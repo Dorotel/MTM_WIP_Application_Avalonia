@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Coding Conventions | Avalonia Project Help</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1><span class="icon">&#128295;</span>Coding Conventions</h1>
+  </header>
+  <nav class="topbar">
+    <a href="index.html"><span class="icon">&#8962;</span>Home</a>
+    <a href="coding-conventions.html" class="active"><span class="icon">&#128295;</span>Coding Conventions</a>
+    <a href="ui-generation.html"><span class="icon">&#128187;</span>UI Generation</a>
+    <a href="ui-mapping.html"><span class="icon">&#128247;</span>UI Mapping</a>
+    <a href="error-handler.html"><span class="icon">&#9888;</span>Error Handling</a>
+    <a href="github-workflow.html"><span class="icon">&#128736;</span>GitHub Workflow</a>
+    <a href="naming-conventions.html"><span class="icon">&#128221;</span>Naming Conventions</a>
+    <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
+    <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
+    <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+  </nav>
+  <main>
+    <h2><span class="icon">&#128295;</span>Coding Conventions</h2>
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Standard Rules</summary>
+      <ul>
+        <li>Use <strong>PascalCase</strong> for classes, methods, and properties.</li>
+        <li>Use <strong>camelCase</strong> for variables and parameters.</li>
+        <li>Use <strong>_camelCase</strong> for private fields.</li>
+        <li>Prefix interfaces with <strong>I</strong> (e.g., <code>IMyService</code>).</li>
+        <li>Add XML documentation for all public members.</li>
+        <li>Do <strong>NOT</strong> add business logic in UI files. Only navigation logic (such as navigation between views, dialogs, or windows) is allowed.</li>
+        <li>Always include navigation event handlers as specified; other events should be empty stubs with <code>TODO</code> comments.</li>
+      </ul>
+    </details>
+    <blockquote>
+      For UI structure and event stubs, see <a href="ui-generation.html">UI Generation</a>.
+    </blockquote>
+  </main>
+</body>
+</html>

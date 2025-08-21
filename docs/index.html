@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Avalonia Project Help & Instructions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>
+      <span class="icon" style="color:#736F5D;">&#128214;</span>
+      Avalonia Project Help Center
+    </h1>
+  </header>
+  <nav class="topbar">
+    <a href="index.html" class="active"><span class="icon">&#8962;</span>Home</a>
+    <a href="coding-conventions.html"><span class="icon">&#128295;</span>Coding Conventions</a>
+    <a href="ui-generation.html"><span class="icon">&#128187;</span>UI Generation</a>
+    <a href="ui-mapping.html"><span class="icon">&#128247;</span>UI Mapping</a>
+    <a href="error-handler.html"><span class="icon">&#9888;</span>Error Handling</a>
+    <a href="github-workflow.html"><span class="icon">&#128736;</span>GitHub Workflow</a>
+    <a href="naming-conventions.html"><span class="icon">&#128221;</span>Naming Conventions</a>
+    <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
+    <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
+    <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+  </nav>
+  <main>
+    <h2><span class="icon">&#128214;</span>Welcome to the Avalonia Project Help Site</h2>
+    <p>
+      This website provides comprehensive help and documentation for all contributors to the Avalonia project. Each section covers a key part of our workflow or project guidelines, with easy-to-navigate pages, clear formatting, and helpful cross-references.
+    </p>
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Quick Navigation</summary>
+      <ul>
+        <li><a href="coding-conventions.html"><span class="icon">&#128295;</span>Coding Conventions</a> — Our C# and Avalonia code style rules.</li>
+        <li><a href="ui-generation.html"><span class="icon">&#128187;</span>UI Generation</a> — How to create and structure UI in Avalonia.</li>
+        <li><a href="ui-mapping.html"><span class="icon">&#128247;</span>UI Mapping</a> — Mapping screenshots to instruction files.</li>
+        <li><a href="error-handler.html"><span class="icon">&#9888;</span>Error Handling & Logging</a> — How to log errors and handle exceptions.</li>
+        <li><a href="github-workflow.html"><span class="icon">&#128736;</span>GitHub Workflow</a> — Best practices for branches, PRs, and issues.</li>
+        <li><a href="naming-conventions.html"><span class="icon">&#128221;</span>Naming Conventions</a> — Rules for naming files, controls, and more.</li>
+        <li><a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a> — Prompts for Copilot and automation.</li>
+        <li><a href="personas.html"><span class="icon">&#128100;</span>Personas</a> — Detailed persona roles for prompt engineering.</li>
+        <li><a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a> — Example prompts for Copilot.</li>
+      </ul>
+    </details>
+    <blockquote class="tip">
+      <span class="icon">&#128204;</span>
+      New to the project? Start with <a href="coding-conventions.html">Coding Conventions</a> and <a href="ui-generation.html">UI Generation</a>.
+    </blockquote>
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Recent Workspace Updates (2025-08-20)</summary>
+      <ul>
+        <li><strong>Error Handling System (Scaffolded)</strong>
+          <ul>
+            <li>Added Services: Service_ErrorHandler, LoggingUtility, ErrorSeverity, ErrorCategory, ErrorEntry, ErrorHandlingConfiguration, ErrorMessageProvider, ErrorHandlingInitializer</li>
+            <li>Examples: Examples/ErrorHandlingUsageExample.cs</li>
+            <li>NuGet: MySql.Data 9.1.0</li>
+          </ul>
+        </li>
+        <li><strong>UI Elements for Error Messages (Avalonia)</strong>
+          <ul>
+            <li>Inline control: Controls/Control_ErrorMessage.axaml (+.cs)</li>
+            <li>Modal dialog: Views/ErrorDialog_Enhanced.axaml (+.cs)</li>
+            <li>Examples and docs: Examples/ErrorMessageUIUsageExample.cs, Controls/README_ErrorMessageUI.md</li>
+          </ul>
+        </li>
+        <li><strong>Configuration (Placeholders)</strong>
+          <ul>
+            <li>Added Config/appsettings.json and Config/README.md. ErrorHandling section to be consumed by ErrorHandlingConfiguration.</li>
+          </ul>
+        </li>
+        <li><strong>Build/Compatibility Fixes</strong>
+          <ul>
+            <li>Replaced DataGrid compiled column bindings with AutoGenerateColumns</li>
+            <li>Adjusted XAML padding via Border wrapper</li>
+            <li>Used FindControl() for control references in code-behind</li>
+          </ul>
+        </li>
+        <li><strong>Usage Guidance</strong>
+          <ul>
+            <li>Initialize via ErrorHandlingInitializer.Initialize()</li>
+            <li>Log with Service_ErrorHandler.HandleException(...)</li>
+            <li>Display UI with Control_ErrorMessage or ErrorDialog_Enhanced.ShowErrorAsync(...)</li>
+          </ul>
+        </li>
+      </ul>
+    </details>
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Configuration Files</summary>
+      <p>The repository includes configuration placeholders under <code>Config/</code>. Primary file: <code>Config/appsettings.json</code></p>
+      <ul>
+        <li>Application (Name, Environment, Theme, Language)</li>
+        <li>ErrorHandling (EnableFileServerLogging, EnableMySqlLogging, EnableConsoleLogging, FileServerBasePath, MySqlConnectionString)</li>
+        <li>Logging (Level, File.Enable, File.Path)</li>
+        <li>Database (Provider, ConnectionString)</li>
+      </ul>
+      <p>Wire-ups should be implemented in services. For example, <code>ErrorHandlingConfiguration.LoadFromConfiguration()</code> should read the <code>ErrorHandling</code> section. Do not commit secrets; prefer environment variables or secret stores.</p>
+    </details>
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>About the Color Scheme</summary>
+      <p>
+        The site uses a high-contrast, modern palette inspired by dramatic water scenes:
+      </p>
+      <ul>
+        <li><span class="icon" style="color:#D9D9D9;">&#9632;</span>#D9D9D9 — Primary text/light background</li>
+        <li><span class="icon" style="color:#565759;">&#9632;</span>#565759 — Card/nav background</li>
+        <li><span class="icon" style="color:#736F5D;">&#9632;</span>#736F5D — Accent</li>
+        <li><span class="icon" style="color:#A6A498;">&#9632;</span>#A6A498 — Secondary text/borders</li>
+        <li><span class="icon" style="color:#0D0D0D;">&#9632;</span>#0D0D0D — Main background</li>
+      </ul>
+      <p>
+        All content is designed for accessibility and readability. For help, contact the project maintainer.</p>
+    </details>
+  </main>
+</body>
+</html>

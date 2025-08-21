@@ -1,5 +1,6 @@
 ﻿using System;
 using Avalonia;
+using Avalonia.ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia
 {
@@ -17,6 +18,7 @@ namespace MTM_WIP_Application_Avalonia
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()
-                .LogToTrace();
+                .LogToTrace()   
+                .UseReactiveUI(); // Enable ReactiveUI integration
     }
 }

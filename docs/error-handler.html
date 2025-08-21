@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Error Handling & Logging | Avalonia Project Help</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1><span class="icon">&#9888;</span>Error Handling & Logging</h1>
+  </header>
+  <nav class="topbar">
+    <a href="index.html"><span class="icon">&#8962;</span>Home</a>
+    <a href="coding-conventions.html"><span class="icon">&#128295;</span>Coding Conventions</a>
+    <a href="ui-generation.html"><span class="icon">&#128187;</span>UI Generation</a>
+    <a href="ui-mapping.html"><span class="icon">&#128247;</span>UI Mapping</a>
+    <a href="error-handler.html" class="active"><span class="icon">&#9888;</span>Error Handling</a>
+    <a href="github-workflow.html"><span class="icon">&#128736;</span>GitHub Workflow</a>
+    <a href="naming-conventions.html"><span class="icon">&#128221;</span>Naming Conventions</a>
+    <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
+    <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
+    <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+  </nav>
+  <main>
+    <h2><span class="icon">&#9888;</span>Error Handler Requirements and Instructions</h2>
+    <blockquote>
+      For prompt and persona standards related to error and logging, see <a href="custom-prompts.html">Custom Prompts</a> and <a href="personas.html">Personas</a>.
+    </blockquote>
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Logging to File Server</summary>
+      <ul>
+        <li><strong>Each user</strong> gets their own subfolder in a central folder on the work file server.
+          <ul>
+            <li>The application creates the subfolder automatically if it doesn't exist.</li>
+            <li>Subfolder naming is based on the user's identity (<code>userId</code> or equivalent).</li>
+          </ul>
+        </li>
+        <li><strong>Log files</strong> are in CSV format, one file per error category (e.g., <code>ui_errors.csv</code>, <code>mysql_errors.csv</code>), per user.
+          <ul>
+            <li>Each error is logged as a new row.</li>
+            <li>The file includes a header row.</li>
+            <li>Do not log duplicate errors for the current session.</li>
+          </ul>
+        </li>
+      </ul>
+    </details>
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Log Entry Details</summary>
+      <ul>
+        <li>Timestamp</li>
+        <li>User ID</li>
+        <li>Machine name (computer name)</li>
+        <li>Error category</li>
+        <li>Error message</li>
+        <li>File name</li>
+        <li>Method name</li>
+        <li>Line number</li>
+        <li>Stack trace</li>
+      </ul>
+      <p>
+        Include extra information to help diagnose and fix the error if the log entry is pasted into a chat window (as long as it doesn't duplicate existing fields).
+      </p>
+    </details>
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Error Categories</summary>
+      <ul>
+        <li>UI</li>
+        <li>Business Logic</li>
+        <li>MySQL</li>
+        <li>Network</li>
+        <li>Other</li>
+      </ul>
+    </details>
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>MySQL Logging</summary>
+      <ul>
+        <li>Log errors to MySQL as well.</li>
+        <li>Each category has a separate table, all tables use the same structure/columns as above.</li>
+      </ul>
+    </details>
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Duplicate Error Detection</summary>
+      <ul>
+        <li>For the current application session, do not log the same error more than once (per user, per category).</li>
+      </ul>
+    </details>
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Additional Info</summary>
+      <ul>
+        <li>The error handler should NOT capture process/thread details.</li>
+        <li>Log files and database tables should focus on user, machine, and error details only.</li>
+      </ul>
+    </details>
+  </main>
+</body>
+</html>

@@ -9,14 +9,36 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0" />
+    <PackageReference Include="Avalonia" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.0">
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.4">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".github\codingconventions.instruction.md" />
+    <None Include=".github\copilot-instructions-master.md" />
+    <None Include=".github\copilot-instructions.md" />
+    <None Include=".github\custom-prompts-examples.md" />
+    <None Include=".github\customprompts.instruction.md" />
+    <None Include=".github\errorhandler.instruction.md" />
+    <None Include=".github\githubworkflow.instruction.md" />
+    <None Include=".github\naming.conventions.instruction.md" />
+    <None Include=".github\needsrepair.instruction.md" />
+    <None Include=".github\personas.instruction.md" />
+    <None Include=".github\ui-generation.instruction.md" />
+    <None Include=".github\ui-mapping.instruction.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Config\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UI Generation | Avalonia Project Help</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1><span class="icon">&#128187;</span>UI Generation Guidelines (Avalonia)</h1>
+  </header>
+  <nav class="topbar">
+    <a href="index.html"><span class="icon">&#8962;</span>Home</a>
+    <a href="coding-conventions.html"><span class="icon">&#128295;</span>Coding Conventions</a>
+    <a href="ui-generation.html" class="active"><span class="icon">&#128187;</span>UI Generation</a>
+    <a href="ui-mapping.html"><span class="icon">&#128247;</span>UI Mapping</a>
+    <a href="error-handler.html"><span class="icon">&#9888;</span>Error Handling</a>
+    <a href="github-workflow.html"><span class="icon">&#128736;</span>GitHub Workflow</a>
+    <a href="naming-conventions.html"><span class="icon">&#128221;</span>Naming Conventions</a>
+    <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
+    <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
+    <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+  </nav>
+  <main>
+    <h2><span class="icon">&#128187;</span>UI Generation Guidelines (Avalonia)</h2>
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>UI Best Practices</summary>
+      <ul>
+        <li>When creating UI elements, always use both:
+          <ul>
+            <li>The referenced <code>.instructions.md</code> file for control names, types, and event definitions.</li>
+            <li>The mapped screenshot in <code>UI_Winform_Screenshots</code> for layout, sizing, and style (see <a href="ui-mapping.html">UI Mapping</a>).</li>
+          </ul>
+        </li>
+        <li>If Markdown and screenshot disagree, prioritize the screenshot for layout, but preserve control names/events from the Markdown.</li>
+        <li>Code generation:
+          <ul>
+            <li><code>.axaml</code> and <code>.axaml.cs</code> files are used for Avalonia layouts and logic.</li>
+            <li>Keep all layout, control initialization, and visual design in <code>.axaml</code>.</li>
+            <li><code>.axaml.cs</code> file contains only:
+              <ul>
+                <li>The constructor</li>
+                <li>Navigation event handlers</li>
+                <li>Empty stubs for all other events (with <code>TODO</code>)</li>
+                <li>No business logic</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>Adhere to the <a href="naming-conventions.html">Naming Conventions</a> and <a href="coding-conventions.html">Coding Conventions</a>.</li>
+      </ul>
+      <ul>
+        <li><input type="checkbox" disabled> Use control names, events, and types from <code>.instructions.md</code>.</li>
+        <li><input type="checkbox" disabled> Match layout and style to screenshot.</li>
+        <li><input type="checkbox" disabled> Navigation logic only (no business logic).</li>
+        <li><input type="checkbox" disabled> Empty event stubs for all events.</li>
+        <li><input type="checkbox" disabled> Add <code>TODO</code> comments for business logic.</li>
+      </ul>
+    </details>
+  </main>
+</body>
+</html>

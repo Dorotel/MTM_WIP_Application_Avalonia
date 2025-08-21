@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Naming Conventions | Avalonia Project Help</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1><span class="icon">&#128221;</span>Naming Conventions</h1>
+  </header>
+  <nav class="topbar">
+    <a href="index.html"><span class="icon">&#8962;</span>Home</a>
+    <a href="coding-conventions.html"><span class="icon">&#128295;</span>Coding Conventions</a>
+    <a href="ui-generation.html"><span class="icon">&#128187;</span>UI Generation</a>
+    <a href="ui-mapping.html"><span class="icon">&#128247;</span>UI Mapping</a>
+    <a href="error-handler.html"><span class="icon">&#9888;</span>Error Handling</a>
+    <a href="github-workflow.html"><span class="icon">&#128736;</span>GitHub Workflow</a>
+    <a href="naming-conventions.html" class="active"><span class="icon">&#128221;</span>Naming Conventions</a>
+    <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
+    <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
+    <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+  </nav>
+  <main>
+    <h2><span class="icon">&#128221;</span>Naming Conventions</h2>
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Rules & Tips</summary>
+      <ul>
+        <li><strong>Views:</strong> <code>[parent]view_[child]</code> or <code>[parent]view</code> (e.g., <code>mainview</code>, <code>mainview_menubar</code>, <code>mainview_tab_inventory</code>)</li>
+        <li><strong>Controls:</strong> <code>[parent]_[type]_[name]</code> (e.g., <code>mainview_usercontrol_inventorytab</code>, <code>mainview_splitcontainer_middle</code>)</li>
+        <li><strong>Menu Items:</strong> <code>[parent]_[menutype]_[menuname]</code> (e.g., <code>mainview_menubar_file_settings</code>)</li>
+        <li><strong>Status/Progress:</strong> <code>[parent]_[statustype]_[statusname]</code> (e.g., <code>mainview_statusbar_savedstatus</code>, <code>mainview_progressbar</code>)</li>
+        <li><strong>Events:</strong> Use C# event handler naming: <code>[controlname]_[event]</code> (e.g., <code>mainview_menubar_file_settings_click</code>)</li>
+        <li><strong>Fields:</strong> Use private or internal prefix if needed. For fields: <code>private</code>, <code>internal</code>, or <code>public</code> as appropriate.</li>
+        <li><strong>Consistent Prefix:</strong> Always prefix with the parent view or control (e.g., <code>mainview_</code>, <code>settingsview_</code>, etc.)</li>
+        <li><strong>Component Containers:</strong> Name as <code>components</code> if using dependency containers or service locators.</li>
+      </ul>
+    </details>
+    <blockquote>
+      For details on control/event layout and UI mapping, see <a href="ui-generation.html">UI Generation</a> and <a href="ui-mapping.html">UI Mapping</a>.
+    </blockquote>
+  </main>
+</body>
+</html>
