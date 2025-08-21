@@ -1,42 +1,176 @@
 <!-- Copilot: Reading needsrepair.instruction.md — Quality Assurance and Code Compliance Tracking -->
 
-# Needs Repair - Code Quality Assurance Report
+# Needs Repair - Code Quality Assurance System
 
 ## Overview
-This instruction file serves as a **quality assurance report system** for identifying code that does not meet the standards defined in the MTM WIP Application instruction files. When Copilot is asked to verify code compliance, it will generate reports in this file documenting what needs to be fixed to meet project standards.
+This instruction file serves as a **quality assurance system guideline** for identifying code that does not meet the standards defined in the MTM WIP Application instruction files. When Copilot is asked to verify code compliance, it will generate **standalone compliance reports** in dedicated files rather than populating this instruction file.
 
 ## Purpose
 - **Code Standards Verification**: Track files that don't comply with instruction guidelines
-- **Quality Assurance Reports**: Document specific violations and required fixes
+- **Standalone Report Generation**: Create individual compliance reports for each audit
+- **Quality Assurance Documentation**: Maintain audit trail with dated reports
 - **Compliance Tracking**: Monitor progress on bringing code up to standards
 - **Instruction File Adherence**: Ensure all code follows established patterns and conventions
 
 ---
 
-## Report Format Template
+## Compliance Report System
 
-When generating compliance reports, use this format:
+### **Report Generation Guidelines**
 
-### **File: [FilePath]**
-**Review Date**: [Date]  
-**Reviewed By**: [Copilot Persona]  
-**Instruction Files Referenced**: [List of relevant .instruction.md files]  
-**Compliance Status**: ? **NEEDS REPAIR** / ?? **PARTIAL COMPLIANCE** / ? **COMPLIANT**
+When conducting code compliance verification, **DO NOT** populate this file with findings. Instead:
 
-#### **Issues Found**:
-1. **[Issue Category]**: [Specific violation description]
-   - **Standard**: [Reference to specific instruction guideline]
-   - **Current Code**: [Example of non-compliant code]
-   - **Required Fix**: [What needs to be changed]
-   - **Priority**: High/Medium/Low
+1. **Create standalone report files** in the `Compliance Reports/` folder
+2. **Use standardized naming**: `{FileName}-compliance-report-{YYYY-MM-DD}.md`
+3. **Generate custom fix prompt** at the end of each report
+4. **Maintain audit trail** with timestamped reports
 
-2. **[Next Issue]**: [Description]
-   - [Continue format...]
+### **Report Directory Structure**
+```
+Compliance Reports/
+??? Services/
+?   ??? InventoryService-compliance-report-2025-01-27.md
+??? ViewModels/
+?   ??? MainViewModel-compliance-report-2025-01-27.md
+??? Views/
+?   ??? MainView-compliance-report-2025-01-27.md
+??? Summary/
+    ??? project-compliance-summary-2025-01-27.md
+```
 
-#### **Recommendations**:
-- [Specific actions needed to bring code into compliance]
-- [Reference to relevant instruction files]
-- [Suggested implementation approach]
+### **Standalone Report Template**
+
+Each compliance report should be a separate markdown file with this structure:
+
+```markdown
+# Compliance Report: {FileName}
+
+**Review Date**: {YYYY-MM-DD}  
+**Reviewed By**: Quality Assurance Auditor Copilot  
+**File Path**: {RelativeFilePath}  
+**Instruction Files Referenced**: {List of .instruction.md files}  
+**Compliance Status**: ? **CRITICAL** / ?? **NEEDS REPAIR** / ? **COMPLIANT**
+
+---
+
+## Executive Summary
+[Brief overview of compliance status and major findings]
+
+---
+
+## Issues Found
+
+### 1. **{Issue Category}**: {Specific violation description}
+- **Standard**: {Reference to specific instruction guideline}
+- **Current Code**: {Example of non-compliant code}
+- **Required Fix**: {What needs to be changed}
+- **Priority**: **CRITICAL** / **HIGH** / **MEDIUM** / **LOW**
+- **Instruction Reference**: {Link to relevant instruction file}
+
+### 2. **{Next Issue}**: {Description}
+[Continue format...]
+
+---
+
+## Recommendations
+
+### **Immediate Actions Required**:
+1. {High priority fixes}
+2. {Critical compliance issues}
+
+### **Implementation Priority Order**:
+1. **CRITICAL**: {Most important fixes}
+2. **HIGH**: {Important standards violations}
+3. **MEDIUM**: {Standards improvements}
+4. **LOW**: {Style and enhancement}
+
+### **Required Implementation Pattern**:
+```{language}
+// Example of compliant code implementation
+```
+
+---
+
+## Related Files Requiring Updates
+- `{RelatedFile1}` - {Description of required changes}
+- `{RelatedFile2}` - {Description of required changes}
+
+---
+
+## Testing Considerations
+- {Test requirements for fixes}
+- {Validation steps}
+
+---
+
+## Custom Fix Prompt
+
+**Use this prompt to implement the fixes identified in this report:**
+
+```
+Fix compliance violations in {FileName} based on the findings in Compliance Reports/{ReportFileName}.
+
+Implement the following fixes in priority order:
+1. {High priority fix 1}
+2. {High priority fix 2}
+3. {Medium priority fixes as applicable}
+
+Follow these MTM patterns:
+- {Pattern 1}
+- {Pattern 2}
+
+Reference these instruction files:
+- {instruction-file-1.md}
+- {instruction-file-2.md}
+
+Ensure all changes maintain existing functionality while bringing code into compliance with MTM standards.
+After implementation, run build verification to confirm no compilation errors.
+```
+
+---
+
+## Compliance Metrics
+- **Total Issues Found**: {Number}
+- **Critical Issues**: {Number}
+- **High Priority Issues**: {Number}
+- **Medium Priority Issues**: {Number}
+- **Low Priority Issues**: {Number}
+- **Estimated Fix Time**: {Hours/Days}
+- **Compliance Score**: {Score}/10
+
+---
+
+*Report generated by Quality Assurance Auditor Copilot following MTM WIP Application instruction guidelines.*
+```
+
+---
+
+## Quality Assurance Workflow
+
+### **Step 1: Compliance Audit**
+1. Run compliance verification prompt on target files
+2. Copilot generates standalone report in `Compliance Reports/` folder
+3. Report includes specific violations and fix guidance
+
+### **Step 2: Report Review**
+1. Review generated compliance report
+2. Prioritize fixes based on report recommendations
+3. Plan implementation using provided custom prompt
+
+### **Step 3: Fix Implementation**
+1. Use custom prompt from report to implement fixes
+2. Address critical and high-priority violations first
+3. Apply recommended patterns and standards
+
+### **Step 4: Re-verification**
+1. Generate new compliance report on updated code
+2. Compare with previous report to track progress
+3. Update compliance status and document improvements
+
+### **Step 5: Compliance Tracking**
+1. Maintain audit trail with dated reports
+2. Track compliance metrics over time
+3. Monitor overall project compliance health
 
 ---
 
@@ -101,49 +235,63 @@ When generating compliance reports, use this format:
 
 ---
 
+## Priority Classification
+
+### **CRITICAL Priority**
+- Security vulnerabilities or data exposure
+- Missing essential files or components
+- Architecture violations preventing functionality
+- Hard-coded values preventing theming
+
+### **HIGH Priority**
+- Essential ReactiveUI patterns missing
+- Incorrect MTM data handling
+- Missing error handling integration
+- Non-async patterns for database operations
+
+### **MEDIUM Priority**
+- Naming convention inconsistencies
+- Missing dependency injection preparation
+- Incomplete documentation
+- Minor architecture deviations
+
+### **LOW Priority**
+- Code formatting improvements
+- Additional documentation enhancements
+- Performance optimizations
+- Non-critical naming adjustments
+
+---
+
 ## Custom Prompt for Quality Verification
 
-### **Verify Code Compliance**
+### **Generate Compliance Report**
 **Persona:** Quality Assurance Auditor Copilot  
 *(See [personas-instruction.md](personas-instruction.md) for role details)*
 
 **Prompt:**  
-"Review [filename] for compliance with all MTM WIP Application instruction guidelines. Generate a detailed report in needsrepair.instruction.md identifying any violations of naming conventions, UI generation standards, ReactiveUI patterns, MTM data patterns, color scheme requirements, architecture guidelines, error handling standards, and layout/design principles. Include specific code examples of violations and required fixes with priority levels."
+"Conduct comprehensive compliance audit of {filename} against all MTM WIP Application instruction guidelines. Generate a standalone compliance report in Compliance Reports/{filename}-compliance-report-{date}.md identifying violations of naming conventions, UI generation standards, ReactiveUI patterns, MTM data patterns, color scheme requirements, architecture guidelines, error handling standards, and layout/design principles. Include specific code examples, priority classifications, and a custom fix prompt at the end of the report."
 
 **Usage Example:**  
 ```
-Review Views/MainView.axaml and ViewModels/MainViewModel.cs for compliance with all MTM WIP Application instruction guidelines. Generate a detailed report in needsrepair.instruction.md identifying violations and required fixes.
+Conduct comprehensive compliance audit of Services/InventoryService.cs against all MTM WIP Application instruction guidelines. Generate a standalone compliance report in Compliance Reports/Services/InventoryService-compliance-report-2025-01-27.md with detailed findings and custom fix prompt.
 ```
 
----
+**Bulk Assessment Example:**  
+```
+Conduct comprehensive quality audit of MTM_WIP_Application_Avalonia project. Review all C# and AXAML files for MTM compliance. Generate individual compliance reports in Compliance Reports/ folder organized by directory structure. Include project-wide compliance summary report with metrics and recommendations.
+```
 
-## Quality Assurance Workflow
-
-### **Step 1: Initial Code Review**
-1. Run compliance verification prompt on target files
-2. Copilot generates detailed report in this file
-3. Review findings and prioritize fixes
-
-### **Step 2: Fix Implementation**
-1. Address high-priority violations first
-2. Use appropriate instruction files as reference
-3. Apply recommended fixes and improvements
-
-### **Step 3: Re-verification**
-1. Run compliance check again on updated code
-2. Update report status from ? NEEDS REPAIR to ? COMPLIANT
-3. Document completion date and any remaining minor issues
-
-### **Step 4: Continuous Monitoring**
-1. Regular compliance checks on new code
-2. Update reports as instruction files evolve
-3. Maintain compliance tracking over time
+**Re-verification Example:**  
+```
+Re-audit {filename} for compliance improvements and generate updated compliance report. Compare findings with previous report from Compliance Reports/ and document progress made on fixing violations. Update compliance status and metrics.
+```
 
 ---
 
 ## Instruction File Cross-Reference
 
-When generating reports, reference these instruction files for standards:
+When generating compliance reports, reference these instruction files for standards:
 
 | Instruction File | Primary Focus | Key Standards |
 |-----------------|---------------|---------------|
@@ -158,81 +306,64 @@ When generating reports, reference these instruction files for standards:
 
 ---
 
-## Priority Classification
+## Compliance Dashboard (Overview)
 
-### **High Priority (Critical Compliance Issues)**
-- Security vulnerabilities or data exposure
-- Architecture violations affecting maintainability
-- Missing essential ReactiveUI patterns
-- Incorrect MTM data handling
-- Hard-coded values preventing theming
+### **Current Project Status**
+*This section provides a high-level view of project compliance - updated when reports are generated*
 
-### **Medium Priority (Standards Violations)**
-- Naming convention inconsistencies
-- Missing error handling
-- Non-optimal UI patterns
-- Incomplete documentation
-- Minor architecture deviations
+- **Total Files Audited**: 0
+- **Compliant Files**: 0 (0%)
+- **Files Needing Repair**: 0 (0%)
+- **Critical Issues Outstanding**: 0
+- **Average Compliance Score**: Not yet assessed
 
-### **Low Priority (Style and Enhancement)**
-- Code formatting improvements
-- Additional documentation
-- Performance optimizations
-- Enhanced user experience features
-- Non-critical naming adjustments
+### **Recent Audit Activity**
+*Links to recent compliance reports*
+- No audits completed yet
+
+### **Compliance Trends**
+*Track improvement over time*
+- Baseline assessment needed
 
 ---
 
-## Report History Template
+## Report Archive Guidelines
 
-### **Active Issues**
-*Files currently needing repair*
+### **File Organization**
+- Group reports by component type (Services/, ViewModels/, Views/, etc.)
+- Use consistent naming: `{FileName}-compliance-report-{YYYY-MM-DD}.md`
+- Maintain chronological audit trail for each file
 
-### **Resolved Issues**
-*Files brought into compliance*
+### **Report Retention**
+- Keep all compliance reports for audit trail
+- Archive older reports after successful compliance verification
+- Maintain summary reports for project-wide compliance tracking
 
-### **Compliance Metrics**
-- **Total Files Reviewed**: [Number]
-- **Compliant Files**: [Number] ([Percentage]%
-- **Files Needing Repair**: [Number] ([Percentage]%
-- **Average Compliance Score**: [Score/10]
-
----
-
-## Example Report Entry
-
-### **File: ViewModels/InventoryViewModel.cs**
-**Review Date**: 2025-01-27  
-**Reviewed By**: Quality Assurance Auditor Copilot  
-**Instruction Files Referenced**: codingconventions.instruction.md, copilot-instructions.md  
-**Compliance Status**: ? **NEEDS REPAIR**
-
-#### **Issues Found**:
-1. **ReactiveUI Pattern Violation**: Properties not using RaiseAndSetIfChanged
-   - **Standard**: All ViewModel properties must use `this.RaiseAndSetIfChanged(ref _field, value)`
-   - **Current Code**: `public string PartId { get; set; }`
-   - **Required Fix**: Convert to reactive property with backing field
-   - **Priority**: High
-
-2. **MTM Data Pattern Violation**: Operation stored as integer instead of string
-   - **Standard**: Operations should be string numbers ("90", "100", "110")
-   - **Current Code**: `public int Operation { get; set; }`
-   - **Required Fix**: Change to `public string Operation { get; set; }`
-   - **Priority**: High
-
-3. **Missing Error Handling**: Commands don't implement exception handling
-   - **Standard**: All ReactiveCommands must have ThrownExceptions subscription
-   - **Current Code**: No exception handling in SaveCommand
-   - **Required Fix**: Add centralized error handling pattern
-   - **Priority**: Medium
-
-#### **Recommendations**:
-- Refactor all properties to use ReactiveUI patterns
-- Update Operation property to use MTM string format
-- Implement centralized exception handling for all commands
-- Add dependency injection preparation comments
-- Reference codingconventions.instruction.md for complete ReactiveUI patterns
+### **Metrics Tracking**
+- Extract compliance metrics from individual reports
+- Generate project-wide compliance summaries
+- Track improvement trends over time
 
 ---
 
-*This file serves as a living document to track and improve code quality across the MTM WIP Application project.*
+## Integration with Development Workflow
+
+### **Pre-Commit Verification**
+Use compliance auditing as part of code review process:
+1. Generate compliance report for changed files
+2. Address critical and high-priority violations
+3. Include compliance status in pull request review
+
+### **Continuous Compliance**
+- Schedule regular compliance audits
+- Monitor compliance trends
+- Update instruction files based on common violations
+
+### **Team Collaboration**
+- Share compliance reports with team members
+- Use custom fix prompts for consistent remediation
+- Maintain project-wide compliance standards
+
+---
+
+*This instruction file serves as the foundation for maintaining code quality and compliance across the MTM WIP Application Avalonia project. All compliance findings should be documented in standalone reports following the guidelines above.*

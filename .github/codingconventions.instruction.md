@@ -36,6 +36,58 @@ public static class Program
 - Prefix interfaces with "I".
 - Add XML documentation for public members.
 
+## .NET 8 Specific Patterns
+
+### File-Scoped Namespaces
+Use file-scoped namespaces for cleaner code structure:
+```csharp
+namespace YourApp.ViewModels;
+
+public class MainViewModel : ReactiveObject
+{
+    // Class implementation
+}
+```
+
+### Global Using Statements
+Leverage global using statements in a GlobalUsings.cs file for commonly used namespaces:
+```csharp
+global using System;
+global using System.Collections.ObjectModel;
+global using System.Reactive;
+global using System.Reactive.Linq;
+global using System.Threading.Tasks;
+global using ReactiveUI;
+global using Avalonia.Controls;
+global using Avalonia.Markup.Xaml;
+```
+
+### Nullable Reference Types
+Enable nullable reference types in project file and use proper null handling:
+```xml
+<PropertyGroup>
+    <Nullable>enable</Nullable>
+</PropertyGroup>
+```
+
+```csharp
+public string? Title { get; set; }
+public string Name { get; set; } = string.Empty;
+```
+
+### Record Types for Data Models
+Use record types for immutable data models when appropriate:
+```csharp
+public record InventoryItem(string PartId, string Operation, int Quantity, int Position);
+
+public record QuickActionExecutedEventArgs
+{
+    public required string PartId { get; init; }
+    public required string Operation { get; init; }
+    public required int Quantity { get; init; }
+}
+```
+
 ## Project Structure
 ```
 /
@@ -246,6 +298,39 @@ Operations in MTM are typically numbers, not actions:
 - Use `{Binding PropertyName}` for one-way bindings
 - Use `{Binding PropertyName, Mode=TwoWay}` for input controls
 - Commands: bind to ReactiveCommand (implements ICommand)
+
+## Common Controls Mapping (WinForms → Avalonia)
+- `Form` → `Window` or `UserControl`
+- `TableLayoutPanel` → `Grid` with RowDefinitions/ColumnDefinitions
+- `SplitContainer` → `Grid` with `GridSplitter`
+- `TabControl` → `TabControl` with `TabItem`
+- `MenuStrip` → `Menu` with `MenuItem`
+- `StatusStrip` → `DockPanel` with `TextBlock` at bottom
+- `ProgressBar` → `ProgressBar`
+- `Label` → `TextBlock` or `Label`
+- `TextBox` → `TextBox`
+- `Button` → `Button`
+- `ComboBox` → `ComboBox`
+- `DataGridView` → `DataGrid`
+
+## Layout Principles
+- Use **Grid** for complex layouts with rows/columns
+- Use **DockPanel** for toolbar/statusbar layouts
+- Use **StackPanel** sparingly, prefer Grid for performance
+- Default margins: `Margin="8"` for containers, `Margin="4"` for controls
+- Default padding: `Padding="8"` for content areas
+- Card padding: `Padding="24"` for spacious card content
+- Ensure spacing isn't squished - use adequate margins between elements
+- Use `Spacing` property on StackPanel for consistent gaps
+
+## Modern UI Elements Coding Standards
+- **Cards**: Rounded corners (8-12px), subtle shadows, white/light background
+- **Sidebar**: Fixed width (240-280px), slightly darker background, clear hierarchy
+- **Navigation Items**: Use RadioButtons or ToggleButtons for single selection
+- **Headers**: Larger font sizes (20-28px), semi-bold or bold weight
+- **Shadows**: Subtle box shadows for depth `BoxShadow="0 2 8 0 #11000000"`
+- **Icons**: Use PathIcon or Avalonia.Icons packages, 24x24 for standard size
+- **Gradients**: Use MTM brand gradient for hero sections and call-to-action areas
 
 ## MTM-Specific UI Generation Guidelines
 
