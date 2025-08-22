@@ -20,9 +20,17 @@
     <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
     <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
     <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+    <a href="needs-repair.html"><span class="icon">&#128679;</span>Quality Assurance</a>
+    <a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a>
   </nav>
   <main>
     <h2><span class="icon">&#128295;</span>Coding Conventions</h2>
+    
+    <blockquote class="warning">
+      <span class="icon">&#9888;</span>
+      <strong>Important:</strong> Before implementing new code, ensure all <a href="missing-systems.html">missing core systems</a> are in place. Current project compliance is only 25%.
+    </blockquote>
+    
     <details open>
       <summary><span class="icon icon-chevron">&#9654;</span>Standard Rules</summary>
       <ul>
@@ -33,10 +41,112 @@
         <li>Add XML documentation for all public members.</li>
         <li>Do <strong>NOT</strong> add business logic in UI files. Only navigation logic (such as navigation between views, dialogs, or windows) is allowed.</li>
         <li>Always include navigation event handlers as specified; other events should be empty stubs with <code>TODO</code> comments.</li>
+        <li><strong>NEW:</strong> All services must implement Result&lt;T&gt; pattern for consistent error handling.</li>
+        <li><strong>NEW:</strong> All services must be prepared for dependency injection with proper interfaces.</li>
       </ul>
     </details>
-    <blockquote>
-      For UI structure and event stubs, see <a href="ui-generation.html">UI Generation</a>.
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>ReactiveUI Patterns (Required)</summary>
+      <ul>
+        <li>All ViewModels must inherit from <code>ReactiveObject</code></li>
+        <li>Use <code>RaiseAndSetIfChanged</code> for all properties with backing fields</li>
+        <li>Implement commands using <code>ReactiveCommand</code> with proper error handling</li>
+        <li>Use <code>WhenAnyValue</code> for derived properties and validation logic</li>
+        <li>Handle command exceptions using <code>ThrownExceptions.Subscribe()</code></li>
+        <li>Use <code>ObservableCollection</code> for collections that change</li>
+        <li>Prepare ViewModels for dependency injection with constructor parameters</li>
+      </ul>
+      <p>Example:</p>
+      <pre><code>public class InventoryViewModel : ReactiveObject
+{
+    private string _partId = string.Empty;
+    public string PartId
+    {
+        get => _partId;
+        set => this.RaiseAndSetIfChanged(ref _partId, value);
+    }
+
+    public ReactiveCommand&lt;Unit, Unit&gt; SaveCommand { get; }
+
+    public InventoryViewModel(IInventoryService inventoryService)
+    {
+        SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
+        SaveCommand.ThrownExceptions.Subscribe(HandleException);
+    }
+}</code></pre>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Service Layer Patterns (Critical Missing)</summary>
+      <ul>
+        <li><strong>Result Pattern:</strong> All service methods must return <code>Result&lt;T&gt;</code> for consistent error handling</li>
+        <li><strong>Async Operations:</strong> All database operations must be async with proper cancellation token support</li>
+        <li><strong>Error Integration:</strong> Use <code>Service_ErrorHandler.HandleException()</code> for all exceptions</li>
+        <li><strong>Dependency Injection:</strong> All services must have interfaces and be registered in DI container</li>
+        <li><strong>MTM Data Patterns:</strong> Follow Part ID (string), Operation (string numbers), Quantity (integer) patterns</li>
+        <li><strong>Validation:</strong> Implement business rule validation before database operations</li>
+        <li><strong>Logging:</strong> Integrate with LoggingUtility for all service operations</li>
+      </ul>
+      <p>Example service implementation:</p>
+      <pre><code>public class InventoryService : IInventoryService
+{
+    private readonly LoggingUtility _loggingUtility;
+    
+    public InventoryService(LoggingUtility loggingUtility)
+    {
+        _loggingUtility = loggingUtility;
+    }
+    
+    public async Task&lt;Result&lt;InventoryItem&gt;&gt; GetInventoryItemAsync(string partId)
+    {
+        try
+        {
+            var item = await _loggingUtility.GetInventoryItemAsync(partId);
+            return Result&lt;InventoryItem&gt;.Success(item);
+        }
+        catch (Exception ex)
+        {
+            Service_ErrorHandler.HandleException(ex, ErrorSeverity.High,
+                source: nameof(InventoryService));
+            return Result&lt;InventoryItem&gt;.Failure("Failed to retrieve inventory item");
+        }
+    }
+}</code></pre>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>MTM-Specific Data Patterns</summary>
+      <ul>
+        <li><strong>Part ID:</strong> Always use string format (e.g., "PART001")</li>
+        <li><strong>Operation:</strong> String numbers only (e.g., "90", "100", "110"), not descriptive text</li>
+        <li><strong>Quantity:</strong> Integer values for all quantity fields</li>
+        <li><strong>Position:</strong> 1-based indexing for UI display (convert to 0-based for arrays)</li>
+        <li><strong>User Tracking:</strong> Include CreatedBy, ModifiedBy fields as string user IDs</li>
+        <li><strong>Timestamps:</strong> Use DateTime for Created, Modified fields</li>
+        <li><strong>Status Fields:</strong> Use enums for status values, not magic strings</li>
+      </ul>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Missing Systems Compliance</summary>
+      <p><strong>Current Status:</strong> <span class="status-critical">25% Compliance</span> - Development should be paused until foundation systems are implemented.</p>
+      
+      <h3>Required Before Continuing Development:</h3>
+      <ul>
+        <li><strong>Models Namespace:</strong> Result&lt;T&gt;, InventoryItem, InventoryTransaction, User, QuickButtonItem</li>
+        <li><strong>Service Layer:</strong> IInventoryService, IUserService, ITransactionService implementations</li>
+        <li><strong>Dependency Injection:</strong> Microsoft.Extensions.DependencyInjection container setup</li>
+        <li><strong>Navigation Service:</strong> Proper MVVM navigation patterns</li>
+        <li><strong>Theme System:</strong> MTM purple brand colors with DynamicResource</li>
+      </ul>
+      
+      <p>See <a href="missing-systems.html">Missing Systems</a> for implementation roadmap and <a href="custom-prompts-examples.html">Prompt Examples</a> for specific implementation prompts.</p>
+    </details>
+    
+    <blockquote class="tip">
+      <span class="icon">&#128204;</span>
+      For UI structure and event stubs, see <a href="ui-generation.html">UI Generation</a>. For quality verification, use <a href="needs-repair.html">Quality Assurance</a> compliance reports.
     </blockquote>
   </main>
 </body>

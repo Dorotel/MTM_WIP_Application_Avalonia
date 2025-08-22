@@ -274,7 +274,7 @@ catch (Exception ex)
 {
     splash.UpdateProgress(progress, $"Error: {ex.Message}");
     Service_ErrorHandler.HandleException(ex, ErrorSeverity.Critical,
-        controlName: "Startup Process");
+        source: "Startup Process");
     
     // Allow user to see error message before closing
     await Task.Delay(3000);

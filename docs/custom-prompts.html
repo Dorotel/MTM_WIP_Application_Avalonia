@@ -20,33 +20,172 @@
     <a href="custom-prompts.html" class="active"><span class="icon">&#128161;</span>Custom Prompts</a>
     <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
     <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+    <a href="needs-repair.html"><span class="icon">&#128679;</span>Quality Assurance</a>
+    <a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a>
   </nav>
   <main>
     <h2><span class="icon">&#128161;</span>Custom Copilot Prompts</h2>
     <blockquote>
       See <a href="personas.html">Personas</a> for complete persona definitions and behavioral guidelines.
     </blockquote>
+    
+    <blockquote class="critical">
+      <span class="icon">&#128679;</span>
+      <strong>CRITICAL UPDATE:</strong> 16 new prompts (21-36) added for implementing missing core systems. See <a href="missing-systems.html">Missing Systems</a> for implementation priority and <a href="custom-prompts-examples.html">Prompt Examples</a> for usage.
+    </blockquote>
+    
     <details open>
-      <summary><span class="icon icon-chevron">&#9654;</span>Prompt Types</summary>
+      <summary><span class="icon icon-chevron">&#9654;</span>Standard Prompt Types (1-20)</summary>
       <ul>
         <li><b>Create UI Element</b> — For generating Avalonia controls or views based on mapping and instructions.</li>
+        <li><b>Create UI Element from Markdown Instructions</b> — For generating Avalonia AXAML and ReactiveUI ViewModels from parsed markdown files.</li>
         <li><b>Create Error System Placeholder</b> — For scaffolding a new error handling class or module with standard conventions.</li>
         <li><b>Create Logging Info Placeholder</b> — For generating a logging helper or logging configuration according to project standards.</li>
         <li><b>Create Business Logic Handler</b> — For scaffolding a business logic class or method with correct naming and separation from UI.</li>
         <li><b>Create Database Access Layer Placeholder</b> — For generating a stub or scaffolding for database interaction classes or repositories.</li>
+        <li><b>Create UI Element for Error Messages</b> — For generating or integrating Control_ErrorMessage or ErrorDialog_Enhanced.</li>
         <li><b>Create Unit Test Skeleton</b> — For generating a basic, empty unit test class or method in the appropriate structure.</li>
         <li><b>Create Configuration File Placeholder</b> — For generating an empty config/settings file with standard project structure.</li>
+        <li><b>Create ReactiveUI ViewModel</b> — For generating ViewModels with ReactiveUI patterns, commands, and observable properties.</li>
+        <li><b>Create Avalonia Theme Resources</b> — For generating MTM-specific color schemes and theme resources using the purple brand palette.</li>
+        <li><b>Create MTM Data Model</b> — For generating models that follow MTM-specific data patterns (Part ID, Operation numbers, etc.).</li>
         <li><b>Refactor Code to Naming Convention</b> — For requesting Copilot to rename code elements to fit project naming rules.</li>
         <li><b>Add Event Handler Stub</b> — For quickly generating empty event handler methods (with TODOs) for specific controls.</li>
         <li><b>Document Public API/Class</b> — For generating XML documentation for public members.</li>
         <li><b>Create Customized Prompt</b> — For drafting new actionable custom prompts and assigning appropriate personas.</li>
+        <li><b>Update Instruction File from Master</b> — For synchronizing any instruction file with relevant content from the main copilot-instructions.md file.</li>
+        <li><b>Create Modern Layout Pattern</b> — For generating modern Avalonia layouts with sidebars, cards, and hero sections using MTM design patterns.</li>
+        <li><b>Create Context Menu Integration</b> — For adding context menus to components with management features following MTM patterns.</li>
+        <li><b>Verify Code Compliance</b> — For conducting comprehensive quality assurance reviews of code against all MTM instruction guidelines.</li>
       </ul>
     </details>
+
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>🏗️ Missing Core Systems Implementation Prompts (21-36)</summary>
+      <p><em>Based on analysis from <a href="needs-repair.html">Quality Assurance</a> identifying 19 missing core systems</em></p>
+
+      <div class="phase-roadmap">
+        <div class="phase critical">
+          <h3><span class="icon">&#128295;</span>Phase 1: Foundation Systems (Prompts 21-24)</h3>
+          <ul>
+            <li><b>Implement Result Pattern System</b> — For creating the Result&lt;T&gt; pattern infrastructure for consistent service responses.</li>
+            <li><b>Create Data Models Foundation</b> — For generating the complete Models namespace with MTM-specific data entities.</li>
+            <li><b>Setup Dependency Injection Container</b> — For configuring Microsoft.Extensions.DependencyInjection in Program.cs and App.axaml.cs.</li>
+            <li><b>Create Core Service Interfaces</b> — For generating all essential service interfaces following MTM patterns.</li>
+          </ul>
+        </div>
+
+        <div class="phase warning">
+          <h3><span class="icon">&#128295;</span>Phase 2: Service Layer Implementation (Prompts 25-28)</h3>
+          <ul>
+            <li><b>Implement Service Layer</b> — For creating complete service implementations with MTM patterns and error handling.</li>
+            <li><b>Create Database Service Layer</b> — For implementing centralized database access with proper connection management.</li>
+            <li><b>Setup Application State Management</b> — For creating global application state service with proper encapsulation.</li>
+            <li><b>Implement Configuration Service</b> — For creating service to read and manage appsettings.json configuration.</li>
+          </ul>
+        </div>
+
+        <div class="phase info">
+          <h3><span class="icon">&#128295;</span>Phase 3: Infrastructure Systems (Prompts 29-32)</h3>
+          <ul>
+            <li><b>Create Navigation Service</b> — For implementing proper MVVM navigation patterns with view-viewmodel mapping.</li>
+            <li><b>Implement Theme System</b> — For creating MTM purple brand theme resources and DynamicResource patterns.</li>
+            <li><b>Setup Repository Pattern</b> — For implementing data access abstraction layer with repository interfaces.</li>
+            <li><b>Create Validation System</b> — For implementing business rule validation with MTM-specific patterns.</li>
+          </ul>
+        </div>
+
+        <div class="phase success">
+          <h3><span class="icon">&#128295;</span>Phase 4: Quality Assurance Systems (Prompts 33-36)</h3>
+          <ul>
+            <li><b>Create Unit Testing Infrastructure</b> — For setting up comprehensive testing framework with mocks and fixtures.</li>
+            <li><b>Implement Structured Logging</b> — For adding centralized logging throughout the application with proper levels.</li>
+            <li><b>Create Caching Layer</b> — For implementing performance-oriented caching for ComboBox data and user preferences.</li>
+            <li><b>Setup Security Infrastructure</b> — For implementing authentication, authorization, and secure connection management.</li>
+          </ul>
+        </div>
+      </div>
+
+      <blockquote class="tip">
+        <span class="icon">&#128204;</span>
+        <strong>Implementation Order:</strong> Follow the phase-based approach. Each phase builds on the previous one. See <a href="custom-prompts-examples.html">Prompt Examples</a> for specific usage and <a href="missing-systems.html">Missing Systems</a> for detailed implementation guidance.
+      </blockquote>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>MTM-Specific Workflow Patterns</summary>
+      
+      <h3>UI Generation from Markdown Files</h3>
+      <ol>
+        <li><b>Parse Component Hierarchy</b> — Extract the tree structure and convert to Avalonia AXAML</li>
+        <li><b>Map MTM Data Types</b> — Use Part ID (string), Operation (string numbers), Quantity (integer)</li>
+        <li><b>Apply Context Menu Patterns</b> — Add management features via right-click menus</li>
+        <li><b>Implement Space Optimization</b> — Use UniformGrid and proper alignment for component removal</li>
+        <li><b>Follow MTM Color Scheme</b> — Apply purple brand colors consistently</li>
+        <li><b>Create ReactiveUI Bindings</b> — Generate ViewModels with proper observable patterns</li>
+      </ol>
+
+      <h3>Quality Assurance Workflow</h3>
+      <ol>
+        <li><b>Initial Assessment</b> — Review code files against all instruction guidelines</li>
+        <li><b>Violation Identification</b> — Document specific non-compliance issues with examples</li>
+        <li><b>Priority Classification</b> — Categorize issues as High/Medium/Low priority</li>
+        <li><b>Fix Recommendations</b> — Provide specific guidance for bringing code into compliance</li>
+        <li><b>Report Generation</b> — Create standalone compliance reports in Compliance Reports/ folder</li>
+        <li><b>Re-verification</b> — Follow up reviews to confirm compliance improvements</li>
+      </ol>
+
+      <h3>Missing Systems Implementation Workflow</h3>
+      <ol>
+        <li><b>Foundation Phase</b> — Implement data models, Result pattern, and DI container (Prompts 21-24)</li>
+        <li><b>Service Layer Phase</b> — Create all service interfaces and implementations (Prompts 25-28)</li>
+        <li><b>Infrastructure Phase</b> — Add navigation, themes, repositories, and validation (Prompts 29-32)</li>
+        <li><b>Quality Assurance Phase</b> — Implement testing, logging, caching, and security (Prompts 33-36)</li>
+      </ol>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Persona Behavioral Guidelines</summary>
+      
+      <h3>MTM-Specific Behaviors</h3>
+      <ul>
+        <li><b>Operations are Numbers</b> — Always treat operations as string numbers ("90", "100", "110"), not action descriptions</li>
+        <li><b>Part ID Format</b> — Use string format for Part IDs (e.g., "PART001")</li>
+        <li><b>1-Based Indexing</b> — UI positions use 1-based indexing for display</li>
+        <li><b>Purple Brand Consistency</b> — Apply MTM purple color scheme (#4B45ED primary, #BA45ED accents)</li>
+        <li><b>ReactiveUI Patterns</b> — Use ReactiveObject, RaiseAndSetIfChanged, ReactiveCommand, WhenAnyValue</li>
+        <li><b>Modern Layout Principles</b> — Prefer Grid over StackPanel, use cards and sidebars</li>
+        <li><b>Context Menu Management</b> — Add right-click functionality for component management</li>
+        <li><b>Business Logic Separation</b> — Leave implementation as TODO comments, focus on structure</li>
+      </ul>
+
+      <h3>Quality Assurance Behaviors</h3>
+      <ul>
+        <li><b>Comprehensive Review</b> — Check all aspects of code against instruction guidelines</li>
+        <li><b>Structured Reporting</b> — Use standardized format for violation documentation</li>
+        <li><b>Priority Assignment</b> — Classify issues based on impact and compliance severity</li>
+        <li><b>Solution-Oriented</b> — Provide specific fix recommendations with instruction references</li>
+        <li><b>Progress Tracking</b> — Update compliance status and maintain audit trail</li>
+      </ul>
+
+      <h3>Missing Systems Implementation Behaviors</h3>
+      <ul>
+        <li><b>Foundation First</b> — Always implement foundational systems before dependent systems</li>
+        <li><b>Clean Architecture</b> — Follow dependency inversion and separation of concerns</li>
+        <li><b>Error Handling</b> — Integrate Service_ErrorHandler in all new implementations</li>
+        <li><b>Testing Support</b> — Include testability considerations in all implementations</li>
+        <li><b>Documentation</b> — Provide comprehensive XML documentation for all public APIs</li>
+        <li><b>DI Preparation</b> — Ensure all services are prepared for dependency injection</li>
+      </ul>
+    </details>
+
     <details>
       <summary><span class="icon icon-chevron">&#9654;</span>Rule for Adding Custom Prompts</summary>
       <ul>
         <li>Whenever a new custom prompt is added to this file, an example usage for that prompt must also be added to <a href="custom-prompts-examples.html">Prompt Examples</a>.</li>
         <li>For persona descriptions, see <a href="personas.html">Personas</a>.</li>
+        <li>For missing systems implementation, see <a href="missing-systems.html">Missing Systems</a>.</li>
+        <li>For quality assurance workflows, see <a href="needs-repair.html">Quality Assurance</a>.</li>
       </ul>
     </details>
   </main>

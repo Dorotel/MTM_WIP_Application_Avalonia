@@ -78,11 +78,11 @@ namespace MTM_WIP_Application_Avalonia.Services
                 var insertSql = $@"
                     INSERT INTO {tableName} 
                     (Timestamp, UserId, MachineName, Category, Severity, ErrorMessage, 
-                     FileName, MethodName, LineNumber, StackTrace, ControlName, 
+                     FileName, MethodName, LineNumber, StackTrace, source, 
                      AdditionalData, ExceptionType)
                     VALUES 
                     (@Timestamp, @UserId, @MachineName, @Category, @Severity, @ErrorMessage,
-                     @FileName, @MethodName, @LineNumber, @StackTrace, @ControlName,
+                     @FileName, @MethodName, @LineNumber, @StackTrace, @source,
                      @AdditionalData, @ExceptionType)";
 
                 using var command = new MySqlCommand(insertSql, connection);
@@ -114,7 +114,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                     MethodName VARCHAR(255),
                     LineNumber INT,
                     StackTrace TEXT,
-                    ControlName VARCHAR(255),
+                    source VARCHAR(255),
                     AdditionalData TEXT,
                     ExceptionType VARCHAR(500),
                     INDEX idx_timestamp (Timestamp),
@@ -141,7 +141,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             command.Parameters.AddWithValue("@MethodName", errorEntry.MethodName);
             command.Parameters.AddWithValue("@LineNumber", errorEntry.LineNumber);
             command.Parameters.AddWithValue("@StackTrace", errorEntry.StackTrace);
-            command.Parameters.AddWithValue("@ControlName", errorEntry.ControlName ?? "");
+            command.Parameters.AddWithValue("@source", errorEntry.source ?? "");
             command.Parameters.AddWithValue("@AdditionalData", errorEntry.AdditionalData);
             command.Parameters.AddWithValue("@ExceptionType", errorEntry.ExceptionType);
         }
@@ -261,7 +261,7 @@ namespace MTM_WIP_Application_Avalonia.Services
         /// </summary>
         private static string GetCsvHeader()
         {
-            return "Timestamp,UserId,MachineName,Category,Severity,ErrorMessage,FileName,MethodName,LineNumber,StackTrace,ControlName,AdditionalData,ExceptionType";
+            return "Timestamp,UserId,MachineName,Category,Severity,ErrorMessage,FileName,MethodName,LineNumber,StackTrace,source,AdditionalData,ExceptionType";
         }
 
         /// <summary>
@@ -284,7 +284,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                 EscapeCsvField(errorEntry.MethodName),
                 EscapeCsvField(errorEntry.LineNumber.ToString()),
                 EscapeCsvField(errorEntry.StackTrace),
-                EscapeCsvField(errorEntry.ControlName ?? ""),
+                EscapeCsvField(errorEntry.source ?? ""),
                 EscapeCsvField(errorEntry.AdditionalData),
                 EscapeCsvField(errorEntry.ExceptionType)
             );

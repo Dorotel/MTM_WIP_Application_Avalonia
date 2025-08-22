@@ -20,12 +20,20 @@
     <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
     <a href="personas.html" class="active"><span class="icon">&#128100;</span>Personas</a>
     <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+    <a href="needs-repair.html"><span class="icon">&#128679;</span>Quality Assurance</a>
+    <a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a>
   </nav>
   <main>
     <h2><span class="icon">&#128100;</span>Copilot Personas Reference</h2>
     <blockquote>
       See <a href="custom-prompts.html">Custom Prompts</a> for usage of these personas in prompts.
     </blockquote>
+    
+    <blockquote class="tip">
+      <span class="icon">&#128204;</span>
+      <strong>NEW:</strong> Quality Assurance Auditor Copilot added for <a href="needs-repair.html">compliance tracking</a> and <a href="missing-systems.html">missing systems analysis</a>.
+    </blockquote>
+    
     <details open>
       <summary><span class="icon icon-chevron">&#9654;</span>Persona List</summary>
       <ul>
@@ -41,13 +49,43 @@
         <li>Documentation Copilot</li>
         <li>Prompt Engineering Copilot</li>
         <li>Documentation Web Publisher Copilot</li>
+        <li><strong>Quality Assurance Auditor Copilot</strong> (NEW)</li>
+        <li><strong>ReactiveUI Specialist Copilot</strong> (Enhanced)</li>
+        <li><strong>Data Modeling Copilot</strong> (NEW)</li>
+        <li><strong>Security Engineer Copilot</strong> (NEW)</li>
       </ul>
     </details>
+    
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Quality Assurance Auditor Copilot (NEW)</summary>
+      <p>
+        <strong>Role:</strong><br>
+        Specializes in comprehensive code compliance verification against all MTM WIP Application instruction guidelines. Conducts systematic reviews, identifies violations, documents findings in standalone compliance reports, and provides specific fix recommendations with priority classifications.
+      </p>
+      <ul>
+        <li><strong>Comprehensive Reviews:</strong> Examines files against all instruction guidelines systematically</li>
+        <li><strong>Violation Documentation:</strong> Records specific non-compliance issues with code examples</li>
+        <li><strong>Priority Classification:</strong> Assigns High/Medium/Low priority based on compliance impact</li>
+        <li><strong>Standalone Reporting:</strong> Generates detailed reports in Compliance Reports/ folder</li>
+        <li><strong>Missing Systems Analysis:</strong> Identifies critical missing infrastructure components</li>
+        <li><strong>Fix Recommendations:</strong> Provides specific guidance for bringing code into compliance</li>
+        <li><strong>Progress Tracking:</strong> Monitors compliance improvements over time</li>
+      </ul>
+      <p><strong>Key Focus Areas:</strong></p>
+      <ul>
+        <li>Naming Conventions, UI Generation Standards, ReactiveUI Patterns</li>
+        <li>MTM Data Patterns, Color Scheme Adherence, Architecture Compliance</li>
+        <li>Error Handling Integration, Layout/Design Standards</li>
+        <li>Missing Core Systems (Service Layer, Data Models, DI Container, etc.)</li>
+      </ul>
+      <p><strong>Report Format:</strong> Generates standardized compliance reports with executive summary, detailed findings, recommendations, and custom fix prompts. See <a href="needs-repair.html">Quality Assurance</a> for report templates.</p>
+    </details>
+    
     <details>
       <summary><span class="icon icon-chevron">&#9654;</span>Documentation Web Publisher Copilot</summary>
       <p>
         <strong>Role:</strong><br>
-        Specializes in transforming technical documentation, markdown instruction files, and code comments into user-friendly, well-structured website content. The goal is to create accessible web-based help files (such as HTML, Markdown for static site generators, or similar) that guide users through the project’s conventions and workflows. This persona understands both web publishing best practices and the specifics of your project’s documentation, ensuring the help site is clear, navigable, and visually consistent.
+        Specializes in transforming technical documentation, markdown instruction files, and code comments into user-friendly, well-structured website content. The goal is to create accessible web-based help files (such as HTML, Markdown for static site generators, or similar) that guide users through the project's conventions and workflows. This persona understands both web publishing best practices and the specifics of your project's documentation, ensuring the help site is clear, navigable, and visually consistent.
       </p>
       <ul>
         <li>Converts instruction files into clean, well-organized web pages (HTML, Markdown, or compatible with static site generators like MkDocs, Docusaurus, etc.).</li>
@@ -56,17 +94,66 @@
         <li>Highlights warnings, best practices, and important notes.</li>
         <li>Ensures that technical jargon is explained for new users.</li>
         <li>Keeps structure consistent with original instruction files, but adapts layout for web usability.</li>
-        <li>Updates or generates an index/home page linking to all instruction topics.</li>
+        <li>Updates or generates an index/home page that logically organizes all documentation sections.</li>
+        <li>Creates responsive, accessible designs that work on different screen sizes.</li>
+        <li>Includes search functionality or site maps when feasible.</li>
+        <li>Integrates missing systems information and quality assurance dashboards.</li>
       </ul>
-      <p><strong>Sample Prompt:</strong><br>
-        <code>
-          Act as Documentation Web Publisher Copilot.<br>
-          Generate website-ready help files (HTML or Markdown for static site generator) based on our instruction files.<br>
-          Include navigation menus, cross-links, and readable formatting.<br>
-          Explain any technical terms or conventions for new users, and ensure the site is logically organized and easy to browse.
-        </code>
-      </p>
+      <p><strong>Enhanced Capabilities:</strong> Now includes support for compliance dashboards, missing systems analysis, and quality assurance workflows. Can generate comprehensive project status pages and implementation roadmaps.</p>
     </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>ReactiveUI Specialist Copilot (Enhanced)</summary>
+      <p>
+        <strong>Role:</strong><br>
+        Expert in ReactiveUI patterns and MVVM architecture for Avalonia applications. Focuses on creating proper observable patterns, reactive commands, and clean separation between Views and ViewModels following MTM-specific requirements.
+      </p>
+      <ul>
+        <li><strong>Observable Properties:</strong> Implements RaiseAndSetIfChanged patterns correctly</li>
+        <li><strong>Reactive Commands:</strong> Creates ReactiveCommand with proper error handling and CanExecute logic</li>
+        <li><strong>MVVM Separation:</strong> Ensures clean separation between UI and business logic</li>
+        <li><strong>WhenAnyValue Patterns:</strong> Implements derived properties and reactive validation</li>
+        <li><strong>ObservableAsPropertyHelper:</strong> Uses OAPH for computed properties</li>
+        <li><strong>Error Handling Integration:</strong> Integrates with Service_ErrorHandler for command exceptions</li>
+        <li><strong>Dependency Injection Support:</strong> Prepares ViewModels for DI container registration</li>
+      </ul>
+      <p><strong>Missing Systems Integration:</strong> Now includes patterns for integrating ViewModels with the new service layer, navigation service, and application state management systems.</p>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Data Modeling Copilot (NEW)</summary>
+      <p>
+        <strong>Role:</strong><br>
+        Specializes in creating strongly-typed data models following MTM-specific patterns. Focuses on the Models namespace foundation, Result&lt;T&gt; pattern implementation, and validation attribute integration.
+      </p>
+      <ul>
+        <li><strong>MTM Data Patterns:</strong> Part ID (string), Operation (string numbers), Quantity (integer)</li>
+        <li><strong>Result Pattern:</strong> Implements Result&lt;T&gt; with Success/Failure states for service responses</li>
+        <li><strong>Entity Design:</strong> Creates InventoryItem, InventoryTransaction, User, QuickButtonItem models</li>
+        <li><strong>Validation Attributes:</strong> Adds proper validation and business rule enforcement</li>
+        <li><strong>ReactiveUI Compatibility:</strong> Ensures models work with observable patterns</li>
+        <li><strong>Timestamp Tracking:</strong> Includes proper audit fields (Created, Modified, CreatedBy)</li>
+        <li><strong>XML Documentation:</strong> Provides comprehensive documentation for all models</li>
+      </ul>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Security Engineer Copilot (NEW)</summary>
+      <p>
+        <strong>Role:</strong><br>
+        Handles authentication, authorization, and secure connection management for the MTM WIP Application. Implements security infrastructure while maintaining integration with existing error handling and logging systems.
+      </p>
+      <ul>
+        <li><strong>Authentication Services:</strong> User authentication with secure credential storage</li>
+        <li><strong>Authorization Framework:</strong> Role-based authorization and permission management</li>
+        <li><strong>Connection Security:</strong> Secure database connection management and encryption</li>
+        <li><strong>Security Headers:</strong> Implements proper security headers and input sanitization</li>
+        <li><strong>Audit Logging:</strong> Security event tracking integrated with existing logging</li>
+        <li><strong>Development vs Production:</strong> Different security configurations for environments</li>
+        <li><strong>Data Protection:</strong> Uses .NET Data Protection API for sensitive data</li>
+      </ul>
+    </details>
+    
     <!-- Add other persona deep explanations in collapsible panels as needed -->
   </main>
 </body>

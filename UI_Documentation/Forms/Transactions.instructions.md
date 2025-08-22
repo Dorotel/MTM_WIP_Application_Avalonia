@@ -236,7 +236,7 @@ private async Task LoadTransactionsAsync()
     {
         _progressHelper?.HideProgress();
         Service_ErrorHandler.HandleException(ex, ErrorSeverity.High,
-            controlName: "LoadTransactionsAsync");
+            source: "LoadTransactionsAsync");
     }
 }
 ```
@@ -270,7 +270,7 @@ private async Task PerformDebouncedSearchAsync()
     catch (Exception ex)
     {
         Service_ErrorHandler.HandleException(ex, ErrorSeverity.Medium,
-            controlName: "PerformDebouncedSearchAsync");
+            source: "PerformDebouncedSearchAsync");
     }
 }
 ```
@@ -361,7 +361,7 @@ private void Transactions_Button_Print_Click(object sender, EventArgs e)
     catch (Exception ex)
     {
         Service_ErrorHandler.HandleException(ex, ErrorSeverity.Medium,
-            controlName: "Print Transaction Report");
+            source: "Print Transaction Report");
     }
 }
 ```
@@ -420,7 +420,7 @@ catch (Exception ex)
 {
     _progressHelper?.HideProgress();
     Service_ErrorHandler.HandleException(ex, ErrorSeverity.High,
-        controlName: "LoadTransactionsAsync",
+        source: "LoadTransactionsAsync",
         additionalData: new Dictionary<string, object>
         {
             ["CurrentPage"] = CurrentPage,

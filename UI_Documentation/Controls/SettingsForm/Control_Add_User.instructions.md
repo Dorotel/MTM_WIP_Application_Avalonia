@@ -192,7 +192,7 @@ private async void Control_Add_User_Button_Add_ClickAsync(object? sender, EventA
     {
         LoggingUtility.LogApplicationError(ex);
         Service_ErrorHandler.HandleException(ex, ErrorSeverity.Medium,
-            controlName: "Control_Add_User",
+            source: "Control_Add_User",
             additionalData: new Dictionary<string, object>
             {
                 ["Operation"] = "AddUser",

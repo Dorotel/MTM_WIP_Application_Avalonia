@@ -24,7 +24,7 @@
 - **Controls:** `[parent]_[type]_[name]` (e.g., `mainview_usercontrol_inventorytab`, `mainview_splitcontainer_middle`)
 - **Menu Items:** `[parent]_[menutype]_[menuname]` (e.g., `mainview_menubar_file_settings`)
 - **Status/Progress:** `[parent]_[statustype]_[statusname]` (e.g., `mainview_statusbar_savedstatus`, `mainview_progressbar`)
-- **Events:** Use C# event handler naming: `[controlname]_[event]` (e.g., `mainview_menubar_file_settings_click`)
+- **Events:** Use C# event handler naming: `[source]_[event]` (e.g., `mainview_menubar_file_settings_click`)
 - **Fields:** Use private or internal prefix if needed. For fields: `private`, `internal`, or `public` as appropriate.
 - **Consistent Prefix:** Always prefix with the parent view or control (e.g., `mainview_`, `settingsview_`, etc.)
 - **Component Containers:** Name as `components` if using dependency containers or service locators.

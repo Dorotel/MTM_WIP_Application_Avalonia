@@ -59,13 +59,13 @@ EnhancedErrorDialog (Form)
 #### **Core Error Processing Operations**
 ```csharp
 // Enhanced Error Dialog Constructor
-public EnhancedErrorDialog(Exception exception, string callerName, string controlName, 
+public EnhancedErrorDialog(Exception exception, string callerName, string source, 
     ErrorSeverity severity = ErrorSeverity.Medium, Func<bool>? retryAction = null,
     Dictionary<string, object>? contextData = null)
 {
     _exception = exception;
     _callerName = callerName;
-    _controlName = controlName;
+    _source = source;
     _severity = severity;
     _retryAction = retryAction;
     _contextData = contextData ?? new Dictionary<string, object>();
@@ -159,7 +159,7 @@ private void PopulateErrorInformation()
     StackTrace.Text = _exception.StackTrace ?? "No stack trace available";
     
     // Context information
-    CallerContext.Text = $"Source: {_controlName} in {_callerName}";
+    CallerContext.Text = $"Source: {_source} in {_callerName}";
     
     // Inner exception details
     if (_exception.InnerException != null)
@@ -197,7 +197,7 @@ private void ReportButton_Click(object sender, EventArgs e)
         {
             Exception = _exception,
             CallerName = _callerName,
-            ControlName = _controlName,
+            source = _source,
             Severity = _severity,
             ContextData = _contextData,
             UserComments = UserCommentsTextBox.Text,

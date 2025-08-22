@@ -24,12 +24,30 @@
     <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
     <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
     <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+    <a href="needs-repair.html"><span class="icon">&#128679;</span>Quality Assurance</a>
+    <a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a>
   </nav>
   <main>
     <h2><span class="icon">&#128214;</span>Welcome to the Avalonia Project Help Site</h2>
     <p>
       This website provides comprehensive help and documentation for all contributors to the Avalonia project. Each section covers a key part of our workflow or project guidelines, with easy-to-navigate pages, clear formatting, and helpful cross-references.
     </p>
+    
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>🚨 Critical Project Status Alert</summary>
+      <div class="alert critical">
+        <h3><span class="icon">&#128679;</span>Missing Core Systems Identified</h3>
+        <p><strong>Current Compliance Status:</strong> <span class="status-critical">25% (CRITICAL RISK)</span></p>
+        <ul>
+          <li><strong>7 CRITICAL systems missing</strong> - Blocking development</li>
+          <li><strong>12 HIGH PRIORITY systems missing</strong> - Architecture violations</li>
+          <li><strong>Estimated Fix Time:</strong> 4-6 weeks for full compliance</li>
+        </ul>
+        <p><strong>Action Required:</strong> Implement <a href="missing-systems.html">foundational systems</a> before continuing with business logic and UI development.</p>
+        <p>See <a href="needs-repair.html">Quality Assurance Dashboard</a> for detailed compliance tracking.</p>
+      </div>
+    </details>
+
     <details open>
       <summary><span class="icon icon-chevron">&#9654;</span>Quick Navigation</summary>
       <ul>
@@ -42,15 +60,64 @@
         <li><a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a> — Prompts for Copilot and automation.</li>
         <li><a href="personas.html"><span class="icon">&#128100;</span>Personas</a> — Detailed persona roles for prompt engineering.</li>
         <li><a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a> — Example prompts for Copilot.</li>
+        <li><a href="needs-repair.html"><span class="icon">&#128679;</span>Quality Assurance</a> — Code compliance tracking and quality gates.</li>
+        <li><a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a> — Critical missing infrastructure and implementation roadmap.</li>
       </ul>
     </details>
+    
     <blockquote class="tip">
       <span class="icon">&#128204;</span>
-      New to the project? Start with <a href="coding-conventions.html">Coding Conventions</a> and <a href="ui-generation.html">UI Generation</a>.
+      <strong>IMPORTANT:</strong> Before starting development, review <a href="missing-systems.html">Missing Systems</a> and implement the foundational infrastructure. New to the project? Start with <a href="coding-conventions.html">Coding Conventions</a> and <a href="ui-generation.html">UI Generation</a>.
     </blockquote>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Implementation Priority Roadmap</summary>
+      <div class="roadmap">
+        <h3><span class="icon">&#128295;</span>Phase 1: Foundation (Week 1) - CRITICAL</h3>
+        <ul>
+          <li><strong>Result Pattern System</strong> - Models/Result.cs with Success/Failure states</li>
+          <li><strong>Data Models Foundation</strong> - Complete Models namespace with MTM entities</li>
+          <li><strong>Dependency Injection</strong> - Microsoft.Extensions.DependencyInjection setup</li>
+          <li><strong>Core Service Interfaces</strong> - All essential service contracts</li>
+        </ul>
+        
+        <h3><span class="icon">&#128295;</span>Phase 2: Service Layer (Week 2) - HIGH</h3>
+        <ul>
+          <li><strong>Service Implementations</strong> - InventoryService, UserService, TransactionService</li>
+          <li><strong>Database Service Layer</strong> - Centralized data access with connection management</li>
+          <li><strong>Application State Management</strong> - Global state service with ReactiveUI</li>
+          <li><strong>Configuration Service</strong> - appsettings.json management</li>
+        </ul>
+        
+        <h3><span class="icon">&#128295;</span>Phase 3: Infrastructure (Week 3) - MEDIUM</h3>
+        <ul>
+          <li><strong>Navigation Service</strong> - MVVM navigation with view-viewmodel mapping</li>
+          <li><strong>Theme System</strong> - MTM purple brand theme resources</li>
+          <li><strong>Repository Pattern</strong> - Data access abstraction layer</li>
+          <li><strong>Validation System</strong> - Business rule validation framework</li>
+        </ul>
+        
+        <h3><span class="icon">&#128295;</span>Phase 4: Quality Assurance (Week 4) - LOW</h3>
+        <ul>
+          <li><strong>Unit Testing Infrastructure</strong> - xUnit, Moq, FluentAssertions setup</li>
+          <li><strong>Structured Logging</strong> - Microsoft.Extensions.Logging integration</li>
+          <li><strong>Caching Layer</strong> - Performance optimization with Microsoft.Extensions.Caching</li>
+          <li><strong>Security Infrastructure</strong> - Authentication, authorization, secure connections</li>
+        </ul>
+      </div>
+    </details>
+
     <details open>
-      <summary><span class="icon icon-chevron">&#9654;</span>Recent Workspace Updates (2025-08-20)</summary>
+      <summary><span class="icon icon-chevron">&#9654;</span>Recent Workspace Updates (2025-01-27)</summary>
       <ul>
+        <li><strong>Quality Assurance System (NEW)</strong>
+          <ul>
+            <li>Standalone compliance reporting system in Compliance Reports/ folder</li>
+            <li>Comprehensive missing systems analysis identifying 19 critical gaps</li>
+            <li>Custom prompts for implementing all missing infrastructure (Prompts 21-36)</li>
+            <li>Phase-based implementation roadmap with priority classifications</li>
+          </ul>
+        </li>
         <li><strong>Error Handling System (Scaffolded)</strong>
           <ul>
             <li>Added Services: Service_ErrorHandler, LoggingUtility, ErrorSeverity, ErrorCategory, ErrorEntry, ErrorHandlingConfiguration, ErrorMessageProvider, ErrorHandlingInitializer</li>
@@ -86,6 +153,34 @@
         </li>
       </ul>
     </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Current Compliance Metrics</summary>
+      <div class="metrics">
+        <div class="metric-card critical">
+          <h4>Overall Compliance</h4>
+          <div class="metric-value">25%</div>
+          <div class="metric-status">CRITICAL RISK</div>
+        </div>
+        <div class="metric-card critical">
+          <h4>Missing Core Systems</h4>
+          <div class="metric-value">19</div>
+          <div class="metric-status">BLOCKING</div>
+        </div>
+        <div class="metric-card warning">
+          <h4>Files Audited</h4>
+          <div class="metric-value">1</div>
+          <div class="metric-status">NEEDS EXPANSION</div>
+        </div>
+        <div class="metric-card critical">
+          <h4>Compliant Files</h4>
+          <div class="metric-value">0</div>
+          <div class="metric-status">NONE</div>
+        </div>
+      </div>
+      <p><strong>Technical Debt:</strong> Estimated 4-6 weeks to achieve 80% compliance threshold required for sustainable development.</p>
+    </details>
+    
     <details>
       <summary><span class="icon icon-chevron">&#9654;</span>Configuration Files</summary>
       <p>The repository includes configuration placeholders under <code>Config/</code>. Primary file: <code>Config/appsettings.json</code></p>
@@ -97,6 +192,7 @@
       </ul>
       <p>Wire-ups should be implemented in services. For example, <code>ErrorHandlingConfiguration.LoadFromConfiguration()</code> should read the <code>ErrorHandling</code> section. Do not commit secrets; prefer environment variables or secret stores.</p>
     </details>
+    
     <details>
       <summary><span class="icon icon-chevron">&#9654;</span>About the Color Scheme</summary>
       <p>
@@ -109,6 +205,9 @@
         <li><span class="icon" style="color:#A6A498;">&#9632;</span>#A6A498 — Secondary text/borders</li>
         <li><span class="icon" style="color:#0D0D0D;">&#9632;</span>#0D0D0D — Main background</li>
       </ul>
+      <p>
+        MTM Application uses the purple brand palette: Primary (#4B45ED), Secondary (#8345ED), Magenta (#BA45ED), Blue (#4574ED), Pink (#ED45E7), Light Purple (#B594ED).
+      </p>
       <p>
         All content is designed for accessibility and readability. For help, contact the project maintainer.</p>
     </details>

@@ -29,6 +29,60 @@ public static class Program
 }
 ```
 
+## Exportable Systems Maintenance
+
+### Core Systems Synchronization
+
+**CRITICAL REQUIREMENT**: When updating core infrastructure systems, always maintain synchronization with the `Exportable/` folder:
+
+#### Files Requiring Exportable Updates
+- **Services/**: All service implementations and interfaces
+- **Models/**: Data models and business entities  
+- **Configuration/**: Settings and configuration management
+- **Infrastructure/**: Cross-cutting concerns like error handling, logging
+
+#### Update Process
+1. **Implement Changes**: Make changes to main project files
+2. **Strip Framework Dependencies**: Remove Avalonia/ReactiveUI specific code
+3. **Copy to Exportable**: Place framework-agnostic version in `Exportable/` folder
+4. **Update Documentation**: Update `Exportable/README.md` and custom prompts
+5. **Verify Independence**: Ensure exportable systems compile without UI frameworks
+
+#### Framework-Agnostic Patterns
+When creating exportable versions:
+```csharp
+// MAIN PROJECT (Avalonia-specific)
+public class InventoryViewModel : ReactiveObject
+{
+    private readonly IInventoryService _inventoryService;
+    
+    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
+}
+
+// EXPORTABLE VERSION (Framework-agnostic)
+namespace MTM.Core.Services
+{
+    public interface IInventoryService
+    {
+        Task<Result<IEnumerable<InventoryItem>>> GetInventoryAsync(CancellationToken cancellationToken = default);
+    }
+}
+```
+
+#### Exportable File Naming
+- **Services**: `MTM.Core.Services` namespace
+- **Models**: `MTM.Core.Models` namespace  
+- **Configuration**: `MTM.Core.Configuration` namespace
+- **Extensions**: `MTM.Core.Extensions` namespace
+
+#### Documentation Requirements
+When adding new exportable systems:
+1. Add entry to `Exportable/README.md` Available Systems table
+2. Create custom prompt in `Exportable/exportable-customprompt.instruction.md`
+3. Update NuGet dependencies if needed
+4. Add usage examples in README
+5. Update version history
+
 ## General C# Conventions
 - Use PascalCase for classes, methods, and properties.
 - Use camelCase for variables and parameters.
@@ -95,7 +149,12 @@ public record QuickActionExecutedEventArgs
 ├── ViewModels/      # ViewModels using ReactiveUI
 ├── Models/          # Data models and business entities
 ├── Services/        # Business logic and data access services
-└── Resources/       # Styles, themes, and assets
+├── Resources/       # Styles, themes, and assets
+└── Exportable/      # Framework-agnostic core systems
+    ├── Models/      # Framework-agnostic data models
+    ├── Services/    # Core business services
+    ├── Configuration/ # Settings management
+    └── Extensions/  # DI setup and utilities
 ```
 
 ## Project-Specific File Naming
@@ -103,6 +162,8 @@ public record QuickActionExecutedEventArgs
 - **ViewModels**: `{Name}ViewModel.cs` (e.g., `MainViewModel.cs`)
 - **Models**: `{Name}Model.cs` or just `{Name}.cs` for simple models
 - **Services**: `{Name}Service.cs` or `I{Name}Service.cs` for interfaces
+- **Exportable Services**: `MTM.Core.Services.{Name}Service.cs`
+- **Exportable Models**: `MTM.Core.Models.{Name}.cs`
 
 ## UI and Business Logic Separation
 - Do **NOT** add any business logic in UI files.  
@@ -431,6 +492,7 @@ LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
 3. **Use dependency injection** - prepare constructors for DI even if not implementing services
 4. **No business logic** in generated UI code - only structure and bindings
 5. **Include placeholders** for service injection
+6. **Maintain exportable systems** when creating core infrastructure
 
 ## Special Instructions for Creating from MD Files
 1. **Focus on structure** - Create the visual hierarchy exactly as described
@@ -484,6 +546,7 @@ public SampleViewModel()
 5. Keep views and ViewModels paired and consistently named
 6. This is an Avalonia app, not WPF or WinForms
 7. Use Avalonia-specific syntax and controls
+8. **Maintain exportable versions** of core systems for reusability
 
 ## Theme System Preparation
 - Use `{DynamicResource ResourceKey}` for colors and brushes
@@ -508,6 +571,8 @@ public SampleViewModel()
 - Follow modern UI patterns with cards, sidebars, and clean layouts
 - Use ReactiveUI's reactive programming paradigms (WhenAnyValue, OAPH, etc.)
 - Apply the MTM brand gradient and color scheme consistently throughout the application
+- **Always maintain exportable versions** of core systems for framework-agnostic reusability
 
 > For UI structure and event stubs, see [UI Generation Guidelines](ui-generation.instruction.md).
 > For complete naming conventions, see [Naming Conventions](naming-conventions.instruction.md)
+> For exportable systems integration, see [Exportable Systems](../Exportable/README.md)

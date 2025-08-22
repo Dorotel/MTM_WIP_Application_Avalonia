@@ -318,7 +318,7 @@ catch (Exception ex)
     Service_ErrorHandler.HandleException(
         ex,
         ErrorSeverity.Medium,
-        controlName: "MyView_Button_Save",
+        source: "MyView_Button_Save",
         additionalData: new Dictionary<string, object> { ["Operation"] = "SaveData" });
 }
 ```
@@ -331,7 +331,7 @@ SomeCommand.ThrownExceptions
         Service_ErrorHandler.HandleException(
             ex,
             ErrorSeverity.Medium,
-            controlName: "ViewName_CommandName",
+            source: "ViewName_CommandName",
             additionalData: new Dictionary<string, object> 
             { 
                 ["Command"] = nameof(SomeCommand),

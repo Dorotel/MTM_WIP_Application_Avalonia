@@ -20,15 +20,14 @@ namespace MTM_WIP_Application_Avalonia.Services
         /// </summary>
         /// <param name="exception">The exception to handle</param>
         /// <param name="severity">The severity level of the error</param>
-        /// <param name="controlName">The name of the control where the error occurred (optional)</param>
+        /// <param name="source">The name of the control where the error occurred (optional)</param>
         /// <param name="additionalData">Additional context data for debugging (optional)</param>
         /// <param name="callerMemberName">Auto-populated caller method name</param>
         /// <param name="callerFilePath">Auto-populated caller file path</param>
         /// <param name="callerLineNumber">Auto-populated caller line number</param>
         public static void HandleException(
             Exception exception,
-            ErrorSeverity severity,
-            string? controlName = null,
+            ErrorSeverity severity,                        string? source = null,
             Dictionary<string, object>? additionalData = null,
             [CallerMemberName] string callerMemberName = "",
             [CallerFilePath] string callerFilePath = "",
@@ -49,7 +48,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                 
                 if (IsNewError(errorCategory, errorKey))
                 {
-                    var errorEntry = CreateErrorEntry(exception, severity, controlName, additionalData, 
+                    var errorEntry = CreateErrorEntry(exception, severity, source, additionalData, 
                         callerMemberName, callerFilePath, callerLineNumber, errorCategory);
                     
                     // Log to file server
@@ -144,7 +143,7 @@ namespace MTM_WIP_Application_Avalonia.Services
         private static ErrorEntry CreateErrorEntry(
             Exception exception,
             ErrorSeverity severity,
-            string? controlName,
+            string? source,
             Dictionary<string, object>? additionalData,
             string callerMemberName,
             string callerFilePath,
@@ -170,7 +169,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                 MethodName = callerMemberName,
                 LineNumber = callerLineNumber,
                 StackTrace = exception.StackTrace ?? "",
-                ControlName = controlName,
+                source = source,
                 AdditionalData = FormatAdditionalData(additionalData),
                 ExceptionType = exception.GetType().FullName ?? ""
             };
@@ -284,7 +283,7 @@ namespace MTM_WIP_Application_Avalonia.Services
         /// <summary>
         /// Gets or sets the name of the control where the error occurred (optional).
         /// </summary>
-        public string? ControlName { get; set; }
+        public string? source { get; set; }
 
         /// <summary>
         /// Gets or sets additional data relevant to debugging the error.
@@ -584,7 +583,7 @@ namespace MTM_WIP_Application_Avalonia.Services
 
                 // Log the test error
                 Service_ErrorHandler.HandleException(testException, ErrorSeverity.Low,
-                    controlName: "ErrorHandlingInitializer_Test",
+                    source: "ErrorHandlingInitializer_Test",
                     additionalData: new System.Collections.Generic.Dictionary<string, object>
                     {
                         ["TestType"] = "SystemValidation",

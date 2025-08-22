@@ -24,7 +24,7 @@ namespace MTM_WIP_Application_Avalonia.Examples
             {
                 // Log the error with UI category and medium severity
                 Service_ErrorHandler.HandleException(ex, ErrorSeverity.Medium,
-                    controlName: "MainWindow_Button_Save",
+                    source: "MainWindow_Button_Save",
                     additionalData: new Dictionary<string, object>
                     {
                         ["Operation"] = "SaveUserData",
@@ -91,7 +91,7 @@ namespace MTM_WIP_Application_Avalonia.Examples
             {
                 // Log with low severity since it's user input validation
                 Service_ErrorHandler.HandleException(ex, ErrorSeverity.Low,
-                    controlName: "InventoryForm_TextBox_Quantity",
+                    source: "InventoryForm_TextBox_Quantity",
                     additionalData: new Dictionary<string, object>
                     {
                         ["Operation"] = "ValidateInventoryQuantity",

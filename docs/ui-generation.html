@@ -20,9 +20,17 @@
     <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
     <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
     <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+    <a href="needs-repair.html"><span class="icon">&#128679;</span>Quality Assurance</a>
+    <a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a>
   </nav>
   <main>
     <h2><span class="icon">&#128187;</span>UI Generation Guidelines (Avalonia)</h2>
+    
+    <blockquote class="warning">
+      <span class="icon">&#9888;</span>
+      <strong>Important:</strong> Before creating new UI elements, ensure <a href="missing-systems.html">theme system and navigation service</a> are implemented for proper MVVM patterns.
+    </blockquote>
+    
     <details open>
       <summary><span class="icon icon-chevron">&#9654;</span>UI Best Practices</summary>
       <ul>
@@ -48,6 +56,8 @@
           </ul>
         </li>
         <li>Adhere to the <a href="naming-conventions.html">Naming Conventions</a> and <a href="coding-conventions.html">Coding Conventions</a>.</li>
+        <li><strong>NEW:</strong> Use DynamicResource for all colors to support MTM theme system</li>
+        <li><strong>NEW:</strong> Bind commands to ReactiveCommand properties in ViewModels</li>
       </ul>
       <ul>
         <li><input type="checkbox" disabled> Use control names, events, and types from <code>.instructions.md</code>.</li>
@@ -55,7 +65,77 @@
         <li><input type="checkbox" disabled> Navigation logic only (no business logic).</li>
         <li><input type="checkbox" disabled> Empty event stubs for all events.</li>
         <li><input type="checkbox" disabled> Add <code>TODO</code> comments for business logic.</li>
+        <li><input type="checkbox" disabled> <strong>NEW:</strong> Use DynamicResource for colors.</li>
+        <li><input type="checkbox" disabled> <strong>NEW:</strong> Bind to ReactiveCommand properties.</li>
       </ul>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>MTM Theme Integration (Critical Missing)</summary>
+      <p><strong>Status:</strong> <span class="status-critical">Theme system missing</span> - See <a href="missing-systems.html#prompt-30">Implementation Guide</a></p>
+      
+      <h3>Required MTM Color Usage</h3>
+      <ul>
+        <li><strong>Primary Purple:</strong> <code>{DynamicResource PrimaryBrush}</code> (#4B45ED)</li>
+        <li><strong>Secondary Purple:</strong> <code>{DynamicResource SecondaryBrush}</code> (#8345ED)</li>
+        <li><strong>Magenta Accent:</strong> <code>{DynamicResource MagentaAccentBrush}</code> (#BA45ED)</li>
+        <li><strong>Blue Accent:</strong> <code>{DynamicResource BlueAccentBrush}</code> (#4574ED)</li>
+        <li><strong>Pink Accent:</strong> <code>{DynamicResource PinkAccentBrush}</code> (#ED45E7)</li>
+        <li><strong>Light Purple:</strong> <code>{DynamicResource LightPurpleBrush}</code> (#B594ED)</li>
+      </ul>
+      
+      <h3>Modern Layout Patterns</h3>
+      <ul>
+        <li><strong>Sidebar Navigation:</strong> 240px width with card-based content</li>
+        <li><strong>Cards:</strong> Rounded corners (8px), shadows, proper spacing</li>
+        <li><strong>Hero Sections:</strong> MTM purple gradients for banners</li>
+        <li><strong>Grid Layouts:</strong> Prefer Grid over StackPanel for performance</li>
+      </ul>
+      
+      <p>Example AXAML with proper theming:</p>
+      <pre><code>&lt;Button Classes="primary" 
+        Background="{DynamicResource PrimaryBrush}"
+        Command="{Binding SaveCommand}"&gt;
+  Save
+&lt;/Button&gt;</code></pre>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>ReactiveUI Integration (Critical Missing)</summary>
+      <p><strong>Status:</strong> <span class="status-critical">Navigation service missing</span> - See <a href="missing-systems.html#prompt-29">Implementation Guide</a></p>
+      
+      <h3>Proper MVVM Bindings</h3>
+      <ul>
+        <li><strong>Commands:</strong> Bind to <code>ReactiveCommand</code> properties</li>
+        <li><strong>Properties:</strong> Use <code>{Binding PropertyName}</code> with compiled bindings</li>
+        <li><strong>Collections:</strong> Bind to <code>ObservableCollection</code> in ViewModels</li>
+        <li><strong>Validation:</strong> Use ReactiveUI validation patterns</li>
+      </ul>
+      
+      <p>Example proper ViewModel binding:</p>
+      <pre><code>&lt;UserControl x:DataType="vm:InventoryViewModel"
+             x:CompileBindings="True"&gt;
+  &lt;TextBox Text="{Binding PartId}" /&gt;
+  &lt;Button Command="{Binding SaveCommand}" /&gt;
+&lt;/UserControl&gt;</code></pre>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Quality Assurance Integration</summary>
+      <p>All generated UI elements should be verified using <a href="needs-repair.html">Quality Assurance</a> compliance reporting.</p>
+      
+      <h3>Common UI Violations to Avoid</h3>
+      <ul>
+        <li>Hard-coded colors instead of DynamicResource</li>
+        <li>Business logic in code-behind files</li>
+        <li>Direct view instantiation (violates MVVM)</li>
+        <li>Missing ReactiveUI command bindings</li>
+        <li>Non-MTM color palette usage</li>
+        <li>Missing context menu integration for management features</li>
+      </ul>
+      
+      <p>Use this prompt to verify UI compliance:</p>
+      <pre><code>Review Views/[YourView].axaml and ViewModels/[YourViewModel].cs for compliance with all MTM instruction guidelines. Generate compliance report identifying violations and required fixes.</code></pre>
     </details>
   </main>
 </body>

@@ -7,7 +7,7 @@
 </head>
 <body>
   <header>
-    <h1><span class="icon">&#128247;</span>UI Mapping Reference (Avalonia)</h1>
+    <h1><span class="icon">&#128247;</span>UI Mapping Reference</h1>
   </header>
   <nav class="topbar">
     <a href="index.html"><span class="icon">&#8962;</span>Home</a>
@@ -20,38 +20,218 @@
     <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
     <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
     <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+    <a href="needs-repair.html"><span class="icon">&#128679;</span>Quality Assurance</a>
+    <a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a>
   </nav>
   <main>
-    <h2><span class="icon">&#128247;</span>UI Mapping Reference (Avalonia)</h2>
-    <blockquote>
-      For control and event naming, see <a href="naming-conventions.html">Naming Conventions</a>.
+    <h2><span class="icon">&#128247;</span>UI Mapping Reference</h2>
+    
+    <blockquote class="warning">
+      <span class="icon">&#9888;</span>
+      <strong>Important:</strong> Before creating UI mappings, ensure <a href="missing-systems.html#prompt-30">theme system</a> and <a href="missing-systems.html#prompt-29">navigation service</a> are implemented for proper MVVM patterns.
     </blockquote>
+    
+    <blockquote>
+      This page explains how screenshots and instruction files are mapped to generate UI components. For the actual generation process, see <a href="ui-generation.html">UI Generation</a>.
+    </blockquote>
+    
     <details open>
-      <summary><span class="icon icon-chevron">&#9654;</span>Settings View Control Screenshots</summary>
+      <summary><span class="icon icon-chevron">&#9654;</span>Mapping Process</summary>
+      <ol>
+        <li><strong>Screenshot Analysis</strong>
+          <ul>
+            <li>Locate the corresponding screenshot in <code>UI_Winform_Screenshots/</code></li>
+            <li>Analyze layout, control positioning, and visual hierarchy</li>
+            <li>Identify modern Avalonia equivalents for WinForms controls</li>
+            <li>Note spacing, alignment, and grouping patterns</li>
+          </ul>
+        </li>
+        <li><strong>Instruction File Review</strong>
+          <ul>
+            <li>Parse the <code>.instructions.md</code> file for component structure</li>
+            <li>Extract control names, types, and event definitions</li>
+            <li>Identify MTM-specific data patterns and relationships</li>
+            <li>Note context menu requirements and management features</li>
+          </ul>
+        </li>
+        <li><strong>Avalonia Translation</strong>
+          <ul>
+            <li>Convert WinForms controls to modern Avalonia equivalents</li>
+            <li>Apply MTM purple brand theme using DynamicResource</li>
+            <li>Implement ReactiveUI binding patterns</li>
+            <li>Add proper MVVM separation with ViewModels</li>
+          </ul>
+        </li>
+      </ol>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Control Mapping Standards</summary>
+      <h3>WinForms to Avalonia Conversion</h3>
       <table>
-        <tr><th>Screenshot Filename</th><th>Instructions File</th></tr>
-        <tr><td>Control_About.png</td><td>UI_Documentation/Controls/SettingsView/Control_About.instructions.md</td></tr>
-        <tr><td>Control_AddItemType.png</td><td>UI_Documentation/Controls/SettingsView/Control_ItemTypes.instructions.md</td></tr>
-        <tr><td>Control_AddLocation.png</td><td>UI_Documentation/Controls/SettingsView/Control_Locations.instructions.md</td></tr>
-        <!-- ... add more rows as needed ... -->
+        <thead>
+          <tr>
+            <th>WinForms Control</th>
+            <th>Avalonia Equivalent</th>
+            <th>Modern Enhancement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Form</td>
+            <td>Window / UserControl</td>
+            <td>Add MTM theme resources</td>
+          </tr>
+          <tr>
+            <td>TableLayoutPanel</td>
+            <td>Grid</td>
+            <td>Use RowDefinitions/ColumnDefinitions</td>
+          </tr>
+          <tr>
+            <td>SplitContainer</td>
+            <td>Grid + GridSplitter</td>
+            <td>Add resizing and responsive design</td>
+          </tr>
+          <tr>
+            <td>TabControl</td>
+            <td>TabControl + TabItem</td>
+            <td>Apply MTM styling and navigation service</td>
+          </tr>
+          <tr>
+            <td>DataGridView</td>
+            <td>DataGrid</td>
+            <td>Add compiled bindings and sorting</td>
+          </tr>
+          <tr>
+            <td>Button</td>
+            <td>Button</td>
+            <td>MTM purple styling, ReactiveCommand binding</td>
+          </tr>
+          <tr>
+            <td>TextBox</td>
+            <td>TextBox</td>
+            <td>Two-way binding, validation integration</td>
+          </tr>
+          <tr>
+            <td>ComboBox</td>
+            <td>ComboBox</td>
+            <td>Observable collections, caching layer</td>
+          </tr>
+          <tr>
+            <td>MenuStrip</td>
+            <td>Menu + MenuItem</td>
+            <td>Context menu integration</td>
+          </tr>
+          <tr>
+            <td>StatusStrip</td>
+            <td>Border (DockPanel.Dock="Bottom")</td>
+            <td>Application state service integration</td>
+          </tr>
+        </tbody>
       </table>
     </details>
+    
     <details>
-      <summary><span class="icon icon-chevron">&#9654;</span>MainView Controls Screenshots</summary>
-      <table>
-        <tr><th>Screenshot Filename</th><th>Instructions File</th></tr>
-        <tr><td>Control_AdvancedInventory_Import.png</td><td>UI_Documentation/Controls/MainView/Control_AdvancedInventory.instructions.md</td></tr>
-        <tr><td>Control_AdvancedRemove.png</td><td>UI_Documentation/Controls/MainView/Control_AdvancedRemove.instructions.md</td></tr>
-        <!-- ... add more rows as needed ... -->
-      </table>
+      <summary><span class="icon icon-chevron">&#9654;</span>MTM-Specific UI Patterns</summary>
+      <h3>Component Management Features</h3>
+      <ul>
+        <li><strong>Context Menus:</strong> Right-click functionality for Edit, Remove, Clear All, Refresh</li>
+        <li><strong>Quick Actions:</strong> Keyboard shortcuts and toolbar integration</li>
+        <li><strong>Space Optimization:</strong> UniformGrid for equal distribution, remove ScrollViewer when not needed</li>
+        <li><strong>Data Population:</strong> Simple field population without tab switching</li>
+      </ul>
+      
+      <h3>MTM Data Display Patterns</h3>
+      <ul>
+        <li><strong>Part ID:</strong> String format display with validation highlighting</li>
+        <li><strong>Operation:</strong> String numbers ("90", "100", "110") with descriptive tooltips</li>
+        <li><strong>Quantity:</strong> Integer input with increment/decrement controls</li>
+        <li><strong>Position:</strong> 1-based indexing for user display (Position 1, Position 2, etc.)</li>
+      </ul>
+      
+      <h3>Button Collections (Quick Buttons)</h3>
+      <ul>
+        <li><strong>Layout:</strong> UniformGrid with equal button sizes</li>
+        <li><strong>Content:</strong> "(Operation) - [PartID x Quantity]" format</li>
+        <li><strong>Management:</strong> Context menu for editing and removal</li>
+        <li><strong>Events:</strong> Simple field population, not tab navigation</li>
+      </ul>
     </details>
+    
     <details>
-      <summary><span class="icon icon-chevron">&#9654;</span>View Screenshots</summary>
-      <table>
-        <tr><th>Screenshot Filename</th><th>Instructions File</th></tr>
-        <tr><td>View_Settings.png</td><td>UI_Documentation/Views/SettingsView.instructions.md</td></tr>
-        <!-- ... add more rows as needed ... -->
-      </table>
+      <summary><span class="icon icon-chevron">&#9654;</span>Modern Layout Enhancement</summary>
+      <h3>From WinForms Layout to Modern Avalonia</h3>
+      
+      <h4>Sidebar Navigation Pattern</h4>
+      <p>Convert traditional TabControl to modern sidebar:</p>
+      <ul>
+        <li><strong>Sidebar Width:</strong> 240px fixed width with navigation items</li>
+        <li><strong>Content Area:</strong> Dynamic content based on selection</li>
+        <li><strong>Visual Enhancement:</strong> Cards, shadows, MTM gradients</li>
+      </ul>
+      
+      <h4>Card-Based Content</h4>
+      <p>Transform grouped controls into modern cards:</p>
+      <ul>
+        <li><strong>Borders:</strong> Rounded corners (8px), subtle shadows</li>
+        <li><strong>Spacing:</strong> Consistent margins and padding</li>
+        <li><strong>Headers:</strong> Clear section titles with icons</li>
+      </ul>
+      
+      <h4>Hero Sections</h4>
+      <p>Add engaging banner areas:</p>
+      <ul>
+        <li><strong>Gradients:</strong> MTM purple gradient backgrounds</li>
+        <li><strong>Typography:</strong> Large, bold headings with descriptions</li>
+        <li><strong>Actions:</strong> Primary action buttons prominently displayed</li>
+      </ul>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Implementation Dependencies</summary>
+      <p><strong>Status:</strong> <span class="status-critical">Missing critical systems</span> - See <a href="missing-systems.html">implementation roadmap</a></p>
+      
+      <h3>Required Before UI Mapping</h3>
+      <div class="system-grid">
+        <div class="system-card critical">
+          <h4>Theme System</h4>
+          <div class="system-status">❌ MISSING</div>
+          <p>MTM purple brand colors with DynamicResource patterns</p>
+          <p><strong>Prompt:</strong> <a href="custom-prompts-examples.html#prompt-30">Implement Theme System</a></p>
+        </div>
+        
+        <div class="system-card critical">
+          <h4>Navigation Service</h4>
+          <div class="system-status">❌ MISSING</div>
+          <p>Proper MVVM navigation with view-viewmodel mapping</p>
+          <p><strong>Prompt:</strong> <a href="custom-prompts-examples.html#prompt-29">Create Navigation Service</a></p>
+        </div>
+        
+        <div class="system-card warning">
+          <h4>Data Models</h4>
+          <div class="system-status">❌ MISSING</div>
+          <p>MTM-specific entities for proper binding</p>
+          <p><strong>Prompt:</strong> <a href="custom-prompts-examples.html#prompt-22">Create Data Models Foundation</a></p>
+        </div>
+      </div>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Quality Verification</summary>
+      <p>All UI mappings should be verified using <a href="needs-repair.html">Quality Assurance</a> compliance reporting.</p>
+      
+      <h3>UI Mapping Compliance Check</h3>
+      <p>Use this prompt to verify UI mapping compliance:</p>
+      <pre><code>Review Views/[ViewName].axaml for compliance with UI mapping standards. Generate compliance report identifying hard-coded colors, missing DynamicResource usage, improper control mappings, and missing MTM design patterns. Include specific fixes for modern Avalonia layout enhancement.</code></pre>
+      
+      <h3>Common Mapping Violations</h3>
+      <ul>
+        <li>Using WinForms control patterns instead of modern Avalonia equivalents</li>
+        <li>Hard-coded colors instead of DynamicResource theme integration</li>
+        <li>Missing context menu integration for management features</li>
+        <li>Improper MTM data display patterns</li>
+        <li>Not following modern layout enhancement guidelines</li>
+      </ul>
     </details>
   </main>
 </body>

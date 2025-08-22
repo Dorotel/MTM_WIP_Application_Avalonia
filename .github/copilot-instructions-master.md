@@ -111,9 +111,9 @@ Acknowledgement: Updating this instruction file and synchronizing docs/index.htm
 - Initialize error handling during app startup:
   - ErrorHandlingInitializer.Initialize();
   - Or ErrorHandlingInitializer.InitializeForDevelopment();
-- Log exceptions via Service_ErrorHandler.HandleException(ex, severity, controlName, contextData);
+- Log exceptions via Service_ErrorHandler.HandleException(ex, severity, source, contextData);
 - Display user message UI when appropriate:
-  - Inline: new Control_ErrorMessage().Initialize(ex, severity, controlName, contextData, retryAction);
-  - Modal: await ErrorDialog_Enhanced.ShowErrorAsync(owner, ex, severity, controlName, contextData, retryAction);
+  - Inline: new Control_ErrorMessage().Initialize(ex, severity, source, contextData, retryAction);
+  - Modal: await ErrorDialog_Enhanced.ShowErrorAsync(owner, ex, severity, source, contextData, retryAction);
 
 ---

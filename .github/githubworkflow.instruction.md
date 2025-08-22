@@ -10,10 +10,58 @@ This document provides comprehensive GitHub workflow and CI/CD instructions for 
 - Open pull requests early for feedback.
 - Reference related issues and documentation where applicable.
 - If your change involves error-handling or logging, cross-check with [error_handler-instruction.md](error_handler-instruction.md).
+- **CRITICAL**: When updating core systems, ensure corresponding updates to the `Exportable/` folder (see [Exportable Folder Maintenance](#exportable-folder-maintenance))
 - Pull Request Guidelines:
   - Provide a clear summary of the problem and solution.
   - Include screenshots or logs if the change affects error handling.
   - Request review from at least one team member.
+  - Include checklist item for Exportable folder updates if core systems are modified.
+
+## Exportable Folder Maintenance
+
+### When to Update Exportable Folder
+
+**MANDATORY UPDATES** - Update `Exportable/` folder whenever changes are made to:
+- Any file in `Services/` folder
+- Any file in `Models/` folder  
+- Any file in `Configuration/` folder
+- Core infrastructure components
+- Error handling systems
+- Logging utilities
+
+### Update Process
+
+1. **Copy Updated Systems**: Copy modified files from main project to corresponding `Exportable/` locations
+2. **Remove Framework Dependencies**: Strip out Avalonia/ReactiveUI specific code to make framework-agnostic
+3. **Update Documentation**: Update `Exportable/README.md` with any new systems or changes
+4. **Update Custom Prompts**: Add/modify prompts in `Exportable/exportable-customprompt.instruction.md` if new systems are added
+5. **Test Compilation**: Ensure all exportable systems compile independently
+6. **Update Dependencies**: Modify NuGet package requirements if needed
+
+### Exportable Folder Structure
+```
+Exportable/
+├── README.md                           # Main documentation (ALWAYS UPDATE)
+├── exportable-customprompt.instruction.md  # Custom prompts (UPDATE WHEN ADDING SYSTEMS)
+├── Models/                             # Framework-agnostic data models
+├── Services/                           # Core business services
+│   ├── ErrorHandler/                   # Error handling system
+│   ├── Logging/                        # Logging utilities
+│   └── Interfaces/                     # Service contracts
+├── Configuration/                      # Configuration management
+├── Extensions/                         # Dependency injection setup
+└── Infrastructure/                     # Cross-cutting concerns
+```
+
+### PR Checklist for Core System Changes
+
+- [ ] Main project changes implemented and tested
+- [ ] Corresponding files copied to `Exportable/` folder
+- [ ] Framework-specific code removed from exportable versions
+- [ ] `Exportable/README.md` updated with new systems/changes
+- [ ] Custom prompts added/updated if new systems introduced
+- [ ] Exportable systems compile independently
+- [ ] Version history updated in README.md
 
 ## .NET 8 Build Configuration
 
@@ -77,6 +125,13 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build --verbosity normal
     
+    - name: Validate Exportable Systems
+      run: |
+        # Ensure exportable systems compile independently
+        cd Exportable
+        find . -name "*.cs" -exec echo "Checking {}" \;
+        # TODO: Add compilation check for exportable systems
+    
     - name: Publish artifacts
       run: dotnet publish --configuration Release --no-build --output ./publish
     
@@ -85,6 +140,12 @@ jobs:
       with:
         name: published-app
         path: ./publish
+        
+    - name: Upload exportable systems
+      uses: actions/upload-artifact@v4
+      with:
+        name: exportable-systems
+        path: ./Exportable
 ```
 
 ### Cross-Platform Build Matrix
@@ -197,6 +258,12 @@ deploy:
     with:
       name: published-app
       
+  - name: Download exportable systems
+    uses: actions/download-artifact@v4
+    with:
+      name: exportable-systems
+      path: ./exportable-release
+      
   - name: Configure MTM Application Settings
     run: |
       # Update appsettings.json for production
@@ -208,6 +275,12 @@ deploy:
       # MTM-specific deployment commands
       # Update Windows services if applicable
       # Configure file server access for error logging
+      
+  - name: Package Exportable Systems
+    run: |
+      # Create versioned release of exportable systems
+      # Include documentation and custom prompts
+      # Archive for distribution to other projects
 ```
 
 ### Configuration Management
@@ -228,6 +301,13 @@ deploy:
       - Automated release from CI/CD pipeline
       - .NET 8 Avalonia application
       - ReactiveUI MVVM implementation
+      - Updated exportable core systems
+      
+      ## Exportable Systems
+      - Error handling and logging utilities
+      - Configuration management
+      - Framework-agnostic service interfaces
+      - Custom implementation prompts available
 ```
 
 ## Build Validation Requirements
@@ -238,6 +318,25 @@ deploy:
 - AXAML files must compile successfully with compiled bindings
 - ReactiveUI property change notifications must work correctly
 - No nullable reference warnings
+- **Exportable systems must compile independently**
+
+### Exportable Systems Validation
+```yaml
+- name: Validate Exportable Systems Independence
+  run: |
+    # Create temporary project to test exportable systems
+    mkdir temp-test-project
+    cd temp-test-project
+    dotnet new console
+    
+    # Copy exportable systems
+    cp -r ../Exportable/* ./
+    
+    # Try to compile (should succeed without Avalonia dependencies)
+    dotnet add package Microsoft.Extensions.DependencyInjection
+    dotnet add package Microsoft.Extensions.Configuration
+    dotnet build --configuration Release
+```
 
 ### Performance Testing
 - Include basic performance benchmarks for UI responsiveness
@@ -260,19 +359,27 @@ deploy:
 - Database schema updates (if applicable)
 - Error logging configuration templates
 - User documentation updates
+- **Exportable core systems package**
 
 ### Artifact Structure
 ```
 MTM-WIP-Application-v{version}/
-├── MTM_WIP_Application_Avalonia.exe
-├── appsettings.json
-├── appsettings.Production.json
-├── Config/
-│   ├── error-logging.json
-│   └── database-config.json
+├── Application/
+│   ├── MTM_WIP_Application_Avalonia.exe
+│   ├── appsettings.json
+│   ├── appsettings.Production.json
+│   └── Config/
+├── Exportable-Systems/
+│   ├── README.md
+│   ├── exportable-customprompt.instruction.md
+│   ├── Models/
+│   ├── Services/
+│   ├── Configuration/
+│   └── Extensions/
 └── Documentation/
     ├── README.md
-    └── CHANGELOG.md
+    ├── CHANGELOG.md
+    └── exportable-integration-guide.md
 ```
 
 ## Error Handling in CI/CD
@@ -323,3 +430,4 @@ MTM-WIP-Application-v{version}/
 - [Coding Conventions](codingconventions.instruction.md) - For build validation standards
 - [UI Generation](ui-generation.instruction.md) - For AXAML compilation requirements
 - [Naming Conventions](naming.conventions.instruction.md) - For consistent file naming in artifacts
+- [Exportable Systems](../Exportable/README.md) - For core systems integration guidance

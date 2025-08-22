@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quality Assurance | Avalonia Project Help</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1><span class="icon">&#128679;</span>Quality Assurance & Code Compliance</h1>
+  </header>
+  <nav class="topbar">
+    <a href="index.html"><span class="icon">&#8962;</span>Home</a>
+    <a href="coding-conventions.html"><span class="icon">&#128295;</span>Coding Conventions</a>
+    <a href="ui-generation.html"><span class="icon">&#128187;</span>UI Generation</a>
+    <a href="ui-mapping.html"><span class="icon">&#128247;</span>UI Mapping</a>
+    <a href="error-handler.html"><span class="icon">&#9888;</span>Error Handling</a>
+    <a href="github-workflow.html"><span class="icon">&#128736;</span>GitHub Workflow</a>
+    <a href="naming-conventions.html"><span class="icon">&#128221;</span>Naming Conventions</a>
+    <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
+    <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
+    <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+    <a href="needs-repair.html" class="active"><span class="icon">&#128679;</span>Quality Assurance</a>
+    <a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a>
+  </nav>
+  <main>
+    <h2><span class="icon">&#128679;</span>Quality Assurance & Code Compliance</h2>
+    
+    <blockquote class="warning">
+      <span class="icon">&#9888;</span>
+      <strong>Project Status:</strong> CRITICAL - Multiple foundational systems missing. Development should be halted until core infrastructure is implemented.
+    </blockquote>
+    
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Compliance Dashboard</summary>
+      <div class="metrics">
+        <div class="metric-card critical">
+          <h4>Overall Compliance</h4>
+          <div class="metric-value">25%</div>
+          <div class="metric-status">CRITICAL RISK</div>
+        </div>
+        <div class="metric-card critical">
+          <h4>Critical Issues</h4>
+          <div class="metric-value">7</div>
+          <div class="metric-status">BLOCKING</div>
+        </div>
+        <div class="metric-card warning">
+          <h4>High Priority Issues</h4>
+          <div class="metric-value">12</div>
+          <div class="metric-status">ARCHITECTURE VIOLATIONS</div>
+        </div>
+        <div class="metric-card info">
+          <h4>Estimated Fix Time</h4>
+          <div class="metric-value">4-6 weeks</div>
+          <div class="metric-status">FULL COMPLIANCE</div>
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Standalone Compliance Reports</summary>
+      <p>The quality assurance system generates <strong>standalone compliance reports</strong> in the <code>Compliance Reports/</code> folder rather than populating instruction files directly.</p>
+      
+      <h3>Report Directory Structure</h3>
+      <pre><code>Compliance Reports/
+??? Services/
+?   ??? InventoryService-compliance-report-2025-01-27.md
+?   ??? README.md
+??? ViewModels/
+?   ??? README.md  
+??? Views/
+?   ??? README.md
+??? Models/
+?   ??? README.md (MISSING - needs creation)
+??? Summary/
+?   ??? project-compliance-summary-2025-01-27.md
+??? README.md</code></pre>
+
+      <h3>Current Compliance Reports</h3>
+      <ul>
+        <li><strong>InventoryService-compliance-report-2025-01-27.md</strong> - ? CRITICAL (File Missing)</li>
+        <li><strong>Project Assessment Needed:</strong> Data Models, ViewModels, Views</li>
+        <li><strong>Summary Report Needed:</strong> Project-wide compliance analysis</li>
+      </ul>
+    </details>
+
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Quality Assurance Workflow</summary>
+      <ol>
+        <li><strong>Compliance Audit</strong> - Generate standalone reports using Quality Assurance Auditor Copilot</li>
+        <li><strong>Report Review</strong> - Prioritize fixes based on report recommendations</li>
+        <li><strong>Fix Implementation</strong> - Use custom prompts from reports to implement fixes</li>
+        <li><strong>Re-verification</strong> - Generate updated compliance reports to track progress</li>
+        <li><strong>Compliance Tracking</strong> - Monitor overall project compliance health</li>
+      </ol>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Common Compliance Categories</summary>
+      <div class="compliance-categories">
+        <div class="category">
+          <h4>1. Naming Conventions Violations</h4>
+          <p>Incorrect file naming patterns, non-compliant class/method/property names</p>
+        </div>
+        <div class="category">
+          <h4>2. UI Generation Standards Violations</h4>
+          <p>Non-Avalonia control usage, missing ReactiveUI patterns, business logic in UI code</p>
+        </div>
+        <div class="category">
+          <h4>3. ReactiveUI Pattern Violations</h4>
+          <p>Missing RaiseAndSetIfChanged usage, incorrect command implementations</p>
+        </div>
+        <div class="category">
+          <h4>4. MTM Data Pattern Violations</h4>
+          <p>Incorrect Part ID format, wrong Operation format, missing MTM-specific structures</p>
+        </div>
+        <div class="category">
+          <h4>5. Color Scheme and Theme Violations</h4>
+          <p>Hard-coded colors instead of DynamicResource, non-MTM palette usage</p>
+        </div>
+        <div class="category">
+          <h4>6. Architecture and Structure Violations</h4>
+          <p>Business logic in UI components, missing MVVM separation, missing DI preparation</p>
+        </div>
+        <div class="category">
+          <h4>7. Error Handling Violations</h4>
+          <p>Missing error handling patterns, non-standardized error logging</p>
+        </div>
+        <div class="category">
+          <h4>8. Layout and Design Violations</h4>
+          <p>Non-modern layout patterns, missing card-based designs</p>
+        </div>
+        <div class="category critical">
+          <h4>9. Missing Core System Violations (NEW)</h4>
+          <p>Service layer missing, data models missing, DI container missing, navigation service missing</p>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Priority Classification</summary>
+      <h3>CRITICAL Priority (Development Blocking)</h3>
+      <ul>
+        <li>Missing essential files or components</li>
+        <li>Architecture violations preventing functionality</li>
+        <li>Missing service layer preventing MVVM compliance</li>
+        <li>Missing data models causing type safety issues</li>
+        <li>Missing DI container preventing service injection</li>
+      </ul>
+
+      <h3>HIGH Priority (Architecture Impact)</h3>
+      <ul>
+        <li>Essential ReactiveUI patterns missing</li>
+        <li>Incorrect MTM data handling</li>
+        <li>Missing error handling integration</li>
+        <li>Missing navigation service causing MVVM violations</li>
+        <li>Missing configuration service preventing settings access</li>
+      </ul>
+
+      <h3>MEDIUM Priority (Standards Improvement)</h3>
+      <ul>
+        <li>Naming convention inconsistencies</li>
+        <li>Missing dependency injection preparation</li>
+        <li>Incomplete documentation</li>
+        <li>Missing validation system</li>
+        <li>Missing caching layer affecting performance</li>
+      </ul>
+
+      <h3>LOW Priority (Style and Enhancement)</h3>
+      <ul>
+        <li>Code formatting improvements</li>
+        <li>Additional documentation enhancements</li>
+        <li>Performance optimizations</li>
+        <li>Non-critical naming adjustments</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Generate Compliance Report</summary>
+      <p><strong>Persona:</strong> Quality Assurance Auditor Copilot</p>
+      
+      <h3>Basic Usage</h3>
+      <pre><code>Conduct comprehensive compliance audit of Services/InventoryService.cs against all MTM WIP Application instruction guidelines. Generate a standalone compliance report in Compliance Reports/Services/InventoryService-compliance-report-2025-01-27.md with detailed findings and custom fix prompt.</code></pre>
+
+      <h3>Bulk Assessment</h3>
+      <pre><code>Conduct comprehensive quality audit of MTM_WIP_Application_Avalonia project. Review all C# and AXAML files for MTM compliance and missing core systems. Generate individual compliance reports in Compliance Reports/ folder organized by directory structure.</code></pre>
+
+      <h3>Missing Systems Analysis</h3>
+      <pre><code>Conduct missing core systems analysis of MTM_WIP_Application_Avalonia project. Identify all missing service layers, data models, dependency injection setup, navigation services, theme systems, and other critical infrastructure. Generate comprehensive analysis report with implementation priority order and estimated timelines.</code></pre>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Quality Assurance Enforcement</summary>
+      <h3>Development Blocking Issues</h3>
+      <p>The following compliance violations should <strong>BLOCK</strong> further development:</p>
+      <ul>
+        <li><strong>Missing service layer</strong> (CRITICAL)</li>
+        <li><strong>Missing data models</strong> (CRITICAL)</li>
+        <li><strong>Missing DI container</strong> (CRITICAL)</li>
+        <li><strong>Direct view instantiation</strong> violating MVVM (HIGH)</li>
+        <li><strong>Hard-coded colors</strong> preventing theming (HIGH)</li>
+      </ul>
+
+      <h3>Technical Debt Tracking</h3>
+      <ul>
+        <li><strong>Current Technical Debt:</strong> 19 missing core systems</li>
+        <li><strong>Estimated Resolution Time:</strong> 4-6 weeks</li>
+        <li><strong>Risk to Project:</strong> HIGH (architecture cannot support sustainable development)</li>
+        <li><strong>Recommended Action:</strong> Implement foundation systems before continuing</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Integration with Development Workflow</summary>
+      <h3>Pre-Implementation Verification</h3>
+      <p><strong>CRITICAL:</strong> Before continuing with any business logic or UI development:</p>
+      <ol>
+        <li>Implement missing core systems identified in analysis</li>
+        <li>Generate compliance reports for all new systems</li>
+        <li>Achieve minimum 80% compliance on foundational systems</li>
+      </ol>
+
+      <h3>Pre-Commit Verification</h3>
+      <ol>
+        <li>Generate compliance report for changed files</li>
+        <li>Address critical and high-priority violations</li>
+        <li>Include compliance status in pull request review</li>
+        <li>Verify no new missing systems introduced</li>
+      </ol>
+
+      <h3>Continuous Compliance</h3>
+      <ul>
+        <li>Schedule regular compliance audits</li>
+        <li>Monitor compliance trends</li>
+        <li>Update instruction files based on common violations</li>
+        <li>Track missing systems implementation progress</li>
+      </ul>
+    </details>
+  </main>
+</body>
+</html>

@@ -52,6 +52,48 @@ Use these as templates for interacting with Copilot, ensuring responses are rele
 - **Verify Code Compliance**  
   For conducting comprehensive quality assurance reviews of code against all MTM instruction guidelines and generating detailed compliance reports.
 
+## Missing Core Systems Implementation Prompts
+
+### **Phase 1: Foundation Systems**
+- **Implement Result Pattern System**  
+  For creating the Result<T> pattern infrastructure for consistent service responses.
+- **Create Data Models Foundation**  
+  For generating the complete Models namespace with MTM-specific data entities.
+- **Setup Dependency Injection Container**  
+  For configuring Microsoft.Extensions.DependencyInjection in Program.cs and App.axaml.cs.
+- **Create Core Service Interfaces**  
+  For generating all essential service interfaces following MTM patterns.
+
+### **Phase 2: Service Layer Implementation**
+- **Implement Service Layer**  
+  For creating complete service implementations with MTM patterns and error handling.
+- **Create Database Service Layer**  
+  For implementing centralized database access with proper connection management.
+- **Setup Application State Management**  
+  For creating global application state service with proper encapsulation.
+- **Implement Configuration Service**  
+  For creating service to read and manage appsettings.json configuration.
+
+### **Phase 3: Infrastructure Systems**
+- **Create Navigation Service**  
+  For implementing proper MVVM navigation patterns with view-viewmodel mapping.
+- **Implement Theme System**  
+  For creating MTM purple brand theme resources and DynamicResource patterns.
+- **Setup Repository Pattern**  
+  For implementing data access abstraction layer with repository interfaces.
+- **Create Validation System**  
+  For implementing business rule validation with MTM-specific patterns.
+
+### **Phase 4: Quality Assurance Systems**
+- **Create Unit Testing Infrastructure**  
+  For setting up comprehensive testing framework with mocks and fixtures.
+- **Implement Structured Logging**  
+  For adding centralized logging throughout the application with proper levels.
+- **Create Caching Layer**  
+  For implementing performance-oriented caching for ComboBox data and user preferences.
+- **Setup Security Infrastructure**  
+  For implementing authentication, authorization, and secure connection management.
+
 ---
 
 ## Custom Prompt Templates
@@ -63,7 +105,7 @@ Use these as templates for interacting with Copilot, ensuring responses are rele
 *(See [personas-instruction.md](personas-instruction.md) for role details)*
 
 **Prompt:**  
-"Create a new UI element for [ControlName] using the mapped .instructions.md and screenshot.  
+"Create a new UI element for [source] using the mapped .instructions.md and screenshot.  
 Follow all naming and UI layout conventions. Only include navigation logic and event stubs as per our standards."
 
 ---
@@ -202,7 +244,7 @@ Rename all classes, controls, and variables as needed."
 *(See [personas-instruction.md](personas-instruction.md) for role details)*
 
 **Prompt:**  
-"Generate empty event handler stubs (with TODO comments) for [ControlName] and its specified events.  
+"Generate empty event handler stubs (with TODO comments) for [source] and its specified events.  
 Use correct naming and signature conventions."
 
 ---
@@ -283,6 +325,231 @@ Follow MTM component management conventions."
 
 ---
 
+## 🏗️ **Missing Core Systems Implementation Prompts**
+
+*Based on analysis from needsrepair.instruction.md identifying 19 missing core systems*
+
+### **21. Implement Result Pattern System**  
+**Persona:** Data Modeling Copilot + Application Logic Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Create the Result<T> pattern infrastructure for MTM WIP Application following .NET 8 patterns.  
+Implement Models/Result.cs with Success/Failure states, error messages, and implicit operators.  
+Include static factory methods for Success(T) and Failure(string), proper equality comparison,  
+and integration patterns for async service methods. Follow MTM error handling conventions and  
+ensure compatibility with ReactiveUI command error handling patterns."
+
+---
+
+### **22. Create Data Models Foundation**  
+**Persona:** Data Modeling Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Create the complete Models namespace foundation for MTM WIP Application with all essential data entities.  
+Generate Models/InventoryItem.cs, Models/InventoryTransaction.cs, Models/User.cs, and Models/QuickButtonItem.cs  
+following MTM-specific patterns. Include Part ID (string), Operation (string numbers), Quantity (integer),  
+Position (1-based indexing), timestamps, and user tracking. Ensure ReactiveUI compatibility with observable  
+properties where needed. Add proper validation attributes and XML documentation."
+
+---
+
+### **23. Setup Dependency Injection Container**  
+**Persona:** Application Logic Copilot + Configuration Wizard Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Configure Microsoft.Extensions.DependencyInjection in Program.cs and App.axaml.cs for MTM WIP Application.  
+Setup service container with proper lifetime management (Singleton, Scoped, Transient).  
+Create extension method for service registration and prepare registration for IInventoryService,  
+IUserService, ITransactionService, IDatabaseService, INavigationService, IApplicationStateService,  
+and IConfigurationService. Include development vs production service variants and  
+integrate with existing LoggingUtility and Service_ErrorHandler."
+
+---
+
+### **24. Create Core Service Interfaces**  
+**Persona:** Application Logic Copilot + Data Access Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Generate all essential service interfaces for MTM WIP Application following clean architecture patterns.  
+Create Services/IInventoryService.cs, Services/IUserService.cs, Services/ITransactionService.cs,  
+Services/IDatabaseService.cs, Services/INavigationService.cs, Services/IApplicationStateService.cs,  
+and Services/IConfigurationService.cs. Include async methods returning Result<T> pattern,  
+MTM-specific operations (Part ID, Operation strings), proper cancellation token support,  
+and comprehensive XML documentation. Prepare for dependency injection implementation."
+
+---
+
+### **25. Implement Service Layer**  
+**Persona:** Application Logic Copilot + Error Handling Specialist Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Implement complete service layer for [ServiceName] following MTM patterns and clean architecture.  
+Create Services/[ServiceName].cs implementing I[ServiceName] interface with full error handling  
+using Service_ErrorHandler, async/await patterns, and Result<T> return types. Include MTM data  
+pattern support, integration with LoggingUtility for database operations, comprehensive logging,  
+and proper validation. Add XML documentation and prepare for dependency injection with  
+constructor parameter validation."
+
+---
+
+### **26. Create Database Service Layer**  
+**Persona:** Data Access Copilot + Application Logic Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Create centralized database service layer with proper connection management for MTM WIP Application.  
+Implement Services/IDatabaseService.cs and Services/DatabaseService.cs with connection pooling,  
+transaction management, and async operations. Include connection string management from configuration,  
+retry policies for connection failures, proper disposal patterns, and integration with existing  
+LoggingUtility. Add stored procedure execution methods, parameter handling, and MTM-specific  
+data access patterns following clean architecture principles."
+
+---
+
+### **27. Setup Application State Management**  
+**Persona:** Application Logic Copilot + ReactiveUI Specialist Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Create global application state service for MTM WIP Application with proper encapsulation and reactivity.  
+Implement Services/IApplicationStateService.cs and Services/ApplicationStateService.cs using ReactiveUI  
+patterns for state change notifications. Include current user management, connection status tracking,  
+application settings, and shared state between ViewModels. Ensure thread-safety, proper disposal,  
+and integration with configuration service. Add state persistence and recovery mechanisms."
+
+---
+
+### **28. Implement Configuration Service**  
+**Persona:** Configuration Wizard Copilot + Application Logic Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Create configuration service to read and manage appsettings.json for MTM WIP Application.  
+Implement Services/IConfigurationService.cs and Services/ConfigurationService.cs using  
+Microsoft.Extensions.Configuration. Include strongly-typed configuration classes for Application,  
+ErrorHandling, Logging, and Database sections. Add configuration validation, environment-specific  
+overrides, and real-time configuration reload support. Integrate with dependency injection  
+and provide convenient access methods for all application components."
+
+---
+
+### **29. Create Navigation Service**  
+**Persona:** UI Architect Copilot + ReactiveUI Specialist Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Implement proper MVVM navigation service for MTM WIP Application with view-viewmodel mapping.  
+Create Services/INavigationService.cs and Services/NavigationService.cs supporting parametrized  
+navigation, navigation history, and modal dialog management. Include view registration,  
+automatic ViewModel instantiation with dependency injection, navigation events, and proper  
+cleanup of ViewModels. Ensure compatibility with Avalonia UI and ReactiveUI patterns while  
+maintaining clean separation between Views and ViewModels."
+
+---
+
+### **30. Implement Theme System**  
+**Persona:** UI Theme Specialist Copilot + UI Architect Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Create comprehensive MTM purple brand theme system for Avalonia application with DynamicResource patterns.  
+Generate Resources/Themes/MTMTheme.axaml with complete color palette: Primary (#4B45ED), Secondary (#8345ED),  
+Magenta (#BA45ED), Blue (#4574ED), Pink (#ED45E7), Light Purple (#B594ED). Include gradient brushes,  
+card styles, button styles, and modern UI element definitions. Add theme switching capability,  
+dark/light mode variants, and proper integration with App.axaml. Ensure all hard-coded colors  
+are replaced with DynamicResource references."
+
+---
+
+### **31. Setup Repository Pattern**  
+**Persona:** Data Access Copilot + Application Logic Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Implement data access abstraction layer with repository pattern for MTM WIP Application.  
+Create Repositories/IInventoryRepository.cs, Repositories/IUserRepository.cs, and  
+Repositories/ITransactionRepository.cs interfaces with corresponding implementations.  
+Include generic repository base class, unit of work pattern, and proper async operations.  
+Integrate with DatabaseService for connection management, add comprehensive error handling,  
+and ensure compatibility with MTM data patterns. Include repository registration in DI container."
+
+---
+
+### **32. Create Validation System**  
+**Persona:** Data Modeling Copilot + Application Logic Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Implement business rule validation system for MTM WIP Application with comprehensive validation framework.  
+Create Services/IValidationService.cs and validation attributes for MTM-specific patterns.  
+Include Part ID format validation, Operation string number validation, quantity range validation,  
+and business rule enforcement. Add FluentValidation integration, custom validation attributes,  
+and ValidationResult patterns. Ensure integration with ReactiveUI ViewModels and proper  
+error message localization support."
+
+---
+
+### **33. Create Unit Testing Infrastructure**  
+**Persona:** Test Automation Copilot + Application Logic Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Setup comprehensive unit testing infrastructure for MTM WIP Application with .NET 8 testing framework.  
+Create test project with xUnit, Moq, and FluentAssertions. Generate mock implementations for all  
+service interfaces, test data builders for MTM entities, and testing utilities. Include repository  
+pattern testing, ReactiveUI ViewModel testing with time scheduling, and service layer testing  
+with proper async patterns. Add test fixtures, in-memory database testing, and CI/CD integration  
+configuration."
+
+---
+
+### **34. Implement Structured Logging**  
+**Persona:** Logging Engineer Copilot + Application Logic Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Add centralized structured logging throughout MTM WIP Application with Microsoft.Extensions.Logging.  
+Enhance existing LoggingUtility with structured logging patterns, log levels, and proper categorization.  
+Include performance logging, user action tracking, error correlation IDs, and log enrichment.  
+Add Serilog integration for advanced logging capabilities, log file rotation, and structured  
+JSON logging. Ensure integration with Service_ErrorHandler and proper log level configuration  
+from appsettings.json."
+
+---
+
+### **35. Create Caching Layer**  
+**Persona:** Application Logic Copilot + Data Access Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Implement performance-oriented caching layer for MTM WIP Application with Microsoft.Extensions.Caching.  
+Create Services/ICacheService.cs and Services/CacheService.cs with memory and distributed caching support.  
+Include ComboBox data caching, user preference caching, and frequently accessed data optimization.  
+Add cache invalidation strategies, expiration policies, and cache warming. Ensure thread-safety,  
+proper disposal, and integration with configuration service for cache settings. Include cache  
+metrics and monitoring capabilities."
+
+---
+
+### **36. Setup Security Infrastructure**  
+**Persona:** Security Engineer Copilot + Application Logic Copilot  
+*(See [personas-instruction.md](personas-instruction.md) for role details)*
+
+**Prompt:**  
+"Implement authentication, authorization, and secure connection management for MTM WIP Application.  
+Create Services/IAuthenticationService.cs, Services/IAuthorizationService.cs, and security middleware.  
+Include user authentication with secure credential storage, role-based authorization, and  
+connection string encryption. Add security headers, input sanitization, and audit logging.  
+Ensure integration with existing user management and proper security event tracking.  
+Include development vs production security configurations."
+
+---
+
 ## MTM-Specific Workflow Patterns
 
 ### UI Generation from Markdown Files
@@ -304,6 +571,14 @@ For comprehensive code compliance verification:
 4. **Fix Recommendations** - Provide specific guidance for bringing code into compliance
 5. **Report Generation** - Update needsrepair.instruction.md with structured findings
 6. **Re-verification** - Follow up reviews to confirm compliance improvements
+
+### Missing Systems Implementation Workflow
+For implementing missing core systems identified in compliance analysis:
+
+1. **Foundation Phase** - Implement data models, Result pattern, and DI container
+2. **Service Layer Phase** - Create all service interfaces and implementations
+3. **Infrastructure Phase** - Add navigation, themes, repositories, and validation
+4. **Quality Assurance Phase** - Implement testing, logging, caching, and security
 
 ### Instruction File Synchronization
 For keeping instruction files synchronized with the main copilot-instructions.md:
@@ -361,3 +636,11 @@ All personas should follow these MTM-specific behavioral patterns:
 - **Priority Assignment**: Classify issues based on impact and compliance severity
 - **Solution-Oriented**: Provide specific fix recommendations with instruction references
 - **Progress Tracking**: Update compliance status and maintain audit trail
+
+### Missing Systems Implementation Behaviors
+- **Foundation First**: Always implement foundational systems before dependent systems
+- **Clean Architecture**: Follow dependency inversion and separation of concerns
+- **Error Handling**: Integrate Service_ErrorHandler in all new implementations
+- **Testing Support**: Include testability considerations in all implementations
+- **Documentation**: Provide comprehensive XML documentation for all public APIs
+- **DI Preparation**: Ensure all services are prepared for dependency injection

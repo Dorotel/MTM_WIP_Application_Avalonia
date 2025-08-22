@@ -127,7 +127,7 @@ public async Task<Result<List<InventoryItem>>> GetInventoryAsync()
     catch (Exception ex)
     {
         Service_ErrorHandler.HandleException(ex, ErrorSeverity.High, 
-            controlName: nameof(InventoryService),
+            source: nameof(InventoryService),
             additionalData: new Dictionary<string, object>
             {
                 ["Operation"] = "GetInventory",
