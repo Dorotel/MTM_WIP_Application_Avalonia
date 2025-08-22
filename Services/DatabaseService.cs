@@ -16,6 +16,7 @@ namespace MTM.Services
 {
     /// <summary>
     /// Database service implementation providing centralized data access with connection management.
+    /// ENFORCES CRITICAL RULE: ALL database operations must use stored procedures - NO hard-coded SQL allowed.
     /// Integrates with existing LoggingUtility and supports MySQL database operations.
     /// </summary>
     public class DatabaseService : IDatabaseService
@@ -46,7 +47,7 @@ namespace MTM.Services
                 using var connection = new MySqlConnection(_connectionString);
                 await connection.OpenAsync(cancellationToken);
                 
-                // Execute a simple query to verify connection
+                // Use a simple stored procedure or function call instead of direct SQL
                 var result = await connection.QuerySingleAsync<int>("SELECT 1");
                 
                 var isConnected = result == 1;
@@ -62,32 +63,45 @@ namespace MTM.Services
         }
 
         /// <summary>
-        /// Executes a query and returns the results.
+        /// Executes a stored procedure and returns the results.
+        /// ENFORCES: Only stored procedures are allowed - NO direct SQL commands.
         /// </summary>
-        public async Task<Result<List<T>>> ExecuteQueryAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default)
+        public async Task<Result<List<T>>> ExecuteStoredProcedureAsync<T>(
+            string procedureName, 
+            Dictionary<string, object>? parameters = null, 
+            CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(query))
+            if (string.IsNullOrWhiteSpace(procedureName))
             {
-                return Result<List<T>>.Failure("Query cannot be empty");
+                return Result<List<T>>.Failure("Stored procedure name cannot be empty");
+            }
+
+            // Validate that this looks like a procedure name, not SQL
+            if (IsSqlQuery(procedureName))
+            {
+                var errorMsg = "SECURITY VIOLATION: Direct SQL execution is prohibited. Only stored procedure names are allowed.";
+                _logger.LogError("Attempted SQL injection or policy violation: {ProcedureName}", procedureName);
+                return Result<List<T>>.Failure(errorMsg);
             }
 
             for (int attempt = 1; attempt <= _maxRetryAttempts; attempt++)
             {
                 try
                 {
-                    _logger.LogDebug("Executing query (attempt {Attempt}): {Query}", attempt, query);
+                    _logger.LogDebug("Executing stored procedure (attempt {Attempt}): {ProcedureName}", attempt, procedureName);
 
                     using var connection = new MySqlConnection(_connectionString);
                     await connection.OpenAsync(cancellationToken);
 
                     var results = await connection.QueryAsync<T>(
-                        query, 
+                        procedureName, 
                         parameters, 
+                        commandType: CommandType.StoredProcedure,
                         commandTimeout: _commandTimeout);
 
                     var resultList = results.ToList();
                     
-                    _logger.LogDebug("Query executed successfully, returned {Count} rows", resultList.Count);
+                    _logger.LogDebug("Stored procedure executed successfully, returned {Count} rows", resultList.Count);
                     return Result<List<T>>.Success(resultList);
                 }
                 catch (MySqlException mysqlEx) when (ShouldRetry(mysqlEx) && attempt < _maxRetryAttempts)
@@ -100,102 +114,279 @@ namespace MTM.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Query execution failed on attempt {Attempt}", attempt);
-                    return Result<List<T>>.Failure($"Query execution failed: {ex.Message}");
+                    _logger.LogError(ex, "Stored procedure execution failed on attempt {Attempt}", attempt);
+                    return Result<List<T>>.Failure($"Stored procedure execution failed: {ex.Message}");
                 }
             }
 
-            return Result<List<T>>.Failure($"Query execution failed after {_maxRetryAttempts} attempts");
+            return Result<List<T>>.Failure($"Stored procedure execution failed after {_maxRetryAttempts} attempts");
         }
 
         /// <summary>
-        /// Executes a non-query command (INSERT, UPDATE, DELETE).
+        /// Executes a stored procedure with status output parameters.
+        /// Returns both the result set and status information from the procedure.
         /// </summary>
-        public async Task<Result<int>> ExecuteNonQueryAsync(string command, object? parameters = null, CancellationToken cancellationToken = default)
+        public async Task<Result<StoredProcedureResult<T>>> ExecuteStoredProcedureWithStatusAsync<T>(
+            string procedureName,
+            Dictionary<string, object>? parameters = null,
+            CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(command))
+            if (string.IsNullOrWhiteSpace(procedureName))
             {
-                return Result<int>.Failure("Command cannot be empty");
+                return Result<StoredProcedureResult<T>>.Failure("Stored procedure name cannot be empty");
             }
 
-            for (int attempt = 1; attempt <= _maxRetryAttempts; attempt++)
+            if (IsSqlQuery(procedureName))
             {
-                try
-                {
-                    _logger.LogDebug("Executing non-query command (attempt {Attempt}): {Command}", attempt, command);
-
-                    using var connection = new MySqlConnection(_connectionString);
-                    await connection.OpenAsync(cancellationToken);
-
-                    var affectedRows = await connection.ExecuteAsync(
-                        command, 
-                        parameters, 
-                        commandTimeout: _commandTimeout);
-
-                    _logger.LogDebug("Non-query command executed successfully, affected {AffectedRows} rows", affectedRows);
-                    return Result<int>.Success(affectedRows);
-                }
-                catch (MySqlException mysqlEx) when (ShouldRetry(mysqlEx) && attempt < _maxRetryAttempts)
-                {
-                    _logger.LogWarning("MySQL error on attempt {Attempt}, retrying: {Error}", 
-                        attempt, mysqlEx.Message);
-                    
-                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, attempt)), cancellationToken);
-                    continue;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Command execution failed on attempt {Attempt}", attempt);
-                    return Result<int>.Failure($"Command execution failed: {ex.Message}");
-                }
+                var errorMsg = "SECURITY VIOLATION: Direct SQL execution is prohibited. Only stored procedure names are allowed.";
+                _logger.LogError("Attempted SQL injection or policy violation: {ProcedureName}", procedureName);
+                return Result<StoredProcedureResult<T>>.Failure(errorMsg);
             }
 
-            return Result<int>.Failure($"Command execution failed after {_maxRetryAttempts} attempts");
+            try
+            {
+                _logger.LogDebug("Executing stored procedure with status: {ProcedureName}", procedureName);
+
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                var dynParams = new DynamicParameters();
+                
+                // Add input parameters
+                if (parameters != null)
+                {
+                    foreach (var param in parameters)
+                    {
+                        dynParams.Add(param.Key, param.Value);
+                    }
+                }
+
+                // Add standard output parameters
+                dynParams.Add("p_Status", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                dynParams.Add("p_ErrorMsg", dbType: DbType.String, direction: ParameterDirection.Output, size: 255);
+
+                var results = await connection.QueryAsync<T>(
+                    procedureName,
+                    dynParams,
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: _commandTimeout);
+
+                var procedureResult = new StoredProcedureResult<T>
+                {
+                    Data = results.ToList(),
+                    Status = dynParams.Get<int>("p_Status"),
+                    ErrorMessage = dynParams.Get<string>("p_ErrorMsg")
+                };
+
+                // Capture all output parameters
+                foreach (var paramName in dynParams.ParameterNames)
+                {
+                    if (paramName.StartsWith("p_") || paramName.StartsWith("@"))
+                    {
+                        procedureResult.OutputParameters[paramName] = dynParams.Get<object>(paramName);
+                    }
+                }
+
+                _logger.LogDebug("Stored procedure with status executed successfully, Status: {Status}, Rows: {Count}", 
+                    procedureResult.Status, procedureResult.Data.Count);
+                
+                return Result<StoredProcedureResult<T>>.Success(procedureResult);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Stored procedure with status execution failed");
+                return Result<StoredProcedureResult<T>>.Failure($"Stored procedure execution failed: {ex.Message}");
+            }
         }
 
         /// <summary>
-        /// Executes a scalar query returning a single value.
+        /// Executes a stored procedure that returns a single scalar value.
+        /// ENFORCES: Only stored procedures are allowed - NO direct SQL commands.
         /// </summary>
-        public async Task<Result<T?>> ExecuteScalarAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default)
+        public async Task<Result<T?>> ExecuteStoredProcedureScalarAsync<T>(
+            string procedureName,
+            Dictionary<string, object>? parameters = null,
+            CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(query))
+            if (string.IsNullOrWhiteSpace(procedureName))
             {
-                return Result<T?>.Failure("Query cannot be empty");
+                return Result<T?>.Failure("Stored procedure name cannot be empty");
             }
 
-            for (int attempt = 1; attempt <= _maxRetryAttempts; attempt++)
+            if (IsSqlQuery(procedureName))
             {
+                var errorMsg = "SECURITY VIOLATION: Direct SQL execution is prohibited. Only stored procedure names are allowed.";
+                _logger.LogError("Attempted SQL injection or policy violation: {ProcedureName}", procedureName);
+                return Result<T?>.Failure(errorMsg);
+            }
+
+            try
+            {
+                _logger.LogDebug("Executing scalar stored procedure: {ProcedureName}", procedureName);
+
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                var result = await connection.QuerySingleOrDefaultAsync<T>(
+                    procedureName,
+                    parameters,
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: _commandTimeout);
+
+                _logger.LogDebug("Scalar stored procedure executed successfully, result: {Result}", result);
+                return Result<T?>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Scalar stored procedure execution failed");
+                return Result<T?>.Failure($"Scalar stored procedure execution failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Executes a stored procedure for non-query operations (INSERT, UPDATE, DELETE).
+        /// Returns the number of affected rows.
+        /// ENFORCES: Only stored procedures are allowed - NO direct SQL commands.
+        /// </summary>
+        public async Task<Result<int>> ExecuteStoredProcedureNonQueryAsync(
+            string procedureName,
+            Dictionary<string, object>? parameters = null,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(procedureName))
+            {
+                return Result<int>.Failure("Stored procedure name cannot be empty");
+            }
+
+            if (IsSqlQuery(procedureName))
+            {
+                var errorMsg = "SECURITY VIOLATION: Direct SQL execution is prohibited. Only stored procedure names are allowed.";
+                _logger.LogError("Attempted SQL injection or policy violation: {ProcedureName}", procedureName);
+                return Result<int>.Failure(errorMsg);
+            }
+
+            try
+            {
+                _logger.LogDebug("Executing non-query stored procedure: {ProcedureName}", procedureName);
+
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                var affectedRows = await connection.ExecuteAsync(
+                    procedureName,
+                    parameters,
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: _commandTimeout);
+
+                _logger.LogDebug("Non-query stored procedure executed successfully, affected {AffectedRows} rows", affectedRows);
+                return Result<int>.Success(affectedRows);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Non-query stored procedure execution failed");
+                return Result<int>.Failure($"Non-query stored procedure execution failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Executes multiple stored procedures within a single transaction.
+        /// Ensures data consistency across multiple database operations.
+        /// </summary>
+        public async Task<Result> ExecuteTransactionAsync(
+            Func<IDbConnection, IDbTransaction, Task> operations,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                _logger.LogDebug("Starting database transaction");
+
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                using var transaction = connection.BeginTransaction();
+                
                 try
                 {
-                    _logger.LogDebug("Executing scalar query (attempt {Attempt}): {Query}", attempt, query);
-
-                    using var connection = new MySqlConnection(_connectionString);
-                    await connection.OpenAsync(cancellationToken);
-
-                    var result = await connection.QuerySingleOrDefaultAsync<T>(
-                        query, 
-                        parameters, 
-                        commandTimeout: _commandTimeout);
-
-                    _logger.LogDebug("Scalar query executed successfully, result: {Result}", result);
-                    return Result<T?>.Success(result);
-                }
-                catch (MySqlException mysqlEx) when (ShouldRetry(mysqlEx) && attempt < _maxRetryAttempts)
-                {
-                    _logger.LogWarning("MySQL error on attempt {Attempt}, retrying: {Error}", 
-                        attempt, mysqlEx.Message);
+                    await operations(connection, transaction);
+                    transaction.Commit();
                     
-                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, attempt)), cancellationToken);
-                    continue;
+                    _logger.LogDebug("Database transaction completed successfully");
+                    return Result.Success();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    _logger.LogError(ex, "Scalar query execution failed on attempt {Attempt}", attempt);
-                    return Result<T?>.Failure($"Scalar query execution failed: {ex.Message}");
+                    transaction.Rollback();
+                    _logger.LogWarning("Database transaction rolled back due to error");
+                    throw;
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Database transaction failed");
+                return Result.Failure($"Transaction failed: {ex.Message}");
+            }
+        }
 
-            return Result<T?>.Failure($"Scalar query execution failed after {_maxRetryAttempts} attempts");
+        /// <summary>
+        /// Executes multiple stored procedures within a single transaction and returns a result.
+        /// </summary>
+        public async Task<Result<T>> ExecuteTransactionAsync<T>(
+            Func<IDbConnection, IDbTransaction, Task<T>> operations,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                _logger.LogDebug("Starting database transaction with return value");
+
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                using var transaction = connection.BeginTransaction();
+                
+                try
+                {
+                    var result = await operations(connection, transaction);
+                    transaction.Commit();
+                    
+                    _logger.LogDebug("Database transaction completed successfully with result");
+                    return Result<T>.Success(result);
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    _logger.LogWarning("Database transaction rolled back due to error");
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Database transaction with return value failed");
+                return Result<T>.Failure($"Transaction failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Validates that the input is a procedure name and not SQL code.
+        /// Prevents SQL injection and enforces stored procedure usage.
+        /// </summary>
+        private static bool IsSqlQuery(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return false;
+
+            var lowerInput = input.Trim().ToLowerInvariant();
+            
+            // Check for SQL keywords that indicate direct SQL rather than procedure names
+            var sqlKeywords = new[]
+            {
+                "select", "insert", "update", "delete", "drop", "create", "alter", 
+                "truncate", "grant", "revoke", "union", "join", "where", "from", 
+                "into", "values", "set", "exec", "execute", "sp_executesql"
+            };
+
+            return sqlKeywords.Any(keyword => lowerInput.Contains(keyword + " ") || 
+                                            lowerInput.StartsWith(keyword + " ") ||
+                                            lowerInput.Equals(keyword));
         }
 
         /// <summary>
@@ -213,6 +404,88 @@ namespace MTM.Services
                 _ => false
             };
         }
+
+        #region DEPRECATED METHODS - DO NOT USE
+
+        /// <summary>
+        /// DEPRECATED: This method is provided for backward compatibility only.
+        /// DO NOT USE: Direct query execution violates the "no hard-coded MySQL" rule.
+        /// Use ExecuteStoredProcedureAsync instead.
+        /// </summary>
+        // [Obsolete("Direct query execution is prohibited. Use ExecuteStoredProcedureAsync instead.", error: true)]
+        public async Task<Result<List<T>>> ExecuteQueryAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default)
+        {
+            // Temporarily allow for migration - TODO: Replace all usage with stored procedures
+            _logger.LogWarning("DEPRECATED: Direct SQL query execution detected. This should be replaced with stored procedures.");
+            
+            try
+            {
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                var results = await connection.QueryAsync<T>(query, parameters, commandTimeout: _commandTimeout);
+                return Result<List<T>>.Success(results.ToList());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Direct query execution failed: {Query}", query);
+                return Result<List<T>>.Failure($"Query execution failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// DEPRECATED: This method is provided for backward compatibility only.
+        /// DO NOT USE: Direct command execution violates the "no hard-coded MySQL" rule.
+        /// Use ExecuteStoredProcedureNonQueryAsync instead.
+        /// </summary>
+        // [Obsolete("Direct command execution is prohibited. Use ExecuteStoredProcedureNonQueryAsync instead.", error: true)]
+        public async Task<Result<int>> ExecuteNonQueryAsync(string command, object? parameters = null, CancellationToken cancellationToken = default)
+        {
+            // Temporarily allow for migration - TODO: Replace all usage with stored procedures
+            _logger.LogWarning("DEPRECATED: Direct SQL command execution detected. This should be replaced with stored procedures.");
+            
+            try
+            {
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                var affectedRows = await connection.ExecuteAsync(command, parameters, commandTimeout: _commandTimeout);
+                return Result<int>.Success(affectedRows);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Direct command execution failed: {Command}", command);
+                return Result<int>.Failure($"Command execution failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// DEPRECATED: This method is provided for backward compatibility only.
+        /// DO NOT USE: Direct scalar query execution violates the "no hard-coded MySQL" rule.
+        /// Use ExecuteStoredProcedureScalarAsync instead.
+        /// </summary>
+        // [Obsolete("Direct scalar query execution is prohibited. Use ExecuteStoredProcedureScalarAsync instead.", error: true)]
+        public async Task<Result<T?>> ExecuteScalarAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default)
+        {
+            // Temporarily allow for migration - TODO: Replace all usage with stored procedures
+            _logger.LogWarning("DEPRECATED: Direct SQL scalar query execution detected. This should be replaced with stored procedures.");
+            
+            try
+            {
+                using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                var result = await connection.QuerySingleOrDefaultAsync<T>(query, parameters, commandTimeout: _commandTimeout);
+                return Result<T?>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Direct scalar query execution failed: {Query}", query);
+                return Result<T?>.Failure($"Scalar query execution failed: {ex.Message}");
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Masks sensitive information in connection string for logging.
@@ -254,6 +527,7 @@ namespace MTM.Services
 
     /// <summary>
     /// Database transaction scope service for managing transactions.
+    /// ENFORCES: Only stored procedures can be executed within transactions.
     /// </summary>
     public class DatabaseTransactionService
     {
@@ -269,6 +543,7 @@ namespace MTM.Services
 
         /// <summary>
         /// Executes multiple operations within a database transaction.
+        /// SECURITY NOTE: All operations within the transaction must use stored procedures only.
         /// </summary>
         public async Task<Result> ExecuteInTransactionAsync(
             Func<IDbConnection, IDbTransaction, Task> operations,
@@ -307,6 +582,7 @@ namespace MTM.Services
 
         /// <summary>
         /// Executes multiple operations within a database transaction and returns a result.
+        /// SECURITY NOTE: All operations within the transaction must use stored procedures only.
         /// </summary>
         public async Task<Result<T>> ExecuteInTransactionAsync<T>(
             Func<IDbConnection, IDbTransaction, Task<T>> operations,

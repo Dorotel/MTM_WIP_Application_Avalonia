@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Operations Prompts | Avalonia Project Help</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1><span class="icon">&#128640;</span>Database Operations Custom Prompts</h1>
+  </header>
+  <nav class="topbar">
+    <a href="index.html"><span class="icon">&#8962;</span>Home</a>
+    <a href="coding-conventions.html"><span class="icon">&#128295;</span>Coding Conventions</a>
+    <a href="ui-generation.html"><span class="icon">&#128187;</span>UI Generation</a>
+    <a href="ui-mapping.html"><span class="icon">&#128247;</span>UI Mapping</a>
+    <a href="error-handler.html"><span class="icon">&#9888;</span>Error Handling</a>
+    <a href="github-workflow.html"><span class="icon">&#128736;</span>GitHub Workflow</a>
+    <a href="naming-conventions.html"><span class="icon">&#128221;</span>Naming Conventions</a>
+    <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
+    <a href="personas.html"><span class="icon">&#128100;</span>Personas</a>
+    <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
+    <a href="needs-repair.html"><span class="icon">&#128679;</span>Quality Assurance</a>
+    <a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a>
+    <a href="database-operations-prompts.html" class="active"><span class="icon">&#128640;</span>Database Operations</a>
+  </nav>
+  <main>
+    <h2><span class="icon">&#128640;</span>Database Operations Custom Prompts</h2>
+    
+    <blockquote class="critical">
+      <span class="icon">&#9888;</span>
+      <strong>CRITICAL DATABASE RULES:</strong> ALL database operations must use stored procedures. ZERO hard-coded SQL commands allowed in application code. Direct SQL execution will result in security violations and build errors.
+    </blockquote>
+    
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Core Database Operations (Prompts 37-42)</summary>
+      
+      <h3><span class="icon">&#128640;</span>37. Create New Stored Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot</p>
+        <p><strong>Purpose:</strong> Creating new stored procedures following MTM standards</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create a new stored procedure called <code>[procedure_name]</code> for [business purpose].<br>
+          Include comprehensive error handling with p_Status and p_ErrorMsg output parameters.<br>
+          Follow MTM naming conventions: [category]_[entity]_[action]_[specifics].<br>
+          Add the procedure to <code>Database_Files/New_Stored_Procedures.sql</code> with full documentation.<br>
+          Include parameter validation, transaction management, and audit logging where appropriate.<br>
+          Ensure the procedure follows the security requirements and performance guidelines from README_New_Stored_Procedures.md."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create a new stored procedure called inv_inventory_Get_LowStock for retrieving inventory items below reorder point</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>38. Update Existing Stored Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot</p>
+        <p><strong>Purpose:</strong> Modifying existing stored procedures safely</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Update the existing stored procedure <code>[procedure_name]</code> to [modification description].<br>
+          Copy the original procedure from <code>Existing_Stored_Procedures.sql</code> to <code>Updated_Stored_Procedures.sql</code>.<br>
+          Document all changes using the change documentation template.<br>
+          Maintain backward compatibility unless explicitly noted as a breaking change.<br>
+          Update the corresponding service layer methods if the interface changes.<br>
+          Include comprehensive testing notes and deployment instructions."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Update the existing stored procedure inv_inventory_Add_Item to include additional validation for negative quantities</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>39. Create Database Service Method</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Application Logic Copilot + Database Architect Copilot</p>
+        <p><strong>Purpose:</strong> Creating service layer methods that call stored procedures</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create a service method in <code>[ServiceClass]</code> to call the stored procedure <code>[procedure_name]</code>.<br>
+          Use IDatabaseService.ExecuteStoredProcedureAsync or ExecuteStoredProcedureWithStatusAsync.<br>
+          Include comprehensive error handling with Service_ErrorHandler integration.<br>
+          Return Result&lt;T&gt; pattern for all operations.<br>
+          Add XML documentation explaining the business purpose and parameters.<br>
+          Ensure the method follows MTM data patterns (Part ID strings, Operation numbers, etc.).<br>
+          Include parameter validation before calling the stored procedure."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create a service method in InventoryService to call the stored procedure inv_inventory_Get_ByLocation</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>40. Validate Database Code Compliance</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Security Auditor Copilot</p>
+        <p><strong>Purpose:</strong> Ensuring no hard-coded SQL exists in codebase</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Audit all database-related code in [file/directory] for compliance with the 'No Hard-Coded MySQL' rule.<br>
+          Identify any direct SQL statements, queries, or commands that should be converted to stored procedures.<br>
+          Check for proper use of IDatabaseService methods instead of direct database access.<br>
+          Verify that all database operations use ExecuteStoredProcedureAsync family of methods.<br>
+          Report any violations with specific file locations and recommended fixes.<br>
+          Ensure all database interactions go through the approved service layer."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Audit all database-related code in Services/ directory for compliance with the No Hard-Coded MySQL rule</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>41. Convert Hard-Coded SQL to Stored Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot + Application Logic Copilot</p>
+        <p><strong>Purpose:</strong> Refactoring existing SQL code to use stored procedures</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Convert the hard-coded SQL statement <code>[SQL_CODE]</code> to use a stored procedure approach.<br>
+          Create the appropriate stored procedure in <code>Database_Files/New_Stored_Procedures.sql</code>.<br>
+          Update the application code to call the new stored procedure using IDatabaseService.<br>
+          Ensure the conversion maintains the same functionality and performance.<br>
+          Add comprehensive error handling and parameter validation.<br>
+          Document the migration with before/after examples."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Convert the hard-coded SQL statement "SELECT * FROM inv_inventory WHERE PartID = @partId" to use a stored procedure approach</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>42. Create Database Transaction Workflow</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot</p>
+        <p><strong>Purpose:</strong> Creating multi-step database operations with transaction safety</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create a transaction workflow for [business process] that involves multiple stored procedures.<br>
+          Use IDatabaseService.ExecuteTransactionAsync to ensure data consistency.<br>
+          Include rollback handling for any step failures.<br>
+          Call the following stored procedures in sequence: [procedure_list].<br>
+          Add comprehensive error handling and status tracking.<br>
+          Ensure each step validates the previous step's success before proceeding.<br>
+          Include audit logging for the complete transaction."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create a transaction workflow for inventory transfer that involves inv_inventory_Remove_Item and inv_inventory_Add_Item stored procedures</code>
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Advanced Database Operations (Prompts 43-46)</summary>
+      
+      <h3><span class="icon">&#128640;</span>43. Create Batch Processing Stored Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot</p>
+        <p><strong>Purpose:</strong> Creating procedures that handle large data sets efficiently</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create a batch processing stored procedure <code>[procedure_name]</code> for [business purpose].<br>
+          Process records in configurable batch sizes (default 1000 records).<br>
+          Include progress tracking and resumption capability for long-running operations.<br>
+          Add loop counters and maximum execution limits to prevent runaway processes.<br>
+          Return status information including processed count and completion status.<br>
+          Include cursor-based processing with proper memory management.<br>
+          Follow the patterns established in assign_BatchNumber_Step3 and similar procedures."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create a batch processing stored procedure maint_archive_OldTransactions for moving old transaction records to archive tables</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>44. Create Database Reporting Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot + Reporting Specialist</p>
+        <p><strong>Purpose:</strong> Creating procedures for data analysis and reporting</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create a reporting stored procedure <code>[procedure_name]</code> that generates [report_description].<br>
+          Include date range parameters with proper validation.<br>
+          Add optional filtering parameters for user, location, part, etc.<br>
+          Return comprehensive result sets with calculated fields and aggregations.<br>
+          Include proper indexing hints and performance optimizations.<br>
+          Add documentation explaining the business logic and calculations.<br>
+          Ensure the procedure can handle large data volumes efficiently."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create a reporting stored procedure rpt_inventory_Usage_Summary that generates monthly inventory usage by part and location</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>45. Create Data Validation Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot + Data Validation Specialist</p>
+        <p><strong>Purpose:</strong> Creating procedures for data integrity checking</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create a data validation stored procedure <code>[procedure_name]</code> that checks [validation_rules].<br>
+          Return detailed validation results with specific error descriptions.<br>
+          Include options for validation-only mode and auto-correction mode.<br>
+          Add comprehensive logging of all validation failures.<br>
+          Include rollback capability if validation fails during corrections.<br>
+          Return statistics on total records checked, errors found, and corrections made.<br>
+          Follow the error handling patterns established in other maintenance procedures."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create a data validation stored procedure maint_validate_InventoryIntegrity that checks for orphaned transactions and batch number inconsistencies</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>46. Debug Database Performance Issue</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Performance Specialist Copilot</p>
+        <p><strong>Purpose:</strong> Analyzing and optimizing stored procedure performance</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Analyze the performance of stored procedure <code>[procedure_name]</code> and identify optimization opportunities.<br>
+          Review the execution plan and identify slow queries or missing indexes.<br>
+          Suggest improvements for cursor usage, joins, and data access patterns.<br>
+          Recommend index additions or modifications.<br>
+          Check for parameter sniffing issues and suggest solutions.<br>
+          Provide before/after performance comparisons.<br>
+          Ensure optimizations maintain data integrity and business logic correctness."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Analyze the performance of stored procedure inv_transaction_Get_ByDateRange and identify optimization opportunities</code>
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Specialized Database Operations (Prompts 47-50)</summary>
+      
+      <h3><span class="icon">&#128640;</span>47. Create Migration Stored Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot + Migration Specialist</p>
+        <p><strong>Purpose:</strong> Creating procedures for data migration tasks</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create a data migration stored procedure <code>[procedure_name]</code> for [migration_purpose].<br>
+          Include comprehensive backup and rollback capabilities.<br>
+          Add progress tracking and status reporting throughout the migration.<br>
+          Include data validation before, during, and after migration.<br>
+          Implement resumption capability for large migrations.<br>
+          Add comprehensive logging of all migration steps and any issues.<br>
+          Include pre-migration checks to validate system readiness.<br>
+          Follow the patterns established in assign_BatchNumber procedures."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create a data migration stored procedure migrate_inventory_NewBatchFormat for updating batch number format from 8 digits to 10 digits</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>48. Create Emergency Data Recovery Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot + Disaster Recovery Specialist</p>
+        <p><strong>Purpose:</strong> Creating procedures for data recovery scenarios</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create an emergency data recovery stored procedure <code>[procedure_name]</code> for [recovery_scenario].<br>
+          Include comprehensive data validation and integrity checking.<br>
+          Add detailed logging of all recovery operations.<br>
+          Include rollback capabilities if recovery fails.<br>
+          Provide detailed status reporting and progress tracking.<br>
+          Include verification steps to confirm successful recovery.<br>
+          Add emergency stop functionality for critical situations.<br>
+          Document all prerequisites and recovery steps."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create an emergency data recovery stored procedure emergency_restore_InventoryFromTransactions for rebuilding inventory from transaction history</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>49. Security Audit Database Procedures</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Security Auditor Copilot</p>
+        <p><strong>Purpose:</strong> Auditing stored procedures for security vulnerabilities</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Conduct a comprehensive security audit of stored procedure <code>[procedure_name]</code>.<br>
+          Check for SQL injection vulnerabilities in dynamic SQL.<br>
+          Verify proper parameter validation and sanitization.<br>
+          Ensure sensitive data is properly protected.<br>
+          Check for privilege escalation possibilities.<br>
+          Verify proper error handling that doesn't expose sensitive information.<br>
+          Ensure audit logging is comprehensive and tamper-resistant.<br>
+          Provide specific recommendations for security improvements."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Conduct a comprehensive security audit of stored procedure usr_users_Add_User</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>50. Create Access Control Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Security Engineer Copilot + Database Architect Copilot</p>
+        <p><strong>Purpose:</strong> Creating procedures with role-based access control</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create a stored procedure <code>[procedure_name]</code> with role-based access control for [operation].<br>
+          Include user permission checking against sys_user_roles table.<br>
+          Add comprehensive audit logging of all access attempts.<br>
+          Return appropriate error messages for unauthorized access.<br>
+          Include parameter validation to prevent privilege escalation.<br>
+          Add session validation and timeout checking.<br>
+          Follow the security patterns established in user management procedures."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create a stored procedure admin_modify_UserRoles with role-based access control for modifying user permissions</code>
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>Maintenance & Optimization (Prompts 51-52)</summary>
+      
+      <h3><span class="icon">&#128640;</span>51. Optimize Slow Database Query</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Performance Specialist Copilot</p>
+        <p><strong>Purpose:</strong> Optimizing specific database performance issues</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Optimize the slow-performing section in stored procedure <code>[procedure_name]</code>: [slow_code_section].<br>
+          Analyze the execution plan and identify bottlenecks.<br>
+          Suggest index improvements or query restructuring.<br>
+          Consider replacing cursors with set-based operations where possible.<br>
+          Recommend partitioning strategies for large tables.<br>
+          Provide performance benchmarks before and after optimization.<br>
+          Ensure optimizations don't affect data integrity or business logic."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Optimize the slow-performing section in stored procedure assign_BatchNumber_Step3 that matches transactions</code>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128640;</span>52. Create Database Maintenance Procedure</h3>
+      <div class="prompt-card">
+        <p><strong>Persona:</strong> Database Architect Copilot + System Administrator</p>
+        <p><strong>Purpose:</strong> Creating automated maintenance procedures</p>
+        
+        <div class="prompt-text">
+          <strong>Prompt:</strong><br>
+          "Create a database maintenance stored procedure <code>[procedure_name]</code> for [maintenance_task].<br>
+          Include comprehensive status reporting and progress tracking.<br>
+          Add scheduling parameters and execution windows.<br>
+          Include automatic rollback if maintenance fails.<br>
+          Add performance impact monitoring during execution.<br>
+          Include cleanup of temporary data and log files.<br>
+          Provide detailed execution summaries and recommendations.<br>
+          Follow maintenance patterns from existing maint_ procedures."
+        </div>
+        
+        <div class="example">
+          <strong>Example Usage:</strong><br>
+          <code>Create a database maintenance stored procedure maint_cleanup_ErrorLogs for archiving old error log entries</code>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>Usage Guidelines</summary>
+      
+      <h3>Before Using These Prompts</h3>
+      <ul>
+        <li><strong>Review Current Procedures:</strong> Check <code>Existing_Stored_Procedures.sql</code> to avoid duplication</li>
+        <li><strong>Understand Business Logic:</strong> Ensure you understand the MTM-specific requirements</li>
+        <li><strong>Plan Testing:</strong> Prepare comprehensive testing in development environment</li>
+        <li><strong>Review Security:</strong> Ensure all security requirements are understood</li>
+      </ul>
+
+      <h3>After Creating Database Code</h3>
+      <ul>
+        <li><strong>Test Thoroughly:</strong> Test all code paths and error conditions</li>
+        <li><strong>Document Changes:</strong> Update appropriate README files</li>
+        <li><strong>Review Performance:</strong> Validate performance with realistic data</li>
+        <li><strong>Plan Deployment:</strong> Create deployment and rollback procedures</li>
+      </ul>
+
+      <h3>Security Reminders</h3>
+      <ul>
+        <li><strong>Never</strong> allow direct SQL execution in application code</li>
+        <li><strong>Always</strong> validate parameters in stored procedures</li>
+        <li><strong>Always</strong> use proper error handling and logging</li>
+        <li><strong>Always</strong> include audit trails for sensitive operations</li>
+      </ul>
+    </details>
+
+    <blockquote class="tip">
+      <span class="icon">&#128204;</span>
+      <strong>Back to Main Prompts:</strong> These database operation prompts are part of the larger custom prompt system. See <a href="custom-prompts.html">Custom Prompts</a> for the complete list of all available prompts.
+    </blockquote>
+  </main>
+</body>
+</html>

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using MTM.Models;
@@ -478,5 +479,184 @@ namespace MTM.Services
         public double Left { get; set; } = 100;
         public double Top { get; set; } = 100;
         public bool IsMaximized { get; set; } = false;
+    }
+}
+
+// Simplified interface for new DI pattern
+namespace MTM_WIP_Application_Avalonia.Services
+{
+    /// <summary>
+    /// State change event arguments.
+    /// </summary>
+    public class StateChangedEventArgs : EventArgs
+    {
+        public string PropertyName { get; set; } = string.Empty;
+        public object? OldValue { get; set; }
+        public object? NewValue { get; set; }
+    }
+
+    /// <summary>
+    /// Simplified application state service interface for the new DI pattern.
+    /// </summary>
+    public interface IApplicationStateService
+    {
+        string CurrentUser { get; set; }
+        string CurrentLocation { get; set; }
+        string CurrentOperation { get; set; }
+        bool IsOfflineMode { get; set; }
+        event EventHandler<StateChangedEventArgs>? StateChanged;
+    }
+
+    /// <summary>
+    /// Simplified configuration service interface for the new DI pattern.
+    /// </summary>
+    public interface IConfigurationService
+    {
+        string GetConnectionString(string name = "DefaultConnection");
+        T GetValue<T>(string key, T defaultValue = default!);
+        string GetValue(string key, string defaultValue = "");
+        bool GetBoolValue(string key, bool defaultValue = false);
+        int GetIntValue(string key, int defaultValue = 0);
+    }
+
+    /// <summary>
+    /// Adapter for the simplified application state service interface.
+    /// </summary>
+    public class ApplicationStateService : IApplicationStateService
+    {
+        private readonly ILogger<ApplicationStateService> _logger;
+        private string _currentUser = string.Empty;
+        private string _currentLocation = string.Empty;
+        private string _currentOperation = string.Empty;
+        private bool _isOfflineMode = false;
+
+        public ApplicationStateService(ILogger<ApplicationStateService> logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        public string CurrentUser
+        {
+            get => _currentUser;
+            set => SetProperty(ref _currentUser, value, nameof(CurrentUser));
+        }
+
+        public string CurrentLocation
+        {
+            get => _currentLocation;
+            set => SetProperty(ref _currentLocation, value, nameof(CurrentLocation));
+        }
+
+        public string CurrentOperation
+        {
+            get => _currentOperation;
+            set => SetProperty(ref _currentOperation, value, nameof(CurrentOperation));
+        }
+
+        public bool IsOfflineMode
+        {
+            get => _isOfflineMode;
+            set => SetProperty(ref _isOfflineMode, value, nameof(IsOfflineMode));
+        }
+
+        public event EventHandler<StateChangedEventArgs>? StateChanged;
+
+        private void SetProperty<T>(ref T field, T value, string propertyName)
+        {
+            if (!Equals(field, value))
+            {
+                var oldValue = field;
+                field = value;
+                
+                _logger.LogDebug("Application state changed: {PropertyName} = {NewValue} (was {OldValue})", 
+                    propertyName, value, oldValue);
+                
+                StateChanged?.Invoke(this, new StateChangedEventArgs
+                {
+                    PropertyName = propertyName,
+                    OldValue = oldValue,
+                    NewValue = value
+                });
+            }
+        }
+    }
+
+    /// <summary>
+    /// Adapter for the simplified configuration service interface.
+    /// </summary>
+    public class ConfigurationService : IConfigurationService
+    {
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<ConfigurationService> _logger;
+
+        public ConfigurationService(IConfiguration configuration, ILogger<ConfigurationService> logger)
+        {
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        public string GetConnectionString(string name = "DefaultConnection")
+        {
+            var connectionString = _configuration.GetConnectionString(name);
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                _logger.LogWarning("Connection string '{Name}' not found, falling back to Model_AppVariables", name);
+                // Fallback to existing static connection string if available
+                try
+                {
+                    var appVariablesType = Type.GetType("Model_AppVariables");
+                    if (appVariablesType != null)
+                    {
+                        var connectionStringProperty = appVariablesType.GetProperty("ConnectionString");
+                        var fallbackConnectionString = connectionStringProperty?.GetValue(null) as string;
+                        return fallbackConnectionString ?? "";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to get fallback connection string from Model_AppVariables");
+                }
+                return "";
+            }
+            return connectionString;
+        }
+
+        public T GetValue<T>(string key, T defaultValue = default!)
+        {
+            try
+            {
+                var value = _configuration[key];
+                if (value == null)
+                {
+                    _logger.LogDebug("Configuration key '{Key}' not found, using default value", key);
+                    return defaultValue;
+                }
+
+                if (typeof(T) == typeof(string))
+                    return (T)(object)value;
+
+                return (T)Convert.ChangeType(value, typeof(T));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error reading configuration key '{Key}', using default value", key);
+                return defaultValue;
+            }
+        }
+
+        public string GetValue(string key, string defaultValue = "")
+        {
+            return GetValue<string>(key, defaultValue);
+        }
+
+        public bool GetBoolValue(string key, bool defaultValue = false)
+        {
+            return GetValue<bool>(key, defaultValue);
+        }
+
+        public int GetIntValue(string key, int defaultValue = 0)
+        {
+            return GetValue<int>(key, defaultValue);
+        }
     }
 }

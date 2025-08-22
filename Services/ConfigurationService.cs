@@ -25,7 +25,6 @@ namespace MTM.Services
         public ConfigurationService(
             IConfiguration configuration, 
             ILogger<ConfigurationService> logger,
-            ILogger<ConfigurationService> logger,
             IOptionsMonitor<MTMSettings> mtmSettings)
         {
             _configuration = configuration;
@@ -112,6 +111,7 @@ namespace MTM.Services
             if (string.IsNullOrWhiteSpace(sectionName))
             {
                 return null;
+            }
 
             try
             {
@@ -171,6 +171,72 @@ namespace MTM.Services
                 if (!loggingSection.Exists())
                 {
                     errors.Add("Logging configuration section is missing");
+                }
+
+                // Validate database configuration
+                var databaseSection = _configuration.GetSection("Database");
+                if (!databaseSection.Exists())
+                {
+                    errors.Add("Database configuration section is missing");
+                }
+
+                if (errors.Count > 0)
+                {
+                    var errorMessage = $"Configuration validation failed: {string.Join("; ", errors)}";
+                    _logger.LogError("Configuration validation failed with {ErrorCount} errors", errors.Count);
+                    return Result.Failure(errorMessage);
+                }
+
+                _logger.LogInformation("Configuration validation completed successfully");
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Configuration validation failed with exception");
+                return Result.Failure($"Configuration validation failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Reloads configuration from sources.
+        /// </summary>
+        public async Task<Result> ReloadConfigurationAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Reloading configuration");
+
+                // Force configuration reload
+                if (_configuration is IConfigurationRoot configRoot)
+                {
+                    configRoot.Reload();
+                }
+
+                // Re-validate after reload
+                var validationResult = ValidateConfiguration();
+                if (!validationResult.IsSuccess)
+                {
+                    return Result.Failure($"Configuration reload failed validation: {validationResult.ErrorMessage}");
+                }
+
+                _logger.LogInformation("Configuration reloaded successfully");
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Configuration reload failed");
+                return Result.Failure($"Configuration reload failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Gets database configuration settings.
+        /// </summary>
+        public DatabaseSettings GetDatabaseSettings()
+        {
+            return GetSection<DatabaseSettings>("Database") ?? new DatabaseSettings();
+        }
+
         /// <summary>
         /// Gets error handling configuration settings.
         /// </summary>

@@ -1,442 +1,347 @@
--- phpMyAdmin SQL Dump
--- version 5.2.2
--- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Generation Time: Aug 22, 2025 at 03:38 PM
--- Server version: 5.7.24
--- PHP Version: 8.3.1
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
---
--- Database: `mtm_wip_application`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `app_themes`
---
-
-CREATE TABLE `app_themes` (
-  `ThemeName` varchar(100) NOT NULL,
-  `SettingsJson` json NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `inv_inventory`
---
-
-CREATE TABLE `inv_inventory` (
-  `ID` int(11) NOT NULL,
-  `PartID` varchar(300) NOT NULL,
-  `Location` varchar(100) NOT NULL,
-  `Operation` varchar(100) DEFAULT NULL,
-  `Quantity` int(11) NOT NULL,
-  `ItemType` varchar(100) NOT NULL DEFAULT 'WIP',
-  `ReceiveDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `LastUpdated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `User` varchar(100) NOT NULL,
-  `BatchNumber` varchar(300) DEFAULT NULL,
-  `Notes` varchar(1000) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `inv_inventory_batch_seq`
---
-
-CREATE TABLE `inv_inventory_batch_seq` (
-  `last_batch_number` bigint(20) NOT NULL,
-  `current_match` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `inv_transaction`
---
-
-CREATE TABLE `inv_transaction` (
-  `ID` int(11) NOT NULL,
-  `TransactionType` enum('IN','OUT','TRANSFER') NOT NULL,
-  `BatchNumber` varchar(300) DEFAULT NULL,
-  `PartID` varchar(300) NOT NULL,
-  `FromLocation` varchar(100) DEFAULT NULL,
-  `ToLocation` varchar(100) DEFAULT NULL,
-  `Operation` varchar(100) DEFAULT NULL,
-  `Quantity` int(11) NOT NULL,
-  `Notes` varchar(1000) DEFAULT NULL,
-  `User` varchar(100) NOT NULL,
-  `ItemType` varchar(100) NOT NULL DEFAULT 'WIP',
-  `ReceiveDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `log_changelog`
---
-
-CREATE TABLE `log_changelog` (
-  `Version` varchar(50) NOT NULL,
-  `Notes` longtext
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `log_error`
---
-
-CREATE TABLE `log_error` (
-  `ID` int(11) NOT NULL,
-  `User` varchar(100) DEFAULT NULL,
-  `Severity` enum('Information','Warning','Error','Critical','High') NOT NULL DEFAULT 'Error',
-  `ErrorType` varchar(100) DEFAULT NULL,
-  `ErrorMessage` text NOT NULL,
-  `StackTrace` text,
-  `ModuleName` varchar(200) DEFAULT NULL,
-  `MethodName` varchar(200) DEFAULT NULL,
-  `AdditionalInfo` text,
-  `MachineName` varchar(100) DEFAULT NULL,
-  `OSVersion` varchar(100) DEFAULT NULL,
-  `AppVersion` varchar(50) DEFAULT NULL,
-  `ErrorTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `md_item_types`
---
-
-CREATE TABLE `md_item_types` (
-  `ID` int(11) NOT NULL,
-  `ItemType` varchar(100) NOT NULL,
-  `IssuedBy` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `md_locations`
---
-
-CREATE TABLE `md_locations` (
-  `ID` int(11) NOT NULL,
-  `Location` varchar(100) NOT NULL,
-  `Building` varchar(100) NOT NULL DEFAULT 'Expo',
-  `IssuedBy` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `md_operation_numbers`
---
-
-CREATE TABLE `md_operation_numbers` (
-  `ID` int(11) NOT NULL,
-  `Operation` varchar(100) NOT NULL,
-  `IssuedBy` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `md_part_ids`
---
-
-CREATE TABLE `md_part_ids` (
-  `ID` int(11) NOT NULL,
-  `PartID` varchar(300) NOT NULL,
-  `Customer` varchar(300) NOT NULL,
-  `Description` varchar(300) NOT NULL,
-  `IssuedBy` varchar(100) NOT NULL,
-  `ItemType` varchar(100) NOT NULL,
-  `Operations` json DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `sys_last_10_transactions`
---
-
-CREATE TABLE `sys_last_10_transactions` (
-  `ID` int(11) NOT NULL,
-  `User` varchar(100) NOT NULL,
-  `PartID` varchar(300) NOT NULL,
-  `Operation` varchar(100) NOT NULL,
-  `Quantity` int(11) NOT NULL,
-  `ReceiveDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `Position` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `sys_roles`
---
-
-CREATE TABLE `sys_roles` (
-  `ID` int(11) NOT NULL,
-  `RoleName` varchar(50) NOT NULL,
-  `Description` varchar(255) DEFAULT NULL,
-  `Permissions` varchar(1000) DEFAULT NULL,
-  `IsSystem` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'True for built-in roles',
-  `CreatedBy` varchar(100) NOT NULL,
-  `CreatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `sys_user_roles`
---
-
-CREATE TABLE `sys_user_roles` (
-  `UserID` int(11) NOT NULL,
-  `RoleID` int(11) NOT NULL,
-  `AssignedBy` varchar(100) NOT NULL,
-  `AssignedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `usr_ui_settings`
---
-
-CREATE TABLE `usr_ui_settings` (
-  `UserId` varchar(64) NOT NULL,
-  `SettingsJson` json NOT NULL,
-  `ShortcutsJson` json NOT NULL,
-  `UpdatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `usr_users`
---
-
-CREATE TABLE `usr_users` (
-  `ID` int(11) NOT NULL,
-  `User` varchar(100) NOT NULL,
-  `Full Name` varchar(200) DEFAULT NULL,
-  `Shift` varchar(50) NOT NULL DEFAULT '1',
-  `VitsUser` tinyint(1) NOT NULL DEFAULT '0',
-  `Pin` varchar(50) DEFAULT NULL,
-  `LastShownVersion` varchar(50) NOT NULL DEFAULT '0.0.0.0',
-  `HideChangeLog` varchar(50) NOT NULL DEFAULT 'false',
-  `Theme_Name` varchar(50) NOT NULL DEFAULT 'Default (Black and White)',
-  `Theme_FontSize` int(11) NOT NULL DEFAULT '9',
-  `VisualUserName` varchar(50) NOT NULL DEFAULT 'User Name',
-  `VisualPassword` varchar(50) NOT NULL DEFAULT 'Password',
-  `WipServerAddress` varchar(15) NOT NULL DEFAULT '172.16.1.104',
-  `WIPDatabase` varchar(300) NOT NULL DEFAULT 'mtm_wip_application',
-  `WipServerPort` varchar(10) NOT NULL DEFAULT '3306'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `app_themes`
---
-ALTER TABLE `app_themes`
-  ADD PRIMARY KEY (`ThemeName`);
-
---
--- Indexes for table `inv_inventory`
---
-ALTER TABLE `inv_inventory`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `idx_partid_location` (`PartID`,`Location`),
-  ADD KEY `idx_operation` (`Operation`),
-  ADD KEY `idx_receivedate` (`ReceiveDate`);
-
---
--- Indexes for table `inv_inventory_batch_seq`
---
-ALTER TABLE `inv_inventory_batch_seq`
-  ADD PRIMARY KEY (`last_batch_number`);
-
---
--- Indexes for table `inv_transaction`
---
-ALTER TABLE `inv_transaction`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `idx_partid` (`PartID`),
-  ADD KEY `idx_user` (`User`),
-  ADD KEY `idx_datetime` (`ReceiveDate`);
-
---
--- Indexes for table `log_changelog`
---
-ALTER TABLE `log_changelog`
-  ADD PRIMARY KEY (`Version`);
-
---
--- Indexes for table `log_error`
---
-ALTER TABLE `log_error`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `idx_errortime` (`ErrorTime`),
-  ADD KEY `idx_user` (`User`),
-  ADD KEY `idx_severity` (`Severity`),
-  ADD KEY `idx_errortype` (`ErrorType`);
-
---
--- Indexes for table `md_item_types`
---
-ALTER TABLE `md_item_types`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `uq_type` (`ItemType`);
-
---
--- Indexes for table `md_locations`
---
-ALTER TABLE `md_locations`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `uq_location` (`Location`);
-
---
--- Indexes for table `md_operation_numbers`
---
-ALTER TABLE `md_operation_numbers`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `uq_operation` (`Operation`);
-
---
--- Indexes for table `md_part_ids`
---
-ALTER TABLE `md_part_ids`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `uq_item_number` (`PartID`);
-
---
--- Indexes for table `sys_last_10_transactions`
---
-ALTER TABLE `sys_last_10_transactions`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `idx_user_datetime` (`User`,`ReceiveDate`);
-
---
--- Indexes for table `sys_roles`
---
-ALTER TABLE `sys_roles`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `uq_rolename` (`RoleName`);
-
---
--- Indexes for table `sys_user_roles`
---
-ALTER TABLE `sys_user_roles`
-  ADD PRIMARY KEY (`UserID`,`RoleID`),
-  ADD KEY `idx_userid` (`UserID`),
-  ADD KEY `idx_roleid` (`RoleID`);
-
---
--- Indexes for table `usr_ui_settings`
---
-ALTER TABLE `usr_ui_settings`
-  ADD PRIMARY KEY (`UserId`);
-
---
--- Indexes for table `usr_users`
---
-ALTER TABLE `usr_users`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `uq_user` (`User`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `inv_inventory`
---
-ALTER TABLE `inv_inventory`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `inv_transaction`
---
-ALTER TABLE `inv_transaction`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `log_error`
---
-ALTER TABLE `log_error`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `md_item_types`
---
-ALTER TABLE `md_item_types`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `md_locations`
---
-ALTER TABLE `md_locations`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `md_operation_numbers`
---
-ALTER TABLE `md_operation_numbers`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `md_part_ids`
---
-ALTER TABLE `md_part_ids`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `sys_last_10_transactions`
---
-ALTER TABLE `sys_last_10_transactions`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `sys_roles`
---
-ALTER TABLE `sys_roles`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `usr_users`
---
-ALTER TABLE `usr_users`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `sys_user_roles`
---
-ALTER TABLE `sys_user_roles`
-  ADD CONSTRAINT `sys_user_roles_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `usr_users` (`ID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `sys_user_roles_ibfk_2` FOREIGN KEY (`RoleID`) REFERENCES `sys_roles` (`ID`) ON DELETE CASCADE;
-
---
--- Constraints for table `usr_ui_settings`
---
-ALTER TABLE `usr_ui_settings`
-  ADD CONSTRAINT `usr_ui_settings_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `usr_users` (`User`);
-COMMIT;
+-- =====================================================
+-- MTM WIP Application - Production Database Schema
+-- =====================================================
+-- Environment: Production
+-- Status: READ-ONLY - Current Production State
+-- Last Updated: [To be updated during deployment]
+-- =====================================================
+
+-- ?? WARNING: This file is READ-ONLY
+-- For schema changes, modify: Development/Database_Files/Development_Database_Schema.sql
+-- Deploy changes through proper change management process
+
+-- =====================================================
+-- Database Creation and Configuration
+-- =====================================================
+
+-- Create database if not exists
+CREATE DATABASE IF NOT EXISTS mtm_wip_application
+  DEFAULT CHARACTER SET utf8mb4 
+  DEFAULT COLLATE utf8mb4_unicode_ci;
+
+USE mtm_wip_application;
+
+-- =====================================================
+-- Core Tables
+-- =====================================================
+
+-- Parts Master Table
+CREATE TABLE parts (
+    part_id VARCHAR(50) PRIMARY KEY,
+    part_description VARCHAR(255) NOT NULL,
+    part_type VARCHAR(50),
+    unit_of_measure VARCHAR(10) DEFAULT 'EA',
+    standard_cost DECIMAL(10,4) DEFAULT 0.0000,
+    active_status BOOLEAN DEFAULT TRUE,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(50),
+    modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    modified_by VARCHAR(50),
+    
+    INDEX idx_parts_type (part_type),
+    INDEX idx_parts_active (active_status),
+    INDEX idx_parts_description (part_description)
+);
+
+-- Operations Master Table
+CREATE TABLE operations (
+    operation_id VARCHAR(10) PRIMARY KEY,
+    operation_description VARCHAR(255) NOT NULL,
+    operation_type VARCHAR(50),
+    standard_time_minutes INT DEFAULT 0,
+    active_status BOOLEAN DEFAULT TRUE,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(50),
+    
+    INDEX idx_operations_type (operation_type),
+    INDEX idx_operations_active (active_status)
+);
+
+-- Locations Master Table
+CREATE TABLE locations (
+    location_id VARCHAR(50) PRIMARY KEY,
+    location_description VARCHAR(255) NOT NULL,
+    location_type VARCHAR(50),
+    capacity_limit INT DEFAULT NULL,
+    active_status BOOLEAN DEFAULT TRUE,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(50),
+    
+    INDEX idx_locations_type (location_type),
+    INDEX idx_locations_active (active_status)
+);
+
+-- Users Table
+CREATE TABLE users (
+    user_id VARCHAR(50) PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    full_name VARCHAR(255),
+    email VARCHAR(255),
+    role VARCHAR(50) DEFAULT 'User',
+    active_status BOOLEAN DEFAULT TRUE,
+    last_login TIMESTAMP NULL,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(50),
+    
+    INDEX idx_users_username (username),
+    INDEX idx_users_role (role),
+    INDEX idx_users_active (active_status)
+);
+
+-- =====================================================
+-- Inventory Tables
+-- =====================================================
+
+-- Main Inventory Table
+CREATE TABLE inventory (
+    inventory_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    part_id VARCHAR(50) NOT NULL,
+    operation_id VARCHAR(10) NOT NULL,
+    location_id VARCHAR(50) NOT NULL,
+    quantity_on_hand INT NOT NULL DEFAULT 0,
+    quantity_allocated INT NOT NULL DEFAULT 0,
+    quantity_available INT GENERATED ALWAYS AS (quantity_on_hand - quantity_allocated) STORED,
+    last_transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (part_id) REFERENCES parts(part_id),
+    FOREIGN KEY (operation_id) REFERENCES operations(operation_id),
+    FOREIGN KEY (location_id) REFERENCES locations(location_id),
+    
+    UNIQUE KEY unique_inventory (part_id, operation_id, location_id),
+    INDEX idx_inventory_part (part_id),
+    INDEX idx_inventory_location (location_id),
+    INDEX idx_inventory_operation (operation_id),
+    INDEX idx_inventory_available (quantity_available)
+);
+
+-- Inventory Transactions Table
+CREATE TABLE inventory_transactions (
+    transaction_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    transaction_type ENUM('IN', 'OUT', 'TRANSFER', 'ADJUSTMENT') NOT NULL,
+    part_id VARCHAR(50) NOT NULL,
+    operation_id VARCHAR(10) NOT NULL,
+    from_location_id VARCHAR(50),
+    to_location_id VARCHAR(50),
+    quantity INT NOT NULL,
+    unit_cost DECIMAL(10,4) DEFAULT 0.0000,
+    reference_number VARCHAR(100),
+    notes TEXT,
+    user_id VARCHAR(50) NOT NULL,
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (part_id) REFERENCES parts(part_id),
+    FOREIGN KEY (operation_id) REFERENCES operations(operation_id),
+    FOREIGN KEY (from_location_id) REFERENCES locations(location_id),
+    FOREIGN KEY (to_location_id) REFERENCES locations(location_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    
+    INDEX idx_transactions_part (part_id),
+    INDEX idx_transactions_date (transaction_date),
+    INDEX idx_transactions_user (user_id),
+    INDEX idx_transactions_type (transaction_type),
+    INDEX idx_transactions_reference (reference_number)
+);
+
+-- =====================================================
+-- System Tables
+-- =====================================================
+
+-- Configuration Table
+CREATE TABLE system_configuration (
+    config_key VARCHAR(100) PRIMARY KEY,
+    config_value TEXT,
+    config_description VARCHAR(255),
+    data_type VARCHAR(20) DEFAULT 'string',
+    modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    modified_by VARCHAR(50)
+);
+
+-- Error Log Table
+CREATE TABLE error_log (
+    error_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    error_message TEXT NOT NULL,
+    stack_trace TEXT,
+    procedure_name VARCHAR(255),
+    user_id VARCHAR(50),
+    severity_level VARCHAR(20) DEFAULT 'Error',
+    additional_info JSON,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    INDEX idx_error_date (created_date),
+    INDEX idx_error_user (user_id),
+    INDEX idx_error_severity (severity_level)
+);
+
+-- Audit Log Table
+CREATE TABLE audit_log (
+    audit_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    table_name VARCHAR(100) NOT NULL,
+    operation_type VARCHAR(20) NOT NULL,
+    record_id VARCHAR(100) NOT NULL,
+    old_values JSON,
+    new_values JSON,
+    user_id VARCHAR(50) NOT NULL,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    INDEX idx_audit_table (table_name),
+    INDEX idx_audit_date (created_date),
+    INDEX idx_audit_user (user_id),
+    INDEX idx_audit_operation (operation_type)
+);
+
+-- User Sessions Table
+CREATE TABLE user_sessions (
+    session_id VARCHAR(255) PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL,
+    login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    active_status BOOLEAN DEFAULT TRUE,
+    
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    INDEX idx_sessions_user (user_id),
+    INDEX idx_sessions_active (active_status),
+    INDEX idx_sessions_activity (last_activity)
+);
+
+-- =====================================================
+-- Performance and Maintenance Tables
+-- =====================================================
+
+-- Performance Metrics Table
+CREATE TABLE performance_metrics (
+    metric_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    metric_name VARCHAR(100) NOT NULL,
+    metric_value DECIMAL(15,4),
+    metric_unit VARCHAR(20),
+    measurement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    additional_data JSON,
+    
+    INDEX idx_metrics_name (metric_name),
+    INDEX idx_metrics_date (measurement_date)
+);
+
+-- =====================================================
+-- Initial Data Setup
+-- =====================================================
+
+-- Default Operations
+INSERT INTO operations (operation_id, operation_description, operation_type) VALUES
+('90', 'Raw Material Receipt', 'RECEIPT'),
+('100', 'Production Processing', 'PRODUCTION'),
+('110', 'Quality Control', 'QC'),
+('120', 'Finished Goods', 'FINISHED'),
+('999', 'General/Other', 'OTHER');
+
+-- Default Locations
+INSERT INTO locations (location_id, location_description, location_type) VALUES
+('RECEIVING', 'Receiving Dock', 'RECEIPT'),
+('PRODUCTION', 'Production Floor', 'PRODUCTION'),
+('QC_HOLD', 'Quality Control Hold', 'QC'),
+('FINISHED', 'Finished Goods', 'SHIPPING'),
+('SCRAP', 'Scrap Area', 'WASTE');
+
+-- System Configuration Defaults
+INSERT INTO system_configuration (config_key, config_value, config_description, data_type) VALUES
+('app_version', '1.0.0', 'Application Version', 'string'),
+('max_transaction_days', '365', 'Maximum days to keep transaction history', 'integer'),
+('default_location', 'RECEIVING', 'Default location for new items', 'string'),
+('enable_audit_logging', 'true', 'Enable audit trail logging', 'boolean'),
+('performance_monitoring', 'true', 'Enable performance monitoring', 'boolean');
+
+-- Default Admin User
+INSERT INTO users (user_id, username, full_name, email, role) VALUES
+('admin', 'admin', 'System Administrator', 'admin@mtm.com', 'Administrator');
+
+-- =====================================================
+-- Triggers for Audit Logging
+-- =====================================================
+
+-- Inventory Audit Trigger
+DELIMITER $$
+CREATE TRIGGER tr_inventory_audit_insert 
+    AFTER INSERT ON inventory 
+    FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (table_name, operation_type, record_id, new_values, user_id)
+    VALUES ('inventory', 'INSERT', NEW.inventory_id, 
+            JSON_OBJECT('part_id', NEW.part_id, 'operation_id', NEW.operation_id, 
+                       'location_id', NEW.location_id, 'quantity_on_hand', NEW.quantity_on_hand),
+            COALESCE(@current_user_id, 'system'));
+END$$
+
+CREATE TRIGGER tr_inventory_audit_update 
+    AFTER UPDATE ON inventory 
+    FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (table_name, operation_type, record_id, old_values, new_values, user_id)
+    VALUES ('inventory', 'UPDATE', NEW.inventory_id,
+            JSON_OBJECT('quantity_on_hand', OLD.quantity_on_hand, 'quantity_allocated', OLD.quantity_allocated),
+            JSON_OBJECT('quantity_on_hand', NEW.quantity_on_hand, 'quantity_allocated', NEW.quantity_allocated),
+            COALESCE(@current_user_id, 'system'));
+END$$
+DELIMITER ;
+
+-- =====================================================
+-- Views for Common Queries
+-- =====================================================
+
+-- Current Inventory View
+CREATE VIEW v_current_inventory AS
+SELECT 
+    i.inventory_id,
+    i.part_id,
+    p.part_description,
+    i.operation_id,
+    o.operation_description,
+    i.location_id,
+    l.location_description,
+    i.quantity_on_hand,
+    i.quantity_allocated,
+    i.quantity_available,
+    i.last_transaction_date
+FROM inventory i
+    INNER JOIN parts p ON i.part_id = p.part_id
+    INNER JOIN operations o ON i.operation_id = o.operation_id
+    INNER JOIN locations l ON i.location_id = l.location_id
+WHERE p.active_status = TRUE
+    AND o.active_status = TRUE
+    AND l.active_status = TRUE;
+
+-- Transaction History View
+CREATE VIEW v_transaction_history AS
+SELECT 
+    t.transaction_id,
+    t.transaction_type,
+    t.part_id,
+    p.part_description,
+    t.operation_id,
+    o.operation_description,
+    t.from_location_id,
+    fl.location_description as from_location_description,
+    t.to_location_id,
+    tl.location_description as to_location_description,
+    t.quantity,
+    t.unit_cost,
+    t.reference_number,
+    t.user_id,
+    u.full_name as user_name,
+    t.transaction_date
+FROM inventory_transactions t
+    INNER JOIN parts p ON t.part_id = p.part_id
+    INNER JOIN operations o ON t.operation_id = o.operation_id
+    LEFT JOIN locations fl ON t.from_location_id = fl.location_id
+    LEFT JOIN locations tl ON t.to_location_id = tl.location_id
+    INNER JOIN users u ON t.user_id = u.user_id;
+
+-- =====================================================
+-- End of Production Database Schema
+-- =====================================================
+-- For development changes, see: Development/Database_Files/Development_Database_Schema.sql
+-- For new stored procedures, see: Development/Database_Files/New_Stored_Procedures.sql
+-- For updated procedures, see: Development/Database_Files/Updated_Stored_Procedures.sql

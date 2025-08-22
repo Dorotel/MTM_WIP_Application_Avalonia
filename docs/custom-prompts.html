@@ -22,6 +22,7 @@
     <a href="custom-prompts-examples.html"><span class="icon">&#9998;</span>Prompt Examples</a>
     <a href="needs-repair.html"><span class="icon">&#128679;</span>Quality Assurance</a>
     <a href="missing-systems.html"><span class="icon">&#128295;</span>Missing Systems</a>
+    <a href="database-operations-prompts.html"><span class="icon">&#128640;</span>Database Operations</a>
   </nav>
   <main>
     <h2><span class="icon">&#128161;</span>Custom Copilot Prompts</h2>
@@ -31,7 +32,12 @@
     
     <blockquote class="critical">
       <span class="icon">&#128679;</span>
-      <strong>CRITICAL UPDATE:</strong> 16 new prompts (21-36) added for implementing missing core systems. See <a href="missing-systems.html">Missing Systems</a> for implementation priority and <a href="custom-prompts-examples.html">Prompt Examples</a> for usage.
+      <strong>CRITICAL UPDATE:</strong> Database file organization has been restructured. Production files (`Database_Files/`) are now READ-ONLY. All development work must be done in `Development/Database_Files/`. Additionally, 16 new prompts (21-36) added for implementing missing core systems and 16 specialized database operation prompts (37-52) have been added. See <a href="database-operations-prompts.html">Database Operations</a> for the complete list.
+    </blockquote>
+
+    <blockquote class="warning">
+      <span class="icon">🗄️</span>
+      <strong>NEW DATABASE STRUCTURE:</strong> Production database files (`Database_Files/`) are READ-ONLY and represent current production state. All development changes must be made in `Development/Database_Files/`. Never edit production files directly.
     </blockquote>
     
     <details open>
@@ -112,6 +118,68 @@
       </blockquote>
     </details>
 
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>🗄️ Database Operations Prompts (37-52)</summary>
+      <p><em>Specialized prompts for database operations enforcing the <strong>"No Hard-Coded MySQL Commands"</strong> rule</em></p>
+
+      <blockquote class="critical">
+        <span class="icon">&#9888;</span>
+        <strong>CRITICAL DATABASE RULE:</strong> ALL database operations must use stored procedures. Zero hard-coded SQL commands allowed in application code.
+      </blockquote>
+
+      <blockquote class="warning">
+        <span class="icon">🗄️</span>
+        <strong>FILE ORGANIZATION RULE:</strong> Production files (`Database_Files/`) are READ-ONLY. All development must be done in `Development/Database_Files/`. Never edit production files directly.
+      </blockquote>
+
+      <div class="phase-roadmap">
+        <div class="phase critical">
+          <h3><span class="icon">&#128640;</span>Core Database Operations (Prompts 37-42)</h3>
+          <ul>
+            <li><b>Create New Stored Procedure</b> — For creating new stored procedures in `Development/Database_Files/New_Stored_Procedures.sql` following MTM standards</li>
+            <li><b>Update Existing Stored Procedure</b> — For copying from `Database_Files/Existing_Stored_Procedures.sql` to `Development/Database_Files/Updated_Stored_Procedures.sql` and modifying safely</li>
+            <li><b>Create Database Service Method</b> — For creating service layer methods that call stored procedures using `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()`</li>
+            <li><b>Validate Database Code Compliance</b> — For ensuring no hard-coded SQL exists in codebase and proper file organization</li>
+            <li><b>Convert Hard-Coded SQL to Stored Procedure</b> — For refactoring existing SQL code to stored procedures in development files</li>
+            <li><b>Create Database Transaction Workflow</b> — For multi-step database operations with transaction safety</li>
+          </ul>
+        </div>
+
+        <div class="phase warning">
+          <h3><span class="icon">&#128640;</span>Advanced Database Operations (Prompts 43-46)</h3>
+          <ul>
+            <li><b>Create Batch Processing Stored Procedure</b> — For handling large data sets efficiently in development environment</li>
+            <li><b>Create Database Reporting Procedure</b> — For data analysis and reporting procedures in `Development/Database_Files/`</li>
+            <li><b>Create Data Validation Procedure</b> — For data integrity checking procedures</li>
+            <li><b>Debug Database Performance Issue</b> — For analyzing and optimizing stored procedure performance</li>
+          </ul>
+        </div>
+
+        <div class="phase info">
+          <h3><span class="icon">&#128640;</span>Specialized Database Operations (Prompts 47-50)</h3>
+          <ul>
+            <li><b>Create Migration Stored Procedure</b> — For data migration tasks in development environment</li>
+            <li><b>Create Emergency Data Recovery Procedure</b> — For data recovery scenarios</li>
+            <li><b>Security Audit Database Procedures</b> — For auditing stored procedures for security vulnerabilities</li>
+            <li><b>Create Access Control Procedure</b> — For procedures with role-based access control</li>
+          </ul>
+        </div>
+
+        <div class="phase success">
+          <h3><span class="icon">&#128640;</span>Maintenance & Optimization (Prompts 51-52)</h3>
+          <ul>
+            <li><b>Optimize Slow Database Query</b> — For optimizing specific database performance issues</li>
+            <li><b>Create Database Maintenance Procedure</b> — For automated maintenance procedures</li>
+          </ul>
+        </div>
+      </div>
+
+      <blockquote class="tip">
+        <span class="icon">&#128640;</span>
+        <strong>Database Security:</strong> All database prompts include comprehensive security validation, parameter checking, and audit logging. Development procedures must be created in `Development/Database_Files/` and never modify production files directly. See <a href="database-operations-prompts.html">Database Operations</a> for complete details.
+      </blockquote>
+    </details>
+
     <details>
       <summary><span class="icon icon-chevron">&#9654;</span>MTM-Specific Workflow Patterns</summary>
       
@@ -133,6 +201,16 @@
         <li><b>Fix Recommendations</b> — Provide specific guidance for bringing code into compliance</li>
         <li><b>Report Generation</b> — Create standalone compliance reports in Compliance Reports/ folder</li>
         <li><b>Re-verification</b> — Follow up reviews to confirm compliance improvements</li>
+      </ol>
+
+      <h3>Database Operations Workflow</h3>
+      <ol>
+        <li><b>Security Validation</b> — Verify all database operations use stored procedures only</li>
+        <li><b>Procedure Design</b> — Create comprehensive stored procedures with error handling in `Development/Database_Files/`</li>
+        <li><b>Service Integration</b> — Update application services to use new procedures via `Helper_Database_StoredProcedure`</li>
+        <li><b>Testing & Validation</b> — Thoroughly test procedures in development environment</li>
+        <li><b>Deployment Planning</b> — Prepare for moving tested procedures from `Development/Database_Files/` to `Database_Files/`</li>
+        <li><b>Monitoring</b> — Monitor performance and security compliance after deployment</li>
       </ol>
 
       <h3>Missing Systems Implementation Workflow</h3>
@@ -157,6 +235,17 @@
         <li><b>Modern Layout Principles</b> — Prefer Grid over StackPanel, use cards and sidebars</li>
         <li><b>Context Menu Management</b> — Add right-click functionality for component management</li>
         <li><b>Business Logic Separation</b> — Leave implementation as TODO comments, focus on structure</li>
+      </ul>
+
+      <h3>Database Security Behaviors</h3>
+      <ul>
+        <li><b>Stored Procedures Only</b> — Enforce zero hard-coded SQL in application code</li>
+        <li><b>Development File Usage</b> — Always work in `Development/Database_Files/`, never edit production files</li>
+        <li><b>Parameter Validation</b> — Validate all inputs in stored procedures</li>
+        <li><b>Security Auditing</b> — Log all database access and modifications</li>
+        <li><b>Error Sanitization</b> — Prevent sensitive information exposure in error messages</li>
+        <li><b>Transaction Safety</b> — Use proper transaction management and rollback capabilities</li>
+        <li><b>Performance Monitoring</b> — Include performance tracking and optimization</li>
       </ul>
 
       <h3>Quality Assurance Behaviors</h3>
@@ -186,6 +275,8 @@
         <li>For persona descriptions, see <a href="personas.html">Personas</a>.</li>
         <li>For missing systems implementation, see <a href="missing-systems.html">Missing Systems</a>.</li>
         <li>For quality assurance workflows, see <a href="needs-repair.html">Quality Assurance</a>.</li>
+        <li>For database operations, see <a href="database-operations-prompts.html">Database Operations</a>.</li>
+        <li><b>Database File Organization</b> — All database development must use `Development/Database_Files/`. Production files in `Database_Files/` are READ-ONLY.</li>
       </ul>
     </details>
   </main>

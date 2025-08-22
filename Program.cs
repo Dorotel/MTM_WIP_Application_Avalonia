@@ -1,68 +1,109 @@
 ﻿using System;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
+using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM.Extensions;
 
-namespace MTM_WIP_Application_Avalonia
+namespace MTM_WIP_Application_Avalonia;
+
+public static class Program
 {
-    internal class Program
+    private static IServiceProvider? _serviceProvider;
+
+    public static void Main(string[] args) 
     {
-        // Initialization code. Don't use any Avalonia, third-party APIs or any
-        // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-        // yet and stuff might break.
-        [STAThread]
-        public static void Main(string[] args) => BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        // Setup dependency injection before starting the application
+        ConfigureServices();
+        
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    }
 
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
+    public static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .LogToTrace()
+            .UseReactiveUI();
+
+    private static void ConfigureServices()
+    {
+        var services = new ServiceCollection();
+
+        // Configuration
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("Config/appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"Config/appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+            .Build();
+
+        services.AddSingleton<IConfiguration>(configuration);
+
+        // Logging
+        services.AddLogging(builder =>
         {
-            // Build configuration
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ENVIRONMENT") ?? "Production"}.json", optional: true)
-                .AddEnvironmentVariables()
-                .Build();
+            builder.AddConsole();
+            builder.SetMinimumLevel(LogLevel.Information);
+        });
 
-            // Build service container
-            var services = new ServiceCollection();
-            
-            // Add configuration
-            services.AddSingleton<IConfiguration>(configuration);
-            
-            // Add logging
-            services.AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddConsole();
-            });
+        // Core Services (Singleton - shared across application)
+        // Use the comprehensive MTM service registration extension
+        services.AddMTMServices(configuration);
 
-            // Add MTM services based on environment
-            var environment = Environment.GetEnvironmentVariable("ENVIRONMENT") ?? "Production";
-            if (environment == "Development")
-            {
-                services.AddMTMServicesForDevelopment(configuration);
-            }
-            else
-            {
-                services.AddMTMServicesForProduction(configuration);
-            }
+        // Override specific services for Avalonia application
+        services.AddSingleton<IConfigurationService, ConfigurationService>();
 
-            // Build service provider
-            var serviceProvider = services.BuildServiceProvider();
+        // Infrastructure Services (Singleton - stateless utilities)
+        services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<IApplicationStateService, ApplicationStateService>();
 
-            // Store service provider for use in App
-            App.ServiceProvider = serviceProvider;
+        // ViewModels (Transient - new instance each time)
+        services.AddTransient<MainViewModel>();
+        services.AddTransient<MainViewViewModel>();
+        services.AddTransient<MainWindowViewModel>();
+        services.AddTransient<InventoryViewModel>();
+        services.AddTransient<AddItemViewModel>();
+        services.AddTransient<RemoveItemViewModel>();
+        services.AddTransient<TransferItemViewModel>();
+        services.AddTransient<TransactionHistoryViewModel>();
+        services.AddTransient<UserManagementViewModel>();
 
-            return AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .WithInterFont()
-                .LogToTrace()   
-                .UseReactiveUI(); // Enable ReactiveUI integration
-        }
+        // Build service provider
+        _serviceProvider = services.BuildServiceProvider();
+    }
+
+    /// <summary>
+    /// Get service instance from DI container
+    /// </summary>
+    public static T GetService<T>() where T : notnull
+    {
+        if (_serviceProvider == null)
+            throw new InvalidOperationException("Service provider not configured. Call ConfigureServices first.");
+
+        return _serviceProvider.GetRequiredService<T>();
+    }
+
+    /// <summary>
+    /// Get service instance with optional fallback
+    /// </summary>
+    public static T? GetOptionalService<T>() where T : class
+    {
+        return _serviceProvider?.GetService<T>();
+    }
+
+    /// <summary>
+    /// Create scope for scoped services (useful for operations that need isolated service instances)
+    /// </summary>
+    public static IServiceScope CreateScope()
+    {
+        if (_serviceProvider == null)
+            throw new InvalidOperationException("Service provider not configured.");
+
+        return _serviceProvider.CreateScope();
     }
 }

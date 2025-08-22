@@ -34,14 +34,319 @@ public static class Program
 ├── ViewModels/      # ViewModels using ReactiveUI
 ├── Models/          # Data models and business entities
 ├── Services/        # Business logic and data access services
-└── Resources/       # Styles, themes, and assets
+├── Resources/       # Styles, themes, and assets
+├── Database_Files/  # 🔒 PRODUCTION database schema and stored procedures (READ-ONLY)
+│   ├── Production_Database_Schema.sql       # Current production schema
+│   ├── Existing_Stored_Procedures.sql      # READ-ONLY production procedures
+│   └── README_*.md                          # Production documentation
+└── Development/     # Development-specific files and documentation
+    ├── Database_Files/      # 📝 Development database files (EDITABLE)
+    │   ├── Development_Database_Schema.sql   # Development schema changes
+    │   ├── New_Stored_Procedures.sql        # New procedures for development
+    │   ├── Updated_Stored_Procedures.sql    # Modified existing procedures
+    │   └── README_*.md                      # Development documentation
+    ├── UI_Documentation/    # UI component instruction files
+    ├── Examples/           # Code examples and usage patterns
+    ├── Docs/              # Development documentation
+    └── UI_Screenshots/     # UI design screenshots and mockups
 ```
+
+## MTM Business Logic Rules
+
+### **CRITICAL: Transaction Type Determination**
+**TransactionType is determined by the USER'S INTENT, NOT the Operation number.**
+
+#### **Correct TransactionType Logic**
+- **IN**: User is adding stock to inventory (regardless of operation number)
+- **OUT**: User is removing stock from inventory (regardless of operation number)
+- **TRANSFER**: User is moving stock from one location to another (regardless of operation number)
+
+#### **Incorrect Pattern (DO NOT USE)**
+```csharp
+// ❌ WRONG - DO NOT determine TransactionType from Operation
+private static TransactionType GetTransactionType(string operation)
+{
+    return operation switch
+    {
+        "90" => TransactionType.IN,    // Wrong!
+        "100" => TransactionType.OUT,  // Wrong!
+        "110" => TransactionType.TRANSFER, // Wrong!
+        _ => TransactionType.OTHER
+    };
+}
+```
+
+#### **Correct Pattern**
+```csharp
+// ✅ CORRECT - TransactionType based on user action
+public async Task<Result> AddStockAsync(string partId, string operation, int quantity, string location, string userId)
+{
+    // Always IN when adding stock
+    var transaction = new InventoryTransaction
+    {
+        TransactionType = TransactionType.IN, // User is adding stock
+        Operation = operation, // Operation is just a workflow step number
+        // ... other properties
+    };
+}
+
+public async Task<Result> RemoveStockAsync(string partId, string operation, int quantity, string location, string userId)
+{
+    // Always OUT when removing stock
+    var transaction = new InventoryTransaction
+    {
+        TransactionType = TransactionType.OUT, // User is removing stock
+        Operation = operation, // Operation is just a workflow step number
+        // ... other properties
+    };
+}
+
+public async Task<Result> TransferStockAsync(string partId, string operation, int quantity, string fromLocation, string toLocation, string userId)
+{
+    // Always TRANSFER when moving stock
+    var transaction = new InventoryTransaction
+    {
+        TransactionType = TransactionType.TRANSFER, // User is moving stock
+        Operation = operation, // Operation is just a workflow step number
+        FromLocation = fromLocation,
+        ToLocation = toLocation,
+        // ... other properties
+    };
+}
+```
+
+#### **MTM Operation Numbers**
+Operation numbers ("90", "100", "110", etc.) are **workflow step identifiers**, NOT transaction type indicators:
+- Operations represent manufacturing or processing steps
+- They help track which stage of production a part is in
+- They do NOT determine whether inventory is being added, removed, or transferred
+- The same operation number can be used with any TransactionType depending on user intent
+
+## Database Operation Rules
+
+### **CRITICAL DATABASE RULE: NO HARD-CODED MYSQL**
+**All MySQL commands MUST be executed through stored procedures only.**
+
+- **Prohibited**: Direct SQL queries in code (SELECT, INSERT, UPDATE, DELETE)
+- **Required**: Use stored procedure calls via `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()`
+- **Exception**: Schema operations during development (handled by database scripts)
+
+## **CRITICAL: Dependency Injection Setup Rules**
+
+### **ALWAYS Use AddMTMServices Extension Method**
+**NEVER register MTM business services individually - use the comprehensive extension method:**
+
+```csharp
+// ✅ CORRECT: Use comprehensive service registration
+services.AddMTMServices(configuration);
+
+// ❌ WRONG: Manual registration misses dependencies
+services.AddScoped<MTM.Services.IInventoryService, MTM.Services.InventoryService>(); // Missing IValidationService dependency!
+```
+
+### **Required Service Registration Pattern in Program.cs**
+```csharp
+private static void ConfigureServices()
+{
+    var services = new ServiceCollection();
+
+    // Configuration setup
+    var configuration = new ConfigurationBuilder()
+        .SetBasePath(AppContext.BaseDirectory)
+        .AddJsonFile("Config/appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .Build();
+
+    services.AddSingleton<IConfiguration>(configuration);
+
+    // Logging
+    services.AddLogging(builder =>
+    {
+        builder.AddConsole();
+        builder.SetMinimumLevel(LogLevel.Information);
+    });
+
+    // ✅ CRITICAL: Use comprehensive MTM service registration
+    services.AddMTMServices(configuration);
+
+    // ✅ Override Avalonia-specific services AFTER AddMTMServices
+    services.AddSingleton<MTM_WIP_Application_Avalonia.Services.IConfigurationService, 
+                         MTM_WIP_Application_Avalonia.Services.ConfigurationService>();
+    services.AddSingleton<MTM_WIP_Application_Avalonia.Services.IApplicationStateService, 
+                         MTM_WIP_Application_Avalonia.Services.ApplicationStateService>();
+
+    // Infrastructure Services (Avalonia-specific)
+    services.AddSingleton<INavigationService, NavigationService>();
+
+    // ViewModels (Transient - new instance each time)
+    services.AddTransient<MainViewModel>();
+    services.AddTransient<MainViewViewModel>();
+    services.AddTransient<MainWindowViewModel>();
+    services.AddTransient<InventoryViewModel>();
+    services.AddTransient<AddItemViewModel>();
+    services.AddTransient<RemoveItemViewModel>();
+    services.AddTransient<TransferItemViewModel>();
+    services.AddTransient<TransactionHistoryViewModel>();
+    services.AddTransient<UserManagementViewModel>();
+
+    // Build service provider
+    _serviceProvider = services.BuildServiceProvider();
+}
+```
+
+### **Why AddMTMServices is Required**
+The `AddMTMServices` extension method (in `MTM.Extensions.ServiceCollectionExtensions`) registers ALL required dependencies:
+
+**✅ Core Infrastructure Services**:
+- `IDatabaseService` → `DatabaseService`
+- `IDbConnectionFactory` → `MySqlConnectionFactory`
+- `DatabaseTransactionService`
+
+**✅ Business Services**:
+- `IInventoryService` → `InventoryService`
+- `IUserService` → `UserService`
+- `ITransactionService` → `TransactionService`
+
+**✅ Supporting Services** (Critical - these are often missing):
+- `IValidationService` → `SimpleValidationService` ⭐ **Required by InventoryService**
+- `ICacheService` → `SimpleCacheService` ⭐ **Required by multiple services**
+- `IConfigurationService` → `ConfigurationService`
+- `IApplicationStateService` → `MTMApplicationStateService`
+
+**✅ Validation and Options**:
+- `IValidateOptions<MTMSettings>` → `ConfigurationValidationService`
+- `IMemoryCache` for caching support
+
+### **Common DI Registration Errors to Avoid**
+
+#### ❌ **Error 1: Missing IValidationService**
+```csharp
+// This will fail at runtime:
+services.AddScoped<MTM.Services.IInventoryService, MTM.Services.InventoryService>();
+// Error: Unable to resolve service for type 'MTM.Core.Services.IValidationService'
+```
+
+#### ❌ **Error 2: Missing ICacheService**
+```csharp
+// This will fail if services depend on caching:
+services.AddScoped<MTM.Services.IUserService, MTM.Services.UserService>();
+// Error: Unable to resolve service for type 'MTM.Core.Services.ICacheService'
+```
+
+#### ❌ **Error 3: Missing ViewModel Registration**
+```csharp
+// This will fail when App.axaml.cs tries to resolve:
+var mainWindowViewModel = Program.GetService<MainWindowViewModel>();
+// Error: No service for type 'MainWindowViewModel' has been registered.
+```
+
+### **Service Lifetime Guidelines**
+
+**Singleton Services** (Created once, shared):
+- Database services (`IDatabaseService`)
+- Configuration services (`IConfigurationService`)
+- Navigation services (`INavigationService`)
+- Application state services (`IApplicationStateService`)
+- Caching services (`ICacheService`)
+
+**Scoped Services** (Created per logical operation):
+- Business services (`IInventoryService`, `IUserService`, `ITransactionService`)
+- Validation services (`IValidationService`)
+
+**Transient Services** (Created each time requested):
+- All ViewModels (UI components should be fresh instances)
+- Short-lived utility services
+
+### **Required Using Statements**
+```csharp
+using MTM.Extensions; // For AddMTMServices extension method
+using MTM_WIP_Application_Avalonia.Services.Interfaces; // For Avalonia-specific interfaces
+```
+
+### **Service Resolution in ViewModels**
+All ViewModels should use constructor injection:
+
+```csharp
+public class InventoryViewModel : BaseViewModel
+{
+    private readonly MTM.Services.IInventoryService _inventoryService;
+    private readonly INavigationService _navigationService;
+
+    public InventoryViewModel(
+        MTM.Services.IInventoryService inventoryService,
+        INavigationService navigationService,
+        ILogger<InventoryViewModel> logger) : base(logger)
+    {
+        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
+        _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+        
+        Logger.LogInformation("InventoryViewModel initialized with dependency injection");
+    }
+}
+```
+
+### **Debugging DI Issues**
+1. **Check service registration order** - `AddMTMServices` must be called before service overrides
+2. **Verify all ViewModels are registered** - Each ViewModel needs `services.AddTransient<ViewModelName>()`
+3. **Check using statements** - Ensure `using MTM.Extensions;` is included
+4. **Review error messages** - DI errors clearly indicate missing service types
+5. **Use GetOptionalService for debugging** - Test if services can be resolved
+
+### **Testing Service Registration**
+Add this to validate all services can be resolved:
+
+```csharp
+private static void ValidateServiceRegistration()
+{
+    try
+    {
+        // Test critical services
+        var dbService = Program.GetService<MTM.Core.Services.IDatabaseService>();
+        var inventoryService = Program.GetService<MTM.Services.IInventoryService>();
+        var validationService = Program.GetService<MTM.Core.Services.IValidationService>();
+        var cacheService = Program.GetService<MTM.Core.Services.ICacheService>();
+        
+        // Test ViewModels
+        var mainViewModel = Program.GetService<MainViewModel>();
+        var inventoryViewModel = Program.GetService<InventoryViewModel>();
+        
+        Console.WriteLine("✅ All services resolved successfully");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Service resolution failed: {ex.Message}");
+        throw;
+    }
+}
+```
+
+## Database Access Pattern
+```csharp
+// CORRECT: Using stored procedure
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    Model_AppVariables.ConnectionString,
+    "sp_ProcedureName",
+    new Dictionary<string, object> 
+    {
+        ["Parameter1"] = value1,
+        ["Parameter2"] = value2
+    }
+);
+
+// PROHIBITED: Direct SQL
+// var query = "SELECT * FROM table WHERE column = @value"; // ❌ NEVER DO THIS
+```
+
+### **Process Continuation Rule**
+**When stopping current process, must notify in:**
+# 🚨🛑 **STOPPING CURRENT PROCESS** 🛑🚨
 
 ## Naming Conventions
 - **Views**: `{Name}View.axaml` (e.g., `MainView.axaml`)
 - **ViewModels**: `{Name}ViewModel.cs` (e.g., `MainViewModel.cs`)
 - **Models**: `{Name}Model.cs` or just `{Name}.cs` for simple models
 - **Services**: `{Name}Service.cs` or `I{Name}Service.cs` for interfaces
+- **Stored Procedures**: `{module}_{action}_{details}` (e.g., `inv_inventory_Get_ByPartID`)
 
 ## Default Color Scheme
 The MTM WIP Application uses a modern purple-based color scheme with vibrant accent colors:
@@ -109,7 +414,7 @@ Light Purple:       hsla(262, 71%, 75%, 1)
 
 ### When asked to "Create UI Element from {filename}.md":
 
-1. **Parse the markdown file** to extract:
+1. **Parse the markdown file** from `Development/UI_Documentation/` to extract:
    - UI Element Name
    - Component Structure
    - Props/Inputs
@@ -167,14 +472,20 @@ public class {Name}ViewModel : ReactiveObject
         // Async command
         LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            await Task.CompletedTask; // TODO: Implement
+            // TODO: Implement database loading via stored procedure
+            // var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            //     Model_AppVariables.ConnectionString,
+            //     "sp_ProcedureName",
+            //     new Dictionary<string, object> { ["Parameter"] = value }
+            // );
+            await Task.CompletedTask;
         });
 
         // Sync command with CanExecute
         var canSave = this.WhenAnyValue(vm => vm.Title, t => !string.IsNullOrWhiteSpace(t));
         SaveCommand = ReactiveCommand.Create(() =>
         {
-            // TODO: Implement
+            // TODO: Implement save via stored procedure
         }, canSave);
 
         // Error handling pattern
@@ -228,8 +539,8 @@ Generate Avalonia structure:
 #### **Business Logic Integration Points**
 When MD files mention database operations or business logic:
 ```csharp
-// In ViewModel - Leave as TODO comments
-// TODO: Implement database loading
+// In ViewModel - Leave as TODO comments with stored procedure pattern
+// TODO: Implement database loading via stored procedure
 // var dataResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
 //     Model_AppVariables.ConnectionString,
 //     "sys_last_10_transactions_Get_ByUser",
@@ -253,11 +564,12 @@ QuickActionExecuted?.Invoke(this, new QuickActionExecutedEventArgs
 ```
 
 #### **MTM Data Patterns**
-Operations in MTM are typically numbers, not actions:
+Operations in MTM are workflow step numbers, not transaction type indicators:
 - **Part ID**: String (e.g., "PART001")
-- **Operation**: String number (e.g., "90", "100", "110")
+- **Operation**: String number (e.g., "90", "100", "110") - represents workflow step
 - **Quantity**: Integer
 - **Position**: 1-based indexing for UI display
+- **TransactionType**: Determined by user intent (IN/OUT/TRANSFER), NOT by operation number
 
 #### **Context Menu Integration**
 For components with management features, prefer context menus over separate buttons:
@@ -289,7 +601,7 @@ private async Task ExecuteQuickActionAsync(QuickButtonItemViewModel button)
     QuickActionExecuted?.Invoke(this, new QuickActionExecutedEventArgs
     {
         PartId = button.PartId,
-        Operation = button.Operation, // Just a number
+        Operation = button.Operation, // Just a workflow step number
         Quantity = button.Quantity
     });
 }
@@ -591,11 +903,14 @@ public SampleViewModel()
 {
     LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
     {
+        // TODO: Use stored procedure for data loading
         await Task.CompletedTask;
     });
 
     var canSave = this.WhenAnyValue(vm => vm.FirstName, s => !string.IsNullOrWhiteSpace(s));
-    SaveCommand = ReactiveCommand.Create(() => { /* ... */ }, canSave);
+    SaveCommand = ReactiveCommand.Create(() => { 
+        // TODO: Use stored procedure for save operation
+    }, canSave);
 
     // Centralized error handling
     LoadDataCommand.ThrownExceptions
@@ -618,7 +933,8 @@ public ObservableCollection<ItemViewModel> Items { get; } = new();
 2. **Use async/await** for any operation that isn't directly UI-related
 3. **Use dependency injection** - prepare constructors for DI even if not implementing services
 4. **No business logic** in generated UI code - only structure and bindings
-5. **Include placeholders** for service injection:
+5. **Database operations via stored procedures only** - no direct SQL in code
+6. **Include placeholders** for service injection:
    ```csharp
    // TODO: Inject services
    // private readonly IDataService _dataService;
@@ -632,14 +948,14 @@ public SampleViewModel()
 {
     PerformOperationCommand = ReactiveCommand.CreateFromTask(async () =>
     {
-        // Operation
+        // TODO: Operation via stored procedure
         await Task.CompletedTask;
     });
 
     PerformOperationCommand.ThrownExceptions
         .Subscribe(ex =>
         {
-            // TODO: Log to MySQL and file
+            // TODO: Log to MySQL via stored procedure and file
             // await _errorService.LogErrorAsync(ex);
             // Show user-friendly message
         });
@@ -711,7 +1027,7 @@ public SampleViewModel()
 2. **Map controls** - Convert WinForms controls to Avalonia equivalents
 3. **Create bindings** - Set up all properties as observable with proper bindings
 4. **Add commands** - Create command stubs for all interactions mentioned
-5. **Skip implementation** - Leave business logic as TODO comments
+5. **Skip implementation** - Leave business logic as TODO comments with stored procedure patterns
 6. **Preserve relationships** - Maintain parent-child control relationships
 
 ### Example Conversion
@@ -745,7 +1061,7 @@ public SampleViewModel()
 {
     OnTabSelectionChangedCommand = ReactiveCommand.Create(() =>
     {
-        // TODO: Handle tab change logic
+        // TODO: Handle tab change logic via stored procedure if needed
     });
 }
 ```
@@ -768,6 +1084,21 @@ public SampleViewModel()
 - Include `Design.DataContext` in AXAML for design-time data
 - Make properties virtual for mocking when needed
 
+## Custom Database Prompts
+
+### Common Database Operation Prompts
+1. **"Create stored procedure for [operation]"** - Generate new SP in `Development/Database_Files/New_Stored_Procedures.sql`
+2. **"Update existing stored procedure [name]"** - Copy to `Updated_Stored_Procedures.sql` and modify  
+3. **"Create CRUD operations for [table]"** - Generate full set of Create, Read, Update, Delete procedures
+4. **"Add error handling to stored procedure"** - Implement standard error handling pattern
+5. **"Create data access service for [entity]"** - Generate service class with stored procedure calls
+
+### Database Documentation Prompts
+1. **"Document database schema"** - Update README files with table relationships and column descriptions
+2. **"Explain stored procedure [name]"** - Generate detailed documentation for procedure functionality
+3. **"Create database migration script"** - Generate script to update production schema
+4. **"Document data flow for [process]"** - Explain how data moves through system tables
+
 ## Remember
 - This is an Avalonia app, not WPF or WinForms
 - Use Avalonia-specific syntax and controls
@@ -778,3 +1109,6 @@ public SampleViewModel()
 - Follow modern UI patterns with cards, sidebars, and clean layouts
 - Use ReactiveUI's reactive programming paradigms (WhenAnyValue, OAPH, etc.)
 - Apply the MTM brand gradient and color scheme consistently throughout the application
+- **NEVER use direct SQL - always use stored procedures**
+- All development files are now in the `Development/` folder
+- **TransactionType is determined by USER INTENT, not Operation numbers**

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Development Guide - MTM WIP Avalonia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>
+      <span class="icon" style="color:#736F5D;">&#128203;</span>
+      Database Development Guide
+    </h1>
+  </header>
+  <nav class="topbar">
+    <a href="index.html"><span class="icon">&#8962;</span>Home</a>
+    <a href="database-development.html" class="active"><span class="icon">&#128203;</span>Database Development</a>
+    <a href="coding-conventions.html"><span class="icon">&#128295;</span>Coding Conventions</a>
+    <a href="ui-generation.html"><span class="icon">&#128187;</span>UI Generation</a>
+    <a href="error-handler.html"><span class="icon">&#9888;</span>Error Handling</a>
+    <a href="custom-prompts.html"><span class="icon">&#128161;</span>Custom Prompts</a>
+  </nav>
+  <main>
+    <h2><span class="icon">&#128203;</span>MTM WIP Database Development Guide</h2>
+    
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>?? Critical Database Fix #1 - COMPLETED</summary>
+      <div class="alert success">
+        <h3><span class="icon">&#9989;</span>Development Unblocked - 12 Comprehensive Stored Procedures Implemented</h3>
+        <p><strong>Status:</strong> ? **ALL STANDARD INVENTORY OPERATIONS AVAILABLE**</p>
+        <ul>
+          <li><strong>? Enhanced Inventory Management:</strong> Add, Remove, Transfer with full error handling</li>
+          <li><strong>? Inventory Queries:</strong> Get by location, operation, part info, summaries</li>
+          <li><strong>? Validation & Utilities:</strong> Stock validation, entity validation, transaction logging</li>
+          <li><strong>? Service Layer Ready:</strong> Designed for Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</li>
+          <li><strong>? MTM Business Logic:</strong> TransactionType correctly determined by user intent</li>
+        </ul>
+        <p><strong>Impact:</strong> All new database functionality development can now proceed. Service layer implementation ready.</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>?? Critical Database Rules</summary>
+      <div class="alert critical">
+        <h3><span class="icon">&#9888;</span>NO HARD-CODED SQL RULE</h3>
+        <p><strong>ALL database operations in the application code MUST use stored procedures ONLY.</strong></p>
+        <div class="code-comparison">
+          <div class="code-block bad">
+            <h4>? PROHIBITED - Direct SQL</h4>
+            <pre><code>// NEVER DO THIS
+var query = "SELECT * FROM inventory WHERE part_id = @partId";
+var query = "INSERT INTO inventory_transactions (part_id, quantity) VALUES (@part, @qty)";
+var query = "UPDATE inventory SET quantity_on_hand = @qty WHERE id = @id";
+var query = "DELETE FROM inventory WHERE id = @id";</code></pre>
+          </div>
+          <div class="code-block good">
+            <h4>? REQUIRED - Use New Stored Procedures</h4>
+            <pre><code>// Use comprehensive stored procedures
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    Model_AppVariables.ConnectionString,
+    "inv_inventory_Add_Item_Enhanced",
+    new Dictionary&lt;string, object&gt; 
+    { 
+        ["p_PartID"] = partId,
+        ["p_OperationID"] = "90",
+        ["p_LocationID"] = "RECEIVING",
+        ["p_Quantity"] = 100,
+        ["p_UserID"] = "admin"
+    }
+);</code></pre>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>?? MTM Business Logic Rules</summary>
+      <div class="business-rules">
+        <h3><span class="icon">&#9989;</span>? IMPLEMENTED CORRECTLY IN NEW PROCEDURES</h3>
+        <p><strong>CRITICAL:</strong> TransactionType is determined by <strong>USER INTENT</strong>, NOT operation numbers.</p>
+        
+        <div class="rule-grid">
+          <div class="rule-card">
+            <h4><span class="icon" style="color:#4B45ED;">&#8594;</span>IN Transactions</h4>
+            <p><strong>When:</strong> User is adding stock to inventory</p>
+            <p><strong>Procedure:</strong> <code>inv_inventory_Add_Item_Enhanced</code></p>
+            <p><strong>Example:</strong> Receiving new parts, production completion</p>
+          </div>
+          <div class="rule-card">
+            <h4><span class="icon" style="color:#BA45ED;">&#8592;</span>OUT Transactions</h4>
+            <p><strong>When:</strong> User is removing stock from inventory</p>
+            <p><strong>Procedure:</strong> <code>inv_inventory_Remove_Item_Enhanced</code></p>
+            <p><strong>Example:</strong> Production consumption, shipment</p>
+          </div>
+          <div class="rule-card">
+            <h4><span class="icon" style="color:#8345ED;">&#8596;</span>TRANSFER Transactions</h4>
+            <p><strong>When:</strong> User is moving stock between locations</p>
+            <p><strong>Procedure:</strong> <code>inv_inventory_Transfer_Item_New</code></p>
+            <p><strong>Example:</strong> Moving from receiving to production</p>
+          </div>
+        </div>
+        
+        <div class="alert info">
+          <h4><span class="icon">&#128161;</span>Operation Numbers Are Workflow Steps Only</h4>
+          <p>Operation numbers ("90", "100", "110", etc.) represent manufacturing workflow steps and do NOT determine transaction types:</p>
+          <ul>
+            <li><strong>"90"</strong> - Raw Material Receipt (workflow step)</li>
+            <li><strong>"100"</strong> - Production Processing (workflow step)</li>
+            <li><strong>"110"</strong> - Quality Control (workflow step)</li>
+            <li><strong>"120"</strong> - Finished Goods (workflow step)</li>
+          </ul>
+          <p>The same operation can be used with any TransactionType depending on what the user is doing.</p>
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="icon icon-chevron">&#9654;</span>?? Available Stored Procedures</summary>
+      
+      <h3><span class="icon">&#128295;</span>Enhanced Inventory Management</h3>
+      <div class="procedure-grid">
+        <div class="procedure-card">
+          <h4>inv_inventory_Add_Item_Enhanced</h4>
+          <p><strong>Purpose:</strong> Add inventory items with comprehensive error handling</p>
+          <p><strong>Features:</strong> ? Input validation, ? Transaction management, ? Business rules</p>
+          <div class="code-example">
+            <pre><code>// C# Usage
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    connectionString,
+    "inv_inventory_Add_Item_Enhanced",
+    new Dictionary&lt;string, object&gt;
+    {
+        ["p_PartID"] = "PART001",
+        ["p_OperationID"] = "90",
+        ["p_LocationID"] = "RECEIVING",
+        ["p_Quantity"] = 100,
+        ["p_UnitCost"] = 5.25m,
+        ["p_ReferenceNumber"] = "PO12345",
+        ["p_Notes"] = "Initial stock",
+        ["p_UserID"] = "admin"
+    }
+);</code></pre>
+          </div>
+        </div>
+
+        <div class="procedure-card">
+          <h4>inv_inventory_Remove_Item_Enhanced</h4>
+          <p><strong>Purpose:</strong> Remove inventory with stock availability validation</p>
+          <p><strong>Features:</strong> ? Stock validation, ? Availability checking, ? Error handling</p>
+          <div class="code-example">
+            <pre><code>// C# Usage
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    connectionString,
+    "inv_inventory_Remove_Item_Enhanced",
+    new Dictionary&lt;string, object&gt;
+    {
+        ["p_PartID"] = "PART001",
+        ["p_OperationID"] = "90", 
+        ["p_LocationID"] = "RECEIVING",
+        ["p_Quantity"] = 50,
+        ["p_ReferenceNumber"] = "WO54321",
+        ["p_Notes"] = "Production use",
+        ["p_UserID"] = "admin"
+    }
+);</code></pre>
+          </div>
+        </div>
+
+        <div class="procedure-card">
+          <h4>inv_inventory_Transfer_Item_New</h4>
+          <p><strong>Purpose:</strong> Transfer inventory between locations with validation</p>
+          <p><strong>Features:</strong> ? Location validation, ? Atomic operations, ? Comprehensive logging</p>
+          <div class="code-example">
+            <pre><code>// C# Usage
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    connectionString,
+    "inv_inventory_Transfer_Item_New",
+    new Dictionary&lt;string, object&gt;
+    {
+        ["p_PartID"] = "PART001",
+        ["p_OperationID"] = "90",
+        ["p_FromLocationID"] = "RECEIVING",
+        ["p_ToLocationID"] = "PRODUCTION",
+        ["p_Quantity"] = 25,
+        ["p_ReferenceNumber"] = "MOVE123",
+        ["p_Notes"] = "To production floor",
+        ["p_UserID"] = "admin"
+    }
+);</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#128203;</span>Inventory Query Procedures</h3>
+      <div class="procedure-grid">
+        <div class="procedure-card">
+          <h4>inv_inventory_Get_ByLocation_New</h4>
+          <p><strong>Purpose:</strong> Get all inventory items at a specific location</p>
+          <p><strong>Returns:</strong> Complete inventory details with part descriptions</p>
+        </div>
+
+        <div class="procedure-card">
+          <h4>inv_inventory_Get_ByOperation_New</h4>
+          <p><strong>Purpose:</strong> Get all inventory items for a specific operation</p>
+          <p><strong>Returns:</strong> Inventory data grouped by workflow step</p>
+        </div>
+
+        <div class="procedure-card">
+          <h4>inv_part_Get_Info_New</h4>
+          <p><strong>Purpose:</strong> Get detailed part information with inventory summary</p>
+          <p><strong>Returns:</strong> Part master data plus aggregated inventory totals</p>
+        </div>
+
+        <div class="procedure-card">
+          <h4>inv_inventory_Get_Summary_New</h4>
+          <p><strong>Purpose:</strong> Get consolidated inventory summary across locations/operations</p>
+          <p><strong>Returns:</strong> Totals, location counts, and last activity dates</p>
+        </div>
+      </div>
+
+      <h3><span class="icon">&#9989;</span>Validation & Utility Procedures</h3>
+      <div class="procedure-grid">
+        <div class="procedure-card">
+          <h4>inv_inventory_Validate_Stock_New</h4>
+          <p><strong>Purpose:</strong> Validate sufficient stock before removal operations</p>
+          <p><strong>Returns:</strong> Status 0=Sufficient, 1=Insufficient with availability details</p>
+        </div>
+
+        <div class="procedure-card">
+          <h4>inv_transaction_Log_New</h4>
+          <p><strong>Purpose:</strong> Log inventory transactions with comprehensive validation</p>
+          <p><strong>Features:</strong> ? Transaction type validation, ? Entity validation, ? Audit trail</p>
+        </div>
+
+        <div class="procedure-card">
+          <h4>inv_location_Validate_New</h4>
+          <p><strong>Purpose:</strong> Validate location exists and is active</p>
+          <p><strong>Returns:</strong> Status with location description if valid</p>
+        </div>
+
+        <div class="procedure-card">
+          <h4>inv_operation_Validate_New</h4>
+          <p><strong>Purpose:</strong> Validate operation workflow step exists and is active</p>
+          <p><strong>Returns:</strong> Status with operation description if valid</p>
+        </div>
+
+        <div class="procedure-card">
+          <h4>sys_user_Validate_New</h4>
+          <p><strong>Purpose:</strong> Validate user exists and is active</p>
+          <p><strong>Returns:</strong> Status with user details if valid</p>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>?? Standardized Error Handling</summary>
+      <div class="error-handling">
+        <h3><span class="icon">&#9989;</span>All Procedures Include Standard Error Handling</h3>
+        
+        <h4>Output Parameters (All Procedures)</h4>
+        <ul>
+          <li><strong>OUT p_Status INT</strong> - Status code</li>
+          <li><strong>OUT p_ErrorMsg VARCHAR(255)</strong> - Descriptive message</li>
+        </ul>
+
+        <h4>Status Codes</h4>
+        <div class="status-grid">
+          <div class="status-card success">
+            <h4>0 - Success</h4>
+            <p>Operation completed successfully</p>
+          </div>
+          <div class="status-card warning">
+            <h4>1 - Warning</h4>
+            <p>Validation failed or business rule violated</p>
+          </div>
+          <div class="status-card error">
+            <h4>-1 - Error</h4>
+            <p>SQL exception or system error occurred</p>
+          </div>
+        </div>
+
+        <h4>Service Layer Integration Pattern</h4>
+        <div class="code-example">
+          <pre><code>// Standard error handling for all procedures
+public async Task&lt;Result&lt;bool&gt;&gt; AddInventoryItemAsync(InventoryItem item)
+{
+    try
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            Model_AppVariables.ConnectionString,
+            "inv_inventory_Add_Item_Enhanced",
+            parameters
+        );
+
+        if (result.Status == 0)
+        {
+            return Result&lt;bool&gt;.Success(true, result.Message);
+        }
+        else if (result.Status == 1)
+        {
+            return Result&lt;bool&gt;.Warning(false, result.Message);
+        }
+        else
+        {
+            return Result&lt;bool&gt;.Error(result.Message);
+        }
+    }
+    catch (Exception ex)
+    {
+        return Result&lt;bool&gt;.Error($"Service layer error: {ex.Message}");
+    }
+}</code></pre>
+        </div>
+
+        <h4>Error Logging</h4>
+        <p>All procedures automatically log errors to the <code>error_log</code> table on SQL exceptions:</p>
+        <ul>
+          <li>? Error message and stack trace</li>
+          <li>? Procedure name and user context</li>
+          <li>? Severity level classification</li>
+          <li>? Timestamp and additional diagnostics</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>?? Service Layer Integration Examples</summary>
+      <div class="service-examples">
+        <h3><span class="icon">&#128203;</span>Complete Service Implementation Examples</h3>
+
+        <h4>InventoryService Implementation</h4>
+        <div class="code-example">
+          <pre><code>public class InventoryService 
+{
+    private readonly string _connectionString;
+
+    public InventoryService(IConfiguration configuration)
+    {
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
+    }
+
+    public async Task&lt;Result&lt;bool&gt;&gt; AddInventoryAsync(string partId, string operationId, 
+        string locationId, int quantity, decimal? unitCost = null, 
+        string referenceNumber = null, string notes = null, string userId = null)
+    {
+        try
+        {
+            var parameters = new Dictionary&lt;string, object&gt;
+            {
+                ["p_PartID"] = partId,
+                ["p_OperationID"] = operationId,
+                ["p_LocationID"] = locationId,
+                ["p_Quantity"] = quantity,
+                ["p_UnitCost"] = unitCost,
+                ["p_ReferenceNumber"] = referenceNumber,
+                ["p_Notes"] = notes,
+                ["p_UserID"] = userId ?? "system"
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Add_Item_Enhanced",
+                parameters
+            );
+
+            return result.Status == 0 
+                ? Result&lt;bool&gt;.Success(true, result.Message)
+                : Result&lt;bool&gt;.Warning(false, result.Message);
+        }
+        catch (Exception ex)
+        {
+            return Result&lt;bool&gt;.Error($"Failed to add inventory: {ex.Message}");
+        }
+    }
+
+    public async Task&lt;Result&lt;DataTable&gt;&gt; GetInventoryByLocationAsync(string locationId, string userId)
+    {
+        try
+        {
+            var parameters = new Dictionary&lt;string, object&gt;
+            {
+                ["p_LocationID"] = locationId,
+                ["p_UserID"] = userId
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Get_ByLocation_New",
+                parameters
+            );
+
+            return result.Status == 0
+                ? Result&lt;DataTable&gt;.Success(result.Data, result.Message)
+                : Result&lt;DataTable&gt;.Warning(null, result.Message);
+        }
+        catch (Exception ex)
+        {
+            return Result&lt;DataTable&gt;.Error($"Failed to get inventory: {ex.Message}");
+        }
+    }
+}</code></pre>
+        </div>
+
+        <h4>ValidationService Implementation</h4>
+        <div class="code-example">
+          <pre><code>public class ValidationService
+{
+    private readonly string _connectionString;
+
+    public ValidationService(IConfiguration configuration)
+    {
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
+    }
+
+    public async Task&lt;Result&lt;bool&gt;&gt; ValidateStockAvailabilityAsync(string partId, 
+        string operationId, string locationId, int requiredQuantity, string userId)
+    {
+        try
+        {
+            var parameters = new Dictionary&lt;string, object&gt;
+            {
+                ["p_PartID"] = partId,
+                ["p_OperationID"] = operationId,
+                ["p_LocationID"] = locationId,
+                ["p_RequiredQuantity"] = requiredQuantity,
+                ["p_UserID"] = userId
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Validate_Stock_New",
+                parameters
+            );
+
+            return result.Status == 0
+                ? Result&lt;bool&gt;.Success(true, result.Message)
+                : Result&lt;bool&gt;.Warning(false, result.Message);
+        }
+        catch (Exception ex)
+        {
+            return Result&lt;bool&gt;.Error($"Stock validation failed: {ex.Message}");
+        }
+    }
+
+    public async Task&lt;Result&lt;bool&gt;&gt; ValidateLocationAsync(string locationId, string userId)
+    {
+        try
+        {
+            var parameters = new Dictionary&lt;string, object&gt;
+            {
+                ["p_LocationID"] = locationId,
+                ["p_UserID"] = userId
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_location_Validate_New",
+                parameters
+            );
+
+            return result.Status == 0
+                ? Result&lt;bool&gt;.Success(true, result.Message)
+                : Result&lt;bool&gt;.Warning(false, result.Message);
+        }
+        catch (Exception ex)
+        {
+            return Result&lt;bool&gt;.Error($"Location validation failed: {ex.Message}");
+        }
+    }
+}</code></pre>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>?? Testing Examples</summary>
+      <div class="testing-examples">
+        <h3><span class="icon">&#9989;</span>Unit Testing with New Procedures</h3>
+
+        <h4>Testing Transaction Type Logic</h4>
+        <div class="code-example">
+          <pre><code>[Test]
+public async Task AddInventory_ShouldCreateINTransaction_WhenUserAddsStock()
+{
+    // Arrange
+    var partId = "TEST001";
+    var operationId = "90"; // Workflow step number
+    var locationId = "RECEIVING";
+    var quantity = 100;
+    var userId = "testuser";
+    
+    // Act - Adding stock should create IN transaction (user intent)
+    var result = await _inventoryService.AddInventoryAsync(
+        partId, operationId, locationId, quantity, userId: userId);
+    
+    // Assert
+    Assert.True(result.IsSuccess);
+    Assert.Contains("Successfully added", result.Message);
+    
+    // Verify transaction type is IN regardless of operation number
+    var transactions = await _transactionService.GetTransactionHistoryAsync(partId, userId);
+    Assert.AreEqual("IN", transactions.Value.First().TransactionType);
+    Assert.AreEqual(operationId, transactions.Value.First().OperationId);
+}
+
+[Test]
+public async Task RemoveInventory_ShouldCreateOUTTransaction_WhenUserRemovesStock()
+{
+    // Arrange
+    var partId = "TEST001";
+    var operationId = "100"; // Different operation number
+    var locationId = "PRODUCTION";
+    var quantity = 50;
+    var userId = "testuser";
+    
+    // Act - Removing stock should create OUT transaction (user intent)
+    var result = await _inventoryService.RemoveInventoryAsync(
+        partId, operationId, locationId, quantity, userId: userId);
+    
+    // Assert
+    Assert.True(result.IsSuccess);
+    
+    // Verify transaction type is OUT regardless of operation number
+    var transactions = await _transactionService.GetTransactionHistoryAsync(partId, userId);
+    Assert.AreEqual("OUT", transactions.Value.First().TransactionType);
+    Assert.AreEqual(operationId, transactions.Value.First().OperationId);
+}</code></pre>
+        </div>
+
+        <h4>Testing Validation Logic</h4>
+        <div class="code-example">
+          <pre><code>[Test]
+public async Task ValidateStock_ShouldReturnWarning_WhenInsufficientStock()
+{
+    // Arrange
+    var partId = "TEST001";
+    var operationId = "90";
+    var locationId = "RECEIVING";
+    var requiredQuantity = 1000; // More than available
+    var userId = "testuser";
+    
+    // Act
+    var result = await _validationService.ValidateStockAvailabilityAsync(
+        partId, operationId, locationId, requiredQuantity, userId);
+    
+    // Assert
+    Assert.False(result.IsSuccess);
+    Assert.Contains("Insufficient stock", result.Message);
+    Assert.Contains("Available:", result.Message);
+    Assert.Contains("Required:", result.Message);
+}
+
+[Test]
+public async Task ValidateLocation_ShouldReturnSuccess_WhenLocationExists()
+{
+    // Arrange
+    var locationId = "RECEIVING";
+    var userId = "testuser";
+    
+    // Act
+    var result = await _validationService.ValidateLocationAsync(locationId, userId);
+    
+    // Assert
+    Assert.True(result.IsSuccess);
+    Assert.Contains("Location is valid", result.Message);
+    Assert.Contains(locationId, result.Message);
+}</code></pre>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>?? Database File Structure</summary>
+      <div class="file-structure">
+        <h3><span class="icon">&#128193;</span>Production vs Development Files</h3>
+        
+        <div class="file-grid">
+          <div class="file-section production">
+            <h4><span class="icon">&#128274;</span>Production Files (READ-ONLY)</h4>
+            <p><strong>Location:</strong> <code>Database_Files/</code></p>
+            <ul>
+              <li><code>Production_Database_Schema.sql</code> - Current production schema</li>
+              <li><code>Existing_Stored_Procedures.sql</code> - ? **READ-ONLY** production procedures</li>
+              <li><code>README_*.md</code> - Production documentation</li>
+            </ul>
+            <p><strong>Rule:</strong> Never edit these files directly</p>
+          </div>
+
+          <div class="file-section development">
+            <h4><span class="icon">&#128295;</span>Development Files (EDITABLE)</h4>
+            <p><strong>Location:</strong> <code>Development/Database_Files/</code></p>
+            <ul>
+              <li><code>Development_Database_Schema.sql</code> - Schema changes</li>
+              <li><code>New_Stored_Procedures.sql</code> - ? **12 COMPREHENSIVE PROCEDURES**</li>
+              <li><code>Updated_Stored_Procedures.sql</code> - ? **Ready template for updates**</li>
+              <li><code>README_NewProcedures.md</code> - ? **Complete documentation**</li>
+            </ul>
+            <p><strong>Rule:</strong> All development work happens here</p>
+          </div>
+        </div>
+
+        <h3><span class="icon">&#128295;</span>Development Workflow</h3>
+        <ol>
+          <li><strong>New Procedures:</strong> Add to <code>New_Stored_Procedures.sql</code> ? **12 procedures available**</li>
+          <li><strong>Update Existing:</strong> Copy to <code>Updated_Stored_Procedures.sql</code> and modify ? **Template ready**</li>
+          <li><strong>Never Edit:</strong> <code>Database_Files/Existing_Stored_Procedures.sql</code> is read-only</li>
+          <li><strong>Test Thoroughly:</strong> Use validation procedures for testing ? **Available**</li>
+          <li><strong>Deploy:</strong> Move validated files to production during deployment</li>
+        </ol>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>?? Next Steps for Development</summary>
+      <div class="next-steps">
+        <h3><span class="icon">&#9989;</span>Development is Now Unblocked</h3>
+        
+        <div class="step-grid">
+          <div class="step-card ready">
+            <h4>? Phase 1: Service Layer Implementation</h4>
+            <p><strong>Status:</strong> Ready to proceed</p>
+            <ul>
+              <li>Implement InventoryService using new procedures</li>
+              <li>Implement ValidationService using validation procedures</li>
+              <li>Implement TransactionService using logging procedure</li>
+              <li>Use existing Helper_Database_StoredProcedure class</li>
+            </ul>
+          </div>
+
+          <div class="step-card ready">
+            <h4>? Phase 2: ViewModel Integration</h4>
+            <p><strong>Status:</strong> Ready for service binding</p>
+            <ul>
+              <li>Bind existing ViewModels to new services</li>
+              <li>Implement error handling using standardized status codes</li>
+              <li>Use reactive commands with new async operations</li>
+              <li>Leverage validation procedures for real-time validation</li>
+            </ul>
+          </div>
+
+          <div class="step-card ready">
+            <h4>? Phase 3: Testing Implementation</h4>
+            <p><strong>Status:</strong> Validation procedures available</p>
+            <ul>
+              <li>Unit test services using new procedures</li>
+              <li>Integration test database operations</li>
+              <li>Test error handling scenarios</li>
+              <li>Validate business logic compliance</li>
+            </ul>
+          </div>
+
+          <div class="step-card future">
+            <h4>?? Phase 4: Additional Features</h4>
+            <p><strong>Status:</strong> Foundation ready</p>
+            <ul>
+              <li>Implement additional procedures as needed</li>
+              <li>Add reporting and analytics procedures</li>
+              <li>Extend validation rules</li>
+              <li>Optimize performance based on usage patterns</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3><span class="icon">&#128295;</span>Immediate Action Items</h3>
+        <ol>
+          <li><strong>Review Documentation:</strong> Read <code>Development/Database_Files/README_NewProcedures.md</code></li>
+          <li><strong>Implement Services:</strong> Create InventoryService using new procedures</li>
+          <li><strong>Test Integration:</strong> Verify procedures work with existing Helper class</li>
+          <li><strong>Update ViewModels:</strong> Bind to new services for database operations</li>
+          <li><strong>Implement Error Handling:</strong> Use standardized status codes in UI</li>
+        </ol>
+      </div>
+    </details>
+
+    <blockquote class="tip">
+      <span class="icon">&#128204;</span>
+      <strong>Complete Documentation:</strong> For detailed information about all 12 procedures, including parameters, examples, and integration patterns, see the comprehensive documentation in <code>Development/Database_Files/README_NewProcedures.md</code>.
+    </blockquote>
+
+  </main>
+</body>
+</html>

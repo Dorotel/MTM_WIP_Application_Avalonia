@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using MTM.Services;
 using MTM.Core.Services;
 using MTM.Models;
+using IDatabaseService = MTM.Core.Services.IDatabaseService;
 
 namespace MTM.Extensions
 {

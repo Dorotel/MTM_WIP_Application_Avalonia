@@ -150,46 +150,4 @@ namespace MTM.Services
         /// <returns>Result containing transactions in the date range</returns>
         Task<Result<List<InventoryTransaction>>> GetTransactionsByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
     }
-
-    /// <summary>
-    /// Interface for database connection and operations management.
-    /// </summary>
-    public interface IDatabaseService
-    {
-        /// <summary>
-        /// Tests the database connection.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>Result indicating connection status</returns>
-        Task<Result<bool>> TestConnectionAsync(CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Executes a query and returns the results.
-        /// </summary>
-        /// <typeparam name="T">The type to map results to</typeparam>
-        /// <param name="query">The SQL query</param>
-        /// <param name="parameters">Query parameters</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>Result containing query results</returns>
-        Task<Result<List<T>>> ExecuteQueryAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Executes a non-query command (INSERT, UPDATE, DELETE).
-        /// </summary>
-        /// <param name="command">The SQL command</param>
-        /// <param name="parameters">Command parameters</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>Result containing affected row count</returns>
-        Task<Result<int>> ExecuteNonQueryAsync(string command, object? parameters = null, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Executes a scalar query returning a single value.
-        /// </summary>
-        /// <typeparam name="T">The type of the scalar value</typeparam>
-        /// <param name="query">The SQL query</param>
-        /// <param name="parameters">Query parameters</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>Result containing the scalar value</returns>
-        Task<Result<T?>> ExecuteScalarAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default);
-    }
 }

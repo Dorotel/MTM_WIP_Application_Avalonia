@@ -1,15 +1,17 @@
 using System;
 using System.Reactive;
+using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class MainViewViewModel : ReactiveObject
+public class MainViewViewModel : BaseViewModel
 {
-    // TODO: Inject services
-    // private readonly IConnectionRecoveryManager _connectionRecoveryManager;
-    // private readonly IProgressHelper _progressHelper;
-    // private readonly IConnectionStrengthChecker _connectionStrengthChecker;
+    private readonly INavigationService _navigationService;
+    private readonly IApplicationStateService _applicationState;
+    private readonly MTM.Services.IInventoryService _inventoryService;
 
     // Tabs
     private int _selectedTabIndex;
@@ -100,9 +102,19 @@ public class MainViewViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> ToggleAdvancedPanelCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenAboutCommand { get; }
 
-    public MainViewViewModel()
+    public MainViewViewModel(
+        INavigationService navigationService,
+        IApplicationStateService applicationState,
+        MTM.Services.IInventoryService inventoryService,
+        ILogger<MainViewViewModel> logger) : base(logger)
     {
-        // Initialize child ViewModels
+        _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+        _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
+
+        Logger.LogInformation("MainViewViewModel initialized with dependency injection");
+
+        // Initialize child ViewModels - TODO: These should also use DI
         QuickButtonsViewModel = new QuickButtonsViewModel();
         InventoryTabViewModel = new InventoryTabViewModel();
 
@@ -148,6 +160,7 @@ public class MainViewViewModel : ReactiveObject
         {
             command.ThrownExceptions.Subscribe(ex =>
             {
+                Logger.LogError(ex, "Error executing command in MainViewViewModel");
                 // TODO: Log and present user-friendly error
             });
         }

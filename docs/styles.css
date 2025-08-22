@@ -18,6 +18,7 @@
   --warning: #E67E22;
   --info: #3498DB;
   --success: #27AE60;
+  --improved: #16A085;
   
   /* MTM Brand Colors */
   --mtm-primary: #4B45ED;
@@ -212,9 +213,30 @@ blockquote {
   border-color: var(--critical);
 }
 
+.alert.success {
+  background: rgba(39, 174, 96, 0.1);
+  border-color: var(--success);
+}
+
+.alert.info {
+  background: rgba(52, 152, 219, 0.1);
+  border-color: var(--info);
+}
+
 .alert h3 {
   margin-top: 0;
+}
+
+.alert.critical h3 {
   color: var(--critical);
+}
+
+.alert.success h3 {
+  color: var(--success);
+}
+
+.alert.info h3 {
+  color: var(--info);
 }
 
 /* Status Indicators */
@@ -270,6 +292,10 @@ blockquote {
   border-color: var(--success);
 }
 
+.metric-card.improved {
+  border-color: var(--improved);
+}
+
 .metric-card h4 {
   margin: 0 0 0.5rem 0;
   color: var(--secondary-text);
@@ -306,6 +332,254 @@ blockquote {
 
 .metric-card.success .metric-status {
   color: var(--success);
+}
+
+.metric-card.improved .metric-status {
+  color: var(--improved);
+}
+
+/* Database Development Specific Styles */
+.business-rules {
+  margin: 1.5em 0;
+}
+
+.rule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.rule-card {
+  background: var(--dark-bg);
+  border: 2px solid var(--mtm-primary);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.rule-card h4 {
+  margin-top: 0;
+  color: var(--primary-text);
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.procedure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.procedure-card {
+  background: var(--dark-bg);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.procedure-card h4 {
+  margin-top: 0;
+  color: var(--mtm-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+}
+
+.procedure-card p {
+  margin: 0.5rem 0;
+}
+
+.code-example {
+  background: var(--code-bg);
+  border-radius: 6px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.code-example pre {
+  margin: 0;
+  padding: 1rem;
+}
+
+.code-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.code-block {
+  background: var(--dark-bg);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.code-block.bad {
+  border: 2px solid var(--critical);
+}
+
+.code-block.good {
+  border: 2px solid var(--success);
+}
+
+.code-block h4 {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.code-block.bad h4 {
+  background: rgba(192, 57, 43, 0.2);
+  color: var(--critical);
+}
+
+.code-block.good h4 {
+  background: rgba(39, 174, 96, 0.2);
+  color: var(--success);
+}
+
+.code-block pre {
+  margin: 0;
+  padding: 1rem;
+  background: var(--code-bg);
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.status-card {
+  background: var(--dark-bg);
+  border: 2px solid;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.status-card.success {
+  border-color: var(--success);
+}
+
+.status-card.warning {
+  border-color: var(--warning);
+}
+
+.status-card.error {
+  border-color: var(--critical);
+}
+
+.status-card h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+}
+
+.status-card.success h4 {
+  color: var(--success);
+}
+
+.status-card.warning h4 {
+  color: var(--warning);
+}
+
+.status-card.error h4 {
+  color: var(--critical);
+}
+
+.error-handling {
+  margin: 1.5em 0;
+}
+
+.service-examples {
+  margin: 1.5em 0;
+}
+
+.testing-examples {
+  margin: 1.5em 0;
+}
+
+.file-structure {
+  margin: 1.5em 0;
+}
+
+.file-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.file-section {
+  background: var(--dark-bg);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.file-section.production {
+  border: 2px solid var(--critical);
+}
+
+.file-section.development {
+  border: 2px solid var(--success);
+}
+
+.file-section h4 {
+  margin-top: 0;
+}
+
+.file-section.production h4 {
+  color: var(--critical);
+}
+
+.file-section.development h4 {
+  color: var(--success);
+}
+
+.next-steps {
+  margin: 1.5em 0;
+}
+
+.step-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.step-card {
+  background: var(--dark-bg);
+  border: 2px solid;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.step-card.ready {
+  border-color: var(--success);
+}
+
+.step-card.future {
+  border-color: var(--info);
+}
+
+.step-card h4 {
+  margin-top: 0;
+}
+
+.step-card.ready h4 {
+  color: var(--success);
+}
+
+.step-card.future h4 {
+  color: var(--info);
+}
+
+.database-operations {
+  margin: 1.5em 0;
 }
 
 /* System Cards */
@@ -526,6 +800,32 @@ details[open] summary .icon-chevron {
 
 .icon-chevron {
   transition: transform 0.2s;
+}
+
+@media (max-width: 768px) {
+  .code-comparison {
+    grid-template-columns: 1fr;
+  }
+  
+  .file-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .procedure-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .rule-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .step-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
