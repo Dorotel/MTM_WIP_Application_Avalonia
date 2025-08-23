@@ -1,0 +1,850 @@
+{
+  "verificationDate": "2025-08-23T16:04:26.834899",
+  "overallScore": 87.79661016949153,
+  "criticalIssues": 17,
+  "highPriorityIssues": 15,
+  "mediumPriorityIssues": 31,
+  "lowPriorityIssues": 0,
+  "fileResults": [
+    {
+      "fileName": "README.md",
+      "accuracyScore": 45.0,
+      "issues": [
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"90\" not 90",
+          "file": "README.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        },
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"100\" not 100",
+          "file": "README.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        },
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"110\" not 110",
+          "file": "README.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        },
+        {
+          "type": "Framework_Deprecated",
+          "severity": "Critical",
+          "description": "Found deprecated pattern: \\.NET Framework",
+          "file": "README.md",
+          "rule": "Must use .NET 8 and modern patterns"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Services/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Database_Files/README_Existing_Stored_Procedures.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Database_Files/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Database_Files/README_Production_Database_Schema.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "ViewModels/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Views/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Models/README.md",
+      "accuracyScore": 90.0,
+      "issues": [
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"100\" not 100",
+          "file": "Models/README.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Extensions/README.md",
+      "accuracyScore": 65.0,
+      "issues": [
+        {
+          "type": "Framework_Deprecated",
+          "severity": "Critical",
+          "description": "Found deprecated pattern: INotifyPropertyChanged.*(?!ReactiveUI)",
+          "file": "Extensions/README.md",
+          "rule": "Must use .NET 8 and modern patterns"
+        },
+        {
+          "type": "Service_Lifetime",
+          "severity": "High",
+          "description": "IDatabaseService should be Scoped, not Singleton",
+          "file": "Extensions/README.md",
+          "rule": "Database services should be Scoped for proper connection management"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/README_ACCURACY_REPORT.md",
+      "accuracyScore": 25.0,
+      "issues": [
+        {
+          "type": "Service_Registration",
+          "severity": "Critical",
+          "description": "Found fictional service registration method: AddCoreServices",
+          "file": "Documentation/README_ACCURACY_REPORT.md",
+          "rule": "Use AddMTMServices(configuration) for service registration"
+        },
+        {
+          "type": "Service_Registration",
+          "severity": "Critical",
+          "description": "Found fictional service registration method: AddBusinessServices",
+          "file": "Documentation/README_ACCURACY_REPORT.md",
+          "rule": "Use AddMTMServices(configuration) for service registration"
+        },
+        {
+          "type": "Service_Registration",
+          "severity": "Critical",
+          "description": "Found fictional service registration method: AddUtilityServices",
+          "file": "Documentation/README_ACCURACY_REPORT.md",
+          "rule": "Use AddMTMServices(configuration) for service registration"
+        }
+      ],
+      "recommendations": [
+        "Replace fictional service registration methods with AddMTMServices(configuration)"
+      ]
+    },
+    {
+      "fileName": "Documentation/README.md",
+      "accuracyScore": 90.0,
+      "issues": [
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ReadmeFiles/Development/README_Examples.md",
+          "file": "Documentation/README.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ReadmeFiles/Database/README_Migration_Guide.md",
+          "file": "Documentation/README.md",
+          "rule": "All internal links must be functional"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/README_FILES_INVENTORY.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Compliance Reports/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Database_Files/README_Updated_Stored_Procedures.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Database_Files/README_Existing_Stored_Procedures.md",
+      "accuracyScore": 90.0,
+      "issues": [
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"100\" not 100",
+          "file": "Development/Database_Files/README_Existing_Stored_Procedures.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Database_Files/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Database_Files/README_Production_Database_Schema.md",
+      "accuracyScore": 90.0,
+      "issues": [
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"100\" not 100",
+          "file": "Development/Database_Files/README_Production_Database_Schema.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Database_Files/README_NewProcedures.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Database_Files/README_Development_Database_Schema.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Database_Files/README_New_Stored_Procedures.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Database_Files/README_UpdatedProcedures.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Custom_Prompts/README.md",
+      "accuracyScore": 90.0,
+      "issues": [
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"100\" not 100",
+          "file": "Development/Custom_Prompts/README.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/DependencyInjection/README_DependencyInjection.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/UI_Documentation/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Compliance Reports/Summary/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Compliance Reports/Services/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Compliance Reports/ViewModels/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/Compliance Reports/Views/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/UI_Documentation/Controls/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/UI_Documentation/Forms/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Development/UI_Documentation/Controls/MainForm/README.md",
+      "accuracyScore": 75.0,
+      "issues": [
+        {
+          "type": "MTM_TransactionType",
+          "severity": "Critical",
+          "description": "Found incorrect TransactionType pattern: operation switch",
+          "file": "Development/UI_Documentation/Controls/MainForm/README.md",
+          "rule": "TransactionType must be determined by USER INTENT, not Operation"
+        }
+      ],
+      "recommendations": [
+        "Replace TransactionType switch statements with user intent-based logic"
+      ]
+    },
+    {
+      "fileName": "Development/UI_Documentation/Controls/SettingsForm/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/Templates/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/Templates/README_Template.md",
+      "accuracyScore": 65.0,
+      "issues": [
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: {{link}}",
+          "file": "Documentation/Templates/README_Template.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: {{link}}",
+          "file": "Documentation/Templates/README_Template.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: {{link}}",
+          "file": "Documentation/Templates/README_Template.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: {{link}}",
+          "file": "Documentation/Templates/README_Template.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: {{link}}",
+          "file": "Documentation/Templates/README_Template.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: {{link}}",
+          "file": "Documentation/Templates/README_Template.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: {{link}}",
+          "file": "Documentation/Templates/README_Template.md",
+          "rule": "All internal links must be functional"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/CurrentIssueDocuments/READMEStepstoCompliace.md",
+      "accuracyScore": 75.0,
+      "issues": [
+        {
+          "type": "Framework_Deprecated",
+          "severity": "Critical",
+          "description": "Found deprecated pattern: \\.NET Framework",
+          "file": "Documentation/CurrentIssueDocuments/READMEStepstoCompliace.md",
+          "rule": "Must use .NET 8 and modern patterns"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Development/README_Custom_Prompts.md",
+      "accuracyScore": 90.0,
+      "issues": [
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"100\" not 100",
+          "file": "Documentation/ReadmeFiles/Development/README_Custom_Prompts.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Development/README_UI_Documentation.md",
+      "accuracyScore": 90.0,
+      "issues": [
+        {
+          "type": "CrossReference_Moved",
+          "severity": "High",
+          "description": "Reference to moved instruction file: ../../Development/UI_Documentation/Views_Structure_Standards.instruction.md",
+          "file": "Documentation/ReadmeFiles/Development/README_UI_Documentation.md",
+          "rule": "Update references to new .github/ organized structure"
+        }
+      ],
+      "recommendations": [
+        "Update instruction file references to new .github/ organized structure"
+      ]
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Development/README_Database_Files.md",
+      "accuracyScore": 80.0,
+      "issues": [
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: README_NewProcedures.md",
+          "file": "Documentation/ReadmeFiles/Development/README_Database_Files.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: README_Development_Database_Schema.md",
+          "file": "Documentation/ReadmeFiles/Development/README_Database_Files.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: README_Updated_Stored_Procedures.md",
+          "file": "Documentation/ReadmeFiles/Development/README_Database_Files.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ../../Database_Files/README.md",
+          "file": "Documentation/ReadmeFiles/Development/README_Database_Files.md",
+          "rule": "All internal links must be functional"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Development/README_Compliance_Reports.md",
+      "accuracyScore": 75.0,
+      "issues": [
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: Services/README.md",
+          "file": "Documentation/ReadmeFiles/Development/README_Compliance_Reports.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ViewModels/README.md",
+          "file": "Documentation/ReadmeFiles/Development/README_Compliance_Reports.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: Views/README.md",
+          "file": "Documentation/ReadmeFiles/Development/README_Compliance_Reports.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: Models/README.md",
+          "file": "Documentation/ReadmeFiles/Development/README_Compliance_Reports.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: Database/README.md",
+          "file": "Documentation/ReadmeFiles/Development/README_Compliance_Reports.md",
+          "rule": "All internal links must be functional"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Development/README_Development_Overview.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Archive/README_Migration_Log.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Database/README_Stored_Procedures.md",
+      "accuracyScore": 80.0,
+      "issues": [
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ../Development/Database_Files/README_New_Stored_Procedures.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Stored_Procedures.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ../Development/Database_Files/README_Updated_Stored_Procedures.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Stored_Procedures.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ../Docs/database-operations-prompts.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Stored_Procedures.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: README_Production_Database_Schema.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Stored_Procedures.md",
+          "rule": "All internal links must be functional"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Database/README_Production_Schema.md",
+      "accuracyScore": 85.0,
+      "issues": [
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ../Development/Database_Files/README.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Production_Schema.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ../Docs/database-operations-prompts.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Production_Schema.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ../.github/copilot-instructions.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Production_Schema.md",
+          "rule": "All internal links must be functional"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Database/README_Development_Schema.md",
+      "accuracyScore": 80.0,
+      "issues": [
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: README_New_Stored_Procedures.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Development_Schema.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: README_Updated_Stored_Procedures.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Development_Schema.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: ../../Database_Files/README_Production_Database_Schema.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Development_Schema.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: README.md",
+          "file": "Documentation/ReadmeFiles/Database/README_Development_Schema.md",
+          "rule": "All internal links must be functional"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Core/README_Project_Overview.md",
+      "accuracyScore": 35.0,
+      "issues": [
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"90\" not 90",
+          "file": "Documentation/ReadmeFiles/Core/README_Project_Overview.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        },
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"100\" not 100",
+          "file": "Documentation/ReadmeFiles/Core/README_Project_Overview.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        },
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"110\" not 110",
+          "file": "Documentation/ReadmeFiles/Core/README_Project_Overview.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        },
+        {
+          "type": "Framework_Deprecated",
+          "severity": "Critical",
+          "description": "Found deprecated pattern: \\.NET Framework",
+          "file": "Documentation/ReadmeFiles/Core/README_Project_Overview.md",
+          "rule": "Must use .NET 8 and modern patterns"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: Development/DependencyInjection/README_DependencyInjection.md",
+          "file": "Documentation/ReadmeFiles/Core/README_Project_Overview.md",
+          "rule": "All internal links must be functional"
+        },
+        {
+          "type": "CrossReference_Broken",
+          "severity": "Medium",
+          "description": "Broken link: Development/DependencyInjection/DI_Troubleshooting_Guide.md",
+          "file": "Documentation/ReadmeFiles/Core/README_Project_Overview.md",
+          "rule": "All internal links must be functional"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Core/README_Architecture.md",
+      "accuracyScore": 25.0,
+      "issues": [
+        {
+          "type": "MTM_TransactionType",
+          "severity": "Critical",
+          "description": "Found incorrect TransactionType pattern: operation switch",
+          "file": "Documentation/ReadmeFiles/Core/README_Architecture.md",
+          "rule": "TransactionType must be determined by USER INTENT, not Operation"
+        },
+        {
+          "type": "Framework_Deprecated",
+          "severity": "Critical",
+          "description": "Found deprecated pattern: \\.NET Framework",
+          "file": "Documentation/ReadmeFiles/Core/README_Architecture.md",
+          "rule": "Must use .NET 8 and modern patterns"
+        },
+        {
+          "type": "Framework_Deprecated",
+          "severity": "Critical",
+          "description": "Found deprecated pattern: INotifyPropertyChanged.*(?!ReactiveUI)",
+          "file": "Documentation/ReadmeFiles/Core/README_Architecture.md",
+          "rule": "Must use .NET 8 and modern patterns"
+        }
+      ],
+      "recommendations": [
+        "Replace TransactionType switch statements with user intent-based logic"
+      ]
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Core/README_Getting_Started.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Components/README_Views.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Components/README_ViewModels.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Components/README_Models.md",
+      "accuracyScore": 90.0,
+      "issues": [
+        {
+          "type": "MTM_OperationFormat",
+          "severity": "High",
+          "description": "Operation number should be string format: \"100\" not 100",
+          "file": "Documentation/ReadmeFiles/Components/README_Models.md",
+          "rule": "Operation numbers are string workflow identifiers"
+        }
+      ],
+      "recommendations": []
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Components/README_Services.md",
+      "accuracyScore": 50.0,
+      "issues": [
+        {
+          "type": "Service_Registration",
+          "severity": "Critical",
+          "description": "Found fictional service registration method: AddCoreServices",
+          "file": "Documentation/ReadmeFiles/Components/README_Services.md",
+          "rule": "Use AddMTMServices(configuration) for service registration"
+        },
+        {
+          "type": "Service_Registration",
+          "severity": "Critical",
+          "description": "Found fictional service registration method: AddBusinessServices",
+          "file": "Documentation/ReadmeFiles/Components/README_Services.md",
+          "rule": "Use AddMTMServices(configuration) for service registration"
+        }
+      ],
+      "recommendations": [
+        "Replace fictional service registration methods with AddMTMServices(configuration)"
+      ]
+    },
+    {
+      "fileName": "Documentation/ReadmeFiles/Components/README_Extensions.md",
+      "accuracyScore": 0,
+      "issues": [
+        {
+          "type": "Framework_Deprecated",
+          "severity": "Critical",
+          "description": "Found deprecated pattern: INotifyPropertyChanged.*(?!ReactiveUI)",
+          "file": "Documentation/ReadmeFiles/Components/README_Extensions.md",
+          "rule": "Must use .NET 8 and modern patterns"
+        },
+        {
+          "type": "Service_Registration",
+          "severity": "Critical",
+          "description": "Found fictional service registration method: AddCoreServices",
+          "file": "Documentation/ReadmeFiles/Components/README_Extensions.md",
+          "rule": "Use AddMTMServices(configuration) for service registration"
+        },
+        {
+          "type": "Service_Registration",
+          "severity": "Critical",
+          "description": "Found fictional service registration method: AddBusinessServices",
+          "file": "Documentation/ReadmeFiles/Components/README_Extensions.md",
+          "rule": "Use AddMTMServices(configuration) for service registration"
+        },
+        {
+          "type": "Service_Registration",
+          "severity": "Critical",
+          "description": "Found fictional service registration method: AddUtilityServices",
+          "file": "Documentation/ReadmeFiles/Components/README_Extensions.md",
+          "rule": "Use AddMTMServices(configuration) for service registration"
+        },
+        {
+          "type": "Service_Lifetime",
+          "severity": "High",
+          "description": "IDatabaseService should be Scoped, not Singleton",
+          "file": "Documentation/ReadmeFiles/Components/README_Extensions.md",
+          "rule": "Database services should be Scoped for proper connection management"
+        }
+      ],
+      "recommendations": [
+        "Replace fictional service registration methods with AddMTMServices(configuration)"
+      ]
+    },
+    {
+      "fileName": ".github/Archive/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": ".github/Core-Instructions/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": ".github/UI-Instructions/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": ".github/Quality-Instructions/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": ".github/Automation-Instructions/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    },
+    {
+      "fileName": ".github/Development-Instructions/README.md",
+      "accuracyScore": 100.0,
+      "issues": [],
+      "recommendations": []
+    }
+  ],
+  "automatedFixPrompts": [
+    {
+      "type": "Service_Registration_Fix",
+      "prompt": "Act as Quality Assurance Auditor Copilot. Fix service registration accuracy:\n\n1. Replace all instances of AddCoreServices/AddBusinessServices/AddUtilityServices with AddMTMServices(configuration)\n2. Update service lifetime documentation: IDatabaseService should be Scoped, not Singleton\n3. Add missing services: ICacheService, IValidationService, IDbConnectionFactory\n4. Verify all service names match actual implementations\n\nGenerate corrected service registration examples."
+    },
+    {
+      "type": "MTM_Business_Logic_Fix",
+      "prompt": "Act as Quality Assurance Auditor Copilot. Fix MTM business logic compliance:\n\n1. Update TransactionType determination to USER INTENT patterns\n2. Correct Operation number formats to string workflow identifiers\n3. Fix MTM color scheme references to exact hex codes\n4. Remove any switch statements on Operation numbers\n\nGenerate corrected MTM business logic examples."
+    }
+  ]
+}

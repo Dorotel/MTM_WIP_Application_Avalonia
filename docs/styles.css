@@ -1,51 +1,52 @@
 :root {
-  --dark-bg: #0D0D0D;
-  --light-bg: #D9D9D9;
-  --primary-text: #D9D9D9;
-  --secondary-text: #A6A498;
-  --accent: #736F5D;
-  --card-bg: #565759;
-  --border: #A6A498;
-  --code-bg: #232323;
-  --nav-bg: #565759;
-  --nav-active: #A6A498;
-  --link: #D9D9D9;
-  --link-hover: #736F5D;
-  --icon-accent: #736F5D;
-  
-  /* Status Colors */
-  --critical: #C0392B;
-  --warning: #E67E22;
-  --info: #3498DB;
-  --success: #27AE60;
-  --improved: #16A085;
+  /* Black/Gold Styling System */
+  --background-primary: #000000;           /* Pure black backdrop */
+  --text-primary: #FFFFFF;                 /* Pure white text */
+  --accent-gold: #FFD700;                  /* Gold trim and highlights */
+  --accent-gold-dark: #DAA520;             /* Darker gold for hover */
+  --border-color: #FFD700;                 /* Gold borders */
+  --shadow-color: rgba(255, 215, 0, 0.3); /* Gold shadows */
+  --card-bg: #111111;                      /* Dark card background */
+  --code-bg: #1a1a1a;                      /* Code block background */
   
   /* MTM Brand Colors */
-  --mtm-primary: #4B45ED;
-  --mtm-secondary: #8345ED;
-  --mtm-magenta: #BA45ED;
-  --mtm-blue: #4574ED;
-  --mtm-pink: #ED45E7;
-  --mtm-light: #B594ED;
+  --mtm-purple: #4B45ED;                   /* MTM primary purple */
+  --mtm-magenta: #BA45ED;                  /* MTM accent color */
+  --mtm-secondary: #8345ED;                /* MTM secondary purple */
+  --mtm-blue: #4574ED;                     /* MTM blue accent */
+  --mtm-pink: #ED45E7;                     /* MTM pink accent */
+  --mtm-light: #B594ED;                    /* MTM light purple */
+  
+  /* Status Colors with high contrast */
+  --critical: #FF4444;                     /* High contrast red */
+  --warning: #FF8800;                      /* High contrast orange */
+  --info: #44AAFF;                         /* High contrast blue */
+  --success: #44FF44;                      /* High contrast green */
+  --improved: #00FFAA;                     /* High contrast teal */
 }
 
 body {
-  background: var(--dark-bg);
-  color: var(--primary-text);
+  background: var(--background-primary);
+  color: var(--text-primary);
   font-family: 'Segoe UI', 'Arial', sans-serif;
   margin: 0;
   padding: 0;
   line-height: 1.7;
+  /* Ensure crisp text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 header {
-  background: var(--nav-bg);
-  color: var(--primary-text);
+  background: var(--card-bg);
+  color: var(--text-primary);
   padding: 0.8rem 2rem 0.8rem 2rem;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--accent-gold);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 header h1 {
@@ -55,12 +56,13 @@ header h1 {
   display: flex;
   align-items: center;
   gap: 0.5em;
+  color: var(--text-primary);
 }
 
 nav.topbar {
   width: 100vw;
-  background: var(--nav-bg);
-  border-bottom: 1.5px solid var(--border);
+  background: var(--card-bg);
+  border-bottom: 2px solid var(--accent-gold);
   display: flex;
   align-items: center;
   padding: 0 2rem;
@@ -70,27 +72,32 @@ nav.topbar {
   z-index: 10;
   min-height: 48px;
   box-sizing: border-box;
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 nav.topbar a {
-  color: var(--link);
+  color: var(--text-primary);
   text-decoration: none;
   padding: 0.6em 1.2em;
   margin: 0 0.3em;
   border-radius: 0.5em;
   background: transparent;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.2s ease;
   font-weight: 500;
   display: flex;
   align-items: center;
   gap: 0.4em;
   font-size: 1.08em;
   outline: none;
+  border: 1px solid transparent;
 }
 
 nav.topbar a.active, nav.topbar a:focus, nav.topbar a:hover {
-  background: var(--nav-active);
-  color: var(--dark-bg);
+  background: var(--accent-gold);
+  color: var(--background-primary);
+  border: 1px solid var(--accent-gold-dark);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transform: translateY(-1px);
 }
 
 main {
@@ -98,23 +105,25 @@ main {
   margin: 2rem auto 2rem auto;
   background: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(13, 13, 13, 0.18);
+  box-shadow: 0 4px 16px var(--shadow-color);
   padding: 2rem 2.5rem;
+  border: 1px solid var(--accent-gold);
 }
 
 h2, h3, h4 {
-  color: var(--secondary-text);
+  color: var(--text-primary);
   margin-top: 2.2rem;
   margin-bottom: 1rem;
 }
 
 h2 {
   font-size: 1.5rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--accent-gold);
   padding-bottom: 0.35em;
   display: flex;
   align-items: center;
   gap: 0.5em;
+  color: var(--text-primary);
 }
 
 h3 {
@@ -122,49 +131,59 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.4em;
+  color: var(--text-primary);
 }
 
 a {
-  color: var(--link);
+  color: var(--accent-gold);
   text-decoration: underline;
+  transition: all 0.2s ease;
 }
 
 a:hover, a:focus {
-  color: var(--link-hover);
-  background: var(--nav-active);
+  color: var(--accent-gold-dark);
+  background: rgba(255, 215, 0, 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
 }
 
 code, pre {
   background: var(--code-bg);
-  color: #e2e2e2;
+  color: var(--text-primary);
   border-radius: 0.3em;
   padding: 0.15em 0.4em;
   font-size: 1em;
+  border: 1px solid var(--accent-gold);
 }
 
 pre {
   padding: 1em;
   overflow-x: auto;
   margin: 1em 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   margin: 1.5em 0;
-  background: var(--dark-bg);
-  color: var(--primary-text);
+  background: var(--background-primary);
+  color: var(--text-primary);
+  border: 2px solid var(--accent-gold);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th, td {
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent-gold);
   padding: 0.7em 1em;
   text-align: left;
 }
 
 th {
-  background: var(--accent);
-  color: var(--primary-text);
+  background: var(--accent-gold);
+  color: var(--background-primary);
+  font-weight: bold;
 }
 
 tr:nth-child(even) {
@@ -172,33 +191,48 @@ tr:nth-child(even) {
 }
 
 tr:nth-child(odd) {
-  background: var(--dark-bg);
+  background: var(--background-primary);
 }
 
 blockquote {
-  border-left: 5px solid var(--accent);
-  background: #232323;
-  color: var(--secondary-text);
+  border-left: 5px solid var(--accent-gold);
+  background: var(--card-bg);
+  color: var(--text-primary);
   margin: 1.5em 0;
   padding: 1em 1.5em;
   font-style: italic;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .warning, .important, .tip, .critical {
   display: block;
   margin: 1.5em 0;
   padding: 1.2em 1.5em;
-  border-left: 6px solid var(--accent);
-  background: #232323;
-  color: var(--secondary-text);
+  border-left: 6px solid var(--accent-gold);
+  background: var(--card-bg);
+  color: var(--text-primary);
   font-weight: 500;
   border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.warning { border-color: var(--warning); }
-.important { border-color: var(--info); }
-.tip { border-color: var(--success); }
-.critical { border-color: var(--critical); }
+.warning { 
+  border-color: var(--warning); 
+  background: rgba(255, 136, 0, 0.1);
+}
+.important { 
+  border-color: var(--info); 
+  background: rgba(68, 170, 255, 0.1);
+}
+.tip { 
+  border-color: var(--success); 
+  background: rgba(68, 255, 68, 0.1);
+}
+.critical { 
+  border-color: var(--critical); 
+  background: rgba(255, 68, 68, 0.1);
+}
 
 /* Alert Styles */
 .alert {
@@ -206,25 +240,28 @@ blockquote {
   padding: 1.5em;
   border-radius: 8px;
   border-left: 6px solid;
+  background: var(--card-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .alert.critical {
-  background: rgba(192, 57, 43, 0.1);
+  background: rgba(255, 68, 68, 0.15);
   border-color: var(--critical);
 }
 
 .alert.success {
-  background: rgba(39, 174, 96, 0.1);
+  background: rgba(68, 255, 68, 0.15);
   border-color: var(--success);
 }
 
 .alert.info {
-  background: rgba(52, 152, 219, 0.1);
+  background: rgba(68, 170, 255, 0.15);
   border-color: var(--info);
 }
 
 .alert h3 {
   margin-top: 0;
+  color: var(--text-primary);
 }
 
 .alert.critical h3 {
@@ -269,36 +306,48 @@ blockquote {
 }
 
 .metric-card {
-  background: var(--dark-bg);
-  border: 2px solid var(--border);
+  background: var(--background-primary);
+  border: 2px solid var(--accent-gold);
   border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--shadow-color);
 }
 
 .metric-card.critical {
   border-color: var(--critical);
+  background: rgba(255, 68, 68, 0.05);
 }
 
 .metric-card.warning {
   border-color: var(--warning);
+  background: rgba(255, 136, 0, 0.05);
 }
 
 .metric-card.info {
   border-color: var(--info);
+  background: rgba(68, 170, 255, 0.05);
 }
 
 .metric-card.success {
   border-color: var(--success);
+  background: rgba(68, 255, 68, 0.05);
 }
 
 .metric-card.improved {
   border-color: var(--improved);
+  background: rgba(0, 255, 170, 0.05);
 }
 
 .metric-card h4 {
   margin: 0 0 0.5rem 0;
-  color: var(--secondary-text);
+  color: var(--text-primary);
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -307,8 +356,9 @@ blockquote {
 .metric-value {
   font-size: 2rem;
   font-weight: bold;
-  color: var(--primary-text);
+  color: var(--accent-gold);
   margin: 0.5rem 0;
+  text-shadow: 0 0 8px var(--shadow-color);
 }
 
 .metric-status {
@@ -584,29 +634,38 @@ blockquote {
 
 /* System Cards */
 .system-card {
-  background: var(--dark-bg);
-  border: 2px solid var(--border);
+  background: var(--background-primary);
+  border: 2px solid var(--accent-gold);
   border-radius: 8px;
   padding: 1.5rem;
   margin: 1rem 0;
   position: relative;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: transform 0.2s ease;
+}
+
+.system-card:hover {
+  transform: translateY(-2px);
 }
 
 .system-card.critical {
   border-color: var(--critical);
+  background: rgba(255, 68, 68, 0.05);
 }
 
 .system-card.warning {
   border-color: var(--warning);
+  background: rgba(255, 136, 0, 0.05);
 }
 
 .system-card.info {
   border-color: var(--info);
+  background: rgba(68, 170, 255, 0.05);
 }
 
 .system-card h3, .system-card h4 {
   margin-top: 0;
-  color: var(--primary-text);
+  color: var(--text-primary);
 }
 
 .system-status {
@@ -617,7 +676,9 @@ blockquote {
   font-size: 0.9rem;
   padding: 0.3rem 0.8rem;
   border-radius: 4px;
-  background: var(--card-bg);
+  background: var(--accent-gold);
+  color: var(--background-primary);
+  border: 1px solid var(--accent-gold-dark);
 }
 
 /* System Grid */
@@ -756,29 +817,35 @@ ul, ol {
 /* Collapsible Panel Styles */
 details {
   margin: 1.2em 0;
-  background: var(--dark-bg);
-  border: 1.5px solid var(--border);
+  background: var(--card-bg);
+  border: 2px solid var(--accent-gold);
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(13, 13, 13, 0.12);
+  box-shadow: 0 4px 12px var(--shadow-color);
   padding: 0.3em 1em 0.7em 1em;
-  transition: box-shadow 0.2s;
+  transition: all 0.3s ease;
 }
 
 details[open] {
-  box-shadow: 0 4px 16px rgba(13, 13, 13, 0.20);
+  box-shadow: 0 6px 20px var(--shadow-color);
+  transform: translateY(-2px);
 }
 
 details summary {
   cursor: pointer;
   font-size: 1.1em;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--accent-gold);
   outline: none;
   display: flex;
   align-items: center;
   gap: 0.5em;
   padding: 0.7em 0 0.3em 0;
   user-select: none;
+  transition: color 0.2s ease;
+}
+
+details summary:hover {
+  color: var(--accent-gold-dark);
 }
 
 details summary::-webkit-details-marker {
@@ -792,14 +859,16 @@ details[open] summary .icon-chevron {
 .icon {
   display: inline-block;
   vertical-align: middle;
-  color: var(--icon-accent);
+  color: var(--accent-gold);
   height: 1.1em;
   width: 1.1em;
   margin-right: 0.15em;
+  text-shadow: 0 0 4px var(--shadow-color);
 }
 
 .icon-chevron {
-  transition: transform 0.2s;
+  transition: transform 0.3s ease;
+  color: var(--accent-gold);
 }
 
 @media (max-width: 768px) {
