@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Service - Plain English Explanation</title>
+    <meta name="description" content="Plain English explanation of the Inventory Service in the MTM WIP Application">
+    <style>
+        /* MTM Black/Gold Theme with Enhanced Accessibility */
+        :root {
+            --background-primary: #000000;
+            --text-primary: #FFFFFF;
+            --accent-gold: #FFD700;
+            --accent-gold-dark: #DAA520;
+            --mtm-purple: #4B45ED;
+            --mtm-magenta: #BA45ED;
+            --border-color: #FFD700;
+            --shadow-color: rgba(255, 215, 0, 0.3);
+            --card-bg: #111111;
+            --code-bg: #1a1a1a;
+            --text-secondary: #CCCCCC;
+            --success-color: #22C55E;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--card-bg), var(--background-primary));
+            border-bottom: 3px solid var(--accent-gold);
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .navigation {
+            background: var(--card-bg);
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--accent-gold);
+            color: var(--background-primary);
+        }
+
+        .doc-type-toggle {
+            background: var(--mtm-purple);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .doc-type-toggle:hover {
+            background: var(--mtm-magenta);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--accent-gold);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .section h2 {
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            margin-right: 1rem;
+        }
+
+        .section h3 {
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            margin: 1.5rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            background: var(--accent-gold);
+            color: var(--background-primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .method-list {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .method-item {
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .method-name {
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .method-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .method-example {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-style: italic;
+            color: var(--accent-gold);
+        }
+
+        .business-context {
+            background: linear-gradient(135deg, var(--mtm-purple), var(--mtm-magenta));
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: none;
+        }
+
+        .business-context h2 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .business-context p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .key-concepts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .concept-card {
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .concept-title {
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .concept-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .warning-box {
+            background: var(--card-bg);
+            border-left: 5px solid var(--warning-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box::before {
+            content: '⚠️ ';
+            color: var(--warning-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer a {
+            color: var(--accent-gold);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .key-concepts {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility Improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Inventory Service</h1>
+        <p>The core system that manages all parts, materials, and products in the MTM manufacturing process</p>
+    </header>
+
+    <nav class="navigation">
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">📁 All Services</a>
+                <a href="../index.html" class="nav-link">🏠 Plain English Home</a>
+                <a href="../../CoreFiles/Services/index.html" class="nav-link">📄 Core Files</a>
+            </div>
+            <a href="../../Technical/FileDefinitions/Services/InventoryService.html" class="doc-type-toggle">
+                🔧 Switch to Technical View
+            </a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="business-context">
+            <h2>🏭 What This Service Does in MTM Manufacturing</h2>
+            <p>
+                The Inventory Service is like the <span class="highlight">warehouse manager</span> for the entire MTM operation. 
+                It keeps track of every part, material, and finished product in the factory - knowing exactly how many of each 
+                item you have, where they're located, and what manufacturing stage they're at.
+            </p>
+            <div class="key-concepts">
+                <div class="concept-card">
+                    <div class="concept-title">📦 Parts Tracking</div>
+                    <div class="concept-description">
+                        Monitors every individual part and component used in manufacturing, from raw materials to finished products.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">📍 Location Management</div>
+                    <div class="concept-description">
+                        Keeps track of where each part is stored in the warehouse or what workstation it's currently at.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">🔄 Operation Tracking</div>
+                    <div class="concept-description">
+                        Knows what manufacturing step each part is at (like Operation 90, 100, or 110 in the MTM process).
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">📊 Quantity Control</div>
+                    <div class="concept-description">
+                        Maintains accurate counts of how many of each part you have available for production.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🎯 What This Service Actually Does</h2>
+            <p>
+                Think of this service as your <strong>digital warehouse assistant</strong>. It handles all the day-to-day tasks 
+                that keep track of your inventory, just like a warehouse supervisor would, but much faster and more accurately.
+            </p>
+
+            <h3>Main Responsibilities</h3>
+            <ul style="color: var(--text-secondary); margin-left: 2rem; margin-bottom: 1.5rem;">
+                <li><strong>Stock Monitoring:</strong> Always knows exactly what you have in stock</li>
+                <li><strong>Movement Tracking:</strong> Records when parts move between locations or operations</li>
+                <li><strong>Adding New Items:</strong> Properly registers new parts when they arrive</li>
+                <li><strong>Removing Items:</strong> Correctly removes parts when they're used or shipped</li>
+                <li><strong>Location Searches:</strong> Quickly finds items based on where they're stored</li>
+                <li><strong>Operation Queries:</strong> Shows what parts are at specific manufacturing stages</li>
+            </ul>
+
+            <div class="warning-box">
+                <strong>Important:</strong> This service is critical for production - without accurate inventory tracking, 
+                you can't plan manufacturing schedules or know when to order more materials.
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Key Functions Explained Simply</h2>
+            <div class="method-list">
+                <div class="method-item">
+                    <div class="method-name">📋 Get All Inventory</div>
+                    <div class="method-description">
+                        Shows you a complete list of everything in your warehouse - every part, how many you have, 
+                        and where they're located. Like taking a full inventory count instantly.
+                    </div>
+                    <div class="method-example">
+                        <strong>Real-world example:</strong> "Show me every part we have in stock right now, 
+                        organized by part number and manufacturing operation."
+                    </div>
+                </div>
+
+                <div class="method-item">
+                    <div class="method-name">🔍 Find Specific Part</div>
+                    <div class="method-description">
+                        Looks up a specific part by its ID number and tells you everything about it - quantity, 
+                        location, manufacturing stage, and when it was last updated.
+                    </div>
+                    <div class="method-example">
+                        <strong>Real-world example:</strong> "I need to find part WIDGET-001. Where is it, 
+                        how many do we have, and what operation stage is it at?"
+                    </div>
+                </div>
+
+                <div class="method-item">
+                    <div class="method-name">➕ Add New Parts</div>
+                    <div class="method-description">
+                        Registers new parts when they arrive at the facility. Makes sure all the information 
+                        is correct (like part number, quantity, location) before adding them to the system.
+                    </div>
+                    <div class="method-example">
+                        <strong>Real-world example:</strong> "We just received 50 units of part ABC-123. 
+                        Add them to the system at location WH-A1, operation 90."
+                    </div>
+                </div>
+
+                <div class="method-item">
+                    <div class="method-name">📝 Update Part Information</div>
+                    <div class="method-description">
+                        Changes information about existing parts - like moving them to a new location, 
+                        updating quantities, or changing their manufacturing operation stage.
+                    </div>
+                    <div class="method-example">
+                        <strong>Real-world example:</strong> "Part XYZ-789 has moved from operation 90 to 
+                        operation 100, and its location changed from WH-A1 to WS-3."
+                    </div>
+                </div>
+
+                <div class="method-item">
+                    <div class="method-name">📈 Add Stock (Receiving)</div>
+                    <div class="method-description">
+                        Records when more quantity of an existing part is added to inventory. This happens 
+                        when you receive shipments or when manufacturing creates more of a part.
+                    </div>
+                    <div class="method-example">
+                        <strong>Real-world example:</strong> "We just manufactured 25 more units of part DEF-456. 
+                        Add these to our existing stock at workstation WS-2."
+                    </div>
+                </div>
+
+                <div class="method-item">
+                    <div class="method-name">📉 Remove Stock (Using/Shipping)</div>
+                    <div class="method-description">
+                        Records when parts are taken out of inventory - either used in manufacturing or 
+                        shipped to customers. Reduces the quantity and tracks who removed them.
+                    </div>
+                    <div class="method-example">
+                        <strong>Real-world example:</strong> "Production used 15 units of part GHI-789 from 
+                        location WH-B2 for today's manufacturing run."
+                    </div>
+                </div>
+
+                <div class="method-item">
+                    <div class="method-name">🔄 Transfer Between Locations</div>
+                    <div class="method-description">
+                        Moves parts from one location to another without changing the total quantity. 
+                        Like moving parts from the warehouse to a workstation for manufacturing.
+                    </div>
+                    <div class="method-example">
+                        <strong>Real-world example:</strong> "Move 10 units of part JKL-012 from warehouse 
+                        storage WH-C1 to manufacturing workstation WS-5."
+                    </div>
+                </div>
+
+                <div class="method-item">
+                    <div class="method-name">📍 Search by Location</div>
+                    <div class="method-description">
+                        Shows all parts stored at a specific location. Useful for organizing warehouse 
+                        areas or knowing what's available at each workstation.
+                    </div>
+                    <div class="method-example">
+                        <strong>Real-world example:</strong> "Show me everything stored in warehouse section WH-A 
+                        so I can organize that area."
+                    </div>
+                </div>
+
+                <div class="method-item">
+                    <div class="method-name">🔧 Search by Operation</div>
+                    <div class="method-description">
+                        Shows all parts that are at a specific manufacturing operation stage. Helps with 
+                        production planning and workflow management.
+                    </div>
+                    <div class="method-example">
+                        <strong>Real-world example:</strong> "Show me all parts currently at operation 100 
+                        so I can plan tomorrow's production schedule."
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🏭 How It Fits Into MTM Manufacturing</h2>
+            <p>
+                In the MTM manufacturing process, this service is <strong>essential for production flow</strong>. 
+                Here's how it connects to your daily operations:
+            </p>
+
+            <h3>Manufacturing Workflow Integration</h3>
+            <div class="key-concepts">
+                <div class="concept-card">
+                    <div class="concept-title">🚚 Receiving Materials</div>
+                    <div class="concept-description">
+                        When raw materials arrive, this service registers them and assigns them to warehouse locations, 
+                        ready for production to begin.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">🏭 Production Planning</div>
+                    <div class="concept-description">
+                        Production managers check what's available at each operation stage to plan daily work schedules 
+                        and ensure materials are ready.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">🔄 Work-in-Progress</div>
+                    <div class="concept-description">
+                        As parts move through operations (90 → 100 → 110), the service tracks their progress and 
+                        current location in the manufacturing process.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">📦 Finished Goods</div>
+                    <div class="concept-description">
+                        When products are completed, the service tracks them as finished inventory ready for 
+                        shipping to customers.
+                    </div>
+                </div>
+            </div>
+
+            <h3>Business Impact</h3>
+            <p>
+                This service directly impacts your <strong>operational efficiency</strong>:
+            </p>
+            <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                <li><strong>Prevents Stockouts:</strong> Always know when to reorder materials</li>
+                <li><strong>Reduces Waste:</strong> Accurate tracking prevents overordering</li>
+                <li><strong>Speeds Production:</strong> Quickly locate parts needed for manufacturing</li>
+                <li><strong>Improves Planning:</strong> Real-time visibility into work-in-progress</li>
+                <li><strong>Ensures Quality:</strong> Track parts through each quality control stage</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🔗 How It Works With Other Systems</h2>
+            <p>
+                The Inventory Service doesn't work alone - it connects with other parts of the MTM system 
+                to provide complete manufacturing management:
+            </p>
+
+            <div class="key-concepts">
+                <div class="concept-card">
+                    <div class="concept-title">📊 Database Connection</div>
+                    <div class="concept-description">
+                        Stores all inventory information in the main database, ensuring data is safe and 
+                        can be shared with other systems.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">📝 Transaction Logging</div>
+                    <div class="concept-description">
+                        Records every inventory change (adds, removes, transfers) so you have a complete 
+                        history of what happened and when.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">✅ Data Validation</div>
+                    <div class="concept-description">
+                        Checks that all inventory information is correct before saving it, preventing 
+                        errors that could disrupt production.
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">📋 User Interface</div>
+                    <div class="concept-description">
+                        Powers the screens that warehouse and production staff use to view and manage 
+                        inventory in their daily work.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>⚡ Performance and Reliability</h2>
+            <p>
+                This service is built to handle the demanding environment of manufacturing operations:
+            </p>
+
+            <h3>Built for Manufacturing Speed</h3>
+            <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                <li><strong>Fast Lookups:</strong> Find any part in milliseconds, even with thousands of items</li>
+                <li><strong>Bulk Operations:</strong> Handle large shipments and production batches efficiently</li>
+                <li><strong>Concurrent Access:</strong> Multiple users can access inventory simultaneously</li>
+                <li><strong>Error Prevention:</strong> Validates all data to prevent costly inventory mistakes</li>
+            </ul>
+
+            <h3>Manufacturing Reliability</h3>
+            <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                <li><strong>Transaction Safety:</strong> All changes are properly recorded and reversible</li>
+                <li><strong>Data Integrity:</strong> Inventory counts always match what's physically in the warehouse</li>
+                <li><strong>Audit Trail:</strong> Complete history of who made what changes and when</li>
+                <li><strong>Error Recovery:</strong> Gracefully handles problems without losing data</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>
+            MTM WIP Application - Inventory Service Documentation •
+            <a href="../../index.html">Documentation Home</a> •
+            <a href="../../Technical/FileDefinitions/Services/InventoryService.html">Technical Documentation</a>
+        </p>
+        <p>
+            Last Updated: <time datetime="2025-01-27">January 27, 2025</time> •
+            <a href="#" onclick="alert('For accessibility feedback, please create an issue in the repository.')">Accessibility Feedback</a>
+        </p>
+    </footer>
+
+    <script>
+        // Enhanced accessibility and user experience
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add focus indicators for better keyboard navigation
+            const focusableElements = document.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])');
+            focusableElements.forEach(element => {
+                element.addEventListener('focus', function() {
+                    this.style.outline = '3px solid var(--accent-gold)';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                element.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+
+            // Smooth scrolling for in-page navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Log page load for analytics
+            console.log('MTM Inventory Service - Plain English Documentation Loaded');
+            console.log('Document Type: Plain English');
+            console.log('Target Audience: Business Users, Managers, Non-Technical Staff');
+        });
+
+        // Add keyboard shortcuts for quick navigation
+        document.addEventListener('keydown', function(e) {
+            // Alt + T = Switch to Technical view
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                window.location.href = '../../Technical/FileDefinitions/Services/InventoryService.html';
+            }
+            // Alt + H = Go to documentation home
+            if (e.altKey && e.key === 'h') {
+                e.preventDefault();
+                window.location.href = '../../index.html';
+            }
+        });
+    </script>
+</body>
+</html>
