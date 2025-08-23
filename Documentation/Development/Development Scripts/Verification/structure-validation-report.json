@@ -1,201 +1,16 @@
 {
+  "ExtraDirectories": [],
+  "Summary": {
+    "ExtraDirectories": 0,
+    "ExistingDirectories": 18,
+    "MissingFiles": 0,
+    "OverallHealth": 70.2,
+    "MissingDirectories": 14,
+    "MissingScripts": 0,
+    "TotalDirectories": 32,
+    "ValidationDate": "2025-08-23 18:33:43"
+  },
   "ValidationResults": [
-    {
-      "Path": "docs/NeedsFixing/items",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/CoreFiles/Services",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/CoreFiles/ViewModels",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/CoreFiles/Models",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/CoreFiles/Extensions",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Production/Production Scripts",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Production/Production Documentation",
-      "Type": "Subdirectory",
-      "Status": "Unexpected",
-      "Expected": false,
-      "Message": "Directory not in expected structure"
-    },
-    {
-      "Path": "docs/assets/css",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/assets/js",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/PlainEnglish/FileDefinitions/Services",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/PlainEnglish/FileDefinitions/ViewModels",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/PlainEnglish/FileDefinitions/Models",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/PlainEnglish/FileDefinitions/Extensions",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Documentation/UI_Screenshots",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Documentation/UI_Documentation",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Documentation/Examples",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Documentation/Verification",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Documentation/Database",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Documentation/GitHub",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Scripts/Verification",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Scripts/Automation",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Scripts/Build",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Scripts/Deployment",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "Documentation/Development/Development Scripts/Utilities",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/Technical/FileDefinitions/Services",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/Technical/FileDefinitions/ViewModels",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/Technical/FileDefinitions/Models",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
-    {
-      "Path": "docs/Technical/FileDefinitions/Extensions",
-      "Type": "Subdirectory",
-      "Status": "Exists",
-      "Expected": true,
-      "Message": "Directory exists as expected"
-    },
     {
       "Path": "docs/assets",
       "Type": "Subdirectory",
@@ -246,11 +61,46 @@
       "Message": "Directory exists as expected"
     },
     {
-      "Path": "Documentation/Production/Production Documentation/Database",
+      "Path": "Documentation/Development/Development Scripts/Verification",
       "Type": "Subdirectory",
       "Status": "Exists",
       "Expected": true,
       "Message": "Directory exists as expected"
+    },
+    {
+      "Path": "Documentation/Development/Development Scripts/Automation",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
+      "Path": "Documentation/Development/Development Scripts/Build",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
+      "Path": "Documentation/Development/Development Scripts/Deployment",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
+      "Path": "Documentation/Development/Development Scripts/Utilities",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
+      "Path": "Documentation/Production/Production Scripts",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
     },
     {
       "Path": "docs/Technical/Updates",
@@ -267,6 +117,48 @@
       "Message": "Directory exists as expected"
     },
     {
+      "Path": "docs/PlainEnglish/FileDefinitions/Services",
+      "Type": "Subdirectory",
+      "Status": "Exists",
+      "Expected": true,
+      "Message": "Directory exists as expected"
+    },
+    {
+      "Path": "docs/PlainEnglish/FileDefinitions/ViewModels",
+      "Type": "Subdirectory",
+      "Status": "Exists",
+      "Expected": true,
+      "Message": "Directory exists as expected"
+    },
+    {
+      "Path": "docs/PlainEnglish/FileDefinitions/Models",
+      "Type": "Subdirectory",
+      "Status": "Exists",
+      "Expected": true,
+      "Message": "Directory exists as expected"
+    },
+    {
+      "Path": "docs/PlainEnglish/FileDefinitions/Extensions",
+      "Type": "Subdirectory",
+      "Status": "Exists",
+      "Expected": true,
+      "Message": "Directory exists as expected"
+    },
+    {
+      "Path": "docs/assets/css",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
+      "Path": "docs/assets/js",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
       "Path": "docs/PlainEnglish/Updates",
       "Type": "Subdirectory",
       "Status": "Exists",
@@ -281,11 +173,81 @@
       "Message": "Directory exists as expected"
     },
     {
-      "Path": "Documentation/README.md",
-      "Type": "Required File",
+      "Path": "Documentation/Production/Production Documentation",
+      "Type": "Parent Directory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Parent directory does not exist"
+    },
+    {
+      "Path": "docs/CoreFiles/Services",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
+      "Path": "docs/CoreFiles/ViewModels",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
+      "Path": "docs/CoreFiles/Models",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
+      "Path": "docs/CoreFiles/Extensions",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
+    },
+    {
+      "Path": "docs/Technical/FileDefinitions/Services",
+      "Type": "Subdirectory",
       "Status": "Exists",
       "Expected": true,
-      "Message": "Main documentation navigation hub"
+      "Message": "Directory exists as expected"
+    },
+    {
+      "Path": "docs/Technical/FileDefinitions/ViewModels",
+      "Type": "Subdirectory",
+      "Status": "Exists",
+      "Expected": true,
+      "Message": "Directory exists as expected"
+    },
+    {
+      "Path": "docs/Technical/FileDefinitions/Models",
+      "Type": "Subdirectory",
+      "Status": "Exists",
+      "Expected": true,
+      "Message": "Directory exists as expected"
+    },
+    {
+      "Path": "docs/Technical/FileDefinitions/Extensions",
+      "Type": "Subdirectory",
+      "Status": "Exists",
+      "Expected": true,
+      "Message": "Directory exists as expected"
+    },
+    {
+      "Path": "Documentation/Development/Development Documentation",
+      "Type": "Parent Directory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Parent directory does not exist"
+    },
+    {
+      "Path": "docs/NeedsFixing/items",
+      "Type": "Subdirectory",
+      "Status": "Missing",
+      "Expected": true,
+      "Message": "Expected directory is missing"
     },
     {
       "Path": "README.md",
@@ -307,6 +269,13 @@
       "Status": "Exists",
       "Expected": true,
       "Message": "Copilot instructions file"
+    },
+    {
+      "Path": "Documentation/README.md",
+      "Type": "Required File",
+      "Status": "Exists",
+      "Expected": true,
+      "Message": "Main documentation navigation hub"
     },
     {
       "Path": "Documentation/Development/Development Scripts/Verification/Discover-CoreFiles.ps1",
@@ -350,18 +319,5 @@
       "Expected": true,
       "Message": "Discovery script is present"
     }
-  ],
-  "ExtraDirectories": [
-    "Documentation/Production/Production Documentation"
-  ],
-  "Summary": {
-    "MissingDirectories": 0,
-    "TotalDirectories": 39,
-    "ExtraDirectories": 1,
-    "MissingScripts": 0,
-    "ExistingDirectories": 39,
-    "OverallHealth": 100.0,
-    "MissingFiles": 0,
-    "ValidationDate": "2025-08-23 18:08:21"
-  }
+  ]
 }

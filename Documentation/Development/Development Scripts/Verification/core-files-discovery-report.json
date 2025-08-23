@@ -1,27 +1,15 @@
 [
   {
-    "Category": "Models",
-    "FileName": "CoreModels.cs",
-    "BaseName": "CoreModels",
-    "RelativePath": "Models/CoreModels.cs",
-    "PlainEnglishExists": false,
-    "TechnicalExists": false,
+    "Category": "Extensions",
+    "FileName": "ServiceCollectionExtensions.cs",
+    "BaseName": "ServiceCollectionExtensions",
+    "RelativePath": "Extensions/ServiceCollectionExtensions.cs",
+    "PlainEnglishExists": true,
+    "TechnicalExists": true,
     "CoreFilesExists": false,
-    "PlainEnglishPath": "./docs/PlainEnglish/FileDefinitions/Models/CoreModels.html",
-    "TechnicalPath": "./docs/Technical/FileDefinitions/Models/CoreModels.html",
-    "CoreFilesPath": "./docs/CoreFiles/Models/CoreModels.html"
-  },
-  {
-    "Category": "Models",
-    "FileName": "Result.cs",
-    "BaseName": "Result",
-    "RelativePath": "Models/Result.cs",
-    "PlainEnglishExists": false,
-    "TechnicalExists": false,
-    "CoreFilesExists": false,
-    "PlainEnglishPath": "./docs/PlainEnglish/FileDefinitions/Models/Result.html",
-    "TechnicalPath": "./docs/Technical/FileDefinitions/Models/Result.html",
-    "CoreFilesPath": "./docs/CoreFiles/Models/Result.html"
+    "PlainEnglishPath": "./docs/PlainEnglish/FileDefinitions/Extensions/ServiceCollectionExtensions.html",
+    "TechnicalPath": "./docs/Technical/FileDefinitions/Extensions/ServiceCollectionExtensions.html",
+    "CoreFilesPath": "./docs/CoreFiles/Extensions/ServiceCollectionExtensions.html"
   },
   {
     "Category": "Services",
@@ -64,8 +52,8 @@
     "FileName": "InventoryService.cs",
     "BaseName": "InventoryService",
     "RelativePath": "Services/InventoryService.cs",
-    "PlainEnglishExists": false,
-    "TechnicalExists": false,
+    "PlainEnglishExists": true,
+    "TechnicalExists": true,
     "CoreFilesExists": false,
     "PlainEnglishPath": "./docs/PlainEnglish/FileDefinitions/Services/InventoryService.html",
     "TechnicalPath": "./docs/Technical/FileDefinitions/Services/InventoryService.html",
@@ -156,6 +144,30 @@
     "CoreFilesPath": "./docs/CoreFiles/Services/INavigationService.html"
   },
   {
+    "Category": "Models",
+    "FileName": "CoreModels.cs",
+    "BaseName": "CoreModels",
+    "RelativePath": "Models/CoreModels.cs",
+    "PlainEnglishExists": false,
+    "TechnicalExists": false,
+    "CoreFilesExists": false,
+    "PlainEnglishPath": "./docs/PlainEnglish/FileDefinitions/Models/CoreModels.html",
+    "TechnicalPath": "./docs/Technical/FileDefinitions/Models/CoreModels.html",
+    "CoreFilesPath": "./docs/CoreFiles/Models/CoreModels.html"
+  },
+  {
+    "Category": "Models",
+    "FileName": "Result.cs",
+    "BaseName": "Result",
+    "RelativePath": "Models/Result.cs",
+    "PlainEnglishExists": false,
+    "TechnicalExists": false,
+    "CoreFilesExists": false,
+    "PlainEnglishPath": "./docs/PlainEnglish/FileDefinitions/Models/Result.html",
+    "TechnicalPath": "./docs/Technical/FileDefinitions/Models/Result.html",
+    "CoreFilesPath": "./docs/CoreFiles/Models/Result.html"
+  },
+  {
     "Category": "ViewModels",
     "FileName": "AddItemViewModel.cs",
     "BaseName": "AddItemViewModel",
@@ -172,8 +184,8 @@
     "FileName": "BaseViewModel.cs",
     "BaseName": "BaseViewModel",
     "RelativePath": "ViewModels/BaseViewModel.cs",
-    "PlainEnglishExists": false,
-    "TechnicalExists": false,
+    "PlainEnglishExists": true,
+    "TechnicalExists": true,
     "CoreFilesExists": false,
     "PlainEnglishPath": "./docs/PlainEnglish/FileDefinitions/ViewModels/BaseViewModel.html",
     "TechnicalPath": "./docs/Technical/FileDefinitions/ViewModels/BaseViewModel.html",
@@ -298,17 +310,5 @@
     "PlainEnglishPath": "./docs/PlainEnglish/FileDefinitions/ViewModels/UserManagementViewModel.html",
     "TechnicalPath": "./docs/Technical/FileDefinitions/ViewModels/UserManagementViewModel.html",
     "CoreFilesPath": "./docs/CoreFiles/ViewModels/UserManagementViewModel.html"
-  },
-  {
-    "Category": "Extensions",
-    "FileName": "ServiceCollectionExtensions.cs",
-    "BaseName": "ServiceCollectionExtensions",
-    "RelativePath": "Extensions/ServiceCollectionExtensions.cs",
-    "PlainEnglishExists": false,
-    "TechnicalExists": false,
-    "CoreFilesExists": false,
-    "PlainEnglishPath": "./docs/PlainEnglish/FileDefinitions/Extensions/ServiceCollectionExtensions.html",
-    "TechnicalPath": "./docs/Technical/FileDefinitions/Extensions/ServiceCollectionExtensions.html",
-    "CoreFilesPath": "./docs/CoreFiles/Extensions/ServiceCollectionExtensions.html"
   }
 ]

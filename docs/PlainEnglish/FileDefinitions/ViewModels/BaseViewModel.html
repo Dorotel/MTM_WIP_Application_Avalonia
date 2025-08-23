@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BaseViewModel - Plain English Guide | MTM WIP Application</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav class="breadcrumb">
+                <a href="../../../index.html">📚 Documentation Hub</a>
+                <span>›</span>
+                <a href="../../index.html">📖 Plain English</a>
+                <span>›</span>
+                <a href="../index.html">📄 File Definitions</a>
+                <span>›</span>
+                <a href="index.html">ViewModels</a>
+                <span>›</span>
+                <span>BaseViewModel</span>
+            </nav>
+            <div class="file-header">
+                <h1>🎯 BaseViewModel - The Foundation Controller</h1>
+                <div class="file-meta">
+                    <span class="file-type">Base ViewModel Class</span>
+                    <span class="complexity">🟢 Simple</span>
+                    <span class="audience">👥 For Everyone</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Quick Summary -->
+            <section class="hero-section">
+                <div class="card">
+                    <h2>🎯 What Does This Do?</h2>
+                    <p class="large-text">Think of BaseViewModel as the <strong>foundation blueprint</strong> that all screen controllers in the application inherit from. Just like how all houses share common features (electricity, plumbing, foundation), all screen controllers need common features too.</p>
+                </div>
+            </section>
+
+            <!-- Real-World Analogy -->
+            <section>
+                <h2>🏭 Manufacturing Floor Analogy</h2>
+                <div class="card">
+                    <div class="analogy-box">
+                        <h3>🏗️ Think of it like a Standard Work Station Template</h3>
+                        <p>In manufacturing, every work station has standard features:</p>
+                        <ul>
+                            <li><strong>📋 Standard clipboard holder</strong> → Logger for tracking what happens</li>
+                            <li><strong>🔌 Standard power outlet</strong> → ReactiveUI base for screen updates</li>
+                            <li><strong>🧹 Standard cleanup procedure</strong> → Disposal system for memory management</li>
+                            <li><strong>⚠️ Standard safety protocols</strong> → Error checking with null validation</li>
+                        </ul>
+                        <p>Every specific work station (welding, assembly, quality control) starts with this template and adds their specific tools on top.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- What It Provides -->
+            <section>
+                <h2>🛠️ What This Foundation Provides</h2>
+                <div class="grid-2">
+                    <div class="feature-card">
+                        <h3>📝 Activity Logging</h3>
+                        <p><strong>Business Value:</strong> Track what happens on each screen</p>
+                        <p>Like having a clipboard at every work station where operators write down what they did, when they did it, and if any problems occurred.</p>
+                        <div class="example-box">
+                            <strong>Example:</strong> "User opened inventory screen at 2:30 PM" or "Error occurred while loading data"
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>⚡ Screen Update System</h3>
+                        <p><strong>Business Value:</strong> Screens automatically refresh when data changes</p>
+                        <p>Like having an electronic board that automatically updates inventory counts when parts are added or removed from the warehouse.</p>
+                        <div class="example-box">
+                            <strong>Example:</strong> When someone adds 10 parts to inventory, all open screens showing that part automatically update to show the new count
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>🧹 Memory Cleanup</h3>
+                        <p><strong>Business Value:</strong> Prevents computer slowdown and crashes</p>
+                        <p>Like having a standard procedure to clean up and turn off equipment when a work station is no longer needed.</p>
+                        <div class="example-box">
+                            <strong>Example:</strong> When user closes a screen, it properly releases computer memory instead of leaving it running in the background
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>⚠️ Safety Checks</h3>
+                        <p><strong>Business Value:</strong> Prevents crashes from missing information</p>
+                        <p>Like requiring every work station to verify tools are available before starting work.</p>
+                        <div class="example-box">
+                            <strong>Example:</strong> If the logging system isn't available, the screen will show an error instead of crashing
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Who Uses This -->
+            <section>
+                <h2>👥 Who Benefits From This</h2>
+                <div class="card">
+                    <div class="grid-3">
+                        <div class="role-card">
+                            <h3>👨‍💻 Software Developers</h3>
+                            <p>Don't have to rebuild basic functionality for every screen they create. They can focus on the specific features each screen needs.</p>
+                        </div>
+                        <div class="role-card">
+                            <h3>👩‍💼 IT Support</h3>
+                            <p>Easier troubleshooting because all screens log activity in the same way and handle errors consistently.</p>
+                        </div>
+                        <div class="role-card">
+                            <h3>👤 End Users</h3>
+                            <p>More reliable application with better performance because screens properly clean up after themselves.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Impact -->
+            <section>
+                <h2>💼 Business Impact</h2>
+                <div class="card">
+                    <h3>📊 Cost Savings & Efficiency</h3>
+                    <div class="impact-grid">
+                        <div class="impact-item positive">
+                            <h4>⏱️ Faster Development</h4>
+                            <p>Developers spend less time on repetitive setup, more time on features that matter to users</p>
+                        </div>
+                        <div class="impact-item positive">
+                            <h4>🛡️ More Reliable System</h4>
+                            <p>Consistent error handling reduces support calls and system crashes</p>
+                        </div>
+                        <div class="impact-item positive">
+                            <h4>🔍 Better Problem Solving</h4>
+                            <p>Consistent logging helps identify and fix issues faster</p>
+                        </div>
+                        <div class="impact-item positive">
+                            <h4>📈 Better Performance</h4>
+                            <p>Proper memory cleanup prevents application slowdowns</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Simple Explanation -->
+            <section>
+                <h2>🔍 In Simple Terms</h2>
+                <div class="card">
+                    <div class="simple-explanation">
+                        <p class="large-text">BaseViewModel is like the <strong>standard work station template</strong> in your manufacturing facility. Every specific work station (welding, assembly, quality control) starts with the same foundation:</p>
+                        <ul class="simple-list">
+                            <li>📋 A standard way to log what's happening</li>
+                            <li>⚡ A standard way to update displays</li>
+                            <li>🧹 A standard way to clean up when done</li>
+                            <li>⚠️ A standard way to check for problems</li>
+                        </ul>
+                        <p>This means every screen in the application behaves predictably and reliably, just like how standardized work stations make your manufacturing floor more efficient and safer.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Navigation -->
+            <section class="navigation-section">
+                <h2>🧭 Related Information</h2>
+                <div class="nav-grid">
+                    <a href="../../../Technical/FileDefinitions/ViewModels/BaseViewModel.html" class="nav-card technical">
+                        <span class="nav-icon">🔧</span>
+                        <div class="nav-content">
+                            <h3>Technical Details</h3>
+                            <p>Developer implementation guide</p>
+                        </div>
+                    </a>
+                    <a href="InventoryViewModel.html" class="nav-card disabled">
+                        <span class="nav-icon">📦</span>
+                        <div class="nav-content">
+                            <h3>InventoryViewModel</h3>
+                            <p>Coming soon - Inventory screen controller</p>
+                        </div>
+                    </a>
+                    <a href="MainViewModel.html" class="nav-card disabled">
+                        <span class="nav-icon">🏠</span>
+                        <div class="nav-content">
+                            <h3>MainViewModel</h3>
+                            <p>Coming soon - Main screen controller</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="file-info">
+                <div class="file-path">
+                    <strong>File:</strong> <code>ViewModels/BaseViewModel.cs</code>
+                </div>
+                <div class="last-updated">
+                    <strong>Documentation:</strong> Plain English explanation for business stakeholders
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Keyboard Navigation -->
+    <script>
+        document.addEventListener('keydown', function(event) {
+            if (event.altKey) {
+                switch(event.key) {
+                    case 't':
+                    case 'T':
+                        event.preventDefault();
+                        window.location.href = '../../../Technical/FileDefinitions/ViewModels/BaseViewModel.html';
+                        break;
+                    case 'h':
+                    case 'H':
+                        event.preventDefault();
+                        window.location.href = '../../../index.html';
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
