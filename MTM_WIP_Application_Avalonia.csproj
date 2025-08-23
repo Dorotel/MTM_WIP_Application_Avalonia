@@ -72,8 +72,4 @@
     <None Include=".github\ui-generation.instruction.md" />
     <None Include=".github\ui-mapping.instruction.md" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Documentation\" />
-  </ItemGroup>
 </Project>
