@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServiceCollectionExtensions.cs - Technical Documentation</title>
+    <meta name="description" content="Technical documentation for the ServiceCollectionExtensions class in the MTM WIP Application">
+    <style>
+        /* MTM Technical Documentation Theme - Consistent with InventoryService */
+        :root {
+            --background-primary: #0d1117;
+            --background-secondary: #161b22;
+            --background-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --text-accent: #58a6ff;
+            --accent-gold: #ffd700;
+            --accent-gold-dark: #daa520;
+            --mtm-purple: #4b45ed;
+            --mtm-magenta: #ba45ed;
+            --border-primary: #30363d;
+            --border-accent: #ffd700;
+            --success-color: #238636;
+            --warning-color: #d29922;
+            --danger-color: #da3633;
+            --code-bg: #0d1117;
+            --code-border: #21262d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Segoe UI Mono', 'Roboto Mono', monospace;
+            background: var(--background-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--background-secondary), var(--background-tertiary));
+            border-bottom: 2px solid var(--accent-gold);
+            padding: 2rem 0;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .class-signature {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--text-accent);
+            margin-top: 1rem;
+        }
+
+        .navigation {
+            background: var(--background-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--accent-gold);
+            color: var(--background-primary);
+        }
+
+        .doc-type-toggle {
+            background: var(--mtm-purple);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .doc-type-toggle:hover {
+            background: var(--mtm-magenta);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: var(--background-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .sidebar h3 {
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            color: var(--accent-gold);
+        }
+
+        .content {
+            min-width: 0;
+        }
+
+        .section {
+            background: var(--background-secondary);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--accent-gold);
+        }
+
+        .section h2 {
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .section h3 {
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            margin: 1.5rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .code-block .type {
+            color: #ffa657;
+        }
+
+        .code-block .method {
+            color: #d2a8ff;
+        }
+
+        .method-item {
+            background: var(--background-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .method-signature {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-accent);
+        }
+
+        .method-name {
+            color: var(--accent-gold);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .method-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .service-registration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .service-registration {
+            background: var(--background-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .service-interface {
+            color: var(--text-accent);
+            font-weight: 600;
+            font-family: 'SF Mono', monospace;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-implementation {
+            color: var(--warning-color);
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .service-lifetime {
+            color: var(--success-color);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .service-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .dependency-diagram {
+            background: var(--background-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .dependency-layer {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .layer-infrastructure {
+            background: linear-gradient(135deg, var(--background-secondary), var(--background-primary));
+            border: 1px solid var(--border-primary);
+        }
+
+        .layer-business {
+            background: linear-gradient(135deg, var(--mtm-purple), var(--mtm-magenta));
+        }
+
+        .layer-support {
+            background: linear-gradient(135deg, var(--warning-color), var(--accent-gold-dark));
+        }
+
+        .layer-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .layer-services {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .implementation-note {
+            background: var(--background-tertiary);
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .implementation-note::before {
+            content: '⚠️ ';
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        .architecture-note {
+            background: var(--background-tertiary);
+            border-left: 4px solid var(--success-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .architecture-note::before {
+            content: '🏗️ ';
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .security-note {
+            background: var(--background-tertiary);
+            border-left: 4px solid var(--danger-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .security-note::before {
+            content: '🔒 ';
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        .footer {
+            background: var(--background-secondary);
+            border-top: 1px solid var(--border-primary);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer a {
+            color: var(--accent-gold);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 250px 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .service-registration-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>ServiceCollectionExtensions.cs</h1>
+            <p class="subtitle">Extension methods for registering MTM services with dependency injection</p>
+            <div class="class-signature">
+                <span class="keyword">public static class</span> <span class="type">ServiceCollectionExtensions</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="navigation">
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">📁 Extensions</a>
+                <a href="../index.html" class="nav-link">🔧 Technical Home</a>
+                <a href="../../CoreFiles/Extensions/index.html" class="nav-link">📄 Core Files</a>
+            </div>
+            <a href="../../PlainEnglish/FileDefinitions/Extensions/ServiceCollectionExtensions.html" class="doc-type-toggle">
+                📝 Switch to Plain English
+            </a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <aside class="sidebar">
+            <h3>Quick Navigation</h3>
+            <ul>
+                <li><a href="#overview">Class Overview</a></li>
+                <li><a href="#architecture">DI Architecture</a></li>
+                <li><a href="#core-method">AddMTMServices</a></li>
+                <li><a href="#environment-methods">Environment Methods</a></li>
+                <li><a href="#helper-services">Helper Services</a></li>
+                <li><a href="#service-lifetimes">Service Lifetimes</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#best-practices">Best Practices</a></li>
+            </ul>
+            
+            <h3>Extension Methods</h3>
+            <ul>
+                <li><a href="#add-mtm-services">AddMTMServices</a></li>
+                <li><a href="#add-development">AddMTMServicesForDevelopment</a></li>
+                <li><a href="#add-production">AddMTMServicesForProduction</a></li>
+            </ul>
+
+            <h3>Helper Classes</h3>
+            <ul>
+                <li><a href="#simple-cache">SimpleCacheService</a></li>
+                <li><a href="#simple-validation">SimpleValidationService</a></li>
+            </ul>
+        </aside>
+
+        <div class="content">
+            <section id="overview" class="section">
+                <h2>🏗️ Class Overview</h2>
+                <p>
+                    The <code>ServiceCollectionExtensions</code> class provides extension methods for configuring 
+                    dependency injection in the MTM WIP Application. It follows the .NET Core DI container patterns 
+                    and implements a comprehensive service registration strategy for all MTM business and infrastructure components.
+                </p>
+
+                <h3>Design Patterns</h3>
+                <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                    <li><strong>Extension Method Pattern:</strong> Extends IServiceCollection with domain-specific registrations</li>
+                    <li><strong>Configuration Pattern:</strong> Strongly-typed configuration with validation</li>
+                    <li><strong>Composition Root Pattern:</strong> Centralized service registration</li>
+                    <li><strong>Environment-Specific Configuration:</strong> Different setups for dev/prod</li>
+                </ul>
+
+                <div class="architecture-note">
+                    <strong>Architecture Decision:</strong> This class implements the "One Call Does It All" pattern, 
+                    where a single method call (<code>AddMTMServices</code>) registers all required dependencies with proper lifetimes and configurations.
+                </div>
+            </section>
+
+            <section id="architecture" class="section">
+                <h2>🔗 Dependency Injection Architecture</h2>
+                <p>
+                    The MTM application uses a layered dependency injection architecture with clear separation of concerns:
+                </p>
+
+                <div class="dependency-diagram">
+                    <div class="dependency-layer layer-infrastructure">
+                        <div class="layer-title">Infrastructure Layer</div>
+                        <div class="layer-services">
+                            IConfigurationService • IApplicationStateService • IDatabaseService • IDbConnectionFactory
+                        </div>
+                    </div>
+                    
+                    <div class="dependency-layer layer-business">
+                        <div class="layer-title">Business Layer</div>
+                        <div class="layer-services">
+                            IInventoryService • IUserService • ITransactionService
+                        </div>
+                    </div>
+                    
+                    <div class="dependency-layer layer-support">
+                        <div class="layer-title">Supporting Services</div>
+                        <div class="layer-services">
+                            ICacheService • IValidationService • IMemoryCache
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Service Dependencies Flow</h3>
+                <div class="code-block">
+<span class="comment">// Business services depend on infrastructure</span>
+<span class="type">IInventoryService</span> → <span class="type">IDatabaseService</span>, <span class="type">ITransactionService</span>, <span class="type">IValidationService</span>
+
+<span class="comment">// Infrastructure services are self-contained</span>
+<span class="type">IDatabaseService</span> → <span class="type">IDbConnectionFactory</span>
+
+<span class="comment">// Supporting services provide cross-cutting concerns</span>
+<span class="type">ICacheService</span> → <span class="type">IMemoryCache</span>
+                </div>
+            </section>
+
+            <section id="core-method" class="section">
+                <h2>🔧 Core Registration Method</h2>
+
+                <div id="add-mtm-services" class="method-item">
+                    <div class="method-name">AddMTMServices</div>
+                    <div class="method-signature">
+<span class="keyword">public static</span> <span class="type">IServiceCollection</span> <span class="method">AddMTMServices</span>(
+    <span class="keyword">this</span> <span class="type">IServiceCollection</span> services, 
+    <span class="type">IConfiguration</span> configuration)
+                    </div>
+                    <div class="method-description">
+                        The primary service registration method that configures all MTM services with proper lifetimes, 
+                        dependencies, and configuration. This method implements the complete service registration strategy 
+                        required for the MTM WIP Application.
+                    </div>
+
+                    <h4>Service Registration Categories</h4>
+                    
+                    <h5>1. Configuration Registration</h5>
+                    <div class="code-block">
+<span class="comment">// Strongly-typed configuration with validation</span>
+services.Configure&lt;<span class="type">MTMSettings</span>&gt;(configuration.GetSection(<span class="string">"MTM"</span>));
+services.Configure&lt;<span class="type">DatabaseSettings</span>&gt;(configuration.GetSection(<span class="string">"Database"</span>));
+services.Configure&lt;<span class="type">ErrorHandlingSettings</span>&gt;(configuration.GetSection(<span class="string">"ErrorHandling"</span>));
+services.Configure&lt;<span class="type">LoggingSettings</span>&gt;(configuration.GetSection(<span class="string">"Logging"</span>));
+
+<span class="comment">// Configuration validation</span>
+services.AddSingleton&lt;<span class="type">IValidateOptions&lt;MTMSettings&gt;</span>, <span class="type">ConfigurationValidationService</span>&gt;();
+                    </div>
+
+                    <h5>2. Infrastructure Services</h5>
+                    <div class="service-registration-grid">
+                        <div class="service-registration">
+                            <div class="service-interface">IConfigurationService</div>
+                            <div class="service-implementation">→ ConfigurationService</div>
+                            <div class="service-lifetime">Lifetime: Singleton</div>
+                            <div class="service-description">Provides centralized configuration management</div>
+                        </div>
+                        <div class="service-registration">
+                            <div class="service-interface">IApplicationStateService</div>
+                            <div class="service-implementation">→ MTMApplicationStateService</div>
+                            <div class="service-lifetime">Lifetime: Singleton</div>
+                            <div class="service-description">Manages application-wide state and context</div>
+                        </div>
+                        <div class="service-registration">
+                            <div class="service-interface">IDatabaseService</div>
+                            <div class="service-implementation">→ DatabaseService</div>
+                            <div class="service-lifetime">Lifetime: Scoped</div>
+                            <div class="service-description">Database abstraction and query execution</div>
+                        </div>
+                        <div class="service-registration">
+                            <div class="service-interface">IDbConnectionFactory</div>
+                            <div class="service-implementation">→ MySqlConnectionFactory</div>
+                            <div class="service-lifetime">Lifetime: Singleton</div>
+                            <div class="service-description">MySQL connection factory for database connections</div>
+                        </div>
+                    </div>
+
+                    <h5>3. Business Services</h5>
+                    <div class="service-registration-grid">
+                        <div class="service-registration">
+                            <div class="service-interface">IInventoryService</div>
+                            <div class="service-implementation">→ InventoryService</div>
+                            <div class="service-lifetime">Lifetime: Scoped</div>
+                            <div class="service-description">Core inventory management operations</div>
+                        </div>
+                        <div class="service-registration">
+                            <div class="service-interface">IUserService</div>
+                            <div class="service-implementation">→ UserService</div>
+                            <div class="service-lifetime">Lifetime: Scoped</div>
+                            <div class="service-description">User authentication and management</div>
+                        </div>
+                        <div class="service-registration">
+                            <div class="service-interface">ITransactionService</div>
+                            <div class="service-implementation">→ TransactionService</div>
+                            <div class="service-lifetime">Lifetime: Scoped</div>
+                            <div class="service-description">Inventory transaction logging and audit trail</div>
+                        </div>
+                    </div>
+
+                    <h5>4. Supporting Services</h5>
+                    <div class="service-registration-grid">
+                        <div class="service-registration">
+                            <div class="service-interface">IMemoryCache</div>
+                            <div class="service-implementation">→ Microsoft.Extensions.Caching.Memory</div>
+                            <div class="service-lifetime">Lifetime: Singleton</div>
+                            <div class="service-description">In-memory caching infrastructure</div>
+                        </div>
+                        <div class="service-registration">
+                            <div class="service-interface">ICacheService</div>
+                            <div class="service-implementation">→ SimpleCacheService</div>
+                            <div class="service-lifetime">Lifetime: Singleton</div>
+                            <div class="service-description">Application-specific caching abstraction</div>
+                        </div>
+                        <div class="service-registration">
+                            <div class="service-interface">IValidationService</div>
+                            <div class="service-implementation">→ SimpleValidationService</div>
+                            <div class="service-lifetime">Lifetime: Scoped</div>
+                            <div class="service-description">Entity validation and business rule checking</div>
+                        </div>
+                    </div>
+
+                    <div class="architecture-note">
+                        <strong>Lifetime Strategy:</strong> Services are registered with appropriate lifetimes based on their usage patterns:
+                        <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                            <li><strong>Singleton:</strong> Stateless services and factories</li>
+                            <li><strong>Scoped:</strong> Services that maintain state within a request/operation</li>
+                            <li><strong>Transient:</strong> Lightweight services created per use</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="environment-methods" class="section">
+                <h2>🌍 Environment-Specific Methods</h2>
+
+                <div id="add-development" class="method-item">
+                    <div class="method-name">AddMTMServicesForDevelopment</div>
+                    <div class="method-signature">
+<span class="keyword">public static</span> <span class="type">IServiceCollection</span> <span class="method">AddMTMServicesForDevelopment</span>(
+    <span class="keyword">this</span> <span class="type">IServiceCollection</span> services, 
+    <span class="type">IConfiguration</span> configuration)
+                    </div>
+                    <div class="method-description">
+                        Configures services specifically for development environment with enhanced debugging and development tools.
+                    </div>
+
+                    <div class="code-block">
+<span class="comment">// Current implementation</span>
+services.AddMTMServices(configuration);
+
+<span class="comment">// TODO: Configure for development environment</span>
+<span class="comment">// ErrorHandlingConfiguration.ConfigureForDevelopment();</span>
+                    </div>
+
+                    <div class="implementation-note">
+                        <strong>Development Roadmap:</strong> This method currently calls the base <code>AddMTMServices</code> method. 
+                        Future enhancements will include development-specific configurations such as enhanced error reporting, 
+                        debugging tools, and development-friendly logging.
+                    </div>
+                </div>
+
+                <div id="add-production" class="method-item">
+                    <div class="method-name">AddMTMServicesForProduction</div>
+                    <div class="method-signature">
+<span class="keyword">public static</span> <span class="type">IServiceCollection</span> <span class="method">AddMTMServicesForProduction</span>(
+    <span class="keyword">this</span> <span class="type">IServiceCollection</span> services, 
+    <span class="type">IConfiguration</span> configuration,
+    <span class="type">IDbConnectionFactory?</span> connectionFactory = <span class="keyword">null</span>)
+                    </div>
+                    <div class="method-description">
+                        Configures services for production environment with optimized performance, security, and reliability settings.
+                    </div>
+
+                    <h4>Production-Specific Features</h4>
+                    <div class="code-block">
+<span class="comment">// Base service registration</span>
+services.AddMTMServices(configuration);
+
+<span class="comment">// Optional connection factory override for production</span>
+<span class="keyword">if</span> (connectionFactory != <span class="keyword">null</span>)
+{
+    services.AddSingleton(connectionFactory);
+    <span class="comment">// TODO: Set connection factory in logging utility</span>
+    <span class="comment">// LoggingUtility.SetConnectionFactory(connectionFactory);</span>
+}
+
+<span class="comment">// TODO: Configure for production environment</span>
+<span class="comment">// ErrorHandlingConfiguration.ConfigureForProduction();</span>
+                    </div>
+
+                    <div class="implementation-note">
+                        <strong>Production Roadmap:</strong> Future enhancements will include production-optimized error handling, 
+                        performance monitoring, security hardening, and integration with enterprise logging and monitoring systems.
+                    </div>
+                </div>
+            </section>
+
+            <section id="helper-services" class="section">
+                <h2>🛠️ Helper Service Implementations</h2>
+
+                <div id="simple-cache" class="method-item">
+                    <div class="method-name">SimpleCacheService</div>
+                    <div class="method-signature">
+<span class="keyword">internal class</span> <span class="type">SimpleCacheService</span> : <span class="type">ICacheService</span>
+                    </div>
+                    <div class="method-description">
+                        A basic caching service implementation using <code>IMemoryCache</code> that provides simple 
+                        key-value caching functionality for the MTM application.
+                    </div>
+
+                    <h4>Key Methods</h4>
+                    <div class="code-block">
+<span class="keyword">public</span> <span class="type">Task&lt;T?&gt;</span> GetAsync&lt;T&gt;(<span class="type">string</span> key, <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+<span class="keyword">public</span> <span class="type">Task&lt;Result&gt;</span> SetAsync&lt;T&gt;(<span class="type">string</span> key, <span class="type">T</span> value, <span class="type">TimeSpan?</span> expiration = <span class="keyword">null</span>, <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+<span class="keyword">public</span> <span class="type">Task&lt;Result&gt;</span> RemoveAsync(<span class="type">string</span> key, <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+<span class="keyword">public</span> <span class="type">Task&lt;Result&gt;</span> RemoveByPatternAsync(<span class="type">string</span> pattern, <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+<span class="keyword">public</span> <span class="type">Task&lt;Result&gt;</span> ClearAllAsync(<span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+                    </div>
+
+                    <h4>Implementation Details</h4>
+                    <div class="code-block">
+<span class="keyword">public</span> <span class="type">Task&lt;T?&gt;</span> GetAsync&lt;T&gt;(<span class="type">string</span> key, <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>) 
+{
+    _memoryCache.TryGetValue(key, <span class="keyword">out var</span> value);
+    <span class="keyword">return</span> <span class="type">Task</span>.FromResult((<span class="type">T?</span>)value);
+}
+
+<span class="keyword">public</span> <span class="type">Task&lt;Result&gt;</span> SetAsync&lt;T&gt;(<span class="type">string</span> key, <span class="type">T</span> value, <span class="type">TimeSpan?</span> expiration = <span class="keyword">null</span>, <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>) 
+{
+    <span class="keyword">var</span> options = <span class="keyword">new</span> <span class="type">MemoryCacheEntryOptions</span>();
+    <span class="keyword">if</span> (expiration.HasValue)
+        options.AbsoluteExpirationRelativeToNow = expiration.Value;
+    
+    _memoryCache.Set(key, value, options);
+    <span class="keyword">return</span> <span class="type">Task</span>.FromResult(<span class="type">Result</span>.Success());
+}
+                    </div>
+
+                    <div class="implementation-note">
+                        <strong>TODO Implementation:</strong> The <code>RemoveByPatternAsync</code> and <code>ClearAllAsync</code> 
+                        methods are currently placeholder implementations. These will be enhanced to provide pattern-based 
+                        cache invalidation and complete cache clearing functionality.
+                    </div>
+                </div>
+
+                <div id="simple-validation" class="method-item">
+                    <div class="method-name">SimpleValidationService</div>
+                    <div class="method-signature">
+<span class="keyword">internal class</span> <span class="type">SimpleValidationService</span> : <span class="type">IValidationService</span>
+                    </div>
+                    <div class="method-description">
+                        A basic validation service implementation that provides entity validation and business rule checking. 
+                        Currently returns success for all validations but designed for future enhancement.
+                    </div>
+
+                    <h4>Key Methods</h4>
+                    <div class="code-block">
+<span class="keyword">public</span> <span class="type">Task&lt;Result&lt;ValidationResult&gt;&gt;</span> ValidateAsync&lt;T&gt;(<span class="type">T</span> entity, <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+<span class="keyword">public</span> <span class="type">Task&lt;Result&lt;bool&gt;&gt;</span> ValidateRuleAsync(<span class="type">string</span> ruleName, <span class="type">object</span> context, <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+                    </div>
+
+                    <h4>Current Implementation</h4>
+                    <div class="code-block">
+<span class="keyword">public</span> <span class="type">Task&lt;Result&lt;ValidationResult&gt;&gt;</span> ValidateAsync&lt;T&gt;(<span class="type">T</span> entity, <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>) 
+{
+    <span class="comment">// TODO: Implement using FluentValidation or similar</span>
+    <span class="keyword">return</span> <span class="type">Task</span>.FromResult(<span class="type">Result&lt;ValidationResult&gt;</span>.Success(<span class="type">ValidationResult</span>.Success()));
+}
+                    </div>
+
+                    <div class="implementation-note">
+                        <strong>Validation Roadmap:</strong> This service is designed for future enhancement with comprehensive 
+                        validation using libraries like FluentValidation. It will include entity validation, business rule 
+                        checking, and custom validation rule support.
+                    </div>
+                </div>
+            </section>
+
+            <section id="service-lifetimes" class="section">
+                <h2>⏱️ Service Lifetime Management</h2>
+                <p>
+                    The service registration follows .NET Core dependency injection lifetime best practices:
+                </p>
+
+                <h3>Singleton Services</h3>
+                <div class="code-block">
+<span class="comment">// Infrastructure services that are stateless and expensive to create</span>
+services.AddSingleton&lt;<span class="type">IConfigurationService</span>, <span class="type">ConfigurationService</span>&gt;();
+services.AddSingleton&lt;<span class="type">IApplicationStateService</span>, <span class="type">MTMApplicationStateService</span>&gt;();
+services.AddSingleton&lt;<span class="type">IDbConnectionFactory</span>, <span class="type">MySqlConnectionFactory</span>&gt;();
+services.AddSingleton&lt;<span class="type">ICacheService</span>, <span class="type">SimpleCacheService</span>&gt;();
+                </div>
+
+                <h3>Scoped Services</h3>
+                <div class="code-block">
+<span class="comment">// Business services that maintain state within a request/operation scope</span>
+services.AddScoped&lt;<span class="type">IDatabaseService</span>, <span class="type">DatabaseService</span>&gt;();
+services.AddScoped&lt;<span class="type">IInventoryService</span>, <span class="type">InventoryService</span>&gt;();
+services.AddScoped&lt;<span class="type">IUserService</span>, <span class="type">UserService</span>&gt;();
+services.AddScoped&lt;<span class="type">ITransactionService</span>, <span class="type">TransactionService</span>&gt;();
+services.AddScoped&lt;<span class="type">IValidationService</span>, <span class="type">SimpleValidationService</span>&gt;();
+                </div>
+
+                <h3>Transient Services</h3>
+                <div class="code-block">
+<span class="comment">// Lightweight services created per use</span>
+services.AddTransient&lt;<span class="type">DatabaseTransactionService</span>&gt;();
+                </div>
+
+                <div class="architecture-note">
+                    <strong>Lifetime Rationale:</strong>
+                    <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                        <li><strong>Configuration and Factories:</strong> Singleton for shared, stateless infrastructure</li>
+                        <li><strong>Business Services:</strong> Scoped to ensure proper transaction boundaries and data consistency</li>
+                        <li><strong>Transaction Services:</strong> Transient for per-operation isolation</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="configuration" class="section">
+                <h2>⚙️ Configuration Management</h2>
+                <p>
+                    The service registration includes comprehensive configuration management with strongly-typed settings and validation:
+                </p>
+
+                <h3>Configuration Sections</h3>
+                <div class="code-block">
+<span class="comment">// Strongly-typed configuration binding</span>
+services.Configure&lt;<span class="type">MTMSettings</span>&gt;(configuration.GetSection(<span class="string">"MTM"</span>));
+services.Configure&lt;<span class="type">DatabaseSettings</span>&gt;(configuration.GetSection(<span class="string">"Database"</span>));
+services.Configure&lt;<span class="type">ErrorHandlingSettings</span>&gt;(configuration.GetSection(<span class="string">"ErrorHandling"</span>));
+services.Configure&lt;<span class="type">LoggingSettings</span>&gt;(configuration.GetSection(<span class="string">"Logging"</span>));
+                </div>
+
+                <h3>Configuration Validation</h3>
+                <div class="code-block">
+<span class="comment">// Validate configuration at startup</span>
+services.AddSingleton&lt;<span class="type">IValidateOptions&lt;MTMSettings&gt;</span>, <span class="type">ConfigurationValidationService</span>&gt;();
+                </div>
+
+                <h3>Expected Configuration Structure</h3>
+                <div class="code-block">
+{
+  <span class="string">"MTM"</span>: {
+    <span class="comment">// MTM-specific settings</span>
+  },
+  <span class="string">"Database"</span>: {
+    <span class="string">"ConnectionString"</span>: <span class="string">"..."</span>,
+    <span class="string">"CommandTimeout"</span>: 30
+  },
+  <span class="string">"ErrorHandling"</span>: {
+    <span class="string">"EnableDetailedErrors"</span>: <span class="keyword">false</span>
+  },
+  <span class="string">"Logging"</span>: {
+    <span class="string">"LogLevel"</span>: {
+      <span class="string">"Default"</span>: <span class="string">"Information"</span>
+    }
+  }
+}
+                </div>
+
+                <div class="security-note">
+                    <strong>Configuration Security:</strong> Sensitive configuration values like connection strings should be 
+                    stored securely using user secrets in development and Azure Key Vault or similar secure storage in production.
+                </div>
+            </section>
+
+            <section id="best-practices" class="section">
+                <h2>✨ Best Practices and Recommendations</h2>
+
+                <h3>Service Registration Best Practices</h3>
+                <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                    <li><strong>Interface Segregation:</strong> Register services by their interfaces for loose coupling</li>
+                    <li><strong>Appropriate Lifetimes:</strong> Choose lifetimes based on service usage patterns and state management</li>
+                    <li><strong>Configuration Validation:</strong> Validate all configuration at startup to fail fast</li>
+                    <li><strong>Environment-Specific Setup:</strong> Use different configurations for different environments</li>
+                </ul>
+
+                <h3>Usage in Application Startup</h3>
+                <div class="code-block">
+<span class="comment">// Recommended usage in Program.cs or Startup.cs</span>
+<span class="keyword">public static void</span> ConfigureServices()
+{
+    <span class="keyword">var</span> services = <span class="keyword">new</span> <span class="type">ServiceCollection</span>();
+    
+    <span class="comment">// Configuration setup</span>
+    <span class="keyword">var</span> configuration = <span class="keyword">new</span> <span class="type">ConfigurationBuilder</span>()
+        .SetBasePath(<span class="type">AppContext</span>.BaseDirectory)
+        .AddJsonFile(<span class="string">"appsettings.json"</span>)
+        .Build();
+    
+    services.AddSingleton&lt;<span class="type">IConfiguration</span>&gt;(configuration);
+    
+    <span class="comment">// ✅ CRITICAL: Use comprehensive MTM service registration</span>
+    services.AddMTMServices(configuration);
+    
+    <span class="comment">// Override specific services if needed (after AddMTMServices)</span>
+    services.AddSingleton&lt;<span class="type">INavigationService</span>, <span class="type">AvaloniaNavigationService</span>&gt;();
+    
+    <span class="keyword">var</span> serviceProvider = services.BuildServiceProvider();
+}
+                </div>
+
+                <h3>Common Pitfalls to Avoid</h3>
+                <div class="implementation-note">
+                    <strong>Anti-Pattern:</strong> Manually registering MTM services individually instead of using <code>AddMTMServices</code>:
+                    <div class="code-block" style="margin-top: 0.5rem;">
+<span class="comment">// ❌ WRONG - Missing dependencies and proper configuration</span>
+services.AddScoped&lt;<span class="type">IInventoryService</span>, <span class="type">InventoryService</span>&gt;(); <span class="comment">// Missing IValidationService dependency!</span>
+                    </div>
+                </div>
+
+                <h3>Testing Considerations</h3>
+                <div class="code-block">
+<span class="comment">// Unit testing with service overrides</span>
+<span class="keyword">var</span> services = <span class="keyword">new</span> <span class="type">ServiceCollection</span>();
+services.AddMTMServices(configuration);
+
+<span class="comment">// Override services for testing</span>
+services.AddScoped&lt;<span class="type">IDatabaseService</span>, <span class="type">MockDatabaseService</span>&gt;();
+
+<span class="keyword">var</span> serviceProvider = services.BuildServiceProvider();
+<span class="keyword">var</span> inventoryService = serviceProvider.GetService&lt;<span class="type">IInventoryService</span>&gt;();
+                </div>
+
+                <div class="architecture-note">
+                    <strong>Testing Strategy:</strong> The service registration design supports dependency injection testing patterns. 
+                    Register all services using <code>AddMTMServices</code>, then override specific services with mock implementations for testing.
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>
+            MTM WIP Application - ServiceCollectionExtensions Technical Documentation •
+            <a href="../../index.html">Documentation Home</a> •
+            <a href="../../PlainEnglish/FileDefinitions/Extensions/ServiceCollectionExtensions.html">Plain English Documentation</a>
+        </p>
+        <p>
+            Generated: <time datetime="2025-01-27">January 27, 2025</time> •
+            <a href="#" onclick="alert('For technical feedback, please create an issue in the repository.')">Technical Feedback</a>
+        </p>
+    </footer>
+
+    <script>
+        // Enhanced technical documentation features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Syntax highlighting for code blocks and copy functionality
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(block => {
+                const copyButton = document.createElement('button');
+                copyButton.textContent = '📋 Copy';
+                copyButton.style.cssText = `
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    background: var(--accent-gold);
+                    color: var(--background-primary);
+                    border: none;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 0.8rem;
+                    cursor: pointer;
+                `;
+                
+                block.style.position = 'relative';
+                block.appendChild(copyButton);
+                
+                copyButton.addEventListener('click', function() {
+                    navigator.clipboard.writeText(block.textContent.replace('📋 Copy', '').trim());
+                    copyButton.textContent = '✅ Copied';
+                    setTimeout(() => {
+                        copyButton.textContent = '📋 Copy';
+                    }, 2000);
+                });
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Alt + P = Switch to Plain English
+                if (e.altKey && e.key === 'p') {
+                    e.preventDefault();
+                    window.location.href = '../../PlainEnglish/FileDefinitions/Extensions/ServiceCollectionExtensions.html';
+                }
+                // Alt + H = Go home
+                if (e.altKey && e.key === 'h') {
+                    e.preventDefault();
+                    window.location.href = '../../index.html';
+                }
+            });
+
+            // Smooth scrolling for sidebar navigation
+            document.querySelectorAll('.sidebar a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            console.log('MTM ServiceCollectionExtensions - Technical Documentation Loaded');
+            console.log('File: Extensions/ServiceCollectionExtensions.cs');
+            console.log('Extension Methods: 3');
+            console.log('Helper Classes: 2');
+            console.log('Documentation Type: Technical');
+        });
+    </script>
+</body>
+</html>
