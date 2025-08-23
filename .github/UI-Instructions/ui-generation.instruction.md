@@ -5,7 +5,7 @@
 
 - When creating UI elements, always use both:
   - The referenced `.instructions.md` file for control names, types, and event definitions.
-  - The mapped screenshot in `UI_Winform_Screenshots` for layout, sizing, and style (see [UI Mapping Reference](ui-mapping.instruction.md)).
+  - The mapped screenshot in `UI_Winform_Screenshots` for layout, sizing, and style (see [UI Mapping Reference](./ui-mapping.instruction.md)).
 
 - If Markdown and screenshot disagree, prioritize the screenshot for layout, but preserve control names/events from the Markdown.
 
@@ -18,7 +18,7 @@
     - Empty stubs for all other events (with TODO)
     - No business logic
 
-- Adhere to the [Naming Conventions](naming-conventions.instruction.md) and [Coding Conventions](coding-conventions.instruction.md).
+- Adhere to the [Naming Conventions](../Core-Instructions/naming.conventions.instruction.md) and [Coding Conventions](../Core-Instructions/codingconventions.instruction.md).
 
 - Checklist:
   - [ ] Use control names, events, and types from `.instructions.md`.
