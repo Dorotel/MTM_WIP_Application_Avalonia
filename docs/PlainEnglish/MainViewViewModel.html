@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MainViewViewModel - The Factory Control Center</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">📦 MTM WIP System</div>
+        <div class="nav-links">
+            <a href="../index.html">🏠 Home</a>
+            <a href="../PlainEnglish/index.html">📖 Plain English</a>
+            <a href="../Technical/index.html">🔧 Technical</a>
+            <a href="#" onclick="switchToTechnical()" title="Switch to Technical View (Alt+T)">🔧 Technical View</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Header Section -->
+        <header class="header-section">
+            <div class="header-content">
+                <div class="icon-container">
+                    <span class="file-icon">🏗️</span>
+                </div>
+                <div class="header-text">
+                    <h1>MainViewViewModel</h1>
+                    <p class="subtitle">The Factory Control Center</p>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <button onclick="window.print()" class="btn-secondary">🖨️ Print</button>
+                <button onclick="exportContent()" class="btn-secondary">📄 Export</button>
+            </div>
+        </header>
+
+        <!-- What This Is Section -->
+        <section class="content-section">
+            <h2>🎯 What This Is</h2>
+            <div class="info-box info-primary">
+                <h3>The Central Manufacturing Control Station</h3>
+                <p>Think of <strong>MainViewViewModel</strong> as your <strong>factory control center</strong> - the main command hub where all manufacturing operations are coordinated. It's like the control room where supervisors monitor production lines, coordinate between different work areas, and manage the overall flow of operations.</p>
+            </div>
+
+            <div class="analogy-box">
+                <h4>🏭 Manufacturing Floor Analogy</h4>
+                <p>Imagine you have a <strong>central control station</strong> in your factory where operators can:</p>
+                <ul>
+                    <li>📊 <strong>Switch between work areas</strong> - Tabs for Inventory, Remove, and Transfer operations</li>
+                    <li>⚡ <strong>Access quick actions panel</strong> - Rapid access to frequently used operations</li>
+                    <li>📱 <strong>Monitor system status</strong> - Connection strength, progress indicators, and system messages</li>
+                    <li>🔧 <strong>Access system functions</strong> - Settings, history, refresh, and emergency cancel operations</li>
+                    <li>👥 <strong>Coordinate between stations</strong> - Links Quick Buttons with inventory forms for seamless workflow</li>
+                    <li>📡 <strong>Real-time communication</strong> - Event-driven updates between all system components</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Control Center Layout Section -->
+        <section class="content-section">
+            <h2>🎛️ Control Center Layout</h2>
+            <div class="layout-grid">
+                <div class="layout-card">
+                    <h3>📊 Main Work Tabs</h3>
+                    <p><strong>Three primary operation areas:</strong></p>
+                    <ul>
+                        <li><strong>Inventory Tab</strong> - Adding items to warehouse stock</li>
+                        <li><strong>Remove Tab</strong> - Taking items out of inventory</li>
+                        <li><strong>Transfer Tab</strong> - Moving items between locations</li>
+                    </ul>
+                    <p>Workers switch between tabs based on their current task, with the system remembering their position and automatically switching when Quick Buttons are used.</p>
+                </div>
+                <div class="layout-card">
+                    <h3>⚡ Quick Actions Panel</h3>
+                    <p><strong>Rapid access control panel with:</strong></p>
+                    <ul>
+                        <li><strong>10 Quick Buttons</strong> - One-click access to frequent operations</li>
+                        <li><strong>Show/Hide Toggle</strong> - Maximize screen space when not needed</li>
+                        <li><strong>Auto-integration</strong> - Buttons automatically populate active tab forms</li>
+                    </ul>
+                    <p>The panel can be hidden to give more space to the main work area, and the toggle button updates its text dynamically.</p>
+                </div>
+                <div class="layout-card">
+                    <h3>📱 Status & Control Strip</h3>
+                    <p><strong>System monitoring and control:</strong></p>
+                    <ul>
+                        <li><strong>Connection Status</strong> - Database connectivity indicator</li>
+                        <li><strong>Progress Bar</strong> - Current operation progress (0-100%)</li>
+                        <li><strong>Status Messages</strong> - Real-time feedback on user actions</li>
+                        <li><strong>Version Display</strong> - Current system version (4.6.0.0)</li>
+                    </ul>
+                </div>
+                <div class="layout-card">
+                    <h3>🔧 System Controls</h3>
+                    <p><strong>Administrative functions:</strong></p>
+                    <ul>
+                        <li><strong>Settings</strong> - Configure system preferences</li>
+                        <li><strong>Personal History</strong> - View your transaction history</li>
+                        <li><strong>Refresh</strong> - Reload current tab data</li>
+                        <li><strong>Cancel</strong> - Stop current operation</li>
+                        <li><strong>About</strong> - System information and help</li>
+                        <li><strong>Exit</strong> - Safely close the application</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="content-section">
+            <h2>⚙️ How It Works</h2>
+            <div class="process-flow">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>🏗️ System Initialization</h3>
+                        <p>Sets up all child components, connects services, and establishes communication between Quick Buttons and inventory forms.</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>📡 Event Coordination</h3>
+                        <p>Listens for events from child components and coordinates responses - when Quick Buttons are clicked, automatically switches to the right tab and populates forms.</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>📊 Status Management</h3>
+                        <p>Continuously updates status displays, progress indicators, and user feedback messages based on system operations.</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>🔄 Real-time Updates</h3>
+                        <p>Processes completed operations, updates Quick Buttons with new data, and maintains system state across all components.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Smart Integration Section -->
+        <section class="content-section">
+            <h2>🧠 Smart Integration Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Quick Button Integration</h3>
+                    <p>When a Quick Button is clicked, the system automatically switches to the Inventory tab and fills in all the form fields</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Auto-Update Buttons</h3>
+                    <p>When inventory operations are completed, the Quick Buttons automatically update with the latest actions</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Dynamic Status Updates</h3>
+                    <p>Status bar shows real-time feedback like "Saved: PART001 - 90 (25 units)" when operations complete</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎛️</div>
+                    <h3>Flexible Panel Management</h3>
+                    <p>Quick Actions panel can be shown or hidden based on user preference, with automatic text updates</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Component Coordination</h3>
+                    <p>All child components communicate through events, ensuring smooth data flow and user experience</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Multi-Tab Management</h3>
+                    <p>Manages three different inventory operation types with seamless switching and state preservation</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Rules Section -->
+        <section class="content-section">
+            <h2>📋 MTM Business Rules</h2>
+            <div class="rules-container">
+                <div class="rule-box rule-critical">
+                    <h3>🚨 Critical Coordination Rules</h3>
+                    <ul>
+                        <li><strong>Tab Switching</strong> - Quick Button clicks always switch to Inventory tab (tab index 0)</li>
+                        <li><strong>Event-Driven Architecture</strong> - All component communication uses events, not direct method calls</li>
+                        <li><strong>Service Integration</strong> - Properly injects and coordinates all MTM business services</li>
+                        <li><strong>State Management</strong> - Maintains application state through IApplicationStateService</li>
+                    </ul>
+                </div>
+                <div class="rule-box rule-warning">
+                    <h3>⚠️ Component Management Rules</h3>
+                    <ul>
+                        <li><strong>Child ViewModel Creation</strong> - Currently creates child ViewModels directly (should use DI)</li>
+                        <li><strong>View Composition</strong> - Manually creates views and assigns DataContext (temporary pattern)</li>
+                        <li><strong>Error Handling</strong> - All commands have centralized error handling with logging</li>
+                        <li><strong>Panel Visibility</strong> - Advanced panel defaults to visible but can be toggled by user</li>
+                    </ul>
+                </div>
+                <div class="rule-box rule-info">
+                    <h3>ℹ️ Development Guidelines</h3>
+                    <ul>
+                        <li><strong>Dependency Injection</strong> - Uses proper DI for services but not for child ViewModels yet</li>
+                        <li><strong>Reactive Properties</strong> - Uses ReactiveUI patterns for property change notifications</li>
+                        <li><strong>Command Stubs</strong> - Many commands are placeholder implementations awaiting business logic</li>
+                        <li><strong>Development Menu</strong> - Shows development menu by default (should be build-config dependent)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Available Operations Section -->
+        <section class="content-section">
+            <h2>⚡ Available Operations</h2>
+            <div class="operations-grid">
+                <div class="operation-card">
+                    <h3>🔧 Settings Command</h3>
+                    <p>Opens system configuration and preferences</p>
+                    <p><em>Status: Placeholder (TODO implementation)</em></p>
+                </div>
+                <div class="operation-card">
+                    <h3>🚪 Exit Command</h3>
+                    <p>Safely closes the application with proper cleanup</p>
+                    <p><em>Status: Placeholder (TODO implementation)</em></p>
+                </div>
+                <div class="operation-card">
+                    <h3>📜 Personal History Command</h3>
+                    <p>Shows the user's transaction history and activity log</p>
+                    <p><em>Status: Placeholder (TODO implementation)</em></p>
+                </div>
+                <div class="operation-card">
+                    <h3>🔄 Refresh Command</h3>
+                    <p>Reloads data for the currently active tab</p>
+                    <p><em>Status: Placeholder (TODO implementation)</em></p>
+                </div>
+                <div class="operation-card">
+                    <h3>❌ Cancel Command</h3>
+                    <p>Cancels the current operation and resets forms</p>
+                    <p><em>Status: Placeholder (TODO implementation)</em></p>
+                </div>
+                <div class="operation-card">
+                    <h3>🎛️ Toggle Panel Command</h3>
+                    <p>Shows or hides the Quick Actions panel</p>
+                    <p><em>Status: Fully implemented</em></p>
+                </div>
+                <div class="operation-card">
+                    <h3>ℹ️ About Command</h3>
+                    <p>Displays system information and version details</p>
+                    <p><em>Status: Placeholder (TODO implementation)</em></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Event Coordination Section -->
+        <section class="content-section">
+            <h2>📡 Event Coordination</h2>
+            <div class="events-info">
+                <h3>📤 Handled Events</h3>
+                <div class="event-grid">
+                    <div class="event-card">
+                        <h4>⚡ Quick Action Executed</h4>
+                        <p><strong>Source:</strong> QuickButtonsViewModel</p>
+                        <p><strong>Action:</strong> Populates inventory form and switches to Inventory tab</p>
+                        <ul>
+                            <li>Sets SelectedPart from button data</li>
+                            <li>Sets SelectedOperation from button data</li>
+                            <li>Sets Quantity from button data</li>
+                            <li>Switches to tab index 0 (Inventory)</li>
+                            <li>Updates status bar with quick action details</li>
+                        </ul>
+                    </div>
+                    <div class="event-card">
+                        <h4>💾 Inventory Item Saved</h4>
+                        <p><strong>Source:</strong> InventoryTabViewModel</p>
+                        <p><strong>Action:</strong> Updates status and could update Quick Buttons</p>
+                        <ul>
+                            <li>Updates status bar with save confirmation</li>
+                            <li>Shows part ID, operation, and quantity saved</li>
+                            <li>Future: Could automatically update Quick Buttons list</li>
+                        </ul>
+                    </div>
+                    <div class="event-card">
+                        <h4>🎛️ Panel Toggle Requested</h4>
+                        <p><strong>Source:</strong> InventoryTabViewModel</p>
+                        <p><strong>Action:</strong> Toggles Quick Actions panel visibility</p>
+                        <ul>
+                            <li>Flips IsAdvancedPanelVisible property</li>
+                            <li>Updates toggle button text automatically</li>
+                            <li>Provides more space for forms when hidden</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Section -->
+        <section class="content-section">
+            <h2>🧭 Related Documentation</h2>
+            <div class="nav-grid">
+                <a href="MainWindowViewModel.html" class="nav-card">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-content">
+                        <h3>MainWindowViewModel</h3>
+                        <p>The parent window container that hosts this main view</p>
+                    </div>
+                </a>
+                <a href="QuickButtonsViewModel.html" class="nav-card">
+                    <div class="nav-icon">⚡</div>
+                    <div class="nav-content">
+                        <h3>QuickButtonsViewModel</h3>
+                        <p>Child component for rapid inventory action access</p>
+                    </div>
+                </a>
+                <a href="InventoryTabViewModel.html" class="nav-card">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-content">
+                        <h3>InventoryTabViewModel</h3>
+                        <p>Child component for inventory form management</p>
+                    </div>
+                </a>
+                <a href="NavigationService.html" class="nav-card">
+                    <div class="nav-icon">🧭</div>
+                    <div class="nav-content">
+                        <h3>NavigationService</h3>
+                        <p>Service for managing application navigation and routing</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>📚 Documentation</h3>
+                    <ul>
+                        <li><a href="../PlainEnglish/index.html">Plain English Docs</a></li>
+                        <li><a href="../Technical/index.html">Technical Docs</a></li>
+                        <li><a href="../index.html">Documentation Home</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>🔧 Development</h3>
+                    <ul>
+                        <li><a href="#" onclick="switchToTechnical()">Technical View</a></li>
+                        <li><a href="../../README.md">Project README</a></li>
+                        <li><a href="../../Development/">Development Docs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>📋 Quick Actions</h3>
+                    <ul>
+                        <li><a href="#" onclick="window.print()">Print This Page</a></li>
+                        <li><a href="#" onclick="exportContent()">Export Content</a></li>
+                        <li><a href="#" onclick="showKeyboardShortcuts()">Keyboard Shortcuts</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MTM WIP Application Documentation. Generated automatically from source code analysis.</p>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                switchToTechnical();
+            }
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                // Already in Plain English view
+                console.log('Already in Plain English view');
+            }
+        });
+
+        function switchToTechnical() {
+            window.location.href = '../Technical/FileDefinitions/MainViewViewModel.html';
+        }
+
+        function exportContent() {
+            // Simple export functionality
+            const content = document.querySelector('main').innerHTML;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'MainViewViewModel_PlainEnglish.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showKeyboardShortcuts() {
+            alert('Keyboard Shortcuts:\nAlt+T: Switch to Technical View\nAlt+P: Switch to Plain English View\nCtrl+P: Print Page');
+        }
+    </script>
+</body>
+</html>

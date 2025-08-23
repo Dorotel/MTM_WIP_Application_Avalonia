@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoreModels - The MTM Data Foundation</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">📦 MTM WIP System</div>
+        <div class="nav-links">
+            <a href="../index.html">🏠 Home</a>
+            <a href="../PlainEnglish/index.html">📖 Plain English</a>
+            <a href="../Technical/index.html">🔧 Technical</a>
+            <a href="#" onclick="switchToTechnical()" title="Switch to Technical View (Alt+T)">🔧 Technical View</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Header Section -->
+        <header class="header-section">
+            <div class="header-content">
+                <div class="icon-container">
+                    <span class="file-icon">🗃️</span>
+                </div>
+                <div class="header-text">
+                    <h1>CoreModels</h1>
+                    <p class="subtitle">The MTM Data Foundation</p>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <button onclick="window.print()" class="btn-secondary">🖨️ Print</button>
+                <button onclick="exportContent()" class="btn-secondary">📄 Export</button>
+            </div>
+        </header>
+
+        <!-- What This Is Section -->
+        <section class="content-section">
+            <h2>🎯 What This Is</h2>
+            <div class="info-box info-primary">
+                <h3>The Digital Blueprint Library</h3>
+                <p>Think of <strong>CoreModels</strong> as your <strong>digital blueprint library</strong> - like having detailed engineering drawings and specifications for every piece of equipment, process, and record in your manufacturing facility. These models define exactly how data is structured, stored, and used throughout the entire MTM WIP system.</p>
+            </div>
+
+            <div class="analogy-box">
+                <h4>🏭 Manufacturing Floor Analogy</h4>
+                <p>Imagine you have a <strong>comprehensive documentation center</strong> that contains:</p>
+                <ul>
+                    <li>👥 <strong>Employee records and roles</strong> - Who can do what in each work area</li>
+                    <li>📦 <strong>Part specifications</strong> - Every component, where it goes, and how it's tracked</li>
+                    <li>📊 <strong>Transaction logs</strong> - Complete history of every item movement</li>
+                    <li>🏭 <strong>Work center definitions</strong> - All locations and operation numbers</li>
+                    <li>⚡ <strong>Quick action templates</strong> - Preset configurations for common operations</li>
+                    <li>📝 <strong>Error and audit logs</strong> - Complete tracking of all system events</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Data Categories Section -->
+        <section class="content-section">
+            <h2>📋 Data Categories</h2>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-icon">👥</div>
+                    <h3>User Management</h3>
+                    <p><strong>Who works in your facility</strong></p>
+                    <ul>
+                        <li><strong>User</strong> - Employee records with shifts and permissions</li>
+                        <li><strong>Role</strong> - Job functions and what they can access</li>
+                        <li><strong>UserRole</strong> - Which employees have which job functions</li>
+                    </ul>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">📦</div>
+                    <h3>Inventory Tracking</h3>
+                    <p><strong>Every part and its movement</strong></p>
+                    <ul>
+                        <li><strong>InventoryItem</strong> - Current stock levels and locations</li>
+                        <li><strong>InventoryTransaction</strong> - Complete history of all movements</li>
+                        <li><strong>BatchSequence</strong> - Unique tracking numbers for groups</li>
+                    </ul>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🏭</div>
+                    <h3>Master Data</h3>
+                    <p><strong>Your facility's reference information</strong></p>
+                    <ul>
+                        <li><strong>PartDefinition</strong> - What parts exist and their properties</li>
+                        <li><strong>Location</strong> - All work centers and storage areas</li>
+                        <li><strong>OperationNumber</strong> - Valid workflow step numbers</li>
+                        <li><strong>ItemType</strong> - Categories of parts (WIP, Raw Material, etc.)</li>
+                    </ul>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">⚡</div>
+                    <h3>Quick Actions</h3>
+                    <p><strong>Rapid access to common operations</strong></p>
+                    <ul>
+                        <li><strong>QuickTransactionButton</strong> - User's top 10 frequent operations</li>
+                        <li><strong>UserUISettings</strong> - Personal preferences and shortcuts</li>
+                        <li><strong>Theme</strong> - Visual appearance configurations</li>
+                    </ul>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">📝</div>
+                    <h3>System Logging</h3>
+                    <p><strong>Complete audit trail and troubleshooting</strong></p>
+                    <ul>
+                        <li><strong>ErrorLog</strong> - All system errors and warnings</li>
+                        <li><strong>ChangelogEntry</strong> - Version history and updates</li>
+                        <li><strong>ValidationResult</strong> - Data quality checking results</li>
+                    </ul>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🔧</div>
+                    <h3>Business Operations</h3>
+                    <p><strong>Complex workflow support</strong></p>
+                    <ul>
+                        <li><strong>InventoryOperationRequest</strong> - Complete operation specifications</li>
+                        <li><strong>InventoryOperationResult</strong> - Results of complex operations</li>
+                        <li><strong>InventorySearchCriteria</strong> - Advanced search and filtering</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Business Models Section -->
+        <section class="content-section">
+            <h2>🔑 Key Business Models</h2>
+            <div class="models-grid">
+                <div class="model-card">
+                    <h3>📦 InventoryItem</h3>
+                    <p><strong>What's currently in your warehouse</strong></p>
+                    <ul>
+                        <li><strong>PartID</strong> - Which part this is (string format)</li>
+                        <li><strong>Location</strong> - Where it's stored (work center code)</li>
+                        <li><strong>Operation</strong> - Which workflow step (string number like "90", "100")</li>
+                        <li><strong>Quantity</strong> - How many pieces</li>
+                        <li><strong>User</strong> - Who last handled it</li>
+                        <li><strong>BatchNumber</strong> - Group tracking identifier</li>
+                    </ul>
+                </div>
+                <div class="model-card">
+                    <h3>📊 InventoryTransaction</h3>
+                    <p><strong>Record of every inventory movement</strong></p>
+                    <ul>
+                        <li><strong>TransactionType</strong> - IN, OUT, or TRANSFER</li>
+                        <li><strong>PartID</strong> - Which part was moved</li>
+                        <li><strong>FromLocation/ToLocation</strong> - Movement path</li>
+                        <li><strong>Operation</strong> - Workflow step number</li>
+                        <li><strong>Quantity</strong> - How many were moved</li>
+                        <li><strong>User</strong> - Who performed the action</li>
+                    </ul>
+                </div>
+                <div class="model-card">
+                    <h3>👤 User</h3>
+                    <p><strong>Employee information and settings</strong></p>
+                    <ul>
+                        <li><strong>User_Name</strong> - Login identifier</li>
+                        <li><strong>Shift</strong> - Which work shift (1, 2, 3)</li>
+                        <li><strong>Theme preferences</strong> - Visual appearance settings</li>
+                        <li><strong>Database connection</strong> - Server and port configuration</li>
+                        <li><strong>VitsUser</strong> - Special permissions flag</li>
+                    </ul>
+                </div>
+                <div class="model-card">
+                    <h3>⚡ QuickTransactionButton</h3>
+                    <p><strong>User's top 10 frequent operations</strong></p>
+                    <ul>
+                        <li><strong>User</strong> - Which employee this belongs to</li>
+                        <li><strong>PartID</strong> - Most used part</li>
+                        <li><strong>Operation</strong> - Most used workflow step</li>
+                        <li><strong>Quantity</strong> - Typical quantity for this operation</li>
+                        <li><strong>Position</strong> - Button position (1-10)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- MTM Business Rules Section -->
+        <section class="content-section">
+            <h2>📋 MTM Business Rules</h2>
+            <div class="rules-container">
+                <div class="rule-box rule-critical">
+                    <h3>🚨 Critical Data Rules</h3>
+                    <ul>
+                        <li><strong>Part IDs are strings</strong> - Always text format (e.g., "PART001")</li>
+                        <li><strong>Operations are string numbers</strong> - Workflow steps like "90", "100", "110"</li>
+                        <li><strong>Quantities are integers</strong> - Whole numbers only, no decimals</li>
+                        <li><strong>TransactionType</strong> - Only IN, OUT, or TRANSFER allowed</li>
+                        <li><strong>UI positions use 1-based indexing</strong> - Positions start at 1, not 0</li>
+                    </ul>
+                </div>
+                <div class="rule-box rule-warning">
+                    <h3>⚠️ Data Consistency Rules</h3>
+                    <ul>
+                        <li><strong>User tracking</strong> - Every transaction must record which user performed it</li>
+                        <li><strong>Timestamp recording</strong> - All operations must have date/time stamps</li>
+                        <li><strong>Location validation</strong> - Locations must exist in master data</li>
+                        <li><strong>Operation validation</strong> - Operations must be valid workflow steps</li>
+                        <li><strong>Batch tracking</strong> - Related items grouped by batch numbers</li>
+                    </ul>
+                </div>
+                <div class="rule-box rule-info">
+                    <h3>ℹ️ Compatibility Guidelines</h3>
+                    <ul>
+                        <li><strong>Multiple property names</strong> - Models support different naming conventions</li>
+                        <li><strong>Database mapping</strong> - Properties map to specific database table columns</li>
+                        <li><strong>JSON serialization</strong> - Models can be converted to/from JSON format</li>
+                        <li><strong>Navigation properties</strong> - Related data can be loaded together</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transaction Types Section -->
+        <section class="content-section">
+            <h2>🔄 Transaction Types</h2>
+            <div class="transaction-types">
+                <div class="transaction-card transaction-in">
+                    <h3>📥 IN Transactions</h3>
+                    <p><strong>Adding items to inventory</strong></p>
+                    <ul>
+                        <li>Receiving new parts from suppliers</li>
+                        <li>Completing manufacturing operations</li>
+                        <li>Returning items to stock</li>
+                        <li>Adjusting quantities upward</li>
+                    </ul>
+                    <div class="transaction-example">
+                        <strong>Example:</strong> Received 50 units of PART001 at operation 90 in work center WC01
+                    </div>
+                </div>
+                <div class="transaction-card transaction-out">
+                    <h3>📤 OUT Transactions</h3>
+                    <p><strong>Removing items from inventory</strong></p>
+                    <ul>
+                        <li>Shipping completed parts to customers</li>
+                        <li>Consuming raw materials in production</li>
+                        <li>Scrapping defective items</li>
+                        <li>Adjusting quantities downward</li>
+                    </ul>
+                    <div class="transaction-example">
+                        <strong>Example:</strong> Removed 25 units of PART002 from operation 100 in work center WC02
+                    </div>
+                </div>
+                <div class="transaction-card transaction-transfer">
+                    <h3>🔄 TRANSFER Transactions</h3>
+                    <p><strong>Moving items between locations</strong></p>
+                    <ul>
+                        <li>Moving parts between work centers</li>
+                        <li>Advancing through workflow operations</li>
+                        <li>Relocating for storage optimization</li>
+                        <li>Balancing inventory across locations</li>
+                    </ul>
+                    <div class="transaction-example">
+                        <strong>Example:</strong> Transferred 15 units of PART003 from WC01 to WC03
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Section -->
+        <section class="content-section">
+            <h2>🧭 Related Documentation</h2>
+            <div class="nav-grid">
+                <a href="Result.html" class="nav-card">
+                    <div class="nav-icon">✅</div>
+                    <div class="nav-content">
+                        <h3>Result Model</h3>
+                        <p>Generic result pattern for operation success/failure handling</p>
+                    </div>
+                </a>
+                <a href="InventoryService.html" class="nav-card">
+                    <div class="nav-icon">🏪</div>
+                    <div class="nav-content">
+                        <h3>InventoryService</h3>
+                        <p>Business service that works with these models</p>
+                    </div>
+                </a>
+                <a href="DatabaseService.html" class="nav-card">
+                    <div class="nav-icon">🗄️</div>
+                    <div class="nav-content">
+                        <h3>DatabaseService</h3>
+                        <p>Data access service that loads and saves these models</p>
+                    </div>
+                </a>
+                <a href="UserAndTransactionServices.html" class="nav-card">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-content">
+                        <h3>UserAndTransactionServices</h3>
+                        <p>Services that manage user and transaction models</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>📚 Documentation</h3>
+                    <ul>
+                        <li><a href="../PlainEnglish/index.html">Plain English Docs</a></li>
+                        <li><a href="../Technical/index.html">Technical Docs</a></li>
+                        <li><a href="../index.html">Documentation Home</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>🔧 Development</h3>
+                    <ul>
+                        <li><a href="#" onclick="switchToTechnical()">Technical View</a></li>
+                        <li><a href="../../README.md">Project README</a></li>
+                        <li><a href="../../Development/">Development Docs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>📋 Quick Actions</h3>
+                    <ul>
+                        <li><a href="#" onclick="window.print()">Print This Page</a></li>
+                        <li><a href="#" onclick="exportContent()">Export Content</a></li>
+                        <li><a href="#" onclick="showKeyboardShortcuts()">Keyboard Shortcuts</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MTM WIP Application Documentation. Generated automatically from source code analysis.</p>
+            </div>
+        </footer>
+    </main>
+
+    <style>
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .category-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #4B45ED;
+        }
+        .category-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .model-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+        }
+        .transaction-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .transaction-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .transaction-in {
+            border-left: 4px solid #28a745;
+        }
+        .transaction-out {
+            border-left: 4px solid #dc3545;
+        }
+        .transaction-transfer {
+            border-left: 4px solid #ffc107;
+        }
+        .transaction-example {
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+
+    <script>
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                switchToTechnical();
+            }
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                // Already in Plain English view
+                console.log('Already in Plain English view');
+            }
+        });
+
+        function switchToTechnical() {
+            window.location.href = '../Technical/FileDefinitions/CoreModels.html';
+        }
+
+        function exportContent() {
+            // Simple export functionality
+            const content = document.querySelector('main').innerHTML;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'CoreModels_PlainEnglish.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showKeyboardShortcuts() {
+            alert('Keyboard Shortcuts:\nAlt+T: Switch to Technical View\nAlt+P: Switch to Plain English View\nCtrl+P: Print Page');
+        }
+    </script>
+</body>
+</html>
