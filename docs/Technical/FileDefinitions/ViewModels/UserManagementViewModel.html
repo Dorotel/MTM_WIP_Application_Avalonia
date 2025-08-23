@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UserManagementViewModel - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>👥 UserManagementViewModel - Technical Documentation</h1>
+            <div class="nav-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/UserManagementViewModel.html" class="nav-link plain-english">📖 Plain English Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Technical Overview -->
+            <section class="doc-section">
+                <h2>🔧 Technical Implementation</h2>
+                <div class="code-block">
+                    <h3>Namespace & Dependencies</h3>
+                    <pre><code>namespace MTM_WIP_Application_Avalonia.ViewModels
+using ReactiveUI;
+using Microsoft.Extensions.Logging;
+using MTM.Services.IUserService;
+using MTM_WIP_Application_Avalonia.Services.IApplicationStateService;
+using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Security;</code></pre>
+                </div>
+
+                <div class="technical-details">
+                    <h3>Class Definition</h3>
+                    <ul>
+                        <li><strong>Base Class:</strong> BaseViewModel (ReactiveUI foundation)</li>
+                        <li><strong>Pattern:</strong> MVVM with Administrative CRUD Operations</li>
+                        <li><strong>DI Dependencies:</strong> IUserService, IApplicationStateService, ILogger</li>
+                        <li><strong>Purpose:</strong> Administrative user account and permission management</li>
+                        <li><strong>Security:</strong> High - requires administrative permissions</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Observable Properties -->
+            <section class="doc-section">
+                <h2>🔄 Observable Properties</h2>
+                <div class="property-grid">
+                    <div class="property-item">
+                        <h4>Users (ObservableCollection)</h4>
+                        <p><strong>Collection Property:</strong> Main user data source</p>
+                        <p><strong>Type:</strong> ObservableCollection&lt;UserViewModel&gt;</p>
+                        <p><strong>UI Binding:</strong> DataGrid ItemsSource</p>
+                        <p><strong>Security:</strong> Filtered based on current user permissions</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>FilteredUsers (ReadOnlyObservableCollection)</h4>
+                        <p><strong>Derived Property:</strong> Filtered view of Users</p>
+                        <p><strong>Updates:</strong> When search or filter criteria change</p>
+                        <p><strong>UI Binding:</strong> Actual DataGrid display source</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>SelectedUser (UserViewModel)</h4>
+                        <p><strong>Reactive Property:</strong> Currently selected user</p>
+                        <p><strong>UI Binding:</strong> DataGrid SelectedItem</p>
+                        <p><strong>Commands:</strong> Enables user-specific operations</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>SearchText (string)</h4>
+                        <p><strong>Reactive Property:</strong> User search filter</p>
+                        <p><strong>Searches:</strong> Name, Employee ID, Department</p>
+                        <p><strong>UI Binding:</strong> SearchBox Text property</p>
+                        <p><strong>Debounced:</strong> 300ms delay for performance</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>DepartmentFilter (string)</h4>
+                        <p><strong>Reactive Property:</strong> Filter by department</p>
+                        <p><strong>Values:</strong> "All", "Inventory", "Production", etc.</p>
+                        <p><strong>UI Binding:</strong> ComboBox SelectedItem</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>StatusFilter (UserStatus?)</h4>
+                        <p><strong>Reactive Property:</strong> Filter by user status</p>
+                        <p><strong>Values:</strong> null (All), Active, Inactive, Locked</p>
+                        <p><strong>UI Binding:</strong> ComboBox SelectedItem</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>IsLoading (bool)</h4>
+                        <p><strong>Reactive Property:</strong> Data loading indicator</p>
+                        <p><strong>UI Impact:</strong> Shows progress bar, disables controls</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>CanManageUsers (bool)</h4>
+                        <p><strong>Computed Property:</strong> Current user has admin permissions</p>
+                        <p><strong>Security Check:</strong> Based on current user role</p>
+                        <p><strong>UI Impact:</strong> Enables/disables management buttons</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>AvailableRoles (ObservableCollection)</h4>
+                        <p><strong>Collection Property:</strong> System roles for assignment</p>
+                        <p><strong>Source:</strong> Configured role definitions</p>
+                        <p><strong>UI Binding:</strong> Role ComboBox ItemsSource</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>AvailableDepartments (ObservableCollection)</h4>
+                        <p><strong>Collection Property:</strong> Organization departments</p>
+                        <p><strong>Source:</strong> HR system or configuration</p>
+                        <p><strong>UI Binding:</strong> Department ComboBox ItemsSource</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reactive Commands -->
+            <section class="doc-section">
+                <h2>⚡ Reactive Commands</h2>
+                <div class="command-grid">
+                    <div class="command-item">
+                        <h4>LoadUsersCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Loads all users with current filters</p>
+                        <p><strong>Implementation:</strong></p>
+                        <div class="code-block">
+                            <pre><code>LoadUsersCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    try
+    {
+        IsLoading = true;
+        
+        // Check permissions first
+        if (!CanManageUsers)
+        {
+            throw new UnauthorizedAccessException("Insufficient permissions for user management");
+        }
+        
+        var users = await _userService.GetAllUsersAsync();
+        
+        Users.Clear();
+        foreach (var user in users)
+        {
+            Users.Add(new UserViewModel(user));
+        }
+        
+        await LoadRolesAndDepartmentsAsync();
+        
+        Logger.LogInformation("Loaded {Count} users", Users.Count);
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Failed to load users");
+        throw;
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+});</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>AddUserCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Opens dialog to create new user</p>
+                        <p><strong>Security:</strong> Requires admin permissions</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>EditUserCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;UserViewModel, Unit&gt;</p>
+                        <p><strong>Parameter:</strong> User to edit</p>
+                        <p><strong>Purpose:</strong> Opens dialog to modify user details</p>
+                        <p><strong>Validation:</strong> Cannot edit higher-privilege users</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>DeactivateUserCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;UserViewModel, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Deactivates user account</p>
+                        <p><strong>Confirmation:</strong> Requires confirmation dialog</p>
+                        <p><strong>Protection:</strong> Cannot deactivate own account</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ResetPasswordCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;UserViewModel, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Resets user password to temporary value</p>
+                        <p><strong>Security:</strong> Generates secure temporary password</p>
+                        <p><strong>Notification:</strong> User notified of new password</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>UnlockUserCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;UserViewModel, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Unlocks locked user accounts</p>
+                        <p><strong>Condition:</strong> Only enabled for locked accounts</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ExportUsersCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Exports user list to Excel/CSV</p>
+                        <p><strong>Privacy:</strong> Excludes sensitive data from export</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>RefreshCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Refreshes user data from database</p>
+                        <p><strong>State:</strong> Maintains current filters and selection</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Model Structure -->
+            <section class="doc-section">
+                <h2>👤 User Data Model</h2>
+                <div class="code-block">
+                    <h3>UserViewModel Structure</h3>
+                    <pre><code>public class UserViewModel : ReactiveObject
+{
+    public string UserId { get; set; }
+    public string EmployeeId { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Department { get; set; }
+    public string Role { get; set; }
+    public UserStatus Status { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime? LastLoginDate { get; set; }
+    public string? Email { get; set; }
+    public string? PhoneNumber { get; set; }
+    public bool IsActive { get; set; }
+    public bool IsLocked { get; set; }
+    public DateTime? PasswordExpiry { get; set; }
+    
+    // Computed Properties
+    public string FullName => $"{FirstName} {LastName}";
+    
+    public string StatusDisplay => Status switch
+    {
+        UserStatus.Active => "✅ Active",
+        UserStatus.Inactive => "🚫 Inactive", 
+        UserStatus.Locked => "🔒 Locked",
+        UserStatus.PendingActivation => "⏳ Pending",
+        _ => "❓ Unknown"
+    };
+    
+    public IBrush StatusBrush => Status switch
+    {
+        UserStatus.Active => Brushes.Green,
+        UserStatus.Inactive => Brushes.Gray,
+        UserStatus.Locked => Brushes.Red,
+        UserStatus.PendingActivation => Brushes.Orange,
+        _ => Brushes.DarkGray
+    };
+    
+    public string LastLoginDisplay => LastLoginDate?.ToString("MM/dd/yyyy HH:mm") ?? "Never";
+    
+    public bool PasswordExpiringSoon => 
+        PasswordExpiry.HasValue && 
+        PasswordExpiry.Value <= DateTime.Now.AddDays(7);
+    
+    // Permission Helpers
+    public bool CanEdit => !IsCurrentUser && HasLowerOrEqualPrivileges;
+    public bool CanDeactivate => !IsCurrentUser && IsActive;
+    public bool CanResetPassword => IsActive;
+    public bool CanUnlock => IsLocked;
+    
+    // Commands
+    public ReactiveCommand&lt;Unit, Unit&gt; EditCommand { get; }
+    public ReactiveCommand&lt;Unit, Unit&gt; DeactivateCommand { get; }
+    public ReactiveCommand&lt;Unit, Unit&gt; ResetPasswordCommand { get; }
+    public ReactiveCommand&lt;Unit, Unit&gt; UnlockCommand { get; }
+    public ReactiveCommand&lt;Unit, Unit&gt; ViewActivityCommand { get; }
+}</code></pre>
+                </div>
+
+                <div class="role-definitions">
+                    <h3>System Role Definitions</h3>
+                    <div class="code-block">
+                        <pre><code>public enum UserRole
+{
+    Worker = 1,        // Basic inventory operations
+    Supervisor = 2,    // Worker + reports and monitoring
+    Manager = 3,       // Supervisor + exports and user activity
+    Administrator = 4  // Full system access including user management
+}
+
+public static class RolePermissions
+{
+    public static Dictionary&lt;UserRole, HashSet&lt;string&gt;&gt; Permissions = new()
+    {
+        [UserRole.Worker] = new HashSet&lt;string&gt;
+        {
+            "INVENTORY_ADD",
+            "INVENTORY_REMOVE", 
+            "INVENTORY_TRANSFER",
+            "INVENTORY_VIEW"
+        },
+        [UserRole.Supervisor] = new HashSet&lt;string&gt;(Permissions[UserRole.Worker])
+        {
+            "TRANSACTION_HISTORY_VIEW",
+            "REPORTS_VIEW",
+            "USER_ACTIVITY_VIEW"
+        },
+        [UserRole.Manager] = new HashSet&lt;string&gt;(Permissions[UserRole.Supervisor])
+        {
+            "DATA_EXPORT",
+            "REPORTS_EXPORT",
+            "USER_ACTIVITY_FULL"
+        },
+        [UserRole.Administrator] = new HashSet&lt;string&gt;(Permissions[UserRole.Manager])
+        {
+            "USER_MANAGEMENT",
+            "SYSTEM_SETTINGS",
+            "AUDIT_LOG_VIEW"
+        }
+    };
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Implementation -->
+            <section class="doc-section">
+                <h2>🔐 Security & Authorization</h2>
+                <div class="code-block">
+                    <h3>Permission Validation</h3>
+                    <pre><code>// Permission Checking Service
+private bool HasPermission(string permission)
+{
+    var currentUser = _applicationState.CurrentUser;
+    return currentUser?.Permissions.Contains(permission) == true;
+}
+
+// Command Security Decorators
+AddUserCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    if (!HasPermission("USER_MANAGEMENT"))
+    {
+        throw new UnauthorizedAccessException("Insufficient permissions to add users");
+    }
+    
+    await ShowAddUserDialog();
+}, this.WhenAnyValue(vm => vm.CanManageUsers));
+
+// Hierarchical Permission Checking
+private bool CanEditUser(UserViewModel targetUser)
+{
+    var currentUser = _applicationState.CurrentUser;
+    
+    // Cannot edit users with higher or equal privileges
+    if (targetUser.Role >= currentUser.Role)
+    {
+        return false;
+    }
+    
+    // Cannot edit own account through this interface
+    if (targetUser.UserId == currentUser.UserId)
+    {
+        return false;
+    }
+    
+    return HasPermission("USER_MANAGEMENT");
+}
+
+// Audit Logging for Security Actions
+private async Task LogSecurityAction(string action, string targetUserId, string details = null)
+{
+    var auditEntry = new SecurityAuditEntry
+    {
+        Action = action,
+        PerformedBy = _applicationState.CurrentUser.UserId,
+        TargetUserId = targetUserId,
+        Timestamp = DateTime.UtcNow,
+        Details = details,
+        IPAddress = _applicationState.UserIPAddress
+    };
+    
+    await _userService.LogSecurityActionAsync(auditEntry);
+}</code></pre>
+                </div>
+
+                <div class="security-features">
+                    <h3>Security Features</h3>
+                    <ul>
+                        <li><strong>Role-Based Access Control:</strong> Hierarchical permission system</li>
+                        <li><strong>Privilege Escalation Prevention:</strong> Cannot edit higher-privilege users</li>
+                        <li><strong>Self-Management Protection:</strong> Cannot modify own account</li>
+                        <li><strong>Action Auditing:</strong> All administrative actions logged</li>
+                        <li><strong>Session Validation:</strong> Continuous verification of user permissions</li>
+                        <li><strong>Data Masking:</strong> Sensitive data hidden in UI and exports</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- User Dialog Management -->
+            <section class="doc-section">
+                <h2>📝 User Creation/Editing Dialogs</h2>
+                <div class="code-block">
+                    <h3>Add/Edit User Dialog Implementation</h3>
+                    <pre><code>// User Creation Dialog
+private async Task ShowAddUserDialog()
+{
+    var dialogViewModel = new UserEditDialogViewModel(_userService)
+    {
+        Title = "Add New User",
+        IsNewUser = true,
+        AvailableRoles = AvailableRoles.Where(r => r.Level <= CurrentUserRole.Level).ToList(),
+        AvailableDepartments = AvailableDepartments
+    };
+    
+    var dialog = new UserEditDialog { DataContext = dialogViewModel };
+    var result = await dialog.ShowDialog&lt;bool?&gt;(GetParentWindow());
+    
+    if (result == true)
+    {
+        try
+        {
+            var newUser = await _userService.CreateUserAsync(dialogViewModel.ToUserModel());
+            Users.Add(new UserViewModel(newUser));
+            
+            await LogSecurityAction("USER_CREATED", newUser.UserId, $"Role: {newUser.Role}");
+            ShowSuccessMessage($"User {newUser.FullName} created successfully");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to create user");
+            ShowErrorMessage($"Failed to create user: {ex.Message}");
+        }
+    }
+}
+
+// Password Reset Dialog
+private async Task ShowPasswordResetDialog(UserViewModel user)
+{
+    var confirmation = await ShowConfirmationDialog(
+        "Reset Password",
+        $"Are you sure you want to reset the password for {user.FullName}? " +
+        "They will be required to change it on next login.");
+    
+    if (confirmation)
+    {
+        try
+        {
+            var tempPassword = await _userService.ResetPasswordAsync(user.UserId);
+            
+            var resultDialog = new PasswordResetResultDialog
+            {
+                UserName = user.FullName,
+                TemporaryPassword = tempPassword
+            };
+            
+            await resultDialog.ShowDialog(GetParentWindow());
+            
+            await LogSecurityAction("PASSWORD_RESET", user.UserId);
+            ShowSuccessMessage($"Password reset for {user.FullName}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to reset password for user {UserId}", user.UserId);
+            ShowErrorMessage($"Failed to reset password: {ex.Message}");
+        }
+    }
+}</code></pre>
+                </div>
+
+                <div class="dialog-features">
+                    <h3>Dialog Management Features</h3>
+                    <ul>
+                        <li><strong>Role-Appropriate Options:</strong> Role dropdown filtered by current user permissions</li>
+                        <li><strong>Validation:</strong> Real-time validation of user input</li>
+                        <li><strong>Duplicate Detection:</strong> Prevents duplicate employee IDs</li>
+                        <li><strong>Password Policy Enforcement:</strong> Validates password requirements</li>
+                        <li><strong>Confirmation Dialogs:</strong> Confirmation required for destructive actions</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Database Operations -->
+            <section class="doc-section">
+                <h2>🗄️ Database Integration</h2>
+                <div class="database-operations">
+                    <h3>Service Layer Calls</h3>
+                    <div class="code-block">
+                        <pre><code>// User Management Operations
+var users = await _userService.GetAllUsersAsync();
+var user = await _userService.GetUserByIdAsync(userId);
+var newUser = await _userService.CreateUserAsync(userModel);
+await _userService.UpdateUserAsync(userModel);
+await _userService.DeactivateUserAsync(userId);
+
+// Password Operations
+var tempPassword = await _userService.ResetPasswordAsync(userId);
+await _userService.UnlockUserAsync(userId);
+await _userService.ForcePasswordChangeAsync(userId);
+
+// Role and Permission Operations
+var roles = await _userService.GetAvailableRolesAsync();
+var permissions = await _userService.GetUserPermissionsAsync(userId);
+await _userService.UpdateUserRoleAsync(userId, newRole);
+
+// Activity and Audit
+var activity = await _userService.GetUserActivityAsync(userId, dateRange);
+await _userService.LogSecurityActionAsync(auditEntry);
+
+// Bulk Operations
+var inactiveUsers = await _userService.GetInactiveUsersAsync(timespan);
+await _userService.BulkDeactivateUsersAsync(userIds);</code></pre>
+                    </div>
+
+                    <h3>Expected Stored Procedures</h3>
+                    <ul>
+                        <li><strong>usr_users_Get_All:</strong> Main user list retrieval</li>
+                        <li><strong>usr_users_Create:</strong> New user account creation</li>
+                        <li><strong>usr_users_Update:</strong> User information updates</li>
+                        <li><strong>usr_users_Deactivate:</strong> Account deactivation</li>
+                        <li><strong>usr_passwords_Reset:</strong> Password reset with temporary password</li>
+                        <li><strong>usr_accounts_Unlock:</strong> Account unlocking</li>
+                        <li><strong>usr_roles_Get_Available:</strong> Available role definitions</li>
+                        <li><strong>usr_audit_Log_Action:</strong> Security action logging</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Export and Reporting -->
+            <section class="doc-section">
+                <h2>📊 Reporting and Export</h2>
+                <div class="reporting">
+                    <div class="code-block">
+                        <h3>User Export Implementation</h3>
+                        <pre><code>// Export with Privacy Protection
+ExportUsersCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    try
+    {
+        var exportData = FilteredUsers.Select(u => new
+        {
+            EmployeeId = u.EmployeeId,
+            FullName = u.FullName,
+            Department = u.Department,
+            Role = u.Role,
+            Status = u.StatusDisplay,
+            LastLogin = u.LastLoginDisplay,
+            AccountCreated = u.CreatedDate.ToString("yyyy-MM-dd"),
+            // Exclude sensitive data like passwords, personal info
+        }).ToList();
+        
+        var fileName = $"UserList_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+        await ExportToExcelAsync(exportData, fileName);
+        
+        await LogSecurityAction("USER_LIST_EXPORTED", null, $"Count: {exportData.Count}");
+        ShowSuccessMessage($"User list exported: {fileName}");
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Failed to export user list");
+        ShowErrorMessage($"Export failed: {ex.Message}");
+    }
+}, this.WhenAnyValue(vm => vm.CanManageUsers));
+
+// Activity Report Generation
+private async Task GenerateUserActivityReport(DateTime startDate, DateTime endDate)
+{
+    var activityData = await _userService.GetUserActivityReportAsync(startDate, endDate);
+    
+    var report = new UserActivityReport
+    {
+        Period = $"{startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
+        TotalUsers = Users.Count,
+        ActiveUsers = Users.Count(u => u.IsActive),
+        LoginStatistics = CalculateLoginStatistics(activityData),
+        MostActiveUsers = GetMostActiveUsers(activityData, 10)
+    };
+    
+    await ExportReportToPdfAsync(report);
+}</code></pre>
+                    </div>
+
+                    <h3>Report Types</h3>
+                    <ul>
+                        <li><strong>User Directory:</strong> Complete user list with contact information</li>
+                        <li><strong>Access Report:</strong> User permissions and role assignments</li>
+                        <li><strong>Activity Summary:</strong> Login patterns and system usage</li>
+                        <li><strong>Security Audit:</strong> Administrative actions and permission changes</li>
+                        <li><strong>Compliance Report:</strong> User access review for audits</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Error Handling -->
+            <section class="doc-section">
+                <h2>🚨 Error Handling</h2>
+                <div class="error-handling">
+                    <div class="code-block">
+                        <h3>Security-Aware Error Handling</h3>
+                        <pre><code>// Security Exception Handling
+LoadUsersCommand.ThrownExceptions
+    .Subscribe(ex =>
+    {
+        var userMessage = ex switch
+        {
+            UnauthorizedAccessException => 
+                "You don't have permission to access user management.",
+            SecurityException secEx => 
+                $"Security error: {secEx.Message}",
+            DatabaseConnectionException => 
+                "Cannot connect to user database. Please try again.",
+            ValidationException valEx => 
+                $"Validation error: {valEx.Message}",
+            _ => "Failed to load users. Please contact support."
+        };
+        
+        Logger.LogError(ex, "User management operation failed");
+        ShowErrorMessage(userMessage);
+        
+        // Log security-related errors for audit
+        if (ex is UnauthorizedAccessException or SecurityException)
+        {
+            _ = LogSecurityAction("UNAUTHORIZED_ACCESS_ATTEMPT", null, ex.Message);
+        }
+    });
+
+// Safe Error Messages (no sensitive info)
+private string GetSafeErrorMessage(Exception ex)
+{
+    // Never expose database schemas, internal errors, or sensitive data
+    return ex switch
+    {
+        ArgumentException => "Invalid input provided",
+        DuplicateKeyException => "User already exists with this employee ID",
+        ReferentialIntegrityException => "Cannot delete user with existing transactions",
+        _ => "Operation failed. Please contact support."
+    };
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Integration Points -->
+            <section class="doc-section">
+                <h2>🔗 System Integration Points</h2>
+                <div class="integration-grid">
+                    <div class="integration-item">
+                        <h4>TransactionHistoryViewModel</h4>
+                        <p>User management controls who can view transaction history</p>
+                        <p>User information displayed in transaction records</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>All Other ViewModels</h4>
+                        <p>User permissions control feature availability across application</p>
+                        <p>Current user context provided to all operations</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>ApplicationStateService</h4>
+                        <p>Manages current user session and permission context</p>
+                        <p>Provides authentication and authorization services</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>External HR Systems</h4>
+                        <p>Syncs user data with corporate employee databases</p>
+                        <p>Maintains organizational structure and department information</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>👥 Technical Documentation | 🏭 MTM WIP Application | ⚡ Powered by Avalonia UI + ReactiveUI</p>
+            <div class="footer-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/UserManagementViewModel.html">📖 Plain English Version</a>
+                <a href="../../../Technical/index.html">📚 Technical Documentation Index</a>
+                <a href="../../../index.html">🏠 Documentation Home</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

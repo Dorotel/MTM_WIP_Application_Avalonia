@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Interfaces - Plain English Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔌 Service Interfaces - Plain English Guide</h1>
+            <div class="nav-links">
+                <a href="../../../Technical/FileDefinitions/Services/ServiceInterfaces.html" class="nav-link technical">🔧 Technical Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- What This Does -->
+            <section class="doc-section">
+                <h2>🤔 What Are Service Interfaces?</h2>
+                <div class="explanation-box">
+                    <p>Think of <strong>Service Interfaces</strong> as <strong>job descriptions for the factory's different departments</strong>. Just like how a job description tells you what a position should do without naming a specific person, these interfaces define what each part of the MTM system should be able to do without specifying exactly how it works.</p>
+                    
+                    <p>The MTM WIP Application has three main "job descriptions" (interfaces):</p>
+                    <ul>
+                        <li>🏢 <strong>IBusinessServices</strong> - What the main business operations department should do</li>
+                        <li>🔧 <strong>ICoreServices</strong> - What the IT infrastructure department should do</li>
+                        <li>🧭 <strong>INavigationService</strong> - What the user interface navigation department should do</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- IBusinessServices -->
+            <section class="doc-section">
+                <h2>🏢 IBusinessServices - Main Operations Interface</h2>
+                <div class="interface-description">
+                    <h3>What This Department Handles</h3>
+                    <p>This is like the <strong>main production floor supervisor</strong> who coordinates all the core business operations.</p>
+                    
+                    <div class="responsibilities">
+                        <h4>Key Responsibilities:</h4>
+                        <ul>
+                            <li>📦 <strong>Inventory Management</strong> - Adding, removing, and tracking parts</li>
+                            <li>👥 <strong>User Management</strong> - Managing worker accounts and permissions</li>
+                            <li>📊 <strong>Transaction Processing</strong> - Recording and tracking all inventory movements</li>
+                            <li>📋 <strong>Business Rules</strong> - Enforcing MTM's specific operating procedures</li>
+                            <li>🔒 <strong>Data Validation</strong> - Making sure all information is correct before processing</li>
+                        </ul>
+                    </div>
+
+                    <div class="real-world-example">
+                        <h4>Real-World Example:</h4>
+                        <p>When Mike the inventory clerk wants to add 100 bolts to the system, the IBusinessServices interface defines that someone must:</p>
+                        <ol>
+                            <li>Check if Mike has permission to add inventory</li>
+                            <li>Validate that the part number exists</li>
+                            <li>Verify the location is valid</li>
+                            <li>Record the transaction with proper audit trail</li>
+                            <li>Update the inventory counts</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ICoreServices -->
+            <section class="doc-section">
+                <h2>🔧 ICoreServices - IT Infrastructure Interface</h2>
+                <div class="interface-description">
+                    <h3>What This Department Handles</h3>
+                    <p>This is like the <strong>plant's IT support team</strong> that keeps all the computers and systems running smoothly.</p>
+                    
+                    <div class="responsibilities">
+                        <h4>Key Responsibilities:</h4>
+                        <ul>
+                            <li>🗄️ <strong>Database Operations</strong> - Connecting to and managing the database</li>
+                            <li>📝 <strong>Logging Services</strong> - Recording what happens in the system for troubleshooting</li>
+                            <li>⚙️ <strong>Configuration Management</strong> - Managing system settings and preferences</li>
+                            <li>🔐 <strong>Security Services</strong> - Handling user authentication and data protection</li>
+                            <li>🔄 <strong>System Health Monitoring</strong> - Checking if everything is working properly</li>
+                        </ul>
+                    </div>
+
+                    <div class="real-world-example">
+                        <h4>Real-World Example:</h4>
+                        <p>When the system starts up each morning, the ICoreServices interface defines that someone must:</p>
+                        <ol>
+                            <li>Connect to the database</li>
+                            <li>Load the system configuration</li>
+                            <li>Start the logging system</li>
+                            <li>Check all connections are working</li>
+                            <li>Report any problems to administrators</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- INavigationService -->
+            <section class="doc-section">
+                <h2>🧭 INavigationService - User Interface Interface</h2>
+                <div class="interface-description">
+                    <h3>What This Department Handles</h3>
+                    <p>This is like the <strong>reception desk and building directory</strong> that helps workers find their way around the application.</p>
+                    
+                    <div class="responsibilities">
+                        <h4>Key Responsibilities:</h4>
+                        <ul>
+                            <li>📱 <strong>Screen Navigation</strong> - Moving between different screens and features</li>
+                            <li>🎯 <strong>Deep Linking</strong> - Taking users directly to specific functions</li>
+                            <li>📊 <strong>Tab Management</strong> - Coordinating multiple open screens</li>
+                            <li>💾 <strong>State Preservation</strong> - Remembering where users were working</li>
+                            <li>🔄 <strong>Back Navigation</strong> - Helping users return to previous screens</li>
+                        </ul>
+                    </div>
+
+                    <div class="real-world-example">
+                        <h4>Real-World Example:</h4>
+                        <p>When Lisa clicks a Quick Button to add specific parts, the INavigationService interface defines that someone must:</p>
+                        <ol>
+                            <li>Switch to the Add Items screen</li>
+                            <li>Pre-fill the form with the part information</li>
+                            <li>Remember which Quick Button was pressed</li>
+                            <li>Keep track of where Lisa came from</li>
+                            <li>Allow her to easily return to the previous screen</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Why Interfaces Matter -->
+            <section class="doc-section">
+                <h2>❓ Why Do We Need These Job Descriptions?</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <h4>🔄 Flexibility</h4>
+                        <p>If we need to change how something works (like switching databases), we only need to hire a new "person" for the job - the job description stays the same.</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <h4>🧪 Testing</h4>
+                        <p>We can create "practice versions" of these departments to test the system without affecting real production data.</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <h4>👥 Team Coordination</h4>
+                        <p>Different programmers can work on different departments independently, as long as they follow the job descriptions.</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <h4>🛡️ Quality Control</h4>
+                        <p>Having clear job descriptions means everyone knows exactly what each department should do, reducing mistakes and confusion.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How They Work Together -->
+            <section class="doc-section">
+                <h2>🤝 How These Departments Work Together</h2>
+                <div class="workflow-example">
+                    <h3>Example: Adding New Inventory</h3>
+                    <div class="workflow-steps">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <div class="step-content">
+                                <h4>INavigationService (Reception)</h4>
+                                <p>User clicks "Add Items" - Navigation service switches to the Add Items screen</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <div class="step-content">
+                                <h4>IBusinessServices (Operations)</h4>
+                                <p>User enters part information - Business service validates the data and checks permissions</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <div class="step-content">
+                                <h4>ICoreServices (IT Support)</h4>
+                                <p>Business service needs database access - Core service handles the database connection and logging</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <div class="step-content">
+                                <h4>Back to IBusinessServices</h4>
+                                <p>Data is saved successfully - Business service confirms the transaction and updates inventory</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">5</span>
+                            <div class="step-content">
+                                <h4>Back to INavigationService</h4>
+                                <p>Operation complete - Navigation service might switch to inventory view to show the results</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- For Managers -->
+            <section class="doc-section">
+                <h2>👨‍💼 What This Means for Managers</h2>
+                <div class="manager-benefits">
+                    <h3>Business Benefits</h3>
+                    <ul>
+                        <li><strong>🔒 System Reliability:</strong> Clear separation of responsibilities reduces system failures</li>
+                        <li><strong>💰 Cost Effective:</strong> Easier to maintain and update the system over time</li>
+                        <li><strong>📈 Scalability:</strong> Can easily add new features or change existing ones</li>
+                        <li><strong>🛡️ Risk Reduction:</strong> Problems in one area don't automatically break other areas</li>
+                    </ul>
+                    
+                    <h3>Operational Benefits</h3>
+                    <ul>
+                        <li><strong>🧪 Better Testing:</strong> Each department can be tested independently</li>
+                        <li><strong>🔧 Easier Troubleshooting:</strong> Problems can be isolated to specific departments</li>
+                        <li><strong>👥 Team Efficiency:</strong> Different teams can work on different parts simultaneously</li>
+                        <li><strong>📋 Clear Documentation:</strong> Everyone knows exactly what each part should do</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Quality Assurance -->
+            <section class="doc-section">
+                <h2>✅ Quality Assurance Benefits</h2>
+                <div class="qa-benefits">
+                    <h3>For Quality Control</h3>
+                    <ul>
+                        <li><strong>📋 Clear Standards:</strong> Each interface defines exactly what should happen</li>
+                        <li><strong>🧪 Consistent Testing:</strong> Same tests can be used regardless of implementation</li>
+                        <li><strong>🔍 Easy Validation:</strong> Can verify each department meets its job requirements</li>
+                        <li><strong>📊 Performance Monitoring:</strong> Can measure how well each department performs</li>
+                    </ul>
+                    
+                    <h3>For Compliance</h3>
+                    <ul>
+                        <li><strong>📝 Audit Trail:</strong> Clear record of what each part of the system should do</li>
+                        <li><strong>🔒 Security Verification:</strong> Can verify that security requirements are met</li>
+                        <li><strong>📋 Documentation Standards:</strong> Ensures all system behavior is properly documented</li>
+                        <li><strong>🎯 Requirement Traceability:</strong> Can trace business requirements to specific interfaces</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section class="doc-section">
+                <h2>🔧 When Things Go Wrong</h2>
+                <div class="troubleshooting">
+                    <div class="issue-item">
+                        <h4>❓ "The system is running slowly"</h4>
+                        <p><strong>Interface Benefit:</strong> Can test each department separately to find which one is causing the slowdown - Business Operations, IT Infrastructure, or Navigation.</p>
+                    </div>
+                    
+                    <div class="issue-item">
+                        <h4>❓ "New features aren't working properly"</h4>
+                        <p><strong>Interface Benefit:</strong> Can verify that new implementations still follow the job descriptions, ensuring compatibility with existing systems.</p>
+                    </div>
+                    
+                    <div class="issue-item">
+                        <h4>❓ "Data is getting corrupted"</h4>
+                        <p><strong>Interface Benefit:</strong> Can focus troubleshooting on the ICoreServices department (IT Infrastructure) without disrupting business operations.</p>
+                    </div>
+                    
+                    <div class="issue-item">
+                        <h4>❓ "Users are getting confused navigating"</h4>
+                        <p><strong>Interface Benefit:</strong> Can improve or replace the INavigationService department without affecting inventory or user management functions.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>🔌 Plain English Documentation | 🏭 MTM WIP Application | 👷‍♂️ Made for Everyone</p>
+            <div class="footer-links">
+                <a href="../../../Technical/FileDefinitions/Services/ServiceInterfaces.html">🔧 Technical Version</a>
+                <a href="../../../PlainEnglish/index.html">📚 Plain English Documentation Index</a>
+                <a href="../../../index.html">🏠 Documentation Home</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
