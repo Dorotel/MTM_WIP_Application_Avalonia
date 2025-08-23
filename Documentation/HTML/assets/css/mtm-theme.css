@@ -1,42 +1,44 @@
 /* MTM Theme Styles - Documentation Modernization Initiative */
-/* MTM-specific branding and component styles */
+/* Black, White & Gold MTM-specific branding and component styles */
 
-/* MTM Brand Gradients */
+/* MTM Brand Gradients - Black, White & Gold */
 .mtm-gradient-primary {
-  background: linear-gradient(135deg, #4B45ED, #8345ED);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
 }
 
 .mtm-gradient-accent {
-  background: linear-gradient(135deg, #BA45ED, #4B45ED);
+  background: linear-gradient(135deg, #FFD700, #FFFF99);
 }
 
 .mtm-gradient-hero {
-  background: linear-gradient(135deg, #4574ED 0%, #4B45ED 30%, #8345ED 70%, #BA45ED 100%);
+  background: linear-gradient(135deg, #000000 0%, #FFD700 30%, #FFA500 70%, #FFFF99 100%);
 }
 
 .mtm-gradient-subtle {
-  background: linear-gradient(135deg, rgba(75, 69, 237, 0.1), rgba(186, 69, 237, 0.1));
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
 }
 
-/* MTM Brand Text Colors */
-.text-mtm-primary { color: #4B45ED; }
-.text-mtm-secondary { color: #8345ED; }
-.text-mtm-magenta { color: #BA45ED; }
-.text-mtm-blue { color: #4574ED; }
-.text-mtm-pink { color: #ED45E7; }
-.text-mtm-light { color: #B594ED; }
+/* MTM Brand Text Colors - Black, White & Gold */
+.text-mtm-primary { color: #FFD700; font-weight: 700; }
+.text-mtm-secondary { color: #FFA500; font-weight: 600; }
+.text-mtm-gold { color: #FFD700; font-weight: 700; }
+.text-mtm-gold-dark { color: #FFA500; font-weight: 600; }
+.text-mtm-gold-light { color: #FFFF99; font-weight: 500; }
+.text-mtm-black { color: #000000; font-weight: 700; }
+.text-mtm-white { color: #FFFFFF; font-weight: 700; }
 
-/* MTM Brand Background Colors */
-.bg-mtm-primary { background-color: #4B45ED; }
-.bg-mtm-secondary { background-color: #8345ED; }
-.bg-mtm-magenta { background-color: #BA45ED; }
-.bg-mtm-blue { background-color: #4574ED; }
-.bg-mtm-pink { background-color: #ED45E7; }
-.bg-mtm-light { background-color: #B594ED; }
+/* MTM Brand Background Colors - Black, White & Gold */
+.bg-mtm-primary { background-color: #FFD700; }
+.bg-mtm-secondary { background-color: #FFA500; }
+.bg-mtm-gold { background-color: #FFD700; }
+.bg-mtm-gold-dark { background-color: #FFA500; }
+.bg-mtm-gold-light { background-color: #FFFF99; }
+.bg-mtm-black { background-color: #000000; }
+.bg-mtm-white { background-color: #FFFFFF; }
 
-/* MTM Hero Section */
+/* MTM Hero Section - Black to Gold Gradient */
 .mtm-hero {
-  background: linear-gradient(135deg, #4574ED 0%, #4B45ED 30%, #8345ED 70%, #BA45ED 100%);
+  background: linear-gradient(135deg, #000000 0%, #FFD700 30%, #FFA500 70%, #FFFF99 100%);
   color: white;
   padding: var(--space-12) var(--space-6);
   border-radius: var(--radius-xl);
@@ -44,6 +46,8 @@
   margin-bottom: var(--space-8);
   position: relative;
   overflow: hidden;
+  border: 3px solid #FFD700;
+  box-shadow: 0 8px 16px rgba(255, 215, 0, 0.3);
 }
 
 .mtm-hero::before {
@@ -89,13 +93,13 @@
   z-index: 1;
 }
 
-/* MTM Cards */
+/* MTM Cards - Gold Accented */
 .mtm-card {
   background: white;
   border-radius: var(--radius-xl);
   padding: var(--space-6);
   box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-color);
+  border: 2px solid #FFD700;
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
@@ -107,13 +111,13 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #4B45ED, #BA45ED, #8345ED);
+  height: 5px;
+  background: linear-gradient(90deg, #FFD700, #FFA500, #FFFF99);
 }
 
 .mtm-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(75, 69, 237, 0.1);
+  box-shadow: 0 12px 24px rgba(255, 215, 0, 0.3), 0 0 0 2px rgba(255, 215, 0, 0.2);
 }
 
 .mtm-card-header {
@@ -127,27 +131,31 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, #4B45ED, #BA45ED);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #000000;
   font-size: var(--font-size-lg);
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
 }
 
 .mtm-card-title {
   font-size: var(--font-size-xl);
-  font-weight: 600;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: #000000;
   margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .mtm-card-content {
-  color: var(--text-secondary);
+  color: #000000;
   line-height: 1.6;
+  font-weight: 500;
 }
 
-/* MTM Status Indicators */
+/* MTM Status Indicators - Gold Theme */
 .mtm-status {
   display: inline-flex;
   align-items: center;
@@ -155,25 +163,27 @@
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .mtm-status-success {
-  background: rgba(16, 185, 129, 0.1);
-  color: #065f46;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(0, 255, 0, 0.2);
+  color: #006600;
+  border: 2px solid #00FF00;
+  font-weight: 700;
 }
 
 .mtm-status-warning {
-  background: rgba(245, 158, 11, 0.1);
-  color: #92400e;
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: rgba(255, 165, 0, 0.2);
+  color: #CC5500;
+  border: 2px solid #FFA500;
+  font-weight: 700;
 }
 
 .mtm-status-error {
-  background: rgba(239, 68, 68, 0.1);
-  color: #991b1b;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(255, 0, 0, 0.2);
+  color: #CC0000;
+  border: 2px solid #FF0000;
 }
 
 .mtm-status-info {
@@ -188,43 +198,48 @@
   border: 1px solid rgba(186, 69, 237, 0.2);
 }
 
-/* MTM Navigation Enhancements */
+/* MTM Navigation Enhancements - Gold Theme */
 .mtm-nav {
-  background: linear-gradient(180deg, rgba(75, 69, 237, 0.02) 0%, rgba(186, 69, 237, 0.02) 100%);
-  border-right: 1px solid rgba(75, 69, 237, 0.1);
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 165, 0, 0.05) 100%);
+  border-right: 3px solid #FFD700;
 }
 
 .mtm-nav-brand {
   padding: var(--space-6);
   text-align: center;
-  border-bottom: 1px solid rgba(75, 69, 237, 0.1);
+  border-bottom: 3px solid #FFD700;
   margin-bottom: var(--space-4);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
 }
 
 .mtm-nav-brand-icon {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #4B45ED, #BA45ED);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #000000;
   font-size: var(--font-size-2xl);
   margin: 0 auto var(--space-3);
+  font-weight: 900;
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
 }
 
 .mtm-nav-brand-title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: 900;
+  color: #000000;
   margin: 0;
+  text-shadow: 1px 1px 2px rgba(255, 215, 0, 0.5);
 }
 
 .mtm-nav-brand-subtitle {
   font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
+  color: #FFD700;
   margin: 0;
+  font-weight: 600;
 }
 
 .mtm-nav-section {
@@ -232,11 +247,11 @@
 }
 
 .mtm-nav-section-title {
-  font-size: var(--font-size-xs);
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-tertiary);
+  color: #FFD700;
   margin-bottom: var(--space-3);
   padding: 0 var(--space-4);
 }
@@ -255,15 +270,17 @@
 }
 
 .mtm-nav-link:hover {
-  background: rgba(75, 69, 237, 0.05);
-  color: var(--text-primary);
+  background: rgba(255, 215, 0, 0.1);
+  color: #000000;
   text-decoration: none;
+  border: 1px solid #FFD700;
 }
 
 .mtm-nav-link.is-active {
-  background: linear-gradient(135deg, #4B45ED, #BA45ED);
-  color: white;
-  box-shadow: var(--shadow);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000000;
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
+  font-weight: 700;
 }
 
 .mtm-nav-link.is-active::before {
@@ -272,10 +289,11 @@
   left: -12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 4px;
-  height: 20px;
-  background: white;
+  width: 5px;
+  height: 24px;
+  background: #FFD700;
   border-radius: var(--radius);
+  box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
 }
 
 .mtm-nav-icon {
@@ -284,21 +302,22 @@
   text-align: center;
 }
 
-/* MTM Buttons */
+/* MTM Buttons - Gold Theme */
 .mtm-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-5);
-  border: none;
+  border: 2px solid #FFD700;
   border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: 700;
   text-decoration: none;
   transition: all var(--transition-fast);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .mtm-btn::before {
@@ -317,41 +336,46 @@
 }
 
 .mtm-btn-primary {
-  background: linear-gradient(135deg, #4B45ED, #8345ED);
-  color: white;
-  box-shadow: var(--shadow);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000000;
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
+  font-weight: 900;
 }
 
 .mtm-btn-primary:hover {
-  background: linear-gradient(135deg, #3b35cd, #7335cd);
+  background: linear-gradient(135deg, #FFFF99, #FFD700);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  color: white;
+  box-shadow: 0 6px 12px rgba(255, 215, 0, 0.5);
+  color: #000000;
   text-decoration: none;
 }
 
 .mtm-btn-secondary {
   background: white;
-  color: #4B45ED;
-  border: 1px solid #4B45ED;
+  color: #000000;
+  border: 2px solid #FFD700;
+  font-weight: 700;
 }
 
 .mtm-btn-secondary:hover {
-  background: #4B45ED;
-  color: white;
+  background: #FFD700;
+  color: #000000;
   text-decoration: none;
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
 }
 
 .mtm-btn-ghost {
   background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
+  color: #FFD700;
+  border: 2px solid #FFD700;
+  font-weight: 600;
 }
 
 .mtm-btn-ghost:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+  background: rgba(255, 215, 0, 0.1);
+  color: #FFA500;
   text-decoration: none;
+  border-color: #FFA500;
 }
 
 /* MTM Badges */
@@ -373,13 +397,15 @@
 }
 
 .mtm-badge-updated {
-  background: linear-gradient(135deg, #4B45ED, #4574ED);
-  color: white;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000000;
+  font-weight: 700;
 }
 
 .mtm-badge-completed {
-  background: linear-gradient(135deg, #10B981, #059669);
-  color: white;
+  background: linear-gradient(135deg, #00FF00, #00CC00);
+  color: #000000;
+  font-weight: 700;
 }
 
 @keyframes pulse {
@@ -387,16 +413,18 @@
   50% { opacity: 0.8; }
 }
 
-/* MTM Code Blocks */
+/* MTM Code Blocks - Gold Theme */
 .mtm-code {
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  background: #F8F8F8;
+  border: 2px solid #FFD700;
   border-radius: var(--radius-md);
   padding: var(--space-4);
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   font-size: var(--font-size-sm);
   overflow-x: auto;
   position: relative;
+  color: #000000;
+  font-weight: 500;
 }
 
 .mtm-code::before {
@@ -405,25 +433,27 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #4B45ED, #BA45ED, #8345ED);
+  height: 4px;
+  background: linear-gradient(90deg, #FFD700, #FFA500, #FFFF99);
   border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
-/* MTM Tables */
+/* MTM Tables - Gold Theme */
 .mtm-table {
   width: 100%;
   border-collapse: collapse;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
   margin-bottom: var(--space-6);
+  border: 2px solid #FFD700;
 }
 
 .mtm-table th {
-  background: linear-gradient(135deg, #4B45ED, #8345ED);
-  color: white;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000000;
   padding: var(--space-4);
+  font-weight: 700;
   text-align: left;
   font-weight: 600;
   font-size: var(--font-size-sm);
