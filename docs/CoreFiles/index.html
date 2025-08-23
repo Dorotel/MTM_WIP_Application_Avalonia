@@ -238,6 +238,28 @@
             <!-- Navigation -->
             <section>
                 <h2>🧭 Navigate Documentation</h2>
+                <div class="grid-4">
+                    <a href="Services/index.html" class="nav-card enhanced">
+                        <h3>🔧 Services</h3>
+                        <p>Infrastructure & business services</p>
+                        <div class="count-badge">11 files</div>
+                    </a>
+                    <a href="ViewModels/index.html" class="nav-card enhanced">
+                        <h3>🖼️ ViewModels</h3>
+                        <p>MVVM pattern ViewModels</p>
+                        <div class="count-badge">12 files</div>
+                    </a>
+                    <a href="Models/index.html" class="nav-card enhanced">
+                        <h3>🗂️ Models</h3>
+                        <p>Data models & entities</p>
+                        <div class="count-badge">2 files</div>
+                    </a>
+                    <a href="Extensions/index.html" class="nav-card enhanced">
+                        <h3>⚙️ Extensions</h3>
+                        <p>Service extensions & DI setup</p>
+                        <div class="count-badge">1 file</div>
+                    </a>
+                </div>
                 <div class="grid-3">
                     <a href="../PlainEnglish/index.html" class="nav-card">
                         <h3>📖 Plain English</h3>
@@ -317,6 +339,36 @@
             margin: 0;
             color: #666;
             font-size: 14px;
+        }
+
+        .nav-card.enhanced {
+            position: relative;
+            background: linear-gradient(135deg, #4B45ED, #BA45ED);
+            color: white;
+            border: none;
+        }
+        
+        .nav-card.enhanced h3 {
+            color: white;
+        }
+        
+        .count-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
     </style>
 </body>
