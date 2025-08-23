@@ -1,0 +1,539 @@
+/* Plain English Documentation Styles */
+/* Enhanced readability and accessibility for non-technical users */
+
+/* Override base styles for better readability */
+body {
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+/* Larger, more readable headings */
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1.25rem;
+  margin-top: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Enhanced paragraph styling */
+p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+/* Stronger emphasis for important text */
+strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* More prominent links */
+a {
+  color: var(--mtm-primary);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: rgba(75, 69, 237, 0.3);
+  text-underline-offset: 2px;
+  transition: all var(--transition-fast);
+}
+
+a:hover {
+  color: var(--mtm-magenta);
+  text-decoration-color: var(--mtm-magenta);
+}
+
+/* Enhanced lists for better readability */
+ul, ol {
+  margin-bottom: 1.5rem;
+  padding-left: 2rem;
+}
+
+li {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+li strong {
+  color: var(--mtm-primary);
+}
+
+/* Business-friendly card styling */
+.business-card {
+  background: linear-gradient(135deg, rgba(75, 69, 237, 0.02), rgba(186, 69, 237, 0.02));
+  border: 2px solid rgba(75, 69, 237, 0.1);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.business-card h3 {
+  color: var(--mtm-primary);
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+}
+
+.business-card .icon {
+  font-size: 1.75rem;
+}
+
+/* Enhanced status indicators for business context */
+.business-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.business-status-complete {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+  color: #065f46;
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.business-status-progress {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.15));
+  color: #1e40af;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.business-status-planned {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15));
+  color: #92400e;
+  border: 2px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Enhanced timeline visualization */
+.business-timeline {
+  display: grid;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.timeline-phase {
+  position: relative;
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+  border-left: 6px solid;
+  box-shadow: var(--shadow-md);
+  background: white;
+}
+
+.timeline-phase.complete {
+  border-left-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.05));
+}
+
+.timeline-phase.in-progress {
+  border-left-color: #3b82f6;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(37, 99, 235, 0.05));
+}
+
+.timeline-phase.planned {
+  border-left-color: #f59e0b;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(217, 119, 6, 0.05));
+}
+
+.timeline-phase h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.timeline-phase .timeline-status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Business metrics and KPIs */
+.business-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.metric-card {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: white;
+  border: 2px solid rgba(75, 69, 237, 0.1);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast);
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.metric-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--mtm-primary);
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.metric-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.metric-description {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+/* ROI and business value callouts */
+.business-value {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: 2px solid var(--mtm-light);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  margin: 2rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.business-value::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--mtm-primary), var(--mtm-magenta));
+}
+
+.business-value h3 {
+  color: var(--mtm-primary);
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+}
+
+.business-value .value-points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.value-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(75, 69, 237, 0.1);
+}
+
+.value-point .icon {
+  font-size: 1.5rem;
+  color: var(--mtm-primary);
+  margin-top: 0.25rem;
+}
+
+.value-point-content h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.value-point-content p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* FAQ and help sections */
+.faq-section {
+  margin: 3rem 0;
+}
+
+.faq-item {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary);
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-size: 1.1rem;
+}
+
+.faq-question:hover {
+  background: var(--bg-tertiary);
+}
+
+.faq-answer {
+  padding: 0 1.5rem 1.5rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 1.1rem;
+}
+
+.faq-icon {
+  font-size: 1.25rem;
+  color: var(--mtm-primary);
+  transition: transform var(--transition-fast);
+}
+
+.faq-item[open] .faq-icon {
+  transform: rotate(45deg);
+}
+
+/* Call-to-action sections */
+.cta-section {
+  background: linear-gradient(135deg, var(--mtm-primary), var(--mtm-magenta));
+  color: white;
+  padding: 3rem 2rem;
+  border-radius: var(--radius-xl);
+  text-align: center;
+  margin: 3rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+  background-size: 50px 50px;
+  opacity: 0.3;
+}
+
+.cta-section h2 {
+  color: white;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-section p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-btn {
+  background: white;
+  color: var(--mtm-primary);
+  padding: 1rem 2rem;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all var(--transition-fast);
+  border: 2px solid white;
+}
+
+.cta-btn:hover {
+  background: transparent;
+  color: white;
+  text-decoration: none;
+}
+
+.cta-btn.secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.cta-btn.secondary:hover {
+  background: white;
+  color: var(--mtm-primary);
+}
+
+/* Mobile enhancements for business users */
+@media (max-width: 768px) {
+  body {
+    font-size: 1rem;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+  
+  .business-card,
+  .business-value {
+    padding: 1.5rem;
+  }
+  
+  .metric-value {
+    font-size: 2.5rem;
+  }
+  
+  .business-metrics {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+  
+  .metric-card {
+    padding: 1.5rem 1rem;
+  }
+  
+  .value-points {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-section {
+    padding: 2rem 1rem;
+  }
+  
+  .cta-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .cta-btn {
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
+}
+
+/* Print styles for business reports */
+@media print {
+  .business-card,
+  .business-value,
+  .metric-card {
+    background: white !important;
+    border: 2px solid #ddd !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+  
+  .cta-section {
+    background: #f8f9fa !important;
+    color: black !important;
+    border: 2px solid #ddd !important;
+  }
+  
+  .cta-section h2,
+  .cta-section p {
+    color: black !important;
+  }
+  
+  .metric-value {
+    color: #4B45ED !important;
+  }
+  
+  .business-timeline .timeline-phase {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .business-card,
+  .business-value,
+  .metric-card {
+    border-width: 3px;
+  }
+  
+  .business-status {
+    border-width: 3px;
+    font-weight: 700;
+  }
+  
+  a {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+  
+  .mtm-btn {
+    border-width: 3px;
+    font-weight: 700;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .metric-card:hover {
+    transform: none;
+  }
+  
+  .business-card,
+  .business-value,
+  .metric-card {
+    transition: none;
+  }
+}

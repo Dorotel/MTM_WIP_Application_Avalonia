@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MTM WIP Application - Coding conventions and standards for C# and Avalonia development">
+    <meta name="keywords" content="MTM, WIP, coding conventions, C#, Avalonia, standards">
+    <meta name="author" content="MTM Development Team">
+    
+    <title>MTM WIP Application - Coding Conventions</title>
+    
+    <!-- Modern Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../assets/css/mtm-theme.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../assets/images/mtm-favicon.svg">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <!-- Main Layout -->
+    <div class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="layout-sidebar mtm-nav" role="navigation" aria-label="Main navigation">
+            <!-- Brand Section -->
+            <div class="mtm-nav-brand">
+                <div class="mtm-nav-brand-icon" aria-hidden="true">📊</div>
+                <h1 class="mtm-nav-brand-title">MTM WIP</h1>
+                <p class="mtm-nav-brand-subtitle">Technical Documentation</p>
+            </div>
+            
+            <!-- Navigation Sections -->
+            <nav class="nav">
+                <!-- Core Documentation -->
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">Core Documentation</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="index.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🏠</span>
+                            Documentation Hub
+                        </a></li>
+                        <li><a href="coding-conventions.html" class="mtm-nav-link is-active" aria-current="page">
+                            <span class="mtm-nav-icon" aria-hidden="true">📝</span>
+                            Coding Conventions
+                        </a></li>
+                        <li><a href="ui-generation.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🖥️</span>
+                            UI Generation
+                        </a></li>
+                        <li><a href="error-handler.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">⚠️</span>
+                            Error Handling
+                        </a></li>
+                    </ul>
+                </section>
+                
+                <!-- Database & Development -->
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">Database & Development</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="../../Docs/database-development.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🗄️</span>
+                            Database Development
+                        </a></li>
+                        <li><a href="github-workflow.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🔄</span>
+                            GitHub Workflow
+                        </a></li>
+                        <li><a href="naming-conventions.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🏷️</span>
+                            Naming Conventions
+                        </a></li>
+                    </ul>
+                </section>
+                
+                <!-- UI & Mapping -->
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">UI & Mapping</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="view-standards.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">📐</span>
+                            View Structure Standards
+                        </a></li>
+                        <li><a href="ui-mapping.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🗺️</span>
+                            UI Mapping
+                        </a></li>
+                    </ul>
+                </section>
+            </nav>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <div class="layout-content">
+            <!-- Header -->
+            <header class="header" role="banner">
+                <div class="header-brand">
+                    <span class="icon" aria-hidden="true">📝</span>
+                    <span>Coding Conventions</span>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="theme-toggle" aria-label="Toggle dark theme" title="Toggle theme">
+                        🌙
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Main Content -->
+            <main id="main-content" class="main" role="main">
+                <!-- Hero Section -->
+                <section class="mtm-hero mtm-fade-in">
+                    <h1 class="mtm-hero-title">MTM WIP Coding Conventions</h1>
+                    <p class="mtm-hero-subtitle">
+                        Comprehensive coding standards and best practices for C# and Avalonia development
+                    </p>
+                </section>
+                
+                <!-- Content Sections -->
+                <section class="mtm-slide-up">
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">🎯</div>
+                            <h3 class="mtm-card-title">Core Principles</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <ul>
+                                <li><strong>MVVM Architecture:</strong> Strict separation of Model, View, and ViewModel layers using ReactiveUI</li>
+                                <li><strong>Dependency Injection:</strong> Use AddMTMServices() extension method for comprehensive service registration</li>
+                                <li><strong>Database Access:</strong> All database operations MUST use stored procedures via Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</li>
+                                <li><strong>Error Handling:</strong> Standardized error handling patterns with consistent status codes</li>
+                                <li><strong>Business Logic:</strong> TransactionType determined by user intent, NOT operation numbers</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mtm-slide-up">
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">🏗️</div>
+                            <h3 class="mtm-card-title">Code Organization</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <h4>File Structure</h4>
+                            <div class="mtm-code">
+Views/           # Avalonia AXAML views
+ViewModels/      # ViewModels using ReactiveUI  
+Models/          # Data models and business entities
+Services/        # Business logic and data access services
+Extensions/      # Extension methods and utilities
+                            </div>
+                            
+                            <h4>Naming Conventions</h4>
+                            <ul>
+                                <li><strong>Views:</strong> {Name}View.axaml (e.g., MainView.axaml)</li>
+                                <li><strong>ViewModels:</strong> {Name}ViewModel.cs (e.g., MainViewModel.cs)</li>
+                                <li><strong>Services:</strong> {Name}Service.cs or I{Name}Service.cs for interfaces</li>
+                                <li><strong>Stored Procedures:</strong> {module}_{action}_{details} (e.g., inv_inventory_Get_ByPartID)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mtm-slide-up">
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">🔧</div>
+                            <h3 class="mtm-card-title">ReactiveUI Patterns</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <h4>Property Implementation</h4>
+                            <div class="mtm-code">
+private string _firstName = string.Empty;
+public string FirstName
+{
+    get => _firstName;
+    set => this.RaiseAndSetIfChanged(ref _firstName, value);
+}
+                            </div>
+
+                            <h4>Command Implementation</h4>
+                            <div class="mtm-code">
+public ReactiveCommand&lt;Unit, Unit&gt; LoadDataCommand { get; }
+
+public SampleViewModel()
+{
+    LoadDataCommand = ReactiveCommand.CreateFromTask(async () =&gt;
+    {
+        // Use stored procedure for data loading
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            Model_AppVariables.ConnectionString,
+            "sp_ProcedureName",
+            parameters
+        );
+    });
+}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mtm-slide-up">
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">💾</div>
+                            <h3 class="mtm-card-title">Database Access Rules</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <div class="alert alert-error">
+                                <h4>⚠️ CRITICAL DATABASE RULE</h4>
+                                <p><strong>All MySQL commands MUST be executed through stored procedures only.</strong></p>
+                                <ul>
+                                    <li><strong>Prohibited:</strong> Direct SQL queries in code (SELECT, INSERT, UPDATE, DELETE)</li>
+                                    <li><strong>Required:</strong> Use stored procedure calls via Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</li>
+                                </ul>
+                            </div>
+
+                            <h4>Correct Pattern</h4>
+                            <div class="mtm-code">
+// CORRECT: Using stored procedure
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    Model_AppVariables.ConnectionString,
+    "sp_ProcedureName",
+    new Dictionary&lt;string, object&gt; 
+    {
+        ["Parameter1"] = value1,
+        ["Parameter2"] = value2
+    }
+);
+
+// PROHIBITED: Direct SQL
+// var query = "SELECT * FROM table WHERE column = @value"; // ❌ NEVER DO THIS
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mtm-slide-up">
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">⚡</div>
+                            <h3 class="mtm-card-title">MTM Business Logic Rules</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <div class="alert alert-warning">
+                                <h4>🎯 CRITICAL: Transaction Type Determination</h4>
+                                <p><strong>TransactionType is determined by the USER'S INTENT, NOT the Operation number.</strong></p>
+                            </div>
+
+                            <h4>Correct TransactionType Logic</h4>
+                            <ul>
+                                <li><strong>IN:</strong> User is adding stock to inventory (regardless of operation number)</li>
+                                <li><strong>OUT:</strong> User is removing stock from inventory (regardless of operation number)</li>
+                                <li><strong>TRANSFER:</strong> User is moving stock from one location to another (regardless of operation number)</li>
+                            </ul>
+
+                            <h4>MTM Operation Numbers</h4>
+                            <p>Operation numbers ("90", "100", "110", etc.) are <strong>workflow step identifiers</strong>, NOT transaction type indicators:</p>
+                            <ul>
+                                <li>Operations represent manufacturing or processing steps</li>
+                                <li>They help track which stage of production a part is in</li>
+                                <li>They do NOT determine whether inventory is being added, removed, or transferred</li>
+                                <li>The same operation number can be used with any TransactionType depending on user intent</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Modern JavaScript -->
+    <script src="../assets/js/modern-features.js"></script>
+</body>
+</html>

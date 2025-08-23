@@ -19,7 +19,10 @@
     <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
   </UserControl.KeyBindings>
 
-  <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource ContentBackgroundBrush}">
+  <!-- MANDATORY: Viewbox wrapper for proportional scaling -->
+  <Viewbox Stretch="Uniform" StretchDirection="Both">
+    <!-- Fixed dimensions for scaling reference -->
+    <Grid Width="1200" Height="700" RowDefinitions="Auto,*,Auto" Background="{DynamicResource ContentBackgroundBrush}">
     <!-- Menu (MenuStrip) with MTM styling -->
     <Border Grid.Row="0" 
             Background="{DynamicResource PrimaryDarkBrush}"
@@ -148,4 +151,5 @@
       </Grid>
     </Border>
   </Grid>
+  </Viewbox>
 </UserControl>
