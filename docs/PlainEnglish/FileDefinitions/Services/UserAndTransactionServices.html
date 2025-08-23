@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User & Transaction Services - The Security Guard & Record Keeper</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <style>
+        .security-highlight { background: linear-gradient(135deg, #FFD700, #FFA500); padding: 2px 6px; border-radius: 3px; }
+        .transaction-highlight { background: linear-gradient(135deg, #00CED1, #20B2AA); padding: 2px 6px; border-radius: 3px; color: white; }
+        .critical-security { background: #FF6B6B; color: white; padding: 8px; border-radius: 5px; margin: 10px 0; }
+        .record-keeper { background: #4ECDC4; color: white; padding: 8px; border-radius: 5px; margin: 10px 0; }
+        .nav-button { display: inline-block; padding: 8px 16px; margin: 5px; background: linear-gradient(45deg, #1a1a1a, #333); color: #FFD700; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .nav-button:hover { background: linear-gradient(45deg, #333, #555); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>🔐 User & Transaction Services</h1>
+            <h2>The Security Guard & Record Keeper</h2>
+            <p class="subtitle">Managing who gets in and tracking what they do</p>
+            
+            <div class="navigation-section">
+                <a href="../../../Technical/FileDefinitions/Services/UserAndTransactionServices.html" class="nav-button">📋 Technical View (Alt+T)</a>
+                <a href="../../index.html" class="nav-button">📂 Back to Services</a>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <div class="summary-box">
+                <h3>🎯 What This Does (In Plain English)</h3>
+                <p>Think of this as your <strong>security guard and record keeper</strong> combined into one. The security guard (UserService) checks IDs at the door and makes sure only authorized people get into the factory. The record keeper (TransactionService) writes down everything that happens - who moved what, when, and where.</p>
+            </div>
+
+            <div class="section">
+                <h3>🏭 Real-World Manufacturing Example</h3>
+                <p>In a real factory, you have:</p>
+                <ul>
+                    <li><span class="security-highlight">🔐 Security Guard</span> - Checks employee badges, logs who enters/leaves, updates time cards</li>
+                    <li><span class="transaction-highlight">📝 Record Keeper</span> - Documents every part movement, tracks inventory changes, maintains history books</li>
+                </ul>
+                <p>This is exactly what our User & Transaction Services do for the digital factory!</p>
+            </div>
+
+            <div class="section">
+                <h3>👤 Security Guard (UserService) - Who Gets Access</h3>
+                
+                <div class="critical-security">
+                    <strong>🚨 CRITICAL SECURITY RULE:</strong> No one enters the factory without proper credentials. Every person must have valid login and active status.
+                </div>
+
+                <h4>🔍 What the Security Guard Does:</h4>
+                <ul>
+                    <li><strong>Badge Verification:</strong> Checks username and password when someone tries to enter</li>
+                    <li><strong>Active Status Check:</strong> Makes sure the employee is still authorized (not terminated)</li>
+                    <li><strong>Time Card Updates:</strong> Records when someone last logged in (like punching a time clock)</li>
+                    <li><strong>Current Status:</strong> Knows who's currently "on the floor" (logged in)</li>
+                    <li><strong>Employee Directory:</strong> Can provide a list of all active employees</li>
+                </ul>
+
+                <h4>🛡️ Security Procedures:</h4>
+                <ul>
+                    <li><strong>No Empty Credentials:</strong> Won't accept blank usernames or passwords</li>
+                    <li><strong>Database Verification:</strong> Double-checks credentials against the master employee database</li>
+                    <li><strong>Session Management:</strong> Keeps track of who's currently logged in</li>
+                    <li><strong>Automatic Refresh:</strong> Regularly updates employee information to stay current</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>📝 Record Keeper (TransactionService) - What Happened When</h3>
+
+                <div class="record-keeper">
+                    <strong>📋 RECORD KEEPING RULE:</strong> Every inventory change gets written in the books. No exceptions. Full history must be maintained.
+                </div>
+
+                <h4>📚 What the Record Keeper Tracks:</h4>
+                <ul>
+                    <li><strong>Part Movement History:</strong> Every time a part is moved, added, or removed</li>
+                    <li><strong>Who Did What:</strong> Which employee performed each action</li>
+                    <li><strong>When It Happened:</strong> Exact timestamp of every transaction</li>
+                    <li><strong>Location Changes:</strong> Where parts were moved from and to</li>
+                    <li><strong>Quantity Changes:</strong> How many parts were involved in each transaction</li>
+                </ul>
+
+                <h4>📊 Types of Records Maintained:</h4>
+                <ul>
+                    <li><strong>Individual Part History:</strong> Complete timeline for any specific part number</li>
+                    <li><strong>Employee Activity Log:</strong> What transactions each person performed</li>
+                    <li><strong>Date Range Reports:</strong> All activity within specific time periods</li>
+                    <li><strong>New Transaction Logging:</strong> Recording new activities as they happen</li>
+                </ul>
+
+                <h4>⚡ Smart Record Management:</h4>
+                <ul>
+                    <li><strong>Automatic Timestamps:</strong> Records the exact time if not provided</li>
+                    <li><strong>Safety Limits:</strong> Won't generate reports larger than 365 days or 10,000 records</li>
+                    <li><strong>Data Validation:</strong> Ensures all required information is present before recording</li>
+                    <li><strong>Error Prevention:</strong> Checks that dates make sense and limits are reasonable</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>🔒 MTM Security & Compliance Rules</h3>
+                <ul>
+                    <li><strong>User Authentication:</strong> All database access requires valid user credentials</li>
+                    <li><strong>Session Management:</strong> Active user session tracked in application state</li>
+                    <li><strong>Audit Trail:</strong> Complete transaction history maintained for compliance</li>
+                    <li><strong>Data Validation:</strong> All inputs validated before database operations</li>
+                    <li><strong>Error Logging:</strong> Security events and errors properly logged</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>🎮 Business Stakeholder Scenarios</h3>
+                
+                <h4>Scenario 1: Employee Arrives for Work</h4>
+                <p>👤 <em>Jane arrives and logs into the WIP system</em></p>
+                <ul>
+                    <li>Security Guard checks Jane's username/password</li>
+                    <li>Verifies Jane is still an active employee</li>
+                    <li>Updates Jane's "last login" timestamp</li>
+                    <li>Sets Jane as the current user in the system</li>
+                </ul>
+
+                <h4>Scenario 2: Part Movement Documentation</h4>
+                <p>📦 <em>John moves 50 widgets from Assembly to Packaging</em></p>
+                <ul>
+                    <li>Record Keeper documents: Part ID, quantity (50), locations (Assembly → Packaging)</li>
+                    <li>Records John as the person who made the move</li>
+                    <li>Timestamps the exact moment it happened</li>
+                    <li>Adds this to the permanent transaction history</li>
+                </ul>
+
+                <h4>Scenario 3: Supervisor Needs Activity Report</h4>
+                <p>👔 <em>Manager Sarah needs to see what John did yesterday</em></p>
+                <ul>
+                    <li>Record Keeper pulls up all of John's transactions from yesterday</li>
+                    <li>Shows complete list with parts, quantities, times, and locations</li>
+                    <li>Provides data for productivity and accuracy analysis</li>
+                </ul>
+            </div>
+
+            <div class="integration-section">
+                <h3>🔗 How It Connects to Other Systems</h3>
+                <ul>
+                    <li><strong>Application State Service:</strong> Shares current user information</li>
+                    <li><strong>Database Service:</strong> All data operations go through stored procedures</li>
+                    <li><strong>Error Handler:</strong> Security events and transaction errors are logged</li>
+                    <li><strong>Logging Utility:</strong> User activities and system events documented</li>
+                </ul>
+            </div>
+
+            <div class="keyboard-shortcuts">
+                <h3>⌨️ Quick Navigation</h3>
+                <ul>
+                    <li><strong>Alt + T:</strong> Switch to Technical Documentation</li>
+                    <li><strong>Alt + P:</strong> Back to Plain English View</li>
+                    <li><strong>Ctrl + F:</strong> Search this page</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                window.location.href = '../../../Technical/FileDefinitions/Services/UserAndTransactionServices.html';
+            } else if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                // Already on Plain English view
+            }
+        });
+    </script>
+</body>
+</html>

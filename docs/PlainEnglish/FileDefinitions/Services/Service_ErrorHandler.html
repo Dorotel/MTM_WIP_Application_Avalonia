@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Handler Service - The Emergency Response Team</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <style>
+        .emergency-highlight { background: linear-gradient(135deg, #FF4444, #CC0000); padding: 2px 6px; border-radius: 3px; color: white; }
+        .diagnostic-highlight { background: linear-gradient(135deg, #FFD700, #FFA500); padding: 2px 6px; border-radius: 3px; }
+        .critical-alert { background: #FF0000; color: white; padding: 10px; border-radius: 5px; margin: 10px 0; text-align: center; font-weight: bold; }
+        .emergency-protocol { background: #FF6B6B; color: white; padding: 8px; border-radius: 5px; margin: 10px 0; }
+        .nav-button { display: inline-block; padding: 8px 16px; margin: 5px; background: linear-gradient(45deg, #1a1a1a, #333); color: #FFD700; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .nav-button:hover { background: linear-gradient(45deg, #333, #555); }
+        .severity-low { background: #4CAF50; color: white; padding: 5px; border-radius: 3px; }
+        .severity-medium { background: #FF9800; color: white; padding: 5px; border-radius: 3px; }
+        .severity-high { background: #FF5722; color: white; padding: 5px; border-radius: 3px; }
+        .severity-critical { background: #F44336; color: white; padding: 5px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>🚨 Error Handler Service</h1>
+            <h2>The Emergency Response Team</h2>
+            <p class="subtitle">When things go wrong, we make sure someone knows about it</p>
+            
+            <div class="navigation-section">
+                <a href="../../../Technical/FileDefinitions/Services/Service_ErrorHandler.html" class="nav-button">📋 Technical View (Alt+T)</a>
+                <a href="../../index.html" class="nav-button">📂 Back to Services</a>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <div class="summary-box">
+                <h3>🎯 What This Does (In Plain English)</h3>
+                <p>Think of this as your <strong>emergency response team</strong> in the factory. When something goes wrong - a machine breaks, someone gets hurt, or a process fails - the emergency team springs into action. They document what happened, alert the right people, and make sure the same problem doesn't flood the emergency system with duplicate reports.</p>
+            </div>
+
+            <div class="critical-alert">
+                🚨 CRITICAL SYSTEM COMPONENT 🚨<br>
+                This service handles ALL errors across the entire application
+            </div>
+
+            <div class="section">
+                <h3>🏭 Real-World Manufacturing Example</h3>
+                <p>In a real factory emergency response system:</p>
+                <ul>
+                    <li><span class="emergency-highlight">🚨 Emergency Dispatcher</span> - Gets the call, categorizes the emergency, decides who to alert</li>
+                    <li><span class="diagnostic-highlight">📝 Incident Reporter</span> - Documents everything: what, when, where, who was involved</li>
+                    <li><strong>📁 File Server Logger:</strong> Writes reports to the main office filing system</li>
+                    <li><strong>💽 Database Logger:</strong> Records incidents in the computer system for analysis</li>
+                    <li><strong>🔄 Duplicate Prevention:</strong> Doesn't call 911 fifty times for the same fire</li>
+                </ul>
+                <p>Our Error Handler does exactly this for computer problems!</p>
+            </div>
+
+            <div class="section">
+                <h3>🚨 Emergency Response Categories</h3>
+                
+                <h4>📱 UI Emergency (User Interface)</h4>
+                <ul>
+                    <li><strong>What It Is:</strong> Screen displays wrong, buttons don't work, windows won't open</li>
+                    <li><strong>Like In Factory:</strong> Control panel display is garbled or touch screen not responding</li>
+                    <li><strong>Response:</strong> User sees friendly message, technical team gets notified</li>
+                </ul>
+
+                <h4>🏭 Business Logic Emergency</h4>
+                <ul>
+                    <li><strong>What It Is:</strong> Numbers don't add up, rules are violated, processes fail</li>
+                    <li><strong>Like In Factory:</strong> Assembly line tries to build impossible combination</li>
+                    <li><strong>Response:</strong> Operation stops safely, supervisor gets alert</li>
+                </ul>
+
+                <h4>💽 MySQL Emergency (Database)</h4>
+                <ul>
+                    <li><strong>What It Is:</strong> Can't connect to database, data corruption, server down</li>
+                    <li><strong>Like In Factory:</strong> Main computer system crashes or network goes down</li>
+                    <li><strong>Response:</strong> Critical alert sent to IT team immediately</li>
+                </ul>
+
+                <h4>🌐 Network Emergency</h4>
+                <ul>
+                    <li><strong>What It Is:</strong> Internet connection lost, server not responding</li>
+                    <li><strong>Like In Factory:</strong> Phone lines down or radio communication failing</li>
+                    <li><strong>Response:</strong> Backup procedures activated, IT notified</li>
+                </ul>
+
+                <h4>❓ Other Emergencies</h4>
+                <ul>
+                    <li><strong>What It Is:</strong> File system errors, unknown problems, third-party failures</li>
+                    <li><strong>Like In Factory:</strong> Unexpected equipment failure or vendor system problems</li>
+                    <li><strong>Response:</strong> General emergency procedures, all hands on deck</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>⚡ Emergency Severity Levels</h3>
+                
+                <div class="severity-low">
+                    🟢 LOW SEVERITY - Minor Issues
+                </div>
+                <p><strong>Examples:</strong> Small validation warnings, cosmetic UI glitches</p>
+                <p><strong>Response:</strong> Log quietly, don't bother the user unless they ask</p>
+
+                <div class="severity-medium">
+                    🟡 MEDIUM SEVERITY - Noticeable Problems
+                </div>
+                <p><strong>Examples:</strong> Feature doesn't work but workaround exists, non-critical errors</p>
+                <p><strong>Response:</strong> Tell user what happened, suggest alternatives</p>
+
+                <div class="severity-high">
+                    🟠 HIGH SEVERITY - Significant Impact
+                </div>
+                <p><strong>Examples:</strong> Database connection lost, major feature broken</p>
+                <p><strong>Response:</strong> Clear alert to user, immediate technical team notification</p>
+
+                <div class="severity-critical">
+                    🔴 CRITICAL SEVERITY - System Failure
+                </div>
+                <p><strong>Examples:</strong> Application crash, complete system failure, data loss risk</p>
+                <p><strong>Response:</strong> Emergency alert, all hands on deck, immediate escalation</p>
+            </div>
+
+            <div class="section">
+                <h3>📝 Smart Documentation System</h3>
+
+                <div class="emergency-protocol">
+                    <strong>📋 NO SPAM RULE:</strong> Same error won't flood the system multiple times in one session. Emergency team tracks what they've already handled.
+                </div>
+
+                <h4>🗂️ What Gets Documented:</h4>
+                <ul>
+                    <li><strong>Timestamp:</strong> Exactly when the emergency happened</li>
+                    <li><strong>Who:</strong> Which user experienced the problem</li>
+                    <li><strong>Where:</strong> Which computer/workstation was involved</li>
+                    <li><strong>What:</strong> Detailed description of what went wrong</li>
+                    <li><strong>How:</strong> Technical details for the IT team</li>
+                    <li><strong>Location:</strong> Exact file and line number where problem occurred</li>
+                    <li><strong>Context:</strong> Additional information that might help solve the problem</li>
+                </ul>
+
+                <h4>📊 Dual Logging System:</h4>
+                <ul>
+                    <li><strong>File Server Reports:</strong> Detailed CSV files stored on the network for analysis</li>
+                    <li><strong>Database Records:</strong> Searchable incident database for tracking and reporting</li>
+                    <li><strong>Session Cache:</strong> Temporary memory to prevent duplicate reports</li>
+                    <li><strong>Fallback Local:</strong> Local files if network storage isn't available</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>🎮 Business Stakeholder Scenarios</h3>
+                
+                <h4>Scenario 1: Screen Freezes During Data Entry</h4>
+                <p>💻 <em>Susan is entering inventory data and the screen freezes</em></p>
+                <ul>
+                    <li>Error Handler categorizes this as UI Emergency (Medium Severity)</li>
+                    <li>Documents: Susan's name, exact time, which screen, what she was doing</li>
+                    <li>Shows Susan friendly message: "Display issue occurred. Please refresh and try again."</li>
+                    <li>Alerts IT team but doesn't panic the user</li>
+                    <li>Prevents 20 duplicate reports if Susan clicks refresh multiple times</li>
+                </ul>
+
+                <h4>Scenario 2: Database Connection Lost</h4>
+                <p>💽 <em>Main inventory database goes offline during busy period</em></p>
+                <ul>
+                    <li>Error Handler identifies MySQL Emergency (Critical Severity)</li>
+                    <li>Documents impact: which users affected, what operations failed</li>
+                    <li>Shows users: "Database temporarily unavailable. Changes are being saved locally."</li>
+                    <li>Immediately escalates to database administrator</li>
+                    <li>Activates backup procedures automatically</li>
+                </ul>
+
+                <h4>Scenario 3: Manager Reviews Daily Error Report</h4>
+                <p>👔 <em>Operations manager checks error patterns from yesterday</em></p>
+                <ul>
+                    <li>Error Handler provides summary: 15 total incidents</li>
+                    <li>Breakdown: 12 minor UI issues, 2 network timeouts, 1 business logic error</li>
+                    <li>Identifies patterns: All network issues occurred during backup window</li>
+                    <li>Recommends: Schedule backups during non-peak hours</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>🛡️ Emergency Prevention Features</h3>
+                <ul>
+                    <li><strong>Automatic Caller ID:</strong> Knows exactly which code called for help</li>
+                    <li><strong>Smart Categorization:</strong> Automatically determines what type of emergency</li>
+                    <li><strong>Duplicate Detection:</strong> Won't log the same error repeatedly in one session</li>
+                    <li><strong>User-Friendly Messages:</strong> Translates technical errors into plain English</li>
+                    <li><strong>Escalation Rules:</strong> High/Critical errors get immediate attention</li>
+                    <li><strong>Fallback Systems:</strong> If main logging fails, backup systems activate</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>🔧 MTM Emergency Procedures</h3>
+                <ul>
+                    <li><strong>Session Tracking:</strong> Each work session tracks its own error history</li>
+                    <li><strong>User Context:</strong> Errors linked to specific user for accountability</li>
+                    <li><strong>Machine Identity:</strong> Workstation information included for hardware issues</li>
+                    <li><strong>Compliance Logging:</strong> All incidents documented for regulatory requirements</li>
+                    <li><strong>Development Mode:</strong> Special logging setup for testing environments</li>
+                </ul>
+            </div>
+
+            <div class="integration-section">
+                <h3>🔗 How It Connects to Other Systems</h3>
+                <ul>
+                    <li><strong>Logging Utility:</strong> Handles the actual file and database writing</li>
+                    <li><strong>Application State:</strong> Gets current user information for incident reports</li>
+                    <li><strong>Configuration Service:</strong> Loads error handling settings and preferences</li>
+                    <li><strong>All Other Services:</strong> Every part of the application can call for emergency help</li>
+                </ul>
+            </div>
+
+            <div class="keyboard-shortcuts">
+                <h3>⌨️ Quick Navigation</h3>
+                <ul>
+                    <li><strong>Alt + T:</strong> Switch to Technical Documentation</li>
+                    <li><strong>Alt + P:</strong> Back to Plain English View</li>
+                    <li><strong>Ctrl + F:</strong> Search this page</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                window.location.href = '../../../Technical/FileDefinitions/Services/Service_ErrorHandler.html';
+            } else if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                // Already on Plain English view
+            }
+        });
+    </script>
+</body>
+</html>

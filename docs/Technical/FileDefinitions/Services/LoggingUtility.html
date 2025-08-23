@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoggingUtility.cs - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <style>
+        .method-signature { background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; font-family: 'Courier New', monospace; margin: 10px 0; }
+        .parameter-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        .parameter-table th, .parameter-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .parameter-table th { background-color: #f2f2f2; }
+        .nav-button { display: inline-block; padding: 8px 16px; margin: 5px; background: linear-gradient(45deg, #1a1a1a, #333); color: #FFD700; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .nav-button:hover { background: linear-gradient(45deg, #333, #555); }
+        .code-example { background: #1e1e1e; color: #dcdcdc; padding: 15px; border-radius: 5px; margin: 10px 0; overflow-x: auto; }
+        .static-class { background: #4CAF50; color: white; padding: 5px; border-radius: 3px; }
+        .thread-safe { background: #2196F3; color: white; padding: 5px; border-radius: 3px; }
+        .fallback-warning { background: #FF9800; color: white; padding: 8px; border-radius: 5px; margin: 10px 0; }
+        .sql-schema { background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>LoggingUtility.cs</h1>
+            <h2>Technical Implementation Documentation</h2>
+            <p class="subtitle">Dual-destination logging utility with file server CSV and MySQL database storage</p>
+            
+            <div class="navigation-section">
+                <a href="../../../PlainEnglish/FileDefinitions/Services/LoggingUtility.html" class="nav-button">🎯 Plain English View (Alt+P)</a>
+                <a href="../../index.html" class="nav-button">📂 Back to Technical Index</a>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <div class="summary-box">
+                <h3>🔧 Technical Overview</h3>
+                <p>Static utility class providing dual-destination error logging with CSV file generation and MySQL database storage. Implements user-specific folder organization, automatic table/file creation, thread-safe operations, and comprehensive fallback mechanisms for high-reliability logging.</p>
+            </div>
+
+            <div class="section">
+                <h3>📦 Class Structure</h3>
+                
+                <div class="static-class">Static Utility Class</div>
+                <div class="method-signature">
+                    public static class LoggingUtility
+                    {
+                        private static string _fileServerBasePath = @"\\FileServer\Logs";
+                        private static readonly object _fileLockObject = new();
+                    }
+                </div>
+
+                <div class="thread-safe">Thread-Safe File Operations</div>
+                <p>Uses lock synchronization on <code>_fileLockObject</code> for safe concurrent file access across multiple threads.</p>
+            </div>
+
+            <div class="section">
+                <h3>📁 File Server Logging</h3>
+
+                <h4>LogToFileServer()</h4>
+                <div class="method-signature">
+                    public static void LogToFileServer(ErrorEntry errorEntry)
+                </div>
+
+                <p><strong>Purpose:</strong> Writes error entries to CSV files on network file server with user-specific folder organization</p>
+
+                <h4>File Organization Structure</h4>
+                <div class="code-example">
+<pre>
+\\FileServer\Logs\
+├── USER1\
+│   ├── ui_errors.csv
+│   ├── business_logic_errors.csv
+│   ├── mysql_errors.csv
+│   ├── network_errors.csv
+│   └── other_errors.csv
+├── USER2\
+│   ├── ui_errors.csv
+│   └── ...
+└── ...
+</pre>
+                </div>
+
+                <h4>CSV File Naming Convention</h4>
+                <table class="parameter-table">
+                    <tr>
+                        <th>Error Category</th>
+                        <th>File Name</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>UI</td>
+                        <td>ui_errors.csv</td>
+                        <td>User interface and display errors</td>
+                    </tr>
+                    <tr>
+                        <td>BusinessLogic</td>
+                        <td>business_logic_errors.csv</td>
+                        <td>Application workflow and validation errors</td>
+                    </tr>
+                    <tr>
+                        <td>MySQL</td>
+                        <td>mysql_errors.csv</td>
+                        <td>Database connection and query errors</td>
+                    </tr>
+                    <tr>
+                        <td>Network</td>
+                        <td>network_errors.csv</td>
+                        <td>Communication and connectivity errors</td>
+                    </tr>
+                    <tr>
+                        <td>Other</td>
+                        <td>other_errors.csv</td>
+                        <td>Unclassified errors</td>
+                    </tr>
+                </table>
+
+                <h4>CSV Format Implementation</h4>
+                <div class="code-example">
+<pre>
+// CSV Header
+"Timestamp,UserId,MachineName,Category,Severity,ErrorMessage,FileName,MethodName,LineNumber,StackTrace,source,AdditionalData,ExceptionType"
+
+// CSV Data Row with Escaping
+private static string FormatErrorEntryAsCsv(ErrorEntry errorEntry)
+{
+    return string.Join(",",
+        EscapeCsvField(errorEntry.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")),
+        EscapeCsvField(errorEntry.UserId),
+        EscapeCsvField(errorEntry.MachineName),
+        // ... all fields properly escaped
+    );
+}
+
+// CSV Field Escaping
+private static string EscapeCsvField(string field)
+{
+    if (field.Contains(",") || field.Contains("\"") || field.Contains("\n"))
+    {
+        return "\"" + field.Replace("\"", "\"\"") + "\"";
+    }
+    return field;
+}
+</pre>
+                </div>
+
+                <div class="fallback-warning">
+                    ⚠️ FALLBACK MECHANISM: If file server is unavailable, automatically switches to local fallback path using ErrorHandlingConfiguration.FallbackLocalPath
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>💽 MySQL Database Logging</h3>
+
+                <h4>LogToMySQL()</h4>
+                <div class="method-signature">
+                    public async static Task LogToMySQL(ErrorEntry errorEntry)
+                </div>
+
+                <p><strong>Purpose:</strong> Asynchronously logs error entries to MySQL database with automatic table creation and proper parameterization</p>
+
+                <h4>Database Table Structure</h4>
+                <div class="sql-schema">
+<pre>
+CREATE TABLE IF NOT EXISTS {tableName} (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Timestamp DATETIME NOT NULL,
+    UserId VARCHAR(255) NOT NULL,
+    MachineName VARCHAR(255) NOT NULL,
+    Category VARCHAR(50) NOT NULL,
+    Severity VARCHAR(20) NOT NULL,
+    ErrorMessage TEXT,
+    FileName VARCHAR(500),
+    MethodName VARCHAR(255),
+    LineNumber INT,
+    StackTrace TEXT,
+    source VARCHAR(255),
+    AdditionalData TEXT,
+    ExceptionType VARCHAR(500),
+    INDEX idx_timestamp (Timestamp),
+    INDEX idx_userid (UserId),
+    INDEX idx_severity (Severity)
+)
+</pre>
+                </div>
+
+                <h4>Table Naming Convention</h4>
+                <table class="parameter-table">
+                    <tr>
+                        <th>Error Category</th>
+                        <th>Table Name</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>UI</td>
+                        <td>ui_errors</td>
+                        <td>UI-related error records</td>
+                    </tr>
+                    <tr>
+                        <td>BusinessLogic</td>
+                        <td>business_logic_errors</td>
+                        <td>Business logic error records</td>
+                    </tr>
+                    <tr>
+                        <td>MySQL</td>
+                        <td>mysql_errors</td>
+                        <td>Database error records</td>
+                    </tr>
+                    <tr>
+                        <td>Network</td>
+                        <td>network_errors</td>
+                        <td>Network error records</td>
+                    </tr>
+                    <tr>
+                        <td>Other</td>
+                        <td>other_errors</td>
+                        <td>Unclassified error records</td>
+                    </tr>
+                </table>
+
+                <h4>Parameterized Query Implementation</h4>
+                <div class="code-example">
+<pre>
+var insertSql = $@"
+    INSERT INTO {tableName} 
+    (Timestamp, UserId, MachineName, Category, Severity, ErrorMessage, 
+     FileName, MethodName, LineNumber, StackTrace, source, 
+     AdditionalData, ExceptionType)
+    VALUES 
+    (@Timestamp, @UserId, @MachineName, @Category, @Severity, @ErrorMessage,
+     @FileName, @MethodName, @LineNumber, @StackTrace, @source,
+     @AdditionalData, @ExceptionType)";
+
+// Safe parameter binding prevents SQL injection
+command.Parameters.AddWithValue("@Timestamp", errorEntry.Timestamp);
+command.Parameters.AddWithValue("@UserId", errorEntry.UserId);
+// ... all parameters safely bound
+</pre>
+                </div>
+
+                <p><strong>Performance Features:</strong></p>
+                <ul>
+                    <li><strong>Async Operations:</strong> Non-blocking database writes</li>
+                    <li><strong>Connection Management:</strong> Proper using statements for resource disposal</li>
+                    <li><strong>Indexed Columns:</strong> Fast queries on Timestamp, UserId, and Severity</li>
+                    <li><strong>Auto Table Creation:</strong> EnsureTableExists() creates tables on first use</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>🛡️ Fallback Protection System</h3>
+
+                <h4>Multi-Level Fallback Strategy</h4>
+                <div class="code-example">
+<pre>
+1. Primary: File Server + MySQL Database
+   ↓ (File Server Fails)
+2. Fallback: Local Files + MySQL Database
+   ↓ (MySQL Fails)  
+3. Fallback: Local Files Only
+   ↓ (Local Files Fail)
+4. Emergency: LogApplicationError() - Minimal logging
+   ↓ (Complete Failure)
+5. Last Resort: Console.WriteLine()
+</pre>
+                </div>
+
+                <h4>LogToFallbackLocation()</h4>
+                <div class="method-signature">
+                    private static void LogToFallbackLocation(ErrorEntry errorEntry, Exception originalException)
+                </div>
+
+                <p><strong>Fallback Process:</strong></p>
+                <ul>
+                    <li>Uses ErrorHandlingConfiguration.FallbackLocalPath</li>
+                    <li>Creates local user folders automatically</li>
+                    <li>Maintains same CSV format as file server</li>
+                    <li>Logs original failure exception via LogApplicationError()</li>
+                </ul>
+
+                <h4>LogApplicationError()</h4>
+                <div class="method-signature">
+                    public static void LogApplicationError(Exception exception)
+                </div>
+
+                <p><strong>Emergency Logging Features:</strong></p>
+                <ul>
+                    <li>Minimal dependency approach to avoid recursive failures</li>
+                    <li>Uses local application data folder</li>
+                    <li>Simple text format: "timestamp - ExceptionType: Message"</li>
+                    <li>Console fallback if all file systems fail</li>
+                </ul>
+
+                <div class="fallback-warning">
+                    🔄 RECURSIVE PROTECTION: LogApplicationError() uses minimal operations to prevent failure loops when logging system itself has problems
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>🔧 Configuration & Management</h3>
+
+                <h4>Configuration Methods</h4>
+                <div class="method-signature">
+                    public static void SetFileServerBasePath(string basePath)
+                    public static string GetFileServerBasePath()
+                </div>
+
+                <p><strong>Configuration Sources:</strong></p>
+                <ul>
+                    <li><strong>ErrorHandlingConfiguration:</strong> Central configuration management</li>
+                    <li><strong>Enable/Disable Flags:</strong> Can selectively disable file or database logging</li>
+                    <li><strong>Connection Strings:</strong> MySQL connection from secure configuration</li>
+                    <li><strong>Path Resolution:</strong> Handles UNC paths, mapped drives, and local paths</li>
+                </ul>
+
+                <h4>Thread Safety Implementation</h4>
+                <div class="code-example">
+<pre>
+private static readonly object _fileLockObject = new();
+
+// Thread-safe file writing
+lock (_fileLockObject)
+{
+    var fileExists = File.Exists(csvFilePath);
+    using var writer = new StreamWriter(csvFilePath, append: true);
+    
+    if (!fileExists)
+    {
+        writer.WriteLine(GetCsvHeader());
+    }
+    
+    writer.WriteLine(FormatErrorEntryAsCsv(errorEntry));
+}
+</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>🏗️ MTM Integration Patterns</h3>
+
+                <h4>Service Dependencies</h4>
+                <ul>
+                    <li><strong>ErrorHandlingConfiguration:</strong> Gets logging preferences and paths</li>
+                    <li><strong>Service_ErrorHandler:</strong> Primary consumer of logging services</li>
+                    <li><strong>File System:</strong> Network and local file system access</li>
+                    <li><strong>MySQL Provider:</strong> MySql.Data.MySqlClient for database operations</li>
+                </ul>
+
+                <h4>Usage Pattern</h4>
+                <div class="code-example">
+<pre>
+// Called by Service_ErrorHandler.HandleException()
+var errorEntry = CreateErrorEntry(exception, severity, source, additionalData, ...);
+
+// Dual logging approach
+LoggingUtility.LogToFileServer(errorEntry);      // CSV files
+await LoggingUtility.LogToMySQL(errorEntry);     // Database
+
+// Automatic fallback handling built-in
+// No additional error handling needed by caller
+</pre>
+                </div>
+
+                <h4>Performance Characteristics</h4>
+                <ul>
+                    <li><strong>File Operations:</strong> Synchronous with lock protection</li>
+                    <li><strong>Database Operations:</strong> Asynchronous for non-blocking performance</li>
+                    <li><strong>Memory Usage:</strong> Minimal - processes one error entry at a time</li>
+                    <li><strong>Network Resilience:</strong> Graceful handling of network path failures</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>📊 Data Formats & Standards</h3>
+
+                <h4>CSV Format Specifications</h4>
+                <ul>
+                    <li><strong>Encoding:</strong> UTF-8 for international character support</li>
+                    <li><strong>Line Endings:</strong> Environment.NewLine for platform compatibility</li>
+                    <li><strong>Field Escaping:</strong> RFC 4180 compliant CSV escaping</li>
+                    <li><strong>Timestamp Format:</strong> yyyy-MM-dd HH:mm:ss (sortable format)</li>
+                    <li><strong>Header Row:</strong> Always included for new files</li>
+                </ul>
+
+                <h4>Database Schema Design</h4>
+                <ul>
+                    <li><strong>Primary Keys:</strong> Auto-incrementing integers for performance</li>
+                    <li><strong>Data Types:</strong> Appropriate sizing for MySQL optimization</li>
+                    <li><strong>Indexes:</strong> Strategic indexing on query columns</li>
+                    <li><strong>Nullable Fields:</strong> Optional fields allow NULL values</li>
+                    <li><strong>Text Fields:</strong> TEXT type for unlimited error message length</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>🔍 Error Handling & Diagnostics</h3>
+
+                <h4>Self-Monitoring Features</h4>
+                <ul>
+                    <li><strong>Exception Wrapping:</strong> Detailed error messages for troubleshooting</li>
+                    <li><strong>Fallback Tracking:</strong> Logs when fallback mechanisms activate</li>
+                    <li><strong>Configuration Validation:</strong> Checks paths and connections during operation</li>
+                    <li><strong>Resource Management:</strong> Proper disposal of file handles and database connections</li>
+                </ul>
+
+                <h4>Development Support</h4>
+                <ul>
+                    <li><strong>Console Output:</strong> Debug information when ErrorHandlingConfiguration.EnableConsoleLogging = true</li>
+                    <li><strong>Local Development:</strong> Works with local paths when file server not available</li>
+                    <li><strong>Testing Support:</strong> SetFileServerBasePath() allows test-specific configurations</li>
+                </ul>
+            </div>
+
+            <div class="keyboard-shortcuts">
+                <h3>⌨️ Quick Navigation</h3>
+                <ul>
+                    <li><strong>Alt + P:</strong> Switch to Plain English Documentation</li>
+                    <li><strong>Alt + T:</strong> Stay on Technical View</li>
+                    <li><strong>Ctrl + F:</strong> Search this page</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                window.location.href = '../../../PlainEnglish/FileDefinitions/Services/LoggingUtility.html';
+            } else if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                // Already on Technical view
+            }
+        });
+    </script>
+</body>
+</html>
