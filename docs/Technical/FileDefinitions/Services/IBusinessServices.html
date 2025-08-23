@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBusinessServices - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏢 IBusinessServices - Technical Documentation</h1>
+            <div class="nav-links">
+                <a href="../../../PlainEnglish/FileDefinitions/Services/IBusinessServices.html" class="nav-link plain-english">📖 Plain English Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Interface Overview -->
+            <section class="doc-section">
+                <h2>🔧 Interface Definition</h2>
+                <div class="code-section">
+                    <h3>IBusinessServices Interface Contract</h3>
+                    <pre><code>namespace MTM.Services
+{
+    /// &lt;summary&gt;
+    /// Primary business services interface defining core MTM WIP operations.
+    /// Implements the business logic layer for inventory management, user operations,
+    /// and transaction processing with MTM-specific business rules.
+    /// &lt;/summary&gt;
+    public interface IBusinessServices
+    {
+        // Inventory Management Operations
+        Task&lt;Result&lt;InventoryItem&gt;&gt; GetInventoryItemAsync(string partId, string operation);
+        Task&lt;Result&lt;IEnumerable&lt;InventoryItem&gt;&gt;&gt; GetInventoryListAsync(InventoryFilter filter = null);
+        Task&lt;Result&gt; AddInventoryItemAsync(AddInventoryRequest request);
+        Task&lt;Result&gt; RemoveInventoryItemAsync(RemoveInventoryRequest request);
+        Task&lt;Result&gt; TransferInventoryItemAsync(TransferInventoryRequest request);
+        Task&lt;Result&gt; UpdateInventoryQuantityAsync(string partId, string operation, int newQuantity, string userId);
+
+        // User Management Operations
+        Task&lt;Result&lt;User&gt;&gt; GetUserAsync(string userId);
+        Task&lt;Result&lt;IEnumerable&lt;User&gt;&gt;&gt; GetUsersAsync(UserFilter filter = null);
+        Task&lt;Result&gt; CreateUserAsync(CreateUserRequest request);
+        Task&lt;Result&gt; UpdateUserAsync(UpdateUserRequest request);
+        Task&lt;Result&gt; DeleteUserAsync(string userId, string deletedBy);
+        Task&lt;Result&lt;bool&gt;&gt; ValidateUserCredentialsAsync(string username, string password);
+
+        // Transaction Processing Operations
+        Task&lt;Result&lt;IEnumerable&lt;InventoryTransaction&gt;&gt;&gt; GetTransactionHistoryAsync(TransactionFilter filter);
+        Task&lt;Result&lt;InventoryTransaction&gt;&gt; CreateTransactionAsync(CreateTransactionRequest request);
+        Task&lt;Result&gt; ReverseTransactionAsync(string transactionId, string reversedBy, string reason);
+
+        // Business Validation Operations
+        Task&lt;Result&lt;ValidationResult&gt;&gt; ValidateInventoryOperationAsync(InventoryOperationRequest request);
+        Task&lt;Result&lt;ValidationResult&gt;&gt; ValidateBusinessRulesAsync&lt;T&gt;(T entity, BusinessRuleContext context);
+
+        // MTM-Specific Operations
+        Task&lt;Result&lt;IEnumerable&lt;QuickButtonItem&gt;&gt;&gt; GetQuickButtonsAsync(string userId);
+        Task&lt;Result&gt; SaveQuickButtonAsync(QuickButtonItem button, string userId);
+        Task&lt;Result&gt; RemoveQuickButtonAsync(int position, string userId);
+    }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Method Details -->
+            <section class="doc-section">
+                <h2>📋 Method Specifications</h2>
+
+                <div class="method-category">
+                    <h3>📦 Inventory Management Methods</h3>
+                    
+                    <div class="method-detail">
+                        <h4>GetInventoryItemAsync</h4>
+                        <div class="method-info">
+                            <p><strong>Purpose:</strong> Retrieves a specific inventory item by part ID and operation number.</p>
+                            <p><strong>Parameters:</strong></p>
+                            <ul>
+                                <li><code>partId</code> (string) - Unique part identifier</li>
+                                <li><code>operation</code> (string) - Manufacturing operation number (e.g., "90", "100", "110")</li>
+                            </ul>
+                            <p><strong>Returns:</strong> <code>Result&lt;InventoryItem&gt;</code> - Success with item data or failure with error details</p>
+                            <p><strong>Database Call:</strong> Executes stored procedure <code>inv_inventory_Get_ByPartID</code></p>
+                        </div>
+                    </div>
+
+                    <div class="method-detail">
+                        <h4>AddInventoryItemAsync</h4>
+                        <div class="method-info">
+                            <p><strong>Purpose:</strong> Adds new inventory to the system with proper transaction logging.</p>
+                            <p><strong>Parameters:</strong> <code>AddInventoryRequest</code> containing part details, quantity, location, and user information</p>
+                            <p><strong>Business Rules:</strong></p>
+                            <ul>
+                                <li>TransactionType is always IN (determined by user intent, not operation number)</li>
+                                <li>Validates part existence and operation validity</li>
+                                <li>Enforces MTM-specific quantity constraints</li>
+                                <li>Requires valid user authentication</li>
+                            </ul>
+                            <p><strong>Database Call:</strong> Executes stored procedure <code>inv_inventory_Add</code></p>
+                        </div>
+                    </div>
+
+                    <div class="method-detail">
+                        <h4>RemoveInventoryItemAsync</h4>
+                        <div class="method-info">
+                            <p><strong>Purpose:</strong> Removes inventory from the system with transaction tracking.</p>
+                            <p><strong>Business Rules:</strong></p>
+                            <ul>
+                                <li>TransactionType is always OUT (determined by user intent, not operation number)</li>
+                                <li>Validates sufficient quantity available</li>
+                                <li>Prevents negative inventory levels</li>
+                                <li>Creates audit trail for removal</li>
+                            </ul>
+                            <p><strong>Database Call:</strong> Executes stored procedure <code>inv_inventory_Remove</code></p>
+                        </div>
+                    </div>
+
+                    <div class="method-detail">
+                        <h4>TransferInventoryItemAsync</h4>
+                        <div class="method-info">
+                            <p><strong>Purpose:</strong> Transfers inventory between locations or operations.</p>
+                            <p><strong>Business Rules:</strong></p>
+                            <ul>
+                                <li>TransactionType is always TRANSFER (determined by user intent, not operation number)</li>
+                                <li>Validates source and destination locations</li>
+                                <li>Ensures atomic transaction (all or nothing)</li>
+                                <li>Maintains location tracking integrity</li>
+                            </ul>
+                            <p><strong>Database Call:</strong> Executes stored procedure <code>inv_inventory_Transfer</code></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-category">
+                    <h3>👥 User Management Methods</h3>
+                    
+                    <div class="method-detail">
+                        <h4>ValidateUserCredentialsAsync</h4>
+                        <div class="method-info">
+                            <p><strong>Purpose:</strong> Authenticates user credentials against MTM security standards.</p>
+                            <p><strong>Security Features:</strong></p>
+                            <ul>
+                                <li>Password hashing with salt</li>
+                                <li>Account lockout after failed attempts</li>
+                                <li>Session timeout management</li>
+                                <li>Role-based access control integration</li>
+                            </ul>
+                            <p><strong>Database Call:</strong> Executes stored procedure <code>usr_user_Validate</code></p>
+                        </div>
+                    </div>
+
+                    <div class="method-detail">
+                        <h4>CreateUserAsync</h4>
+                        <div class="method-info">
+                            <p><strong>Purpose:</strong> Creates new user accounts with appropriate permissions.</p>
+                            <p><strong>Validation Rules:</strong></p>
+                            <ul>
+                                <li>Unique username enforcement</li>
+                                <li>Password complexity requirements</li>
+                                <li>Role assignment validation</li>
+                                <li>MTM organizational structure compliance</li>
+                            </ul>
+                            <p><strong>Database Call:</strong> Executes stored procedure <code>usr_user_Create</code></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-category">
+                    <h3>📊 Transaction Processing Methods</h3>
+                    
+                    <div class="method-detail">
+                        <h4>GetTransactionHistoryAsync</h4>
+                        <div class="method-info">
+                            <p><strong>Purpose:</strong> Retrieves filtered transaction history for audit and analysis.</p>
+                            <p><strong>Filter Options:</strong></p>
+                            <ul>
+                                <li>Date range filtering</li>
+                                <li>Part ID and operation filtering</li>
+                                <li>User-based filtering</li>
+                                <li>Transaction type filtering</li>
+                                <li>Pagination support</li>
+                            </ul>
+                            <p><strong>Database Call:</strong> Executes stored procedure <code>txn_transaction_GetHistory</code></p>
+                        </div>
+                    </div>
+
+                    <div class="method-detail">
+                        <h4>CreateTransactionAsync</h4>
+                        <div class="method-info">
+                            <p><strong>Purpose:</strong> Creates new transaction records with full audit trail.</p>
+                            <p><strong>Transaction Properties:</strong></p>
+                            <ul>
+                                <li>Unique transaction ID generation</li>
+                                <li>Timestamp with timezone handling</li>
+                                <li>User identification and session tracking</li>
+                                <li>Operation and location context</li>
+                                <li>Before/after quantity snapshots</li>
+                            </ul>
+                            <p><strong>Database Call:</strong> Executes stored procedure <code>txn_transaction_Create</code></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Implementation Requirements -->
+            <section class="doc-section">
+                <h2>⚙️ Implementation Requirements</h2>
+                
+                <div class="requirement-grid">
+                    <div class="requirement-item">
+                        <h4>🔄 Dependency Injection</h4>
+                        <p>Must be registered as Scoped service in ServiceCollectionExtensions with all required dependencies:</p>
+                        <ul>
+                            <li>IDatabaseService for data access</li>
+                            <li>IValidationService for business rule enforcement</li>
+                            <li>ICacheService for performance optimization</li>
+                            <li>ILogger for comprehensive logging</li>
+                        </ul>
+                    </div>
+
+                    <div class="requirement-item">
+                        <h4>🗄️ Database Integration</h4>
+                        <p>All data operations must use stored procedures through Helper_Database_StoredProcedure.ExecuteDataTableWithStatus():</p>
+                        <ul>
+                            <li>No direct SQL queries allowed</li>
+                            <li>Parameter validation and sanitization</li>
+                            <li>Transaction rollback support</li>
+                            <li>Connection pool management</li>
+                        </ul>
+                    </div>
+
+                    <div class="requirement-item">
+                        <h4>🛡️ Error Handling</h4>
+                        <p>Comprehensive error handling with Result pattern:</p>
+                        <ul>
+                            <li>All methods return Result&lt;T&gt; or Result</li>
+                            <li>Business rule violations as failures</li>
+                            <li>Database errors handled gracefully</li>
+                            <li>User-friendly error messages</li>
+                        </ul>
+                    </div>
+
+                    <div class="requirement-item">
+                        <h4>📊 Performance Standards</h4>
+                        <p>Performance optimization requirements:</p>
+                        <ul>
+                            <li>Response times &lt; 2 seconds for typical operations</li>
+                            <li>Caching for frequently accessed data</li>
+                            <li>Async/await pattern for all I/O operations</li>
+                            <li>Efficient query execution plans</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MTM Business Rules -->
+            <section class="doc-section">
+                <h2>🏭 MTM-Specific Business Rules</h2>
+                
+                <div class="business-rules">
+                    <div class="rule-category">
+                        <h3>⚡ Critical Transaction Type Rule</h3>
+                        <div class="critical-rule">
+                            <p><strong>IMPORTANT:</strong> TransactionType is determined by USER INTENT, NOT by Operation number.</p>
+                            <ul>
+                                <li><strong>IN:</strong> User is adding stock to inventory (regardless of operation)</li>
+                                <li><strong>OUT:</strong> User is removing stock from inventory (regardless of operation)</li>
+                                <li><strong>TRANSFER:</strong> User is moving stock between locations (regardless of operation)</li>
+                            </ul>
+                            <p>Operation numbers ("90", "100", "110") are workflow step identifiers, not transaction type indicators.</p>
+                        </div>
+                    </div>
+
+                    <div class="rule-category">
+                        <h3>📋 Inventory Validation Rules</h3>
+                        <ul>
+                            <li>Part IDs must exist in master parts table</li>
+                            <li>Operations must be valid for the specific part</li>
+                            <li>Quantities must be positive integers</li>
+                            <li>Locations must be active and accessible</li>
+                            <li>Users must have appropriate permissions for the operation</li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-category">
+                        <h3>👥 User Management Rules</h3>
+                        <ul>
+                            <li>Usernames must be unique within the MTM system</li>
+                            <li>Password requirements: minimum 8 characters, complexity rules</li>
+                            <li>Role assignments must match MTM organizational structure</li>
+                            <li>Account deactivation preserves historical data</li>
+                            <li>Session timeout: 8 hours for production, 1 hour for administrative functions</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testing Requirements -->
+            <section class="doc-section">
+                <h2>🧪 Testing Requirements</h2>
+                
+                <div class="testing-grid">
+                    <div class="test-category">
+                        <h4>Unit Tests</h4>
+                        <ul>
+                            <li>All public methods have unit tests</li>
+                            <li>Business rule validation coverage</li>
+                            <li>Error condition testing</li>
+                            <li>Mock database interactions</li>
+                        </ul>
+                    </div>
+
+                    <div class="test-category">
+                        <h4>Integration Tests</h4>
+                        <ul>
+                            <li>Database stored procedure integration</li>
+                            <li>Service dependency injection</li>
+                            <li>End-to-end workflow testing</li>
+                            <li>Performance benchmarking</li>
+                        </ul>
+                    </div>
+
+                    <div class="test-category">
+                        <h4>Business Logic Tests</h4>
+                        <ul>
+                            <li>MTM-specific business rule validation</li>
+                            <li>Transaction type determination logic</li>
+                            <li>Inventory constraint enforcement</li>
+                            <li>User permission validation</li>
+                        </ul>
+                    </div>
+
+                    <div class="test-category">
+                        <h4>Security Tests</h4>
+                        <ul>
+                            <li>Authentication mechanism validation</li>
+                            <li>Authorization boundary testing</li>
+                            <li>Input sanitization verification</li>
+                            <li>SQL injection prevention</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>📍 <strong>Navigation:</strong> 
+                <a href="../../../PlainEnglish/FileDefinitions/Services/IBusinessServices.html">Plain English Guide</a> | 
+                <a href="../../../index.html">Documentation Home</a> | 
+                <a href="../../../Technical/index.html">Technical Index</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

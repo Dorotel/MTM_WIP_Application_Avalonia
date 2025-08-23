@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICoreServices - Plain English Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔧 ICoreServices - Plain English Guide</h1>
+            <div class="nav-links">
+                <a href="../../../Technical/FileDefinitions/Services/ICoreServices.html" class="nav-link technical">🔧 Technical Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- What This Does -->
+            <section class="doc-section">
+                <h2>🤔 What Is ICoreServices?</h2>
+                <div class="explanation-box">
+                    <p>Think of <strong>ICoreServices</strong> as the <strong>factory's IT infrastructure manager's job description</strong>. This interface defines what the core technical services department should be capable of providing, like the utilities and support systems that keep the factory running smoothly.</p>
+                    
+                    <p>Just like how a factory needs electricity, water, compressed air, and communication systems to operate, the MTM application needs core technical services to function properly.</p>
+                </div>
+            </section>
+
+            <!-- Core Infrastructure Services -->
+            <section class="doc-section">
+                <h2>⚙️ Core Infrastructure Responsibilities</h2>
+                <div class="responsibility-grid">
+                    <div class="responsibility-card">
+                        <h3>🗄️ Database Management</h3>
+                        <p><strong>Like the factory's data storage system:</strong></p>
+                        <ul>
+                            <li>Managing database connections</li>
+                            <li>Executing stored procedures</li>
+                            <li>Handling transaction rollbacks</li>
+                            <li>Ensuring data consistency</li>
+                            <li>Managing connection pooling</li>
+                        </ul>
+                    </div>
+
+                    <div class="responsibility-card">
+                        <h3>📝 Configuration Management</h3>
+                        <p><strong>Like the plant's settings control center:</strong></p>
+                        <ul>
+                            <li>Loading application settings</li>
+                            <li>Managing environment configurations</li>
+                            <li>Handling database connection strings</li>
+                            <li>Storing user preferences</li>
+                            <li>Managing feature flags</li>
+                        </ul>
+                    </div>
+
+                    <div class="responsibility-card">
+                        <h3>📊 Logging & Monitoring</h3>
+                        <p><strong>Like the factory's monitoring system:</strong></p>
+                        <ul>
+                            <li>Recording system events</li>
+                            <li>Tracking errors and exceptions</li>
+                            <li>Monitoring performance metrics</li>
+                            <li>Creating audit trails</li>
+                            <li>Generating diagnostic reports</li>
+                        </ul>
+                    </div>
+
+                    <div class="responsibility-card">
+                        <h3>🔒 Security Services</h3>
+                        <p><strong>Like the factory's security system:</strong></p>
+                        <ul>
+                            <li>Authentication management</li>
+                            <li>Authorization checking</li>
+                            <li>Session management</li>
+                            <li>Data encryption/decryption</li>
+                            <li>Security policy enforcement</li>
+                        </ul>
+                    </div>
+
+                    <div class="responsibility-card">
+                        <h3>💾 Caching Services</h3>
+                        <p><strong>Like the factory's quick-access storage:</strong></p>
+                        <ul>
+                            <li>Storing frequently used data</li>
+                            <li>Reducing database load</li>
+                            <li>Improving response times</li>
+                            <li>Managing cache expiration</li>
+                            <li>Cache invalidation strategies</li>
+                        </ul>
+                    </div>
+
+                    <div class="responsibility-card">
+                        <h3>✅ Validation Services</h3>
+                        <p><strong>Like the factory's quality control:</strong></p>
+                        <ul>
+                            <li>Data format validation</li>
+                            <li>Business rule checking</li>
+                            <li>Input sanitization</li>
+                            <li>Constraint verification</li>
+                            <li>Error message generation</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MTM Manufacturing Context -->
+            <section class="doc-section">
+                <h2>🏭 MTM Infrastructure Context</h2>
+                <div class="manufacturing-context">
+                    <h3>Why Core Services Matter</h3>
+                    <p>In MTM's manufacturing environment, <strong>ICoreServices</strong> provides:</p>
+                    
+                    <div class="benefit-list">
+                        <div class="benefit-item">
+                            <strong>⚡ Reliability:</strong> Core infrastructure services keep the application running 24/7, just like factory utilities.
+                        </div>
+                        <div class="benefit-item">
+                            <strong>🔧 Maintainability:</strong> Centralized core services make it easier to update and maintain the system infrastructure.
+                        </div>
+                        <div class="benefit-item">
+                            <strong>📈 Performance:</strong> Optimized core services ensure fast response times for critical manufacturing operations.
+                        </div>
+                        <div class="benefit-item">
+                            <strong>🛡️ Security:</strong> Standardized security services protect sensitive manufacturing data and operations.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Service Dependencies -->
+            <section class="doc-section">
+                <h2>🔗 Core Service Dependencies</h2>
+                <div class="dependency-flow">
+                    <h3>How Core Services Support the System</h3>
+                    <div class="flow-diagram">
+                        <div class="flow-step foundation">
+                            <div class="step-number">Base</div>
+                            <div class="step-content">
+                                <strong>ICoreServices</strong><br>
+                                Foundation infrastructure layer
+                            </div>
+                        </div>
+                        <div class="flow-arrow-up">↑</div>
+                        <div class="flow-step business">
+                            <div class="step-number">Mid</div>
+                            <div class="step-content">
+                                <strong>IBusinessServices</strong><br>
+                                Business logic layer (depends on core)
+                            </div>
+                        </div>
+                        <div class="flow-arrow-up">↑</div>
+                        <div class="flow-step ui">
+                            <div class="step-number">Top</div>
+                            <div class="step-content">
+                                <strong>User Interface</strong><br>
+                                Presentation layer (depends on business)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Critical Infrastructure -->
+            <section class="doc-section">
+                <h2>🏗️ Critical Infrastructure Components</h2>
+                <div class="infrastructure-grid">
+                    <div class="infra-component">
+                        <h4>🗄️ Database Layer</h4>
+                        <p>Manages all data persistence operations using stored procedures, ensuring data integrity and performance optimization.</p>
+                    </div>
+                    <div class="infra-component">
+                        <h4>📋 Configuration Layer</h4>
+                        <p>Handles application settings, environment variables, and runtime configuration management across different deployment scenarios.</p>
+                    </div>
+                    <div class="infra-component">
+                        <h4>📊 Monitoring Layer</h4>
+                        <p>Provides comprehensive logging, error tracking, and performance monitoring for manufacturing operations.</p>
+                    </div>
+                    <div class="infra-component">
+                        <h4>🔒 Security Layer</h4>
+                        <p>Implements authentication, authorization, and data protection mechanisms for sensitive manufacturing information.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quality Standards -->
+            <section class="doc-section">
+                <h2>✅ Infrastructure Quality Standards</h2>
+                <div class="standards-grid">
+                    <div class="standard-item">
+                        <h4>🎯 High Availability</h4>
+                        <p>Core services are designed for 24/7 operation with minimal downtime, supporting continuous manufacturing operations.</p>
+                    </div>
+                    <div class="standard-item">
+                        <h4>🔒 Security First</h4>
+                        <p>All core services implement security best practices, protecting MTM's sensitive manufacturing data and processes.</p>
+                    </div>
+                    <div class="standard-item">
+                        <h4>📊 Performance Optimized</h4>
+                        <p>Infrastructure services are optimized for speed and efficiency, minimizing response times for critical operations.</p>
+                    </div>
+                    <div class="standard-item">
+                        <h4>🧪 Thoroughly Tested</h4>
+                        <p>Core infrastructure includes comprehensive testing to ensure reliability under all manufacturing scenarios.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>📍 <strong>Navigation:</strong> 
+                <a href="../../../Technical/FileDefinitions/Services/ICoreServices.html">Technical Details</a> | 
+                <a href="../../../index.html">Documentation Home</a> | 
+                <a href="../../../PlainEnglish/index.html">Plain English Index</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
