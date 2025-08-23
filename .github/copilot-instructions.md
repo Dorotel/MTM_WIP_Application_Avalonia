@@ -1099,6 +1099,42 @@ public SampleViewModel()
 3. **"Create database migration script"** - Generate script to update production schema
 4. **"Document data flow for [process]"** - Explain how data moves through system tables
 
+## **📚 Organized Instruction Files Reference**
+
+**This main instruction file provides comprehensive guidance, but for specialized contexts, refer to the organized instruction categories:**
+
+### **🔧 Core Instructions** (`Core-Instructions/`)
+- **Primary Usage**: All development work requiring coding patterns, naming standards, or project structure guidance
+- **Key Files**: `codingconventions.instruction.md`, `naming.conventions.instruction.md`
+- **When to Use**: Before starting any development task, creating new components, or setting up services
+
+### **🎨 UI Instructions** (`UI-Instructions/`)
+- **Primary Usage**: Creating Views, ViewModels, or any UI-related components
+- **Key Files**: `ui-generation.instruction.md` (823 lines), `ui-mapping.instruction.md`
+- **When to Use**: Generating Avalonia AXAML, converting WinForms patterns, or implementing MTM design system
+
+### **⚙️ Development Instructions** (`Development-Instructions/`)
+- **Primary Usage**: Workflow setup, error handling implementation, or database integration
+- **Key Files**: `errorhandler.instruction.md`, `githubworkflow.instruction.md`
+- **When to Use**: Implementing error handling, setting up CI/CD, or working with database patterns
+
+### **✅ Quality Instructions** (`Quality-Instructions/`)
+- **Primary Usage**: Quality assurance, compliance verification, or system repair
+- **Key Files**: `needsrepair.instruction.md` (630 lines, comprehensive quality standards)
+- **When to Use**: Code reviews, quality assessments, or identifying missing system components
+
+### **🤖 Automation Instructions** (`Automation-Instructions/`)
+- **Primary Usage**: Creating custom prompts, defining Copilot personas, or automation workflows
+- **Key Files**: `personas.instruction.md` (640 lines), `customprompts.instruction.md`
+- **When to Use**: Specialized Copilot behaviors, prompt engineering, or workflow automation
+
+### **📂 Related Documentation**
+- **Development/UI_Documentation/**: Component-specific instruction files (43 additional files)
+- **Archive/**: Historical files and migration documentation
+- **Each Category README.md**: Detailed descriptions of category contents and usage guidelines
+
+---
+
 ## Remember
 - This is an Avalonia app, not WPF or WinForms
 - Use Avalonia-specific syntax and controls
@@ -1111,4 +1147,5 @@ public SampleViewModel()
 - Apply the MTM brand gradient and color scheme consistently throughout the application
 - **NEVER use direct SQL - always use stored procedures**
 - All development files are now in the `Development/` folder
+- **TransactionType is determined by USER INTENT, not Operation numbers**
 - **TransactionType is determined by USER INTENT, not Operation numbers**

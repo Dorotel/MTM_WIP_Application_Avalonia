@@ -103,14 +103,14 @@ public class InventoryService : IInventoryService
 - Search and filtering capabilities
 - Business rule enforcement
 
-#### `UserAndTransactionServices.cs`
-User management and transaction processing services.
+#### `UserService.cs`
+User management and authentication service.
 ```csharp
-public class UserAndTransactionServices : IUserAndTransactionServices
+public class UserService : IUserService
 {
     // User authentication
     // Permission management
-    // Transaction history
+    // User profile management
     // User activity tracking
 }
 ```
@@ -118,8 +118,26 @@ public class UserAndTransactionServices : IUserAndTransactionServices
 **Key Features:**
 - User authentication and authorization
 - Role-based access control
+- User profile management
+- User preference persistence
+
+#### `TransactionService.cs`
+Transaction processing and audit service.
+```csharp
+public class TransactionService : ITransactionService
+{
+    // Transaction processing
+    // Transaction history
+    // Audit logging
+    // Transaction validation
+}
+```
+
+**Key Features:**
 - Transaction audit logging
-- User preference management
+- Transaction history management
+- Business rule validation
+- Transaction reporting
 
 #### `ApplicationStateService.cs`
 Application-wide state management service.
@@ -138,6 +156,62 @@ public class ApplicationStateService : IApplicationStateService
 - User session tracking
 - Inter-service communication
 - Cache coordination
+
+### Support and Infrastructure Services
+
+#### `CacheService.cs` (SimpleCacheService)
+Application-wide caching service using IMemoryCache.
+```csharp
+public class SimpleCacheService : ICacheService
+{
+    // Memory cache management
+    // Cache expiration handling
+    // Pattern-based cache operations
+    // Cache performance optimization
+}
+```
+
+**Key Features:**
+- In-memory caching with expiration
+- Async cache operations
+- Cache key pattern operations
+- Performance optimization
+
+#### `ValidationService.cs` (SimpleValidationService)
+Data validation and business rule validation service.
+```csharp
+public class SimpleValidationService : IValidationService
+{
+    // Data validation
+    // Business rule validation
+    // Input sanitization
+    // Validation error handling
+}
+```
+
+**Key Features:**
+- Comprehensive data validation
+- Business rule enforcement
+- Input parameter validation
+- Validation error reporting
+
+#### `DbConnectionFactory.cs` (MySqlConnectionFactory)
+Database connection factory for MySQL operations.
+```csharp
+public class MySqlConnectionFactory : IDbConnectionFactory
+{
+    // MySQL connection creation
+    // Connection string management
+    // Connection pooling
+    // Connection health monitoring
+}
+```
+
+**Key Features:**
+- MySQL connection management
+- Connection pooling optimization
+- Connection string validation
+- Database connectivity monitoring
 
 ### Utility and Support Services
 
@@ -162,37 +236,59 @@ public class Service_ErrorHandler
 ## ?? Service Integration
 
 ### Dependency Injection Setup
-Services are registered in `Extensions/ServiceCollectionExtensions.cs`:
+Services are registered using the comprehensive `AddMTMServices` extension method in `Extensions/ServiceCollectionExtensions.cs`:
 
 ```csharp
-public static class ServiceCollectionExtensions
+public static IServiceCollection AddMTMServices(this IServiceCollection services, IConfiguration configuration)
 {
-    public static IServiceCollection AddCoreServices(this IServiceCollection services)
-    {
-        // Register core services
-        services.AddSingleton<IDatabaseService, DatabaseService>();
-        services.AddSingleton<IConfigurationService, ConfigurationService>();
-        services.AddSingleton<LoggingUtility>();
-        
-        return services;
-    }
-    
-    public static IServiceCollection AddBusinessServices(this IServiceCollection services)
-    {
-        // Register business services
-        services.AddScoped<IInventoryService, InventoryService>();
-        services.AddScoped<IUserAndTransactionServices, UserAndTransactionServices>();
-        services.AddSingleton<IApplicationStateService, ApplicationStateService>();
-        
-        return services;
-    }
+    // Configure strongly-typed settings
+    services.Configure<MTMSettings>(configuration.GetSection("MTM"));
+    services.Configure<DatabaseSettings>(configuration.GetSection("Database"));
+    services.Configure<ErrorHandlingSettings>(configuration.GetSection("ErrorHandling"));
+    services.Configure<LoggingSettings>(configuration.GetSection("Logging"));
+
+    // Add settings validation
+    services.AddSingleton<IValidateOptions<MTMSettings>, ConfigurationValidationService>();
+
+    // Add core infrastructure services
+    services.AddSingleton<IConfigurationService, ConfigurationService>();
+    services.AddSingleton<IApplicationStateService, MTMApplicationStateService>();
+
+    // Add database services
+    services.AddScoped<IDatabaseService, DatabaseService>();
+    services.AddSingleton<IDbConnectionFactory, MySqlConnectionFactory>();
+    services.AddTransient<DatabaseTransactionService>();
+
+    // Add business services
+    services.AddScoped<IInventoryService, InventoryService>();
+    services.AddScoped<IUserService, UserService>();
+    services.AddScoped<ITransactionService, TransactionService>();
+
+    // Add caching services
+    services.AddMemoryCache();
+    services.AddSingleton<ICacheService, SimpleCacheService>();
+
+    // Add validation services
+    services.AddScoped<IValidationService, SimpleValidationService>();
+
+    return services;
 }
 ```
 
 ### Service Lifetimes
-- **Singleton**: Services that maintain state across the application (Database, Configuration, Logging)
-- **Scoped**: Services that are created per operation scope (Inventory, User/Transaction)
-- **Transient**: Services that are created each time they're requested (Error Handler)
+- **Singleton**: Services that maintain state across the application
+  - `IConfigurationService` - Application configuration and settings
+  - `IApplicationStateService` - Global application state management
+  - `IDbConnectionFactory` - Database connection factory
+  - `ICacheService` - Application-wide caching
+- **Scoped**: Services that are created per operation scope
+  - `IDatabaseService` - Database operations and connectivity
+  - `IInventoryService` - Inventory management operations
+  - `IUserService` - User management and authentication
+  - `ITransactionService` - Transaction processing
+  - `IValidationService` - Data validation services
+- **Transient**: Services that are created each time they're requested
+  - `DatabaseTransactionService` - Database transaction management
 
 ## ?? Database Integration
 

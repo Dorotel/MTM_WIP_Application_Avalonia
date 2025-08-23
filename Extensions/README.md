@@ -25,111 +25,235 @@ This directory contains extension methods and utility classes that extend the fu
 
 ### Service Registration (`ServiceCollectionExtensions.cs`)
 
-Primary dependency injection setup for the application:
+Primary dependency injection setup for the MTM WIP Application:
 
 ```csharp
 /// <summary>
-/// Extension methods for IServiceCollection to register application services
+/// Extension methods for registering MTM services with dependency injection.
+/// Implementation for the main MTM WIP Application following .NET 8 patterns.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers all core services required for basic application functionality
-    /// </summary>
-    public static IServiceCollection AddCoreServices(this IServiceCollection services)
-    {
-        // Database services
-        services.AddSingleton<IDatabaseService, DatabaseService>();
-        
-        // Configuration services
-        services.AddSingleton<IConfigurationService, ConfigurationService>();
-        
-        // Logging services
-        services.AddSingleton<LoggingUtility>();
-        
-        return services;
-    }
-
-    /// <summary>
-    /// Registers business logic services for inventory and operations
-    /// </summary>
-    public static IServiceCollection AddBusinessServices(this IServiceCollection services)
-    {
-        // Inventory management
-        services.AddScoped<IInventoryService, InventoryService>();
-        
-        // User and transaction services
-        services.AddScoped<IUserAndTransactionServices, UserAndTransactionServices>();
-        
-        // Application state management
-        services.AddSingleton<IApplicationStateService, ApplicationStateService>();
-        
-        return services;
-    }
-
-    /// <summary>
-    /// Registers utility and support services
-    /// </summary>
-    public static IServiceCollection AddUtilityServices(this IServiceCollection services)
-    {
-        // Error handling
-        services.AddTransient<Service_ErrorHandler>();
-        
-        // Background services
-        services.AddHostedService<BackgroundTaskService>();
-        
-        return services;
-    }
-
-    /// <summary>
-    /// Registers all application services in the correct order
+    /// Adds all MTM services to the service collection.
+    /// This is the comprehensive service registration method that should be used in Program.cs.
     /// </summary>
     public static IServiceCollection AddMTMServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Core infrastructure first
-        services.AddCoreServices();
-        
-        // Business services
-        services.AddBusinessServices();
-        
-        // Utility services
-        services.AddUtilityServices();
-        
-        // Configure options
-        services.Configure<AppConfiguration>(configuration.GetSection("AppConfiguration"));
-        
+        // Configure strongly-typed settings
+        services.Configure<MTMSettings>(configuration.GetSection("MTM"));
+        services.Configure<DatabaseSettings>(configuration.GetSection("Database"));
+        services.Configure<ErrorHandlingSettings>(configuration.GetSection("ErrorHandling"));
+        services.Configure<LoggingSettings>(configuration.GetSection("Logging"));
+
+        // Add settings validation
+        services.AddSingleton<IValidateOptions<MTMSettings>, ConfigurationValidationService>();
+
+        // Add core infrastructure services
+        services.AddSingleton<IConfigurationService, ConfigurationService>();
+        services.AddSingleton<IApplicationStateService, MTMApplicationStateService>();
+
+        // Add database services
+        services.AddScoped<IDatabaseService, DatabaseService>();
+        services.AddSingleton<IDbConnectionFactory, MySqlConnectionFactory>();
+        services.AddTransient<DatabaseTransactionService>();
+
+        // Add business services
+        services.AddScoped<IInventoryService, InventoryService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITransactionService, TransactionService>();
+
+        // Add caching services
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheService, SimpleCacheService>();
+
+        // Add validation services
+        services.AddScoped<IValidationService, SimpleValidationService>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds MTM services configured for development environment.
+    /// </summary>
+    public static IServiceCollection AddMTMServicesForDevelopment(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Add core services
+        services.AddMTMServices(configuration);
+
+        // TODO: Configure for development environment
+        // ErrorHandlingConfiguration.ConfigureForDevelopment();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds MTM services configured for production environment.
+    /// </summary>
+    public static IServiceCollection AddMTMServicesForProduction(this IServiceCollection services, 
+        IConfiguration configuration, 
+        IDbConnectionFactory? connectionFactory = null)
+    {
+        // Add core services
+        services.AddMTMServices(configuration);
+
+        // Override connection factory if provided
+        if (connectionFactory != null)
+        {
+            services.AddSingleton(connectionFactory);
+        }
+
+        // TODO: Configure for production environment
+        // ErrorHandlingConfiguration.ConfigureForProduction();
+
         return services;
     }
 }
 ```
 
 ### Service Lifetime Management
-Proper service lifetime configuration:
+Proper service lifetime configuration following .NET 8 patterns:
 
 ```csharp
-public static class ServiceLifetimeExtensions
+/// <summary>
+/// Service lifetimes used in AddMTMServices registration
+/// </summary>
+public static class ServiceLifetimePatterns
 {
     /// <summary>
-    /// Registers services with appropriate lifetimes for optimal performance
+    /// Singleton services - created once and shared across the application
     /// </summary>
-    public static IServiceCollection AddServicesWithLifetimes(this IServiceCollection services)
+    public static void RegisterSingletonServices(IServiceCollection services)
     {
-        // Singleton: Services that maintain state across the application
-        services.AddSingleton<IDatabaseService, DatabaseService>();
+        // Configuration and settings
         services.AddSingleton<IConfigurationService, ConfigurationService>();
-        services.AddSingleton<IApplicationStateService, ApplicationStateService>();
-        services.AddSingleton<LoggingUtility>();
-
-        // Scoped: Services that are created per operation scope
-        services.AddScoped<IInventoryService, InventoryService>();
-        services.AddScoped<IUserAndTransactionServices, UserAndTransactionServices>();
-
-        // Transient: Services that are created each time they're requested
-        services.AddTransient<Service_ErrorHandler>();
-        services.AddTransient<IValidationService, ValidationService>();
-
-        return services;
+        services.AddSingleton<IApplicationStateService, MTMApplicationStateService>();
+        
+        // Infrastructure services
+        services.AddSingleton<IDbConnectionFactory, MySqlConnectionFactory>();
+        services.AddSingleton<ICacheService, SimpleCacheService>();
+        
+        // Settings validation
+        services.AddSingleton<IValidateOptions<MTMSettings>, ConfigurationValidationService>();
     }
+
+    /// <summary>
+    /// Scoped services - created per request/operation scope
+    /// </summary>
+    public static void RegisterScopedServices(IServiceCollection services)
+    {
+        // Database operations
+        services.AddScoped<IDatabaseService, DatabaseService>();
+        
+        // Business services
+        services.AddScoped<IInventoryService, InventoryService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITransactionService, TransactionService>();
+        
+        // Validation services
+        services.AddScoped<IValidationService, SimpleValidationService>();
+    }
+
+    /// <summary>
+    /// Transient services - created each time they're requested
+    /// </summary>
+    public static void RegisterTransientServices(IServiceCollection services)
+    {
+        // Database transaction management
+        services.AddTransient<DatabaseTransactionService>();
+    }
+}
+```
+
+### Internal Service Implementations
+
+#### SimpleCacheService
+Internal implementation of `ICacheService` using `IMemoryCache`:
+
+```csharp
+/// <summary>
+/// Simple cache service implementation using IMemoryCache.
+/// Registered as Singleton for application-wide caching.
+/// </summary>
+internal class SimpleCacheService : ICacheService
+{
+    private readonly IMemoryCache _memoryCache;
+
+    public SimpleCacheService(IMemoryCache memoryCache)
+    {
+        _memoryCache = memoryCache;
+    }
+
+    public Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default) 
+    {
+        _memoryCache.TryGetValue(key, out var value);
+        return Task.FromResult((T?)value);
+    }
+
+    public Task<Result> SetAsync<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default) 
+    {
+        var options = new MemoryCacheEntryOptions();
+        if (expiration.HasValue)
+            options.AbsoluteExpirationRelativeToNow = expiration.Value;
+        
+        _memoryCache.Set(key, value, options);
+        return Task.FromResult(Result.Success());
+    }
+
+    public Task<Result> RemoveAsync(string key, CancellationToken cancellationToken = default) 
+    {
+        _memoryCache.Remove(key);
+        return Task.FromResult(Result.Success());
+    }
+
+    // Additional cache operations...
+}
+```
+
+#### SimpleValidationService
+Internal implementation of `IValidationService`:
+
+```csharp
+/// <summary>
+/// Simple validation service implementation.
+/// Registered as Scoped for per-operation validation context.
+/// </summary>
+internal class SimpleValidationService : IValidationService
+{
+    public Result ValidateInventoryItem(InventoryItem item)
+    {
+        var errors = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(item.PartId))
+            errors.Add("Part ID is required");
+        
+        if (string.IsNullOrWhiteSpace(item.Operation))
+            errors.Add("Operation is required");
+        
+        if (item.Quantity <= 0)
+            errors.Add("Quantity must be greater than zero");
+
+        return errors.Any() 
+            ? Result.Failure(string.Join("; ", errors))
+            : Result.Success();
+    }
+
+    public Result ValidateUser(User user)
+    {
+        var errors = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(user.Username))
+            errors.Add("Username is required");
+        
+        if (string.IsNullOrWhiteSpace(user.Role))
+            errors.Add("User role is required");
+
+        return errors.Any() 
+            ? Result.Failure(string.Join("; ", errors))
+            : Result.Success();
+    }
+
+    // Additional validation methods...
 }
 ```
 
