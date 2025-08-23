@@ -81,7 +81,11 @@
     </Style>
   </UserControl.Styles>
 
-  <!-- Main container with GroupBox styling -->
+  <!-- MANDATORY: Viewbox wrapper for proportional scaling -->
+  <Viewbox Stretch="Uniform" StretchDirection="Both">
+    <!-- Fixed dimensions for scaling reference -->
+    <Grid Width="800" Height="600">
+      <!-- Main container with GroupBox styling -->
   <Border Background="{DynamicResource CardBackgroundBrush}"
           BorderBrush="{DynamicResource BorderBrush}"
           BorderThickness="1"
@@ -229,4 +233,6 @@
                  Margin="8,4"/>
     </Grid>
   </Border>
+    </Grid>
+  </Viewbox>
 </UserControl>

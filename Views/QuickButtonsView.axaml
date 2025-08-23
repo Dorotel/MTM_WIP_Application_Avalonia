@@ -37,7 +37,11 @@
     </Style>
   </UserControl.Styles>
 
-  <!-- MTM styled container - Full height layout -->
+  <!-- MANDATORY: Viewbox wrapper for proportional scaling -->
+  <Viewbox Stretch="Uniform" StretchDirection="Both">
+    <!-- Fixed dimensions for scaling reference -->
+    <Grid Width="300" Height="600">
+      <!-- MTM styled container - Full height layout -->
   <Border Background="Transparent"
           CornerRadius="6"
           Padding="8">
@@ -119,4 +123,6 @@
       </ItemsControl.ItemTemplate>
     </ItemsControl>
   </Border>
+    </Grid>
+  </Viewbox>
 </UserControl>

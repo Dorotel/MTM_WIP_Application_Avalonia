@@ -16,6 +16,7 @@ Organized documentation covering all aspects of the project:
 - **[README_Development_Overview.md](ReadmeFiles/Development/README_Development_Overview.md)** - Development environment and workflow
 - **[README_Database_Files.md](ReadmeFiles/Development/README_Database_Files.md)** - Database development and procedures
 - **[README_UI_Documentation.md](ReadmeFiles/Development/README_UI_Documentation.md)** - UI component documentation
+- **[Views_Structure_Standards.instruction.md](../Development/UI_Documentation/Views_Structure_Standards.instruction.md)** - Mandatory view structure standards
 - **[README_Custom_Prompts.md](ReadmeFiles/Development/README_Custom_Prompts.md)** - Custom prompt system
 - **[README_Examples.md](ReadmeFiles/Development/README_Examples.md)** - Code examples and patterns
 - **[README_Compliance_Reports.md](ReadmeFiles/Development/README_Compliance_Reports.md)** - Quality assurance reports
@@ -68,6 +69,7 @@ Professional, accessible web documentation with MTM branding:
 - **Development Guide**: [Development/README_Development_Overview.md](ReadmeFiles/Development/README_Development_Overview.md)
 - **Database Development**: [Development/README_Database_Files.md](ReadmeFiles/Development/README_Database_Files.md)
 - **UI Components**: [Development/README_UI_Documentation.md](ReadmeFiles/Development/README_UI_Documentation.md)
+- **View Standards**: [Views_Structure_Standards.instruction.md](../Development/UI_Documentation/Views_Structure_Standards.instruction.md)
 
 ### **For Project Managers**
 - **Project Overview**: [Core/README_Project_Overview.md](ReadmeFiles/Core/README_Project_Overview.md)
