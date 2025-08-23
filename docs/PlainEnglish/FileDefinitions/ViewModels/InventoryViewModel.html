@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InventoryViewModel - Plain English Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📦 InventoryViewModel - Plain English Guide</h1>
+            <div class="nav-links">
+                <a href="../../../Technical/FileDefinitions/ViewModels/InventoryViewModel.html" class="nav-link technical">🔧 Technical Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- What This Does -->
+            <section class="doc-section">
+                <h2>🤔 What Does This Do?</h2>
+                <div class="explanation-box">
+                    <p>Think of the <strong>InventoryViewModel</strong> as the <strong>main warehouse display screen</strong> in the MTM factory. This is where workers can see all the parts and materials currently in stock, like looking at a digital inventory board that shows:</p>
+                    <ul>
+                        <li>📦 <strong>What parts we have</strong> (part numbers, descriptions)</li>
+                        <li>📍 <strong>Where they're located</strong> (shelves, bins, workstations)</li>
+                        <li>🔢 <strong>How many we have</strong> (quantities on hand)</li>
+                        <li>🏭 <strong>Which operation they're for</strong> (what manufacturing step)</li>
+                        <li>📈 <strong>Stock levels and alerts</strong> (low stock warnings)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Real-World Example -->
+            <section class="doc-section">
+                <h2>🏭 Real-World Manufacturing Example</h2>
+                <div class="example-scenario">
+                    <h3>Scenario: Production Supervisor Checking Stock</h3>
+                    <p><strong>Lisa, the production supervisor</strong>, starts her shift and needs to check what parts are available for today's production runs.</p>
+                    
+                    <div class="workflow-steps">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <div class="step-content">
+                                <h4>Open Inventory View</h4>
+                                <p>Lisa clicks on the "Inventory" tab to see the main inventory display screen. The system loads all current stock information.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <div class="step-content">
+                                <h4>Search for Specific Parts</h4>
+                                <p>She searches for "BEARING" to see all bearing parts. The list filters to show only bearing-related inventory.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <div class="step-content">
+                                <h4>Check Stock Levels</h4>
+                                <p>Lisa sees that "BEARING-001" has only 5 units left at Operation 100, which is below the minimum. The row shows in red to indicate low stock.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <div class="step-content">
+                                <h4>Review Locations</h4>
+                                <p>She checks where the bearings are located and sees they're split between "BIN-A12" (3 units) and "WORKSTATION-05" (2 units).</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">5</span>
+                            <div class="step-content">
+                                <h4>Take Action</h4>
+                                <p>From the inventory screen, Lisa can directly order more bearings or move existing stock to where it's needed most.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Features -->
+            <section class="doc-section">
+                <h2>⭐ Key Features for Workers</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <h4>🔍 Smart Search & Filter</h4>
+                        <p>Type any part number, description, or location to instantly find what you're looking for. Like a Google search for your inventory.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>📊 Visual Stock Alerts</h4>
+                        <p>Low stock items are highlighted in red, adequate stock in yellow, and good stock in green. No need to guess if you have enough.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>📍 Location Tracking</h4>
+                        <p>See exactly where each part is located in the warehouse. No more hunting around for parts - know exactly which bin or shelf to check.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>🏭 Operation Grouping</h4>
+                        <p>View inventory organized by manufacturing operation (90, 100, 110, etc.) to see what's available for each production step.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>🔄 Real-Time Updates</h4>
+                        <p>The inventory display updates automatically when parts are added, removed, or transferred. Always shows current, accurate information.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>📈 Quick Actions</h4>
+                        <p>Right-click on any item to quickly add more stock, remove items, or transfer to another location without switching screens.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- What Workers See -->
+            <section class="doc-section">
+                <h2>👀 What Workers See on Screen</h2>
+                <div class="ui-description">
+                    <h3>Main Inventory Grid</h3>
+                    <div class="grid-example">
+                        <table class="example-table">
+                            <thead>
+                                <tr>
+                                    <th>Part ID</th>
+                                    <th>Description</th>
+                                    <th>Operation</th>
+                                    <th>Location</th>
+                                    <th>Quantity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="status-good">
+                                    <td>BOLT-M12-50</td>
+                                    <td>M12x50 Hex Bolt</td>
+                                    <td>90</td>
+                                    <td>BIN-A15</td>
+                                    <td>250</td>
+                                    <td>✅ Good Stock</td>
+                                </tr>
+                                <tr class="status-warning">
+                                    <td>WASHER-12</td>
+                                    <td>12mm Flat Washer</td>
+                                    <td>90</td>
+                                    <td>BIN-B03</td>
+                                    <td>15</td>
+                                    <td>⚠️ Low Stock</td>
+                                </tr>
+                                <tr class="status-critical">
+                                    <td>BEARING-001</td>
+                                    <td>Ball Bearing 6205</td>
+                                    <td>100</td>
+                                    <td>WORK-05</td>
+                                    <td>3</td>
+                                    <td>🚨 Critical Low</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Control Panel</h3>
+                    <ul>
+                        <li><strong>Search Box:</strong> Type to filter the inventory list</li>
+                        <li><strong>Operation Filter:</strong> Dropdown to show only specific operations</li>
+                        <li><strong>Location Filter:</strong> Dropdown to show only specific locations</li>
+                        <li><strong>Stock Level Filter:</strong> Show only low stock, good stock, etc.</li>
+                        <li><strong>Refresh Button:</strong> Get the latest inventory data from the database</li>
+                        <li><strong>Export Button:</strong> Create a report of current inventory levels</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Business Rules -->
+            <section class="doc-section">
+                <h2>📋 MTM Business Rules</h2>
+                <div class="business-rules">
+                    <h3>Stock Level Classifications</h3>
+                    <ul>
+                        <li><strong>🚨 Critical (Red):</strong> Less than 10 units or below minimum threshold</li>
+                        <li><strong>⚠️ Low (Yellow):</strong> Between minimum and reorder point</li>
+                        <li><strong>✅ Good (Green):</strong> Above reorder point with adequate safety stock</li>
+                        <li><strong>📈 Excess (Blue):</strong> Above maximum recommended levels</li>
+                    </ul>
+                    
+                    <h3>Access Controls</h3>
+                    <ul>
+                        <li><strong>All Workers:</strong> Can view inventory levels and locations</li>
+                        <li><strong>Floor Supervisors:</strong> Can initiate stock moves and adjustments</li>
+                        <li><strong>Inventory Managers:</strong> Can modify stock levels and create orders</li>
+                        <li><strong>System Admins:</strong> Can modify business rules and thresholds</li>
+                    </ul>
+                    
+                    <h3>Data Refresh Rules</h3>
+                    <ul>
+                        <li><strong>Auto-Refresh:</strong> Screen updates every 30 seconds during business hours</li>
+                        <li><strong>Transaction Updates:</strong> Immediate refresh when inventory changes occur</li>
+                        <li><strong>Manual Refresh:</strong> Workers can click refresh anytime for latest data</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Common Tasks -->
+            <section class="doc-section">
+                <h2>🎯 Common Daily Tasks</h2>
+                <div class="tasks-grid">
+                    <div class="task-item">
+                        <h4>Morning Stock Check</h4>
+                        <p>Supervisors review inventory levels at shift start to identify any shortages before production begins.</p>
+                    </div>
+                    
+                    <div class="task-item">
+                        <h4>Part Location Lookup</h4>
+                        <p>Workers search for specific parts to find their exact warehouse location for picking or cycle counting.</p>
+                    </div>
+                    
+                    <div class="task-item">
+                        <h4>Low Stock Identification</h4>
+                        <p>Inventory clerks filter for low stock items to create purchase orders or move requests.</p>
+                    </div>
+                    
+                    <div class="task-item">
+                        <h4>Operation Planning</h4>
+                        <p>Production planners check what parts are available for specific operations to schedule work orders.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section class="doc-section">
+                <h2>🔧 Common Issues & Solutions</h2>
+                <div class="troubleshooting">
+                    <div class="issue-item">
+                        <h4>❓ "I can't find a part I know we have"</h4>
+                        <p><strong>Solution:</strong> Try searching with partial part numbers or descriptions. Check if it might be assigned to a different operation than expected.</p>
+                    </div>
+                    
+                    <div class="issue-item">
+                        <h4>❓ "The quantities look wrong"</h4>
+                        <p><strong>Solution:</strong> Click the refresh button to get the latest data. If still incorrect, check if there are pending transactions being processed.</p>
+                    </div>
+                    
+                    <div class="issue-item">
+                        <h4>❓ "The screen is loading slowly"</h4>
+                        <p><strong>Solution:</strong> Use filters to reduce the amount of data displayed. Large inventory lists take longer to load and display.</p>
+                    </div>
+                    
+                    <div class="issue-item">
+                        <h4>❓ "I need to find parts in a specific location"</h4>
+                        <p><strong>Solution:</strong> Use the Location filter dropdown to show only items in that location, or search for the location name in the search box.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Integration -->
+            <section class="doc-section">
+                <h2>🔗 How This Connects to Other Screens</h2>
+                <div class="integration-info">
+                    <h3>Connected Features</h3>
+                    <ul>
+                        <li><strong>Add Items Screen:</strong> Links directly from inventory view to add more of a specific part</li>
+                        <li><strong>Remove Items Screen:</strong> Right-click inventory items to remove or consume stock</li>
+                        <li><strong>Transfer Screen:</strong> Move inventory between locations directly from the inventory grid</li>
+                        <li><strong>Transaction History:</strong> Click on any item to see its transaction history</li>
+                        <li><strong>Quick Buttons:</strong> Configure quick buttons based on frequently accessed inventory items</li>
+                    </ul>
+                    
+                    <h3>Data Sources</h3>
+                    <ul>
+                        <li><strong>Real-time Database:</strong> Shows current stock levels from the main MTM database</li>
+                        <li><strong>Transaction Log:</strong> Reflects all recent adds, removes, and transfers</li>
+                        <li><strong>Location Master:</strong> Uses official location codes and descriptions</li>
+                        <li><strong>Parts Master:</strong> Shows official part numbers and descriptions</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>📦 Plain English Documentation | 🏭 MTM WIP Application | 👷‍♂️ Made for Workers</p>
+            <div class="footer-links">
+                <a href="../../../Technical/FileDefinitions/ViewModels/InventoryViewModel.html">🔧 Technical Version</a>
+                <a href="../../../PlainEnglish/index.html">📚 Plain English Documentation Index</a>
+                <a href="../../../index.html">🏠 Documentation Home</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MainWindowViewModel - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🪟 MainWindowViewModel - Technical Documentation</h1>
+            <div class="nav-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/MainWindowViewModel.html" class="nav-link plain-english">📖 Plain English Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Technical Overview -->
+            <section class="doc-section">
+                <h2>🔧 Technical Implementation</h2>
+                <div class="code-block">
+                    <h3>Namespace & Dependencies</h3>
+                    <pre><code>namespace MTM_WIP_Application_Avalonia.ViewModels
+using ReactiveUI;
+using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Services.Interfaces.INavigationService;
+using MTM_WIP_Application_Avalonia.Services.IApplicationStateService;
+using System.Reactive;</code></pre>
+                </div>
+
+                <div class="technical-details">
+                    <h3>Class Definition</h3>
+                    <ul>
+                        <li><strong>Base Class:</strong> BaseViewModel (ReactiveUI foundation)</li>
+                        <li><strong>Pattern:</strong> Application Shell with Content Hosting</li>
+                        <li><strong>DI Dependencies:</strong> INavigationService, IApplicationStateService, ILogger</li>
+                        <li><strong>Purpose:</strong> Top-level window coordinator and application host</li>
+                        <li><strong>Lifetime:</strong> Singleton - exists for entire application lifecycle</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Observable Properties -->
+            <section class="doc-section">
+                <h2>🔄 Observable Properties</h2>
+                <div class="property-grid">
+                    <div class="property-item">
+                        <h4>CurrentView (object?)</h4>
+                        <p><strong>Reactive Property:</strong> Main content area display</p>
+                        <p><strong>Type:</strong> UserControl or ViewModel instance</p>
+                        <p><strong>UI Binding:</strong> ContentControl Content property</p>
+                        <p><strong>Navigation:</strong> Changes when navigating between major views</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>WindowTitle (string)</h4>
+                        <p><strong>Reactive Property:</strong> Application window title</p>
+                        <p><strong>Format:</strong> "MTM WIP Application - [Current View] - [User]"</p>
+                        <p><strong>UI Binding:</strong> Window Title property</p>
+                        <p><strong>Updates:</strong> When view changes or user context changes</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>StatusBarText (string)</h4>
+                        <p><strong>Reactive Property:</strong> Status bar information display</p>
+                        <p><strong>Content:</strong> User info, connection status, current time</p>
+                        <p><strong>UI Binding:</strong> StatusBar TextBlock</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>IsConnected (bool)</h4>
+                        <p><strong>Reactive Property:</strong> Database connection status</p>
+                        <p><strong>UI Impact:</strong> Status bar color, feature availability</p>
+                        <p><strong>Auto-Updates:</strong> From application state service</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>CurrentUser (string)</h4>
+                        <p><strong>Reactive Property:</strong> Currently logged-in user</p>
+                        <p><strong>Source:</strong> Application state service</p>
+                        <p><strong>UI Display:</strong> Status bar user indicator</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>HasUnsavedChanges (bool)</h4>
+                        <p><strong>Computed Property:</strong> Any unsaved work in child views</p>
+                        <p><strong>Window Closing:</strong> Prevents accidental data loss</p>
+                        <p><strong>UI Indicator:</strong> Window title asterisk or status icon</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>MenuItems (ObservableCollection)</h4>
+                        <p><strong>Collection Property:</strong> Main menu structure</p>
+                        <p><strong>Dynamic:</strong> Updates based on user permissions</p>
+                        <p><strong>UI Binding:</strong> Menu ItemsSource</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reactive Commands -->
+            <section class="doc-section">
+                <h2>⚡ Reactive Commands</h2>
+                <div class="command-grid">
+                    <div class="command-item">
+                        <h4>InitializeCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Application startup initialization</p>
+                        <p><strong>Implementation:</strong></p>
+                        <div class="code-block">
+                            <pre><code>InitializeCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    try
+    {
+        Logger.LogInformation("Initializing MainWindow");
+        
+        // Initialize navigation and load main view
+        await _navigationService.InitializeAsync();
+        
+        // Load main content view with DI
+        var mainViewViewModel = Program.GetService&lt;MainViewViewModel&gt;();
+        var mainView = new Views.MainView
+        {
+            DataContext = mainViewViewModel
+        };
+        
+        CurrentView = mainView;
+        
+        // Set up status bar updates
+        SetupStatusBarUpdates();
+        
+        // Restore window state
+        await RestoreWindowStateAsync();
+        
+        Logger.LogInformation("MainWindow initialization complete");
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Failed to initialize MainWindow");
+        throw;
+    }
+});</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>NavigateCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;string, Unit&gt;</p>
+                        <p><strong>Parameter:</strong> Target view name or route</p>
+                        <p><strong>Purpose:</strong> Handles top-level navigation requests</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ExitApplicationCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Graceful application shutdown</p>
+                        <p><strong>Validation:</strong> Checks for unsaved changes</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ShowAboutCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Displays application information dialog</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ShowSettingsCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Opens application settings dialog</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Window Management -->
+            <section class="doc-section">
+                <h2>🪟 Window Lifecycle Management</h2>
+                <div class="code-block">
+                    <h3>Window State Persistence</h3>
+                    <pre><code>// Window State Management
+private async Task RestoreWindowStateAsync()
+{
+    try
+    {
+        var savedState = await _applicationState.GetWindowStateAsync();
+        if (savedState != null)
+        {
+            // Restore window dimensions and position
+            WindowWidth = savedState.Width;
+            WindowHeight = savedState.Height;
+            WindowLeft = savedState.Left;
+            WindowTop = savedState.Top;
+            WindowState = savedState.State;
+        }
+        else
+        {
+            // Default window configuration
+            SetDefaultWindowState();
+        }
+    }
+    catch (Exception ex)
+    {
+        Logger.LogWarning(ex, "Failed to restore window state, using defaults");
+        SetDefaultWindowState();
+    }
+}
+
+private async Task SaveWindowStateAsync()
+{
+    var windowState = new WindowState
+    {
+        Width = WindowWidth,
+        Height = WindowHeight,
+        Left = WindowLeft,
+        Top = WindowTop,
+        State = WindowState,
+        LastSaved = DateTime.UtcNow
+    };
+    
+    await _applicationState.SaveWindowStateAsync(windowState);
+}
+
+// Window Closing Event Handler
+public async Task&lt;bool&gt; CanCloseAsync()
+{
+    if (HasUnsavedChanges)
+    {
+        var result = await ShowConfirmationDialog(
+            "Unsaved Changes",
+            "You have unsaved changes. Do you want to save before closing?",
+            MessageBoxButtons.YesNoCancel);
+            
+        switch (result)
+        {
+            case DialogResult.Yes:
+                return await SaveAllChangesAsync();
+            case DialogResult.No:
+                return true;
+            case DialogResult.Cancel:
+                return false;
+        }
+    }
+    
+    await SaveWindowStateAsync();
+    return true;
+}</code></pre>
+                </div>
+
+                <div class="window-features">
+                    <h3>Window Management Features</h3>
+                    <ul>
+                        <li><strong>State Persistence:</strong> Remembers size, position, and window state</li>
+                        <li><strong>Multi-Monitor Support:</strong> Handles multiple monitor configurations</li>
+                        <li><strong>Graceful Shutdown:</strong> Saves all work before closing</li>
+                        <li><strong>Crash Recovery:</strong> Restores state after unexpected shutdown</li>
+                        <li><strong>DPI Awareness:</strong> Adapts to different screen resolutions</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Status Bar System -->
+            <section class="doc-section">
+                <h2>📊 Status Bar Integration</h2>
+                <div class="code-block">
+                    <h3>Real-time Status Updates</h3>
+                    <pre><code>// Status Bar Update System
+private void SetupStatusBarUpdates()
+{
+    // Connection Status Updates
+    _applicationState.WhenAnyValue(state => state.IsConnected)
+        .Subscribe(isConnected =>
+        {
+            IsConnected = isConnected;
+            UpdateStatusBar();
+        });
+    
+    // User Context Updates
+    _applicationState.WhenAnyValue(state => state.CurrentUser)
+        .Subscribe(user =>
+        {
+            CurrentUser = user;
+            UpdateWindowTitle();
+            UpdateStatusBar();
+        });
+    
+    // Time Updates (every minute)
+    Observable.Interval(TimeSpan.FromMinutes(1))
+        .ObserveOn(RxApp.MainThreadScheduler)
+        .Subscribe(_ => UpdateStatusBar());
+}
+
+private void UpdateStatusBar()
+{
+    var connectionStatus = IsConnected ? "Connected" : "Disconnected";
+    var connectionIcon = IsConnected ? "✅" : "❌";
+    
+    StatusBarText = $"{connectionIcon} {connectionStatus} | " +
+                   $"👤 {CurrentUser} | " +
+                   $"🕒 {DateTime.Now:HH:mm}";
+}
+
+private void UpdateWindowTitle()
+{
+    var viewName = GetCurrentViewName();
+    var unsavedIndicator = HasUnsavedChanges ? "*" : "";
+    
+    WindowTitle = $"MTM WIP Application - {viewName}{unsavedIndicator} - {CurrentUser}";
+}</code></pre>
+                </div>
+
+                <div class="status-features">
+                    <h3>Status Bar Components</h3>
+                    <ul>
+                        <li><strong>Connection Indicator:</strong> Real-time database connection status</li>
+                        <li><strong>User Information:</strong> Current logged-in user display</li>
+                        <li><strong>System Time:</strong> Current time with minute-level updates</li>
+                        <li><strong>Activity Status:</strong> Current application activity or operation</li>
+                        <li><strong>Progress Indicators:</strong> Loading or processing status</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Menu System -->
+            <section class="doc-section">
+                <h2>📱 Dynamic Menu System</h2>
+                <div class="code-block">
+                    <h3>Menu Structure and Permissions</h3>
+                    <pre><code>// Dynamic Menu Generation
+private void BuildMainMenu()
+{
+    MenuItems.Clear();
+    
+    // File Menu
+    var fileMenu = new MenuItemViewModel("File")
+    {
+        Items = 
+        {
+            new MenuItemViewModel("Settings", ShowSettingsCommand),
+            new MenuItemViewModel("Export", ExportDataCommand) 
+            { 
+                IsEnabled = _userPermissions.CanExport 
+            },
+            new MenuItemViewModel("-"), // Separator
+            new MenuItemViewModel("Exit", ExitApplicationCommand)
+        }
+    };
+    
+    // View Menu
+    var viewMenu = new MenuItemViewModel("View")
+    {
+        Items = 
+        {
+            new MenuItemViewModel("Inventory", () => NavigateCommand.Execute("Inventory")),
+            new MenuItemViewModel("Add Items", () => NavigateCommand.Execute("AddItems")),
+            new MenuItemViewModel("Remove Items", () => NavigateCommand.Execute("RemoveItems")),
+            new MenuItemViewModel("Transfer Items", () => NavigateCommand.Execute("TransferItems")),
+            new MenuItemViewModel("History", () => NavigateCommand.Execute("History"))
+        }
+    };
+    
+    // Tools Menu (Admin only)
+    if (_userPermissions.IsAdmin)
+    {
+        var toolsMenu = new MenuItemViewModel("Tools")
+        {
+            Items = 
+            {
+                new MenuItemViewModel("User Management", ShowUserManagementCommand),
+                new MenuItemViewModel("System Diagnostics", ShowDiagnosticsCommand),
+                new MenuItemViewModel("Database Maintenance", ShowMaintenanceCommand)
+            }
+        };
+        MenuItems.Add(toolsMenu);
+    }
+    
+    // Help Menu
+    var helpMenu = new MenuItemViewModel("Help")
+    {
+        Items = 
+        {
+            new MenuItemViewModel("User Guide", ShowUserGuideCommand),
+            new MenuItemViewModel("Keyboard Shortcuts", ShowShortcutsCommand),
+            new MenuItemViewModel("-"),
+            new MenuItemViewModel("About", ShowAboutCommand)
+        }
+    };
+    
+    MenuItems.Add(fileMenu);
+    MenuItems.Add(viewMenu);
+    MenuItems.Add(helpMenu);
+}</code></pre>
+                </div>
+
+                <div class="menu-features">
+                    <h3>Menu System Features</h3>
+                    <ul>
+                        <li><strong>Permission-Based:</strong> Menu items visible based on user permissions</li>
+                        <li><strong>Dynamic Updates:</strong> Menu structure updates when permissions change</li>
+                        <li><strong>Keyboard Shortcuts:</strong> Standard accelerator keys and shortcuts</li>
+                        <li><strong>Context Sensitivity:</strong> Menu items enabled/disabled based on current state</li>
+                        <li><strong>Internationalization Ready:</strong> Menu text can be localized</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Error Handling -->
+            <section class="doc-section">
+                <h2>🚨 Application-Level Error Handling</h2>
+                <div class="error-handling">
+                    <div class="code-block">
+                        <h3>Global Exception Management</h3>
+                        <pre><code>// Application-Wide Error Handling
+private void SetupGlobalErrorHandling()
+{
+    // Handle unhandled exceptions from all commands
+    var allCommands = new[]
+    {
+        InitializeCommand,
+        NavigateCommand,
+        ExitApplicationCommand,
+        ShowSettingsCommand
+    };
+    
+    var allErrors = allCommands
+        .SelectMany(cmd => cmd.ThrownExceptions)
+        .Merge(RxApp.DefaultExceptionHandler);
+    
+    allErrors.Subscribe(async ex =>
+    {
+        Logger.LogError(ex, "Unhandled exception in MainWindow");
+        
+        await HandleGlobalError(ex);
+    });
+}
+
+private async Task HandleGlobalError(Exception ex)
+{
+    var errorMessage = ex switch
+    {
+        DatabaseConnectionException => 
+            "Lost connection to the database. The application will try to reconnect automatically.",
+        UnauthorizedAccessException => 
+            "You don't have permission to perform this action. Please contact your supervisor.",
+        OutOfMemoryException => 
+            "The application is running low on memory. Please save your work and restart the application.",
+        FileNotFoundException fileEx when fileEx.FileName.Contains("config") => 
+            "Configuration file is missing. The application will use default settings.",
+        _ => "An unexpected error occurred. The application will attempt to recover automatically."
+    };
+    
+    // Show user-friendly error message
+    await ShowErrorDialog("Application Error", errorMessage);
+    
+    // Attempt automatic recovery
+    await AttemptErrorRecovery(ex);
+}
+
+private async Task AttemptErrorRecovery(Exception ex)
+{
+    switch (ex)
+    {
+        case DatabaseConnectionException:
+            // Try to reconnect to database
+            await _applicationState.ReconnectAsync();
+            break;
+            
+        case OutOfMemoryException:
+            // Clear caches and free memory
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            break;
+    }
+}</code></pre>
+                    </div>
+
+                    <h3>Error Recovery Strategies</h3>
+                    <ul>
+                        <li><strong>Automatic Reconnection:</strong> Attempts to restore database connections</li>
+                        <li><strong>Memory Management:</strong> Clears caches when memory is low</li>
+                        <li><strong>State Recovery:</strong> Restores application state after errors</li>
+                        <li><strong>User Notification:</strong> Provides clear, actionable error messages</li>
+                        <li><strong>Graceful Degradation:</strong> Continues operation with reduced functionality</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Navigation Integration -->
+            <section class="doc-section">
+                <h2>🧭 Navigation Service Integration</h2>
+                <div class="navigation-integration">
+                    <div class="code-block">
+                        <h3>Content View Management</h3>
+                        <pre><code>// Navigation Request Handling
+public async Task NavigateToViewAsync(string viewName, object parameter = null)
+{
+    try
+    {
+        // Save current view state
+        if (CurrentView is IStatefulViewModel stateful)
+        {
+            await stateful.SaveStateAsync();
+        }
+        
+        // Create new view through DI container
+        var newView = viewName.ToLowerInvariant() switch
+        {
+            "mainview" => CreateMainView(),
+            "settings" => CreateSettingsView(),
+            "about" => CreateAboutView(),
+            _ => throw new ArgumentException($"Unknown view: {viewName}")
+        };
+        
+        // Apply navigation parameter if provided
+        if (parameter != null && newView.DataContext is IParameterizedViewModel parameterized)
+        {
+            parameterized.ReceiveParameter(parameter);
+        }
+        
+        // Update current view
+        CurrentView = newView;
+        
+        // Update window title and status
+        UpdateWindowTitle();
+        
+        Logger.LogInformation("Navigated to view: {ViewName}", viewName);
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Navigation failed to view: {ViewName}", viewName);
+        throw;
+    }
+}
+
+private UserControl CreateMainView()
+{
+    var mainViewViewModel = Program.GetService&lt;MainViewViewModel&gt;();
+    return new Views.MainView 
+    { 
+        DataContext = mainViewViewModel 
+    };
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance Optimization -->
+            <section class="doc-section">
+                <h2>⚡ Performance Optimization</h2>
+                <div class="performance-notes">
+                    <h3>Application Lifecycle Optimization</h3>
+                    <ul>
+                        <li><strong>Lazy View Creation:</strong> Views created only when needed</li>
+                        <li><strong>ViewModel Caching:</strong> Frequently used ViewModels kept in memory</li>
+                        <li><strong>Background Initialization:</strong> Non-critical initialization on background thread</li>
+                        <li><strong>Resource Management:</strong> Proper disposal of views and ViewModels</li>
+                    </ul>
+
+                    <h3>Memory Management</h3>
+                    <ul>
+                        <li><strong>Weak Event Handling:</strong> Prevents memory leaks from event subscriptions</li>
+                        <li><strong>Subscription Cleanup:</strong> All reactive subscriptions properly disposed</li>
+                        <li><strong>View Disposal:</strong> Old views disposed when navigating</li>
+                        <li><strong>Garbage Collection:</strong> Explicit GC calls during low activity</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Integration Points -->
+            <section class="doc-section">
+                <h2>🔗 System Integration Points</h2>
+                <div class="integration-grid">
+                    <div class="integration-item">
+                        <h4>MainViewViewModel</h4>
+                        <p>Primary content coordinator containing all main application features</p>
+                        <p>Loaded as default content view with full DI support</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>NavigationService</h4>
+                        <p>Handles all application navigation and view switching</p>
+                        <p>Provides centralized navigation coordination</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>ApplicationStateService</h4>
+                        <p>Manages user session, connection status, and application state</p>
+                        <p>Provides status information for window title and status bar</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>All Other ViewModels</h4>
+                        <p>Serves as host container for all other application ViewModels</p>
+                        <p>Provides application-level services and error handling</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>🪟 Technical Documentation | 🏭 MTM WIP Application | ⚡ Powered by Avalonia UI + ReactiveUI</p>
+            <div class="footer-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/MainWindowViewModel.html">📖 Plain English Version</a>
+                <a href="../../../Technical/index.html">📚 Technical Documentation Index</a>
+                <a href="../../../index.html">🏠 Documentation Home</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
