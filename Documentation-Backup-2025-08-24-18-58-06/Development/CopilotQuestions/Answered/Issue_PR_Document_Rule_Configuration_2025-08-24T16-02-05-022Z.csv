@@ -1,0 +1,9 @@
+Question_ID,Category,Question,Answer,Notes
+"R1","File_Structure","Sub-issue naming strategy (Fix# vs Phase#)","HYBRID_SYSTEM",""
+"R2","File_Location","Repository location for issue/PR documents","DEVELOPMENT_ISSUES",""
+"R3","Master_File_Content","Master file content level and requirements","PROJECT_MANAGEMENT","Master should be a link to each Fix/Phase file as well as progress tracking."
+"R4","Fix_Phase_Content","Comprehensiveness level for GitHub Copilot Agents","AGENT_OPTIMIZED",""
+"R5","Continue_Script","Continue script design for efficient resumption","SMART_RESUME",""
+"R6","System_Integration","Integration with existing questions HTML system","QUESTIONS_FOR_ISSUES",""
+"R7","Template_Strategy","Template standardization approach","FULL_TEMPLATES",""
+"R8","Rule_Triggers","Trigger phrase specificity and detection","CONTEXT_AWARE",""

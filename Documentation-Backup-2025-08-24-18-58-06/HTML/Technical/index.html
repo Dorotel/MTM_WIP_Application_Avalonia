@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MTM WIP Application - Comprehensive documentation and help center for the Avalonia-based inventory management system">
+    <meta name="keywords" content="MTM, WIP, Avalonia, inventory, documentation, help">
+    <meta name="author" content="MTM Development Team">
+    
+    <title>MTM WIP Application - Technical Documentation Hub</title>
+    
+    <!-- Modern Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../assets/css/mtm-theme.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../assets/images/mtm-favicon.svg">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../assets/css/modern-styles.css" as="style">
+    <link rel="preload" href="../assets/js/modern-features.js" as="script">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <!-- Reading progress indicator -->
+    <div class="reading-progress" aria-hidden="true"></div>
+    
+    <!-- Main Layout -->
+    <div class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="layout-sidebar mtm-nav" role="navigation" aria-label="Main navigation">
+            <!-- Brand Section -->
+            <div class="mtm-nav-brand">
+                <div class="mtm-nav-brand-icon" aria-hidden="true">📊</div>
+                <h1 class="mtm-nav-brand-title">MTM WIP</h1>
+                <p class="mtm-nav-brand-subtitle">Technical Documentation</p>
+            </div>
+            
+            <!-- Navigation Sections -->
+            <nav class="nav">
+                <!-- Core Documentation -->
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">Core Documentation</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="index.html" class="mtm-nav-link is-active" aria-current="page">
+                            <span class="mtm-nav-icon" aria-hidden="true">🏠</span>
+                            Documentation Hub
+                        </a></li>
+                        <li><a href="coding-conventions.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">📝</span>
+                            Coding Conventions
+                        </a></li>
+                        <li><a href="ui-generation.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🖥️</span>
+                            UI Generation
+                        </a></li>
+                        <li><a href="error-handler.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">⚠️</span>
+                            Error Handling
+                        </a></li>
+                    </ul>
+                </section>
+                
+                <!-- Database & Development -->
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">Database & Development</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="../../Docs/database-development.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🗄️</span>
+                            Database Development
+                            <span class="mtm-badge mtm-badge-updated">Enhanced</span>
+                        </a></li>
+                        <li><a href="github-workflow.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🔄</span>
+                            GitHub Workflow
+                        </a></li>
+                        <li><a href="naming-conventions.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🏷️</span>
+                            Naming Conventions
+                        </a></li>
+                    </ul>
+                </section>
+                
+                <!-- Quality & Tools -->
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">Quality & Tools</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="needs-repair.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">✅</span>
+                            Quality Assurance
+                            <span class="mtm-badge mtm-badge-completed">100% Complete</span>
+                        </a></li>
+                        <li><a href="missing-systems.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🔧</span>
+                            System Status
+                        </a></li>
+                        <li><a href="custom-prompts.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🤖</span>
+                            Custom Prompts
+                        </a></li>
+                        <li><a href="personas.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">👥</span>
+                            Development Personas
+                        </a></li>
+                    </ul>
+                </section>
+                
+                <!-- UI & Mapping -->
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">UI & Mapping</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="view-standards.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">📐</span>
+                            View Structure Standards
+                        </a></li>
+                        <li><a href="ui-mapping.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🗺️</span>
+                            UI Mapping
+                        </a></li>
+                        <li><a href="custom-prompts-examples.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">💡</span>
+                            Prompt Examples
+                        </a></li>
+                    </ul>
+                </section>
+            </nav>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <div class="layout-content">
+            <!-- Header -->
+            <header class="header" role="banner">
+                <div class="header-brand">
+                    <span class="icon" aria-hidden="true">📚</span>
+                    <span>MTM WIP Documentation Hub</span>
+                </div>
+                
+                <div class="header-actions">
+                    <!-- Search will be added by JavaScript -->
+                    <button class="theme-toggle" aria-label="Toggle dark theme" title="Toggle theme">
+                        🌙
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Main Content -->
+            <main id="main-content" class="main" role="main">
+                <!-- Hero Section -->
+                <section class="mtm-hero mtm-fade-in">
+                    <h1 class="mtm-hero-title">MTM WIP Application</h1>
+                    <p class="mtm-hero-subtitle">
+                        Comprehensive documentation and help center for the Avalonia-based inventory management system
+                    </p>
+                    <div class="mtm-hero-actions">
+                        <a href="../ReadmeFiles/Core/README_Getting_Started.md" class="mtm-btn mtm-btn-primary">
+                            🚀 Get Started
+                        </a>
+                        <a href="../ReadmeFiles/Core/README_Architecture.md" class="mtm-btn mtm-btn-secondary">
+                            🏗️ Architecture Guide
+                        </a>
+                    </div>
+                </section>
+                
+                <!-- Project Status Alert -->
+                <section class="alert alert-success mtm-slide-up">
+                    <h2>🎉 Critical Database Enhancement Completed</h2>
+                    <div class="mtm-status mtm-status-success">✅ Development Unblocked</div>
+                    <p><strong>Database Development Status:</strong> All critical systems implemented</p>
+                    <ul>
+                        <li><strong>✅ 12 comprehensive stored procedures implemented</strong> - All standard inventory operations available</li>
+                        <li><strong>✅ Standardized error handling pattern</strong> - Consistent status codes and error messages</li>
+                        <li><strong>✅ Service layer integration ready</strong> - Designed for Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</li>
+                        <li><strong>✅ Complete documentation</strong> - Examples, usage patterns, and integration guidance</li>
+                    </ul>
+                    <p><strong>Development Impact:</strong> All new database functionality development can now proceed. The service layer is ready for implementation using the new stored procedures.</p>
+                    <p>See <a href="../../Docs/database-development.html">Database Development Guide</a> for complete procedure documentation and usage examples.</p>
+                </section>
+                
+                <!-- Quick Navigation Cards -->
+                <section class="mtm-slide-up">
+                    <h2>📍 Quick Navigation</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                        <!-- Database Development Card -->
+                        <div class="mtm-card">
+                            <div class="mtm-card-header">
+                                <div class="mtm-card-icon">🗄️</div>
+                                <h3 class="mtm-card-title">Database Development</h3>
+                            </div>
+                            <div class="mtm-card-content">
+                                <p><strong>✅ NEW</strong> Complete guide to the 12 new stored procedures and database operations.</p>
+                                <p>Enhanced with standardized error handling, input validation, and comprehensive documentation with examples.</p>
+                                <div style="margin-top: 1rem;">
+                                    <a href="../../Docs/database-development.html" class="mtm-btn mtm-btn-primary">View Guide</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Coding Conventions Card -->
+                        <div class="mtm-card">
+                            <div class="mtm-card-header">
+                                <div class="mtm-card-icon">📝</div>
+                                <h3 class="mtm-card-title">Coding Conventions</h3>
+                            </div>
+                            <div class="mtm-card-content">
+                                <p>Our C# and Avalonia code style rules, MVVM patterns, and architectural guidelines.</p>
+                                <p>Includes ReactiveUI patterns, dependency injection setup, and MTM-specific business logic rules.</p>
+                                <div style="margin-top: 1rem;">
+                                    <a href="coding-conventions.html" class="mtm-btn mtm-btn-primary">View Conventions</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- UI Generation Card -->
+                        <div class="mtm-card">
+                            <div class="mtm-card-header">
+                                <div class="mtm-card-icon">🖥️</div>
+                                <h3 class="mtm-card-title">UI Generation</h3>
+                            </div>
+                            <div class="mtm-card-content">
+                                <p>How to create and structure UI components in Avalonia using modern patterns.</p>
+                                <p>Includes AXAML markup, ViewModel binding, and MTM design system integration.</p>
+                                <div style="margin-top: 1rem;">
+                                    <a href="ui-generation.html" class="mtm-btn mtm-btn-primary">View Guide</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- View Structure Standards Card -->
+                        <div class="mtm-card">
+                            <div class="mtm-card-header">
+                                <div class="mtm-card-icon">📐</div>
+                                <h3 class="mtm-card-title">View Structure Standards</h3>
+                            </div>
+                            <div class="mtm-card-content">
+                                <p>Mandatory standards for all Views including proportional scaling and MTM styling.</p>
+                                <p>Essential for consistent appearance across all screen sizes and resolutions.</p>
+                                <div style="margin-top: 1rem;">
+                                    <a href="view-standards.html" class="mtm-btn mtm-btn-primary">View Standards</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quality Assurance Card -->
+                        <div class="mtm-card">
+                            <div class="mtm-card-header">
+                                <div class="mtm-card-icon">✅</div>
+                                <h3 class="mtm-card-title">Quality Assurance</h3>
+                            </div>
+                            <div class="mtm-card-content">
+                                <p><strong>✅ 100% Complete</strong> Code compliance tracking and quality gates.</p>
+                                <p>All critical and high-priority issues resolved. System ready for production development.</p>
+                                <div style="margin-top: 1rem;">
+                                    <a href="needs-repair.html" class="mtm-btn mtm-btn-primary">View Status</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Error Handling Card -->
+                        <div class="mtm-card">
+                            <div class="mtm-card-header">
+                                <div class="mtm-card-icon">⚠️</div>
+                                <h3 class="mtm-card-title">Error Handling</h3>
+                            </div>
+                            <div class="mtm-card-content">
+                                <p>Comprehensive error handling patterns, logging strategies, and exception management.</p>
+                                <p>Includes standardized error codes and user-friendly error message patterns.</p>
+                                <div style="margin-top: 1rem;">
+                                    <a href="error-handler.html" class="mtm-btn mtm-btn-primary">View Guide</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- GitHub Workflow Card -->
+                        <div class="mtm-card">
+                            <div class="mtm-card-header">
+                                <div class="mtm-card-icon">🔄</div>
+                                <h3 class="mtm-card-title">GitHub Workflow</h3>
+                            </div>
+                            <div class="mtm-card-content">
+                                <p>Best practices for branches, pull requests, and issue management.</p>
+                                <p>Includes compliance checking, code review processes, and CI/CD integration.</p>
+                                <div style="margin-top: 1rem;">
+                                    <a href="github-workflow.html" class="mtm-btn mtm-btn-primary">View Workflow</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Implementation Roadmap -->
+                <section class="mtm-slide-up">
+                    <details class="details" open>
+                        <summary class="details-summary">
+                            <span class="icon" aria-hidden="true">📋</span>
+                            <strong>Implementation Priority Roadmap</strong>
+                            <span class="mtm-badge mtm-badge-updated">Updated</span>
+                        </summary>
+                        <div class="details-content">
+                            <div class="roadmap">
+                                <!-- Phase 0: Database Foundation (COMPLETED) -->
+                                <div class="alert alert-success">
+                                    <h3><span class="icon" aria-hidden="true">✅</span> Phase 0: Database Foundation (COMPLETED)</h3>
+                                    <ul>
+                                        <li><strong>✅ Database Schema</strong> - Complete production schema with all tables</li>
+                                        <li><strong>✅ Stored Procedures</strong> - 12 comprehensive procedures with error handling</li>
+                                        <li><strong>✅ Documentation</strong> - Complete procedure documentation with examples</li>
+                                        <li><strong>✅ Business Logic</strong> - MTM transaction type determination rules implemented</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Phase 1: Service Layer Implementation -->
+                                <div class="alert alert-info">
+                                    <h3><span class="icon" aria-hidden="true">🔄</span> Phase 1: Service Layer Implementation (Ready to Start)</h3>
+                                    <p><strong>Status:</strong> <span class="mtm-status mtm-status-info">Ready for Development</span></p>
+                                    <ul>
+                                        <li><strong>Service Integration</strong> - Implement service layer using new stored procedures</li>
+                                        <li><strong>Error Handling</strong> - Integrate standardized error handling patterns</li>
+                                        <li><strong>Business Logic</strong> - Implement MTM-specific validation and rules</li>
+                                        <li><strong>Unit Testing</strong> - Comprehensive test coverage for all services</li>
+                                    </ul>
+                                    <p><strong>Estimated Duration:</strong> 2-3 weeks with database foundation completed</p>
+                                </div>
+                                
+                                <!-- Phase 2: UI Layer Enhancement -->
+                                <div class="alert alert-warning">
+                                    <h3><span class="icon" aria-hidden="true">⏳</span> Phase 2: UI Layer Enhancement (Planned)</h3>
+                                    <p><strong>Dependencies:</strong> Service layer completion</p>
+                                    <ul>
+                                        <li><strong>ViewModel Implementation</strong> - Connect ViewModels to service layer</li>
+                                        <li><strong>Error UI Integration</strong> - User-friendly error handling in UI</li>
+                                        <li><strong>Data Binding</strong> - Implement reactive data binding patterns</li>
+                                        <li><strong>UI Testing</strong> - Automated UI testing framework</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </section>
+                
+                <!-- Important Notice -->
+                <section class="alert alert-info mtm-slide-up">
+                    <h2><span class="icon" aria-hidden="true">📋</span> Getting Started</h2>
+                    <p><strong>New to the project?</strong> Start with <a href="../../Docs/database-development.html">Database Development</a> to understand the new stored procedures, then review <a href="coding-conventions.html">Coding Conventions</a> and <a href="ui-generation.html">UI Generation</a>.</p>
+                    <p><strong>Experienced developers?</strong> Check the <a href="needs-repair.html">Quality Assurance Dashboard</a> for current compliance status and development priorities.</p>
+                </section>
+                
+                <!-- Documentation Links -->
+                <section class="mtm-slide-up">
+                    <h2>📚 Additional Resources</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div class="card">
+                            <h3>📖 README Documentation</h3>
+                            <p>Comprehensive README files organized by topic:</p>
+                            <ul>
+                                <li><a href="../ReadmeFiles/Core/README_Project_Overview.md">Project Overview</a></li>
+                                <li><a href="../ReadmeFiles/Core/README_Architecture.md">Architecture Guide</a></li>
+                                <li><a href="../ReadmeFiles/Core/README_Getting_Started.md">Getting Started</a></li>
+                                <li><a href="../ReadmeFiles/Development/README_Database_Files.md">Database Development</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>🔧 Development Tools</h3>
+                            <p>Tools and utilities for development:</p>
+                            <ul>
+                                <li><a href="custom-prompts.html">Custom Prompts</a> - AI assistance templates</li>
+                                <li><a href="personas.html">Development Personas</a> - Role-based guidance</li>
+                                <li><a href="ui-mapping.html">UI Mapping</a> - Screenshot to code mapping</li>
+                                <li><a href="naming-conventions.html">Naming Conventions</a> - Consistent naming rules</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>⚡ Quick Actions</h3>
+                            <p>Common development tasks:</p>
+                            <ul>
+                                <li><a href="custom-prompts-examples.html">Prompt Examples</a> - Ready-to-use prompts</li>
+                                <li><a href="../ReadmeFiles/Development/README_Compliance_Reports.md">Compliance Reports</a> - Quality metrics</li>
+                                <li><a href="../ReadmeFiles/Components/README_Services.md">Service Documentation</a> - Service layer guide</li>
+                                <li><a href="../ReadmeFiles/Components/README_ViewModels.md">ViewModel Patterns</a> - MVVM implementation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Modern JavaScript -->
+    <script src="../assets/js/modern-features.js"></script>
+    
+    <!-- Schema.org structured data for better SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "name": "MTM WIP Application Documentation",
+        "description": "Comprehensive technical documentation for the MTM WIP Avalonia-based inventory management system",
+        "author": {
+            "@type": "Organization",
+            "name": "MTM Development Team"
+        },
+        "dateModified": "2025-01-27",
+        "mainEntity": {
+            "@type": "SoftwareApplication",
+            "name": "MTM WIP Application",
+            "applicationCategory": "Business Software",
+            "operatingSystem": "Windows, macOS, Linux"
+        }
+    }
+    </script>
+</body>
+</html>

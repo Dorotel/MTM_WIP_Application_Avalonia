@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue/PR Document Creation Rule - Configuration Questions</title>
+    <style>
+        :root {
+            --primary-purple: #4B45ED;
+            --magenta-accent: #BA45ED;
+            --secondary-purple: #8345ED;
+            --blue-accent: #4574ED;
+            --pink-accent: #ED45E7;
+            --light-purple: #B594ED;
+            --background: #f8f9fa;
+            --card-background: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --border-color: #e2e8f0;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--blue-accent) 0%, var(--primary-purple) 30%, var(--secondary-purple) 70%, var(--magenta-accent) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, var(--primary-purple), var(--magenta-accent));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .rule-overview {
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.1) 0%, rgba(72, 187, 120, 0.05) 100%);
+            border: 2px solid var(--success-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .rule-title {
+            color: var(--success-color);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-structure {
+            background: #f7fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+        }
+
+        .file-structure-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .question-card {
+            background: var(--card-background);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .question-card:hover {
+            border-color: var(--primary-purple);
+            box-shadow: 0 5px 15px rgba(75, 69, 237, 0.1);
+        }
+
+        .question-card.answered {
+            border-color: var(--success-color);
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.05) 0%, rgba(72, 187, 120, 0.02) 100%);
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--primary-purple);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .file-structure-badge {
+            background: var(--blue-accent);
+        }
+
+        .naming-badge {
+            background: var(--magenta-accent);
+        }
+
+        .content-badge {
+            background: var(--secondary-purple);
+        }
+
+        .workflow-badge {
+            background: var(--pink-accent);
+        }
+
+        .question-id {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: var(--secondary-purple);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .context-box {
+            background: #f7fafc;
+            border-left: 4px solid var(--blue-accent);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .context-label {
+            font-weight: 600;
+            color: var(--blue-accent);
+            margin-bottom: 8px;
+        }
+
+        .answer-section {
+            margin-top: 20px;
+        }
+
+        .answer-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(75, 69, 237, 0.1);
+        }
+
+        select:not([value=""]), input[type="text"]:not([value=""]), textarea:not(:placeholder-shown) {
+            border-color: var(--success-color);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .notes-section {
+            margin-top: 15px;
+        }
+
+        .action-buttons {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 2px solid var(--border-color);
+            padding: 20px 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-purple), var(--magenta-accent));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(75, 69, 237, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light-purple);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-purple);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .validation-message {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: var(--warning-color);
+            display: none;
+        }
+
+        .question-card.invalid .validation-message {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>?? Issue/PR Document Creation Rule</h1>
+            <p>New Rule Configuration for GitHub Copilot Instructions</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Rule Overview -->
+            <div class="rule-overview">
+                <div class="rule-title">
+                    <span>??</span>
+                    <span>New Rule: Issue/PR Document Creation System</span>
+                </div>
+                <div><strong>Trigger:</strong> "When I ask to create Issue or pull request documents"</div>
+                <div class="file-structure">
+                    <div class="file-structure-title">Generated File Structure:</div>
+{IssueName}_Master.md
+??? {IssueName}_Fix1.md
+??? {IssueName}_Fix2.md  
+??? {IssueName}_FixN.md
+??? {IssueName}_Continue.md
+
+OR
+
+{IssueName}_Master.md
+??? {IssueName}_Phase1.md
+??? {IssueName}_Phase2.md
+??? {IssueName}_PhaseN.md
+??? {IssueName}_Continue.md
+                </div>
+                <div><strong>Purpose:</strong></div>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Master.md</strong> - Small linking file to organize sub-issues</li>
+                    <li><strong>Fix#/Phase.md</strong> - Comprehensive instructions for GitHub Copilot Agents</li>
+                    <li><strong>Continue.md</strong> - Quick continuation script for efficient resumption</li>
+                </ul>
+            </div>
+
+            <form id="questionsForm">
+                <!-- Question 1 -->
+                <div class="question-card" data-question-id="1">
+                    <span class="question-id">R1</span>
+                    <span class="category-badge file-structure-badge">File Structure</span>
+                    <div class="question-text">Should I use "Fix#" or "Phase#" naming for sub-issues, or allow both depending on the context?</div>
+                    <div class="context-box">
+                        <div class="context-label">Naming Context:</div>
+                        <div>� <strong>Fix#</strong> - For bug fixes, corrections, specific problems</div>
+                        <div>� <strong>Phase#</strong> - For feature development, multi-step implementations</div>
+                        <div>� <strong>Both</strong> - Context-dependent based on issue type</div>
+                    </div>
+                    <div class="answer-section">
+                        <label class="answer-label">Sub-Issue Naming Strategy:</label>
+                        <select name="r1_answer" required>
+                            <option value="">-- Select Naming Strategy --</option>
+                            <option value="FIX_ONLY">FIX_ONLY - Always use Fix# for all sub-issues</option>
+                            <option value="PHASE_ONLY">PHASE_ONLY - Always use Phase# for all sub-issues</option>
+                            <option value="CONTEXT_DEPENDENT">CONTEXT_DEPENDENT - Fix# for bugs, Phase# for features</option>
+                            <option value="USER_CHOICE">USER_CHOICE - Ask user which naming to use each time</option>
+                            <option value="HYBRID_SYSTEM">HYBRID_SYSTEM - Mix both in same issue when appropriate</option>
+                        </select>
+                        <div class="validation-message">Please select a naming strategy</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Naming Preferences:</label>
+                        <textarea name="r1_notes" placeholder="Specify naming conventions or additional requirements..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="question-card" data-question-id="2">
+                    <span class="question-id">R2</span>
+                    <span class="category-badge naming-badge">File Location</span>
+                    <div class="question-text">Where should these issue/PR documents be created in the repository structure?</div>
+                    <div class="context-box">
+                        <div class="context-label">Potential Locations:</div>
+                        <div>� <strong>Documentation/Development/Agent_Issues/</strong> - With other development docs</div>
+                        <div>� <strong>Documentation/Issues/</strong> - Separate issues folder</div>
+                        <div>� <strong>.github/ISSUES/</strong> - GitHub-specific folder</div>
+                        <div>� <strong>Root Issues/</strong> - Top-level issues folder</div>
+                        <div>� <strong>Variable Location</strong> - Depends on issue type</div>
+                    </div>
+                    <div class="answer-section">
+                        <label class="answer-label">File Location Strategy:</label>
+                        <select name="r2_answer" required>
+                            <option value="">-- Select Location --</option>
+                            <option value="DEVELOPMENT_ISSUES">DEVELOPMENT_ISSUES - Documentation/Development/Agent_Issues/</option>
+                            <option value="DOCUMENTATION_ISSUES">DOCUMENTATION_ISSUES - Documentation/Issues/</option>
+                            <option value="GITHUB_FOLDER">GITHUB_FOLDER - .github/ISSUES/</option>
+                            <option value="ROOT_ISSUES">ROOT_ISSUES - Issues/ (root level)</option>
+                            <option value="TYPE_BASED">TYPE_BASED - Location depends on issue type</option>
+                            <option value="USER_SPECIFIED">USER_SPECIFIED - Ask user for location each time</option>
+                        </select>
+                        <div class="validation-message">Please select file location</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Location Preferences:</label>
+                        <textarea name="r2_notes" placeholder="Specify location requirements or folder structure preferences..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="question-card" data-question-id="3">
+                    <span class="question-id">R3</span>
+                    <span class="category-badge content-badge">Master File Content</span>
+                    <div class="question-text">What should the {Master}.md file contain beyond links to sub-issues?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Master File Content:</label>
+                        <select name="r3_answer" required>
+                            <option value="">-- Select Content Level --</option>
+                            <option value="MINIMAL_LINKS">MINIMAL_LINKS - Just links to Fix#/Phase# files</option>
+                            <option value="OVERVIEW_SUMMARY">OVERVIEW_SUMMARY - Brief overview + links</option>
+                            <option value="DETAILED_BREAKDOWN">DETAILED_BREAKDOWN - Detailed issue breakdown + links + status</option>
+                            <option value="PROJECT_MANAGEMENT">PROJECT_MANAGEMENT - Full project management with progress tracking</option>
+                            <option value="GITHUB_TEMPLATE">GITHUB_TEMPLATE - GitHub issue template format</option>
+                        </select>
+                        <div class="validation-message">Please select content level</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Master File Requirements:</label>
+                        <textarea name="r3_notes" placeholder="Specify what should be included in the master file..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="question-card" data-question-id="4">
+                    <span class="question-id">R4</span>
+                    <span class="category-badge content-badge">Fix/Phase File Content</span>
+                    <div class="question-text">How comprehensive should the Fix#/Phase# files be for GitHub Copilot Agents?</div>
+                    <div class="context-box">
+                        <div class="context-label">GitHub Copilot Agents Context:</div>
+                        <div>� These files will be used by automated agents at https://github.com/copilot/agents</div>
+                        <div>� Need to provide complete context for autonomous execution</div>
+                        <div>� Should include acceptance criteria, implementation details, testing requirements</div>
+                    </div>
+                    <div class="answer-section">
+                        <label class="answer-label">Fix/Phase File Comprehensiveness:</label>
+                        <select name="r4_answer" required>
+                            <option value="">-- Select Comprehensiveness Level --</option>
+                            <option value="AGENT_OPTIMIZED">AGENT_OPTIMIZED - Comprehensive agent-focused instructions</option>
+                            <option value="HUMAN_AND_AGENT">HUMAN_AND_AGENT - Readable by both humans and agents</option>
+                            <option value="STRUCTURED_TEMPLATE">STRUCTURED_TEMPLATE - Standardized template for consistency</option>
+                            <option value="CONTEXT_ADAPTIVE">CONTEXT_ADAPTIVE - Varies by complexity of Fix/Phase</option>
+                            <option value="MINIMAL_AGENT">MINIMAL_AGENT - Minimal but sufficient for agent execution</option>
+                        </select>
+                        <div class="validation-message">Please select comprehensiveness level</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Content Requirements:</label>
+                        <textarea name="r4_notes" placeholder="Specify what should be included in Fix/Phase files for optimal agent execution..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="question-card" data-question-id="5">
+                    <span class="question-id">R5</span>
+                    <span class="category-badge workflow-badge">Continue Script Design</span>
+                    <div class="question-text">What should the {Continue}.md script contain to enable quick and efficient resumption?</div>
+                    <div class="context-box">
+                        <div class="context-label">Continue Script Purpose:</div>
+                        <div>� Enable Copilot to quickly resume work without re-referencing every file</div>
+                        <div>� Provide current state, next actions, and key context</div>
+                        <div>� Optimize for efficiency and minimal context loading</div>
+                    </div>
+                    <div class="answer-section">
+                        <label class="answer-label">Continue Script Content:</label>
+                        <select name="r5_answer" required>
+                            <option value="">-- Select Continue Script Design --</option>
+                            <option value="STATE_AND_NEXT">STATE_AND_NEXT - Current state + next immediate actions</option>
+                            <option value="CHECKPOINT_SYSTEM">CHECKPOINT_SYSTEM - Checkpoint-based progress tracking</option>
+                            <option value="CONTEXT_SUMMARY">CONTEXT_SUMMARY - Key context summary + action items</option>
+                            <option value="EXECUTABLE_COMMANDS">EXECUTABLE_COMMANDS - Ready-to-execute command sequences</option>
+                            <option value="SMART_RESUME">SMART_RESUME - Intelligent state detection + adaptive resumption</option>
+                        </select>
+                        <div class="validation-message">Please select continue script design</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Continue Script Requirements:</label>
+                        <textarea name="r5_notes" placeholder="Specify what should be included for optimal resumption efficiency..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="question-card" data-question-id="6">
+                    <span class="question-id">R6</span>
+                    <span class="category-badge workflow-badge">Integration with Existing Systems</span>
+                    <div class="question-text">How should this new rule integrate with the existing "Ask Questions" HTML system?</div>
+                    <div class="context-box">
+                        <div class="context-label">Existing System Context:</div>
+                        <div>� Current HTML questionnaire system in Documentation/Development/CopilotQuestions/</div>
+                        <div>� Auto-save functionality and export capabilities</div>
+                        <div>� Answered folder for storing responses</div>
+                    </div>
+                    <div class="answer-section">
+                        <label class="answer-label">Integration Strategy:</label>
+                        <select name="r6_answer" required>
+                            <option value="">-- Select Integration Approach --</option>
+                            <option value="SEPARATE_SYSTEMS">SEPARATE_SYSTEMS - Keep issue docs separate from questions system</option>
+                            <option value="LINKED_SYSTEMS">LINKED_SYSTEMS - Cross-reference between issues and questions</option>
+                            <option value="UNIFIED_WORKFLOW">UNIFIED_WORKFLOW - Integrate issues into questions workflow</option>
+                            <option value="QUESTIONS_FOR_ISSUES">QUESTIONS_FOR_ISSUES - Generate questions HTML for complex issues</option>
+                            <option value="ADAPTIVE_INTEGRATION">ADAPTIVE_INTEGRATION - Integration level depends on issue complexity</option>
+                        </select>
+                        <div class="validation-message">Please select integration strategy</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Integration Notes:</label>
+                        <textarea name="r6_notes" placeholder="Specify how the systems should work together..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="question-card" data-question-id="7">
+                    <span class="question-id">R7</span>
+                    <span class="category-badge naming-badge">Template Standardization</span>
+                    <div class="question-text">Should I create standardized templates for each file type to ensure consistency?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Template Strategy:</label>
+                        <select name="r7_answer" required>
+                            <option value="">-- Select Template Approach --</option>
+                            <option value="FULL_TEMPLATES">FULL_TEMPLATES - Complete templates for Master, Fix/Phase, Continue files</option>
+                            <option value="SECTION_TEMPLATES">SECTION_TEMPLATES - Template sections that can be combined</option>
+                            <option value="DYNAMIC_TEMPLATES">DYNAMIC_TEMPLATES - Templates that adapt based on issue type</option>
+                            <option value="MINIMAL_TEMPLATES">MINIMAL_TEMPLATES - Basic structure templates only</option>
+                            <option value="NO_TEMPLATES">NO_TEMPLATES - Generate content dynamically without templates</option>
+                        </select>
+                        <div class="validation-message">Please select template strategy</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Template Requirements:</label>
+                        <textarea name="r7_notes" placeholder="Specify template requirements or standard sections needed..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 8 -->
+                <div class="question-card" data-question-id="8">
+                    <span class="question-id">R8</span>
+                    <span class="category-badge workflow-badge">Rule Trigger Specificity</span>
+                    <div class="question-text">How specific should the trigger phrases be for this rule?</div>
+                    <div class="context-box">
+                        <div class="context-label">Potential Triggers:</div>
+                        <div>� "create Issue documents"</div>
+                        <div>� "create pull request documents"</div>
+                        <div>� "generate issue files"</div>
+                        <div>� "create bug report docs"</div>
+                        <div>� "create feature request docs"</div>
+                    </div>
+                    <div class="answer-section">
+                        <label class="answer-label">Trigger Sensitivity:</label>
+                        <select name="r8_answer" required>
+                            <option value="">-- Select Trigger Approach --</option>
+                            <option value="EXACT_PHRASES">EXACT_PHRASES - Only trigger on specific exact phrases</option>
+                            <option value="KEYWORD_DETECTION">KEYWORD_DETECTION - Trigger on key combinations (issue + document)</option>
+                            <option value="CONTEXT_AWARE">CONTEXT_AWARE - Smart detection based on context and intent</option>
+                            <option value="EXPLICIT_REQUEST">EXPLICIT_REQUEST - Only when explicitly requested</option>
+                            <option value="BROAD_DETECTION">BROAD_DETECTION - Trigger on any issue/PR creation request</option>
+                        </select>
+                        <div class="validation-message">Please select trigger sensitivity</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Trigger Preferences:</label>
+                        <textarea name="r8_notes" placeholder="Specify trigger phrases or detection preferences..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="action-buttons">
+            <div class="stats">
+                <div class="stat-item">
+                    <span>??</span>
+                    <span>Progress: <span id="progressText">0/8</span></span>
+                </div>
+                <div class="stat-item">
+                    <span>?</span>
+                    <span>Answered: <span id="answeredCount">0</span></span>
+                </div>
+                <div class="stat-item">
+                    <span>??</span>
+                    <span>Remaining: <span id="remainingCount">8</span></span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <button type="button" class="btn btn-secondary" onclick="validateForm()">
+                    <span>??</span>
+                    Validate Answers
+                </button>
+                <button type="button" class="btn btn-primary" onclick="exportAnswers()">
+                    <span>??</span>
+                    Create Rule Configuration
+                </button>
+                <button type="button" class="btn btn-success" onclick="downloadAnswers()" style="display: none;" id="downloadBtn">
+                    <span>??</span>
+                    Download Rule Config
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let answeredQuestions = new Set();
+        const totalQuestions = 8;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('questionsForm');
+            const inputs = form.querySelectorAll('select, input, textarea');
+            
+            inputs.forEach(input => {
+                input.addEventListener('change', updateProgress);
+                input.addEventListener('input', updateProgress);
+            });
+            
+            updateProgress();
+        });
+
+        function updateProgress() {
+            const form = document.getElementById('questionsForm');
+            const selects = form.querySelectorAll('select[required]');
+            answeredQuestions.clear();
+            
+            selects.forEach((select, index) => {
+                const questionCard = select.closest('.question-card');
+                if (select.value) {
+                    answeredQuestions.add(index + 1);
+                    questionCard.classList.add('answered');
+                    questionCard.classList.remove('invalid');
+                } else {
+                    questionCard.classList.remove('answered');
+                }
+            });
+            
+            const answered = answeredQuestions.size;
+            const remaining = totalQuestions - answered;
+            const percentage = (answered / totalQuestions) * 100;
+            
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+            document.getElementById('progressText').textContent = `${answered}/${totalQuestions}`;
+            document.getElementById('answeredCount').textContent = answered;
+            document.getElementById('remainingCount').textContent = remaining;
+        }
+
+        function validateForm() {
+            const form = document.getElementById('questionsForm');
+            const selects = form.querySelectorAll('select[required]');
+            let isValid = true;
+            
+            selects.forEach(select => {
+                const questionCard = select.closest('.question-card');
+                if (!select.value) {
+                    questionCard.classList.add('invalid');
+                    isValid = false;
+                } else {
+                    questionCard.classList.remove('invalid');
+                }
+            });
+            
+            if (isValid) {
+                alert(`? Rule configuration complete!\n\nReady to implement Issue/PR document creation rule with:\n� File structure and naming conventions\n� Content templates and standards\n� Integration with existing systems\n� Automated workflow triggers`);
+            } else {
+                const unanswered = totalQuestions - answeredQuestions.size;
+                alert(`?? Please answer all questions. ${unanswered} question(s) still need answers.`);
+                
+                const firstInvalid = document.querySelector('.question-card.invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            
+            return isValid;
+        }
+
+        function exportAnswers() {
+            if (!validateForm()) {
+                return;
+            }
+            
+            const form = document.getElementById('questionsForm');
+            const formData = new FormData(form);
+            const answers = {};
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            
+            for (let [key, value] of formData.entries()) {
+                answers[key] = value;
+            }
+            
+            const csvContent = createCSV(answers);
+            const jsonContent = JSON.stringify({
+                timestamp: new Date().toISOString(),
+                questionnaire: "Issue/PR Document Creation Rule Configuration",
+                project: "MTM WIP Application Avalonia",
+                ruleType: "ISSUE_PR_DOCUMENT_CREATION",
+                totalQuestions: totalQuestions,
+                answeredQuestions: answeredQuestions.size,
+                answers: answers
+            }, null, 2);
+            
+            const htmlContent = createHTMLSummary(answers, timestamp);
+            
+            document.getElementById('downloadBtn').style.display = 'flex';
+            
+            window.exportedData = {
+                csv: csvContent,
+                json: jsonContent,
+                html: htmlContent,
+                timestamp: timestamp
+            };
+            
+            alert(`? Rule configuration exported!\n\n?? Summary:\n� ${answeredQuestions.size} configuration questions answered\n� Ready to implement in copilot-instructions.md\n� Download files for reference\n\nThis rule will be added to your GitHub Copilot Instructions.`);
+        }
+
+        function createCSV(answers) {
+            let csv = 'Question_ID,Category,Question,Answer,Notes\n';
+            
+            const questions = [
+                {id: 'R1', category: 'File_Structure', question: 'Sub-issue naming strategy (Fix# vs Phase#)'},
+                {id: 'R2', category: 'File_Location', question: 'Repository location for issue/PR documents'},
+                {id: 'R3', category: 'Master_File_Content', question: 'Master file content level and requirements'},
+                {id: 'R4', category: 'Fix_Phase_Content', question: 'Comprehensiveness level for GitHub Copilot Agents'},
+                {id: 'R5', category: 'Continue_Script', question: 'Continue script design for efficient resumption'},
+                {id: 'R6', category: 'System_Integration', question: 'Integration with existing questions HTML system'},
+                {id: 'R7', category: 'Template_Strategy', question: 'Template standardization approach'},
+                {id: 'R8', category: 'Rule_Triggers', question: 'Trigger phrase specificity and detection'}
+            ];
+            
+            questions.forEach(q => {
+                const answer = answers[`${q.id.toLowerCase()}_answer`] || '';
+                const notes = answers[`${q.id.toLowerCase()}_notes`] || '';
+                csv += `"${q.id}","${q.category}","${q.question.replace(/"/g, '""')}","${answer}","${notes.replace(/"/g, '""')}"\n`;
+            });
+            
+            return csv;
+        }
+
+        function createHTMLSummary(answers, timestamp) {
+            return `<!DOCTYPE html><html><head><title>Issue/PR Rule Configuration - ${timestamp}</title></head><body><h1>Issue/PR Document Creation Rule</h1><p>Configuration for GitHub Copilot Instructions</p></body></html>`;
+        }
+
+        function downloadAnswers() {
+            if (!window.exportedData) {
+                alert('No data to download. Please create configuration first.');
+                return;
+            }
+            
+            const { csv, json, html, timestamp } = window.exportedData;
+            
+            downloadFile(csv, `Issue_PR_Document_Rule_Configuration_${timestamp}.csv`, 'text/csv');
+            downloadFile(json, `Issue_PR_Document_Rule_Configuration_${timestamp}.json`, 'application/json');
+            downloadFile(html, `Issue_PR_Document_Rule_Configuration_${timestamp}.html`, 'text/html');
+            
+            alert(`?? Downloaded rule configuration!\n\nReady to implement in copilot-instructions.md`);
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

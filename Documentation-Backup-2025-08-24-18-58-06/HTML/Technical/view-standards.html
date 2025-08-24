@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View Structure Standards for MTM WIP Application Avalonia - Mandatory standards for all Views implementation">
+    <meta name="keywords" content="MTM, WIP, Avalonia, view standards, UI structure, proportional scaling">
+    <meta name="author" content="MTM Development Team">
+    
+    <title>View Structure Standards - MTM WIP Application Technical Documentation</title>
+    
+    <!-- Modern Stylesheets -->
+    <link rel="stylesheet" href="assets/css/modern-styles.css">
+    <link rel="stylesheet" href="assets/css/mtm-theme.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/images/mtm-favicon.svg">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="assets/css/modern-styles.css" as="style">
+    <link rel="preload" href="assets/js/modern-features.js" as="script">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <!-- Reading progress indicator -->
+    <div class="reading-progress" aria-hidden="true"></div>
+    
+    <!-- Main Layout -->
+    <div class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="layout-sidebar mtm-nav" role="navigation" aria-label="Main navigation">
+            <!-- Brand Section -->
+            <div class="mtm-nav-brand">
+                <div class="mtm-nav-brand-icon" aria-hidden="true">📐</div>
+                <h1 class="mtm-nav-brand-title">View Standards</h1>
+                <p class="mtm-nav-brand-subtitle">Mandatory Structure Guide</p>
+            </div>
+            
+            <!-- Quick Navigation -->
+            <nav class="nav">
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">Quick Navigation</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="#overview" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">📋</span>
+                            Overview
+                        </a></li>
+                        <li><a href="#proportional-scaling" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🔄</span>
+                            Proportional Scaling
+                        </a></li>
+                        <li><a href="#axaml-structure" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">📝</span>
+                            AXAML Structure
+                        </a></li>
+                        <li><a href="#mtm-styling" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🎨</span>
+                            MTM Styling
+                        </a></li>
+                        <li><a href="#compliance" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">✅</span>
+                            Compliance Checklist
+                        </a></li>
+                    </ul>
+                </section>
+                
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">Documentation</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="index.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🏠</span>
+                            Documentation Hub
+                        </a></li>
+                        <li><a href="ui-generation.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🖥️</span>
+                            UI Generation
+                        </a></li>
+                        <li><a href="coding-conventions.html" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">📝</span>
+                            Coding Conventions
+                        </a></li>
+                    </ul>
+                </section>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="layout-main" id="main-content" role="main">
+            <!-- Hero Section -->
+            <section class="mtm-hero">
+                <div class="mtm-hero-content">
+                    <h1 class="mtm-hero-title">View Structure Standards</h1>
+                    <p class="mtm-hero-subtitle">Mandatory standards for all Views in the MTM WIP Application Avalonia</p>
+                    <div class="mtm-hero-badges">
+                        <span class="mtm-badge mtm-badge-primary">Mandatory</span>
+                        <span class="mtm-badge mtm-badge-secondary">All Views</span>
+                        <span class="mtm-badge mtm-badge-accent">Avalonia UI</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Alert Section -->
+            <section class="alert alert-error">
+                <h2><span class="icon" aria-hidden="true">⚠️</span> MANDATORY REQUIREMENT</h2>
+                <p><strong>ALL Views MUST implement proportional scaling</strong> to maintain consistent appearance across different window sizes. This is a mandatory requirement for all new and updated views.</p>
+            </section>
+            
+            <!-- Overview Section -->
+            <section id="overview" class="mtm-content-section">
+                <h2>📋 Overview</h2>
+                <p>This document establishes mandatory standards for all Views in the MTM WIP Application Avalonia project to ensure consistency, maintainability, and proper scaling behavior across all screen sizes and resolutions.</p>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">🎯</div>
+                        <h3 class="mtm-card-title">Key Requirements</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <ul>
+                            <li><strong>Proportional Scaling:</strong> Every view must wrap content in a Viewbox for consistent scaling</li>
+                            <li><strong>Standard Structure:</strong> Consistent AXAML header with required attributes</li>
+                            <li><strong>MTM Styling:</strong> Use dynamic resources for all colors and styling</li>
+                            <li><strong>Responsive Design:</strong> Layouts must adapt to different screen sizes</li>
+                            <li><strong>Accessibility:</strong> Full keyboard navigation and screen reader support</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Proportional Scaling Section -->
+            <section id="proportional-scaling" class="mtm-content-section">
+                <h2>🔄 Proportional Scaling Requirement</h2>
+                
+                <div class="alert alert-info">
+                    <h3><span class="icon" aria-hidden="true">📐</span> Mandatory Implementation</h3>
+                    <p>Every view that could be displayed as the main content <strong>MUST</strong> wrap its content in a Viewbox with specific configuration.</p>
+                </div>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">💻</div>
+                        <h3 class="mtm-card-title">Implementation Pattern</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <pre><code class="language-xml">&lt;UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Views.ExampleView"
+             x:CompileBindings="True"
+             x:DataType="vm:ExampleViewModel"&gt;
+
+    &lt;!-- MANDATORY: Viewbox wrapper for proportional scaling --&gt;
+    &lt;Viewbox Stretch="Uniform" StretchDirection="Both"&gt;
+        &lt;!-- Fixed dimensions for scaling reference --&gt;
+        &lt;Grid Width="800" Height="600"&gt;
+            &lt;!-- Your content here --&gt;
+        &lt;/Grid&gt;
+    &lt;/Viewbox&gt;
+&lt;/UserControl&gt;</code></pre>
+                    </div>
+                </div>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">📏</div>
+                        <h3 class="mtm-card-title">Scaling Rules</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <ul>
+                            <li><strong>Base Dimensions:</strong> Define fixed Width/Height on the inner Grid as reference size</li>
+                            <li><strong>Viewbox Properties:</strong> Always use <code>Stretch="Uniform"</code> and <code>StretchDirection="Both"</code></li>
+                            <li><strong>Content Scaling:</strong> All elements (text, buttons, spacing) scale proportionally</li>
+                            <li><strong>Ratio Maintenance:</strong> Original aspect ratio is preserved at all window sizes</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- AXAML Structure Section -->
+            <section id="axaml-structure" class="mtm-content-section">
+                <h2>📝 Required AXAML Structure</h2>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">📋</div>
+                        <h3 class="mtm-card-title">Header Declaration (Mandatory)</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <pre><code class="language-xml">&lt;UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Views.{ViewName}View"
+             x:CompileBindings="True"
+             x:DataType="vm:{ViewName}ViewModel"&gt;</code></pre>
+                    </div>
+                </div>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">✅</div>
+                        <h3 class="mtm-card-title">Required Attributes</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <ul>
+                            <li><code>x:CompileBindings="True"</code> - Enables compile-time binding validation</li>
+                            <li><code>x:DataType="vm:{ViewName}ViewModel"</code> - Provides IntelliSense and type safety</li>
+                            <li><code>d:DesignWidth</code> and <code>d:DesignHeight</code> - Design-time preview dimensions</li>
+                            <li>Proper namespace declarations including <code>vm</code> for ViewModels</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- MTM Styling Section -->
+            <section id="mtm-styling" class="mtm-content-section">
+                <h2>🎨 MTM Styling Standards</h2>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">🌈</div>
+                        <h3 class="mtm-card-title">Color Usage (Required)</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <pre><code class="language-xml">&lt;!-- MTM Brand Colors - Use Dynamic Resources --&gt;
+&lt;Border Background="{DynamicResource PrimaryBrush}"/&gt;        &lt;!-- #4B45ED --&gt;
+&lt;Button Classes="primary" Background="{DynamicResource PrimaryBrush}"/&gt;
+&lt;Button Classes="accent" Background="{DynamicResource AccentBrush}"/&gt;   &lt;!-- #BA45ED --&gt;
+&lt;TextBlock Foreground="{DynamicResource ForegroundBrush}"/&gt;</code></pre>
+                    </div>
+                </div>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">🔘</div>
+                        <h3 class="mtm-card-title">Standard MTM Button Classes</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <ul>
+                            <li><code>primary</code> - Main actions (MTM Purple #4B45ED)</li>
+                            <li><code>secondary</code> - Secondary actions</li>
+                            <li><code>accent</code> - Special highlights (Magenta #BA45ED)</li>
+                            <li><code>danger</code> - Destructive actions</li>
+                            <li><code>success</code> - Confirmation actions</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">📐</div>
+                        <h3 class="mtm-card-title">Spacing Standards</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <ul>
+                            <li><strong>Container margins:</strong> <code>Margin="8"</code> for panels, <code>Margin="24"</code> for content areas</li>
+                            <li><strong>Element spacing:</strong> <code>Spacing="8"</code> for related items, <code>Spacing="16"</code> for sections</li>
+                            <li><strong>Padding:</strong> <code>Padding="8"</code> for compact areas, <code>Padding="16"</code> for comfortable areas, <code>Padding="24"</code> for spacious cards</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Compliance Checklist Section -->
+            <section id="compliance" class="mtm-content-section">
+                <h2>✅ Compliance Checklist</h2>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">✅</div>
+                        <h3 class="mtm-card-title">Every View Must Have:</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <ul>
+                            <li>☐ Viewbox wrapper with Uniform stretch</li>
+                            <li>☐ Fixed base dimensions on inner Grid</li>
+                            <li>☐ Proper AXAML header with all required attributes</li>
+                            <li>☐ x:CompileBindings="True" and x:DataType specified</li>
+                            <li>☐ Dynamic resource usage for all colors and brushes</li>
+                            <li>☐ Consistent spacing using MTM standards</li>
+                            <li>☐ Proper ViewModel binding patterns</li>
+                            <li>☐ Error handling UI elements where appropriate</li>
+                            <li>☐ Loading state support where appropriate</li>
+                            <li>☐ Responsive design considerations</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">🚫</div>
+                        <h3 class="mtm-card-title">Prohibited Patterns:</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <ul>
+                            <li>❌ Hard-coded colors (use dynamic resources only)</li>
+                            <li>❌ Missing Viewbox for main content views</li>
+                            <li>❌ Inconsistent spacing and margins</li>
+                            <li>❌ Missing error handling UI</li>
+                            <li>❌ Non-responsive layouts</li>
+                            <li>❌ Direct code-behind business logic</li>
+                            <li>❌ Missing accessibility considerations</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Testing Requirements Section -->
+            <section class="mtm-content-section">
+                <h2>🧪 Testing Requirements</h2>
+                
+                <div class="mtm-card">
+                    <div class="mtm-card-header">
+                        <div class="mtm-card-icon">🔍</div>
+                        <h3 class="mtm-card-title">Required Testing</h3>
+                    </div>
+                    <div class="mtm-card-content">
+                        <ol>
+                            <li><strong>Test at multiple window sizes</strong> (800x600, 1200x800, 1920x1080, 4K)</li>
+                            <li><strong>Verify proportional scaling</strong> of all elements</li>
+                            <li><strong>Check color theme compatibility</strong> with light/dark modes</li>
+                            <li><strong>Validate responsive behavior</strong> on different screen ratios</li>
+                            <li><strong>Test keyboard navigation</strong> and accessibility</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Related Documentation Section -->
+            <section class="mtm-content-section">
+                <h2>📚 Related Documentation</h2>
+                
+                <div class="mtm-grid mtm-grid-2cols">
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">🖥️</div>
+                            <h3 class="mtm-card-title">UI Generation</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <p>Complete guide to creating UI components.</p>
+                            <a href="ui-generation.html" class="mtm-btn mtm-btn-secondary">View Guide</a>
+                        </div>
+                    </div>
+                    
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">📝</div>
+                            <h3 class="mtm-card-title">Coding Conventions</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <p>C# and Avalonia code style rules.</p>
+                            <a href="coding-conventions.html" class="mtm-btn mtm-btn-secondary">View Conventions</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Footer Navigation -->
+            <footer class="mtm-content-footer">
+                <div class="mtm-footer-nav">
+                    <a href="index.html" class="mtm-btn mtm-btn-outline">← Documentation Hub</a>
+                    <a href="ui-generation.html" class="mtm-btn mtm-btn-outline">UI Generation →</a>
+                </div>
+                <p class="mtm-footer-text">
+                    <strong>Last Updated:</strong> December 2024 |
+                    <strong>Applies To:</strong> All Views in MTM WIP Application Avalonia |
+                    <strong>Status:</strong> Mandatory for all new and updated views
+                </p>
+            </footer>
+        </main>
+    </div>
+    
+    <!-- Modern JavaScript Features -->
+    <script src="assets/js/modern-features.js"></script>
+</body>
+</html>
