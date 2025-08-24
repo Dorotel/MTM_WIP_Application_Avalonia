@@ -1,4 +1,66 @@
-﻿# MTM WIP Application Avalonia (.NET 8)
+﻿# MTM WIP Application Avalonia
+
+## 🚀 Quick Start with Custom Copilot Commands
+
+This project includes 50+ custom GitHub Copilot shortcuts for rapid development. Type `@` followed by a category in GitHub Copilot chat:
+
+### 🎨 UI Generation (@ui:)
+```
+@ui:create - Generate Avalonia controls/views
+@ui:viewmodel - Create ReactiveUI ViewModels
+@ui:layout - Modern layout patterns
+@ui:theme - MTM purple theme resources
+```
+
+### 🔧 Business Logic (@biz:)
+```
+@biz:handler - Business logic classes
+@biz:model - MTM data models
+@biz:db - Database access layers
+@biz:crud - Complete CRUD operations
+```
+
+### 🗄️ Database (@db:)
+```
+@db:procedure - Stored procedures
+@db:service - Database services
+@db:validation - Business rule validation
+```
+
+### ✅ Quality (@qa:)
+```
+@qa:verify - Code compliance audits
+@qa:refactor - Apply naming conventions
+@qa:test - Unit test skeletons
+```
+
+### 🏗️ Systems (@sys:)
+```
+@sys:di - Dependency injection setup
+@sys:services - Core service interfaces
+@sys:result - Result pattern implementation
+```
+
+### 🔧 Quick Fixes (@fix:)
+```
+@fix:01-11 - Address specific compliance issues
+```
+
+### **Example Usage:**
+```
+@ui:create inventory search component
+@biz:handler user authentication logic
+@qa:verify MyComponent.axaml.cs
+```
+
+**📖 Complete Reference:** See `Documentation/Development/Custom_Prompts/MTM_Hotkey_Reference.md`
+
+---
+
+## Project Overview
+This is an Avalonia UI application for MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using MVVM pattern with Avalonia.ReactiveUI.
+
+# MTM WIP Application Avalonia (.NET 8)
 
 A modern, cross-platform WIP (Work In Progress) Inventory Management System built with Avalonia UI and .NET 8 for Manitowoc Tool and Manufacturing (MTM).
 

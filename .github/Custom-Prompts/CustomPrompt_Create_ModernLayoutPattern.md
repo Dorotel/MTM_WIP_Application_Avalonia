@@ -1,195 +1,456 @@
-# Custom Prompt: Create Modern Layout Pattern
+# Create Modern Layout Pattern - Custom Prompt
 
-## ?? **Instructions**
-Use this prompt when you need to generate modern Avalonia layouts with sidebars, cards, hero sections, and responsive design using MTM design patterns. This prompt creates complete layout structures with proper spacing, shadows, and purple brand theming.
+## Instructions
+Use this prompt when you need to generate modern Avalonia layouts with sidebars, cards, and hero sections using MTM design patterns.
 
-## ?? **Persona**
-**Layout Designer Copilot** - Specializes in creating modern, responsive Avalonia layouts with MTM design system integration, proper spacing, and contemporary UI patterns.
+## Persona
+**UI Architect Copilot + Design System Specialist**  
+*(See [personas-instruction.md](../../.github/personas.instruction.md) for role details)*
 
-## ?? **Prompt Template**
+## Prompt Template
 
 ```
-Act as Layout Designer Copilot. Create a modern Avalonia layout pattern for [LAYOUT_NAME] with the following requirements:
-
-**Layout Type:** [Sidebar + Content | Card Grid | Hero + Content | Dashboard | Form Layout]
-**Purpose:** [Describe the layout's intended use and content]
-**Key Sections:** [List main areas - header, sidebar, content, footer, etc.]
-**Responsive Behavior:** [How layout adapts to different screen sizes]
-**Content Areas:** [Describe what goes in each section]
-
-**Design Requirements:**
-- Apply MTM purple brand theme (#4B45ED primary, #BA45ED accents, #8345ED secondary)
-- Use modern card-based design with subtle shadows
-- Implement proper spacing (8px containers, 4px controls, 24px card padding)
-- Create responsive design that works on mobile and desktop
-- Include hero/banner sections with gradient backgrounds
-- Apply modern UI elements (rounded corners, shadows, gradients)
-
-**Layout Specifications:**
-- Use Grid layouts for performance and proper alignment
-- Implement sidebar with fixed width (240-280px) and clear hierarchy
-- Create card containers with BoxShadow="0 2 8 0 #11000000"
-- Apply proper typography scaling (20-28px headers, 14-16px content)
-- Use DynamicResource for all colors to support theming
-- Include navigation patterns and content organization
-
-**Technical Requirements:**
-- Generate clean AXAML with proper indentation and structure
-- Use compiled bindings preparation (x:CompileBindings ready)
-- Apply Avalonia-specific controls and patterns
-- Ensure proper performance with Grid over StackPanel preference
-- Include responsive breakpoints and mobile considerations
-
-**Additional Context:** [Any specific layout requirements or constraints]
+Generate a modern Avalonia layout using MTM design patterns.  
+Include sidebar navigation (240px width), card-based content with rounded corners and shadows,  
+hero sections with MTM purple gradients, and proper spacing using Grid layouts.  
+Apply the MTM color scheme and ensure responsive design principles.
 ```
 
-## ?? **Purpose**
-This prompt generates complete modern layout patterns that serve as foundations for Avalonia applications, incorporating MTM design system, responsive design principles, and contemporary UI patterns.
+## Purpose
+For generating modern Avalonia layouts with sidebars, cards, and hero sections using MTM design patterns.
 
-## ?? **Usage Examples**
+## Usage Examples
 
-### **Example 1: Main Application Layout with Sidebar**
+### Example 1: Main Application Window
 ```
-Act as Layout Designer Copilot. Create a modern Avalonia layout pattern for MainApplicationLayout with the following requirements:
-
-**Layout Type:** Sidebar + Content
-**Purpose:** Primary application window layout with navigation sidebar and dynamic content area
-**Key Sections:** App header, navigation sidebar, main content area, status bar
-**Responsive Behavior:** Sidebar collapses to icons on small screens, content area adjusts
-**Content Areas:** Logo/branding in header, navigation menu in sidebar, dynamic views in content
-
-**Design Requirements:**
-- Apply MTM purple brand theme (#4B45ED primary, #BA45ED accents, #8345ED secondary)
-- Use modern card-based design with subtle shadows
-- Implement proper spacing (8px containers, 4px controls, 24px card padding)
-- Create responsive design that works on mobile and desktop
-- Include hero/banner sections with gradient backgrounds
-- Apply modern UI elements (rounded corners, shadows, gradients)
-
-**Layout Specifications:**
-- Use Grid layouts for performance and proper alignment
-- Implement sidebar with fixed width (240-280px) and clear hierarchy
-- Create card containers with BoxShadow="0 2 8 0 #11000000"
-- Apply proper typography scaling (20-28px headers, 14-16px content)
-- Use DynamicResource for all colors to support theming
-- Include navigation patterns and content organization
-
-**Technical Requirements:**
-- Generate clean AXAML with proper indentation and structure
-- Use compiled bindings preparation (x:CompileBindings ready)
-- Apply Avalonia-specific controls and patterns
-- Ensure proper performance with Grid over StackPanel preference
-- Include responsive breakpoints and mobile considerations
-
-**Additional Context:** Layout should support view switching through navigation and maintain state during transitions
+Generate a modern Avalonia layout for the main application window using MTM design patterns.  
+Include sidebar navigation (240px width), card-based content with rounded corners and shadows,  
+hero sections with MTM purple gradients, and proper spacing using Grid layouts.  
+Apply the MTM color scheme and ensure responsive design principles.
 ```
 
-### **Example 2: Dashboard Card Grid Layout**
+### Example 2: Dashboard Layout
 ```
-Act as Layout Designer Copilot. Create a modern Avalonia layout pattern for DashboardLayout with the following requirements:
-
-**Layout Type:** Card Grid
-**Purpose:** Dashboard view with multiple information cards and quick actions
-**Key Sections:** Hero banner, card grid area, action buttons section
-**Responsive Behavior:** Cards reflow from 3 columns to 2 to 1 based on screen size
-**Content Areas:** Summary banner, metric cards, chart widgets, action shortcuts
-
-**Design Requirements:**
-- Apply MTM purple brand theme (#4B45ED primary, #BA45ED accents, #8345ED secondary)
-- Use modern card-based design with subtle shadows
-- Implement proper spacing (8px containers, 4px controls, 24px card padding)
-- Create responsive design that works on mobile and desktop
-- Include hero/banner sections with gradient backgrounds
-- Apply modern UI elements (rounded corners, shadows, gradients)
-
-**Layout Specifications:**
-- Use Grid layouts for performance and proper alignment
-- Implement sidebar with fixed width (240-280px) and clear hierarchy
-- Create card containers with BoxShadow="0 2 8 0 #11000000"
-- Apply proper typography scaling (20-28px headers, 14-16px content)
-- Use DynamicResource for all colors to support theming
-- Include navigation patterns and content organization
-
-**Technical Requirements:**
-- Generate clean AXAML with proper indentation and structure
-- Use compiled bindings preparation (x:CompileBindings ready)
-- Apply Avalonia-specific controls and patterns
-- Ensure proper performance with Grid over StackPanel preference
-- Include responsive breakpoints and mobile considerations
-
-**Additional Context:** Cards should support hover effects and click actions for detailed views
+Generate a modern Avalonia dashboard layout using MTM design patterns.  
+Include sidebar navigation, card-based widgets with rounded corners and shadows,  
+hero banner with MTM purple gradients, and responsive Grid layouts.  
+Apply the MTM color scheme and ensure proper spacing throughout.
 ```
 
-## ?? **Guidelines**
+## Guidelines
 
-### **MTM Design System Integration**
+### Modern Application Layout Template
 ```xml
-<!-- MTM Color Variables -->
-<Window.Resources>
-    <SolidColorBrush x:Key="PrimaryBrush" Color="#4B45ED"/>
-    <SolidColorBrush x:Key="AccentBrush" Color="#BA45ED"/>
-    <SolidColorBrush x:Key="SecondaryBrush" Color="#8345ED"/>
-    <SolidColorBrush x:Key="BlueAccentBrush" Color="#4574ED"/>
-    <SolidColorBrush x:Key="PinkAccentBrush" Color="#ED45E7"/>
-    <SolidColorBrush x:Key="LightPurpleBrush" Color="#B594ED"/>
-</Window.Resources>
-
-<!-- Hero Gradient Pattern -->
-<LinearGradientBrush x:Key="HeroGradientBrush" StartPoint="0,0" EndPoint="1,1">
-    <GradientStop Color="#4574ED" Offset="0"/>
-    <GradientStop Color="#4B45ED" Offset="0.3"/>
-    <GradientStop Color="#8345ED" Offset="0.7"/>
-    <GradientStop Color="#BA45ED" Offset="1"/>
-</LinearGradientBrush>
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MTM_WIP_Application_Avalonia.MainWindow"
+        Title="MTM WIP Application"
+        Width="1200" Height="700"
+        Background="{DynamicResource BackgroundBrush}">
+    
+    <Grid ColumnDefinitions="240,*">
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0" 
+                Background="{DynamicResource SidebarBackgroundBrush}"
+                BoxShadow="1 0 3 0 #22000000">
+            <DockPanel>
+                <!-- App Header/Logo -->
+                <Border DockPanel.Dock="Top" 
+                        Padding="16" 
+                        Height="60"
+                        Background="{DynamicResource PrimaryBrush}">
+                    <TextBlock Text="MTM WIP System" 
+                               FontSize="18" 
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </Border>
+                
+                <!-- Navigation Items -->
+                <ScrollViewer>
+                    <StackPanel Spacing="2" Margin="8">
+                        <!-- Inventory Section -->
+                        <Expander Header="Inventory" IsExpanded="True">
+                            <StackPanel Spacing="2" Margin="24,4,0,4">
+                                <RadioButton GroupName="Navigation" 
+                                             Classes="nav-item"
+                                             Content="View Inventory"
+                                             Command="{Binding NavigateCommand}"
+                                             CommandParameter="Inventory"/>
+                                <RadioButton GroupName="Navigation"
+                                             Classes="nav-item" 
+                                             Content="Add Items"
+                                             Command="{Binding NavigateCommand}"
+                                             CommandParameter="AddItems"/>
+                                <RadioButton GroupName="Navigation"
+                                             Classes="nav-item" 
+                                             Content="Transfer Items"
+                                             Command="{Binding NavigateCommand}"
+                                             CommandParameter="Transfer"/>
+                            </StackPanel>
+                        </Expander>
+                        
+                        <!-- Reports Section -->
+                        <Expander Header="Reports">
+                            <StackPanel Spacing="2" Margin="24,4,0,4">
+                                <RadioButton GroupName="Navigation" 
+                                             Classes="nav-item"
+                                             Content="Transaction History"
+                                             Command="{Binding NavigateCommand}"
+                                             CommandParameter="History"/>
+                                <RadioButton GroupName="Navigation"
+                                             Classes="nav-item" 
+                                             Content="Inventory Reports"
+                                             Command="{Binding NavigateCommand}"
+                                             CommandParameter="Reports"/>
+                            </StackPanel>
+                        </Expander>
+                        
+                        <!-- Settings Section -->
+                        <Expander Header="Settings">
+                            <StackPanel Spacing="2" Margin="24,4,0,4">
+                                <RadioButton GroupName="Navigation" 
+                                             Classes="nav-item"
+                                             Content="Database Settings"
+                                             Command="{Binding NavigateCommand}"
+                                             CommandParameter="DatabaseSettings"/>
+                                <RadioButton GroupName="Navigation"
+                                             Classes="nav-item" 
+                                             Content="User Preferences"
+                                             Command="{Binding NavigateCommand}"
+                                             CommandParameter="UserSettings"/>
+                            </StackPanel>
+                        </Expander>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+        
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1" Background="{DynamicResource ContentBackgroundBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Content Header -->
+            <Border Grid.Row="0" 
+                    Background="{DynamicResource CardBackgroundBrush}"
+                    Padding="24,16"
+                    BoxShadow="0 1 3 0 #11000000">
+                <Grid ColumnDefinitions="*,Auto">
+                    <!-- Breadcrumb -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Home" 
+                                   FontSize="14" 
+                                   Foreground="{DynamicResource AccentBrush}"/>
+                        <TextBlock Text=">" FontSize="14"/>
+                        <TextBlock Text="{Binding CurrentPageTitle}" 
+                                   FontSize="14" 
+                                   FontWeight="SemiBold"/>
+                    </StackPanel>
+                    
+                    <!-- User Info -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="{Binding CurrentUser}" 
+                                   FontSize="14" 
+                                   VerticalAlignment="Center"/>
+                        <Button Content="Logout" 
+                                Classes="secondary"
+                                Command="{Binding LogoutCommand}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            
+            <!-- Main Content -->
+            <ScrollViewer Grid.Row="1" Padding="24">
+                <ContentControl Content="{Binding CurrentView}"/>
+            </ScrollViewer>
+            
+            <!-- Status Bar -->
+            <Border Grid.Row="2" 
+                    Background="{DynamicResource StatusBarBackgroundBrush}"
+                    Padding="16,8"
+                    BorderThickness="0,1,0,0"
+                    BorderBrush="{DynamicResource BorderBrush}">
+                <Grid ColumnDefinitions="*,Auto,Auto">
+                    <!-- Status Message -->
+                    <TextBlock Grid.Column="0" 
+                               Text="{Binding StatusMessage}"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
+                    
+                    <!-- Connection Status -->
+                    <StackPanel Grid.Column="1" 
+                                Orientation="Horizontal" 
+                                Spacing="8"
+                                Margin="0,0,16,0">
+                        <Ellipse Width="8" Height="8" 
+                                 Fill="{Binding IsConnected, Converter={x:Static converters:BoolToBrushConverter.Instance}}"/>
+                        <TextBlock Text="{Binding ConnectionStatus}" 
+                                   FontSize="12"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <!-- Progress Indicator -->
+                    <ProgressBar Grid.Column="2" 
+                                 Width="100" 
+                                 Height="4"
+                                 IsVisible="{Binding IsLoading}"
+                                 IsIndeterminate="True"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
 ```
 
-### **Layout Patterns**
-- **Main Window**: Grid with sidebar and content areas
-- **Cards**: Border with CornerRadius="8" and BoxShadow
-- **Hero Sections**: Gradient background with centered content
-- **Navigation**: Expandable groups with clear hierarchy
-- **Content Areas**: Proper padding and margin application
+### Card-Based Content Layout
+```xml
+<!-- Hero Banner with MTM Purple Gradient -->
+<Border CornerRadius="12" 
+        ClipToBounds="True"
+        Height="200"
+        Margin="0,0,0,24">
+    <Border.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4574ED" Offset="0"/>
+            <GradientStop Color="#4B45ED" Offset="0.3"/>
+            <GradientStop Color="#8345ED" Offset="0.7"/>
+            <GradientStop Color="#BA45ED" Offset="1"/>
+        </LinearGradientBrush>
+    </Border.Background>
+    
+    <Grid Margin="32">
+        <StackPanel VerticalAlignment="Center" Spacing="8">
+            <TextBlock Text="Welcome to MTM WIP System"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="White"/>
+            <TextBlock Text="Manage your inventory efficiently with modern tools"
+                       FontSize="16"
+                       Foreground="White"
+                       Opacity="0.9"/>
+            <Button Content="Get Started" 
+                    Classes="hero-button"
+                    Margin="0,16,0,0"
+                    HorizontalAlignment="Left"/>
+        </StackPanel>
+    </Grid>
+</Border>
 
-### **Responsive Design Principles**
-- Use Grid for flexible layouts that adapt to size changes
-- Implement proper margin and padding that scale appropriately
-- Design for both mouse and touch interaction
-- Consider keyboard navigation and accessibility
-- Plan for different screen densities and scaling factors
+<!-- Feature Cards Grid -->
+<Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*" ColumnSpacing="24" RowSpacing="24">
+    <!-- Inventory Card -->
+    <Border Grid.Row="0" Grid.Column="0" Classes="feature-card">
+        <Grid RowDefinitions="Auto,16,Auto,24,*">
+            <!-- Card Header with Icon -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,12,*">
+                <PathIcon Grid.Column="0" 
+                          Data="{StaticResource InventoryIcon}"
+                          Width="24" Height="24"
+                          Foreground="{DynamicResource AccentBrush}"/>
+                <TextBlock Grid.Column="2" 
+                           Text="Inventory Management"
+                           FontSize="20"
+                           FontWeight="SemiBold"/>
+            </Grid>
+            
+            <!-- Card Description -->
+            <TextBlock Grid.Row="2" 
+                       Text="Add, view, and manage inventory items with real-time tracking"
+                       Opacity="0.8"
+                       TextWrapping="Wrap"/>
+            
+            <!-- Card Actions -->
+            <StackPanel Grid.Row="4" 
+                        Orientation="Horizontal" 
+                        Spacing="8"
+                        VerticalAlignment="Bottom">
+                <Button Content="View Inventory" 
+                        Classes="primary"
+                        Command="{Binding NavigateToInventoryCommand}"/>
+                <Button Content="Add Items" 
+                        Classes="secondary"
+                        Command="{Binding NavigateToAddItemsCommand}"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+    
+    <!-- Transfer Card -->
+    <Border Grid.Row="0" Grid.Column="1" Classes="feature-card">
+        <Grid RowDefinitions="Auto,16,Auto,24,*">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,12,*">
+                <PathIcon Grid.Column="0" 
+                          Data="{StaticResource TransferIcon}"
+                          Width="24" Height="24"
+                          Foreground="{DynamicResource BlueAccentBrush}"/>
+                <TextBlock Grid.Column="2" 
+                           Text="Transfer Operations"
+                           FontSize="20"
+                           FontWeight="SemiBold"/>
+            </Grid>
+            
+            <TextBlock Grid.Row="2" 
+                       Text="Move inventory between locations and operations"
+                       Opacity="0.8"
+                       TextWrapping="Wrap"/>
+            
+            <StackPanel Grid.Row="4" 
+                        Orientation="Horizontal" 
+                        Spacing="8"
+                        VerticalAlignment="Bottom">
+                <Button Content="Transfer Items" 
+                        Classes="primary"
+                        Command="{Binding NavigateToTransferCommand}"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+    
+    <!-- Reports Card -->
+    <Border Grid.Row="0" Grid.Column="2" Classes="feature-card">
+        <Grid RowDefinitions="Auto,16,Auto,24,*">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,12,*">
+                <PathIcon Grid.Column="0" 
+                          Data="{StaticResource ReportsIcon}"
+                          Width="24" Height="24"
+                          Foreground="{DynamicResource MagentaAccentBrush}"/>
+                <TextBlock Grid.Column="2" 
+                           Text="Reports & Analytics"
+                           FontSize="20"
+                           FontWeight="SemiBold"/>
+            </Grid>
+            
+            <TextBlock Grid.Row="2" 
+                       Text="View transaction history and generate detailed reports"
+                       Opacity="0.8"
+                       TextWrapping="Wrap"/>
+            
+            <StackPanel Grid.Row="4" 
+                        Orientation="Horizontal" 
+                        Spacing="8"
+                        VerticalAlignment="Bottom">
+                <Button Content="View Reports" 
+                        Classes="primary"
+                        Command="{Binding NavigateToReportsCommand}"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Grid>
+```
 
-### **Performance Considerations**
-- Prefer Grid over StackPanel for better virtualization
-- Use proper control hierarchy to minimize layout passes
-- Apply efficient data binding patterns
-- Minimize complex visual effects that impact performance
+### Navigation Sidebar Styling
+```xml
+<!-- Style for navigation items -->
+<Style Selector="RadioButton.nav-item">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Padding" Value="12,8"/>
+    <Setter Property="CornerRadius" Value="6"/>
+    <Setter Property="Margin" Value="0,2"/>
+    <Setter Property="FontSize" Value="14"/>
+    <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+</Style>
 
-## ?? **Related Files**
-- [../UI-Instructions/ui-generation.instruction.md](../UI-Instructions/ui-generation.instruction.md) - Complete UI generation guidelines
-- [../Core-Instructions/naming.conventions.instruction.md](../Core-Instructions/naming.conventions.instruction.md) - Layout and control naming standards
-- [../Automation-Instructions/personas.instruction.md](../Automation-Instructions/personas.instruction.md) - Layout Designer Copilot persona details
+<Style Selector="RadioButton.nav-item:checked">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+    <Setter Property="Foreground" Value="White"/>
+</Style>
 
-## ? **Quality Checklist**
+<Style Selector="RadioButton.nav-item:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+    <Setter Property="TextElement.Foreground" Value="White"/>
+</Style>
 
-### **Design System Compliance**
-- [ ] MTM purple color scheme applied consistently
-- [ ] Proper spacing and margins (8px containers, 24px card padding)
-- [ ] Modern UI elements (cards, shadows, gradients) implemented
-- [ ] Typography hierarchy appropriate (20-28px headers)
+<!-- Feature card styling -->
+<Style Selector="Border.feature-card">
+    <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+    <Setter Property="CornerRadius" Value="12"/>
+    <Setter Property="BoxShadow" Value="0 4 12 0 #11000000"/>
+    <Setter Property="Padding" Value="24"/>
+    <Setter Property="MinHeight" Value="200"/>
+</Style>
 
-### **Layout Structure**
-- [ ] Clean Grid-based layout with proper rows/columns
-- [ ] Responsive design principles applied
-- [ ] Proper control hierarchy and nesting
-- [ ] Performance-optimized structure (Grid over StackPanel)
+<Style Selector="Border.feature-card:pointerover">
+    <Setter Property="BoxShadow" Value="0 6 16 0 #16000000"/>
+</Style>
 
-### **Technical Implementation**
-- [ ] Clean AXAML with proper indentation
-- [ ] DynamicResource used for all colors
-- [ ] Compiled bindings preparation included
-- [ ] Avalonia-specific patterns followed
+<!-- Hero button styling -->
+<Style Selector="Button.hero-button">
+    <Setter Property="Background" Value="White"/>
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+    <Setter Property="Padding" Value="20,12"/>
+    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="FontSize" Value="16"/>
+</Style>
 
-### **Accessibility and Usability**
-- [ ] Keyboard navigation support considered
-- [ ] Touch-friendly sizing for interactive elements
-- [ ] Clear visual hierarchy and information organization
-- [ ] Consistent interaction patterns throughout layout
+<Style Selector="Button.hero-button:pointerover">
+    <Setter Property="Background" Value="#F0F0F0"/>
+</Style>
+```
+
+### Responsive Design Principles
+```xml
+<!-- Responsive grid that stacks on smaller screens -->
+<Grid Name="ResponsiveGrid">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" MinWidth="300"/>
+        <ColumnDefinition Width="2*" MinWidth="400"/>
+    </Grid.ColumnDefinitions>
+    
+    <!-- Content adapts based on available space -->
+    <StackPanel Grid.Column="0" Spacing="16">
+        <!-- Form controls -->
+    </StackPanel>
+    
+    <Grid Grid.Column="1" Margin="16,0,0,0">
+        <!-- Data display area -->
+    </Grid>
+</Grid>
+
+<!-- Adaptive card layout -->
+<ItemsControl ItemsSource="{Binding FeatureCards}">
+    <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+            <UniformGrid Columns="3" MinColumnWidth="300"/>
+        </ItemsPanelTemplate>
+    </ItemsControl.ItemsPanel>
+    <ItemsControl.ItemTemplate>
+        <DataTemplate>
+            <Border Classes="feature-card" Margin="8">
+                <!-- Card content -->
+            </Border>
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+</ItemsControl>
+```
+
+### Layout Principles
+- **Sidebar Width**: Fixed 240px for consistent navigation
+- **Card Padding**: 24px for spacious content areas
+- **Grid Spacing**: 24px between major sections, 16px between related items
+- **Corner Radius**: 8-12px for modern, friendly appearance
+- **Shadows**: Subtle depth with `BoxShadow="0 4 12 0 #11000000"`
+- **Typography**: 28px for hero headers, 20px for section headers, 14px for body text
+- **Color Usage**: MTM purple for primary actions, gradients for hero sections
+
+## Related Files
+- `.github/ui-generation.instruction.md` - UI generation guidelines
+- `.github/copilot-instructions.md` - MTM color scheme and design patterns
+- `Resources/Themes/` - Theme resource definitions
+- `Views/` - Implementation examples
+
+## Quality Checklist
+- [ ] Sidebar navigation implemented with 240px width
+- [ ] Card-based content with rounded corners and shadows
+- [ ] Hero sections with MTM purple gradients
+- [ ] Proper Grid layouts with appropriate spacing
+- [ ] MTM color scheme applied throughout
+- [ ] Responsive design principles followed
+- [ ] Navigation styles implemented
+- [ ] Feature cards with proper hover effects
+- [ ] Status bar with connection and progress indicators
+- [ ] Accessibility considerations included

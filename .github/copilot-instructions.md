@@ -1,16 +1,134 @@
 ﻿# GitHub Copilot Instructions for MTM WIP Application Avalonia
 
-## Project Overview
-This is an Avalonia UI application for MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using MVVM pattern with Avalonia.ReactiveUI.
+You are an expert Avalonia UI developer working on the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System. This is a .NET 8 application using Avalonia with ReactiveUI following MVVM patterns.
 
-Required packages:
-- Avalonia
-- Avalonia.Desktop
-- Avalonia.Themes.Fluent
-- Avalonia.Diagnostics (dev only)
-- Avalonia.ReactiveUI
+## Your Role and Expertise
+- **Primary Focus**: Generate Avalonia UI components, ReactiveUI ViewModels, and business logic following MTM standards
+- **Architecture**: MVVM with ReactiveUI, dependency injection, and service-oriented design
+- **Data Patterns**: MTM-specific patterns where Part ID = string, Operation = string numbers, Quantity = integer
+- **Database Access**: Use stored procedures only via `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()` - NEVER direct SQL
+- **UI Framework**: Avalonia (not WPF or WinForms) with compiled bindings and DynamicResource patterns
 
-Program setup (ensure ReactiveUI is enabled):
+## Critical Requirements - Always Follow
+
+### TransactionType Business Logic (CRITICAL)
+```csharp
+// CORRECT: Based on user intent, not operation numbers
+public string DetermineTransactionType(UserAction action)
+{
+    return action.Intent switch
+    {
+        UserIntent.AddingStock => "IN",      // User adding inventory
+        UserIntent.RemovingStock => "OUT",   // User removing inventory  
+        UserIntent.MovingStock => "TRANSFER" // User moving between locations
+    };
+}
+// Operation numbers like "90", "100", "110" are workflow steps, NOT transaction indicators
+```
+
+### Service Registration Pattern (CRITICAL)
+```csharp
+// CORRECT: Use comprehensive registration
+services.AddMTMServices(configuration);
+
+// WRONG: Never register individually - causes missing dependencies
+services.AddScoped<IInventoryService, InventoryService>();
+services.AddScoped<ILocationService, LocationService>();
+```
+
+### Database Access Pattern (CRITICAL)
+```csharp
+// CORRECT: Use stored procedures only
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    "sp_GetInventoryByPart", 
+    parameters
+);
+
+// WRONG: Never use direct SQL
+var query = "SELECT * FROM inventory WHERE part_id = @partId";
+```
+
+### ReactiveUI ViewModel Pattern (CRITICAL)
+```csharp
+public class InventoryViewModel : ReactiveObject
+{
+    private string _partId = string.Empty;
+    public string PartId
+    {
+        get => _partId;
+        set => this.RaiseAndSetIfChanged(ref _partId, value);
+    }
+
+    public ReactiveCommand<Unit, Unit> SearchCommand { get; }
+
+    public InventoryViewModel()
+    {
+        SearchCommand = ReactiveCommand.CreateFromTask(ExecuteSearchAsync);
+    }
+}
+```
+
+### Avalonia AXAML Patterns (CRITICAL)
+```xml
+<!-- CORRECT: Compiled bindings with proper namespaces -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
+             x:Class="MTM_WIP_Application_Avalonia.Views.InventoryView"
+             x:CompileBindings="True"
+             x:DataType="vm:InventoryViewModel">
+    
+    <TextBox Text="{Binding PartId}" />
+    <Button Content="Search" Command="{Binding SearchCommand}" />
+</UserControl>
+```
+
+## Code Generation Rules
+
+### When generating UI components:
+1. **Always use Avalonia controls** - Not WPF or WinForms equivalents
+2. **Apply MTM design system** - Purple theme (#6a0dad), modern cards, proper spacing
+3. **Use compiled bindings** - Include x:CompileBindings="True" and x:DataType
+4. **Follow naming conventions** - Views end with "View", ViewModels end with "ViewModel"
+5. **Implement proper disposal** - Override OnDetachedFromVisualTree for cleanup
+
+### When generating ViewModels:
+1. **Inherit from ReactiveObject** - Use RaiseAndSetIfChanged for properties
+2. **Use ReactiveCommand** - For all user actions and async operations
+3. **Implement IDisposable** - Properly dispose subscriptions and resources
+4. **Apply validation** - Use ReactiveUI validation patterns
+5. **Prepare for DI** - Design constructors for service injection
+
+### When generating business logic:
+1. **Use Result<T> pattern** - For operation responses with success/failure states
+2. **Apply async/await** - For all I/O operations and database calls
+3. **Implement logging** - Use ILogger<T> dependency injection
+4. **Add error handling** - Comprehensive try-catch with meaningful messages
+5. **Follow separation** - No UI dependencies in business logic
+
+## MTM-Specific Data Patterns
+
+### Part Information
+```csharp
+public class PartInfo
+{
+    public string PartId { get; set; } = string.Empty;        // "PART001", "ABC-123"
+    public string Operation { get; set; } = string.Empty;     // "90", "100", "110" (workflow steps)
+    public int Quantity { get; set; }                         // Integer count only
+    public string Location { get; set; } = string.Empty;      // Location identifier
+}
+```
+
+### Operation Numbers Usage
+```csharp
+// CORRECT: Operations are workflow steps
+var operations = new[] { "90", "100", "110", "120" }; // String numbers representing workflow
+
+// WRONG: Don't use operations to determine transaction type
+if (operation == "90") transactionType = "IN"; // This is incorrect logic
+```
+
+## Required Project Setup
 ```csharp
 using Avalonia;
 using Avalonia.ReactiveUI;
@@ -23,145 +141,57 @@ public static class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .LogToTrace()
-            .UseReactiveUI(); // Enable ReactiveUI integration
+            .UseReactiveUI(); // REQUIRED: Enable ReactiveUI integration
 }
 ```
 
-## **📚 Organized Instruction Files Reference**
+## Documentation and HTML Synchronization (CRITICAL)
 
-**This main instruction file provides project overview and coordination, but for specialized contexts, refer to the organized instruction categories:**
+### When modifying any .md files:
+1. **Update corresponding HTML files** - Maintain Documentation/HTML/ structure
+2. **Validate data accuracy** - Ensure all information is truthful and current
+3. **Maintain cross-references** - Update all related links and references
+4. **Follow naming conventions** - Use established file naming patterns
 
-### **🔧 Core Instructions** (`Core-Instructions/`)
-- **Primary Usage**: All development work requiring coding patterns, naming standards, or project structure guidance
-- **Key Files**: 
-  - `codingconventions.instruction.md` - ReactiveUI, MVVM, and .NET 8 patterns
-  - `naming.conventions.instruction.md` - File, class, and service naming standards
-  - `dependency-injection.instruction.md` - DI container setup and AddMTMServices usage
-  - `project-structure.instruction.md` - Repository organization and file placement
-- **When to Use**: Before starting any development task, creating new components, or setting up services
+### When creating questionnaires or clarification:
+1. **Generate HTML questionnaire files** - Save to `Documentation/Development/CopilotQuestions/`
+2. **Use interactive forms** - Include progress tracking and validation
+3. **Apply MTM styling** - Purple theme with responsive design
+4. **Never ask questions in chat** - When complex configuration is needed
 
-### **🎨 UI Instructions** (`UI-Instructions/`)
-- **Primary Usage**: Creating Views, ViewModels, or any UI-related components
-- **Key Files**: 
-  - `ui-generation.instruction.md` (823 lines) - Avalonia AXAML generation patterns
-  - `ui-mapping.instruction.md` - WinForms to Avalonia control mapping
-- **When to Use**: Generating Avalonia AXAML, converting WinForms patterns, or implementing MTM design system
+## Specialized Instruction Categories
 
-### **⚙️ Development Instructions** (`Development-Instructions/`)
-- **Primary Usage**: Workflow setup, error handling implementation, or database integration
-- **Key Files**: 
-  - `errorhandler.instruction.md` - Error handling patterns and implementation
-  - `githubworkflow.instruction.md` - GitHub Actions and CI/CD configuration
-  - `database-patterns.instruction.md` - Database access patterns and MTM business logic
-  - `templates-documentation.instruction.md` - HTML templates and documentation migration
-- **When to Use**: Implementing error handling, setting up CI/CD, working with database patterns, or migrating documentation
+Reference these organized instruction files for detailed guidance:
 
-### **✅ Quality Instructions** (`Quality-Instructions/`)
-- **Primary Usage**: Quality assurance, compliance verification, or system repair
-- **Key Files**: `needsrepair.instruction.md` (630 lines, comprehensive quality standards)
-- **When to Use**: Code reviews, quality assessments, or identifying missing system components
+- **Core-Instructions/**: Coding patterns, naming standards, project structure
+- **UI-Instructions/**: Avalonia AXAML generation, WinForms conversion, MTM design system  
+- **Development-Instructions/**: Error handling, database patterns, workflow setup
+- **Quality-Instructions/**: Compliance verification, quality standards
+- **Automation-Instructions/**: Custom prompts, personas, workflow automation
 
-### **🤖 Automation Instructions** (`Automation-Instructions/`)
-- **Primary Usage**: Creating custom prompts, defining Copilot personas, or automation workflows
-- **Key Files**: 
-  - `personas.instruction.md` (640 lines) - Specialized Copilot behaviors
-  - `customprompts.instruction.md` - Custom prompt templates and automation
-  - `issue-pr-creation.instruction.md` - Automated issue and PR documentation generation
-- **When to Use**: Specialized Copilot behaviors, prompt engineering, or workflow automation
+## Required Dependencies
+```xml
+<PackageReference Include="Avalonia" Version="11.0.0" />
+<PackageReference Include="Avalonia.Desktop" Version="11.0.0" />
+<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />
+<PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
+<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+```
 
-### **📂 Related Documentation**
-- **Development/UI_Documentation/**: Component-specific instruction files (43 additional files)
-- **Archive/**: Historical files and migration documentation
-- **Each Category README.md**: Detailed descriptions of category contents and usage guidelines
+## Never Do
+- Use WPF or WinForms patterns in Avalonia code
+- Write direct SQL queries - always use stored procedures
+- Register services individually - use AddMTMServices()
+- Determine TransactionType from operation numbers
+- Ask clarification questions in chat when HTML questionnaire is appropriate
+- Modify .md files without updating corresponding HTML files
 
----
-
-## **Quick Reference for Common Tasks**
-
-### **Starting New Development Work**
-1. **Review**: [Core Instructions](Core-Instructions/) for coding patterns and naming
-2. **Setup**: Use [dependency-injection.instruction.md](Core-Instructions/dependency-injection.instruction.md) for service registration
-3. **Structure**: Follow [project-structure.instruction.md](Core-Instructions/project-structure.instruction.md) for file placement
-
-### **Creating UI Components**
-1. **Generate**: Use [UI Instructions](UI-Instructions/) for Avalonia AXAML and ViewModels
-2. **Convert**: Reference [ui-mapping.instruction.md](UI-Instructions/ui-mapping.instruction.md) for WinForms patterns
-3. **Style**: Apply MTM design system from [ui-generation.instruction.md](UI-Instructions/ui-generation.instruction.md)
-
-### **Database Operations**
-1. **Patterns**: Follow [database-patterns.instruction.md](Development-Instructions/database-patterns.instruction.md)
-2. **Business Logic**: Apply MTM TransactionType rules (user intent, not operation numbers)
-3. **Access**: Use stored procedures only, never direct SQL
-
-### **Error Handling**
-1. **Implementation**: Use [errorhandler.instruction.md](Development-Instructions/errorhandler.instruction.md)
-2. **Patterns**: Apply ReactiveUI error handling with stored procedure logging
-3. **UI**: Integrate with error display components
-
-### **Documentation and Templates**
-1. **HTML Migration**: Use [templates-documentation.instruction.md](Development-Instructions/templates-documentation.instruction.md)
-2. **FileDefinitions**: Apply PlainEnglish or Technical templates as appropriate
-3. **Cross-References**: Maintain links between related documentation
-
-### **Automation and Issues**
-1. **Issue Creation**: Use [issue-pr-creation.instruction.md](Automation-Instructions/issue-pr-creation.instruction.md)
-2. **Custom Prompts**: Apply [customprompts.instruction.md](Automation-Instructions/customprompts.instruction.md)
-3. **Specialized Behavior**: Reference [personas.instruction.md](Automation-Instructions/personas.instruction.md)
-
----
-
-## **Critical MTM Business Rules Summary**
-
-### **Documentation Integrity and Synchronization** (CRITICAL)
-- **MANDATORY**: When ANY .md file is altered in any way, TWO actions are REQUIRED:
-  1. **HTML Synchronization**: Update ALL corresponding HTML files that use the modified .md file as a source
-  2. **Data Validation**: Validate that ALL data being added/removed from the .md file is 100% accurate and truthful
-- **Scope**: This applies to ALL markdown files including instruction files, documentation, FileDefinitions, issue tracking, and project documentation
-- **Verification**: Before completing any markdown modification task, confirm both HTML updates and data accuracy validation have been performed
-- **Quality Gate**: No markdown changes should be considered complete without validated HTML synchronization and verified data accuracy
-
-### **Question Generation Rule** (CRITICAL)
-- **MANDATORY**: When a user asks me to "ask questions" or requests clarification through questions, I MUST generate an interactive HTML questionnaire file instead of asking questions directly in chat
-- **Location**: All questionnaire files must be saved in `Documentation/Development/CopilotQuestions/` directory
-- **Naming Convention**: `{Topic}_{Purpose}_Questions.html` (e.g., `File_Reference_Validation_Script_Questions.html`)
-- **Format Requirements**: 
-  - Modern responsive HTML with MTM purple theme styling
-  - Interactive form with progress tracking
-  - Question categorization with visual badges
-  - Real-time validation and progress updates
-  - Summary generation upon completion
-- **Never**: Ask clarification questions directly in chat when an HTML questionnaire is more appropriate
-- **Always**: Generate questionnaire files for complex configuration, feature requirements, or multi-part decision processes
-
-### **TransactionType Logic** (from [database-patterns.instruction.md](Development-Instructions/database-patterns.instruction.md))
-- **IN**: User adding stock (regardless of operation number)
-- **OUT**: User removing stock (regardless of operation number)  
-- **TRANSFER**: User moving stock between locations (regardless of operation number)
-- **Operation numbers are workflow steps, NOT transaction type indicators**
-
-### **Database Access** (from [database-patterns.instruction.md](Development-Instructions/database-patterns.instruction.md))
-- **Required**: Use stored procedures only via `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()`
-- **Prohibited**: Direct SQL queries in code
-- **Development**: Use `Development/Database_Files/` for new procedures
-
-### **Service Registration** (from [dependency-injection.instruction.md](Core-Instructions/dependency-injection.instruction.md))
-- **Required**: Use `services.AddMTMServices(configuration)` - never register services individually
-- **Pattern**: Comprehensive registration prevents missing dependency errors
-- **Lifetimes**: Singletons for infrastructure, Scoped for business logic, Transient for ViewModels
-
----
-
-## Remember
-- This is an Avalonia app, not WPF or WinForms
-- Use Avalonia-specific syntax and controls
-- Follow MVVM pattern strictly with ReactiveUI
-- Keep views and ViewModels paired and consistently named
-- Generate clean, readable code with proper spacing
-- Add XML comments only where helpful for understanding UI purpose
-- Follow modern UI patterns with cards, sidebars, and clean layouts
-- Use ReactiveUI's reactive programming paradigms (WhenAnyValue, OAPH, etc.)
-- Apply the MTM brand gradient and color scheme consistently throughout the application
-- **NEVER use direct SQL - always use stored procedures**
-- All development files are now in the `Development/` folder
-- **TransactionType is determined by USER INTENT, not Operation numbers**
-- **Use specialized instruction files for detailed guidance - this main file provides coordination and overview**
+## Always Do
+- Use Avalonia-specific controls and syntax
+- Follow MVVM with ReactiveUI patterns
+- Apply MTM business rules correctly
+- Use compiled bindings in AXAML
+- Implement proper error handling and logging
+- Follow established naming conventions
+- Validate data accuracy when updating documentation

@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.4" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
@@ -71,21 +72,30 @@
     <None Include=".github\Automation-Instructions\issue-pr-creation.instruction.md" />
     <None Include=".github\Automation-Instructions\personas.instruction.md" />
     <None Include=".github\Automation-Instructions\README.md" />
+    <None Include=".github\copilot-commands.md" />
     <None Include=".github\copilot-instructions.md" />
+    <None Include=".github\copilot-training.md" />
     <None Include=".github\Core-Instructions\codingconventions.instruction.md" />
     <None Include=".github\Core-Instructions\dependency-injection.instruction.md" />
     <None Include=".github\Core-Instructions\naming.conventions.instruction.md" />
     <None Include=".github\Core-Instructions\project-structure.instruction.md" />
     <None Include=".github\Core-Instructions\README.md" />
     <None Include=".github\custom-prompts-examples.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ContextMenuIntegration.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ErrorSystemPlaceholder.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ModernLayoutPattern.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ReactiveUIViewModel.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_UIElement.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_UIElementFromMarkdown.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Implement_ResultPatternSystem.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Verify_CodeCompliance.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ContextMenuIntegration.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_CRUDOperations.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ErrorSystemPlaceholder.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_HotkeySystem.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_Issue.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ModernLayoutPattern.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ReactiveUIViewModel.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_StoredProcedure.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_UIElement.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_UIElementFromMarkdown.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Database_ErrorHandling.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Document_DatabaseSchema.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Implement_ResultPatternSystem.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Update_StoredProcedure.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Verify_CodeCompliance.prompt.md" />
     <None Include=".github\Custom-Prompts\README.md" />
     <None Include=".github\Development-Instructions\database-patterns.instruction.md" />
     <None Include=".github\Development-Instructions\errorhandler.instruction.md" />
@@ -97,5 +107,10 @@
     <None Include=".github\UI-Instructions\README.md" />
     <None Include=".github\UI-Instructions\ui-generation.instruction.md" />
     <None Include=".github\UI-Instructions\ui-mapping.instruction.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include=".vscode\" />
+    <Folder Include="docs\" />
   </ItemGroup>
 </Project>

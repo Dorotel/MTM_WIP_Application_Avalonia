@@ -1,0 +1,205 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
+             mc:Ignorable="d"
+             d:DesignWidth="1200"
+             d:DesignHeight="800"
+             x:Class="MTM_WIP_Application_Avalonia.Views.AdvancedInventoryView"
+             x:CompileBindings="True"
+             x:DataType="vm:AdvancedInventoryViewModel">
+
+	<Grid RowDefinitions="Auto,*" Margin="8">
+		<!-- Title -->
+		<TextBlock Grid.Row="0"
+			   Text="Advanced Inventory Entry"
+			   FontSize="14"
+			   FontWeight="SemiBold"
+			   Margin="4,0,0,8"/>
+
+		<!-- Main Panel with Tabs -->
+		<Border Grid.Row="1"
+				BorderBrush="#C8C8C8"
+				BorderThickness="1"
+				CornerRadius="2"
+				Padding="8">
+			<TabControl>
+				<!-- Make tab headers smaller and tighter -->
+				<TabControl.Styles>
+					<Style Selector="TabItem">
+						<Setter Property="FontSize" Value="13"/>
+						<Setter Property="Padding" Value="10,4"/>
+					</Style>
+				</TabControl.Styles>
+
+				<!-- Tab 1: Single Item, Multiple Times -->
+				<TabItem Header="Single Item, Multiple Times">
+					<Grid Margin="6"
+						  ColumnDefinitions="1*,2*"
+						  ColumnSpacing="12"
+						  MinHeight="420">
+						<!-- Left Card: Form -->
+						<Border Grid.Column="0"
+								BorderBrush="#C8C8C8"
+								BorderThickness="1"
+								CornerRadius="2"
+								Margin="0,0,8,0"
+								Padding="8">
+							<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
+								  RowSpacing="8">
+								<AutoCompleteBox Grid.Row="0" 
+												 Watermark="Enter Part Number"
+												 HorizontalAlignment="Stretch"
+												 ItemsSource="{Binding PartIDOptions}" 
+												 SelectedItem="{Binding SelectedPartID, Mode=TwoWay}"/>
+
+								<AutoCompleteBox Grid.Row="1"
+												 Watermark="Enter Operation"
+												 HorizontalAlignment="Stretch"
+												 ItemsSource="{Binding OperationOptions}" 
+												 SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"/>
+
+								<TextBox Grid.Row="2" 
+										 Watermark="Enter Valid Quantity"
+										 HorizontalAlignment="Stretch"
+										 Text="{Binding QuantityText, Mode=TwoWay}"/>
+
+								<AutoCompleteBox Grid.Row="3"
+												 Watermark="Enter Location"
+												 HorizontalAlignment="Stretch"
+												 ItemsSource="{Binding LocationOptions}" 
+												 SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"/>
+
+								<TextBox Grid.Row="4" 
+										 Watermark="How Many Transactions"
+										 HorizontalAlignment="Stretch"
+										 Text="{Binding RepeatTimesText, Mode=TwoWay}"/>
+
+								<TextBox Grid.Row="5" 
+										 Watermark="Notes"
+										 HorizontalAlignment="Stretch"
+										 AcceptsReturn="True" 
+										 MinHeight="120"/>
+
+								<Button Grid.Row="6" Content="Send to Preview" HorizontalAlignment="Stretch"/>
+							</Grid>
+						</Border>
+
+						<!-- Right Card: Preview -->
+						<Border Grid.Column="1"
+								BorderBrush="#C8C8C8"
+								BorderThickness="1"
+								CornerRadius="2"
+								Padding="8">
+							<Grid RowDefinitions="Auto,*,Auto" RowSpacing="8">
+								<TextBlock Text="Transaction Preview" FontWeight="SemiBold"/>
+
+								<!-- Simple preview grid to match appearance -->
+								<DataGrid Grid.Row="1"
+										  AutoGenerateColumns="False"
+										  IsReadOnly="True"
+										  ItemsSource="{Binding SelectedLocations}">
+									<DataGrid.Columns>
+										<DataGridTextColumn Header="Part" Binding="{Binding .}"/>
+										<DataGridTextColumn Header="Operation" Binding="{Binding .}"/>
+										<DataGridTextColumn Header="Location" Binding="{Binding .}"/>
+										<DataGridTextColumn Header="Quantity" Binding="{Binding .}"/>
+									</DataGrid.Columns>
+								</DataGrid>
+
+								<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
+									<Button Content="Save All" Width="120" Command="{Binding AddMultipleTimesCommand}"/>
+									<Button Content="Reset" Width="120" Command="{Binding ResetMultipleTimesCommand}"/>
+									<Button Content="Back to Normal" Width="140" Command="{Binding BackToNormalCommand}"/>
+								</StackPanel>
+							</Grid>
+						</Border>
+					</Grid>
+				</TabItem>
+
+				<!-- Tab 2: Same Item, Multiple Locations -->
+				<TabItem Header="Same Item, Multiple Locations">
+					<Grid Margin="6"
+						  ColumnDefinitions="1*,2*"
+						  ColumnSpacing="12"
+						  MinHeight="420">
+						<!-- Left Card: Form -->
+						<Border Grid.Column="0"
+								BorderBrush="#C8C8C8"
+								BorderThickness="1"
+								CornerRadius="2"
+								Margin="0,0,8,0"
+								Padding="8">
+							<Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto"
+								  RowSpacing="8">
+								<AutoCompleteBox Grid.Row="0"
+												 Watermark="Enter Part Number"
+												 HorizontalAlignment="Stretch"
+												 ItemsSource="{Binding PartIDOptions}" 
+												 SelectedItem="{Binding MultiLocationPartID, Mode=TwoWay}"/>
+
+								<AutoCompleteBox Grid.Row="1"
+												 Watermark="Enter Operation"
+												 HorizontalAlignment="Stretch"
+												 ItemsSource="{Binding OperationOptions}" 
+												 SelectedItem="{Binding MultiLocationOperation, Mode=TwoWay}"/>
+
+								<TextBox Grid.Row="2" 
+										 Watermark="Enter Valid Quantity"
+										 HorizontalAlignment="Stretch"
+										 Text="{Binding MultiLocationQuantityText, Mode=TwoWay}"/>
+
+								<AutoCompleteBox Grid.Row="3"
+												 Watermark="Enter Location"
+												 HorizontalAlignment="Stretch"
+												 ItemsSource="{Binding LocationOptions}" 
+												 SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"/>
+
+								<TextBox Grid.Row="4" 
+										 Watermark="Notes"
+										 HorizontalAlignment="Stretch"
+										 AcceptsReturn="True" 
+										 MinHeight="120"/>
+
+								<Button Grid.Row="5" Content="Send to Preview" HorizontalAlignment="Stretch"/>
+							</Grid>
+						</Border>
+
+						<!-- Right Card: Preview -->
+						<Border Grid.Column="1"
+								BorderBrush="#C8C8C8"
+								BorderThickness="1"
+								CornerRadius="2"
+								Padding="8">
+							<Grid RowDefinitions="Auto,*,Auto" RowSpacing="8">
+								<TextBlock Text="Transaction Preview" FontWeight="SemiBold"/>
+
+								<!-- Preview Grid -->
+								<DataGrid Grid.Row="1"
+										  AutoGenerateColumns="False"
+										  IsReadOnly="True"
+										  ItemsSource="{Binding SelectedLocations}">
+									<DataGrid.Columns>
+										<DataGridTextColumn Header="Part" Binding="{Binding .}"/>
+										<DataGridTextColumn Header="Operation" Binding="{Binding .}"/>
+										<DataGridTextColumn Header="Location" Binding="{Binding .}"/>
+										<DataGridTextColumn Header="Quantity" Binding="{Binding .}"/>
+									</DataGrid.Columns>
+								</DataGrid>
+
+								<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
+									<Button Content="Save All" Width="120" Command="{Binding AddToMultipleLocationsCommand}"/>
+									<Button Content="Reset" Width="120" Command="{Binding ResetMultipleLocationsCommand}"/>
+									<Button Content="Back to Normal" Width="140" Command="{Binding BackToNormalCommand}"/>
+								</StackPanel>
+							</Grid>
+						</Border>
+					</Grid>
+				</TabItem>
+
+				<!-- Import tab removed -->
+			</TabControl>
+		</Border>
+	</Grid>
+</UserControl>

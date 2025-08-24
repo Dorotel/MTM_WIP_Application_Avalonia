@@ -1,0 +1,282 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
+             mc:Ignorable="d"
+             d:DesignWidth="1200"
+             d:DesignHeight="800"
+             x:Class="MTM_WIP_Application_Avalonia.Views.AdvancedRemoveView"
+             x:CompileBindings="True"
+             x:DataType="vm:AdvancedRemoveViewModel">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="8">
+		<!-- Title -->
+		<TextBlock Grid.Row="0"
+			   Text="Advanced Inventory Removal"
+			   FontSize="14"
+			   FontWeight="SemiBold"
+			   Margin="4,0,0,8"/>
+
+		<!-- Main Panel -->
+		<Border Grid.Row="1"
+				BorderBrush="#C8C8C8"
+				BorderThickness="1"
+				CornerRadius="2"
+				Padding="8">
+			<Grid ColumnSpacing="8">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="{Binding FilterPanelWidth, FallbackValue=300}"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				
+				<!-- Left Panel: Search Criteria (Collapsible) -->
+				<Border Grid.Column="0"
+						BorderBrush="#C8C8C8"
+						BorderThickness="1"
+						CornerRadius="2"
+						Background="White"
+						VerticalAlignment="Stretch"
+						HorizontalAlignment="Stretch">
+					<Grid ColumnDefinitions="Auto,*">
+						<!-- Left Vertical Header Bar -->
+						<Border Grid.Column="0"
+								BorderBrush="#C8C8C8"
+								BorderThickness="0,0,1,0"
+								Background="#F8F8F8"
+								Width="28"
+								VerticalAlignment="Stretch">
+							<Grid RowDefinitions="*,Auto">
+								<!-- Vertical Title Text -->
+								<Viewbox Grid.Row="0"
+										 VerticalAlignment="Center"
+										 HorizontalAlignment="Center"
+										 Width="18"
+										 Height="80"
+										 IsVisible="{Binding IsFilterPanelExpanded, FallbackValue=True}">
+									<TextBlock Text="Filters"
+											   FontSize="12"
+											   FontWeight="SemiBold"
+											   Foreground="#6a0dad">
+										<TextBlock.RenderTransform>
+											<RotateTransform Angle="-90"/>
+										</TextBlock.RenderTransform>
+									</TextBlock>
+								</Viewbox>
+								
+								<!-- Toggle Button at Bottom -->
+								<Button Grid.Row="1"
+										Content="{Binding CollapseButtonText, FallbackValue='?'}"
+										Command="{Binding ToggleFilterPanelCommand}"
+										Width="20"
+										Height="20"
+										FontSize="12"
+										FontWeight="Bold"
+										Background="Transparent"
+										BorderThickness="0"
+										HorizontalContentAlignment="Center"
+										VerticalContentAlignment="Center"
+										Margin="4,4,4,8"/>
+							</Grid>
+						</Border>
+
+						<!-- Filter Content (Collapsible) -->
+						<Border Grid.Column="1"
+								IsVisible="{Binding IsFilterPanelExpanded, FallbackValue=True}"
+								Padding="8,6"
+								VerticalAlignment="Stretch"
+								HorizontalAlignment="Stretch">
+							<ScrollViewer VerticalScrollBarVisibility="Auto" 
+										  HorizontalScrollBarVisibility="Disabled"
+										  Padding="0,0,4,0">
+								<StackPanel Spacing="8">
+									
+									<!-- Part ID -->
+									<StackPanel>
+										<TextBlock Text="Part ID:" FontSize="10" FontWeight="Medium" Margin="0,0,0,2"/>
+										<AutoCompleteBox ItemsSource="{Binding PartIDOptions}"
+														 Text="{Binding FilterPartIDText, Mode=TwoWay}"
+														 HorizontalAlignment="Stretch"
+														 FontSize="10"
+														 MinHeight="22"
+														 MaxWidth="220"/>
+									</StackPanel>
+
+									<!-- Location -->
+									<StackPanel>
+										<TextBlock Text="Location:" FontSize="10" FontWeight="Medium" Margin="0,0,0,2"/>
+										<AutoCompleteBox ItemsSource="{Binding LocationOptions}"
+														 Text="{Binding FilterLocationText, Mode=TwoWay}"
+														 HorizontalAlignment="Stretch"
+														 FontSize="10"
+														 MinHeight="22"
+														 MaxWidth="220"/>
+									</StackPanel>
+
+									<!-- Operation -->
+									<StackPanel>
+										<TextBlock Text="Op:" FontSize="10" FontWeight="Medium" Margin="0,0,0,2"/>
+										<AutoCompleteBox ItemsSource="{Binding OperationOptions}"
+														 Text="{Binding FilterOperation, Mode=TwoWay}"
+														 HorizontalAlignment="Stretch"
+														 FontSize="10"
+														 MinHeight="22"
+														 MaxWidth="220"/>
+									</StackPanel>
+
+									<!-- User -->
+									<StackPanel>
+										<TextBlock Text="User:" FontSize="10" FontWeight="Medium" Margin="0,0,0,2"/>
+										<AutoCompleteBox ItemsSource="{Binding UserOptions}"
+														 Text="{Binding FilterUserText, Mode=TwoWay}"
+														 Watermark="Enter User"
+														 HorizontalAlignment="Stretch"
+														 FontSize="10"
+														 MinHeight="22"
+														 MaxWidth="220"/>
+									</StackPanel>
+
+									<!-- Notes -->
+									<StackPanel>
+										<TextBlock Text="Notes:" FontSize="10" FontWeight="Medium" Margin="0,0,0,2"/>
+										<TextBox Text="{Binding FilterNotes, Mode=TwoWay}"
+												 HorizontalAlignment="Stretch"
+												 FontSize="10"
+												 MinHeight="22"
+												 MaxWidth="220"/>
+									</StackPanel>
+
+									<!-- Quantity Range -->
+									<StackPanel>
+										<TextBlock Text="Quantity:" FontSize="10" FontWeight="Medium" Margin="0,0,0,2"/>
+										<Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="4" MaxWidth="220">
+											<TextBox Grid.Column="0" 
+													 Watermark="Min"
+													 Text="{Binding QuantityMin, Mode=TwoWay}"
+													 HorizontalAlignment="Stretch"
+													 FontSize="10"
+													 MinHeight="22"/>
+											<TextBlock Grid.Column="1" Text="-" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10"/>
+											<TextBox Grid.Column="2" 
+													 Watermark="Max"
+													 Text="{Binding QuantityMax, Mode=TwoWay}"
+													 HorizontalAlignment="Stretch"
+													 FontSize="10"
+													 MinHeight="22"/>
+										</Grid>
+									</StackPanel>
+
+									<!-- Date Range -->
+									<StackPanel>
+										<CheckBox Content="Date Range:"
+												  IsChecked="{Binding UseDateRange, Mode=TwoWay}"
+												  FontSize="10"
+												  FontWeight="Medium"
+												  Margin="0,0,0,4"/>
+										<Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="4" 
+											  IsEnabled="{Binding UseDateRange}"
+											  MaxWidth="220">
+											<DatePicker Grid.Column="0" 
+														SelectedDate="{Binding RemovalDateRangeStart, Mode=TwoWay}"
+														HorizontalAlignment="Stretch"
+														FontSize="9"
+														MinHeight="22"/>
+											<TextBlock Grid.Column="1" Text="-" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10"/>
+											<DatePicker Grid.Column="2" 
+														SelectedDate="{Binding RemovalDateRangeEnd, Mode=TwoWay}"
+														HorizontalAlignment="Stretch"
+														FontSize="9"
+														MinHeight="22"/>
+										</Grid>
+									</StackPanel>
+
+								</StackPanel>
+							</ScrollViewer>
+						</Border>
+					</Grid>
+				</Border>
+
+				<!-- Right Panel: Removal History Grid -->
+				<Border Grid.Column="1"
+						BorderBrush="#C8C8C8"
+						BorderThickness="1"
+						CornerRadius="2"
+						Padding="4"
+						Background="White"
+						VerticalAlignment="Stretch"
+						HorizontalAlignment="Stretch">
+					<DataGrid ItemsSource="{Binding RemovalHistoryGrid}"
+							  SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}"
+							  AutoGenerateColumns="False"
+							  IsReadOnly="True"
+							  GridLinesVisibility="All"
+							  HeadersVisibility="Column"
+							  CanUserResizeColumns="True"
+							  CanUserSortColumns="True"
+							  VerticalAlignment="Stretch"
+							  HorizontalAlignment="Stretch">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="60"/>
+							<DataGridTextColumn Header="Part" Binding="{Binding PartID}" Width="120"/>
+							<DataGridTextColumn Header="Operation" Binding="{Binding Operation}" Width="80"/>
+							<DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="80"/>
+							<DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="80"/>
+							<DataGridTextColumn Header="User" Binding="{Binding User}" Width="80"/>
+							<DataGridTextColumn Header="Date" Binding="{Binding DateRemoved, StringFormat='{}{0:MM/dd/yyyy}'}" Width="100"/>
+						</DataGrid.Columns>
+					</DataGrid>
+				</Border>
+
+			</Grid>
+		</Border>
+
+		<!-- Bottom Buttons Panel -->
+		<Border Grid.Row="2"
+				BorderBrush="#C8C8C8"
+				BorderThickness="1"
+				CornerRadius="2"
+				Padding="8"
+				Margin="0,8,0,0"
+				Background="#F5F5F5">
+			<Grid ColumnDefinitions="*,Auto">
+				<!-- Left side buttons -->
+				<StackPanel Grid.Column="0" 
+							Orientation="Horizontal" 
+							HorizontalAlignment="Left" 
+							Spacing="8">
+					<Button Content="Search" 
+							Width="80" 
+							Height="28"
+							Command="{Binding SearchCommand}"/>
+					<Button Content="Undo" 
+							Width="80" 
+							Height="28"
+							Command="{Binding UndoRemovalCommand}"
+							IsEnabled="{Binding CanUndo}"/>
+					<Button Content="Delete" 
+							Width="80" 
+							Height="28"
+							Command="{Binding RemoveSelectedCommand}"/>
+					<Button Content="Reset" 
+							Width="80" 
+							Height="28"
+							Command="{Binding ClearCommand}"/>
+					<Button Content="Print" 
+							Width="80" 
+							Height="28"
+							Command="{Binding PrintRemovalSummaryCommand}"/>
+				</StackPanel>
+
+				<!-- Right side button -->
+				<StackPanel Grid.Column="1" 
+							Orientation="Horizontal" 
+							HorizontalAlignment="Right">
+					<Button Content="Back to Normal" 
+							Width="140" 
+							Height="28"
+							Command="{Binding BackToNormalCommand}"/>
+				</StackPanel>
+			</Grid>
+		</Border>
+	</Grid>
+</UserControl>

@@ -1,0 +1,275 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             xmlns:controls="using:Avalonia.Controls"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Views.RemoveTabView"
+             x:CompileBindings="True"
+             x:DataType="vm:RemoveItemViewModel">
+
+  <UserControl.Styles>
+    <!-- Input field styles -->
+    <Style Selector="ComboBox.input-field">
+      <Setter Property="Margin" Value="4"/>
+      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+    </Style>
+    
+    <!-- Label styles -->
+    <Style Selector="TextBlock.field-label">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="4,0"/>
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
+
+    <!-- Button styles -->
+    <Style Selector="Button.action-button">
+      <Setter Property="Padding" Value="12,6"/>
+      <Setter Property="Margin" Value="4"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="MinWidth" Value="80"/>
+    </Style>
+    
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#4B45ED"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="BorderBrush" Value="#4B45ED"/>
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+      <Setter Property="Background" Value="#BA45ED"/>
+    </Style>
+    <Style Selector="Button.primary:disabled">
+      <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
+      <Setter Property="Foreground" Value="Gray"/>
+    </Style>
+
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+    </Style>
+    <Style Selector="Button.secondary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="#ED45E7"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="BorderBrush" Value="#ED45E7"/>
+    </Style>
+    <Style Selector="Button.danger:pointerover">
+      <Setter Property="Background" Value="#BA45ED"/>
+    </Style>
+
+    <Style Selector="DataGrid">
+      <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+      <Setter Property="HeadersVisibility" Value="Column"/>
+      <Setter Property="CanUserReorderColumns" Value="True"/>
+      <Setter Property="CanUserResizeColumns" Value="True"/>
+      <Setter Property="CanUserSortColumns" Value="True"/>
+      <Setter Property="SelectionMode" Value="Extended"/>
+    </Style>
+
+    <!-- Nothing found image style -->
+    <Style Selector="Image.nothing-found">
+      <Setter Property="Width" Value="120"/>
+      <Setter Property="Height" Value="120"/>
+      <Setter Property="Opacity" Value="0.6"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+  </UserControl.Styles>
+
+  <!-- Responsive layout that stretches to fill available space -->
+  <Grid RowDefinitions="Auto,Auto,*,Auto"
+        HorizontalAlignment="Stretch" 
+        VerticalAlignment="Stretch">
+    
+    <!-- Header -->
+    <TextBlock Grid.Row="0"
+               Text="Inventory Removal"
+               FontSize="14"
+               FontWeight="SemiBold"
+               Margin="8,8,8,4"
+               Foreground="{DynamicResource ForegroundBrush}"/>
+    
+    <!-- Search Controls Row -->
+    <Grid Grid.Row="1" 
+          ColumnDefinitions="Auto,*,Auto,*,Auto,Auto"
+          Margin="8,4">
+      
+      <!-- Part ID ComboBox -->
+      <TextBlock Grid.Column="0"
+                 Classes="field-label"
+                 Text="Part ID:"/>
+      <ComboBox Grid.Column="1"
+                x:Name="Control_RemoveTab_ComboBox_Part"
+                Classes="input-field"
+                PlaceholderText="Select Part ID"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding PartOptions}"
+                SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
+                IsTextSearchEnabled="True"
+                ToolTip.Tip="Select or search for a part number"/>
+
+      <!-- Operation ComboBox -->
+      <TextBlock Grid.Column="2"
+                 Classes="field-label"
+                 Text="Operation:"
+                 Margin="16,0,4,0"/>
+      <ComboBox Grid.Column="3"
+                x:Name="Control_RemoveTab_ComboBox_Operation"
+                Classes="input-field"
+                PlaceholderText="Select Operation"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding OperationOptions}"
+                SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
+                ToolTip.Tip="Select an operation number (optional)"/>
+
+      <!-- Search Button -->
+      <Button Grid.Column="4"
+              x:Name="Control_RemoveTab_Button_Search"
+              Classes="action-button primary"
+              Content="Search"
+              Command="{Binding SearchCommand}"
+              ToolTip.Tip="Search inventory (F5)"
+              Margin="8,4,4,4"/>
+
+      <!-- Reset Button -->
+      <Button Grid.Column="5"
+              x:Name="Control_RemoveTab_Button_Reset"
+              Classes="action-button secondary"
+              Content="Reset"
+              Command="{Binding ResetCommand}"
+              ToolTip.Tip="Reset search criteria and refresh all data"/>
+    </Grid>
+
+    <!-- Data Display Area - stretches to fill remaining space -->
+    <Grid Grid.Row="2" 
+          Margin="8"
+          VerticalAlignment="Stretch"
+          HorizontalAlignment="Stretch">
+      <!-- DataGridView Panel -->
+      <Panel x:Name="Control_RemoveTab_Panel_DataGridView">
+        <!-- Main DataGrid - stretches to fill all available space -->
+        <DataGrid x:Name="Control_RemoveTab_DataGridView_Main"
+                  ItemsSource="{Binding InventoryItems}"
+                  SelectedItem="{Binding SelectedItem}"
+                  IsVisible="{Binding HasInventoryItems}"
+                  AutoGenerateColumns="False"
+                  SelectionMode="Extended"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Location" 
+                                Binding="{Binding Location}" 
+                                Width="*"/>
+            <DataGridTextColumn Header="Part ID" 
+                                Binding="{Binding PartId}" 
+                                Width="*"/>
+            <DataGridTextColumn Header="Operation" 
+                                Binding="{Binding Operation}" 
+                                Width="Auto"/>
+            <DataGridTextColumn Header="Quantity" 
+                                Binding="{Binding Quantity}" 
+                                Width="Auto"/>
+            <DataGridTextColumn Header="Notes" 
+                                Binding="{Binding Notes}" 
+                                Width="2*"/>
+          </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Nothing Found Image -->
+        <StackPanel x:Name="Control_RemoveTab_Image_NothingFound"
+                   Classes="nothing-found"
+                   IsVisible="{Binding !HasInventoryItems}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Orientation="Vertical"
+                   Spacing="8">
+          <Border Background="{DynamicResource BorderBrush}"
+                  CornerRadius="4"
+                  Width="120" Height="120"
+                  HorizontalAlignment="Center">
+            <TextBlock Text="??"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="48"
+                       Opacity="0.6"/>
+          </Border>
+          <TextBlock Text="No inventory items found"
+                     HorizontalAlignment="Center"
+                     FontSize="12"
+                     Opacity="0.6"/>
+        </StackPanel>
+      </Panel>
+    </Grid>
+
+    <!-- Action Controls Row -->
+    <Grid Grid.Row="3" 
+          ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto"
+          Margin="8,4">
+      
+      <!-- Delete Button -->
+      <Button Grid.Column="0"
+              x:Name="Control_RemoveTab_Button_Delete"
+              Classes="action-button danger"
+              Content="Delete"
+              Command="{Binding DeleteCommand}"
+              IsEnabled="{Binding CanDelete}"
+              ToolTip.Tip="Remove selected items (Delete key)"/>
+
+      <!-- Undo Button -->
+      <Button Grid.Column="1"
+              x:Name="Control_RemoveTab_Button_Undo"
+              Classes="action-button secondary"
+              Content="Undo"
+              Command="{Binding UndoCommand}"
+              IsEnabled="{Binding CanUndo}"
+              ToolTip.Tip="Restore last removed items (Ctrl+Z)"/>
+
+      <!-- Advanced Item Removal Button -->
+      <Button Grid.Column="2"
+              x:Name="Control_RemoveTab_Button_AdvancedItemRemoval"
+              Classes="action-button secondary"
+              Content="Advanced"
+              Command="{Binding AdvancedRemovalCommand}"
+              ToolTip.Tip="Open advanced removal features"/>
+
+      <!-- Print Button -->
+      <Button Grid.Column="3"
+              x:Name="Control_RemoveTab_Button_Print"
+              Classes="action-button secondary"
+              Content="Print"
+              Command="{Binding PrintCommand}"
+              IsEnabled="{Binding HasInventoryItems}"
+              ToolTip.Tip="Print current inventory view (Ctrl+P)"/>
+
+      <!-- Toggle Right Panel Button -->
+      <Button Grid.Column="5"
+              x:Name="Control_RemoveTab_Button_Toggle_RightPanel"
+              Classes="action-button secondary"
+              Content="?"
+              Command="{Binding TogglePanelCommand}"
+              ToolTip.Tip="Toggle quick actions panel"
+              FontSize="14"
+              MinWidth="36"/>
+    </Grid>
+  </Grid>
+</UserControl>

@@ -1,77 +1,59 @@
-# Custom Prompt: Create UI Element from Markdown Instructions
+# Create UI Element from Markdown Instructions - Custom Prompt
 
-## ?? **Instructions**
-Use this prompt when you need to generate Avalonia AXAML and ReactiveUI ViewModels from markdown instruction files that describe UI component hierarchies. This prompt parses markdown structure and converts it to proper Avalonia UI components with MTM design patterns.
+## Instructions
+Use this prompt when you need to generate Avalonia AXAML and ReactiveUI ViewModels from parsed markdown instruction files with component hierarchies.
 
-## ?? **Persona**
-**Markdown UI Parser Copilot** - Specializes in parsing markdown component specifications and generating corresponding Avalonia AXAML views and ReactiveUI ViewModels with proper data binding and MTM patterns.
+## Persona
+**UI Architect Copilot + ReactiveUI Specialist**  
+*(See [personas-instruction.md](../../.github/personas.instruction.md) for role details)*
 
-## ?? **Prompt Template**
+## Prompt Template
 
 ```
-Act as Markdown UI Parser Copilot. Create Avalonia UI components from the markdown instruction file [FILENAME].md with the following requirements:
-
-**Source File:** [Path to markdown file with component specification]
-**Component Type:** [Extract from markdown - UserControl/Window/Custom Control]
-**Target Files:** 
-- Views/[NAME]View.axaml
-- ViewModels/[NAME]ViewModel.cs
-
-**Parse Requirements:**
-- Extract component hierarchy from markdown tree structure
-- Convert component descriptions to appropriate Avalonia controls
-- Map data properties to observable ViewModel properties
-- Generate commands for all user interactions mentioned
-- Apply MTM design patterns and styling
-
-**Component Structure Parsing:**
-- Parse tree structure (??? ???) to determine control hierarchy
-- Map control types (Button, TextBox, DataGrid, etc.) to Avalonia equivalents
-- Extract data binding requirements from property descriptions
-- Identify event handlers and convert to ReactiveUI commands
-- Determine layout patterns from structural relationships
-
-**MTM Design Integration:**
-- Apply purple brand colors (#4B45ED primary, #BA45ED accents)
-- Use card-based layouts with proper spacing (24px padding)
-- Implement context menus for management features
-- Follow space optimization patterns (UniformGrid, proper alignment)
-- Apply responsive design principles
-
-**Code Generation:**
-- Create AXAML with compiled bindings (x:CompileBindings="True")
-- Generate ReactiveUI ViewModel with proper observable patterns
-- Leave business logic as TODO comments with stored procedure patterns
-- Include event-driven communication for parent-child relationships
-- Apply MTM data patterns (Part ID strings, Operation numbers, etc.)
-
-**Additional Context:** [Any specific parsing requirements or modifications needed]
+Create UI Element from [filename].md following MTM-specific UI generation guidelines.  
+Parse the markdown component structure and generate both AXAML view and ReactiveUI ViewModel.  
+Include MTM data patterns (Part ID, Operation numbers), context menu integration, and space optimization.  
+Follow the MTM purple color scheme and modern layout patterns. Leave business logic as TODO comments.
 ```
 
-## ?? **Purpose**
-This prompt generates complete Avalonia UI components (View + ViewModel) from markdown specifications, ensuring proper component hierarchy mapping, MTM design consistency, and ReactiveUI patterns while maintaining the intent described in the markdown documentation.
+## Purpose
+For generating Avalonia AXAML and ReactiveUI ViewModels from parsed markdown files with component hierarchies.
 
-## ?? **Usage Examples**
+## Usage Examples
 
-### **Example 1: Parsing a Quick Button Component**
+### Example 1: Quick Buttons Component
 ```
-Act as Markdown UI Parser Copilot. Create Avalonia UI components from the markdown instruction file Control_QuickButtons.md with the following requirements:
+Create UI Element from Control_QuickButtons.instructions.md following MTM-specific UI generation guidelines.  
+Parse the markdown component structure and generate both AXAML view and ReactiveUI ViewModel.  
+Include MTM data patterns (Part ID, Operation numbers), context menu integration, and space optimization.  
+Follow the MTM purple color scheme and modern layout patterns. Leave business logic as TODO comments.
+```
 
-**Source File:** Development/UI_Documentation/Control_QuickButtons.md
-**Component Type:** UserControl
-**Target Files:** 
-- Views/QuickButtonsView.axaml
-- ViewModels/QuickButtonsViewModel.cs
+### Example 2: Inventory Tab Component
+```
+Create UI Element from Control_InventoryTab.instructions.md following MTM-specific UI generation guidelines.  
+Parse the markdown component structure and generate both AXAML view and ReactiveUI ViewModel.  
+Include MTM data patterns (Part ID, Operation numbers), context menu integration, and space optimization.  
+Follow the MTM purple color scheme and modern layout patterns. Leave business logic as TODO comments.
+```
 
-**Parse Requirements:**
-- Extract component hierarchy from markdown tree structure
-- Convert component descriptions to appropriate Avalonia controls
-- Map data properties to observable ViewModel properties
-- Generate commands for all user interactions mentioned
-- Apply MTM design patterns and styling
+## Guidelines
 
-**Component Structure Parsing:**
-The markdown shows:
+### Markdown Parsing Requirements
+1. **Extract UI Element Name**: Use as base for file naming
+2. **Parse Component Structure**: Convert hierarchy to Avalonia AXAML
+3. **Identify Props/Inputs**: Create ViewModel properties
+4. **Map Visual Representation**: Apply layout and styling
+5. **Extract Related Controls**: Create integration points
+
+### Generated File Structure
+```
+Views/{Name}View.axaml - Avalonia UI markup
+ViewModels/{Name}ViewModel.cs - ReactiveUI ViewModel
+```
+
+### Component Hierarchy Mapping Example
+**Markdown Structure:**
 ```
 Control_QuickButtons
 ??? quickButtons List<Button> (10 buttons maximum)
@@ -82,145 +64,162 @@ Control_QuickButtons
     ??? Remove Button
 ```
 
-**MTM Design Integration:**
-- Apply purple brand colors (#4B45ED primary, #BA45ED accents)
-- Use card-based layouts with proper spacing (24px padding)
-- Implement context menus for management features
-- Follow space optimization patterns (UniformGrid, proper alignment)
-- Apply responsive design principles
-
-**Code Generation:**
-- Create AXAML with compiled bindings (x:CompileBindings="True")
-- Generate ReactiveUI ViewModel with proper observable patterns
-- Leave business logic as TODO comments with stored procedure patterns
-- Include event-driven communication for parent-child relationships
-- Apply MTM data patterns (Part ID strings, Operation numbers, etc.)
-
-**Additional Context:** Quick buttons should populate other controls when clicked, not switch tabs. Use UniformGrid for equal distribution.
+**Generated Avalonia Structure:**
+```xml
+<ItemsControl ItemsSource="{Binding QuickButtons}">
+    <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+            <UniformGrid Rows="10" Columns="1"/>
+        </ItemsPanelTemplate>
+    </ItemsControl.ItemsPanel>
+    <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="vm:QuickButtonItemViewModel">
+            <Button Classes="quick-button">
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Edit Button"/>
+                        <MenuItem Header="Remove Button"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+</ItemsControl>
 ```
 
-### **Example 2: Parsing a Data Grid Component**
-```
-Act as Markdown UI Parser Copilot. Create Avalonia UI components from the markdown instruction file Control_TransactionHistory.md with the following requirements:
-
-**Source File:** Development/UI_Documentation/Control_TransactionHistory.md
-**Component Type:** UserControl
-**Target Files:** 
-- Views/TransactionHistoryView.axaml
-- ViewModels/TransactionHistoryViewModel.cs
-
-**Parse Requirements:**
-- Extract component hierarchy from markdown tree structure
-- Convert component descriptions to appropriate Avalonia controls
-- Map data properties to observable ViewModel properties
-- Generate commands for all user interactions mentioned
-- Apply MTM design patterns and styling
-
-**Component Structure Parsing:**
-- Parse tree structure (??? ???) to determine control hierarchy
-- Map control types (Button, TextBox, DataGrid, etc.) to Avalonia equivalents
-- Extract data binding requirements from property descriptions
-- Identify event handlers and convert to ReactiveUI commands
-- Determine layout patterns from structural relationships
-
-**MTM Design Integration:**
-- Apply purple brand colors (#4B45ED primary, #BA45ED accents)
-- Use card-based layouts with proper spacing (24px padding)
-- Implement context menus for management features
-- Follow space optimization patterns (UniformGrid, proper alignment)
-- Apply responsive design principles
-
-**Code Generation:**
-- Create AXAML with compiled bindings (x:CompileBindings="True")
-- Generate ReactiveUI ViewModel with proper observable patterns
-- Leave business logic as TODO comments with stored procedure patterns
-- Include event-driven communication for parent-child relationships
-- Apply MTM data patterns (Part ID strings, Operation numbers, etc.)
-
-**Additional Context:** Transaction history should support filtering, sorting, and export functionality with progress tracking integration.
-```
-
-## ?? **Guidelines**
-
-### **Markdown Parsing Patterns**
-- **Tree Structure**: Parse `???` and `???` symbols to determine component hierarchy
-- **Control Types**: Map control names (Button, TextBox, DataGrid) to Avalonia equivalents
-- **Data Properties**: Extract property descriptions and convert to observable properties
-- **Events**: Convert event descriptions to ReactiveUI commands
-- **Layout Hints**: Use structural relationships to determine Grid/StackPanel/DockPanel usage
-
-### **Component Hierarchy Mapping**
-```
-Markdown Tree ? Avalonia Structure
-
-Control_Name                    ? UserControl
-??? container List<Type>        ? ItemsControl with ItemsPanel
-?   ??? Item[0] - properties   ? DataTemplate with bindings
-?   ??? Item[n] - properties   ? DataTemplate continuation
-??? Context Menu               ? ContextMenu with MenuItems
-    ??? Menu Item 1           ? MenuItem with Command binding
-    ??? Menu Item 2           ? MenuItem with Command binding
-```
-
-### **MTM Data Pattern Integration**
-- **Part ID**: String properties (e.g., "PART001")
-- **Operation**: String number properties (e.g., "90", "100", "110")
-- **Quantity**: Integer properties with validation
+### MTM Data Pattern Integration
+- **Part ID**: String (e.g., "PART001")
+- **Operation**: String numbers (e.g., "90", "100", "110") - workflow step identifiers
+- **Quantity**: Integer
 - **Position**: 1-based indexing for UI display
-- **TransactionType**: Determined by user intent, not operation numbers
+- **TransactionType**: Determined by user intent, NOT operation number
 
-### **Event-Driven Communication**
+### Business Logic Integration Points
 ```csharp
-// Parent-child communication pattern
+// Leave as TODO comments with stored procedure pattern
+// TODO: Implement database loading via stored procedure
+// var dataResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+//     Model_AppVariables.ConnectionString,
+//     "sys_last_10_transactions_Get_ByUser",
+//     new Dictionary<string, object> { ["User"] = currentUser }
+// );
+```
+
+### Event-Driven Communication
+```csharp
+// Events for parent-child communication
 public event EventHandler<QuickActionExecutedEventArgs>? QuickActionExecuted;
 
 // Fire events instead of direct method calls
 QuickActionExecuted?.Invoke(this, new QuickActionExecutedEventArgs
 {
     PartId = button.PartId,
-    Operation = button.Operation,
+    Operation = button.Operation, // Just a workflow step number
     Quantity = button.Quantity
 });
 ```
 
-### **Space Optimization Patterns**
-- Use `UniformGrid` for equal distribution when components are removed
+### Context Menu Integration
+```xml
+<Button.ContextMenu>
+    <ContextMenu>
+        <MenuItem Header="Edit Button" Command="{Binding EditCommand}"/>
+        <MenuItem Header="Remove Button" Command="{Binding RemoveCommand}"/>
+        <Separator/>
+        <MenuItem Header="Clear All" Command="{Binding ClearAllCommand}"/>
+        <MenuItem Header="Refresh" Command="{Binding RefreshCommand}"/>
+    </ContextMenu>
+</Button.ContextMenu>
+```
+
+### Space Optimization Patterns
+- Use `UniformGrid` for equal distribution
 - Implement `VerticalAlignment="Stretch"` for full height usage
 - Remove `ScrollViewer` when all items fit in available space
 - Increase font sizes and padding when more space is available
 
-## ?? **Related Files**
-- [../UI-Instructions/ui-generation.instruction.md](../UI-Instructions/ui-generation.instruction.md) - Complete UI generation guidelines
-- [../Development-Instructions/templates-documentation.instruction.md](../Development-Instructions/templates-documentation.instruction.md) - Markdown parsing and documentation standards
-- [../Core-Instructions/naming.conventions.instruction.md](../Core-Instructions/naming.conventions.instruction.md) - Naming standards for generated components
-- [../Automation-Instructions/personas.instruction.md](../Automation-Instructions/personas.instruction.md) - Markdown UI Parser Copilot persona details
+### Progress Integration
+```csharp
+// TODO: Inject services
+// private readonly IProgressService _progressService;
 
-## ? **Quality Checklist**
+// Commands with progress support
+LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    // TODO: Show progress during operation
+    await LoadLast10TransactionsAsync();
+});
+```
 
-### **Markdown Parsing Accuracy**
-- [ ] Component hierarchy correctly extracted from tree structure
-- [ ] All control types properly mapped to Avalonia equivalents
-- [ ] Data properties converted to observable ViewModel properties
-- [ ] Events converted to ReactiveUI commands
-- [ ] Layout structure reflects markdown organization
+## Technical Requirements
 
-### **Avalonia Implementation**
-- [ ] AXAML uses compiled bindings with x:DataType specification
-- [ ] Proper xmlns declarations and control hierarchy
-- [ ] MTM design patterns applied (cards, spacing, colors)
-- [ ] Context menus implemented where specified
-- [ ] Responsive design principles followed
+### AXAML View Template
+```xml
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:YourApp.ViewModels"
+             x:Class="YourApp.Views.{Name}View"
+             x:DataType="vm:{Name}ViewModel"
+             x:CompileBindings="True">
+    <!-- UI Elements here -->
+</UserControl>
+```
 
-### **ReactiveUI ViewModel**
-- [ ] Inherits from ReactiveObject
-- [ ] Observable properties use RaiseAndSetIfChanged
-- [ ] Commands are ReactiveCommand instances
-- [ ] Event communication implemented for parent-child relationships
+### ViewModel Template
+```csharp
+using System;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using ReactiveUI;
+
+namespace YourApp.ViewModels;
+
+public class {Name}ViewModel : ReactiveObject
+{
+    // Observable properties with RaiseAndSetIfChanged
+    private string _title = string.Empty;
+    public string Title
+    {
+        get => _title;
+        set => this.RaiseAndSetIfChanged(ref _title, value);
+    }
+
+    // Commands with error handling
+    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
+    
+    public {Name}ViewModel()
+    {
+        LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            // TODO: Implement via stored procedure
+            await Task.CompletedTask;
+        });
+
+        // Centralized error handling
+        LoadDataCommand.ThrownExceptions
+            .Subscribe(ex =>
+            {
+                // TODO: Log and present user-friendly error
+            });
+    }
+}
+```
+
+## Related Files
+- `Documentation/Development/UI_Documentation/Controls/` - Component instruction files
+- `.github/ui-generation.instruction.md` - UI generation guidelines
+- `.github/copilot-instructions.md` - MTM business logic rules
+- `.github/naming.conventions.instruction.md` - Naming standards
+
+## Quality Checklist
+- [ ] Markdown structure parsed correctly
+- [ ] Component hierarchy mapped to Avalonia
+- [ ] MTM data patterns implemented
+- [ ] Context menus added where appropriate
+- [ ] Space optimization applied
+- [ ] MTM color scheme used
 - [ ] Business logic left as TODO comments
-
-### **MTM Compliance**
-- [ ] Part IDs treated as strings
-- [ ] Operations treated as string numbers (workflow steps)
-- [ ] Purple brand colors applied consistently
-- [ ] Space optimization patterns implemented
-- [ ] 1-based indexing used for UI positions
+- [ ] ReactiveUI patterns implemented
+- [ ] Compiled bindings enabled
+- [ ] Event-driven communication patterns included

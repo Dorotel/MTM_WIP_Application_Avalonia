@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM.Extensions;
 
 namespace MTM_WIP_Application_Avalonia;

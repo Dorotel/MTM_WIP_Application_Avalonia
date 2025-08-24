@@ -1,196 +1,289 @@
-# Custom Prompt: Verify Code Compliance
+# Verify Code Compliance - Custom Prompt
 
-## ?? **Instructions**
-Use this prompt when you need to conduct comprehensive quality assurance reviews of code files against MTM instruction guidelines. This prompt performs systematic compliance checking and generates structured reports with specific violation details and fix recommendations.
+## Instructions
+Use this prompt when you need to conduct comprehensive quality assurance reviews of code against all MTM instruction guidelines and generate detailed compliance reports.
 
-## ?? **Persona**
-**Quality Assurance Copilot** - Specializes in conducting thorough code compliance reviews against MTM instruction guidelines, identifying violations, and providing specific remediation guidance.
+## Persona
+**Quality Assurance Auditor Copilot**  
+*(See [personas-instruction.md](../../.github/personas.instruction.md) for role details)*
 
-## ?? **Prompt Template**
+## Prompt Template
 
 ```
-Act as Quality Assurance Copilot. Conduct comprehensive code compliance verification for [FILE_PATH] against MTM instruction guidelines with the following requirements:
-
-**Target File:** [Specific file path to review]
-**Review Scope:** [All guidelines | Specific category - UI/Database/Naming/etc.]
-**Priority Focus:** [High priority violations | All violations | Specific pattern compliance]
-
-**Compliance Review Areas:**
-1. **Naming Conventions** - Check against naming.conventions.instruction.md
-2. **Coding Standards** - Verify codingconventions.instruction.md compliance
-3. **UI Patterns** - Review ui-generation.instruction.md requirements
-4. **Database Patterns** - Validate database-patterns.instruction.md compliance
-5. **MTM Business Rules** - Verify MTM-specific patterns and requirements
-6. **Architecture Compliance** - Check MVVM, ReactiveUI, and dependency injection patterns
-
-**Analysis Requirements:**
-- Identify specific line numbers and code sections with violations
-- Classify violations by priority (Critical/High/Medium/Low)
-- Provide specific fix recommendations with code examples
-- Reference relevant instruction file sections
-- Generate summary compliance score and status
-- Document missing systems or components
-- Track compliance trends if reviewing multiple times
-
-**Output Format:**
-- Structured violation report with priority classification
-- Specific fix recommendations for each violation
-- Code examples showing compliant alternatives
-- References to relevant instruction guidelines
-- Overall compliance assessment and next steps
-
-**Additional Context:** [Any specific compliance concerns or focus areas]
+Review [filename] for compliance with all MTM WIP Application instruction guidelines. Generate a detailed report in needsrepair.instruction.md identifying any violations of naming conventions, UI generation standards, ReactiveUI patterns, MTM data patterns, color scheme requirements, architecture guidelines, error handling standards, and layout/design principles. Include specific code examples of violations and required fixes with priority levels.
 ```
 
-## ?? **Purpose**
-This prompt generates comprehensive compliance reports that identify specific violations against MTM instruction guidelines, provide actionable fix recommendations, and maintain quality standards across the codebase.
+## Purpose
+For conducting comprehensive quality assurance reviews of code against all MTM instruction guidelines and generating detailed compliance reports.
 
-## ?? **Usage Examples**
+## Usage Examples
 
-### **Example 1: Full Compliance Review**
+### Example 1: Single File Review
 ```
-Act as Quality Assurance Copilot. Conduct comprehensive code compliance verification for ViewModels/InventoryViewModel.cs against MTM instruction guidelines with the following requirements:
-
-**Target File:** ViewModels/InventoryViewModel.cs
-**Review Scope:** All guidelines
-**Priority Focus:** All violations
-
-**Compliance Review Areas:**
-1. **Naming Conventions** - Check against naming.conventions.instruction.md
-2. **Coding Standards** - Verify codingconventions.instruction.md compliance
-3. **UI Patterns** - Review ui-generation.instruction.md requirements
-4. **Database Patterns** - Validate database-patterns.instruction.md compliance
-5. **MTM Business Rules** - Verify MTM-specific patterns and requirements
-6. **Architecture Compliance** - Check MVVM, ReactiveUI, and dependency injection patterns
-
-**Analysis Requirements:**
-- Identify specific line numbers and code sections with violations
-- Classify violations by priority (Critical/High/Medium/Low)
-- Provide specific fix recommendations with code examples
-- Reference relevant instruction file sections
-- Generate summary compliance score and status
-- Document missing systems or components
-- Track compliance trends if reviewing multiple times
-
-**Output Format:**
-- Structured violation report with priority classification
-- Specific fix recommendations for each violation
-- Code examples showing compliant alternatives
-- References to relevant instruction guidelines
-- Overall compliance assessment and next steps
-
-**Additional Context:** This ViewModel handles inventory operations and should follow all MTM business rules for TransactionType determination and operation handling.
+Review ViewModels/InventoryViewModel.cs for compliance with all MTM WIP Application instruction guidelines. Generate a detailed report in needsrepair.instruction.md identifying violations and required fixes.
 ```
 
-### **Example 2: Database Pattern Focus Review**
+### Example 2: View and ViewModel Pair Review
 ```
-Act as Quality Assurance Copilot. Conduct comprehensive code compliance verification for Services/DatabaseService.cs against MTM instruction guidelines with the following requirements:
-
-**Target File:** Services/DatabaseService.cs
-**Review Scope:** Database patterns and MTM business rules
-**Priority Focus:** High priority violations
-
-**Compliance Review Areas:**
-1. **Naming Conventions** - Check against naming.conventions.instruction.md
-2. **Coding Standards** - Verify codingconventions.instruction.md compliance
-3. **UI Patterns** - Review ui-generation.instruction.md requirements
-4. **Database Patterns** - Validate database-patterns.instruction.md compliance
-5. **MTM Business Rules** - Verify MTM-specific patterns and requirements
-6. **Architecture Compliance** - Check MVVM, ReactiveUI, and dependency injection patterns
-
-**Analysis Requirements:**
-- Identify specific line numbers and code sections with violations
-- Classify violations by priority (Critical/High/Medium/Low)
-- Provide specific fix recommendations with code examples
-- Reference relevant instruction file sections
-- Generate summary compliance score and status
-- Document missing systems or components
-- Track compliance trends if reviewing multiple times
-
-**Output Format:**
-- Structured violation report with priority classification
-- Specific fix recommendations for each violation
-- Code examples showing compliant alternatives
-- References to relevant instruction guidelines
-- Overall compliance assessment and next steps
-
-**Additional Context:** Focus on stored procedure usage, TransactionType logic, and MTM operation number handling. Ensure no direct SQL queries are present.
+Review Views/MainView.axaml and ViewModels/MainViewModel.cs for compliance with all MTM WIP Application instruction guidelines. Generate a detailed report in needsrepair.instruction.md identifying violations and required fixes.
 ```
 
-## ?? **Guidelines**
+### Example 3: Comprehensive Project Audit
+```
+Conduct comprehensive quality audit of [ProjectName] codebase. Review all Views and ViewModels for MTM compliance. Generate prioritized repair list in needsrepair.instruction.md with specific fix recommendations and instruction file references.
+```
 
-### **Compliance Review Process**
-1. **File Analysis** - Read and understand the code structure and purpose
-2. **Guideline Cross-Reference** - Check against all relevant instruction files
-3. **Violation Identification** - Document specific non-compliance issues
-4. **Priority Classification** - Categorize violations by impact and severity
-5. **Fix Recommendations** - Provide specific, actionable remediation steps
-6. **Report Generation** - Create structured output with clear next steps
+## Guidelines
 
-### **Priority Classification System**
-- **Critical**: Breaks compilation, security issues, data corruption risks
-- **High**: Violates core MTM business rules, architecture violations
-- **Medium**: Naming convention violations, code quality issues
-- **Low**: Documentation gaps, minor style inconsistencies
+### Compliance Areas to Review
 
-### **Violation Documentation Format**
+#### 1. Naming Conventions Violations
+**Reference**: `naming-conventions.instruction.md`
+- Incorrect file naming patterns
+- Non-compliant class/method/property names
+- Missing prefix/suffix conventions
+- Case sensitivity violations
+
+#### 2. UI Generation Standards Violations
+**Reference**: `ui-generation.instruction.md`
+- Non-Avalonia control usage
+- Missing ReactiveUI patterns
+- Incorrect AXAML structure
+- Missing compiled bindings
+- Business logic in UI code
+
+#### 3. ReactiveUI Pattern Violations
+**Reference**: `codingconventions.instruction.md`
+- Missing `RaiseAndSetIfChanged` usage
+- Incorrect command implementations
+- Missing error handling patterns
+- Non-reactive property implementations
+
+#### 4. MTM Data Pattern Violations
+**Reference**: `copilot-instructions.md`
+- Incorrect Part ID format (should be string)
+- Wrong Operation format (should be string numbers like "90", "100")
+- Missing MTM-specific data structures
+- Incorrect quantity handling
+
+#### 5. Color Scheme and Theme Violations
+**Reference**: `copilot-instructions.md`
+- Hard-coded colors instead of DynamicResource
+- Non-MTM color palette usage
+- Missing theme resource references
+- Incorrect purple brand color implementation
+
+#### 6. Architecture and Structure Violations
+**Reference**: `codingconventions.instruction.md`
+- Business logic in UI components
+- Missing MVVM separation
+- Incorrect project structure
+- Missing dependency injection preparation
+
+#### 7. Error Handling Violations
+**Reference**: `errorhandler.instruction.md`
+- Missing error handling patterns
+- Non-standardized error logging
+- Missing user-friendly error messages
+- Incorrect exception handling
+
+#### 8. Layout and Design Violations
+**Reference**: `ui-generation.instruction.md`
+- Non-modern layout patterns
+- Missing card-based designs
+- Incorrect spacing and margins
+- Missing sidebar navigation patterns
+
+### Priority Classification
+
+#### **CRITICAL Priority**
+- Security vulnerabilities or data exposure
+- Missing essential files or components
+- Architecture violations preventing functionality
+- Hard-coded values preventing theming
+- **Missing service layer preventing MVVM compliance**
+- **Missing data models causing type safety issues**
+- **Missing DI container preventing service injection**
+
+#### **HIGH Priority**
+- Essential ReactiveUI patterns missing
+- Incorrect MTM data handling
+- Missing error handling integration
+- Non-async patterns for database operations
+- **Missing navigation service causing MVVM violations**
+- **Missing configuration service preventing settings access**
+- **Missing theme resources causing inconsistent styling**
+
+#### **MEDIUM Priority**
+- Naming convention inconsistencies
+- Missing dependency injection preparation
+- Incomplete documentation
+- Minor architecture deviations
+- **Missing validation system**
+- **Missing caching layer affecting performance**
+
+#### **LOW Priority**
+- Code formatting improvements
+- Additional documentation enhancements
+- Performance optimizations
+- Non-critical naming adjustments
+
+### Report Format Template
+
 ```markdown
-## Violation [Priority]: [Brief Description]
-**File:** [Path]
-**Lines:** [Specific line numbers]
-**Issue:** [Detailed description of the violation]
-**Guideline:** [Reference to specific instruction file and section]
-**Fix:** [Specific steps to resolve]
-**Example:**
+# Compliance Report: [FileName]
+
+**Review Date**: [YYYY-MM-DD]  
+**Reviewed By**: Quality Assurance Auditor Copilot  
+**File Path**: [RelativeFilePath]  
+**Instruction Files Referenced**: [List of .instruction.md files]  
+**Compliance Status**: ? **CRITICAL** / ?? **NEEDS REPAIR** / ? **COMPLIANT**
+
+---
+
+## Executive Summary
+[Brief overview of compliance status and major findings]
+
+---
+
+## Issues Found
+
+### 1. **[Issue Category]**: [Specific violation description]
+- **Standard**: [Reference to specific instruction guideline]
+- **Current Code**: [Example of non-compliant code]
+- **Required Fix**: [What needs to be changed]
+- **Priority**: **CRITICAL** / **HIGH** / **MEDIUM** / **LOW**
+- **Instruction Reference**: [Link to relevant instruction file]
+
+### 2. **[Next Issue]**: [Description]
+[Continue format...]
+
+---
+
+## Recommendations
+
+### **Immediate Actions Required**:
+1. [High priority fixes]
+2. [Critical compliance issues]
+
+### **Implementation Priority Order**:
+1. **CRITICAL**: [Most important fixes]
+2. **HIGH**: [Important standards violations]
+3. **MEDIUM**: [Standards improvements]
+4. **LOW**: [Style and enhancement]
+
+### **Required Implementation Pattern**:
+```[language]
+// Example of compliant code implementation
+```
+
+---
+
+## Related Files Requiring Updates
+- [RelatedFile1] - [Description of required changes]
+- [RelatedFile2] - [Description of required changes]
+
+---
+
+## Custom Fix Prompt
+
+**Use this prompt to implement the fixes identified in this report:**
+
+```
+Fix compliance violations in [FileName] based on the findings in Development/Compliance Reports/[ReportFileName].
+
+Implement the following fixes in priority order:
+1. [High priority fix 1]
+2. [High priority fix 2]
+3. [Medium priority fixes as applicable]
+
+Follow these MTM patterns:
+- [Pattern 1]
+- [Pattern 2]
+
+Reference these instruction files:
+- [instruction-file-1.md]
+- [instruction-file-2.md]
+
+Ensure all changes maintain existing functionality while bringing code into compliance with MTM standards.
+After implementation, run build verification to confirm no compilation errors.
+```
+
+---
+
+## Compliance Metrics
+- **Total Issues Found**: [Number]
+- **Critical Issues**: [Number]
+- **High Priority Issues**: [Number]  
+- **Medium Priority Issues**: [Number]
+- **Low Priority Issues**: [Number]
+- **Estimated Fix Time**: [Hours/Days]
+- **Compliance Score**: [Score]/10
+
+---
+
+*Report generated by Quality Assurance Auditor Copilot following MTM WIP Application instruction guidelines.*
+```
+
+### Common Violation Examples
+
+#### **Naming Convention Issues**
 ```csharp
-// Current (incorrect)
-[Current code]
+// ? WRONG: Non-compliant naming
+public class inventoryTab : UserControl
+private string partid;
+public ReactiveCommand LoadData { get; }
 
-// Corrected
-[Compliant code example]
+// ? CORRECT: MTM naming conventions
+public class InventoryTabView : UserControl
+private string _partId = string.Empty;
+public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
 ```
+
+#### **ReactiveUI Pattern Issues**
+```csharp
+// ? WRONG: Not using ReactiveUI patterns
+public string PartId { get; set; }
+
+public void LoadData()
+{
+    // Direct method call
+}
+
+// ? CORRECT: ReactiveUI patterns
+private string _partId = string.Empty;
+public string PartId
+{
+    get => _partId;
+    set => this.RaiseAndSetIfChanged(ref _partId, value);
+}
+
+public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
 ```
 
-### **MTM-Specific Compliance Checks**
-- **TransactionType Logic**: Must be based on user intent, not operation numbers
-- **Database Access**: Only stored procedures allowed, no direct SQL
-- **Operation Numbers**: Must be treated as string numbers (workflow steps)
-- **Part IDs**: Must use string format
-- **ReactiveUI Patterns**: Proper observable properties and command implementation
-- **Service Registration**: Must use AddMTMServices, not individual registrations
+#### **Color Scheme Issues**
+```xml
+<!-- ? WRONG: Hard-coded colors -->
+<Button Background="#4B45ED" />
 
-## ?? **Related Files**
-- [../Core-Instructions/naming.conventions.instruction.md](../Core-Instructions/naming.conventions.instruction.md) - Naming standards for all components
-- [../Core-Instructions/codingconventions.instruction.md](../Core-Instructions/codingconventions.instruction.md) - Coding standards and patterns
-- [../Development-Instructions/database-patterns.instruction.md](../Development-Instructions/database-patterns.instruction.md) - Database access and MTM business rules
-- [../UI-Instructions/ui-generation.instruction.md](../UI-Instructions/ui-generation.instruction.md) - UI component standards
-- [../Quality-Instructions/needsrepair.instruction.md](../Quality-Instructions/needsrepair.instruction.md) - Quality standards and tracking
+<!-- ? CORRECT: Dynamic resources -->
+<Button Background="{DynamicResource PrimaryBrush}" />
+```
 
-## ? **Quality Checklist**
+## Related Files
+- `.github/needsrepair.instruction.md` - Quality assurance system guidelines
+- `Compliance Reports/` - Generated compliance reports folder
+- All `.github/*.instruction.md` files - Standards references
+- `.github/personas.instruction.md` - Quality Assurance Auditor persona details
 
-### **Review Completeness**
-- [ ] All applicable instruction guidelines checked
-- [ ] Specific line numbers identified for violations
-- [ ] Priority classification applied consistently
-- [ ] Fix recommendations provided for each violation
-- [ ] Code examples included for corrections
-
-### **Report Quality**
-- [ ] Structured format with clear sections
-- [ ] References to specific instruction file sections
-- [ ] Actionable recommendations with clear steps
-- [ ] Overall compliance score and assessment
-- [ ] Next steps and priorities identified
-
-### **MTM Compliance Verification**
-- [ ] TransactionType logic reviewed against user intent rules
-- [ ] Database operations checked for stored procedure usage
-- [ ] Operation numbers verified as string workflow steps
-- [ ] ReactiveUI patterns validated for proper implementation
-- [ ] Service registration patterns checked for AddMTMServices usage
-
-### **Follow-up Actions**
-- [ ] Violations documented in tracking system
-- [ ] Priority fixes scheduled for implementation
-- [ ] Compliance trends tracked over time
-- [ ] Team notification provided for critical issues
+## Quality Checklist
+- [ ] All compliance areas reviewed systematically
+- [ ] Specific code examples provided for violations
+- [ ] Priority levels assigned correctly
+- [ ] Fix recommendations are actionable
+- [ ] Instruction file references included
+- [ ] Custom fix prompt generated
+- [ ] Compliance metrics calculated
+- [ ] Report follows standard format
+- [ ] Related files identified for updates
+- [ ] Compliance score assigned accurately
