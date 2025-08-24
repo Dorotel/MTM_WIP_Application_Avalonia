@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Technical documentation for Services - Services in MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, Services, Services, technical documentation, implementation">
+    <meta name="author" content="MTM Development Team">
+    
+    <title>FileDefinitions-Services - MTM WIP Application Technical Documentation</title>
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../assets/css/responsive.css">
+    
+    <!-- Additional Technical Documentation Styling -->
+    <style>
+        /* FileDefinitions Technical-specific styling */
+        :root {
+            --tech-primary: #4B45ED;
+            --tech-secondary: #8345ED;
+            --tech-accent: #BA45ED;
+            --tech-blue: #4574ED;
+            --tech-pink: #ED45E7;
+            --tech-light: #B594ED;
+            --code-bg: #1e1e1e;
+            --code-border: #4B45ED;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: #e6edf3;
+            font-family: 'Segoe UI', 'Monaco', 'Menlo', monospace;
+            line-height: 1.6;
+        }
+
+        .technical-header {
+            background: linear-gradient(135deg, var(--tech-primary), var(--tech-secondary), var(--tech-accent));
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .technical-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .technical-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .component-type-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .cross-reference-nav {
+            background: rgba(75, 69, 237, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--tech-primary);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--tech-primary), var(--tech-secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(75, 69, 237, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav-button.plain-english {
+            background: linear-gradient(135deg, #FFD700, #DAA520);
+            color: #000000;
+        }
+
+        .nav-button.plain-english:hover {
+            color: #000000;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .service-card {
+            background: #21262d;
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 5px solid var(--tech-primary);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(75, 69, 237, 0.4);
+            background: #2a2f36;
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .service-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            color: var(--tech-primary);
+        }
+
+        .service-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #58a6ff;
+        }
+
+        .service-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-documented {
+            background: rgba(34, 197, 94, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .status-pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        .service-description {
+            margin-bottom: 1.5rem;
+            color: #e6edf3;
+            line-height: 1.6;
+        }
+
+        .service-details {
+            background: rgba(75, 69, 237, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--tech-primary);
+        }
+
+        .detail-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--tech-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-list ul {
+            color: #7d8590;
+            margin-left: 1rem;
+        }
+
+        .detail-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .service-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-link {
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-link.primary {
+            background: var(--tech-primary);
+            color: white;
+        }
+
+        .action-link.primary:hover {
+            background: var(--tech-secondary);
+            transform: translateY(-1px);
+        }
+
+        .action-link:not(.primary) {
+            background: rgba(255, 215, 0, 0.1);
+            color: #FFD700;
+            border: 1px solid #FFD700;
+        }
+
+        .action-link:not(.primary):hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .action-icon {
+            margin-right: 0.5rem;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .architecture-overview {
+            background: #161b22;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--tech-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-Reference Navigation -->
+        <div class="cross-reference-nav">
+            <h3>🔧 Navigate Technical FileDefinitions</h3>
+            <a href="../index.html" class="nav-button">🏠 Home</a>
+            <a href="../../Technical/index.html" class="nav-button">📚 Technical Index</a>
+            <a href="../PlainEnglish/FileDefinitions-Services.html" class="nav-button plain-english">📖 Plain English Version</a>
+            <a href="FileDefinitions-ViewModels.html" class="nav-button">📱 ViewModels</a>
+            <a href="FileDefinitions-Models.html" class="nav-button">📊 Models</a>
+            <a href="FileDefinitions-Extensions.html" class="nav-button">🔧 Extensions</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="technical-header">
+            <div class="technical-header-content">
+                <div class="component-type-badge">SERVICES</div>
+                <h1>🏢 Services - Technical Implementation</h1>
+                <p>Dependency Injection managed services implementing business logic, data access patterns, and infrastructure concerns using .NET 8 and ReactiveUI frameworks.</p>
+            </div>
+        </div>
+
+        <!-- Architecture Overview -->
+        <div class="architecture-overview">
+            <h2>🏗️ Architecture Overview</h2>
+            <p>Services in the MTM WIP Application follow the Repository and Service patterns, implemented as singleton or scoped services registered via dependency injection. All services use the Result&lt;T&gt; pattern for error handling and async/await for asynchronous operations.</p>
+            
+            <div class="code-block">
+// Service Registration Pattern (Program.cs)
+services.AddMTMServices(configuration);
+
+// All services implement consistent patterns:
+// - Result&lt;T&gt; return types for error handling
+// - CancellationToken support for async operations
+// - Comprehensive logging and error handling
+// - Repository pattern for data access
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="service-grid">
+            <!-- InventoryService -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">📦</span>
+                        <span class="service-name">InventoryService</span>
+                    </div>
+                    <span class="service-status status-documented">DOCUMENTED</span>
+                </div>
+                <p class="service-description">
+                    Core inventory management service implementing Repository pattern with Result&lt;T&gt; error handling. 
+                    Provides comprehensive inventory operations including add, remove, transfer, and query functionality.
+                </p>
+                <div class="service-details">
+                    <div class="detail-title">🔧 Technical Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>10 public async methods with cancellation token support</li>
+                            <li>Repository pattern with Result&lt;T&gt; error handling</li>
+                            <li>Integrated validation and transaction logging</li>
+                            <li>MTM business rule compliance (TransactionType by user intent)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#inventory-service" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        View Documentation
+                    </a>
+                    <a href="../PlainEnglish/FileDefinitions-Services.html#inventory-service" class="action-link">
+                        <span class="action-icon">📝</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- DatabaseService -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">🗄️</span>
+                        <span class="service-name">DatabaseService</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    Database connection and query execution service. Handles connection management, parameter binding, 
+                    and result mapping for stored procedure calls using Helper_Database_StoredProcedure.
+                </p>
+                <div class="service-details">
+                    <div class="detail-title">🔧 Implementation Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>Connection pooling and management</li>
+                            <li>Stored procedure execution with status handling</li>
+                            <li>Parameter binding and result mapping</li>
+                            <li>Transaction support and error recovery</li>
+                            <li>Uses Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#database-service" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        View Documentation
+                    </a>
+                    <a href="../PlainEnglish/FileDefinitions-Services.html#database-service" class="action-link">
+                        <span class="action-icon">📝</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- ApplicationStateService -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">📊</span>
+                        <span class="service-name">ApplicationStateService</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    Global application state management service. Tracks current user, active operations, 
+                    and application-wide settings using ReactiveUI observable properties.
+                </p>
+                <div class="service-details">
+                    <div class="detail-title">🔧 ReactiveUI Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>ReactiveUI observable properties for state management</li>
+                            <li>Current user and session management</li>
+                            <li>Application-wide state coordination</li>
+                            <li>Cross-component communication via observables</li>
+                            <li>Async property updates with proper notification</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#application-state-service" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        View Documentation
+                    </a>
+                    <a href="../PlainEnglish/FileDefinitions-Services.html#application-state-service" class="action-link">
+                        <span class="action-icon">📝</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- ConfigurationService -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">⚙️</span>
+                        <span class="service-name">ConfigurationService</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    Configuration management service for application settings, database connections, 
+                    and environment-specific configurations using .NET 8 Configuration patterns.
+                </p>
+                <div class="service-details">
+                    <div class="detail-title">🔧 .NET 8 Configuration</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>appsettings.json and appsettings.{Environment}.json support</li>
+                            <li>Environment-specific configuration overrides</li>
+                            <li>Connection string management with secure storage</li>
+                            <li>Runtime configuration updates and hot reload</li>
+                            <li>Strongly-typed configuration binding</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#configuration-service" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        View Documentation
+                    </a>
+                    <a href="../PlainEnglish/FileDefinitions-Services.html#configuration-service" class="action-link">
+                        <span class="action-icon">📝</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- UserAndTransactionServices -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">👥</span>
+                        <span class="service-name">UserAndTransactionServices</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    Combined user management and transaction logging services. Handles user authentication, 
+                    permissions, and comprehensive audit trail logging with MTM business rule compliance.
+                </p>
+                <div class="service-details">
+                    <div class="detail-title">🔧 Security & Audit Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>User authentication and authorization with role-based access</li>
+                            <li>Transaction logging and comprehensive audit trails</li>
+                            <li>Permission and role management system</li>
+                            <li>Security compliance and data protection features</li>
+                            <li>MTM TransactionType business rule enforcement</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#user-transaction-services" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        View Documentation
+                    </a>
+                    <a href="../PlainEnglish/FileDefinitions-Services.html#user-transaction-services" class="action-link">
+                        <span class="action-icon">📝</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- LoggingUtility -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">📝</span>
+                        <span class="service-name">LoggingUtility</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    Comprehensive logging utility implementing structured logging patterns with .NET 8 ILogger. 
+                    Provides application-wide logging, error tracking, and diagnostic information capture.
+                </p>
+                <div class="service-details">
+                    <div class="detail-title">🔧 Logging Implementation</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>Structured logging with .NET 8 ILogger interface</li>
+                            <li>Log level management (Debug, Info, Warning, Error, Critical)</li>
+                            <li>Contextual logging with scope and correlation IDs</li>
+                            <li>Error handling and exception logging with stack traces</li>
+                            <li>Performance monitoring and diagnostic data capture</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#logging-utility" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        View Documentation
+                    </a>
+                    <a href="../PlainEnglish/FileDefinitions-Services.html#logging-utility" class="action-link">
+                        <span class="action-icon">📝</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- Service_ErrorHandler -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">🚨</span>
+                        <span class="service-name">Service_ErrorHandler</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    Centralized error handling service implementing the Result&lt;T&gt; pattern. Provides consistent 
+                    error handling, user-friendly error messages, and system recovery mechanisms.
+                </p>
+                <div class="service-details">
+                    <div class="detail-title">🔧 Error Handling Patterns</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>Result&lt;T&gt; pattern implementation for consistent error handling</li>
+                            <li>Exception capture and transformation to user-friendly messages</li>
+                            <li>Error recovery strategies and fallback mechanisms</li>
+                            <li>Integration with logging for comprehensive error tracking</li>
+                            <li>Stored procedure error logging and status management</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#error-handler-service" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        View Documentation
+                    </a>
+                    <a href="../PlainEnglish/FileDefinitions-Services.html#error-handler-service" class="action-link">
+                        <span class="action-icon">📝</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+        </div>
+
+        <!-- Technical Standards -->
+        <div class="architecture-overview">
+            <h2>📋 Technical Standards & Patterns</h2>
+            <div class="service-details">
+                <div class="detail-title">🔧 Required Patterns</div>
+                <div class="detail-list">
+                    <ul>
+                        <li><strong>Dependency Injection:</strong> All services registered via AddMTMServices()</li>
+                        <li><strong>Result&lt;T&gt; Pattern:</strong> Consistent error handling across all operations</li>
+                        <li><strong>Async/Await:</strong> All database and I/O operations use async patterns</li>
+                        <li><strong>CancellationToken:</strong> Support for operation cancellation</li>
+                        <li><strong>Repository Pattern:</strong> Data access abstraction for testability</li>
+                        <li><strong>Stored Procedures Only:</strong> No direct SQL in code, use Helper_Database_StoredProcedure</li>
+                        <li><strong>Comprehensive Logging:</strong> All operations logged with contextual information</li>
+                        <li><strong>MTM Business Rules:</strong> TransactionType determined by user intent, not operation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Footer -->
+        <div class="cross-reference-nav">
+            <h3>🗺️ Continue Technical Exploration</h3>
+            <a href="FileDefinitions-ViewModels.html" class="nav-button">📱 Next: ViewModels</a>
+            <a href="FileDefinitions-Models.html" class="nav-button">📊 See: Models</a>
+            <a href="FileDefinitions-Extensions.html" class="nav-button">🔧 Explore: Extensions</a>
+            <a href="../PlainEnglish/FileDefinitions-Services.html" class="nav-button plain-english">📖 Plain English Version</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-Services - Services Explained</title>
+    <meta name="description" content="Plain English explanation of Services - Services in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, Services, Services, plain english, business explanation">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../assets/css/responsive.css">
+    
+    <!-- Additional MTM Styling for FileDefinitions -->
+    <style>
+        /* FileDefinitions-specific styling for PlainEnglish version */
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-gold-dark: #DAA520;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-gray: #CCCCCC;
+            --mtm-purple: #4B45ED;
+            --mtm-magenta: #BA45ED;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+        }
+
+        .filedefinitions-header {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .component-badge {
+            background: var(--mtm-purple);
+            color: var(--mtm-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold), var(--mtm-gold-dark));
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+            text-decoration: none;
+            color: var(--mtm-black);
+        }
+
+        .nav-button.technical {
+            background: linear-gradient(135deg, var(--mtm-purple), var(--mtm-magenta));
+            color: var(--mtm-white);
+        }
+
+        .nav-button.technical:hover {
+            color: var(--mtm-white);
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 5px solid var(--mtm-gold);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .service-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .service-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--mtm-gold);
+        }
+
+        .service-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--mtm-gold);
+            border: 1px solid var(--mtm-gold);
+        }
+
+        .service-description {
+            margin-bottom: 1.5rem;
+            color: var(--mtm-white);
+            line-height: 1.6;
+        }
+
+        .analogy-box {
+            background: rgba(75, 69, 237, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--mtm-purple);
+        }
+
+        .analogy-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--mtm-purple);
+            margin-bottom: 0.5rem;
+        }
+
+        .analogy-text {
+            font-style: italic;
+            color: #e0e0e0;
+        }
+
+        .service-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-link {
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-link.primary {
+            background: var(--mtm-gold);
+            color: var(--mtm-black);
+        }
+
+        .action-link.primary:hover {
+            background: var(--mtm-gold-dark);
+            transform: translateY(-1px);
+        }
+
+        .action-link:not(.primary) {
+            background: rgba(75, 69, 237, 0.2);
+            color: var(--mtm-purple);
+            border: 1px solid var(--mtm-purple);
+        }
+
+        .action-link:not(.primary):hover {
+            background: rgba(75, 69, 237, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .action-icon {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-Reference Navigation -->
+        <div class="cross-reference-nav">
+            <h3>📋 Navigate FileDefinitions</h3>
+            <a href="../index.html" class="nav-button">🏠 Home</a>
+            <a href="../../PlainEnglish/index.html" class="nav-button">📖 PlainEnglish Index</a>
+            <a href="../Technical/FileDefinitions-Services.html" class="nav-button technical">🔧 Technical Version</a>
+            <a href="FileDefinitions-ViewModels.html" class="nav-button">📱 ViewModels</a>
+            <a href="FileDefinitions-Models.html" class="nav-button">📊 Models</a>
+            <a href="FileDefinitions-Extensions.html" class="nav-button">🔧 Extensions</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="filedefinitions-header">
+            <div class="component-badge">SERVICES</div>
+            <h1>🏢 Services - The Support Departments</h1>
+            <p>The behind-the-scenes departments that keep the MTM WIP Application running smoothly. Think of these as specialized support teams that handle specific business functions.</p>
+        </div>
+
+        <!-- Introduction -->
+        <div class="business-card">
+            <h2>🎯 What Are Services?</h2>
+            <p>Services are like the different departments in a manufacturing facility - each one has a specific job that supports the overall operation. They handle things like database access, user management, system configuration, and error handling.</p>
+            
+            <div class="business-highlight">
+                <h3>🏭 Real-World Comparison</h3>
+                <p>Just like a manufacturing facility has departments for IT, HR, Maintenance, and Quality Control, our application has services that handle similar specialized functions for the software.</p>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="service-grid">
+            <!-- DatabaseService -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">🗄️</span>
+                        <span class="service-name">Database Service</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    The data warehouse manager that handles all information storage and retrieval. 
+                    Ensures data is saved properly, retrieved quickly, and kept secure and accurate.
+                </p>
+                <div class="analogy-box">
+                    <div class="analogy-title">Real-World Analogy</div>
+                    <div class="analogy-text">
+                        Like a well-organized warehouse with computerized inventory tracking that knows 
+                        exactly where everything is stored and can quickly retrieve any item when needed.
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        Learn More
+                    </a>
+                    <a href="../Technical/FileDefinitions-Services.html#database-service" class="action-link">
+                        <span class="action-icon">🔧</span>
+                        Technical Details
+                    </a>
+                </div>
+            </article>
+
+            <!-- ApplicationStateService -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">📊</span>
+                        <span class="service-name">Application State Service</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    The supervisor who keeps track of what's happening across the entire facility. 
+                    Knows who's logged in, what operations are running, and the overall system status.
+                </p>
+                <div class="analogy-box">
+                    <div class="analogy-title">Real-World Analogy</div>
+                    <div class="analogy-text">
+                        Like a production supervisor with a dashboard showing all active workstations, 
+                        current operators, and the status of every process in the facility.
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        Learn More
+                    </a>
+                    <a href="../Technical/FileDefinitions-Services.html#application-state-service" class="action-link">
+                        <span class="action-icon">🔧</span>
+                        Technical Details
+                    </a>
+                </div>
+            </article>
+
+            <!-- ConfigurationService -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">⚙️</span>
+                        <span class="service-name">Configuration Service</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    The settings and controls department. Manages all the system settings, connection information, 
+                    and configuration options that make the application work properly.
+                </p>
+                <div class="analogy-box">
+                    <div class="analogy-title">Real-World Analogy</div>
+                    <div class="analogy-text">
+                        Like the control room where all the machine settings, operating parameters, 
+                        and system configurations are stored and managed.
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        Learn More
+                    </a>
+                    <a href="../Technical/FileDefinitions-Services.html#configuration-service" class="action-link">
+                        <span class="action-icon">🔧</span>
+                        Technical Details
+                    </a>
+                </div>
+            </article>
+
+            <!-- UserAndTransactionServices -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">👥</span>
+                        <span class="service-name">User & Transaction Services</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    The security and accounting departments combined. Handles user access, permissions, 
+                    and keeps a complete record of every transaction and change in the system.
+                </p>
+                <div class="analogy-box">
+                    <div class="analogy-title">Real-World Analogy</div>
+                    <div class="analogy-text">
+                        Like having security badges that control who can access different areas, plus an 
+                        accounting system that records every transaction for audit purposes.
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        Learn More
+                    </a>
+                    <a href="../Technical/FileDefinitions-Services.html#user-transaction-services" class="action-link">
+                        <span class="action-icon">🔧</span>
+                        Technical Details
+                    </a>
+                </div>
+            </article>
+
+            <!-- LoggingUtility -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">📝</span>
+                        <span class="service-name">Logging Utility</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    The record keeper that writes down everything that happens in the system. 
+                    Like a detailed log book that tracks all activities for troubleshooting and monitoring.
+                </p>
+                <div class="analogy-box">
+                    <div class="analogy-title">Real-World Analogy</div>
+                    <div class="analogy-text">
+                        Like a shift supervisor's log book that records all events, problems, and activities 
+                        throughout the day for review and problem-solving.
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        Learn More
+                    </a>
+                    <a href="../Technical/FileDefinitions-Services.html#logging-utility" class="action-link">
+                        <span class="action-icon">🔧</span>
+                        Technical Details
+                    </a>
+                </div>
+            </article>
+
+            <!-- Service_ErrorHandler -->
+            <article class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <span class="service-icon">🚨</span>
+                        <span class="service-name">Error Handler Service</span>
+                    </div>
+                    <span class="service-status status-pending">ACTIVE</span>
+                </div>
+                <p class="service-description">
+                    The emergency response team that handles problems when they occur. 
+                    Catches errors, provides helpful messages, and helps the system recover gracefully.
+                </p>
+                <div class="analogy-box">
+                    <div class="analogy-title">Real-World Analogy</div>
+                    <div class="analogy-text">
+                        Like having a maintenance team that quickly responds to equipment problems, 
+                        provides clear status updates, and gets everything back to normal operation.
+                    </div>
+                </div>
+                <div class="service-actions">
+                    <a href="#" class="action-link primary">
+                        <span class="action-icon">📖</span>
+                        Learn More
+                    </a>
+                    <a href="../Technical/FileDefinitions-Services.html#error-handler-service" class="action-link">
+                        <span class="action-icon">🔧</span>
+                        Technical Details
+                    </a>
+                </div>
+            </article>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="business-card">
+            <h2>🎯 Key Takeaways</h2>
+            <div class="value-points">
+                <div class="business-value">
+                    <h3>🏢 Specialized Functions</h3>
+                    <p>Each service handles a specific business function, just like departments in a company.</p>
+                </div>
+                <div class="business-value">
+                    <h3>🤝 Team Coordination</h3>
+                    <p>Services work together to provide a complete, integrated solution for inventory management.</p>
+                </div>
+                <div class="business-value">
+                    <h3>🛡️ Reliability & Security</h3>
+                    <p>Built-in error handling, logging, and security ensure robust operation in production environments.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Footer -->
+        <div class="cross-reference-nav">
+            <h3>🗺️ Continue Exploring</h3>
+            <a href="FileDefinitions-ViewModels.html" class="nav-button">📱 Next: ViewModels</a>
+            <a href="FileDefinitions-Models.html" class="nav-button">📊 See: Models</a>
+            <a href="FileDefinitions-Extensions.html" class="nav-button">🔧 Explore: Extensions</a>
+            <a href="../Technical/FileDefinitions-Services.html" class="nav-button technical">🔬 Technical Version</a>
+        </div>
+    </div>
+</body>
+</html>
