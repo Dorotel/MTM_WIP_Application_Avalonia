@@ -716,7 +716,7 @@ public class InventoryItemBuilder
 ## ?? Related Documentation
 
 - **Services**: See `Services/README.md` for service integration patterns
-- **Database Schema**: `Development/Database_Files/README_Development_Database_Schema.md`
+- **Database Schema**: `Documentation/Development/Database_Files/README_Development_Database_Schema.md`
 - **Validation Rules**: Business rule documentation in `Development/Custom_Prompts/`
 - **API Documentation**: Generated from XML comments for external integration
 

@@ -428,9 +428,9 @@ Tests/
 ## ?? Related Documentation
 
 - **Interface Definitions**: See `Services/Interfaces/` for service contracts
-- **Database Schema**: `Development/Database_Files/README_Development_Database_Schema.md`
+- **Database Schema**: `Documentation/Development/Database_Files/README_Development_Database_Schema.md`
 - **Error Handling**: `Development/Custom_Prompts/Database_Error_Handling.md`
-- **Code Examples**: `Development/Examples/` for service usage patterns
+- **Code Examples**: `Documentation/Development/Examples/` for service usage patterns
 
 ---
 

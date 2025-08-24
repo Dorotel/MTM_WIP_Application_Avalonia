@@ -1,109 +1,144 @@
 # Models Directory
 
-This directory contains all data models, DTOs (Data Transfer Objects), and business entities for the MTM WIP Application Avalonia.
+This directory contains all data models, DTOs (Data Transfer Objects), and business entities for the MTM WIP Application Avalonia (.NET 8).
 
-## ??? Model Architecture
+## ??? Model Architecture (.NET 8)
 
-### Model Categories
+### Model Categories (.NET 8 Enhanced)
 
 #### Core Models (`CoreModels.cs`)
-Essential data structures for the application's core functionality:
-- **Result Pattern**: Standardized result handling with success/failure states
-- **Inventory Models**: Core inventory and transaction data structures
-- **User Models**: User authentication and authorization entities
-- **Application State**: Global application state management
+Essential data structures leveraging .NET 8 modern features:
+- **Result Pattern**: Standardized result handling with generic constraints and nullable references
+- **Inventory Models**: Core inventory and transaction data with record types
+- **User Models**: User authentication with strong typing and null safety
+- **Application State**: Global state management with immutable patterns
 
-#### Business Entities
-Domain-specific models representing business concepts:
-- **Inventory Items**: Part-based inventory with location and quantity tracking
-- **Transactions**: Audit trail for all inventory operations
-- **Users**: User accounts with role-based permissions
-- **Locations**: Physical storage locations and their properties
+#### Business Entities (.NET 8)
+Domain-specific models using modern C# patterns:
+- **Inventory Items**: Part-based inventory with location tracking and nullable references
+- **Transactions**: Comprehensive audit trail with record types for immutability
+- **Users**: User accounts with role-based permissions and strong typing
+- **Locations**: Physical storage with hierarchical organization
 
-#### Utility Models
-Support models for enhanced functionality:
-- **Configuration**: Application settings and user preferences
-- **Error Handling**: Structured error information and logging
-- **UI State**: View-specific state management and persistence
+#### Utility Models (.NET 8)
+Support models with enhanced functionality:
+- **Configuration**: Application settings with options pattern validation
+- **Error Handling**: Structured error information with source generators
+- **UI State**: View-specific state with reactive patterns
 
-## ?? Model Files
+## ?? Model Files (.NET 8)
 
 ### Core Models (`CoreModels.cs`)
 
-#### Result Pattern
-Standardized result handling for all operations:
+#### Result Pattern (.NET 8 Enhanced)
+Standardized result handling with modern C# features:
 
 ```csharp
+namespace MTM_WIP_Application_Avalonia.Models;
+
 /// <summary>
 /// Represents the result of an operation that can succeed or fail
 /// </summary>
-public class Result
+public record Result
 {
-    public bool IsSuccess { get; set; }
-    public string? ErrorMessage { get; set; }
-    public List<string> Errors { get; set; } = new();
+    public bool IsSuccess { get; init; }
+    public string? ErrorMessage { get; init; }
+    public IReadOnlyList<string> Errors { get; init; } = [];
     
     public static Result Success() => new() { IsSuccess = true };
     public static Result Failure(string error) => new() { IsSuccess = false, ErrorMessage = error };
-    public static Result Failure(List<string> errors) => new() { IsSuccess = false, Errors = errors };
+    public static Result Failure(IEnumerable<string> errors) => new() 
+    { 
+        IsSuccess = false, 
+        Errors = errors.ToList().AsReadOnly() 
+    };
 }
 
 /// <summary>
 /// Generic result type that can return data on success
 /// </summary>
-public class Result<T> : Result
+/// <typeparam name="T">The type of data returned on success</typeparam>
+public record Result<T> : Result
 {
-    public T? Data { get; set; }
+    public T? Data { get; init; }
     
     public static Result<T> Success(T data) => new() { IsSuccess = true, Data = data };
     public static new Result<T> Failure(string error) => new() { IsSuccess = false, ErrorMessage = error };
+    public static new Result<T> Failure(IEnumerable<string> errors) => new() 
+    { 
+        IsSuccess = false, 
+        Errors = errors.ToList().AsReadOnly() 
+    };
 }
 ```
 
-#### Inventory Models
-Core inventory management entities:
+#### Inventory Models (.NET 8 with Record Types)
+Core inventory management entities using modern patterns:
 
 ```csharp
 /// <summary>
 /// Represents an inventory item in the system
 /// </summary>
-public class InventoryItem
+public record InventoryItem
 {
-    public int Id { get; set; }
-    public string PartId { get; set; } = string.Empty;
-    public string Operation { get; set; } = string.Empty; // Workflow step identifier
-    public string Location { get; set; } = string.Empty;
-    public int Quantity { get; set; }
-    public string ItemType { get; set; } = string.Empty;
-    public string Notes { get; set; } = string.Empty;
-    public DateTime CreatedDate { get; set; }
-    public DateTime ModifiedDate { get; set; }
-    public string CreatedBy { get; set; } = string.Empty;
-    public string ModifiedBy { get; set; } = string.Empty;
-    public string BatchNumber { get; set; } = string.Empty;
+    public int Id { get; init; }
+    public required string PartId { get; init; }
+    public required string Operation { get; init; } // Workflow step identifier
+    public required string Location { get; init; }
+    public int Quantity { get; init; }
+    public string ItemType { get; init; } = string.Empty;
+    public string Notes { get; init; } = string.Empty;
+    public DateTime CreatedDate { get; init; } = DateTime.UtcNow;
+    public DateTime ModifiedDate { get; init; } = DateTime.UtcNow;
+    public required string CreatedBy { get; init; }
+    public required string ModifiedBy { get; init; }
+    public string BatchNumber { get; init; } = string.Empty;
+    public decimal UnitCost { get; init; }
+    
+    // Factory methods for common scenarios
+    public static InventoryItem Create(string partId, string operation, string location, 
+        int quantity, string user) => new()
+    {
+        PartId = partId,
+        Operation = operation,
+        Location = location,
+        Quantity = quantity,
+        CreatedBy = user,
+        ModifiedBy = user
+    };
 }
 
 /// <summary>
 /// Represents a transaction record for audit trail
 /// </summary>
-public class InventoryTransaction
+public record InventoryTransaction
 {
-    public int Id { get; set; }
-    public string PartId { get; set; } = string.Empty;
-    public string Operation { get; set; } = string.Empty; // Just a workflow step number
-    public TransactionType TransactionType { get; set; } // Based on user intent
-    public string FromLocation { get; set; } = string.Empty;
-    public string ToLocation { get; set; } = string.Empty;
-    public int Quantity { get; set; }
-    public string ItemType { get; set; } = string.Empty;
-    public string Notes { get; set; } = string.Empty;
-    public DateTime TransactionDate { get; set; }
-    public string User { get; set; } = string.Empty;
-    public string BatchNumber { get; set; } = string.Empty;
+    public int Id { get; init; }
+    public required string PartId { get; init; }
+    public required string Operation { get; init; } // Workflow step number only
+    public TransactionType TransactionType { get; init; } // Based on user intent
+    public string FromLocation { get; init; } = string.Empty;
+    public string ToLocation { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public string ItemType { get; init; } = string.Empty;
+    public string Notes { get; init; } = string.Empty;
+    public DateTime TransactionDate { get; init; } = DateTime.UtcNow;
+    public required string User { get; init; }
+    public string BatchNumber { get; init; } = string.Empty;
+    public string ReferenceNumber { get; init; } = string.Empty;
+    
+    // Helper property for UI display
+    public string LocationDisplay => TransactionType switch
+    {
+        TransactionType.IN => ToLocation,
+        TransactionType.OUT => FromLocation,
+        TransactionType.TRANSFER => $"{FromLocation} ? {ToLocation}",
+        _ => "Unknown"
+    };
 }
 
 /// <summary>
-/// Transaction types based on user intent
+/// Transaction types based on user intent (NOT operation numbers)
 /// </summary>
 public enum TransactionType
 {
@@ -113,24 +148,29 @@ public enum TransactionType
 }
 ```
 
-#### User Models
-User management and authentication:
+#### User Models (.NET 8 with Strong Typing)
+User management with enhanced type safety:
 
 ```csharp
 /// <summary>
 /// Represents a user in the system
 /// </summary>
-public class User
+public record User
 {
-    public int Id { get; set; }
-    public string Username { get; set; } = string.Empty;
-    public string FullName { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public UserRole Role { get; set; }
-    public bool IsActive { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public DateTime LastLoginDate { get; set; }
-    public UserPreferences Preferences { get; set; } = new();
+    public int Id { get; init; }
+    public required string Username { get; init; }
+    public required string FullName { get; init; }
+    public string Email { get; init; } = string.Empty;
+    public UserRole Role { get; init; } = UserRole.ReadOnly;
+    public bool IsActive { get; init; } = true;
+    public DateTime CreatedDate { get; init; } = DateTime.UtcNow;
+    public DateTime? LastLoginDate { get; init; }
+    public UserPreferences Preferences { get; init; } = new();
+    
+    // Computed properties
+    public bool CanEditInventory => Role >= UserRole.Standard;
+    public bool CanManageUsers => Role >= UserRole.Supervisor;
+    public bool IsAdministrator => Role == UserRole.Administrator;
 }
 
 /// <summary>
@@ -138,46 +178,51 @@ public class User
 /// </summary>
 public enum UserRole
 {
-    ReadOnly,     // Can view data only
-    Standard,     // Can add/edit inventory
-    Supervisor,   // Can manage users and advanced operations
-    Administrator // Full system access
+    ReadOnly = 0,     // Can view data only
+    Standard = 1,     // Can add/edit inventory
+    Supervisor = 2,   // Can manage users and advanced operations
+    Administrator = 3 // Full system access
 }
 
 /// <summary>
 /// User-specific preferences and settings
 /// </summary>
-public class UserPreferences
+public record UserPreferences
 {
-    public string Theme { get; set; } = "Default";
-    public string DefaultLocation { get; set; } = string.Empty;
-    public string DefaultOperation { get; set; } = string.Empty;
-    public bool EnableQuickButtons { get; set; } = true;
-    public int QuickButtonCount { get; set; } = 10;
-    public Dictionary<string, object> CustomSettings { get; set; } = new();
+    public string Theme { get; init; } = "Default";
+    public string DefaultLocation { get; init; } = string.Empty;
+    public string DefaultOperation { get; init; } = string.Empty;
+    public bool EnableQuickButtons { get; init; } = true;
+    public int QuickButtonCount { get; init; } = 10;
+    public IReadOnlyDictionary<string, object> CustomSettings { get; init; } = 
+        new Dictionary<string, object>().AsReadOnly();
 }
 ```
 
-### Business Entity Models
+### Business Entity Models (.NET 8)
 
-#### Location Models
-Physical storage location management:
-
+#### Location Models with Hierarchy
 ```csharp
 /// <summary>
-/// Represents a storage location
+/// Represents a storage location with hierarchical structure
 /// </summary>
-public class StorageLocation
+public record StorageLocation
 {
-    public int Id { get; set; }
-    public string LocationCode { get; set; } = string.Empty;
-    public string LocationName { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public bool IsActive { get; set; }
-    public string Zone { get; set; } = string.Empty;
-    public string Building { get; set; } = string.Empty;
-    public int Capacity { get; set; }
-    public LocationType Type { get; set; }
+    public int Id { get; init; }
+    public required string LocationCode { get; init; }
+    public required string LocationName { get; init; }
+    public string Description { get; init; } = string.Empty;
+    public bool IsActive { get; init; } = true;
+    public string Zone { get; init; } = string.Empty;
+    public string Building { get; init; } = string.Empty;
+    public int Capacity { get; init; } = 0;
+    public LocationType Type { get; init; } = LocationType.Warehouse;
+    public int? ParentLocationId { get; init; }
+    
+    // Computed properties
+    public string FullPath => !string.IsNullOrEmpty(Building) && !string.IsNullOrEmpty(Zone)
+        ? $"{Building}/{Zone}/{LocationName}"
+        : LocationName;
 }
 
 public enum LocationType
@@ -191,58 +236,69 @@ public enum LocationType
 }
 ```
 
-#### Part Models
-Part management and specifications:
-
+#### Part Models (.NET 8 Enhanced)
 ```csharp
 /// <summary>
-/// Represents a part definition
+/// Represents a part definition with specifications
 /// </summary>
-public class Part
+public record Part
 {
-    public int Id { get; set; }
-    public string PartId { get; set; } = string.Empty;
-    public string PartName { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string ItemType { get; set; } = string.Empty;
-    public bool IsActive { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public string CreatedBy { get; set; } = string.Empty;
-    public PartSpecifications Specifications { get; set; } = new();
+    public int Id { get; init; }
+    public required string PartId { get; init; }
+    public required string PartName { get; init; }
+    public string Description { get; init; } = string.Empty;
+    public string ItemType { get; init; } = string.Empty;
+    public bool IsActive { get; init; } = true;
+    public DateTime CreatedDate { get; init; } = DateTime.UtcNow;
+    public required string CreatedBy { get; init; }
+    public PartSpecifications Specifications { get; init; } = new();
+    
+    // Factory method for common creation
+    public static Part Create(string partId, string partName, string createdBy) => new()
+    {
+        PartId = partId,
+        PartName = partName,
+        CreatedBy = createdBy
+    };
 }
 
 /// <summary>
 /// Part specifications and technical details
 /// </summary>
-public class PartSpecifications
+public record PartSpecifications
 {
-    public string Material { get; set; } = string.Empty;
-    public decimal Weight { get; set; }
-    public string Dimensions { get; set; } = string.Empty;
-    public string Color { get; set; } = string.Empty;
-    public string Supplier { get; set; } = string.Empty;
-    public decimal StandardCost { get; set; }
-    public Dictionary<string, object> CustomProperties { get; set; } = new();
+    public string Material { get; init; } = string.Empty;
+    public decimal Weight { get; init; }
+    public string Dimensions { get; init; } = string.Empty;
+    public string Color { get; init; } = string.Empty;
+    public string Supplier { get; init; } = string.Empty;
+    public decimal StandardCost { get; init; }
+    public IReadOnlyDictionary<string, object> CustomProperties { get; init; } = 
+        new Dictionary<string, object>().AsReadOnly();
 }
 ```
 
-#### Operation Models
-Workflow and operation management:
-
+#### Operation Models (.NET 8)
 ```csharp
 /// <summary>
-/// Represents a workflow operation
+/// Represents a workflow operation with modern patterns
 /// </summary>
-public class Operation
+public record Operation
 {
-    public int Id { get; set; }
-    public string OperationCode { get; set; } = string.Empty; // e.g., "90", "100", "110"
-    public string OperationName { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public int Sequence { get; set; }
-    public bool IsActive { get; set; }
-    public WorkflowType WorkflowType { get; set; }
-    public OperationSettings Settings { get; set; } = new();
+    public int Id { get; init; }
+    public required string OperationCode { get; init; } // e.g., "90", "100", "110"
+    public required string OperationName { get; init; }
+    public string Description { get; init; } = string.Empty;
+    public int Sequence { get; init; } = 0;
+    public bool IsActive { get; init; } = true;
+    public WorkflowType WorkflowType { get; init; } = WorkflowType.Manufacturing;
+    public OperationSettings Settings { get; init; } = new();
+    
+    // Helper for validation
+    public static bool IsValidOperationCode(string? code) =>
+        !string.IsNullOrWhiteSpace(code) && 
+        code.All(char.IsDigit) && 
+        code.Length is > 0 and <= 10;
 }
 
 public enum WorkflowType
@@ -256,71 +312,87 @@ public enum WorkflowType
 }
 
 /// <summary>
-/// Operation-specific settings and configuration
+/// Operation-specific settings
 /// </summary>
-public class OperationSettings
+public record OperationSettings
 {
-    public bool RequiresQualityCheck { get; set; }
-    public bool AllowsPartialQuantities { get; set; }
-    public int StandardProcessingTime { get; set; } // minutes
-    public string DefaultLocation { get; set; } = string.Empty;
-    public Dictionary<string, object> CustomSettings { get; set; } = new();
+    public bool RequiresQualityCheck { get; init; }
+    public bool AllowsPartialQuantities { get; init; } = true;
+    public int StandardProcessingTime { get; init; } // minutes
+    public string DefaultLocation { get; init; } = string.Empty;
+    public IReadOnlyDictionary<string, object> CustomSettings { get; init; } = 
+        new Dictionary<string, object>().AsReadOnly();
 }
 ```
 
-### Utility and Support Models
+### Configuration and Error Models (.NET 8)
 
-#### Configuration Models
-Application configuration and settings:
-
+#### Application Configuration
 ```csharp
 /// <summary>
-/// Application configuration settings
+/// Application configuration using .NET 8 options pattern
 /// </summary>
-public class AppConfiguration
+public record AppConfiguration
 {
-    public string ConnectionString { get; set; } = string.Empty;
-    public DatabaseSettings Database { get; set; } = new();
-    public UISettings UI { get; set; } = new();
-    public LoggingSettings Logging { get; set; } = new();
-    public SecuritySettings Security { get; set; } = new();
+    public required string ConnectionString { get; init; }
+    public DatabaseSettings Database { get; init; } = new();
+    public UISettings UI { get; init; } = new();
+    public LoggingSettings Logging { get; init; } = new();
+    public SecuritySettings Security { get; init; } = new();
 }
 
-public class DatabaseSettings
+public record DatabaseSettings
 {
-    public int CommandTimeout { get; set; } = 30;
-    public int ConnectionPoolSize { get; set; } = 100;
-    public bool EnableRetry { get; set; } = true;
-    public int MaxRetryAttempts { get; set; } = 3;
+    public int CommandTimeout { get; init; } = 30;
+    public int ConnectionPoolSize { get; init; } = 100;
+    public bool EnableRetry { get; init; } = true;
+    public int MaxRetryAttempts { get; init; } = 3;
 }
 
-public class UISettings
+public record UISettings
 {
-    public string DefaultTheme { get; set; } = "MTM_Purple";
-    public bool EnableAnimations { get; set; } = true;
-    public int AutoSaveInterval { get; set; } = 300; // seconds
-    public bool ShowDebugInfo { get; set; } = false;
+    public string DefaultTheme { get; init; } = "MTM_Purple";
+    public bool EnableAnimations { get; init; } = true;
+    public int AutoSaveInterval { get; init; } = 300; // seconds
+    public bool ShowDebugInfo { get; init; } = false;
 }
 ```
 
-#### Error Models
-Structured error handling and logging:
-
+#### Error Models (.NET 8 Enhanced)
 ```csharp
 /// <summary>
-/// Represents an error that occurred in the system
+/// Represents an error with structured information
 /// </summary>
-public class ErrorInfo
+public record ErrorInfo
 {
-    public int Id { get; set; }
-    public string ErrorCode { get; set; } = string.Empty;
-    public string ErrorMessage { get; set; } = string.Empty;
-    public string StackTrace { get; set; } = string.Empty;
-    public ErrorSeverity Severity { get; set; }
-    public string Source { get; set; } = string.Empty;
-    public string User { get; set; } = string.Empty;
-    public DateTime OccurredAt { get; set; }
-    public Dictionary<string, object> Context { get; set; } = new();
+    public int Id { get; init; }
+    public required string ErrorCode { get; init; }
+    public required string ErrorMessage { get; init; }
+    public string StackTrace { get; init; } = string.Empty;
+    public ErrorSeverity Severity { get; init; } = ErrorSeverity.Error;
+    public required string Source { get; init; }
+    public string User { get; init; } = string.Empty;
+    public DateTime OccurredAt { get; init; } = DateTime.UtcNow;
+    public IReadOnlyDictionary<string, object> Context { get; init; } = 
+        new Dictionary<string, object>().AsReadOnly();
+    
+    // Factory methods for common scenarios
+    public static ErrorInfo CreateValidationError(string message, string source) => new()
+    {
+        ErrorCode = "VALIDATION_ERROR",
+        ErrorMessage = message,
+        Source = source,
+        Severity = ErrorSeverity.Warning
+    };
+    
+    public static ErrorInfo CreateDatabaseError(Exception ex, string source) => new()
+    {
+        ErrorCode = "DATABASE_ERROR",
+        ErrorMessage = ex.Message,
+        StackTrace = ex.StackTrace ?? string.Empty,
+        Source = source,
+        Severity = ErrorSeverity.Error
+    };
 }
 
 public enum ErrorSeverity
@@ -330,133 +402,67 @@ public enum ErrorSeverity
     Error,
     Critical
 }
-
-/// <summary>
-/// Validation error details
-/// </summary>
-public class ValidationError
-{
-    public string PropertyName { get; set; } = string.Empty;
-    public string ErrorMessage { get; set; } = string.Empty;
-    public object? AttemptedValue { get; set; }
-    public ErrorCode ErrorCode { get; set; }
-}
-
-public enum ErrorCode
-{
-    Required,
-    InvalidFormat,
-    OutOfRange,
-    Duplicate,
-    NotFound,
-    BusinessRuleViolation
-}
 ```
 
-### DTO (Data Transfer Objects)
+## ?? Model Validation (.NET 8)
 
-#### API DTOs
-Data transfer objects for API communication:
-
+### Data Annotations with Enhanced Attributes
 ```csharp
-/// <summary>
-/// DTO for inventory search requests
-/// </summary>
-public class InventorySearchRequest
-{
-    public string? PartId { get; set; }
-    public string? Operation { get; set; }
-    public string? Location { get; set; }
-    public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
-    public int PageSize { get; set; } = 50;
-    public int PageNumber { get; set; } = 1;
-}
-
-/// <summary>
-/// DTO for inventory search results
-/// </summary>
-public class InventorySearchResponse
-{
-    public List<InventoryItem> Items { get; set; } = new();
-    public int TotalCount { get; set; }
-    public int PageNumber { get; set; }
-    public int PageSize { get; set; }
-    public bool HasNextPage => PageNumber * PageSize < TotalCount;
-}
-
-/// <summary>
-/// DTO for creating new inventory items
-/// </summary>
-public class CreateInventoryItemRequest
-{
-    public string PartId { get; set; } = string.Empty;
-    public string Operation { get; set; } = string.Empty; // Workflow step identifier
-    public string Location { get; set; } = string.Empty;
-    public int Quantity { get; set; }
-    public string? Notes { get; set; }
-    public string User { get; set; } = string.Empty;
-    // TransactionType determined by service based on user intent (always IN for creation)
-}
-```
-
-## ?? Model Validation
-
-### Data Annotations
-Models use data annotations for validation:
-
-```csharp
-public class InventoryItem
+public record ValidatedInventoryItem
 {
     [Required(ErrorMessage = "Part ID is required")]
     [StringLength(300, ErrorMessage = "Part ID cannot exceed 300 characters")]
-    public string PartId { get; set; } = string.Empty;
+    [RegularExpression(@"^[A-Z0-9\-_]+$", ErrorMessage = "Part ID can only contain uppercase letters, numbers, hyphens, and underscores")]
+    public required string PartId { get; init; }
 
     [Required(ErrorMessage = "Operation is required")]
     [StringLength(100, ErrorMessage = "Operation cannot exceed 100 characters")]
-    public string Operation { get; set; } = string.Empty;
+    [RegularExpression(@"^\d+$", ErrorMessage = "Operation must be numeric")]
+    public required string Operation { get; init; }
 
     [Required(ErrorMessage = "Location is required")]
     [StringLength(100, ErrorMessage = "Location cannot exceed 100 characters")]
-    public string Location { get; set; } = string.Empty;
+    public required string Location { get; init; }
 
     [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than zero")]
-    public int Quantity { get; set; }
+    public int Quantity { get; init; }
 
     [StringLength(1000, ErrorMessage = "Notes cannot exceed 1000 characters")]
-    public string Notes { get; set; } = string.Empty;
+    public string Notes { get; init; } = string.Empty;
 }
 ```
 
-### Custom Validation
-Business rule validation:
-
+### Business Rule Validation (.NET 8)
 ```csharp
 /// <summary>
-/// Validates business rules for inventory operations
+/// Validates business rules for inventory operations using modern patterns
 /// </summary>
 public static class InventoryValidator
 {
-    public static Result ValidateInventoryItem(InventoryItem item)
+    public static ValidationResult ValidateInventoryItem(InventoryItem item)
     {
         var errors = new List<string>();
 
-        if (string.IsNullOrWhiteSpace(item.PartId))
-            errors.Add("Part ID is required");
+        // Use pattern matching for validation
+        var validationChecks = new[]
+        {
+            (string.IsNullOrWhiteSpace(item.PartId), "Part ID is required"),
+            (string.IsNullOrWhiteSpace(item.Operation), "Operation is required"),
+            (string.IsNullOrWhiteSpace(item.Location), "Location is required"),
+            (item.Quantity <= 0, "Quantity must be greater than zero"),
+            (!Operation.IsValidOperationCode(item.Operation), "Operation must be numeric")
+        };
 
-        if (string.IsNullOrWhiteSpace(item.Operation))
-            errors.Add("Operation is required");
+        errors.AddRange(validationChecks
+            .Where(check => check.Item1)
+            .Select(check => check.Item2));
 
-        if (string.IsNullOrWhiteSpace(item.Location))
-            errors.Add("Location is required");
-
-        if (item.Quantity <= 0)
-            errors.Add("Quantity must be greater than zero");
-
-        return errors.Any() ? Result.Failure(errors) : Result.Success();
+        return errors.Count == 0 
+            ? ValidationResult.Success() 
+            : ValidationResult.Failure(errors);
     }
 
-    public static Result ValidateTransferOperation(string fromLocation, string toLocation, int quantity)
+    public static ValidationResult ValidateTransferOperation(string fromLocation, string toLocation, int quantity)
     {
         var errors = new List<string>();
 
@@ -472,46 +478,66 @@ public static class InventoryValidator
         if (quantity <= 0)
             errors.Add("Transfer quantity must be greater than zero");
 
-        return errors.Any() ? Result.Failure(errors) : Result.Success();
+        return errors.Count == 0 
+            ? ValidationResult.Success() 
+            : ValidationResult.Failure(errors);
     }
+}
+
+public record ValidationResult
+{
+    public bool IsValid { get; init; }
+    public IReadOnlyList<string> Errors { get; init; } = [];
+    
+    public static ValidationResult Success() => new() { IsValid = true };
+    public static ValidationResult Failure(IEnumerable<string> errors) => new() 
+    { 
+        IsValid = false, 
+        Errors = errors.ToList().AsReadOnly() 
+    };
 }
 ```
 
-## ?? Business Logic Integration
+## ?? Business Logic Integration (.NET 8)
 
-### Transaction Type Logic
-Models implement correct transaction type handling:
-
+### Transaction Type Helper (.NET 8)
 ```csharp
 /// <summary>
-/// Helper class for transaction type determination
+/// Helper for transaction type determination using modern C# patterns
 /// </summary>
 public static class TransactionTypeHelper
 {
     /// <summary>
     /// Determines transaction type based on user action, NOT operation number
     /// </summary>
-    public static TransactionType GetTransactionTypeForAction(UserAction action)
+    public static TransactionType GetTransactionTypeForAction(UserAction action) => action switch
     {
-        return action switch
-        {
-            UserAction.AddInventory => TransactionType.IN,      // User adding stock
-            UserAction.RemoveInventory => TransactionType.OUT,  // User removing stock
-            UserAction.TransferInventory => TransactionType.TRANSFER, // User moving stock
-            _ => throw new ArgumentException($"Unknown user action: {action}")
-        };
-    }
+        UserAction.AddInventory => TransactionType.IN,      // User adding stock
+        UserAction.RemoveInventory => TransactionType.OUT,  // User removing stock
+        UserAction.TransferInventory => TransactionType.TRANSFER, // User moving stock
+        _ => throw new ArgumentException($"Unknown user action: {action}")
+    };
 
     /// <summary>
-    /// Validates that operation is used correctly (as workflow identifier, not transaction type)
+    /// Creates a transaction record with proper business logic
     /// </summary>
-    public static bool IsValidOperation(string operation)
+    public static InventoryTransaction CreateTransaction(
+        string partId, 
+        string operation, 
+        UserAction action, 
+        int quantity, 
+        string user,
+        string? fromLocation = null,
+        string? toLocation = null) => new()
     {
-        // Operations are workflow step identifiers like "90", "100", "110"
-        return !string.IsNullOrWhiteSpace(operation) && 
-               operation.All(char.IsDigit) && 
-               operation.Length <= 10;
-    }
+        PartId = partId,
+        Operation = operation,
+        TransactionType = GetTransactionTypeForAction(action),
+        FromLocation = fromLocation ?? string.Empty,
+        ToLocation = toLocation ?? string.Empty,
+        Quantity = quantity,
+        User = user
+    };
 }
 
 public enum UserAction
@@ -524,72 +550,99 @@ public enum UserAction
 }
 ```
 
-### Audit Trail Models
-Complete audit trail for all operations:
-
+### Audit Trail Models (.NET 8)
 ```csharp
 /// <summary>
-/// Comprehensive audit log entry
+/// Comprehensive audit log entry using modern patterns
 /// </summary>
-public class AuditLogEntry
+public record AuditLogEntry
 {
-    public int Id { get; set; }
-    public string TableName { get; set; } = string.Empty;
-    public string Operation { get; set; } = string.Empty; // INSERT, UPDATE, DELETE
-    public string PrimaryKeyValue { get; set; } = string.Empty;
-    public string OldValues { get; set; } = string.Empty; // JSON
-    public string NewValues { get; set; } = string.Empty; // JSON
-    public DateTime Timestamp { get; set; }
-    public string User { get; set; } = string.Empty;
-    public string Source { get; set; } = string.Empty; // Application, API, etc.
+    public int Id { get; init; }
+    public required string TableName { get; init; }
+    public required string Operation { get; init; } // INSERT, UPDATE, DELETE
+    public required string PrimaryKeyValue { get; init; }
+    public string? OldValues { get; init; } // JSON
+    public string? NewValues { get; init; } // JSON
+    public DateTime Timestamp { get; init; } = DateTime.UtcNow;
+    public required string User { get; init; }
+    public string Source { get; init; } = "Application";
+    
+    // Factory method for creation
+    public static AuditLogEntry Create(string tableName, string operation, 
+        string primaryKey, string user) => new()
+    {
+        TableName = tableName,
+        Operation = operation,
+        PrimaryKeyValue = primaryKey,
+        User = user
+    };
 }
 
 /// <summary>
-/// User activity tracking
+/// User activity tracking with performance metrics
 /// </summary>
-public class UserActivity
+public record UserActivity
 {
-    public int Id { get; set; }
-    public string User { get; set; } = string.Empty;
-    public string Action { get; set; } = string.Empty;
-    public string Entity { get; set; } = string.Empty;
-    public string EntityId { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; }
-    public TimeSpan Duration { get; set; }
-    public string Details { get; set; } = string.Empty;
-    public bool Success { get; set; }
+    public int Id { get; init; }
+    public required string User { get; init; }
+    public required string Action { get; init; }
+    public required string Entity { get; init; }
+    public string EntityId { get; init; } = string.Empty;
+    public DateTime Timestamp { get; init; } = DateTime.UtcNow;
+    public TimeSpan Duration { get; init; }
+    public string Details { get; init; } = string.Empty;
+    public bool Success { get; init; } = true;
+    public IReadOnlyDictionary<string, object> Metadata { get; init; } = 
+        new Dictionary<string, object>().AsReadOnly();
 }
 ```
 
-## ?? Query Models
+## ?? Query Models (.NET 8)
 
-### Search and Filter Models
-Comprehensive search and filtering capabilities:
-
+### Search Criteria with Modern Patterns
 ```csharp
 /// <summary>
-/// Advanced inventory search criteria
+/// Advanced inventory search with builder pattern
 /// </summary>
-public class InventorySearchCriteria
+public record InventorySearchCriteria
 {
-    public string? PartId { get; set; }
-    public string? PartNameContains { get; set; }
-    public string? Operation { get; set; }
-    public string? Location { get; set; }
-    public string? ItemType { get; set; }
-    public int? MinQuantity { get; set; }
-    public int? MaxQuantity { get; set; }
-    public DateTime? CreatedAfter { get; set; }
-    public DateTime? CreatedBefore { get; set; }
-    public string? CreatedBy { get; set; }
-    public string? NotesContains { get; set; }
-    public bool? IsActive { get; set; }
+    public string? PartId { get; init; }
+    public string? PartNameContains { get; init; }
+    public string? Operation { get; init; }
+    public string? Location { get; init; }
+    public string? ItemType { get; init; }
+    public int? MinQuantity { get; init; }
+    public int? MaxQuantity { get; init; }
+    public DateTime? CreatedAfter { get; init; }
+    public DateTime? CreatedBefore { get; init; }
+    public string? CreatedBy { get; init; }
+    public string? NotesContains { get; init; }
+    public bool? IsActive { get; init; }
     
     // Sorting and pagination
-    public string SortBy { get; set; } = "CreatedDate";
-    public SortDirection SortDirection { get; set; } = SortDirection.Descending;
-    public int PageSize { get; set; } = 50;
-    public int PageNumber { get; set; } = 1;
+    public string SortBy { get; init; } = "CreatedDate";
+    public SortDirection SortDirection { get; init; } = SortDirection.Descending;
+    public int PageSize { get; init; } = 50;
+    public int PageNumber { get; init; } = 1;
+    
+    // Builder pattern for fluent interface
+    public static InventorySearchCriteriaBuilder Builder() => new();
+}
+
+public class InventorySearchCriteriaBuilder
+{
+    private InventorySearchCriteria _criteria = new();
+    
+    public InventorySearchCriteriaBuilder WithPartId(string partId) => 
+        this with { _criteria = _criteria with { PartId = partId } };
+    
+    public InventorySearchCriteriaBuilder WithLocation(string location) => 
+        this with { _criteria = _criteria with { Location = location } };
+    
+    public InventorySearchCriteriaBuilder WithQuantityRange(int min, int max) => 
+        this with { _criteria = _criteria with { MinQuantity = min, MaxQuantity = max } };
+    
+    public InventorySearchCriteria Build() => _criteria;
 }
 
 public enum SortDirection
@@ -597,129 +650,66 @@ public enum SortDirection
     Ascending,
     Descending
 }
-
-/// <summary>
-/// Transaction history search criteria
-/// </summary>
-public class TransactionSearchCriteria
-{
-    public string? PartId { get; set; }
-    public string? Operation { get; set; }
-    public TransactionType? TransactionType { get; set; }
-    public string? User { get; set; }
-    public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
-    public string? Location { get; set; }
-    public int? MinQuantity { get; set; }
-    public int? MaxQuantity { get; set; }
-    
-    // Sorting and pagination
-    public string SortBy { get; set; } = "TransactionDate";
-    public SortDirection SortDirection { get; set; } = SortDirection.Descending;
-    public int PageSize { get; set; } = 100;
-    public int PageNumber { get; set; } = 1;
-}
 ```
 
-## ?? Performance Models
+## ?? Testing Support (.NET 8)
 
-### Caching Models
-Efficient data caching and performance optimization:
-
+### Test Data Builders
 ```csharp
 /// <summary>
-/// Cache entry for frequently accessed data
-/// </summary>
-public class CacheEntry<T>
-{
-    public T Data { get; set; } = default!;
-    public DateTime CachedAt { get; set; }
-    public TimeSpan ExpirationTime { get; set; }
-    public bool IsExpired => DateTime.Now > CachedAt.Add(ExpirationTime);
-    public string Key { get; set; } = string.Empty;
-}
-
-/// <summary>
-/// Performance metrics for operations
-/// </summary>
-public class PerformanceMetrics
-{
-    public string OperationName { get; set; } = string.Empty;
-    public TimeSpan Duration { get; set; }
-    public DateTime Timestamp { get; set; }
-    public string User { get; set; } = string.Empty;
-    public int RecordsProcessed { get; set; }
-    public long MemoryUsed { get; set; }
-    public Dictionary<string, object> AdditionalMetrics { get; set; } = new();
-}
-```
-
-## ?? Testing Models
-
-### Test Data Models
-Models for unit and integration testing:
-
-```csharp
-/// <summary>
-/// Test data builder for inventory items
+/// Test data builder using modern C# patterns
 /// </summary>
 public class InventoryItemBuilder
 {
-    private InventoryItem _item = new();
+    private InventoryItem _item = InventoryItem.Create("TEST-PART", "100", "TEST-LOCATION", 1, "TestUser");
 
-    public InventoryItemBuilder WithPartId(string partId)
-    {
-        _item.PartId = partId;
-        return this;
-    }
+    public InventoryItemBuilder WithPartId(string partId) => 
+        this with { _item = _item with { PartId = partId } };
 
-    public InventoryItemBuilder WithOperation(string operation)
-    {
-        _item.Operation = operation;
-        return this;
-    }
+    public InventoryItemBuilder WithOperation(string operation) => 
+        this with { _item = _item with { Operation = operation } };
 
-    public InventoryItemBuilder WithLocation(string location)
-    {
-        _item.Location = location;
-        return this;
-    }
+    public InventoryItemBuilder WithLocation(string location) => 
+        this with { _item = _item with { Location = location } };
 
-    public InventoryItemBuilder WithQuantity(int quantity)
-    {
-        _item.Quantity = quantity;
-        return this;
-    }
+    public InventoryItemBuilder WithQuantity(int quantity) => 
+        this with { _item = _item with { Quantity = quantity } };
 
     public InventoryItem Build() => _item;
 
     public static InventoryItemBuilder Create() => new();
+    
+    // Common test scenarios
+    public static InventoryItem ValidItem() => Create().Build();
+    public static InventoryItem ItemWithLargeQuantity() => Create().WithQuantity(1000).Build();
+    public static InventoryItem ItemForTransfer() => Create().WithLocation("WAREHOUSE-A").Build();
 }
 ```
 
-## ?? Development Guidelines
+## ?? Development Guidelines (.NET 8)
 
 ### Adding New Models
-1. **Define Purpose**: Clearly define what the model represents
-2. **Add Validation**: Include appropriate data annotations and custom validation
-3. **Include Documentation**: Add comprehensive XML comments
-4. **Consider Relationships**: Define relationships to other models
-5. **Add Unit Tests**: Create tests for validation and business logic
+1. **Use record types**: For immutable data transfer objects and value objects
+2. **Required properties**: Use `required` keyword for essential properties
+3. **Nullable references**: Properly handle nullable reference types
+4. **Factory methods**: Provide static factory methods for common creation scenarios
+5. **Validation**: Include appropriate data annotations and business rule validation
+6. **Documentation**: Add comprehensive XML comments
 
-### Model Conventions
-- **Naming**: Use descriptive names that clearly indicate purpose
-- **Properties**: Use proper C# property conventions with get/set
-- **Validation**: Include appropriate validation attributes
-- **Documentation**: Add XML comments for all public members
-- **Immutability**: Consider immutable models for data that shouldn't change
+### Model Conventions (.NET 8)
+- **Naming**: Use descriptive names with proper C# conventions
+- **Immutability**: Prefer record types for immutable data structures
+- **Null safety**: Use nullable reference types appropriately
+- **Performance**: Consider readonly collections for better performance
+- **Validation**: Implement both attribute-based and business rule validation
 
 ## ?? Related Documentation
 
-- **Services**: See `Services/README.md` for service integration patterns
-- **Database Schema**: `Development/Database_Files/README_Development_Database_Schema.md`
-- **Validation Rules**: Business rule documentation in `Development/Custom_Prompts/`
-- **API Documentation**: Generated from XML comments for external integration
+- **Services**: See `Services/README.md` for service integration patterns with .NET 8
+- **Database Schema**: `Documentation/Development/Database_Files/README_NewProcedures.md`
+- **GitHub Instructions**: `.github/copilot-instructions.md` for comprehensive development guidelines
+- **ViewModels**: `ViewModels/README.md` for ReactiveUI integration patterns
 
 ---
 
-*This directory contains the data layer of the MTM WIP Application, defining all business entities, DTOs, and data structures used throughout the application.*
+*This directory contains the data layer using .NET 8 modern patterns, defining all business entities, DTOs, and data structures with enhanced type safety, immutability, and performance optimizations for the MTM WIP Application.*

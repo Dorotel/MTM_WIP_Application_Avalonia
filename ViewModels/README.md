@@ -1,15 +1,16 @@
 # ViewModels Directory
 
-This directory contains all ViewModel classes that implement the MVVM pattern using ReactiveUI for the MTM WIP Application Avalonia.
+This directory contains all ViewModel classes that implement the MVVM pattern using ReactiveUI for the MTM WIP Application Avalonia (.NET 8).
 
 ## ??? ViewModel Architecture
 
-### MVVM with ReactiveUI
-All ViewModels follow ReactiveUI patterns for reactive programming:
-- **Reactive Properties**: Observable properties that notify on changes
-- **Reactive Commands**: Commands that support async operations and CanExecute logic
-- **Property Dependencies**: Automatic property updates based on other property changes
-- **Error Handling**: Centralized exception handling for all commands
+### MVVM with ReactiveUI (.NET 8)
+All ViewModels follow ReactiveUI patterns optimized for .NET 8:
+- **Reactive Properties**: Observable properties with modern C# nullable reference types
+- **Reactive Commands**: Async commands with CancellationToken support and proper error handling
+- **Property Dependencies**: Automatic updates using ObservableAsPropertyHelper (OAPH)
+- **Error Handling**: Centralized exception handling with structured logging
+- **Dependency Injection**: Constructor injection with .NET 8 DI container
 
 ## ?? ViewModel Files
 
@@ -19,126 +20,299 @@ All ViewModels follow ReactiveUI patterns for reactive programming:
 Primary application window ViewModel managing overall application state and navigation.
 
 ```csharp
-public class MainWindowViewModel : ReactiveObject
+namespace MTM_WIP_Application_Avalonia.ViewModels;
+
+public sealed class MainWindowViewModel : ReactiveObject
 {
-    // Navigation management
-    // Global application state
-    // Menu and toolbar commands
-    // Status bar information
+    private readonly INavigationService _navigationService;
+    private readonly IApplicationStateService _applicationState;
+    private readonly ILogger<MainWindowViewModel> _logger;
+
+    public MainWindowViewModel(
+        INavigationService navigationService,
+        IApplicationStateService applicationState,
+        ILogger<MainWindowViewModel> logger)
+    {
+        _navigationService = navigationService;
+        _applicationState = applicationState;
+        _logger = logger;
+        
+        InitializeCommands();
+        InitializeProperties();
+    }
+
+    // Modern C# properties with nullable reference types
+    private string? _currentUser;
+    public string? CurrentUser
+    {
+        get => _currentUser;
+        set => this.RaiseAndSetIfChanged(ref _currentUser, value);
+    }
+
+    private ViewModelBase? _currentContent;
+    public ViewModelBase? CurrentContent
+    {
+        get => _currentContent;
+        set => this.RaiseAndSetIfChanged(ref _currentContent, value);
+    }
+
+    public ReactiveCommand<string, Unit> NavigateCommand { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> ExitCommand { get; private set; } = null!;
 }
 ```
 
 **Key Features:**
-- **Navigation Management**: Controls which view is currently displayed
-- **Global Commands**: Application-wide commands (Exit, About, Settings)
-- **Status Management**: Application status and progress reporting
-- **Theme Management**: User theme selection and application
+- **Navigation Management**: Type-safe navigation with dependency injection
+- **Global State**: Application-wide state management with ReactiveUI
+- **Error Handling**: Structured logging and user-friendly error presentation
+- **Theme Support**: Dynamic theme switching with .NET 8 configuration patterns
 
 #### `MainViewViewModel.cs`
-Main content area ViewModel coordinating tab-based navigation and content display.
+Main content area ViewModel coordinating tab-based navigation.
 
 ```csharp
-public class MainViewViewModel : ReactiveObject
+namespace MTM_WIP_Application_Avalonia.ViewModels;
+
+public sealed class MainViewViewModel : ReactiveObject
 {
-    // Tab management
-    // Content coordination
-    // Inter-tab communication
-    // Quick actions integration
+    private readonly ObservableAsPropertyHelper<bool> _hasActiveTab;
+    public bool HasActiveTab => _hasActiveTab.Value;
+
+    private int _selectedTabIndex;
+    public int SelectedTabIndex
+    {
+        get => _selectedTabIndex;
+        set => this.RaiseAndSetIfChanged(ref _selectedTabIndex, value);
+    }
+
+    // Modern collection initialization
+    public ObservableCollection<TabItemViewModel> Tabs { get; } = [];
+
+    public ReactiveCommand<TabItemViewModel, Unit> SwitchTabCommand { get; }
+    public ReactiveCommand<TabItemViewModel, Unit> CloseTabCommand { get; }
+
+    public MainViewViewModel(ILogger<MainViewViewModel> logger)
+    {
+        // OAPH with .NET 8 patterns
+        _hasActiveTab = this.WhenAnyValue(vm => vm.SelectedTabIndex)
+            .Select(index => index >= 0 && index < Tabs.Count)
+            .ToProperty(this, vm => vm.HasActiveTab);
+
+        SwitchTabCommand = ReactiveCommand.Create<TabItemViewModel>(SwitchTab);
+        CloseTabCommand = ReactiveCommand.Create<TabItemViewModel>(CloseTab);
+    }
 }
 ```
 
-**Key Features:**
-- **Tab Coordination**: Manages inventory, transfer, and remove tabs
-- **Quick Actions**: Integrates with quick buttons panel
-- **Data Sharing**: Coordinates data sharing between tabs
-- **Progress Tracking**: Manages progress feedback across operations
-
-### Tab ViewModels
+### Business ViewModels
 
 #### `InventoryTabViewModel.cs`
-Primary inventory management interface ViewModel.
+Primary inventory management interface with enhanced .NET 8 patterns.
 
 ```csharp
-public class InventoryTabViewModel : ReactiveObject
+namespace MTM_WIP_Application_Avalonia.ViewModels;
+
+public sealed class InventoryTabViewModel : ReactiveObject
 {
-    // Inventory item creation
-    // Form validation
-    // Save operations
-    // Reset functionality
+    private readonly IInventoryService _inventoryService;
+    private readonly IUserAndTransactionServices _userService;
+    private readonly IApplicationStateService _applicationState;
+    private readonly ILogger<InventoryTabViewModel> _logger;
+
+    public InventoryTabViewModel(
+        IInventoryService inventoryService,
+        IUserAndTransactionServices userService,
+        IApplicationStateService applicationState,
+        ILogger<InventoryTabViewModel> logger)
+    {
+        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        
+        InitializeProperties();
+        InitializeCommands();
+        InitializeValidation();
+    }
+
+    // Properties with nullable reference types
+    private string _selectedPart = string.Empty;
+    public string SelectedPart
+    {
+        get => _selectedPart;
+        set => this.RaiseAndSetIfChanged(ref _selectedPart, value);
+    }
+
+    private string _selectedOperation = string.Empty;
+    public string SelectedOperation
+    {
+        get => _selectedOperation;
+        set => this.RaiseAndSetIfChanged(ref _selectedOperation, value);
+    }
+
+    private string _selectedLocation = string.Empty;
+    public string SelectedLocation
+    {
+        get => _selectedLocation;
+        set => this.RaiseAndSetIfChanged(ref _selectedLocation, value);
+    }
+
+    private int _quantity;
+    public int Quantity
+    {
+        get => _quantity;
+        set => this.RaiseAndSetIfChanged(ref _quantity, value);
+    }
+
+    private string _notes = string.Empty;
+    public string Notes
+    {
+        get => _notes;
+        set => this.RaiseAndSetIfChanged(ref _notes, value);
+    }
+
+    // Validation with OAPH
+    private readonly ObservableAsPropertyHelper<bool> _isFormValid;
+    public bool IsFormValid => _isFormValid.Value;
+
+    private readonly ObservableAsPropertyHelper<string?> _validationMessage;
+    public string? ValidationMessage => _validationMessage.Value;
+
+    // Commands with CancellationToken support
+    public ReactiveCommand<Unit, Unit> SaveCommand { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> ResetCommand { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> LoadPartsCommand { get; private set; } = null!;
+
+    private void InitializeProperties()
+    {
+        // Advanced validation with multiple criteria
+        _isFormValid = this.WhenAnyValue(
+                vm => vm.SelectedPart,
+                vm => vm.SelectedOperation,
+                vm => vm.SelectedLocation,
+                vm => vm.Quantity,
+                (part, op, loc, qty) => 
+                    !string.IsNullOrWhiteSpace(part) &&
+                    !string.IsNullOrWhiteSpace(op) &&
+                    !string.IsNullOrWhiteSpace(loc) &&
+                    qty > 0)
+            .ToProperty(this, vm => vm.IsFormValid, initialValue: false);
+
+        _validationMessage = this.WhenAnyValue(
+                vm => vm.SelectedPart,
+                vm => vm.SelectedOperation,
+                vm => vm.SelectedLocation,
+                vm => vm.Quantity,
+                GetValidationMessage)
+            .ToProperty(this, vm => vm.ValidationMessage, initialValue: null);
+    }
+
+    private void InitializeCommands()
+    {
+        // Commands with proper CanExecute
+        SaveCommand = ReactiveCommand.CreateFromTask(
+            SaveInventoryItemAsync,
+            this.WhenAnyValue(vm => vm.IsFormValid));
+
+        ResetCommand = ReactiveCommand.Create(ResetForm);
+
+        LoadPartsCommand = ReactiveCommand.CreateFromTask(LoadAvailablePartsAsync);
+
+        // Centralized error handling
+        Observable.Merge(
+                SaveCommand.ThrownExceptions,
+                LoadPartsCommand.ThrownExceptions)
+            .Subscribe(HandleError);
+    }
+
+    private async Task SaveInventoryItemAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            _logger.LogInformation("Saving inventory item: Part={PartId}, Operation={Operation}, Quantity={Quantity}", 
+                SelectedPart, SelectedOperation, Quantity);
+
+            // Use stored procedure for database operations
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_PartID"] = SelectedPart,
+                ["p_OperationID"] = SelectedOperation,
+                ["p_LocationID"] = SelectedLocation,
+                ["p_Quantity"] = Quantity,
+                ["p_Notes"] = Notes,
+                ["p_UserID"] = _applicationState.CurrentUser ?? "Unknown",
+                ["p_TransactionType"] = "IN" // Always IN when adding inventory
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                Model_AppVariables.ConnectionString,
+                "inv_inventory_Add_Item_Enhanced",
+                parameters
+            );
+
+            if (result.Status == 0)
+            {
+                _logger.LogInformation("Inventory item saved successfully");
+                ResetForm();
+                
+                // Raise event for parent components
+                ItemSaved?.Invoke(this, new InventoryItemSavedEventArgs
+                {
+                    PartId = SelectedPart,
+                    Operation = SelectedOperation,
+                    Quantity = Quantity
+                });
+            }
+            else
+            {
+                throw new InvalidOperationException(result.Message);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to save inventory item");
+            throw; // Re-throw for error handling subscription
+        }
+    }
+
+    private void HandleError(Exception ex)
+    {
+        _logger.LogError(ex, "ViewModel error occurred");
+        
+        // Show user-friendly error message
+        ErrorMessage = ex switch
+        {
+            InvalidOperationException => ex.Message,
+            TimeoutException => "Operation timed out. Please try again.",
+            _ => "An unexpected error occurred. Please contact support."
+        };
+    }
+
+    // Events for component communication
+    public event EventHandler<InventoryItemSavedEventArgs>? ItemSaved;
+}
+
+public record InventoryItemSavedEventArgs
+{
+    public required string PartId { get; init; }
+    public required string Operation { get; init; }
+    public required int Quantity { get; init; }
 }
 ```
 
-**Key Responsibilities:**
-- **Form Management**: Part, Operation, Location, Quantity, Notes inputs
-- **Validation Logic**: Real-time form validation with visual feedback
-- **Save Operations**: Inventory item creation with progress tracking
-- **Quick Button Integration**: Updates quick buttons on successful saves
+## ?? ReactiveUI Patterns (.NET 8)
 
-**Key Properties:**
+### Observable Properties with Nullable Reference Types
 ```csharp
-// Form inputs
-public string SelectedPart { get; set; }
-public string SelectedOperation { get; set; }
-public string SelectedLocation { get; set; }
-public int Quantity { get; set; }
-public string Notes { get; set; }
-
-// Validation states
-public bool IsPartValid { get; }
-public bool IsOperationValid { get; }
-public bool IsLocationValid { get; }
-public bool IsQuantityValid { get; }
-public bool IsFormValid { get; }
-
-// Commands
-public ReactiveCommand<Unit, Unit> SaveCommand { get; }
-public ReactiveCommand<Unit, Unit> ResetCommand { get; }
-public ReactiveCommand<Unit, Unit> AdvancedEntryCommand { get; }
-```
-
-### Component ViewModels
-
-#### `QuickButtonsViewModel.cs`
-Quick action buttons panel ViewModel for rapid inventory operations.
-
-```csharp
-public class QuickButtonsViewModel : ReactiveObject
+// Nullable string property
+private string? _description;
+public string? Description
 {
-    // Quick button collection
-    // Button management
-    // Action execution
-    // User customization
+    get => _description;
+    set => this.RaiseAndSetIfChanged(ref _description, value);
 }
-```
 
-**Key Features:**
-- **Dynamic Button Management**: Loads user's last 10 transactions as buttons
-- **Button Customization**: Edit, remove, and clear button operations
-- **Action Execution**: One-click inventory operations
-- **Context Menus**: Right-click management options
-
-**Key Properties:**
-```csharp
-// Button collection
-public ObservableCollection<QuickButtonItemViewModel> QuickButtons { get; }
-
-// Management commands
-public ReactiveCommand<Unit, Unit> LoadButtonsCommand { get; }
-public ReactiveCommand<QuickButtonItemViewModel, Unit> EditButtonCommand { get; }
-public ReactiveCommand<QuickButtonItemViewModel, Unit> RemoveButtonCommand { get; }
-public ReactiveCommand<Unit, Unit> ClearAllButtonsCommand { get; }
-public ReactiveCommand<Unit, Unit> RefreshButtonsCommand { get; }
-
-// Action execution
-public ReactiveCommand<QuickButtonItemViewModel, Unit> ExecuteQuickActionCommand { get; }
-```
-
-## ?? ReactiveUI Patterns
-
-### Observable Properties
-Standard pattern for reactive properties:
-
-```csharp
+// Non-nullable string with default value
 private string _partId = string.Empty;
 public string PartId
 {
@@ -147,369 +321,252 @@ public string PartId
 }
 ```
 
-### Derived Properties (OAPH)
-Properties that derive from other properties:
-
+### Derived Properties with Modern C#
 ```csharp
-private readonly ObservableAsPropertyHelper<bool> _isFormValid;
-public bool IsFormValid => _isFormValid.Value;
+private readonly ObservableAsPropertyHelper<string> _displayName;
+public string DisplayName => _displayName.Value;
 
-public InventoryTabViewModel()
+public InventoryViewModel()
 {
-    _isFormValid = this.WhenAnyValue(
-            vm => vm.SelectedPart,
-            vm => vm.SelectedOperation,
-            vm => vm.SelectedLocation,
-            vm => vm.Quantity,
-            (part, op, loc, qty) => 
-                !string.IsNullOrWhiteSpace(part) &&
-                !string.IsNullOrWhiteSpace(op) &&
-                !string.IsNullOrWhiteSpace(loc) &&
-                qty > 0)
-        .ToProperty(this, vm => vm.IsFormValid, initialValue: false);
+    _displayName = this.WhenAnyValue(
+            vm => vm.PartId,
+            vm => vm.Description,
+            (partId, desc) => $"{partId}: {desc ?? "No Description"}")
+        .ToProperty(this, vm => vm.DisplayName, initialValue: string.Empty);
 }
 ```
 
-### Reactive Commands
-Commands with async support and CanExecute logic:
-
+### Async Commands with CancellationToken
 ```csharp
-public ReactiveCommand<Unit, Unit> SaveCommand { get; }
+public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
 
-public InventoryTabViewModel()
+public InventoryViewModel()
 {
-    // Command with CanExecute
-    var canSave = this.WhenAnyValue(vm => vm.IsFormValid);
-    SaveCommand = ReactiveCommand.CreateFromTask(async () =>
+    LoadDataCommand = ReactiveCommand.CreateFromTask(async (cancellationToken) =>
     {
-        await SaveInventoryItemAsync();
-    }, canSave);
+        await LoadInventoryDataAsync(cancellationToken);
+    });
 
-    // Error handling
-    SaveCommand.ThrownExceptions
+    // Error handling with structured logging
+    LoadDataCommand.ThrownExceptions
         .Subscribe(ex =>
         {
-            // Handle errors gracefully
-            ErrorMessage = $"Save failed: {ex.Message}";
+            _logger.LogError(ex, "Failed to load inventory data");
+            ErrorMessage = "Failed to load data. Please try again.";
         });
 }
-```
 
-### Property Change Notifications
-Responding to property changes:
-
-```csharp
-public InventoryTabViewModel()
+private async Task LoadInventoryDataAsync(CancellationToken cancellationToken = default)
 {
-    // React to part selection changes
-    this.WhenAnyValue(vm => vm.SelectedPart)
-        .Where(part => !string.IsNullOrWhiteSpace(part))
-        .Subscribe(async part =>
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        Model_AppVariables.ConnectionString,
+        "inv_inventory_Get_All",
+        new Dictionary<string, object>()
+    );
+
+    if (result.Status == 0)
+    {
+        // Process successful result
+        Items.Clear();
+        foreach (DataRow row in result.Data.Rows)
         {
-            await LoadPartDetailsAsync(part);
+            Items.Add(MapToInventoryItem(row));
+        }
+    }
+    else
+    {
+        throw new InvalidOperationException(result.Message);
+    }
+}
+```
+
+### Collection Binding with Modern Patterns
+```csharp
+// Modern collection initialization
+public ObservableCollection<InventoryItemViewModel> Items { get; } = [];
+
+// Reactive collection operations
+public ReactiveCommand<InventoryItemViewModel, Unit> RemoveItemCommand { get; }
+
+public InventoryViewModel()
+{
+    RemoveItemCommand = ReactiveCommand.Create<InventoryItemViewModel>(item =>
+    {
+        Items.Remove(item);
+    });
+
+    // React to collection changes
+    Items.ObserveCollectionChanges()
+        .Subscribe(change =>
+        {
+            _logger.LogInformation("Inventory collection changed: {ChangeType}", change.EventArgs.Action);
         });
 }
 ```
 
-## ?? Service Integration
+## ?? Service Integration (.NET 8)
 
-### Dependency Injection Pattern
-ViewModels receive services through constructor injection:
-
+### Constructor Injection with Nullable Guards
 ```csharp
-public class InventoryTabViewModel : ReactiveObject
+public sealed class InventoryTabViewModel : ReactiveObject
 {
     private readonly IInventoryService _inventoryService;
     private readonly IUserAndTransactionServices _userService;
     private readonly IApplicationStateService _applicationState;
+    private readonly ILogger<InventoryTabViewModel> _logger;
 
     public InventoryTabViewModel(
         IInventoryService inventoryService,
         IUserAndTransactionServices userService,
-        IApplicationStateService applicationState)
+        IApplicationStateService applicationState,
+        ILogger<InventoryTabViewModel> logger)
     {
-        _inventoryService = inventoryService;
-        _userService = userService;
-        _applicationState = applicationState;
+        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         
-        InitializeCommands();
-        InitializeProperties();
+        _logger.LogInformation("InventoryTabViewModel initialized with dependency injection");
+        
+        InitializeViewModel();
     }
 }
 ```
 
-### Service Usage Patterns
-Async service calls with error handling:
-
+### Service Usage with Result Patterns
 ```csharp
-private async Task SaveInventoryItemAsync()
+private async Task<Result> SaveInventoryItemAsync(CancellationToken cancellationToken = default)
 {
     try
     {
-        var result = await _inventoryService.AddInventoryItemAsync(new InventoryItem
+        var inventoryItem = new InventoryItem
         {
             PartId = SelectedPart,
-            Operation = SelectedOperation,
+            Operation = SelectedOperation, // Workflow step identifier
             Location = SelectedLocation,
             Quantity = Quantity,
             Notes = Notes,
             TransactionType = TransactionType.IN, // User is adding stock
-            User = _applicationState.CurrentUser
-        });
+            User = _applicationState.CurrentUser ?? "System",
+            CreatedDate = DateTime.UtcNow
+        };
+
+        var result = await _inventoryService.AddInventoryItemAsync(inventoryItem, cancellationToken);
 
         if (result.IsSuccess)
         {
-            StatusMessage = "Inventory item saved successfully";
+            _logger.LogInformation("Inventory item saved successfully: {PartId}", inventoryItem.PartId);
             await ResetFormAsync();
+            return Result.Success();
         }
         else
         {
-            ErrorMessage = result.ErrorMessage;
+            _logger.LogWarning("Failed to save inventory item: {Error}", result.ErrorMessage);
+            return Result.Failure(result.ErrorMessage ?? "Unknown error occurred");
         }
+    }
+    catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+    {
+        _logger.LogInformation("Save operation was cancelled");
+        return Result.Failure("Operation was cancelled");
     }
     catch (Exception ex)
     {
-        ErrorMessage = $"Failed to save inventory item: {ex.Message}";
+        _logger.LogError(ex, "Unexpected error saving inventory item");
+        return Result.Failure($"Failed to save inventory item: {ex.Message}");
     }
 }
 ```
 
-## ?? Business Logic Integration
+## ?? Business Logic Integration (.NET 8)
 
-### Transaction Type Logic
-ViewModels implement correct transaction type determination:
-
+### Transaction Type Logic with Pattern Matching
 ```csharp
-// ? CORRECT: TransactionType based on user intent
-private TransactionType GetTransactionTypeForUserAction(UserAction action)
-{
-    return action switch
-    {
-        UserAction.AddStock => TransactionType.IN,      // User adding stock
-        UserAction.RemoveStock => TransactionType.OUT,  // User removing stock
-        UserAction.TransferStock => TransactionType.TRANSFER, // User moving stock
-        _ => throw new ArgumentException($"Unknown user action: {action}")
-    };
-}
+public enum UserAction { AddInventory, RemoveInventory, TransferInventory }
 
-// Operation is just a workflow step number
-private async Task ProcessInventoryActionAsync(UserAction action, string operation)
+// Modern switch expression
+private TransactionType GetTransactionTypeForUserAction(UserAction action) => action switch
 {
-    var transactionType = GetTransactionTypeForUserAction(action);
-    
-    var transaction = new InventoryTransaction
-    {
-        TransactionType = transactionType, // Based on user intent
-        Operation = operation, // Just a workflow step identifier
-        // ... other properties
-    };
-}
+    UserAction.AddInventory => TransactionType.IN,      // User adding stock
+    UserAction.RemoveInventory => TransactionType.OUT,  // User removing stock
+    UserAction.TransferInventory => TransactionType.TRANSFER, // User moving stock
+    _ => throw new ArgumentException($"Unknown user action: {action}")
+};
+
+// Operation validation with modern patterns
+private static bool IsValidOperation(string? operation) =>
+    !string.IsNullOrWhiteSpace(operation) && 
+    operation.All(char.IsDigit) && 
+    operation.Length is > 0 and <= 10;
 ```
 
-### Data Validation
-Comprehensive validation with immediate feedback:
-
+### Data Validation with Record Types
 ```csharp
-// Property validation
-private bool ValidatePartId(string partId)
+public record ValidationResult(bool IsValid, string? ErrorMessage = null)
 {
-    if (string.IsNullOrWhiteSpace(partId))
-    {
-        PartIdError = "Part ID is required";
-        return false;
-    }
-    
-    if (!_inventoryService.IsValidPartId(partId))
-    {
-        PartIdError = "Invalid Part ID";
-        return false;
-    }
-    
-    PartIdError = null;
-    return true;
+    public static ValidationResult Valid() => new(true);
+    public static ValidationResult Invalid(string message) => new(false, message);
 }
 
-// Quantity validation
-private bool ValidateQuantity(int quantity)
+private ValidationResult ValidateInventoryData()
 {
-    if (quantity <= 0)
-    {
-        QuantityError = "Quantity must be greater than zero";
-        return false;
-    }
-    
-    QuantityError = null;
-    return true;
+    if (string.IsNullOrWhiteSpace(SelectedPart))
+        return ValidationResult.Invalid("Part ID is required");
+        
+    if (string.IsNullOrWhiteSpace(SelectedOperation))
+        return ValidationResult.Invalid("Operation is required");
+        
+    if (!IsValidOperation(SelectedOperation))
+        return ValidationResult.Invalid("Operation must be numeric");
+        
+    if (Quantity <= 0)
+        return ValidationResult.Invalid("Quantity must be greater than zero");
+        
+    return ValidationResult.Valid();
 }
 ```
 
-## ?? UI Binding Support
-
-### Design-Time Data
-ViewModels support design-time data for XAML previews:
-
-```csharp
-public class InventoryTabViewModel : ReactiveObject
-{
-    public InventoryTabViewModel() : this(null, null, null)
-    {
-        // Design-time constructor
-    }
-
-    public InventoryTabViewModel(
-        IInventoryService inventoryService,
-        IUserAndTransactionServices userService,
-        IApplicationStateService applicationState)
-    {
-        // Runtime constructor
-        if (inventoryService == null) // Design-time
-        {
-            LoadDesignTimeData();
-        }
-        else // Runtime
-        {
-            _inventoryService = inventoryService;
-            // ... other service assignments
-        }
-    }
-
-    private void LoadDesignTimeData()
-    {
-        SelectedPart = "SAMPLE-PART-001";
-        SelectedOperation = "100";
-        SelectedLocation = "Main Warehouse";
-        Quantity = 25;
-        Notes = "Sample inventory item for design-time preview";
-    }
-}
-```
-
-### Avalonia Binding Support
-Properties designed for Avalonia compiled bindings:
-
-```csharp
-// Properties with proper change notification
-public string SelectedPart
-{
-    get => _selectedPart;
-    set
-    {
-        this.RaiseAndSetIfChanged(ref _selectedPart, value);
-        ValidatePartId(value); // Immediate validation
-    }
-}
-
-// Collections for ItemsControl binding
-public ObservableCollection<string> AvailableParts { get; } = new();
-public ObservableCollection<string> AvailableOperations { get; } = new();
-public ObservableCollection<string> AvailableLocations { get; } = new();
-```
-
-## ?? Error Handling
+## ?? Error Handling (.NET 8)
 
 ### Centralized Error Management
-All ViewModels implement consistent error handling:
-
 ```csharp
-// Error properties
-private string _errorMessage;
-public string ErrorMessage
+public sealed class ViewModelErrorHandler
 {
-    get => _errorMessage;
-    set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
-}
-
-private bool _hasError;
-public bool HasError
-{
-    get => _hasError;
-    set => this.RaiseAndSetIfChanged(ref _hasError, value);
-}
-
-// Command error handling
-public InventoryTabViewModel()
-{
-    SaveCommand = ReactiveCommand.CreateFromTask(SaveInventoryItemAsync);
+    private readonly ILogger _logger;
     
-    // Global error handling for all commands
-    Observable.Merge(
-            SaveCommand.ThrownExceptions,
-            ResetCommand.ThrownExceptions,
-            LoadDataCommand.ThrownExceptions)
-        .Subscribe(HandleError);
-}
-
-private void HandleError(Exception ex)
-{
-    ErrorMessage = TranslateErrorToUserMessage(ex);
-    HasError = true;
+    public ViewModelErrorHandler(ILogger logger)
+    {
+        _logger = logger;
+    }
     
-    // Log error for debugging
-    Debug.WriteLine($"ViewModel Error: {ex}");
-}
-```
-
-### User-Friendly Error Messages
-Error translation for better user experience:
-
-```csharp
-private string TranslateErrorToUserMessage(Exception ex)
-{
-    return ex switch
+    public string HandleError(Exception ex) => ex switch
     {
         ValidationException validationEx => validationEx.Message,
-        DatabaseException => "Database connection issue. Please check your connection and try again.",
-        TimeoutException => "Operation timed out. Please try again.",
+        TimeoutException => "The operation timed out. Please try again.",
         UnauthorizedAccessException => "You don't have permission to perform this action.",
+        InvalidOperationException invalidOp => invalidOp.Message,
         _ => "An unexpected error occurred. Please contact support if the problem persists."
     };
 }
-```
 
-## ?? Performance Optimization
+// Usage in ViewModel
+private readonly ViewModelErrorHandler _errorHandler;
 
-### Efficient Property Updates
-Minimizing unnecessary updates:
-
-```csharp
-// Batch property updates
-public void UpdateFormData(InventoryFormData data)
+private void HandleCommandError(Exception ex)
 {
-    using (DelayChangeNotifications())
-    {
-        SelectedPart = data.PartId;
-        SelectedOperation = data.Operation;
-        SelectedLocation = data.Location;
-        Quantity = data.Quantity;
-        Notes = data.Notes;
-    } // Change notifications sent here
+    var userMessage = _errorHandler.HandleError(ex);
+    ErrorMessage = userMessage;
+    HasError = true;
+    
+    _logger.LogError(ex, "ViewModel command error: {UserMessage}", userMessage);
 }
 ```
 
-### Lazy Loading
-Load data only when needed:
+## ?? Testing Support (.NET 8)
 
+### Testable ViewModel Design
 ```csharp
-private readonly Lazy<Task<List<string>>> _availableParts;
-
-public InventoryTabViewModel()
-{
-    _availableParts = new Lazy<Task<List<string>>>(LoadAvailablePartsAsync);
-}
-
-public async Task<List<string>> GetAvailablePartsAsync()
-{
-    return await _availableParts.Value;
-}
-```
-
-## ?? Testing Support
-
-### Testable Design
-ViewModels designed for easy unit testing:
-
-```csharp
-public class InventoryTabViewModelTests
+public sealed class InventoryTabViewModelTests
 {
     [Test]
     public async Task SaveCommand_ValidData_SavesSuccessfully()
@@ -518,12 +575,19 @@ public class InventoryTabViewModelTests
         var mockInventoryService = new Mock<IInventoryService>();
         var mockUserService = new Mock<IUserAndTransactionServices>();
         var mockApplicationState = new Mock<IApplicationStateService>();
+        var mockLogger = new Mock<ILogger<InventoryTabViewModel>>();
+        
+        mockApplicationState.Setup(x => x.CurrentUser).Returns("TestUser");
+        mockInventoryService.Setup(x => x.AddInventoryItemAsync(It.IsAny<InventoryItem>(), It.IsAny<CancellationToken>()))
+                           .ReturnsAsync(Result.Success());
         
         var viewModel = new InventoryTabViewModel(
             mockInventoryService.Object,
             mockUserService.Object,
-            mockApplicationState.Object);
+            mockApplicationState.Object,
+            mockLogger.Object);
         
+        // Set up valid form data
         viewModel.SelectedPart = "TEST-PART";
         viewModel.SelectedOperation = "100";
         viewModel.SelectedLocation = "Test Location";
@@ -533,36 +597,44 @@ public class InventoryTabViewModelTests
         await viewModel.SaveCommand.Execute();
         
         // Assert
-        mockInventoryService.Verify(s => s.AddInventoryItemAsync(It.IsAny<InventoryItem>()), Times.Once);
-        Assert.That(viewModel.ErrorMessage, Is.Null);
+        mockInventoryService.Verify(s => s.AddInventoryItemAsync(
+            It.Is<InventoryItem>(item => 
+                item.PartId == "TEST-PART" && 
+                item.TransactionType == TransactionType.IN), 
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 }
 ```
 
-## ?? Development Guidelines
+## ?? Development Guidelines (.NET 8)
 
 ### Adding New ViewModels
-1. **Inherit from ReactiveObject**: All ViewModels must inherit from `ReactiveObject`
-2. **Use Reactive Patterns**: Implement properties and commands using ReactiveUI patterns
-3. **Inject Services**: Use constructor injection for all service dependencies
-4. **Handle Errors**: Implement comprehensive error handling for all operations
-5. **Support Design-Time**: Provide design-time data for XAML previews
-6. **Add Unit Tests**: Create comprehensive unit tests for all public methods
+1. **Use file-scoped namespaces**: `namespace MTM_WIP_Application_Avalonia.ViewModels;`
+2. **Sealed classes**: Mark ViewModels as `sealed` unless inheritance is specifically needed
+3. **Nullable reference types**: Enable and properly handle nullable reference types
+4. **Constructor injection**: Use primary constructors where appropriate
+5. **Structured logging**: Use `ILogger<T>` with structured logging patterns
+6. **CancellationToken support**: Include CancellationToken in async operations
+7. **Result patterns**: Use Result<T> for service operations
+8. **Modern C# features**: Utilize pattern matching, switch expressions, and record types
 
-### ViewModel Conventions
+### ViewModel Conventions (.NET 8)
 - **Naming**: ViewModels end with `ViewModel` (e.g., `InventoryTabViewModel`)
-- **Properties**: Use `RaiseAndSetIfChanged` for all settable properties
-- **Commands**: Use `ReactiveCommand` for all user actions
-- **Async Operations**: Use `CreateFromTask` for async command operations
+- **Namespace**: `MTM_WIP_Application_Avalonia.ViewModels`
+- **Properties**: Use `RaiseAndSetIfChanged` with nullable reference type annotations
+- **Commands**: Use `ReactiveCommand` with proper CanExecute and error handling
+- **Collections**: Initialize with collection expressions `[]`
+- **Async Operations**: Always include CancellationToken support
 - **Error Handling**: Subscribe to `ThrownExceptions` for all commands
 
 ## ?? Related Documentation
 
-- **View Bindings**: See `Views/` directory for AXAML view files
-- **Service Contracts**: `Services/Interfaces/` for service interfaces
-- **UI Documentation**: `Development/UI_Documentation/` for component specifications
-- **ReactiveUI Guide**: Official ReactiveUI documentation for advanced patterns
+- **View Bindings**: See `Views/README.md` for Avalonia 11+ view patterns
+- **Service Contracts**: `Services/Interfaces/` for service interfaces with .NET 8 patterns
+- **UI Documentation**: `Documentation/Development/UI_Documentation/` for component specifications
+- **ReactiveUI Guide**: Official ReactiveUI documentation for .NET 8 compatibility
+- **GitHub Instructions**: `.github/copilot-instructions.md` for comprehensive development guidelines
 
 ---
 
-*This directory implements the ViewModel layer of the MVVM pattern, providing reactive data binding and command handling for the MTM WIP Application UI components.*
+*This directory implements the ViewModel layer using ReactiveUI with .NET 8 modern patterns, providing type-safe reactive data binding and command handling for the MTM WIP Application UI components.*

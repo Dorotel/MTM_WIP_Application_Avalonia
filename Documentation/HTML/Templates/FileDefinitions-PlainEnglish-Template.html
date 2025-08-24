@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-{{FILENAME}} - {{COMPONENT_TYPE}} Explained</title>
+    <meta name="description" content="Plain English explanation of {{COMPONENT_TYPE}} - {{FILENAME}} in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, {{COMPONENT_TYPE}}, {{FILENAME}}, plain english, business explanation">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../assets/css/responsive.css">
+    
+    <!-- Additional MTM Styling for FileDefinitions -->
+    <style>
+        /* FileDefinitions-specific styling for PlainEnglish version */
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-gold-dark: #DAA520;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-gray: #CCCCCC;
+            --mtm-purple: #4B45ED;
+            --mtm-magenta: #BA45ED;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+        }
+
+        .filedefinitions-header {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .component-badge {
+            background: var(--mtm-purple);
+            color: var(--mtm-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold), var(--mtm-gold-dark));
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+            text-decoration: none;
+            color: var(--mtm-black);
+        }
+
+        .nav-button.technical {
+            background: linear-gradient(135deg, var(--mtm-purple), var(--mtm-magenta));
+            color: var(--mtm-white);
+        }
+
+        .nav-button.technical:hover {
+            color: var(--mtm-white);
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #4a4a4a 0%, #6a6a6a 100%);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .analogy-title {
+            color: var(--mtm-gold);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .business-impact {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+        }
+
+        .process-step {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 3px solid var(--mtm-gold);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--mtm-gold);
+        }
+
+        .feature-title {
+            color: var(--mtm-gold);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .mtm-callout {
+            background: linear-gradient(135deg, var(--mtm-purple), var(--mtm-magenta));
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--mtm-white);
+        }
+
+        .mtm-callout h3 {
+            color: var(--mtm-white);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cross-Reference Navigation (TOP_OF_PAGE as specified) -->
+    <div class="cross-reference-nav">
+        <h3>?? Quick Navigation</h3>
+        <a href="../../../Technical/FileDefinitions/{{CATEGORY}}/FileDefinitions-{{FILENAME}}.html" class="nav-button technical" accesskey="t">?? Technical View (Alt+T)</a>
+        <a href="../../index.html" class="nav-button">?? Plain English Home</a>
+        <a href="../../../index.html" class="nav-button">?? Documentation Hub</a>
+        <a href="index.html" class="nav-button">?? {{CATEGORY}} Index</a>
+        {{ADDITIONAL_NAV_BUTTONS}}
+    </div>
+
+    <!-- Main Header -->
+    <div class="filedefinitions-header">
+        <div class="component-badge">{{COMPONENT_TYPE}}</div>
+        <h1>{{DISPLAY_NAME}} - What It Does for MTM</h1>
+        <p><strong>{{FILENAME}}</strong> | <span style="background: rgba(0,0,0,0.2); padding: 0.25rem 0.5rem; border-radius: 15px;">{{STATUS_BADGE}}</span></p>
+    </div>
+
+    <!-- Manufacturing Analogy Section -->
+    <div class="analogy-box">
+        <h2 class="analogy-title">?? {{ANALOGY_TITLE}}</h2>
+        <p>{{ANALOGY_DESCRIPTION}}</p>
+        
+        <div class="process-step">
+            <strong>{{ANALOGY_DETAIL_TITLE}}</strong>
+            <ul>
+                {{ANALOGY_POINTS}}
+            </ul>
+        </div>
+    </div>
+
+    <!-- What This Component Does -->
+    <section style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--mtm-gold);">
+        <h2 style="color: var(--mtm-gold);">?? What This Component Does</h2>
+        <p>{{COMPONENT_PURPOSE}}</p>
+
+        <div class="mtm-callout">
+            ?? <strong>Key Principle:</strong> {{KEY_PRINCIPLE}}
+        </div>
+
+        {{COMPONENT_FEATURES_SECTION}}
+    </section>
+
+    <!-- Features/Capabilities Grid -->
+    <section style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--mtm-gold);">
+        <h2 style="color: var(--mtm-gold);">?? Key Capabilities</h2>
+        
+        <div class="feature-grid">
+            {{FEATURE_CARDS}}
+        </div>
+    </section>
+
+    <!-- Business Impact Section -->
+    <section class="business-impact">
+        <h2 style="color: var(--mtm-gold);">?? Business Impact</h2>
+        <p>{{BUSINESS_IMPACT_DESCRIPTION}}</p>
+
+        <h3 style="color: var(--mtm-gold);">?? Benefits for MTM Operations</h3>
+        <ul>
+            {{BUSINESS_BENEFITS_LIST}}
+        </ul>
+
+        <h3 style="color: var(--mtm-gold);">?? Who Uses This</h3>
+        <p>{{USER_GROUPS}}</p>
+    </section>
+
+    <!-- MTM-Specific Business Rules -->
+    <section style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--mtm-gold);">
+        <h2 style="color: var(--mtm-gold);">?? MTM Business Rules</h2>
+        
+        <div class="mtm-callout">
+            ?? <strong>Critical MTM Conventions:</strong>
+            {{MTM_BUSINESS_RULES}}
+        </div>
+
+        {{MTM_SPECIFIC_SECTIONS}}
+    </section>
+
+    <!-- How It Works (Process-Oriented) -->
+    <section style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--mtm-gold);">
+        <h2 style="color: var(--mtm-gold);">?? How It Works (Simple Process)</h2>
+        <p>{{PROCESS_OVERVIEW}}</p>
+
+        {{PROCESS_STEPS}}
+    </section>
+
+    <!-- Integration with Other Components -->
+    <section style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--mtm-gold);">
+        <h2 style="color: var(--mtm-gold);">?? How It Connects to Other Parts</h2>
+        <p>{{INTEGRATION_DESCRIPTION}}</p>
+
+        <div class="feature-grid">
+            {{INTEGRATION_CONNECTIONS}}
+        </div>
+    </section>
+
+    <!-- Troubleshooting for Non-Technical Users -->
+    <section style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--mtm-gold);">
+        <h2 style="color: var(--mtm-gold);">??? Common Issues & Solutions</h2>
+        <p>{{TROUBLESHOOTING_INTRO}}</p>
+
+        {{TROUBLESHOOTING_ITEMS}}
+    </section>
+
+    <!-- Cross-Reference Navigation (BOTTOM) -->
+    <div class="cross-reference-nav">
+        <h3>?? Explore More</h3>
+        <a href="../../../Technical/FileDefinitions/{{CATEGORY}}/FileDefinitions-{{FILENAME}}.html" class="nav-button technical">?? View Technical Implementation</a>
+        {{RELATED_COMPONENTS_NAV}}
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: rgba(255, 255, 255, 0.05); padding: 2rem; text-align: center; margin-top: 3rem; border-top: 1px solid var(--mtm-gold);">
+        <p style="color: var(--mtm-gray);">
+            MTM WIP Application - {{COMPONENT_TYPE}} Documentation •
+            <a href="../../index.html" style="color: var(--mtm-gold);">Plain English Home</a> •
+            <a href="../../../Technical/FileDefinitions/{{CATEGORY}}/FileDefinitions-{{FILENAME}}.html" style="color: var(--mtm-gold);">Technical Documentation</a>
+        </p>
+        <p style="color: var(--mtm-gray); margin-top: 0.5rem; font-size: 0.9rem;">
+            Last Updated: <time datetime="{{LAST_UPDATED}}">{{LAST_UPDATED_DISPLAY}}</time> •
+            <a href="#" onclick="alert('For accessibility feedback, please create an issue in the repository.')" style="color: var(--mtm-gold);">Accessibility Feedback</a>
+        </p>
+    </footer>
+
+    <!-- Modern JavaScript Features -->
+    <script>
+        // Enhanced accessibility and user experience
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('FileDefinitions PlainEnglish Documentation Loaded: {{FILENAME}}');
+            console.log('Component Type: {{COMPONENT_TYPE}}');
+            console.log('Target Audience: Business Users, Operations Managers, Non-Technical Staff');
+
+            // Add focus indicators for better keyboard navigation
+            const focusableElements = document.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])');
+            focusableElements.forEach(element => {
+                element.addEventListener('focus', function() {
+                    this.style.outline = '3px solid var(--mtm-gold)';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                element.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+
+            // Smooth scrolling for in-page navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add interaction effects for cards
+            const cards = document.querySelectorAll('.feature-card, .process-step');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+
+        // Keyboard shortcuts for quick navigation
+        document.addEventListener('keydown', function(e) {
+            // Alt + T = Switch to Technical view
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                window.location.href = '../../../Technical/FileDefinitions/{{CATEGORY}}/FileDefinitions-{{FILENAME}}.html';
+            }
+            // Alt + H = Go to documentation home
+            if (e.altKey && e.key === 'h') {
+                e.preventDefault();
+                window.location.href = '../../../index.html';
+            }
+            // Alt + P = Go to Plain English home
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                window.location.href = '../../index.html';
+            }
+        });
+    </script>
+</body>
+</html>
+
+<!-- 
+TEMPLATE USAGE INSTRUCTIONS FOR FILEDEFINITIONS MIGRATION:
+
+1. REPLACE ALL PLACEHOLDERS:
+   - {{FILENAME}} - The actual filename without extension (e.g., "InventoryService")
+   - {{COMPONENT_TYPE}} - Type of component (Service, ViewModel, Model, Extension)
+   - {{CATEGORY}} - Folder category (Services, ViewModels, Models, Extensions)
+   - {{DISPLAY_NAME}} - User-friendly display name
+   - {{STATUS_BADGE}} - Current status (Active, Enhanced, New, etc.)
+   - {{ANALOGY_TITLE}} - Manufacturing analogy title
+   - {{ANALOGY_DESCRIPTION}} - Main analogy explanation
+   - {{COMPONENT_PURPOSE}} - What the component does (1-2 sentences)
+   - {{KEY_PRINCIPLE}} - Most important thing to understand
+   - {{BUSINESS_IMPACT_DESCRIPTION}} - How it affects business operations
+   - {{BUSINESS_BENEFITS_LIST}} - Bullet points of benefits
+   - {{USER_GROUPS}} - Who uses this component
+   - {{MTM_BUSINESS_RULES}} - MTM-specific conventions
+   - {{PROCESS_OVERVIEW}} - How it works overview
+   - {{INTEGRATION_DESCRIPTION}} - How it connects to other components
+   - {{TROUBLESHOOTING_INTRO}} - Introduction to common issues
+   - {{LAST_UPDATED}} - ISO date format
+   - {{LAST_UPDATED_DISPLAY}} - Human-readable date
+
+2. REPLACE DYNAMIC SECTIONS:
+   - {{COMPONENT_FEATURES_SECTION}} - Main features/capabilities
+   - {{FEATURE_CARDS}} - Grid of feature cards
+   - {{MTM_SPECIFIC_SECTIONS}} - MTM business rule details
+   - {{PROCESS_STEPS}} - Step-by-step process explanation
+   - {{INTEGRATION_CONNECTIONS}} - Connection cards
+   - {{TROUBLESHOOTING_ITEMS}} - Common issues and solutions
+   - {{ADDITIONAL_NAV_BUTTONS}} - Extra navigation buttons if needed
+   - {{RELATED_COMPONENTS_NAV}} - Links to related components
+
+3. FEATURE CARD TEMPLATE:
+   <div class="feature-card">
+       <div class="feature-title">?? Feature Name</div>
+       <div>Description of what this feature does for business operations.</div>
+   </div>
+
+4. PROCESS STEP TEMPLATE:
+   <div class="process-step">
+       <strong>Step X: Step Title</strong>
+       <p>Description of what happens in this step.</p>
+   </div>
+
+5. BUSINESS BENEFIT TEMPLATE:
+   <li><strong>Benefit Category:</strong> Specific benefit description</li>
+
+6. MTM BUSINESS RULE TEMPLATE:
+   <ul>
+       <li><strong>Rule Category:</strong> Specific MTM convention or rule</li>
+   </ul>
+
+7. TROUBLESHOOTING ITEM TEMPLATE:
+   <div class="process-step">
+       <strong>Issue:</strong> Description of the problem
+       <p><strong>Solution:</strong> How to resolve it</p>
+   </div>
+
+8. QUALITY CHECKLIST:
+   - [ ] All {{placeholder}} content replaced with actual values
+   - [ ] Navigation links point to correct file locations
+   - [ ] Cross-reference buttons work for Technical view
+   - [ ] Manufacturing analogies are relevant and clear
+   - [ ] Business impact clearly explained for non-technical users
+   - [ ] MTM-specific rules and conventions included
+   - [ ] Process explanations avoid technical jargon
+   - [ ] Accessibility features tested (keyboard navigation, screen reader)
+   - [ ] Mobile responsive design verified
+   - [ ] All CSS files correctly referenced
+   - [ ] Content is appropriate for business users and managers
+   - [ ] FileDefinitions- prefix used in all file names and links
+
+9. TARGET AUDIENCE:
+   - Business users and operations managers
+   - Non-technical staff who need to understand system capabilities
+   - New employees learning the MTM system
+   - Stakeholders who need business context without technical details
+
+10. CONTENT PRINCIPLES:
+    - Use manufacturing analogies and real-world comparisons
+    - Focus on business value and operational impact
+    - Explain "what" and "why" rather than "how" (technical details)
+    - Use simple, clear language without jargon
+    - Provide practical benefits and use cases
+    - Include troubleshooting from a user perspective
+-->

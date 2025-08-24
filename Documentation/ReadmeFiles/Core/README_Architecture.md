@@ -453,9 +453,9 @@ Mock<IValidationService> mockValidationService;
 ## 📚 **Related Documentation**
 
 - **[Getting Started Guide](README_Getting_Started.md)** - Setup and installation
-- **[Database Architecture](../Database/README_Production_Schema.md)** - Database design details
-- **[Service Layer Guide](../Components/README_Services.md)** - Service implementation patterns
-- **[UI Component Guide](../Development/README_UI_Documentation.md)** - UI architecture patterns
+- **[Database Architecture](../../Documentation/Development/Database_Files/README_Production_Schema.md)** - Database design details
+- **[Service Layer Guide](../../Documentation/Development/Components/README_Services.md)** - Service implementation patterns
+- **[UI Component Guide](../../Documentation/Development/UI_Documentation/README_UI_Documentation.md)** - UI architecture patterns
 
 ---
 

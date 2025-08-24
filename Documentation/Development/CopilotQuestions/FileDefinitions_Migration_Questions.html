@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions Migration Questions - MTM WIP Application</title>
+    <style>
+        :root {
+            --primary-purple: #4B45ED;
+            --magenta-accent: #BA45ED;
+            --secondary-purple: #8345ED;
+            --blue-accent: #4574ED;
+            --pink-accent: #ED45E7;
+            --light-purple: #B594ED;
+            --background: #f8f9fa;
+            --card-background: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --border-color: #e2e8f0;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--blue-accent) 0%, var(--primary-purple) 30%, var(--secondary-purple) 70%, var(--magenta-accent) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, var(--primary-purple), var(--magenta-accent));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .question-card {
+            background: var(--card-background);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .question-card:hover {
+            border-color: var(--primary-purple);
+            box-shadow: 0 5px 15px rgba(75, 69, 237, 0.1);
+        }
+
+        .question-card.answered {
+            border-color: var(--success-color);
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.05) 0%, rgba(72, 187, 120, 0.02) 100%);
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--light-purple);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .question-id {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: var(--secondary-purple);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .answer-section {
+            margin-top: 20px;
+        }
+
+        .answer-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(75, 69, 237, 0.1);
+        }
+
+        select:not([value=""]), input[type="text"]:not([value=""]), textarea:not(:placeholder-shown) {
+            border-color: var(--success-color);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .notes-section {
+            margin-top: 15px;
+        }
+
+        .action-buttons {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 2px solid var(--border-color);
+            padding: 20px 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-purple), var(--magenta-accent));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(75, 69, 237, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light-purple);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-purple);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-primary);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .validation-message {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: var(--warning-color);
+            display: none;
+        }
+
+        .question-card.invalid .validation-message {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .category-content_treatment { background: var(--pink-accent); }
+        .category-template_consistency { background: var(--blue-accent); }
+        .category-cross_reference_implementation { background: var(--magenta-accent); }
+        .category-directory_structure_confirmation { background: var(--primary-purple); }
+        .category-missing_root_files_placement { background: var(--secondary-purple); }
+        .category-processing_order { background: var(--light-purple); }
+        .category-css_integration { background: var(--pink-accent); }
+        .category-navigation_update_timing { background: var(--blue-accent); }
+        .category-file_naming_convention { background: var(--magenta-accent); }
+        .category-quality_assurance { background: var(--primary-purple); }
+        .category-backup_strategy { background: var(--secondary-purple); }
+        .category-content_enhancement { background: var(--light-purple); }
+        .category-search_functionality { background: var(--pink-accent); }
+        .category-mobile_responsiveness { background: var(--blue-accent); }
+        .category-error_handling { background: var(--magenta-accent); }
+        .category-progress_reporting { background: var(--primary-purple); }
+        .category-file_count_verification { background: var(--secondary-purple); }
+        .category-final_structure_validation { background: var(--light-purple); }
+        .category-legacy_docs_handling { background: var(--pink-accent); }
+        .category-testing_requirements { background: var(--blue-accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>?? FileDefinitions Migration Questions</h1>
+            <p>MTM WIP Application - Documentation Migration Configuration</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <form id="questionsForm">
+                <!-- Question 1 -->
+                <div class="question-card" data-question-id="1">
+                    <span class="question-id">Q1</span>
+                    <span class="category-badge category-content_treatment">Content Treatment</span>
+                    <div class="question-text">Should I copy content exactly as-is from Docs folder, or update styling to match MTM black/gold theme?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q1_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="EXACT_COPY">EXACT_COPY - Copy content exactly as-is</option>
+                            <option value="UPDATE_STYLING">UPDATE_STYLING - Update styling to match MTM theme</option>
+                            <option value="MODERNIZE_FULL">MODERNIZE_FULL - Complete modernization with MTM styling</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q1_notes" placeholder="Add any specific requirements or clarifications..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="question-card" data-question-id="2">
+                    <span class="question-id">Q2</span>
+                    <span class="category-badge category-template_consistency">Template Consistency</span>
+                    <div class="question-text">Should migrated FileDefinitions files match the existing HTML template structure used in Documentation\HTML?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q2_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES">YES - Match existing template structure</option>
+                            <option value="NO">NO - Use different template structure</option>
+                            <option value="PARTIAL">PARTIAL - Match some elements, customize others</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q2_notes" placeholder="Will include navigation header and CSS references..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="question-card" data-question-id="3">
+                    <span class="question-id">Q3</span>
+                    <span class="category-badge category-cross_reference_implementation">Cross Reference Implementation</span>
+                    <div class="question-text">Should I add navigation links between corresponding PlainEnglish and Technical versions of the same file?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q3_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_WITH_BUTTONS">YES_WITH_BUTTONS - Add prominent navigation buttons</option>
+                            <option value="YES_SIMPLE_LINKS">YES_SIMPLE_LINKS - Add simple text links</option>
+                            <option value="NO_CROSS_LINKS">NO_CROSS_LINKS - No cross-linking between versions</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q3_notes" placeholder="Specify button placement or link style preferences..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="question-card" data-question-id="4">
+                    <span class="question-id">Q4</span>
+                    <span class="category-badge category-directory_structure_confirmation">Directory Structure</span>
+                    <div class="question-text">Confirm the target structure will be Documentation\HTML\PlainEnglish\FileDefinitions\ and Documentation\HTML\Technical\FileDefinitions\?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q4_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES">YES - Use proposed structure</option>
+                            <option value="NO">NO - Use different structure</option>
+                            <option value="MODIFY_STRUCTURE">MODIFY_STRUCTURE - Make specific modifications</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q4_notes" placeholder="If modifications needed, specify the preferred structure..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="question-card" data-question-id="5">
+                    <span class="question-id">Q5</span>
+                    <span class="category-badge category-missing_root_files_placement">Root Files Placement</span>
+                    <div class="question-text">Where should root-level files (database-development.html, database-operations-prompts.html, missing-systems.html) be placed?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q5_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="TECHNICAL_SECTION">TECHNICAL_SECTION - Place in Technical section</option>
+                            <option value="PLAINENGLISH_SECTION">PLAINENGLISH_SECTION - Place in PlainEnglish section</option>
+                            <option value="BOTH_SECTIONS">BOTH_SECTIONS - Create versions for both sections</option>
+                            <option value="SEPARATE_FOLDER">SEPARATE_FOLDER - Create separate folder for root files</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q5_notes" placeholder="Specify folder name if using separate folder option..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="question-card" data-question-id="6">
+                    <span class="question-id">Q6</span>
+                    <span class="category-badge category-processing_order">Processing Order</span>
+                    <div class="question-text">What processing order do you prefer for the migration?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q6_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="BY_CATEGORY">BY_CATEGORY - Process all ViewModels, then Services, etc.</option>
+                            <option value="BY_TYPE">BY_TYPE - Process all PlainEnglish first, then Technical</option>
+                            <option value="ALPHABETICAL">ALPHABETICAL - Process in alphabetical order</option>
+                            <option value="VIEWMODELS_FIRST">VIEWMODELS_FIRST - Prioritize ViewModels first</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q6_notes" placeholder="Specify any priority order within categories..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="question-card" data-question-id="7">
+                    <span class="question-id">Q7</span>
+                    <span class="category-badge category-css_integration">CSS Integration</span>
+                    <div class="question-text">Should all migrated files reference the existing CSS files (mtm-theme.css, modern-styles.css, plain-english.css)?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q7_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES">YES - Reference all existing CSS files</option>
+                            <option value="NO">NO - Don't reference existing CSS files</option>
+                            <option value="SELECTIVE">SELECTIVE - Reference only specific CSS files</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q7_notes" placeholder="If selective, specify which CSS files to include..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 8 -->
+                <div class="question-card" data-question-id="8">
+                    <span class="question-id">Q8</span>
+                    <span class="category-badge category-navigation_update_timing">Navigation Update Timing</span>
+                    <div class="question-text">Should I update the main index.html files in PlainEnglish and Technical sections after migration is complete?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q8_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_AFTER_MIGRATION">YES_AFTER_MIGRATION - Update after all files are migrated</option>
+                            <option value="YES_DURING_MIGRATION">YES_DURING_MIGRATION - Update incrementally during migration</option>
+                            <option value="NO_UPDATES">NO_UPDATES - Don't update navigation files</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q8_notes" placeholder="Specify navigation structure preferences..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 9 -->
+                <div class="question-card" data-question-id="9">
+                    <span class="question-id">Q9</span>
+                    <span class="category-badge category-file_naming_convention">File Naming Convention</span>
+                    <div class="question-text">Should migrated files keep their exact current names or follow a new naming convention?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q9_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="KEEP_EXACT">KEEP_EXACT - Keep exact current names</option>
+                            <option value="ADD_PREFIX">ADD_PREFIX - Add prefix to existing names</option>
+                            <option value="MODIFY_STRUCTURE">MODIFY_STRUCTURE - Follow new naming convention</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q9_notes" placeholder="Specify prefix or new naming convention if applicable..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 10 -->
+                <div class="question-card" data-question-id="10">
+                    <span class="question-id">Q10</span>
+                    <span class="category-badge category-quality_assurance">Quality Assurance</span>
+                    <div class="question-text">Should I validate that all migrated content maintains accuracy and cross-references work correctly?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q10_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_FULL_VALIDATION">YES_FULL_VALIDATION - Comprehensive validation</option>
+                            <option value="BASIC_CHECK">BASIC_CHECK - Basic validation only</option>
+                            <option value="NO_VALIDATION">NO_VALIDATION - Skip validation</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q10_notes" placeholder="Specify validation requirements or focus areas..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 11 -->
+                <div class="question-card" data-question-id="11">
+                    <span class="question-id">Q11</span>
+                    <span class="category-badge category-backup_strategy">Backup Strategy</span>
+                    <div class="question-text">Should I create a backup of existing Documentation\HTML structure before migration?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q11_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_FULL_BACKUP">YES_FULL_BACKUP - Complete backup of entire structure</option>
+                            <option value="BACKUP_MODIFIED_ONLY">BACKUP_MODIFIED_ONLY - Backup only files being modified</option>
+                            <option value="NO_BACKUP">NO_BACKUP - No backup needed</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q11_notes" placeholder="Specify backup location or naming convention..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 12 -->
+                <div class="question-card" data-question-id="12">
+                    <span class="question-id">Q12</span>
+                    <span class="category-badge category-content_enhancement">Content Enhancement</span>
+                    <div class="question-text">Should I enhance the content with additional MTM-specific styling and modern HTML structure?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q12_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_ENHANCE">YES_ENHANCE - Full enhancement with MTM styling</option>
+                            <option value="MINIMAL_CHANGES">MINIMAL_CHANGES - Minimal changes only</option>
+                            <option value="NO_ENHANCEMENT">NO_ENHANCEMENT - No enhancement</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q12_notes" placeholder="Specify enhancement priorities or areas to focus on..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 13 -->
+                <div class="question-card" data-question-id="13">
+                    <span class="question-id">Q13</span>
+                    <span class="category-badge category-search_functionality">Search Functionality</span>
+                    <div class="question-text">Should migrated content be optimized for search functionality across the HTML structure?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q13_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_OPTIMIZE">YES_OPTIMIZE - Full search optimization</option>
+                            <option value="BASIC_SEARCH">BASIC_SEARCH - Basic search support</option>
+                            <option value="NO_OPTIMIZATION">NO_OPTIMIZATION - No search optimization</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q13_notes" placeholder="Specify search requirements or metadata needs..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 14 -->
+                <div class="question-card" data-question-id="14">
+                    <span class="question-id">Q14</span>
+                    <span class="category-badge category-mobile_responsiveness">Mobile Responsiveness</span>
+                    <div class="question-text">Should migrated content include responsive design elements for mobile viewing?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q14_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_RESPONSIVE">YES_RESPONSIVE - Full responsive design</option>
+                            <option value="DESKTOP_ONLY">DESKTOP_ONLY - Desktop-only design</option>
+                            <option value="BASIC_MOBILE">BASIC_MOBILE - Basic mobile compatibility</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q14_notes" placeholder="Specify mobile breakpoints or responsive requirements..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 15 -->
+                <div class="question-card" data-question-id="15">
+                    <span class="question-id">Q15</span>
+                    <span class="category-badge category-error_handling">Error Handling</span>
+                    <div class="question-text">How should I handle any content that doesn't migrate cleanly or has formatting issues?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q15_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="FIX_AUTOMATICALLY">FIX_AUTOMATICALLY - Attempt automatic fixes</option>
+                            <option value="FLAG_FOR_REVIEW">FLAG_FOR_REVIEW - Flag issues for manual review</option>
+                            <option value="SKIP_PROBLEMATIC">SKIP_PROBLEMATIC - Skip problematic files</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q15_notes" placeholder="Specify error handling preferences or tolerance levels..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 16 -->
+                <div class="question-card" data-question-id="16">
+                    <span class="question-id">Q16</span>
+                    <span class="category-badge category-progress_reporting">Progress Reporting</span>
+                    <div class="question-text">Would you like progress updates during the migration process?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q16_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_DETAILED">YES_DETAILED - Detailed progress updates</option>
+                            <option value="YES_SUMMARY">YES_SUMMARY - Summary updates only</option>
+                            <option value="NO_UPDATES">NO_UPDATES - No progress updates</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q16_notes" placeholder="Specify update frequency or format preferences..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 17 -->
+                <div class="question-card" data-question-id="17">
+                    <span class="question-id">Q17</span>
+                    <span class="category-badge category-file_count_verification">File Count Verification</span>
+                    <div class="question-text">Should I verify the exact count of files being migrated (27 files: 13 ViewModels, 11 Services, 2 Models, 1 Extension)?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q17_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_VERIFY_COUNT">YES_VERIFY_COUNT - Verify exact file count</option>
+                            <option value="TRUST_ANALYSIS">TRUST_ANALYSIS - Trust existing analysis</option>
+                            <option value="RECOUNT_NEEDED">RECOUNT_NEEDED - Perform new count verification</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q17_notes" placeholder="Specify any concerns about file counts or categories..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 18 -->
+                <div class="question-card" data-question-id="18">
+                    <span class="question-id">Q18</span>
+                    <span class="category-badge category-final_structure_validation">Final Structure Validation</span>
+                    <div class="question-text">Should I generate a final report showing the complete structure after migration?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q18_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_DETAILED_REPORT">YES_DETAILED_REPORT - Comprehensive final report</option>
+                            <option value="YES_SUMMARY">YES_SUMMARY - Summary report only</option>
+                            <option value="NO_REPORT">NO_REPORT - No final report</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q18_notes" placeholder="Specify report format or content preferences..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 19 -->
+                <div class="question-card" data-question-id="19">
+                    <span class="question-id">Q19</span>
+                    <span class="category-badge category-legacy_docs_handling">Legacy Docs Handling</span>
+                    <div class="question-text">What should happen to the original Docs folder after successful migration?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q19_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="KEEP_UNCHANGED">KEEP_UNCHANGED - Keep original folder unchanged</option>
+                            <option value="ARCHIVE">ARCHIVE - Archive original folder</option>
+                            <option value="ADD_MIGRATION_NOTE">ADD_MIGRATION_NOTE - Add migration notice to folder</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q19_notes" placeholder="Specify archive location or migration notice details..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 20 -->
+                <div class="question-card" data-question-id="20">
+                    <span class="question-id">Q20</span>
+                    <span class="category-badge category-testing_requirements">Testing Requirements</span>
+                    <div class="question-text">Should I test that all cross-references and navigation work correctly after migration?</div>
+                    <div class="answer-section">
+                        <label class="answer-label">Your Answer:</label>
+                        <select name="q20_answer" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="YES_FULL_TESTING">YES_FULL_TESTING - Comprehensive testing</option>
+                            <option value="BASIC_TESTING">BASIC_TESTING - Basic functionality testing</option>
+                            <option value="NO_TESTING">NO_TESTING - No testing required</option>
+                        </select>
+                        <div class="validation-message">Please select an option</div>
+                    </div>
+                    <div class="notes-section">
+                        <label class="answer-label">Additional Notes (Optional):</label>
+                        <textarea name="q20_notes" placeholder="Specify testing priorities or specific areas to focus on..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="action-buttons">
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="icon">??</span>
+                    <span>Progress: <span id="progressText">0/20</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="icon">?</span>
+                    <span>Answered: <span id="answeredCount">0</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="icon">??</span>
+                    <span>Remaining: <span id="remainingCount">20</span></span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <button type="button" class="btn btn-secondary" onclick="validateForm()">
+                    <span class="icon">??</span>
+                    Validate Answers
+                </button>
+                <button type="button" class="btn btn-primary" onclick="exportAnswers()">
+                    <span class="icon">??</span>
+                    Save Answers
+                </button>
+                <button type="button" class="btn btn-success" onclick="downloadAnswers()" style="display: none;" id="downloadBtn">
+                    <span class="icon">??</span>
+                    Download Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Track form state
+        let answeredQuestions = new Set();
+        const totalQuestions = 20;
+
+        // Initialize form listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('questionsForm');
+            const inputs = form.querySelectorAll('select, input, textarea');
+            
+            inputs.forEach(input => {
+                input.addEventListener('change', updateProgress);
+                input.addEventListener('input', updateProgress);
+            });
+            
+            updateProgress();
+        });
+
+        function updateProgress() {
+            const form = document.getElementById('questionsForm');
+            const selects = form.querySelectorAll('select[required]');
+            answeredQuestions.clear();
+            
+            selects.forEach((select, index) => {
+                const questionCard = select.closest('.question-card');
+                if (select.value) {
+                    answeredQuestions.add(index + 1);
+                    questionCard.classList.add('answered');
+                    questionCard.classList.remove('invalid');
+                } else {
+                    questionCard.classList.remove('answered');
+                }
+            });
+            
+            const answered = answeredQuestions.size;
+            const remaining = totalQuestions - answered;
+            const percentage = (answered / totalQuestions) * 100;
+            
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+            document.getElementById('progressText').textContent = `${answered}/${totalQuestions}`;
+            document.getElementById('answeredCount').textContent = answered;
+            document.getElementById('remainingCount').textContent = remaining;
+        }
+
+        function validateForm() {
+            const form = document.getElementById('questionsForm');
+            const selects = form.querySelectorAll('select[required]');
+            let isValid = true;
+            
+            selects.forEach(select => {
+                const questionCard = select.closest('.question-card');
+                if (!select.value) {
+                    questionCard.classList.add('invalid');
+                    isValid = false;
+                } else {
+                    questionCard.classList.remove('invalid');
+                }
+            });
+            
+            if (isValid) {
+                alert(`? All questions answered! Ready to save your responses.`);
+            } else {
+                const unanswered = totalQuestions - answeredQuestions.size;
+                alert(`?? Please answer all questions. ${unanswered} question(s) still need answers.`);
+                
+                // Scroll to first unanswered question
+                const firstInvalid = document.querySelector('.question-card.invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            
+            return isValid;
+        }
+
+        function exportAnswers() {
+            if (!validateForm()) {
+                return;
+            }
+            
+            const form = document.getElementById('questionsForm');
+            const formData = new FormData(form);
+            const answers = {};
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            
+            // Collect all answers
+            for (let [key, value] of formData.entries()) {
+                answers[key] = value;
+            }
+            
+            // Create CSV content
+            const csvContent = createCSV(answers);
+            
+            // Create JSON content
+            const jsonContent = JSON.stringify({
+                timestamp: new Date().toISOString(),
+                questionnaire: "FileDefinitions Migration Questions",
+                project: "MTM WIP Application Avalonia",
+                totalQuestions: totalQuestions,
+                answeredQuestions: answeredQuestions.size,
+                answers: answers
+            }, null, 2);
+            
+            // Create HTML summary
+            const htmlContent = createHTMLSummary(answers, timestamp);
+            
+            // Show download button
+            document.getElementById('downloadBtn').style.display = 'flex';
+            
+            // Store data for download
+            window.exportedData = {
+                csv: csvContent,
+                json: jsonContent,
+                html: htmlContent,
+                timestamp: timestamp
+            };
+            
+            alert(`? Answers processed successfully!\n\n?? Summary:\n• ${answeredQuestions.size} questions answered\n• Ready for download in multiple formats\n\nClick "Download Results" to save your responses.`);
+        }
+
+        function createCSV(answers) {
+            let csv = 'Question_ID,Category,Question,Answer,Notes\n';
+            
+            const questions = [
+                {id: 1, category: 'Content_Treatment', question: 'Should I copy content exactly as-is from Docs folder, or update styling to match MTM black/gold theme?'},
+                {id: 2, category: 'Template_Consistency', question: 'Should migrated FileDefinitions files match the existing HTML template structure used in Documentation\\HTML?'},
+                {id: 3, category: 'Cross_Reference_Implementation', question: 'Should I add navigation links between corresponding PlainEnglish and Technical versions of the same file?'},
+                {id: 4, category: 'Directory_Structure_Confirmation', question: 'Confirm the target structure will be Documentation\\HTML\\PlainEnglish\\FileDefinitions\\ and Documentation\\HTML\\Technical\\FileDefinitions\\?'},
+                {id: 5, category: 'Missing_Root_Files_Placement', question: 'Where should root-level files (database-development.html, database-operations-prompts.html, missing-systems.html) be placed?'},
+                {id: 6, category: 'Processing_Order', question: 'What processing order do you prefer for the migration?'},
+                {id: 7, category: 'CSS_Integration', question: 'Should all migrated files reference the existing CSS files (mtm-theme.css, modern-styles.css, plain-english.css)?'},
+                {id: 8, category: 'Navigation_Update_Timing', question: 'Should I update the main index.html files in PlainEnglish and Technical sections after migration is complete?'},
+                {id: 9, category: 'File_Naming_Convention', question: 'Should migrated files keep their exact current names or follow a new naming convention?'},
+                {id: 10, category: 'Quality_Assurance', question: 'Should I validate that all migrated content maintains accuracy and cross-references work correctly?'},
+                {id: 11, category: 'Backup_Strategy', question: 'Should I create a backup of existing Documentation\\HTML structure before migration?'},
+                {id: 12, category: 'Content_Enhancement', question: 'Should I enhance the content with additional MTM-specific styling and modern HTML structure?'},
+                {id: 13, category: 'Search_Functionality', question: 'Should migrated content be optimized for search functionality across the HTML structure?'},
+                {id: 14, category: 'Mobile_Responsiveness', question: 'Should migrated content include responsive design elements for mobile viewing?'},
+                {id: 15, category: 'Error_Handling', question: 'How should I handle any content that doesn\'t migrate cleanly or has formatting issues?'},
+                {id: 16, category: 'Progress_Reporting', question: 'Would you like progress updates during the migration process?'},
+                {id: 17, category: 'File_Count_Verification', question: 'Should I verify the exact count of files being migrated (27 files: 13 ViewModels, 11 Services, 2 Models, 1 Extension)?'},
+                {id: 18, category: 'Final_Structure_Validation', question: 'Should I generate a final report showing the complete structure after migration?'},
+                {id: 19, category: 'Legacy_Docs_Handling', question: 'What should happen to the original Docs folder after successful migration?'},
+                {id: 20, category: 'Testing_Requirements', question: 'Should I test that all cross-references and navigation work correctly after migration?'}
+            ];
+            
+            questions.forEach(q => {
+                const answer = answers[`q${q.id}_answer`] || '';
+                const notes = answers[`q${q.id}_notes`] || '';
+                csv += `${q.id},"${q.category}","${q.question.replace(/"/g, '""')}","${answer}","${notes.replace(/"/g, '""')}"\n`;
+            });
+            
+            return csv;
+        }
+
+        function createHTMLSummary(answers, timestamp) {
+            const questions = [
+                {id: 1, category: 'Content_Treatment', question: 'Should I copy content exactly as-is from Docs folder, or update styling to match MTM black/gold theme?'},
+                {id: 2, category: 'Template_Consistency', question: 'Should migrated FileDefinitions files match the existing HTML template structure used in Documentation\\HTML?'},
+                {id: 3, category: 'Cross_Reference_Implementation', question: 'Should I add navigation links between corresponding PlainEnglish and Technical versions of the same file?'},
+                {id: 4, category: 'Directory_Structure_Confirmation', question: 'Confirm the target structure will be Documentation\\HTML\\PlainEnglish\\FileDefinitions\\ and Documentation\\HTML\\Technical\\FileDefinitions\\?'},
+                {id: 5, category: 'Missing_Root_Files_Placement', question: 'Where should root-level files (database-development.html, database-operations-prompts.html, missing-systems.html) be placed?'},
+                {id: 6, category: 'Processing_Order', question: 'What processing order do you prefer for the migration?'},
+                {id: 7, category: 'CSS_Integration', question: 'Should all migrated files reference the existing CSS files (mtm-theme.css, modern-styles.css, plain-english.css)?'},
+                {id: 8, category: 'Navigation_Update_Timing', question: 'Should I update the main index.html files in PlainEnglish and Technical sections after migration is complete?'},
+                {id: 9, category: 'File_Naming_Convention', question: 'Should migrated files keep their exact current names or follow a new naming convention?'},
+                {id: 10, category: 'Quality_Assurance', question: 'Should I validate that all migrated content maintains accuracy and cross-references work correctly?'},
+                {id: 11, category: 'Backup_Strategy', question: 'Should I create a backup of existing Documentation\\HTML structure before migration?'},
+                {id: 12, category: 'Content_Enhancement', question: 'Should I enhance the content with additional MTM-specific styling and modern HTML structure?'},
+                {id: 13, category: 'Search_Functionality', question: 'Should migrated content be optimized for search functionality across the HTML structure?'},
+                {id: 14, category: 'Mobile_Responsiveness', question: 'Should migrated content include responsive design elements for mobile viewing?'},
+                {id: 15, category: 'Error_Handling', question: 'How should I handle any content that doesn\'t migrate cleanly or has formatting issues?'},
+                {id: 16, category: 'Progress_Reporting', question: 'Would you like progress updates during the migration process?'},
+                {id: 17, category: 'File_Count_Verification', question: 'Should I verify the exact count of files being migrated (27 files: 13 ViewModels, 11 Services, 2 Models, 1 Extension)?'},
+                {id: 18, category: 'Final_Structure_Validation', question: 'Should I generate a final report showing the complete structure after migration?'},
+                {id: 19, category: 'Legacy_Docs_Handling', question: 'What should happen to the original Docs folder after successful migration?'},
+                {id: 20, category: 'Testing_Requirements', question: 'Should I test that all cross-references and navigation work correctly after migration?'}
+            ];
+            
+            let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions Migration Answers - ${timestamp}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background: #f8f9fa; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid #4B45ED; }
+        .header h1 { color: #4B45ED; margin-bottom: 10px; }
+        .metadata { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .question { margin-bottom: 30px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; }
+        .question-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .question-id { background: #4B45ED; color: white; padding: 5px 12px; border-radius: 15px; font-weight: bold; margin-right: 15px; }
+        .category { background: #BA45ED; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em; }
+        .question-text { font-weight: 600; margin-bottom: 15px; color: #2d3748; }
+        .answer { background: #e6fffa; padding: 15px; border-left: 4px solid #38a169; margin-bottom: 10px; }
+        .notes { background: #f7fafc; padding: 15px; border-left: 4px solid #4299e1; }
+        .footer { margin-top: 40px; text-align: center; color: #718096; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>?? FileDefinitions Migration Configuration</h1>
+            <p>MTM WIP Application Avalonia - Documentation Migration Answers</p>
+        </div>
+        
+        <div class="metadata">
+            <h3>?? Summary</h3>
+            <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+            <p><strong>Questions Answered:</strong> ${answeredQuestions.size} of ${totalQuestions}</p>
+            <p><strong>Completion Rate:</strong> ${Math.round((answeredQuestions.size / totalQuestions) * 100)}%</p>
+        </div>
+        
+        <div class="questions">`;
+            
+            questions.forEach(q => {
+                const answer = answers[`q${q.id}_answer`] || 'Not answered';
+                const notes = answers[`q${q.id}_notes`] || '';
+                
+                html += `
+            <div class="question">
+                <div class="question-header">
+                    <span class="question-id">Q${q.id}</span>
+                    <span class="category">${q.category.replace(/_/g, ' ')}</span>
+                </div>
+                <div class="question-text">${q.question}</div>
+                <div class="answer"><strong>Answer:</strong> ${answer}</div>
+                ${notes ? `<div class="notes"><strong>Notes:</strong> ${notes}</div>` : ''}
+            </div>`;
+            });
+            
+            html += `
+        </div>
+        
+        <div class="footer">
+            <p>Generated by MTM WIP Application Documentation System</p>
+            <p>Timestamp: ${timestamp}</p>
+        </div>
+    </div>
+</body>
+</html>`;
+            
+            return html;
+        }
+
+        function downloadAnswers() {
+            if (!window.exportedData) {
+                alert('No data to download. Please save answers first.');
+                return;
+            }
+            
+            const { csv, json, html, timestamp } = window.exportedData;
+            
+            // Download CSV
+            downloadFile(csv, `FileDefinitions_Migration_Answers_${timestamp}.csv`, 'text/csv');
+            
+            // Download JSON
+            downloadFile(json, `FileDefinitions_Migration_Answers_${timestamp}.json`, 'application/json');
+            
+            // Download HTML
+            downloadFile(html, `FileDefinitions_Migration_Summary_${timestamp}.html`, 'text/html');
+            
+            alert(`?? Downloaded 3 files:\n• CSV format for data processing\n• JSON format for programmatic use\n• HTML format for viewing and sharing`);
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-save to localStorage
+        function autoSave() {
+            const form = document.getElementById('questionsForm');
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            localStorage.setItem('mtm_migration_questions', JSON.stringify(data));
+        }
+
+        // Load from localStorage
+        function loadSaved() {
+            const saved = localStorage.getItem('mtm_migration_questions');
+            if (saved) {
+                const data = JSON.parse(saved);
+                const form = document.getElementById('questionsForm');
+                Object.keys(data).forEach(key => {
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        input.value = data[key];
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // Initialize auto-save
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSaved();
+            
+            const form = document.getElementById('questionsForm');
+            const inputs = form.querySelectorAll('select, input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('change', autoSave);
+                input.addEventListener('input', autoSave);
+            });
+        });
+    </script>
+</body>
+</html>

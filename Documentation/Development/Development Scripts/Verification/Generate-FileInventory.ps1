@@ -35,7 +35,7 @@ $FileCategories = @{
     }
     "Database" = @{
         Extensions = @(".sql")
-        Directories = @("Database_Files", "Development/Database_Files")
+        Directories = @("Database_Files", "Documentation/Development/Database_Files")
         Description = "SQL scripts and database files"
     }
     "Scripts" = @{

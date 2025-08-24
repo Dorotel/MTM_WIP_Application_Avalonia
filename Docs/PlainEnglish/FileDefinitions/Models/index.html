@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Models - Plain English | MTM WIP Application</title>
+    <meta name="description" content="Plain English explanations of MTM WIP Application data models">
+    <style>
+        /* MTM Brand Colors and Modern Styling */
+        :root {
+            --primary-purple: #4B45ED;
+            --magenta-accent: #BA45ED;
+            --secondary-purple: #8345ED;
+            --blue-accent: #4574ED;
+            --pink-accent: #ED45E7;
+            --light-purple: #B594ED;
+            --background-dark: #1a1a1a;
+            --surface-dark: #2a2a2a;
+            --surface-light: #3a3a3a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --gold-accent: #FFD700;
+            --gold-light: #FFF8DC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--gold-accent), var(--primary-purple));
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--gold-light);
+            font-weight: 300;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .breadcrumb {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--surface-dark);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--gold-accent);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .intro-section {
+            background: var(--surface-dark);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-left: 5px solid var(--gold-accent);
+        }
+
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .model-card {
+            background: var(--surface-dark);
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 5px solid var(--gold-accent);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .model-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .model-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .model-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .model-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .model-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .analogy-box {
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-purple);
+        }
+
+        .analogy-title {
+            color: var(--primary-purple);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .analogy-text {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        .model-details {
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .detail-title {
+            color: var(--gold-accent);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .detail-list {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .detail-list ul {
+            margin-left: 1.5rem;
+        }
+
+        .detail-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .model-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            background: var(--surface-light);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .action-link:hover {
+            background: var(--gold-accent);
+            color: var(--background-dark);
+        }
+
+        .action-link.primary {
+            background: var(--primary-purple);
+            color: white;
+        }
+
+        .action-link.primary:hover {
+            background: var(--magenta-accent);
+        }
+
+        .action-icon {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .tech-switch {
+            background: var(--surface-dark);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            border: 2px solid var(--primary-purple);
+        }
+
+        .tech-switch-title {
+            color: var(--primary-purple);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tech-switch-btn {
+            background: var(--primary-purple);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .tech-switch-btn:hover {
+            background: var(--magenta-accent);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            background: var(--surface-dark);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--surface-light);
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+        }
+
+        .footer a {
+            color: var(--gold-accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--primary-purple);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .model-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .model-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>?? Models</h1>
+            <p>The blueprints that define how information is structured and organized</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <nav class="breadcrumb">
+            ?? <a href="../index.html">Plain English Home</a> 
+            > <a href="index.html">File Definitions</a>
+            > <strong>Models</strong>
+        </nav>
+
+        <section class="intro-section">
+            <h2 style="color: var(--gold-accent); margin-bottom: 1.5rem;">?? What Are Models in MTM?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 1.1rem;">
+                Think of models as the <strong>blueprints</strong> for information in the MTM system. 
+                Just like engineering blueprints define how a part should be made, models define how 
+                information should be structured, what data is required, and how different pieces of 
+                information relate to each other.
+            </p>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                For example, a model might define that every inventory item must have a part number, 
+                description, quantity, and location - just like a blueprint defines that every bolt 
+                must have a specific thread size, length, and material specification.
+            </p>
+        </section>
+
+        <div class="tech-switch">
+            <h2 class="tech-switch-title">?? Need Technical Details?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Switch to technical documentation for detailed class definitions, properties, validation rules, and code examples.
+            </p>
+            <a href="../../../Technical/FileDefinitions/Models/index.html" class="tech-switch-btn">
+                ?? Switch to Technical View
+            </a>
+        </div>
+
+        <div class="model-grid">
+            <!-- Result Model -->
+            <article class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-icon">?</span>
+                        <span class="model-name">Result Model</span>
+                    </div>
+                    <span class="model-status status-pending">COMING SOON</span>
+                </div>
+                <p class="model-description">
+                    The blueprint for how the system reports whether operations succeeded or failed. 
+                    Like a quality control report that tells you if a process worked correctly or what went wrong.
+                </p>
+                <div class="analogy-box">
+                    <div class="analogy-title">Real-World Analogy</div>
+                    <div class="analogy-text">
+                        Like a standardized inspection report form that always tells you: "Did this pass inspection?" 
+                        If yes, what's the result. If no, what was the problem. Every operation in the factory 
+                        uses the same report format so everyone knows what to expect.
+                    </div>
+                </div>
+                <div class="model-details">
+                    <div class="detail-title">?? What This Defines</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li><strong>Success Status:</strong> Did the operation work correctly?</li>
+                            <li><strong>Result Data:</strong> If successful, what information came back?</li>
+                            <li><strong>Error Information:</strong> If failed, what went wrong and why?</li>
+                            <li><strong>Consistent Format:</strong> Same structure for all operations</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="model-actions">
+                    <a href="Result.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        Learn More
+                    </a>
+                    <a href="../../../Technical/FileDefinitions/Models/Result.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Technical Details
+                    </a>
+                </div>
+            </article>
+
+            <!-- CoreModels -->
+            <article class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-icon">??</span>
+                        <span class="model-name">Core Models</span>
+                    </div>
+                    <span class="model-status status-pending">COMING SOON</span>
+                </div>
+                <p class="model-description">
+                    The main blueprints for all the important information in the MTM system. 
+                    Defines how inventory items, users, and transactions are structured and what information is required.
+                </p>
+                <div class="analogy-box">
+                    <div class="analogy-title">Real-World Analogy</div>
+                    <div class="analogy-text">
+                        Like the standard forms and record templates used throughout a manufacturing facility - 
+                        employee records, part specifications, work orders, and transaction logs. Each form has 
+                        specific required fields and follows a consistent format.
+                    </div>
+                </div>
+                <div class="model-details">
+                    <div class="detail-title">?? What This Defines</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li><strong>Inventory Items:</strong> Part numbers, descriptions, quantities, locations</li>
+                            <li><strong>Users:</strong> Employee information, permissions, access levels</li>
+                            <li><strong>Transactions:</strong> What changed, when, who did it, and why</li>
+                            <li><strong>Validation Rules:</strong> What information is required and what format it should be in</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="model-details">
+                    <div class="detail-title">?? Business Examples</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li><strong>Inventory Item:</strong> "Part #12345, Bolt M8x25, Qty: 100, Location: Bin A-15"</li>
+                            <li><strong>User:</strong> "John Smith, Employee ID: 001, Permissions: Operator Level"</li>
+                            <li><strong>Transaction:</strong> "Added 50 bolts to Bin A-15 by John Smith on 1/27/2025"</li>
+                            <li><strong>Transaction Type:</strong> "IN (adding), OUT (removing), TRANSFER (moving)"</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="model-actions">
+                    <a href="CoreModels.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        Learn More
+                    </a>
+                    <a href="../../../Technical/FileDefinitions/Models/CoreModels.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Technical Details
+                    </a>
+                </div>
+            </article>
+        </div>
+
+        <section style="background: var(--surface-dark); border-radius: 12px; padding: 2rem; margin-top: 3rem; border-left: 5px solid var(--primary-purple);">
+            <h2 style="color: var(--primary-purple); margin-bottom: 1.5rem;">?? How Models Work Together</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.1rem;">
+                Just like how different forms and records in a manufacturing facility work together, 
+                the MTM models are designed to connect and share information efficiently:
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--gold-accent); margin-bottom: 1rem;">?? Inventory Chain</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        When someone adds inventory, the system uses the Inventory Item model to structure the data, 
+                        then creates a Transaction record using the Transaction model, and reports success or failure 
+                        using the Result model.
+                    </p>
+                </div>
+                <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--gold-accent); margin-bottom: 1rem;">?? User Tracking</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        Every transaction includes information from the User model to track who made the change, 
+                        ensuring accountability and proper audit trails throughout the manufacturing process.
+                    </p>
+                </div>
+                <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--gold-accent); margin-bottom: 1rem;">? Quality Control</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        All operations use the Result model to provide consistent feedback, making it easy to 
+                        understand what happened and handle any problems that occur during operations.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>
+            MTM WIP Application - Models Plain English Documentation �
+            <a href="../index.html">File Definitions</a> �
+            <a href="../../index.html">Plain English Home</a>
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            Last Updated: <time datetime="2025-01-27">January 27, 2025</time> �
+            <a href="#" onclick="alert('Accessibility feedback: Please create an issue in the repository for accessibility concerns.')">Report Accessibility Issues</a>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add focus management for keyboard navigation
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('focus', function() {
+                    this.style.outline = '2px solid #FFD700';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                link.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+
+            console.log('MTM Models - Plain English Documentation Loaded');
+            console.log('Models Count: 2 primary (Result, CoreModels)');
+            console.log('Focus: Data structure blueprints and business information organization');
+        });
+    </script>
+</body>
+</html>

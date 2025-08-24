@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using System.Text.Json;
 
 namespace MTM_WIP_Application_Avalonia.Services
 {
     /// <summary>
-    /// Utility class for handling all logging operations including file server CSV logging
-    /// and MySQL database logging. Manages user-specific log folders and file creation.
+    /// Enhanced utility class for handling all logging operations with structured logging support,
+    /// MTM business context integration, and comprehensive fallback mechanisms.
     /// </summary>
     public static class LoggingUtility
     {
-        private static string _fileServerBasePath = @"\\FileServer\Logs"; // TODO: Configure from settings
+        private static string _fileServerBasePath = @"\\FileServer\Logs";
         private static readonly object _fileLockObject = new();
         
         /// <summary>
-        /// Logs an error entry to the file server in CSV format.
-        /// Creates user-specific folders and category-specific CSV files automatically.
+        /// Logs an error entry to the file server with enhanced CSV format including business context.
         /// </summary>
-        /// <param name="errorEntry">The error entry to log</param>
         public static void LogToFileServer(ErrorEntry errorEntry)
         {
             try
@@ -40,7 +39,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                     
                     if (!fileExists)
                     {
-                        writer.WriteLine(GetCsvHeader());
+                        writer.WriteLine(GetEnhancedCsvHeader());
                     }
                     
                     writer.WriteLine(FormatErrorEntryAsCsv(errorEntry));
@@ -48,16 +47,13 @@ namespace MTM_WIP_Application_Avalonia.Services
             }
             catch (Exception ex)
             {
-                // Fallback to local logging when file server logging fails
                 LogToFallbackLocation(errorEntry, ex);
             }
         }
 
         /// <summary>
-        /// Logs an error entry to the MySQL database.
-        /// Uses category-specific tables with consistent structure.
+        /// Enhanced MySQL logging with business context and structured data support.
         /// </summary>
-        /// <param name="errorEntry">The error entry to log</param>
         public static async Task LogToMySQL(ErrorEntry errorEntry)
         {
             try
@@ -71,22 +67,20 @@ namespace MTM_WIP_Application_Avalonia.Services
                 using var connection = new MySqlConnection(ErrorHandlingConfiguration.MySqlConnectionString);
                 await connection.OpenAsync();
                 
-                // Ensure table exists
-                await EnsureTableExists(connection, tableName);
+                await EnsureEnhancedTableExists(connection, tableName);
                 
-                // Insert error entry
                 var insertSql = $@"
                     INSERT INTO {tableName} 
                     (Timestamp, UserId, MachineName, Category, Severity, ErrorMessage, 
                      FileName, MethodName, LineNumber, StackTrace, source, 
-                     AdditionalData, ExceptionType)
+                     AdditionalData, ExceptionType, BusinessContext)
                     VALUES 
                     (@Timestamp, @UserId, @MachineName, @Category, @Severity, @ErrorMessage,
                      @FileName, @MethodName, @LineNumber, @StackTrace, @source,
-                     @AdditionalData, @ExceptionType)";
+                     @AdditionalData, @ExceptionType, @BusinessContext)";
 
                 using var command = new MySqlCommand(insertSql, connection);
-                AddMySqlParameters(command, errorEntry);
+                AddEnhancedMySqlParameters(command, errorEntry);
                 
                 await command.ExecuteNonQueryAsync();
             }
@@ -97,9 +91,65 @@ namespace MTM_WIP_Application_Avalonia.Services
         }
 
         /// <summary>
-        /// Ensures the MySQL table exists for the specified category.
+        /// Structured logging for MTM business operations with stored procedure integration patterns.
         /// </summary>
-        private static async Task EnsureTableExists(MySqlConnection connection, string tableName)
+        public static async Task LogBusinessOperationAsync(
+            string operation,
+            string userId,
+            Dictionary<string, object> parameters,
+            Exception? exception = null,
+            string? result = null)
+        {
+            try
+            {
+                var logEntry = new Dictionary<string, object>
+                {
+                    ["Operation"] = operation,
+                    ["UserId"] = userId,
+                    ["Timestamp"] = DateTime.UtcNow,
+                    ["Parameters"] = JsonSerializer.Serialize(parameters),
+                    ["Result"] = result ?? "Success",
+                    ["HasError"] = exception != null
+                };
+
+                if (exception != null)
+                {
+                    logEntry["ErrorMessage"] = exception.Message;
+                    logEntry["ErrorType"] = exception.GetType().FullName ?? "";
+                }
+
+                // TODO: Replace with actual Helper_Database_StoredProcedure call when available
+                // var logParameters = new Dictionary<string, object>
+                // {
+                //     ["p_Operation"] = operation,
+                //     ["p_UserId"] = userId,
+                //     ["p_Context"] = JsonSerializer.Serialize(logEntry),
+                //     ["p_Severity"] = exception != null ? "Error" : "Information"
+                // };
+                //
+                // await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                //     Model_AppVariables.ConnectionString,
+                //     "sys_business_operation_Log",
+                //     logParameters
+                // );
+
+                // Fallback to file logging for now
+                var businessLogPath = Path.Combine(_fileServerBasePath, userId, "business_operations.log");
+                Directory.CreateDirectory(Path.GetDirectoryName(businessLogPath)!);
+                
+                var logLine = $"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} | {operation} | {JsonSerializer.Serialize(logEntry)}{Environment.NewLine}";
+                await File.AppendAllTextAsync(businessLogPath, logLine);
+            }
+            catch (Exception ex)
+            {
+                LogApplicationError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Enhanced table creation with business context column.
+        /// </summary>
+        private static async Task EnsureEnhancedTableExists(MySqlConnection connection, string tableName)
         {
             var createTableSql = $@"
                 CREATE TABLE IF NOT EXISTS {tableName} (
@@ -117,9 +167,11 @@ namespace MTM_WIP_Application_Avalonia.Services
                     source VARCHAR(255),
                     AdditionalData TEXT,
                     ExceptionType VARCHAR(500),
+                    BusinessContext TEXT,
                     INDEX idx_timestamp (Timestamp),
                     INDEX idx_userid (UserId),
-                    INDEX idx_severity (Severity)
+                    INDEX idx_severity (Severity),
+                    INDEX idx_business_context (BusinessContext(255))
                 )";
 
             using var command = new MySqlCommand(createTableSql, connection);
@@ -127,9 +179,9 @@ namespace MTM_WIP_Application_Avalonia.Services
         }
 
         /// <summary>
-        /// Adds parameters to the MySQL command for error entry insertion.
+        /// Enhanced parameter addition including business context.
         /// </summary>
-        private static void AddMySqlParameters(MySqlCommand command, ErrorEntry errorEntry)
+        private static void AddEnhancedMySqlParameters(MySqlCommand command, ErrorEntry errorEntry)
         {
             command.Parameters.AddWithValue("@Timestamp", errorEntry.Timestamp);
             command.Parameters.AddWithValue("@UserId", errorEntry.UserId);
@@ -144,6 +196,122 @@ namespace MTM_WIP_Application_Avalonia.Services
             command.Parameters.AddWithValue("@source", errorEntry.source ?? "");
             command.Parameters.AddWithValue("@AdditionalData", errorEntry.AdditionalData);
             command.Parameters.AddWithValue("@ExceptionType", errorEntry.ExceptionType);
+            command.Parameters.AddWithValue("@BusinessContext", errorEntry.BusinessContext);
+        }
+
+        /// <summary>
+        /// Enhanced CSV header including business context.
+        /// </summary>
+        private static string GetEnhancedCsvHeader()
+        {
+            return "Timestamp,UserId,MachineName,Category,Severity,ErrorMessage,FileName,MethodName,LineNumber,StackTrace,source,AdditionalData,ExceptionType,BusinessContext";
+        }
+
+        /// <summary>
+        /// Enhanced CSV formatting with business context.
+        /// </summary>
+        private static string FormatErrorEntryAsCsv(ErrorEntry errorEntry)
+        {
+            return string.Join(",",
+                EscapeCsvField(errorEntry.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")),
+                EscapeCsvField(errorEntry.UserId),
+                EscapeCsvField(errorEntry.MachineName),
+                EscapeCsvField(errorEntry.Category.ToString()),
+                EscapeCsvField(errorEntry.Severity.ToString()),
+                EscapeCsvField(errorEntry.ErrorMessage),
+                EscapeCsvField(errorEntry.FileName),
+                EscapeCsvField(errorEntry.MethodName),
+                EscapeCsvField(errorEntry.LineNumber.ToString()),
+                EscapeCsvField(errorEntry.StackTrace),
+                EscapeCsvField(errorEntry.source ?? ""),
+                EscapeCsvField(errorEntry.AdditionalData),
+                EscapeCsvField(errorEntry.ExceptionType),
+                EscapeCsvField(errorEntry.BusinessContext)
+            );
+        }
+
+        /// <summary>
+        /// Performance monitoring and logging for database operations.
+        /// </summary>
+        public static async Task LogPerformanceMetricsAsync(
+            string operation,
+            TimeSpan duration,
+            string userId,
+            Dictionary<string, object>? additionalMetrics = null)
+        {
+            try
+            {
+                var metrics = new Dictionary<string, object>
+                {
+                    ["Operation"] = operation,
+                    ["Duration"] = duration.TotalMilliseconds,
+                    ["UserId"] = userId,
+                    ["Timestamp"] = DateTime.UtcNow
+                };
+
+                if (additionalMetrics != null)
+                {
+                    foreach (var metric in additionalMetrics)
+                    {
+                        metrics[metric.Key] = metric.Value;
+                    }
+                }
+
+                // Log to performance log file
+                var performanceLogPath = Path.Combine(_fileServerBasePath, "performance", $"performance_{DateTime.UtcNow:yyyy-MM}.log");
+                Directory.CreateDirectory(Path.GetDirectoryName(performanceLogPath)!);
+                
+                var logLine = $"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} | {JsonSerializer.Serialize(metrics)}{Environment.NewLine}";
+                await File.AppendAllTextAsync(performanceLogPath, logLine);
+            }
+            catch (Exception ex)
+            {
+                LogApplicationError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Audit trail logging for MTM business operations.
+        /// </summary>
+        public static async Task LogAuditTrailAsync(
+            string action,
+            string userId,
+            string entityType,
+            string entityId,
+            Dictionary<string, object>? beforeState = null,
+            Dictionary<string, object>? afterState = null)
+        {
+            try
+            {
+                var auditEntry = new Dictionary<string, object>
+                {
+                    ["Action"] = action,
+                    ["UserId"] = userId,
+                    ["EntityType"] = entityType,
+                    ["EntityId"] = entityId,
+                    ["Timestamp"] = DateTime.UtcNow,
+                    ["BeforeState"] = beforeState != null ? JsonSerializer.Serialize(beforeState) : null,
+                    ["AfterState"] = afterState != null ? JsonSerializer.Serialize(afterState) : null
+                };
+
+                // TODO: Replace with actual Helper_Database_StoredProcedure call when available
+                // await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                //     Model_AppVariables.ConnectionString,
+                //     "sys_audit_trail_Insert",
+                //     auditEntry
+                // );
+
+                // Fallback to file logging for now
+                var auditLogPath = Path.Combine(_fileServerBasePath, "audit", $"audit_{DateTime.UtcNow:yyyy-MM}.log");
+                Directory.CreateDirectory(Path.GetDirectoryName(auditLogPath)!);
+                
+                var logLine = $"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} | {JsonSerializer.Serialize(auditEntry)}{Environment.NewLine}";
+                await File.AppendAllTextAsync(auditLogPath, logLine);
+            }
+            catch (Exception ex)
+            {
+                LogApplicationError(ex);
+            }
         }
 
         /// <summary>
@@ -163,12 +331,11 @@ namespace MTM_WIP_Application_Avalonia.Services
                 
                 if (!fileExists)
                 {
-                    writer.WriteLine(GetCsvHeader());
+                    writer.WriteLine(GetEnhancedCsvHeader());
                 }
                 
                 writer.WriteLine(FormatErrorEntryAsCsv(errorEntry));
                 
-                // Also log the original exception that caused the fallback
                 LogApplicationError(originalException);
             }
             catch (Exception fallbackEx)
@@ -186,11 +353,6 @@ namespace MTM_WIP_Application_Avalonia.Services
         {
             try
             {
-                // TODO: Implement minimal fallback logging
-                // - Use local file system if file server is unavailable
-                // - Write to application event log as last resort
-                // - Avoid complex operations that could cause recursive errors
-                
                 var fallbackPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
                     "MTM_WIP_Application", "Logs", "application_errors.log");
                 
@@ -201,7 +363,6 @@ namespace MTM_WIP_Application_Avalonia.Services
             }
             catch
             {
-                // Last resort - write to console
                 Console.WriteLine($"Critical logging failure: {exception.Message}");
             }
         }
@@ -256,51 +417,10 @@ namespace MTM_WIP_Application_Avalonia.Services
             }
         }
 
-        /// <summary>
-        /// Gets the CSV header row for error log files.
-        /// </summary>
-        private static string GetCsvHeader()
-        {
-            return "Timestamp,UserId,MachineName,Category,Severity,ErrorMessage,FileName,MethodName,LineNumber,StackTrace,source,AdditionalData,ExceptionType";
-        }
-
-        /// <summary>
-        /// Formats an error entry as a CSV row with proper escaping.
-        /// </summary>
-        private static string FormatErrorEntryAsCsv(ErrorEntry errorEntry)
-        {
-            // TODO: Implement proper CSV formatting with escaping
-            // - Handle commas, quotes, and newlines in field values
-            // - Ensure all fields are properly escaped
-            
-            return string.Join(",",
-                EscapeCsvField(errorEntry.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")),
-                EscapeCsvField(errorEntry.UserId),
-                EscapeCsvField(errorEntry.MachineName),
-                EscapeCsvField(errorEntry.Category.ToString()),
-                EscapeCsvField(errorEntry.Severity.ToString()),
-                EscapeCsvField(errorEntry.ErrorMessage),
-                EscapeCsvField(errorEntry.FileName),
-                EscapeCsvField(errorEntry.MethodName),
-                EscapeCsvField(errorEntry.LineNumber.ToString()),
-                EscapeCsvField(errorEntry.StackTrace),
-                EscapeCsvField(errorEntry.source ?? ""),
-                EscapeCsvField(errorEntry.AdditionalData),
-                EscapeCsvField(errorEntry.ExceptionType)
-            );
-        }
-
-        /// <summary>
-        /// Escapes a field value for safe CSV formatting.
-        /// </summary>
         private static string EscapeCsvField(string field)
         {
             if (string.IsNullOrEmpty(field))
                 return "\"\"";
-            
-            // TODO: Implement proper CSV escaping
-            // - Wrap in quotes if contains comma, quote, or newline
-            // - Escape internal quotes by doubling them
             
             if (field.Contains(",") || field.Contains("\"") || field.Contains("\n") || field.Contains("\r"))
             {
@@ -308,15 +428,6 @@ namespace MTM_WIP_Application_Avalonia.Services
             }
             
             return field;
-        }
-
-        /// <summary>
-        /// Gets the MySQL connection string from configuration.
-        /// </summary>
-        private static string GetMySqlConnectionString()
-        {
-            // TODO: Implement configuration-based connection string retrieval
-            return "Server=localhost;Database=mtm_logs;Uid=app_user;Pwd=placeholder;";
         }
 
         /// <summary>

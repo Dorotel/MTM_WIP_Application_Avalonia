@@ -11,17 +11,17 @@ This folder contains essential project guidelines and core development patterns 
 
 ### naming-conventions.instruction.md  
 - **Purpose**: File, class, and service naming standards
-- **Key Topics**: Consistent naming across all components
+- **Key Topics**: Consistent naming across all components, stored procedure naming
 - **Usage**: Reference before creating any new files or classes
 
-### dependency-injection.instruction.md
+### dependency-injection.instruction.md ? **NEW**
 - **Purpose**: DI container setup and service registration rules
-- **Key Topics**: AddMTMServices usage, service lifetimes
+- **Key Topics**: AddMTMServices usage, service lifetimes, common DI errors
 - **Usage**: Critical for service registration and constructor patterns
 
-### project-structure.instruction.md
+### project-structure.instruction.md ? **NEW**
 - **Purpose**: Repository organization and file placement guidelines
-- **Key Topics**: Folder hierarchy, file organization principles
+- **Key Topics**: Folder hierarchy, file organization principles, development vs production separation
 - **Usage**: Reference when adding new components or reorganizing code
 
 ## Integration with Main Instructions

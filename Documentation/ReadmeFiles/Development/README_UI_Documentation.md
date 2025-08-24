@@ -7,7 +7,7 @@ This directory contains comprehensive documentation for all user interface compo
 ### Component Organization
 
 **NEW: Mandatory View Structure Standards**
-- **[Views_Structure_Standards.instruction.md](../../Development/UI_Documentation/Views_Structure_Standards.instruction.md)**: Mandatory standards for all Views implementation including proportional scaling, layout patterns, and MTM styling requirements
+- **[Views_Structure_Standards.instruction.md](../../Documentation/Development/UI_Documentation/Views_Structure_Standards.instruction.md)**: Mandatory standards for all Views implementation including proportional scaling, layout patterns, and MTM styling requirements
 
 #### `Controls/`
 Individual control specifications organized by functional area:

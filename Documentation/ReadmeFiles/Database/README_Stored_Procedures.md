@@ -9,8 +9,8 @@
 **This file contains the current production stored procedures and is READ-ONLY.**
 
 ### For Modifications:
-- **New Procedures**: Add to `Development/Database_Files/New_Stored_Procedures.sql`
-- **Update Existing**: Copy to `Development/Database_Files/Updated_Stored_Procedures.sql` and modify
+- **New Procedures**: Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql`
+- **Update Existing**: Copy to `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql` and modify
 
 ## Overview
 This file contains all stored procedures currently deployed in the production MTM WIP Application database. All application database operations must use these procedures.
@@ -212,7 +212,7 @@ Before deployment, all procedures must pass:
 
 ### Making Changes
 1. **Identify Need**: Document requirement for new/modified procedure
-2. **Development**: Create/modify in `Development/Database_Files/`
+2. **Development**: Create/modify in `Documentation/Development/Database_Files/`
 3. **Testing**: Thorough testing in development environment
 4. **Review**: Code review and security analysis
 5. **Staging**: Deploy to staging for integration testing
@@ -226,11 +226,11 @@ Before deployment, all procedures must pass:
 - Documentation updates
 
 ## Related Documentation
-- [New Stored Procedures](../Development/Database_Files/README_New_Stored_Procedures.md)
-- [Updated Stored Procedures](../Development/Database_Files/README_Updated_Stored_Procedures.md)  
+- [New Stored Procedures](../Documentation/Development/Database_Files/README_New_Stored_Procedures.md)
+- [Updated Stored Procedures](../Documentation/Development/Database_Files/README_Updated_Stored_Procedures.md)  
 - [Database Operations Guide](../Docs/database-operations-prompts.md)
 - [Production Schema](README_Production_Database_Schema.md)
 
 ---
-**For new procedures, see**: `Development/Database_Files/New_Stored_Procedures.sql`  
-**For procedure updates, see**: `Development/Database_Files/Updated_Stored_Procedures.sql`
+**For new procedures, see**: `Documentation/Development/Database_Files/New_Stored_Procedures.sql`  
+**For procedure updates, see**: `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql`

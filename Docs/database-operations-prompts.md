@@ -13,7 +13,7 @@ This document provides specialized custom prompts for database operations within
 
 ### **DATABASE FILE ORGANIZATION**
 - **Production Files** (`Database_Files/`) - **READ-ONLY** - Current production state
-- **Development Files** (`Development/Database_Files/`) - **EDITABLE** - All development work
+- **Development Files** (`Documentation/Development/Database_Files/`) - **EDITABLE** - All development work
 - **NEVER** edit production files directly
 - **ALWAYS** work in development files and deploy through proper change management
 
@@ -27,7 +27,7 @@ This document provides specialized custom prompts for database operations within
 
 **Prompt:**  
 "Create a new stored procedure called `[procedure_name]` for [business purpose].  
-Add the procedure to `Development/Database_Files/New_Stored_Procedures.sql` (NEVER edit production files).  
+Add the procedure to `Documentation/Development/Database_Files/New_Stored_Procedures.sql` (NEVER edit production files).  
 Include comprehensive error handling with p_Status and p_ErrorMsg output parameters.  
 Follow MTM naming conventions: [category]_[entity]_[action]_[specifics].  
 Add full documentation following the standards in README_New_Stored_Procedures.md.  
@@ -45,7 +45,7 @@ Ensure the procedure follows the security requirements and performance guideline
 
 **Prompt:**  
 "Update the existing stored procedure `[procedure_name]` to [modification description].  
-Copy the original procedure from `Database_Files/Existing_Stored_Procedures.sql` (READ-ONLY) to `Development/Database_Files/Updated_Stored_Procedures.sql`.  
+Copy the original procedure from `Database_Files/Existing_Stored_Procedures.sql` (READ-ONLY) to `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql`.  
 NEVER edit the original file in Database_Files/ - it represents current production state.  
 Document all changes using the change documentation template.  
 Maintain backward compatibility unless explicitly noted as a breaking change.  
@@ -85,7 +85,7 @@ Follow the connection string pattern using Model_AppVariables.ConnectionString."
 Check for violations of the 'No Hard-Coded MySQL' rule - identify any direct SQL statements.  
 Verify proper use of Helper_Database_StoredProcedure.ExecuteDataTableWithStatus() methods.  
 Ensure no code is directly editing files in Database_Files/ (production files are READ-ONLY).  
-Verify all development work is being done in Development/Database_Files/.  
+Verify all development work is being done in Documentation/Development/Database_Files/.  
 Report any violations with specific file locations and recommended fixes.  
 Ensure all database interactions go through the approved service layer."
 
@@ -100,7 +100,7 @@ Ensure all database interactions go through the approved service layer."
 
 **Prompt:**  
 "Convert the hard-coded SQL statement `[SQL_CODE]` to use a stored procedure approach.  
-Create the appropriate stored procedure in `Development/Database_Files/New_Stored_Procedures.sql`.  
+Create the appropriate stored procedure in `Documentation/Development/Database_Files/New_Stored_Procedures.sql`.  
 Update the application code to call the new stored procedure using Helper_Database_StoredProcedure.ExecuteDataTableWithStatus().  
 Ensure the conversion maintains the same functionality and performance.  
 Add comprehensive error handling and parameter validation.  
@@ -118,7 +118,7 @@ Follow MTM connection string patterns with Model_AppVariables.ConnectionString."
 
 **Prompt:**  
 "Create a transaction workflow for [business process] that involves multiple stored procedures.  
-Create coordinating stored procedures in `Development/Database_Files/New_Stored_Procedures.sql`.  
+Create coordinating stored procedures in `Documentation/Development/Database_Files/New_Stored_Procedures.sql`.  
 Use proper transaction management with BEGIN TRANSACTION, COMMIT, and ROLLBACK.  
 Include rollback handling for any step failures.  
 Call the following stored procedures in sequence: [procedure_list].  
@@ -137,7 +137,7 @@ Include audit logging for the complete transaction."
 
 **Prompt:**  
 "Create a batch processing stored procedure `[procedure_name]` for [business purpose].  
-Add to `Development/Database_Files/New_Stored_Procedures.sql` following MTM standards.  
+Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql` following MTM standards.  
 Process records in configurable batch sizes (default 1000 records).  
 Include progress tracking and resumption capability for long-running operations.  
 Add loop counters and maximum execution limits to prevent runaway processes.  
@@ -156,7 +156,7 @@ Follow the patterns established in MTM database architecture."
 
 **Prompt:**  
 "Create a reporting stored procedure `[procedure_name]` that generates [report_description].  
-Add to `Development/Database_Files/New_Stored_Procedures.sql` with full documentation.  
+Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql` with full documentation.  
 Include date range parameters with proper validation.  
 Add optional filtering parameters for user, location, part, etc.  
 Return comprehensive result sets with calculated fields and aggregations.  
@@ -175,7 +175,7 @@ Ensure the procedure can handle large data volumes efficiently."
 
 **Prompt:**  
 "Create a data validation stored procedure `[procedure_name]` that checks [validation_rules].  
-Add to `Development/Database_Files/New_Stored_Procedures.sql` with comprehensive documentation.  
+Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql` with comprehensive documentation.  
 Return detailed validation results with specific error descriptions.  
 Include options for validation-only mode and auto-correction mode.  
 Add comprehensive logging of all validation failures.  
@@ -194,7 +194,7 @@ Follow the error handling patterns established in MTM procedures."
 
 **Prompt:**  
 "Analyze the performance of stored procedure `[procedure_name]` from production (`Database_Files/Existing_Stored_Procedures.sql`).  
-Create optimized version in `Development/Database_Files/Updated_Stored_Procedures.sql`.  
+Create optimized version in `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql`.  
 Review the execution plan and identify slow queries or missing indexes.  
 Suggest improvements for cursor usage, joins, and data access patterns.  
 Recommend index additions or modifications.  
@@ -213,7 +213,7 @@ Ensure optimizations maintain data integrity and business logic correctness."
 
 **Prompt:**  
 "Create a data migration stored procedure `[procedure_name]` for [migration_purpose].  
-Add to `Development/Database_Files/New_Stored_Procedures.sql` with full documentation.  
+Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql` with full documentation.  
 Include comprehensive backup and rollback capabilities.  
 Add progress tracking and status reporting throughout the migration.  
 Include data validation before, during, and after migration.  
@@ -233,7 +233,7 @@ Follow MTM transaction safety patterns."
 
 **Prompt:**  
 "Create an emergency data recovery stored procedure `[procedure_name]` for [recovery_scenario].  
-Add to `Development/Database_Files/New_Stored_Procedures.sql` with emergency deployment notes.  
+Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql` with emergency deployment notes.  
 Include comprehensive data validation and integrity checking.  
 Add detailed logging of all recovery operations.  
 Include rollback capabilities if recovery fails.  
@@ -261,7 +261,7 @@ Ensure sensitive data is properly protected.
 Check for privilege escalation possibilities.  
 Verify proper error handling that doesn't expose sensitive information.  
 Ensure audit logging is comprehensive and tamper-resistant.  
-If fixes are needed, create updated version in `Development/Database_Files/Updated_Stored_Procedures.sql`.  
+If fixes are needed, create updated version in `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql`.  
 Provide specific recommendations for security improvements."
 
 **Example Usage:**  
@@ -275,7 +275,7 @@ Provide specific recommendations for security improvements."
 
 **Prompt:**  
 "Create a stored procedure `[procedure_name]` with role-based access control for [operation].  
-Add to `Development/Database_Files/New_Stored_Procedures.sql` with security documentation.  
+Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql` with security documentation.  
 Include user permission checking against appropriate user roles tables.  
 Add comprehensive audit logging of all access attempts.  
 Return appropriate error messages for unauthorized access.  
@@ -296,7 +296,7 @@ Follow the security patterns established in MTM user management procedures."
 
 **Prompt:**  
 "Optimize the slow-performing section in stored procedure `[procedure_name]`: [slow_code_section].  
-Copy original from `Database_Files/Existing_Stored_Procedures.sql` to `Development/Database_Files/Updated_Stored_Procedures.sql` for optimization.  
+Copy original from `Database_Files/Existing_Stored_Procedures.sql` to `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql` for optimization.  
 Analyze the execution plan and identify bottlenecks.  
 Suggest index improvements or query restructuring.  
 Consider replacing cursors with set-based operations where possible.  
@@ -315,7 +315,7 @@ Ensure optimizations don't affect data integrity or business logic."
 
 **Prompt:**  
 "Create a database maintenance stored procedure `[procedure_name]` for [maintenance_task].  
-Add to `Development/Database_Files/New_Stored_Procedures.sql` with maintenance documentation.  
+Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql` with maintenance documentation.  
 Include comprehensive status reporting and progress tracking.  
 Add scheduling parameters and execution windows.  
 Include automatic rollback if maintenance fails.  
@@ -333,9 +333,9 @@ Follow maintenance patterns from MTM database architecture."
 
 ### ??? File Organization Rules
 1. **NEVER** edit files in `Database_Files/` - they are READ-ONLY production files
-2. **ALWAYS** work in `Development/Database_Files/` for all changes
-3. **New Procedures**: Add to `Development/Database_Files/New_Stored_Procedures.sql`
-4. **Update Existing**: Copy to `Development/Database_Files/Updated_Stored_Procedures.sql` and modify
+2. **ALWAYS** work in `Documentation/Development/Database_Files/` for all changes
+3. **New Procedures**: Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql`
+4. **Update Existing**: Copy to `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql` and modify
 5. **Production Deployment**: Move tested procedures through proper change management
 
 ### Before Using These Prompts
@@ -346,7 +346,7 @@ Follow maintenance patterns from MTM database architecture."
 
 ### After Creating Database Code
 1. **Test Thoroughly**: Test all code paths and error conditions in development
-2. **Document Changes**: Update appropriate README files in `Development/Database_Files/`
+2. **Document Changes**: Update appropriate README files in `Documentation/Development/Database_Files/`
 3. **Review Performance**: Validate performance with realistic data
 4. **Plan Deployment**: Create deployment procedures to move from Development to Production
 

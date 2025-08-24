@@ -26,9 +26,9 @@
   <main>
     <h2><span class="icon">&#128295;</span>Coding Conventions</h2>
     
-    <blockquote class="warning">
-      <span class="icon">&#9888;</span>
-      <strong>Important:</strong> Before implementing new code, ensure all <a href="missing-systems.html">missing core systems</a> are in place. Current project compliance is only 25%.
+    <blockquote class="info">
+      <span class="icon">&#128161;</span>
+      <strong>GitHub Instructions:</strong> Complete coding guidelines are available in <a href="../.github/codingconventions.instruction.md">GitHub Instructions - Coding Conventions</a>. This page provides quick reference for common patterns.
     </blockquote>
     
     <details open>
@@ -42,7 +42,7 @@
         <li>Do <strong>NOT</strong> add business logic in UI files. Only navigation logic (such as navigation between views, dialogs, or windows) is allowed.</li>
         <li>Always include navigation event handlers as specified; other events should be empty stubs with <code>TODO</code> comments.</li>
         <li><strong>NEW:</strong> All services must implement Result&lt;T&gt; pattern for consistent error handling.</li>
-        <li><strong>NEW:</strong> All services must be prepared for dependency injection with proper interfaces.</li>
+        <li><strong>CRITICAL:</strong> All services must use <code>services.AddMTMServices(configuration)</code> for proper dependency injection.</li>
       </ul>
     </details>
     
@@ -78,75 +78,74 @@
     </details>
     
     <details>
-      <summary><span class="icon icon-chevron">&#9654;</span>Service Layer Patterns (Critical Missing)</summary>
+      <summary><span class="icon icon-chevron">&#9654;</span>Service Registration Patterns (CRITICAL)</summary>
       <ul>
-        <li><strong>Result Pattern:</strong> All service methods must return <code>Result&lt;T&gt;</code> for consistent error handling</li>
-        <li><strong>Async Operations:</strong> All database operations must be async with proper cancellation token support</li>
-        <li><strong>Error Integration:</strong> Use <code>Service_ErrorHandler.HandleException()</code> for all exceptions</li>
-        <li><strong>Dependency Injection:</strong> All services must have interfaces and be registered in DI container</li>
-        <li><strong>MTM Data Patterns:</strong> Follow Part ID (string), Operation (string numbers), Quantity (integer) patterns</li>
-        <li><strong>Validation:</strong> Implement business rule validation before database operations</li>
-        <li><strong>Logging:</strong> Integrate with LoggingUtility for all service operations</li>
+        <li><strong>ALWAYS Use AddMTMServices:</strong> Never register MTM services individually</li>
+        <li><strong>Dependency Chain:</strong> AddMTMServices registers all required dependencies</li>
+        <li><strong>ViewModel Registration:</strong> All ViewModels must be registered as Transient</li>
+        <li><strong>Service Overrides:</strong> Avalonia-specific services registered AFTER AddMTMServices</li>
+        <li><strong>Proper Order:</strong> Configuration → AddMTMServices → Overrides → ViewModels</li>
+        <li><strong>Validation:</strong> Test service resolution before production deployment</li>
       </ul>
-      <p>Example service implementation:</p>
-      <pre><code>public class InventoryService : IInventoryService
-{
-    private readonly LoggingUtility _loggingUtility;
-    
-    public InventoryService(LoggingUtility loggingUtility)
-    {
-        _loggingUtility = loggingUtility;
-    }
-    
-    public async Task&lt;Result&lt;InventoryItem&gt;&gt; GetInventoryItemAsync(string partId)
-    {
-        try
-        {
-            var item = await _loggingUtility.GetInventoryItemAsync(partId);
-            return Result&lt;InventoryItem&gt;.Success(item);
-        }
-        catch (Exception ex)
-        {
-            Service_ErrorHandler.HandleException(ex, ErrorSeverity.High,
-                source: nameof(InventoryService));
-            return Result&lt;InventoryItem&gt;.Failure("Failed to retrieve inventory item");
-        }
-    }
-}</code></pre>
+      <p>Example service registration:</p>
+      <pre><code>// ✅ CORRECT: Use comprehensive service registration
+services.AddMTMServices(configuration);
+
+// ✅ Override Avalonia-specific services AFTER AddMTMServices
+services.AddSingleton&lt;IConfigurationService, ConfigurationService&gt;();
+
+// ✅ Register all ViewModels as Transient
+services.AddTransient&lt;InventoryViewModel&gt;();
+
+// ❌ WRONG: Manual registration misses dependencies
+services.AddScoped&lt;IInventoryService, InventoryService&gt;(); // Missing IValidationService!</code></pre>
     </details>
     
     <details>
-      <summary><span class="icon icon-chevron">&#9654;</span>MTM-Specific Data Patterns</summary>
+      <summary><span class="icon icon-chevron">&#9654;</span>Database Access Patterns</summary>
       <ul>
+        <li><strong>CRITICAL Rule:</strong> All database operations MUST use stored procedures only</li>
+        <li><strong>NO Direct SQL:</strong> Zero hard-coded SQL commands allowed in application code</li>
+        <li><strong>Standard Pattern:</strong> Use Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</li>
+        <li><strong>Error Handling:</strong> All procedures return standardized status codes</li>
+        <li><strong>Parameter Validation:</strong> All inputs validated by stored procedures</li>
+        <li><strong>Transaction Management:</strong> Proper START/COMMIT/ROLLBACK in procedures</li>
+      </ul>
+      <p>Example database access:</p>
+      <pre><code>// ✅ CORRECT: Using stored procedure
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    Model_AppVariables.ConnectionString,
+    "inv_inventory_Add_Item_Enhanced",
+    new Dictionary&lt;string, object&gt; 
+    {
+        ["p_PartID"] = partId,
+        ["p_OperationID"] = operationId,
+        ["p_LocationID"] = locationId,
+        ["p_Quantity"] = quantity,
+        ["p_UserID"] = userId
+    }
+);
+
+// ❌ PROHIBITED: Direct SQL
+// var query = "SELECT * FROM inventory WHERE part_id = @partId"; // NEVER DO THIS</code></pre>
+    </details>
+    
+    <details>
+      <summary><span class="icon icon-chevron">&#9654;</span>MTM Business Logic Rules</summary>
+      <ul>
+        <li><strong>CRITICAL:</strong> TransactionType determined by USER INTENT, NOT Operation number</li>
+        <li><strong>IN:</strong> User is adding stock to inventory (regardless of operation number)</li>
+        <li><strong>OUT:</strong> User is removing stock from inventory (regardless of operation number)</li>
+        <li><strong>TRANSFER:</strong> User is moving stock between locations (regardless of operation number)</li>
+        <li><strong>Operation Numbers:</strong> Workflow step identifiers only ("90", "100", "110")</li>
         <li><strong>Part ID:</strong> Always use string format (e.g., "PART001")</li>
-        <li><strong>Operation:</strong> String numbers only (e.g., "90", "100", "110"), not descriptive text</li>
         <li><strong>Quantity:</strong> Integer values for all quantity fields</li>
-        <li><strong>Position:</strong> 1-based indexing for UI display (convert to 0-based for arrays)</li>
-        <li><strong>User Tracking:</strong> Include CreatedBy, ModifiedBy fields as string user IDs</li>
-        <li><strong>Timestamps:</strong> Use DateTime for Created, Modified fields</li>
-        <li><strong>Status Fields:</strong> Use enums for status values, not magic strings</li>
       </ul>
-    </details>
-    
-    <details>
-      <summary><span class="icon icon-chevron">&#9654;</span>Missing Systems Compliance</summary>
-      <p><strong>Current Status:</strong> <span class="status-critical">25% Compliance</span> - Development should be paused until foundation systems are implemented.</p>
-      
-      <h3>Required Before Continuing Development:</h3>
-      <ul>
-        <li><strong>Models Namespace:</strong> Result&lt;T&gt;, InventoryItem, InventoryTransaction, User, QuickButtonItem</li>
-        <li><strong>Service Layer:</strong> IInventoryService, IUserService, ITransactionService implementations</li>
-        <li><strong>Dependency Injection:</strong> Microsoft.Extensions.DependencyInjection container setup</li>
-        <li><strong>Navigation Service:</strong> Proper MVVM navigation patterns</li>
-        <li><strong>Theme System:</strong> MTM purple brand colors with DynamicResource</li>
-      </ul>
-      
-      <p>See <a href="missing-systems.html">Missing Systems</a> for implementation roadmap and <a href="custom-prompts-examples.html">Prompt Examples</a> for specific implementation prompts.</p>
     </details>
     
     <blockquote class="tip">
       <span class="icon">&#128204;</span>
-      For UI structure and event stubs, see <a href="ui-generation.html">UI Generation</a>. For quality verification, use <a href="needs-repair.html">Quality Assurance</a> compliance reports.
+      For comprehensive patterns, see <a href="../.github/copilot-instructions.md">GitHub Instructions Master File</a>. For UI structure, see <a href="ui-generation.html">UI Generation</a>. For quality verification, use <a href="needs-repair.html">Quality Assurance</a>.
     </blockquote>
   </main>
 </body>

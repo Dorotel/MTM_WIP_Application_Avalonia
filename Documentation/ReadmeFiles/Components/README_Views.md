@@ -526,7 +526,7 @@ Consistent spacing throughout the application:
 ## ?? Related Documentation
 
 - **ViewModels**: See `ViewModels/README.md` for ViewModel patterns
-- **UI Documentation**: `Development/UI_Documentation/` for detailed component specs
+- **UI Documentation**: `Documentation/Development/UI_Documentation/` for detailed component specs
 - **Styling Guide**: Avalonia styling documentation for advanced styling
 - **Design System**: MTM brand guidelines and color specifications
 

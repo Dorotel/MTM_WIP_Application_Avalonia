@@ -1,0 +1,8 @@
+Question_ID,Category,Question,Answer,Notes
+"F1","Critical_Scope","Backup strategy for expanded scope affecting 50+ files","FULL_DOCUMENTATION_BACKUP",""
+"F2","Implementation_Order","Migration execution order for extensive cross-file dependencies","CSS_FIRST","Do whichever will produces the most accurate results"
+"F3","Link_Management","External link handling with FileDefinitions- prefix on all files","SCAN_AND_UPDATE",""
+"F4","Mobile_Responsiveness_Scope","CSS modification strategy for UPGRADE_ALL responsiveness","CREATE_RESPONSIVE_CSS",""
+"F5","Error_Recovery","Error recovery strategy for extensive migration scope","CHECKPOINT_SYSTEM",""
+"F6","Final_Validation","Testing and validation level after comprehensive migration","COMPREHENSIVE_TESTING",""
+"F7","Documentation_Updates","README and documentation update strategy for structure changes","UPDATE_ALL_READMES","Update all relevant instruction files as well."

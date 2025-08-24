@@ -58,7 +58,7 @@ MTM_WIP_Application_Avalonia/
   - `Existing_Stored_Procedures.sql` - All current production procedures
   - `README_*.md` - Production documentation
 
-#### **Development Files** (`Development/Database_Files/` - EDITABLE)
+#### **Development Files** (`Documentation/Development/Database_Files/` - EDITABLE)
 - **Purpose**: Development changes and new procedures
 - **Status**: ✅ **CRITICAL FIX #1 COMPLETED - DEVELOPMENT UNBLOCKED**
 - **Files**:
@@ -68,9 +68,9 @@ MTM_WIP_Application_Avalonia/
   - `README_NewProcedures.md` - ✅ **Complete documentation with examples**
 
 #### **Database Development Workflow**
-1. **New Procedures**: Add to `Development/Database_Files/New_Stored_Procedures.sql`
-2. **Update Existing**: Copy from `Database_Files/Existing_Stored_Procedures.sql` to `Development/Database_Files/Updated_Stored_Procedures.sql`, then modify
-3. **Schema Changes**: Update `Development/Database_Files/Development_Database_Schema.sql`
+1. **New Procedures**: Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql`
+2. **Update Existing**: Copy from `Database_Files/Existing_Stored_Procedures.sql` to `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql`, then modify
+3. **Schema Changes**: Update `Documentation/Development/Database_Files/Development_Database_Schema.sql`
 4. **Deploy to Production**: Move validated files from Development to Database_Files
 
 ## 🎨 UI Design System
@@ -234,7 +234,7 @@ Operation numbers ("90", "100", "110", etc.) are **workflow step identifiers** o
 ├── Existing_Stored_Procedures.sql         # READ ONLY - All production procedures
 └── README_*.md                            # Production documentation
 
-🔧 Development/Database_Files/ (Development - EDITABLE) ✅ UPDATED
+🔧 Documentation/Development/Database_Files/ (Development - EDITABLE) ✅ UPDATED
 ├── Development_Database_Schema.sql        # Schema changes for development
 ├── New_Stored_Procedures.sql             # ✅ 12 NEW PROCEDURES IMPLEMENTED
 ├── Updated_Stored_Procedures.sql         # ✅ Ready template for future updates
@@ -289,13 +289,13 @@ mysql -u username -p database_name < Database_Files/Production_Database_Schema.s
 mysql -u username -p database_name < Database_Files/Existing_Stored_Procedures.sql
 
 # 2. Apply development changes
-mysql -u username -p database_name < Development/Database_Files/Development_Database_Schema.sql
+mysql -u username -p database_name < Documentation/Development/Database_Files/Development_Database_Schema.sql
 
 # 3. Add NEW comprehensive procedures ✅ 12 PROCEDURES READY
-mysql -u username -p database_name < Development/Database_Files/New_Stored_Procedures.sql
+mysql -u username -p database_name < Documentation/Development/Database_Files/New_Stored_Procedures.sql
 
 # 4. Apply updated procedures (when available)
-mysql -u username -p database_name < Development/Database_Files/Updated_Stored_Procedures.sql
+mysql -u username -p database_name < Documentation/Development/Database_Files/Updated_Stored_Procedures.sql
 ```
 
 ### Development Setup
@@ -305,7 +305,7 @@ mysql -u username -p database_name < Development/Database_Files/Updated_Stored_P
    - Configure debugging settings
 
 2. **Database Development** ✅ **NOW UNBLOCKED**
-   - Always work in `Development/Database_Files/` for changes
+   - Always work in `Documentation/Development/Database_Files/` for changes
    - Never edit files in `Database_Files/` (production)
    - ✅ **NEW PROCEDURES AVAILABLE**: All standard inventory operations implemented
    - Test all changes thoroughly before deployment
@@ -332,7 +332,7 @@ services.AddMTMServices(configuration);
 ```
 
 #### **🔧 Complete DI Setup Guide**
-See [`Development/DependencyInjection/README_DependencyInjection.md`](Development/DependencyInjection/README_DependencyInjection.md) and [`Development/DependencyInjection/DI_Troubleshooting_Guide.md`](Development/DependencyInjection/DI_Troubleshooting_Guide.md) for comprehensive setup instructions and error prevention.
+See [`Documentation/Development/DependencyInjection/README_DependencyInjection.md`](Documentation/Development/DependencyInjection/README_DependencyInjection.md) and [`Documentation/Development/DependencyInjection/DI_Troubleshooting_Guide.md`](Documentation/Development/DependencyInjection/DI_Troubleshooting_Guide.md) for comprehensive setup instructions and error prevention.
 
 #### **Quick Reference - Required Setup:**
 1. **Using Statement**: `using MTM.Extensions;` in Program.cs
@@ -348,8 +348,8 @@ See [`Development/DependencyInjection/README_DependencyInjection.md`](Developmen
 - **Error Handling**: Comprehensive error handling with user-friendly messages
 
 ### Database Development Rules ✅ **ENHANCED WITH NEW PROCEDURES**
-- **New Procedures**: Add to `Development/Database_Files/New_Stored_Procedures.sql` ✅ **12 IMPLEMENTED**
-- **Update Existing**: Copy to `Development/Database_Files/Updated_Stored_Procedures.sql` and modify ✅ **TEMPLATE READY**
+- **New Procedures**: Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql` ✅ **12 IMPLEMENTED**
+- **Update Existing**: Copy to `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql` and modify ✅ **TEMPLATE READY**
 - **Never Edit**: `Database_Files/Existing_Stored_Procedures.sql` is read-only
 - **Parameter Validation**: ✅ **ALL NEW PROCEDURES INCLUDE COMPREHENSIVE VALIDATION**
 - **Transaction Management**: ✅ **ALL NEW PROCEDURES USE PROPER TRANSACTION PATTERNS**
@@ -365,17 +365,17 @@ See [`Development/DependencyInjection/README_DependencyInjection.md`](Developmen
 ## 📚 Documentation
 
 ### Comprehensive Documentation ✅ **ENHANCED**
-- **Database Files**: Complete documentation in both `Database_Files/README_*.md` and `Development/Database_Files/README_*.md`
-- **NEW PROCEDURES**: ✅ **Complete documentation in `Development/Database_Files/README_NewProcedures.md`**
-- **UI Components**: Detailed specifications in `Development/UI_Documentation/`
+- **Database Files**: Complete documentation in both `Database_Files/README_*.md` and `Documentation/Development/Database_Files/README_*.md`
+- **NEW PROCEDURES**: ✅ **Complete documentation in `Documentation/Development/Database_Files/README_NewProcedures.md`**
+- **UI Components**: Detailed specifications in `Documentation/Development/UI_Documentation/`
 - **Custom Prompts**: Development templates in `Development/Custom_Prompts/`
-- **Code Examples**: Usage patterns in `Development/Examples/`
+- **Code Examples**: Usage patterns in `Documentation/Development/Examples/`
 - **HTML Guides**: User-friendly documentation in `Docs/`
 
 ### Key Documentation Files ✅ **UPDATED**
 - **Production Database**: `Database_Files/README.md` - Production database overview
-- **Development Database**: `Development/Database_Files/README.md` - Development workflow
-- **NEW PROCEDURES**: ✅ **`Development/Database_Files/README_NewProcedures.md` - Complete procedure documentation**
+- **Development Database**: `Documentation/Development/Database_Files/README.md` - Development workflow
+- **NEW PROCEDURES**: ✅ **`Documentation/Development/Database_Files/README_NewProcedures.md` - Complete procedure documentation**
 - **GitHub Instructions**: `.github/copilot-instructions.md` - Complete development guidelines
 - **Code Compliance**: `Compliance Reports/` - Automated code analysis
 
@@ -384,14 +384,14 @@ See [`Development/DependencyInjection/README_DependencyInjection.md`](Developmen
 ### Development Workflow
 1. **Create Feature Branch**: `git checkout -b feature/your-feature-name`
 2. **Follow Code Standards**: Use established patterns and conventions
-3. **Database Changes**: Work only in `Development/Database_Files/`
+3. **Database Changes**: Work only in `Documentation/Development/Database_Files/`
 4. **Add Documentation**: Update relevant `.md` files
 5. **Test Thoroughly**: Ensure all functionality works as expected
 6. **Submit Pull Request**: Include detailed description of changes
 
 ### Database Contribution Rules ✅ **ENHANCED**
 - **🚫 NEVER** edit files in `Database_Files/` directly
-- **✅ ALWAYS** make changes in `Development/Database_Files/`
+- **✅ ALWAYS** make changes in `Documentation/Development/Database_Files/`
 - **✅ ALWAYS** test procedures thoroughly before requesting deployment
 - **✅ ALWAYS** update documentation when adding/modifying procedures
 - **✅ NEW**: Use standardized error handling pattern from `New_Stored_Procedures.sql`
@@ -411,9 +411,9 @@ This project is proprietary software owned by Manitowoc Tool and Manufacturing (
 ### Getting Help
 - **GitHub Issues**: Report bugs and request features
 - **Documentation**: Check `Docs/` and `Development/` for detailed guides
-- **Database Issues**: Review `Database_Files/README.md` and `Development/Database_Files/README_NewProcedures.md`
-- **Code Examples**: Review `Development/Examples/` for usage patterns
-- **NEW PROCEDURES**: See `Development/Database_Files/README_NewProcedures.md` for complete documentation
+- **Database Issues**: Review `Database_Files/README.md` and `Documentation/Development/Database_Files/README_NewProcedures.md`
+- **Code Examples**: Review `Documentation/Development/Examples/` for usage patterns
+- **NEW PROCEDURES**: See `Documentation/Development/Database_Files/README_NewProcedures.md` for complete documentation
 
 ### Contact Information
 - **Project Maintainer**: [Contact Information]

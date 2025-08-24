@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM WIP Application - File Reference Validation Script Configuration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d1b69 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(75, 69, 237, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(75, 69, 237, 0.3);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4B45ED, #BA45ED);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4B45ED, #BA45ED);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(75, 69, 237, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(186, 69, 237, 0.5);
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .question-id {
+            background: linear-gradient(45deg, #4B45ED, #BA45ED);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .category-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-file_types { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        .category-reference_patterns { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .category_path_resolution { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .category-exclusions { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+        .category-output_format { background: rgba(155, 89, 182, 0.2); color: #9b59b6; }
+        .category-performance { background: rgba(230, 126, 34, 0.2); color: #e67e22; }
+        .category-validation_rules { background: rgba(26, 188, 156, 0.2); color: #1abc9c; }
+
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .answer-section {
+            margin-bottom: 15px;
+        }
+
+        .answer-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #BA45ED;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #4B45ED;
+            box-shadow: 0 0 0 2px rgba(75, 69, 237, 0.2);
+        }
+
+        select option {
+            background: #2d1b69;
+            color: #ffffff;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .notes-section {
+            margin-top: 15px;
+        }
+
+        .validation-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .submit-section {
+            background: rgba(75, 69, 237, 0.1);
+            border: 1px solid rgba(75, 69, 237, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #4B45ED, #BA45ED);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .summary-section {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .summary-title {
+            color: #2ecc71;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .summary-content {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .question-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>File Reference Validation Script Configuration</h1>
+            <p>Configure the comprehensive file reference validation script for MTM WIP Application Avalonia</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form id="questionnaireForm">
+            <!-- Question 1: File Type Definitions -->
+            <div class="question-card" data-question-id="1">
+                <div class="question-header">
+                    <span class="question-id">Q1</span>
+                    <span class="category-badge category-file_types">File Types</span>
+                </div>
+                <div class="question-text">What file types should be considered "application files" that need to be referenced correctly in documentation?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Application File Types:</label>
+                    <select name="q1_app_files" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="CS_AXAML_CSPROJ_SLN">Standard (.cs, .axaml, .csproj, .sln)</option>
+                        <option value="CS_AXAML_CSPROJ_SLN_CONFIG">Standard + Config (.cs, .axaml, .csproj, .sln, .json, .config)</option>
+                        <option value="ALL_CODE_FILES">All Code Files (.cs, .axaml, .csproj, .sln, .json, .config, .xml)</option>
+                        <option value="CUSTOM">Custom Selection</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+                <div class="notes-section">
+                    <label class="answer-label">Additional Notes (if Custom):</label>
+                    <textarea name="q1_notes" placeholder="Specify custom file extensions..."></textarea>
+                </div>
+            </div>
+
+            <!-- Question 2: Documentation File Types -->
+            <div class="question-card" data-question-id="2">
+                <div class="question-header">
+                    <span class="question-id">Q2</span>
+                    <span class="category-badge category-file_types">Documentation Types</span>
+                </div>
+                <div class="question-text">What file types should be considered "documentation files" to scan for references?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Documentation File Types:</label>
+                    <select name="q2_doc_files" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="MD_HTML">Basic (.md, .html)</option>
+                        <option value="MD_HTML_TXT">Standard (.md, .html, .txt)</option>
+                        <option value="MD_HTML_TXT_INSTRUCTION">MTM Standard (.md, .html, .txt, .instruction.md)</option>
+                        <option value="ALL_TEXT_FILES">All Text Files (.md, .html, .txt, .rst, .adoc)</option>
+                        <option value="CUSTOM">Custom Selection</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+                <div class="notes-section">
+                    <label class="answer-label">Additional Notes (if Custom):</label>
+                    <textarea name="q2_notes" placeholder="Specify custom file extensions..."></textarea>
+                </div>
+            </div>
+
+            <!-- Question 3: Reference Pattern Detection -->
+            <div class="question-card" data-question-id="3">
+                <div class="question-header">
+                    <span class="question-id">Q3</span>
+                    <span class="category-badge category-reference_patterns">Reference Patterns</span>
+                </div>
+                <div class="question-text">What types of file references should the script detect and validate?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Reference Types to Check:</label>
+                    <select name="q3_reference_types" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="MARKDOWN_ONLY">Markdown Links Only ([text](path))</option>
+                        <option value="MARKDOWN_HTML_BASIC">Markdown + Basic HTML (href, src)</option>
+                        <option value="MARKDOWN_HTML_EXTENDED">Markdown + Extended HTML (href, src, action, data-*)</option>
+                        <option value="ALL_PATTERNS">All Patterns + Plain Text Paths</option>
+                        <option value="CUSTOM">Custom Pattern Selection</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+                <div class="notes-section">
+                    <label class="answer-label">Additional Notes (if Custom):</label>
+                    <textarea name="q3_notes" placeholder="Specify custom patterns or regex..."></textarea>
+                </div>
+            </div>
+
+            <!-- Question 4: Path Resolution Strategy -->
+            <div class="question-card" data-question-id="4">
+                <div class="question-header">
+                    <span class="question-id">Q4</span>
+                    <span class="category-badge category_path_resolution">Path Resolution</span>
+                </div>
+                <div class="question-text">How should relative paths be resolved for validation?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Path Resolution Method:</label>
+                    <select name="q4_path_resolution" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="FROM_FILE_LOCATION">From File's Directory Location</option>
+                        <option value="FROM_PROJECT_ROOT">Always From Project Root</option>
+                        <option value="SMART_RESOLUTION">Smart Resolution (try both methods)</option>
+                        <option value="CONTEXT_AWARE">Context Aware (based on path format)</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+                <div class="notes-section">
+                    <label class="answer-label">Additional Notes:</label>
+                    <textarea name="q4_notes" placeholder="Any specific path resolution requirements..."></textarea>
+                </div>
+            </div>
+
+            <!-- Question 5: Case Sensitivity -->
+            <div class="question-card" data-question-id="5">
+                <div class="question-header">
+                    <span class="question-id">Q5</span>
+                    <span class="category-badge category-validation_rules">Case Sensitivity</span>
+                </div>
+                <div class="question-text">Should the script be case-sensitive when validating file paths?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Case Sensitivity:</label>
+                    <select name="q5_case_sensitivity" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="CASE_SENSITIVE">Case Sensitive (README.md ? readme.md)</option>
+                        <option value="CASE_INSENSITIVE">Case Insensitive (README.md = readme.md)</option>
+                        <option value="WINDOWS_STANDARD">Windows Standard (case insensitive)</option>
+                        <option value="WARN_CASE_MISMATCH">Case Insensitive but Warn on Mismatch</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+            </div>
+
+            <!-- Question 6: Directory Exclusions -->
+            <div class="question-card" data-question-id="6">
+                <div class="question-header">
+                    <span class="question-id">Q6</span>
+                    <span class="category-badge category-exclusions">Exclusions</span>
+                </div>
+                <div class="question-text">Which directories should be excluded from scanning?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Excluded Directories:</label>
+                    <select name="q6_exclusions" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="STANDARD_EXCLUSIONS">Standard (.git, bin, obj, node_modules)</option>
+                        <option value="EXTENDED_EXCLUSIONS">Extended (Standard + packages, .vs, Debug, Release)</option>
+                        <option value="MTM_OPTIMIZED">MTM Optimized (Extended + specific folders)</option>
+                        <option value="CUSTOM">Custom Exclusion List</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+                <div class="notes-section">
+                    <label class="answer-label">Additional Exclusions (if Custom):</label>
+                    <textarea name="q6_notes" placeholder="List additional folders to exclude..."></textarea>
+                </div>
+            </div>
+
+            <!-- Question 7: URL Handling -->
+            <div class="question-card" data-question-id="7">
+                <div class="question-header">
+                    <span class="question-id">Q7</span>
+                    <span class="category-badge category-validation_rules">URL Handling</span>
+                </div>
+                <div class="question-text">How should HTTP/HTTPS URLs be handled?</div>
+                <div class="answer-section">
+                    <label class="answer-label">URL Validation:</label>
+                    <select name="q7_url_handling" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="SKIP_URLS">Skip URLs (don't validate)</option>
+                        <option value="VALIDATE_URLS">Validate URLs (check if accessible)</option>
+                        <option value="LOG_URLS_ONLY">Log URLs but don't validate</option>
+                        <option value="GITHUB_ONLY">Validate only GitHub URLs</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+            </div>
+
+            <!-- Question 8: Anchor Link Validation -->
+            <div class="question-card" data-question-id="8">
+                <div class="question-header">
+                    <span class="question-id">Q8</span>
+                    <span class="category-badge category-validation_rules">Anchor Links</span>
+                </div>
+                <div class="question-text">Should the script validate anchor links (e.g., #section-name) within documents?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Anchor Link Validation:</label>
+                    <select name="q8_anchor_validation" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="NO_ANCHOR_VALIDATION">Don't validate anchors</option>
+                        <option value="BASIC_ANCHOR_VALIDATION">Basic validation (check if heading exists)</option>
+                        <option value="ADVANCED_ANCHOR_VALIDATION">Advanced validation (check heading IDs)</option>
+                        <option value="MARKDOWN_ANCHOR_ONLY">Markdown anchor validation only</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+            </div>
+
+            <!-- Question 9: Report Format -->
+            <div class="question-card" data-question-id="9">
+                <div class="question-header">
+                    <span class="question-id">Q9</span>
+                    <span class="category-badge category-output_format">Report Format</span>
+                </div>
+                <div class="question-text">What format should the validation report use?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Report Format:</label>
+                    <select name="q9_report_format" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="MARKDOWN">Markdown Report (.md)</option>
+                        <option value="HTML">HTML Report (.html)</option>
+                        <option value="JSON">JSON Report (.json)</option>
+                        <option value="CSV">CSV Report (.csv)</option>
+                        <option value="MULTIPLE_FORMATS">Multiple Formats (MD + HTML)</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+            </div>
+
+            <!-- Question 10: Report Location -->
+            <div class="question-card" data-question-id="10">
+                <div class="question-header">
+                    <span class="question-id">Q10</span>
+                    <span class="category-badge category-output_format">Report Location</span>
+                </div>
+                <div class="question-text">Where should the validation report be saved?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Report Location:</label>
+                    <select name="q10_report_location" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="PROJECT_ROOT">Project Root Directory</option>
+                        <option value="DOCUMENTATION_FOLDER">Documentation/ Folder</option>
+                        <option value="DEVELOPMENT_REPORTS">Documentation/Development/Reports/</option>
+                        <option value="CUSTOM_LOCATION">Custom Location</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+                <div class="notes-section">
+                    <label class="answer-label">Custom Path (if applicable):</label>
+                    <input type="text" name="q10_custom_path" placeholder="Enter custom path...">
+                </div>
+            </div>
+
+            <!-- Question 11: Report Grouping -->
+            <div class="question-card" data-question-id="11">
+                <div class="question-header">
+                    <span class="question-id">Q11</span>
+                    <span class="category-badge category-output_format">Report Grouping</span>
+                </div>
+                <div class="question-text">How should errors be grouped in the report?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Error Grouping:</label>
+                    <select name="q11_grouping" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="BY_SOURCE_FILE">Group by Source File</option>
+                        <option value="BY_TARGET_FILE">Group by Target File</option>
+                        <option value="BY_ERROR_TYPE">Group by Error Type</option>
+                        <option value="BY_DIRECTORY">Group by Directory</option>
+                        <option value="HIERARCHICAL">Hierarchical (Type > Directory > File)</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+            </div>
+
+            <!-- Question 12: Progress Reporting -->
+            <div class="question-card" data-question-id="12">
+                <div class="question-header">
+                    <span class="question-id">Q12</span>
+                    <span class="category-badge category-performance">Progress Reporting</span>
+                </div>
+                <div class="question-text">Should the script provide progress updates during execution?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Progress Updates:</label>
+                    <select name="q12_progress" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="NO_PROGRESS">No Progress Updates</option>
+                        <option value="BASIC_PROGRESS">Basic Progress (file count)</option>
+                        <option value="DETAILED_PROGRESS">Detailed Progress (current file being processed)</option>
+                        <option value="PERCENTAGE_PROGRESS">Percentage Progress Bar</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+            </div>
+
+            <!-- Question 13: Performance Optimization -->
+            <div class="question-card" data-question-id="13">
+                <div class="question-header">
+                    <span class="question-id">Q13</span>
+                    <span class="category-badge category-performance">Performance</span>
+                </div>
+                <div class="question-text">What performance optimizations should be included?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Performance Features:</label>
+                    <select name="q13_performance" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="BASIC">Basic (sequential processing)</option>
+                        <option value="PARALLEL_PROCESSING">Parallel Processing</option>
+                        <option value="CACHING">File Existence Caching</option>
+                        <option value="FULL_OPTIMIZATION">Full Optimization (parallel + caching + limits)</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+            </div>
+
+            <!-- Question 14: File Size Limits -->
+            <div class="question-card" data-question-id="14">
+                <div class="question-header">
+                    <span class="question-id">Q14</span>
+                    <span class="category-badge category-performance">File Size Limits</span>
+                </div>
+                <div class="question-text">Should there be limits on file sizes to scan?</div>
+                <div class="answer-section">
+                    <label class="answer-label">File Size Limit:</label>
+                    <select name="q14_file_limits" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="NO_LIMIT">No Size Limit</option>
+                        <option value="REASONABLE_LIMIT">Reasonable Limit (10MB)</option>
+                        <option value="STRICT_LIMIT">Strict Limit (1MB)</option>
+                        <option value="CUSTOM_LIMIT">Custom Size Limit</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+                <div class="notes-section">
+                    <label class="answer-label">Custom Size (if applicable):</label>
+                    <input type="text" name="q14_custom_size" placeholder="Enter size (e.g., 5MB)...">
+                </div>
+            </div>
+
+            <!-- Question 15: Special File Handling -->
+            <div class="question-card" data-question-id="15">
+                <div class="question-header">
+                    <span class="question-id">Q15</span>
+                    <span class="category-badge category-validation_rules">Special Handling</span>
+                </div>
+                <div class="question-text">How should special MTM files be handled?</div>
+                <div class="answer-section">
+                    <label class="answer-label">Special File Handling:</label>
+                    <select name="q15_special_handling" required>
+                        <option value="">-- Select Option --</option>
+                        <option value="STANDARD_HANDLING">Standard Handling (treat all files equally)</option>
+                        <option value="INSTRUCTION_FILE_AWARE">Instruction File Aware (.instruction.md special rules)</option>
+                        <option value="GITHUB_FOLDER_AWARE">GitHub Folder Aware (.github/ special handling)</option>
+                        <option value="MTM_OPTIMIZED">MTM Optimized (custom rules for MTM project structure)</option>
+                    </select>
+                    <div class="validation-message">Please select an option</div>
+                </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <h3>Generate Your Custom File Reference Validation Script</h3>
+                <p>Click the button below to generate your PowerShell script based on your configuration.</p>
+                <button type="submit" class="submit-btn" id="submitBtn" disabled>Generate Script</button>
+                <p style="margin-top: 15px; font-size: 14px; opacity: 0.7;">
+                    Please answer all questions to enable script generation.
+                </p>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="summary-section" id="summarySection">
+                <h3 class="summary-title">Configuration Summary</h3>
+                <div class="summary-content" id="summaryContent"></div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('questionnaireForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const progressFill = document.getElementById('progressFill');
+            const summarySection = document.getElementById('summarySection');
+            const summaryContent = document.getElementById('summaryContent');
+
+            // Get all required select elements
+            const requiredSelects = form.querySelectorAll('select[required]');
+            const totalQuestions = requiredSelects.length;
+
+            function updateProgress() {
+                let answeredQuestions = 0;
+                requiredSelects.forEach(select => {
+                    if (select.value !== '') {
+                        answeredQuestions++;
+                    }
+                });
+
+                const progress = (answeredQuestions / totalQuestions) * 100;
+                progressFill.style.width = progress + '%';
+
+                // Enable submit button when all questions are answered
+                submitBtn.disabled = answeredQuestions < totalQuestions;
+
+                // Update progress text
+                const progressText = document.querySelector('.submit-section p');
+                if (answeredQuestions === totalQuestions) {
+                    progressText.textContent = 'All questions answered! Ready to generate script.';
+                    progressText.style.color = '#2ecc71';
+                } else {
+                    progressText.textContent = `Please answer all questions to enable script generation. (${answeredQuestions}/${totalQuestions} completed)`;
+                    progressText.style.color = '#ffffff';
+                }
+            }
+
+            // Add event listeners to all select elements
+            requiredSelects.forEach(select => {
+                select.addEventListener('change', updateProgress);
+            });
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateSummary();
+                summarySection.style.display = 'block';
+                summarySection.scrollIntoView({ behavior: 'smooth' });
+            });
+
+            function generateSummary() {
+                const formData = new FormData(form);
+                let summary = 'MTM WIP Application - File Reference Validation Script Configuration\n';
+                summary += '='.repeat(70) + '\n\n';
+
+                summary += 'CONFIGURATION SUMMARY:\n\n';
+
+                summary += `Application Files: ${formData.get('q1_app_files')}\n`;
+                summary += `Documentation Files: ${formData.get('q2_doc_files')}\n`;
+                summary += `Reference Patterns: ${formData.get('q3_reference_types')}\n`;
+                summary += `Path Resolution: ${formData.get('q4_path_resolution')}\n`;
+                summary += `Case Sensitivity: ${formData.get('q5_case_sensitivity')}\n`;
+                summary += `Directory Exclusions: ${formData.get('q6_exclusions')}\n`;
+                summary += `URL Handling: ${formData.get('q7_url_handling')}\n`;
+                summary += `Anchor Validation: ${formData.get('q8_anchor_validation')}\n`;
+                summary += `Report Format: ${formData.get('q9_report_format')}\n`;
+                summary += `Report Location: ${formData.get('q10_report_location')}\n`;
+                summary += `Error Grouping: ${formData.get('q11_grouping')}\n`;
+                summary += `Progress Updates: ${formData.get('q12_progress')}\n`;
+                summary += `Performance: ${formData.get('q13_performance')}\n`;
+                summary += `File Size Limits: ${formData.get('q14_file_limits')}\n`;
+                summary += `Special Handling: ${formData.get('q15_special_handling')}\n\n`;
+
+                summary += 'ADDITIONAL NOTES:\n';
+                summary += '-'.repeat(20) + '\n';
+                
+                // Add any additional notes
+                const notes = [
+                    formData.get('q1_notes'),
+                    formData.get('q2_notes'),
+                    formData.get('q3_notes'),
+                    formData.get('q4_notes'),
+                    formData.get('q6_notes'),
+                    formData.get('q10_custom_path'),
+                    formData.get('q14_custom_size')
+                ].filter(note => note && note.trim() !== '');
+
+                if (notes.length > 0) {
+                    notes.forEach(note => {
+                        summary += `• ${note}\n`;
+                    });
+                } else {
+                    summary += 'No additional notes provided.\n';
+                }
+
+                summary += '\n' + '='.repeat(70) + '\n';
+                summary += 'Ready to generate PowerShell script with these specifications.\n';
+
+                summaryContent.textContent = summary;
+            }
+
+            // Initial progress check
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

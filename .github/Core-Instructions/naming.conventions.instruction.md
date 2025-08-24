@@ -10,6 +10,13 @@
 - **Models:** `{Name}Model.cs` or just `{Name}.cs` for simple models
 - **Services:** `{Name}Service.cs` or `I{Name}Service.cs` for interfaces
 
+### **Core Naming Standards**
+- **Views**: `{Name}View.axaml` (e.g., `MainView.axaml`)
+- **ViewModels**: `{Name}ViewModel.cs` (e.g., `MainViewModel.cs`)
+- **Models**: `{Name}Model.cs` or just `{Name}.cs` for simple models
+- **Services**: `{Name}Service.cs` or `I{Name}Service.cs` for interfaces
+- **Stored Procedures**: `{module}_{action}_{details}` (e.g., `inv_inventory_Get_ByPartID`)
+
 ### Directory Structure
 ```
 /Views/           # Avalonia AXAML views

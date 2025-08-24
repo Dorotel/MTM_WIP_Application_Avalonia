@@ -13,6 +13,7 @@ This documentation system has been modernized with a structured approach separat
 - **[Technical HTML Docs](../docs/Technical/)** - Detailed technical documentation in HTML format
 - **[Core Files Documentation](../docs/CoreFiles/)** - C# source file documentation
 - **[Discovery Scripts](Development/Development%20Scripts/Verification/)** - Automated file and dependency discovery
+- **[Custom Prompts](Development/Custom_Prompts/)** - Custom GitHub Copilot prompts for development
 
 ### **👥 For Business Stakeholders**  
 - **[Plain English Documentation](../docs/PlainEnglish/)** - Non-technical explanations of system functionality
@@ -63,6 +64,23 @@ This documentation system has been modernized with a structured approach separat
 
 #### **Production Scripts/**
 - Production deployment and maintenance scripts
+
+### **🤖 Custom Prompts** - GitHub Copilot Automation
+**Location**: `Documentation/Development/Custom_Prompts/` - Custom GitHub Copilot prompts for development automation
+
+#### **Key Features**
+- **[Master Index](Automation-Instructions/customprompts.instruction.md)** - Complete prompt library overview
+- **[UI Generation Prompts](Development/Custom_Prompts/CustomPrompt_Create_UIElement.md)** - Avalonia UI component generation
+- **[ReactiveUI Prompts](Development/Custom_Prompts/CustomPrompt_Create_ReactiveUIViewModel.md)** - ViewModel generation with MVVM patterns
+- **[Quality Assurance Prompts](Development/Custom_Prompts/CustomPrompt_Verify_CodeCompliance.md)** - Code compliance verification
+- **[Error Handling Prompts](Development/Custom_Prompts/CustomPrompt_Create_ErrorSystemPlaceholder.md)** - Error handling scaffolding
+- **[Layout Prompts](Development/Custom_Prompts/CustomPrompt_Create_ModernLayoutPattern.md)** - Modern Avalonia layout patterns
+- **[HTML Documentation Integration](.github/Automation-Instructions/customprompts.instruction.md)** - Synchronized HTML documentation
+
+#### **Documentation Synchronization Rule** ⭐ **NEW**
+All custom prompts maintain corresponding HTML documentation:
+- **Plain English**: `Documentation/HTML/PlainEnglish/custom-prompts.html`
+- **Technical**: `Documentation/HTML/Technical/custom-prompts.html`
 
 ---
 
@@ -131,8 +149,7 @@ Organized documentation covering all aspects of the project:
 - **[README_Development_Overview.md](ReadmeFiles/Development/README_Development_Overview.md)** - Development environment and workflow
 - **[README_Database_Files.md](ReadmeFiles/Development/README_Database_Files.md)** - Database development and procedures
 - **[README_UI_Documentation.md](ReadmeFiles/Development/README_UI_Documentation.md)** - UI component documentation
-- **[Views_Structure_Standards.instruction.md](../Development/UI_Documentation/Views_Structure_Standards.instruction.md)** - Mandatory view structure standards
-- **[README_Custom_Prompts.md](ReadmeFiles/Development/README_Custom_Prompts.md)** - Custom prompt system
+- **[Views_Structure_Standards.instruction.md](../Documentation/Development/UI_Documentation/Views_Structure_Standards.instruction.md)** - Mandatory view structure standards
 - **[README_Examples.md](ReadmeFiles/Development/README_Examples.md)** - Code examples and patterns
 - **[README_Compliance_Reports.md](ReadmeFiles/Development/README_Compliance_Reports.md)** - Quality assurance reports
 
@@ -184,7 +201,8 @@ Professional, accessible web documentation with MTM branding:
 - **Development Guide**: [Development/README_Development_Overview.md](ReadmeFiles/Development/README_Development_Overview.md)
 - **Database Development**: [Development/README_Database_Files.md](ReadmeFiles/Development/README_Database_Files.md)
 - **UI Components**: [Development/README_UI_Documentation.md](ReadmeFiles/Development/README_UI_Documentation.md)
-- **View Standards**: [Views_Structure_Standards.instruction.md](../Development/UI_Documentation/Views_Structure_Standards.instruction.md)
+- **View Standards**: [Views_Structure_Standards.instruction.md](../Documentation/Development/UI_Documentation/Views_Structure_Standards.instruction.md)
+- **Custom Prompts**: [.github/Custom-Prompts/README.md](../.github/Custom-Prompts/README.md)
 
 ### **For Project Managers**
 - **Project Overview**: [Core/README_Project_Overview.md](ReadmeFiles/Core/README_Project_Overview.md)
@@ -201,6 +219,12 @@ Professional, accessible web documentation with MTM branding:
 - **Quality Assurance**: [Development/README_Compliance_Reports.md](ReadmeFiles/Development/README_Compliance_Reports.md)
 - **Testing Procedures**: [HTML/PlainEnglish/quality-assurance.html](HTML/PlainEnglish/quality-assurance.html)
 - **Troubleshooting**: [HTML/PlainEnglish/troubleshooting.html](HTML/PlainEnglish/troubleshooting.html)
+
+### **For Automation and Development Efficiency**
+- **[Custom Prompts Library](Development/Custom_Prompts/README.md)** - Custom prompt library overview
+- **[UI Generation](Development/Custom_Prompts/CustomPrompt_Create_UIElement.md)** - Avalonia UI component generation
+- **[Quality Assurance](Development/Custom_Prompts/CustomPrompt_Verify_CodeCompliance.md)** - Code compliance verification
+- **[ReactiveUI Patterns](Development/Custom_Prompts/CustomPrompt_Create_ReactiveUIViewModel.md)** - ViewModel generation with MVVM patterns
 
 ## 🔧 **Documentation Standards**
 
@@ -221,14 +245,17 @@ Professional, accessible web documentation with MTM branding:
 - **Version Control**: All changes tracked through Git
 - **Quality Assurance**: Documentation accuracy verified before release
 - **Stakeholder Review**: Content validated by appropriate teams
+- **HTML Synchronization**: Custom prompt changes automatically trigger HTML documentation updates
 
 ## 📊 **Documentation Metrics**
 
 - **Total README Files**: 30+ files (centralized in ReadmeFiles/)
 - **HTML Documentation**: 14+ modern responsive pages
+- **Custom Prompts**: 25+ automated development prompts
 - **Content Coverage**: 100% of project components documented
 - **Accessibility**: WCAG AA compliant
 - **Update Frequency**: Monthly review cycle
+- **Automation Integration**: 100% (Custom prompts synchronized with HTML documentation)
 
 ## 🔍 **Dynamic Discovery System**
 
@@ -248,6 +275,7 @@ The documentation system includes automated discovery scripts that continuously 
 - **👁️ ViewModels**: 12 files in ViewModels/ directory  
 - **📊 Models**: 2 files in Models/ directory
 - **⚡ Extensions**: 1 file in Extensions/ directory
+- **🤖 Custom Prompts**: 25+ prompts with HTML synchronization
 - **📋 Documentation Coverage**: 0% (Ready for Step 2 execution)
 
 ### **Automated Quality Tracking**
@@ -255,12 +283,14 @@ The documentation system includes automated discovery scripts that continuously 
 - **Required Files**: 100% (All critical files present)
 - **Discovery Scripts**: 100% (All 6 scripts operational)
 - **HTML Structure**: 100% (All 5 categories ready)
+- **Custom Prompt Integration**: 100% (HTML documentation synchronization active)
 
 ### **Next Steps for Discovery**
 1. **Step 2 Execution**: Generate 52 documentation files (26 Plain English + 26 Technical)
 2. **Quality Issue Extraction**: Parse needsrepair.instruction.md for tracking
 3. **Dependency Analysis**: Map service injection patterns and relationships
 4. **Change Detection**: Establish baseline for future change monitoring
+5. **Custom Prompt HTML Updates**: Maintain synchronization between prompt files and HTML documentation
 
 ## 🚀 **Recent Updates**
 
@@ -274,10 +304,15 @@ The documentation system includes automated discovery scripts that continuously 
 - Standardized naming conventions
 - Content consolidation and deduplication
 
+### **Phase 3: Custom Prompts Integration** ✅ Completed
+- Created Documentation/Development/Custom_Prompts/ folder with 25+ specialized prompts
+- Implemented HTML documentation synchronization rule
+- Established automated prompt-to-HTML documentation workflow
+
 ### **Upcoming Phases**
-- **Phase 3**: HTML modernization with MTM branding
-- **Phase 4**: Plain English documentation creation
-- **Phase 5**: Quality assurance and final validation
+- **Phase 4**: HTML modernization with MTM branding
+- **Phase 5**: Plain English documentation creation
+- **Phase 6**: Quality assurance and final validation
 
 ---
 
@@ -287,8 +322,9 @@ For documentation questions or suggestions:
 - **Technical Issues**: Create an issue in the project repository
 - **Content Feedback**: Contact the development team
 - **Accessibility Concerns**: Report through accessibility feedback channels
+- **Custom Prompts**: Submit prompt requests through GitHub issues
 
 ---
 
 *This documentation was last updated: January 2025*  
-*Documentation Modernization Initiative v1.0*
+*Documentation Modernization Initiative v1.1 - Custom Prompts Integration*

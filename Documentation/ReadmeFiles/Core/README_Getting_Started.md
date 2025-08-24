@@ -76,13 +76,13 @@ mysql -u root -p mtm_wip_inventory_dev < Database_Files/Production_Database_Sche
 mysql -u root -p mtm_wip_inventory_dev < Database_Files/Existing_Stored_Procedures.sql
 
 # 3. Apply development enhancements
-mysql -u root -p mtm_wip_inventory_dev < Development/Database_Files/Development_Database_Schema.sql
+mysql -u root -p mtm_wip_inventory_dev < Documentation/Development/Database_Files/Development_Database_Schema.sql
 
 # 4. Install new comprehensive procedures ✅ 12 PROCEDURES AVAILABLE
-mysql -u root -p mtm_wip_inventory_dev < Development/Database_Files/New_Stored_Procedures.sql
+mysql -u root -p mtm_wip_inventory_dev < Documentation/Development/Database_Files/New_Stored_Procedures.sql
 
 # 5. Apply updates (when available)
-mysql -u root -p mtm_wip_inventory_dev < Development/Database_Files/Updated_Stored_Procedures.sql
+mysql -u root -p mtm_wip_inventory_dev < Documentation/Development/Database_Files/Updated_Stored_Procedures.sql
 ```
 
 ### **Step 5: Configure Connection String**
@@ -182,7 +182,7 @@ Database Files Structure:
 │   ├── Production_Database_Schema.sql
 │   ├── Existing_Stored_Procedures.sql
 │   └── README_*.md
-└── Development/Database_Files/ (🔧 Development - EDITABLE)
+└── Documentation/Development/Database_Files/ (🔧 Development - EDITABLE)
     ├── Development_Database_Schema.sql
     ├── New_Stored_Procedures.sql ✅ 12 PROCEDURES IMPLEMENTED
     ├── Updated_Stored_Procedures.sql ✅ TEMPLATE READY
@@ -274,7 +274,7 @@ dotnet --list-sdks
 SHOW PROCEDURE STATUS WHERE Db = 'mtm_wip_inventory_dev';
 
 -- Reinstall if missing
-mysql -u root -p mtm_wip_inventory_dev < Development/Database_Files/New_Stored_Procedures.sql
+mysql -u root -p mtm_wip_inventory_dev < Documentation/Development/Database_Files/New_Stored_Procedures.sql
 ```
 
 #### **Issue: Permission Denied**
@@ -322,17 +322,17 @@ dotnet run -c Release
 
 ### **For Developers**
 1. **Read Architecture Guide**: [README_Architecture.md](README_Architecture.md)
-2. **Review Database Documentation**: [../Database/README_Production_Schema.md](../Database/README_Production_Schema.md)
-3. **Study Service Layer**: [../Components/README_Services.md](../Components/README_Services.md)
-4. **Explore UI Components**: [../Development/README_UI_Documentation.md](../Development/README_UI_Documentation.md)
+2. **Review Database Documentation**: [../Documentation/Development/Database_Files/README_Production_Schema.md](../Documentation/Development/Database_Files/README_Production_Schema.md)
+3. **Study Service Layer**: [../Documentation/Development/README_Services.md](../Documentation/Development/README_Services.md)
+4. **Explore UI Components**: [../Documentation/Development/README_UI_Documentation.md](../Documentation/Development/README_UI_Documentation.md)
 
 ### **For Database Developers**
-1. **Database Development Guide**: [../Development/README_Database_Files.md](../Development/README_Database_Files.md)
-2. **New Procedures Documentation**: `Development/Database_Files/README_NewProcedures.md`
-3. **Stored Procedure Patterns**: `Development/Database_Files/README_Updated_Stored_Procedures.md`
+1. **Database Development Guide**: [../Documentation/Development/README_Database_Files.md](../Documentation/Development/README_Database_Files.md)
+2. **New Procedures Documentation**: [../Documentation/Development/Database_Files/README_NewProcedures.md](../Documentation/Development/Database_Files/README_NewProcedures.md)
+3. **Stored Procedure Patterns**: [../Documentation/Development/Database_Files/README_Updated_Stored_Procedures.md](../Documentation/Development/Database_Files/README_Updated_Stored_Procedures.md)
 
 ### **For QA Teams**
-1. **Testing Procedures**: [../Development/README_Compliance_Reports.md](../Development/README_Compliance_Reports.md)
+1. **Testing Procedures**: [../Documentation/Development/README_Compliance_Reports.md](../Documentation/Development/README_Compliance_Reports.md)
 2. **Quality Assurance**: Review compliance reports in `Development/Compliance Reports/`
 
 ## 🆘 **Getting Help**
@@ -340,7 +340,7 @@ dotnet run -c Release
 ### **Documentation Resources**
 - **Project Overview**: [README_Project_Overview.md](README_Project_Overview.md)
 - **Architecture Details**: [README_Architecture.md](README_Architecture.md)
-- **Development Guides**: [../Development/README_Development_Overview.md](../Development/README_Development_Overview.md)
+- **Development Guides**: [../Documentation/Development/README_Development_Overview.md](../Documentation/Development/README_Development_Overview.md)
 
 ### **Support Channels**
 - **GitHub Issues**: Report bugs and request features

@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="MTM WIP Application - Coding conventions and standards for C# and Avalonia development">
-    <meta name="keywords" content="MTM, WIP, coding conventions, C#, Avalonia, standards">
+    <meta name="description" content="MTM WIP Application - Coding conventions and standards for .NET 8, C#, and Avalonia development">
+    <meta name="keywords" content="MTM, WIP, coding conventions, C#, Avalonia, .NET 8, standards">
     <meta name="author" content="MTM Development Team">
     
-    <title>MTM WIP Application - Coding Conventions</title>
+    <title>MTM WIP Application - Coding Conventions (.NET 8)</title>
     
     <!-- Modern Stylesheets -->
     <link rel="stylesheet" href="../assets/css/modern-styles.css">
@@ -56,36 +56,44 @@
                     </ul>
                 </section>
                 
+                <!-- GitHub Instructions -->
+                <section class="mtm-nav-section">
+                    <h2 class="mtm-nav-section-title">GitHub Instructions</h2>
+                    <ul class="nav-links" role="list">
+                        <li><a href="../../.github/copilot-instructions.md" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">📚</span>
+                            Master Instructions
+                        </a></li>
+                        <li><a href="../../.github/codingconventions.instruction.md" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">📋</span>
+                            Coding Standards
+                        </a></li>
+                        <li><a href="../../.github/ui-generation.instruction.md" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🎨</span>
+                            UI Instructions
+                        </a></li>
+                        <li><a href="../../.github/errorhandler.instruction.md" class="mtm-nav-link">
+                            <span class="mtm-nav-icon" aria-hidden="true">🔧</span>
+                            Error Handling
+                        </a></li>
+                    </ul>
+                </section>
+                
                 <!-- Database & Development -->
                 <section class="mtm-nav-section">
                     <h2 class="mtm-nav-section-title">Database & Development</h2>
                     <ul class="nav-links" role="list">
-                        <li><a href="../../Docs/database-development.html" class="mtm-nav-link">
+                        <li><a href="../../Documentation/Documentation/Development/Database_Files/README_NewProcedures.md" class="mtm-nav-link">
                             <span class="mtm-nav-icon" aria-hidden="true">🗄️</span>
-                            Database Development
+                            Database Procedures
                         </a></li>
                         <li><a href="github-workflow.html" class="mtm-nav-link">
                             <span class="mtm-nav-icon" aria-hidden="true">🔄</span>
                             GitHub Workflow
                         </a></li>
-                        <li><a href="naming-conventions.html" class="mtm-nav-link">
+                        <li><a href="../../.github/naming.conventions.instruction.md" class="mtm-nav-link">
                             <span class="mtm-nav-icon" aria-hidden="true">🏷️</span>
                             Naming Conventions
-                        </a></li>
-                    </ul>
-                </section>
-                
-                <!-- UI & Mapping -->
-                <section class="mtm-nav-section">
-                    <h2 class="mtm-nav-section-title">UI & Mapping</h2>
-                    <ul class="nav-links" role="list">
-                        <li><a href="view-standards.html" class="mtm-nav-link">
-                            <span class="mtm-nav-icon" aria-hidden="true">📐</span>
-                            View Structure Standards
-                        </a></li>
-                        <li><a href="ui-mapping.html" class="mtm-nav-link">
-                            <span class="mtm-nav-icon" aria-hidden="true">🗺️</span>
-                            UI Mapping
                         </a></li>
                     </ul>
                 </section>
@@ -98,10 +106,13 @@
             <header class="header" role="banner">
                 <div class="header-brand">
                     <span class="icon" aria-hidden="true">📝</span>
-                    <span>Coding Conventions</span>
+                    <span>Coding Conventions (.NET 8)</span>
                 </div>
                 
                 <div class="header-actions">
+                    <a href="../../.github/copilot-instructions.md" class="btn btn-secondary" title="View GitHub Instructions">
+                        📚 GitHub Instructions
+                    </a>
                     <button class="theme-toggle" aria-label="Toggle dark theme" title="Toggle theme">
                         🌙
                     </button>
@@ -114,11 +125,64 @@
                 <section class="mtm-hero mtm-fade-in">
                     <h1 class="mtm-hero-title">MTM WIP Coding Conventions</h1>
                     <p class="mtm-hero-subtitle">
-                        Comprehensive coding standards and best practices for C# and Avalonia development
+                        Comprehensive coding standards for .NET 8, C#, and Avalonia development with ReactiveUI
                     </p>
+                    <div class="mtm-hero-badges">
+                        <span class="badge badge-primary">.NET 8</span>
+                        <span class="badge badge-secondary">Avalonia UI</span>
+                        <span class="badge badge-accent">ReactiveUI</span>
+                    </div>
                 </section>
                 
-                <!-- Content Sections -->
+                <!-- .NET 8 Specific Updates -->
+                <section class="mtm-slide-up">
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">🚀</div>
+                            <h3 class="mtm-card-title">.NET 8 Framework Updates</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <div class="alert alert-info">
+                                <h4>🎯 .NET 8 Compliance</h4>
+                                <p><strong>Project targets .NET 8</strong> with modern C# language features and performance improvements.</p>
+                            </div>
+                            
+                            <h4>Required Framework Features</h4>
+                            <ul>
+                                <li><strong>File-scoped namespaces:</strong> Use file-scoped namespace declarations</li>
+                                <li><strong>Global using statements:</strong> Defined in GlobalUsings.cs for common imports</li>
+                                <li><strong>Nullable reference types:</strong> Enabled project-wide with proper null handling</li>
+                                <li><strong>Top-level statements:</strong> Used in Program.cs for cleaner application startup</li>
+                                <li><strong>Record types:</strong> Use for immutable data transfer objects</li>
+                                <li><strong>Pattern matching:</strong> Enhanced switch expressions and pattern matching</li>
+                            </ul>
+
+                            <h4>Example .NET 8 Service Class</h4>
+                            <div class="mtm-code">
+using MTM.Core.Services;
+
+namespace MTM_WIP_Application_Avalonia.Services;
+
+public sealed class ConfigurationService : IConfigurationService
+{
+    private readonly IConfiguration _configuration;
+    
+    public ConfigurationService(IConfiguration configuration)
+    {
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+    }
+    
+    public string? GetConnectionString(string name) => _configuration.GetConnectionString(name);
+    
+    public T? GetSection<T>(string sectionName) where T : class, new()
+        => _configuration.GetSection(sectionName).Get<T>();
+}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Core Principles -->
                 <section class="mtm-slide-up">
                     <div class="mtm-card">
                         <div class="mtm-card-header">
@@ -127,81 +191,147 @@
                         </div>
                         <div class="mtm-card-content">
                             <ul>
-                                <li><strong>MVVM Architecture:</strong> Strict separation of Model, View, and ViewModel layers using ReactiveUI</li>
-                                <li><strong>Dependency Injection:</strong> Use AddMTMServices() extension method for comprehensive service registration</li>
-                                <li><strong>Database Access:</strong> All database operations MUST use stored procedures via Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</li>
-                                <li><strong>Error Handling:</strong> Standardized error handling patterns with consistent status codes</li>
+                                <li><strong>MVVM Architecture:</strong> Strict separation using ReactiveUI with .NET 8 patterns</li>
+                                <li><strong>Dependency Injection:</strong> Use <code>services.AddMTMServices(configuration)</code> for comprehensive setup</li>
+                                <li><strong>Database Access:</strong> ALL operations via stored procedures using Helper_Database_StoredProcedure</li>
+                                <li><strong>Error Handling:</strong> Standardized patterns with Result&lt;T&gt; and proper logging</li>
                                 <li><strong>Business Logic:</strong> TransactionType determined by user intent, NOT operation numbers</li>
+                                <li><strong>Async/Await:</strong> All I/O operations must be asynchronous with CancellationToken support</li>
                             </ul>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="mtm-slide-up">
-                    <div class="mtm-card">
-                        <div class="mtm-card-header">
-                            <div class="mtm-card-icon">🏗️</div>
-                            <h3 class="mtm-card-title">Code Organization</h3>
-                        </div>
-                        <div class="mtm-card-content">
-                            <h4>File Structure</h4>
-                            <div class="mtm-code">
-Views/           # Avalonia AXAML views
-ViewModels/      # ViewModels using ReactiveUI  
-Models/          # Data models and business entities
-Services/        # Business logic and data access services
-Extensions/      # Extension methods and utilities
-                            </div>
                             
-                            <h4>Naming Conventions</h4>
-                            <ul>
-                                <li><strong>Views:</strong> {Name}View.axaml (e.g., MainView.axaml)</li>
-                                <li><strong>ViewModels:</strong> {Name}ViewModel.cs (e.g., MainViewModel.cs)</li>
-                                <li><strong>Services:</strong> {Name}Service.cs or I{Name}Service.cs for interfaces</li>
-                                <li><strong>Stored Procedures:</strong> {module}_{action}_{details} (e.g., inv_inventory_Get_ByPartID)</li>
-                            </ul>
+                            <div class="alert alert-warning">
+                                <h4>⚠️ CRITICAL SERVICE REGISTRATION</h4>
+                                <p><strong>ALWAYS use AddMTMServices() - NEVER register MTM services individually!</strong></p>
+                                <p>Manual registration will fail due to missing dependency chains (IValidationService, ICacheService, etc.)</p>
+                            </div>
                         </div>
                     </div>
                 </section>
 
+                <!-- Service Registration -->
                 <section class="mtm-slide-up">
                     <div class="mtm-card">
                         <div class="mtm-card-header">
                             <div class="mtm-card-icon">🔧</div>
-                            <h3 class="mtm-card-title">ReactiveUI Patterns</h3>
+                            <h3 class="mtm-card-title">Service Registration (.NET 8 DI)</h3>
                         </div>
                         <div class="mtm-card-content">
-                            <h4>Property Implementation</h4>
+                            <h4>Correct Service Registration Pattern</h4>
                             <div class="mtm-code">
-private string _firstName = string.Empty;
-public string FirstName
-{
-    get => _firstName;
-    set => this.RaiseAndSetIfChanged(ref _firstName, value);
-}
+// Program.cs with .NET 8 top-level statements
+using MTM.Extensions;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// ✅ CRITICAL: Use comprehensive service registration
+builder.Services.AddMTMServices(builder.Configuration);
+
+// ✅ Override Avalonia-specific services AFTER AddMTMServices
+builder.Services.AddSingleton<IConfigurationService, ConfigurationService>();
+builder.Services.AddSingleton<IApplicationStateService, ApplicationStateService>();
+
+// ✅ Infrastructure Services
+builder.Services.AddSingleton<INavigationService, NavigationService>();
+
+// ✅ ViewModels (Transient - new instance each time)
+builder.Services.AddTransient<MainViewModel>();
+builder.Services.AddTransient<InventoryViewModel>();
+// ... register all ViewModels
+
+var app = builder.Build();
                             </div>
 
-                            <h4>Command Implementation</h4>
-                            <div class="mtm-code">
-public ReactiveCommand&lt;Unit, Unit&gt; LoadDataCommand { get; }
+                            <div class="alert alert-error">
+                                <h4>❌ Common Registration Errors</h4>
+                                <ul>
+                                    <li><strong>Missing IValidationService:</strong> Required by InventoryService</li>
+                                    <li><strong>Missing ICacheService:</strong> Required by multiple business services</li>
+                                    <li><strong>Unregistered ViewModels:</strong> Each ViewModel needs explicit registration</li>
+                                    <li><strong>Wrong Service Lifetime:</strong> ViewModels should be Transient, services Scoped/Singleton</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-public SampleViewModel()
+                <!-- ReactiveUI Patterns -->
+                <section class="mtm-slide-up">
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">⚡</div>
+                            <h3 class="mtm-card-title">ReactiveUI Patterns (.NET 8)</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <h4>ViewModel Implementation</h4>
+                            <div class="mtm-code">
+namespace MTM_WIP_Application_Avalonia.ViewModels;
+
+public sealed class InventoryViewModel : ReactiveObject
 {
-    LoadDataCommand = ReactiveCommand.CreateFromTask(async () =&gt;
+    private string _partId = string.Empty;
+    public string PartId
     {
-        // Use stored procedure for data loading
+        get => _partId;
+        set => this.RaiseAndSetIfChanged(ref _partId, value);
+    }
+
+    private readonly ObservableAsPropertyHelper<bool> _isFormValid;
+    public bool IsFormValid => _isFormValid.Value;
+
+    public ReactiveCommand<Unit, Unit> SaveCommand { get; }
+
+    public InventoryViewModel(IInventoryService inventoryService, ILogger<InventoryViewModel> logger)
+    {
+        // Derived properties
+        _isFormValid = this.WhenAnyValue(
+                vm => vm.PartId,
+                vm => vm.Quantity,
+                (part, qty) => !string.IsNullOrWhiteSpace(part) && qty > 0)
+            .ToProperty(this, vm => vm.IsFormValid);
+
+        // Commands with proper error handling
+        SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync, 
+            this.WhenAnyValue(vm => vm.IsFormValid));
+            
+        SaveCommand.ThrownExceptions.Subscribe(ex =>
+        {
+            logger.LogError(ex, "Failed to save inventory item");
+            // Show user-friendly error message
+        });
+    }
+
+    private async Task SaveAsync(CancellationToken cancellationToken = default)
+    {
+        // Use stored procedure for database operations
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
             Model_AppVariables.ConnectionString,
-            "sp_ProcedureName",
-            parameters
+            "inv_inventory_Add_Item_Enhanced",
+            new Dictionary<string, object> 
+            {
+                ["p_PartID"] = PartId,
+                ["p_Quantity"] = Quantity,
+                ["p_UserID"] = CurrentUser
+            }
         );
-    });
+        
+        if (result.Status == 0)
+        {
+            // Success - reset form
+            PartId = string.Empty;
+            Quantity = 0;
+        }
+        else
+        {
+            throw new InvalidOperationException(result.Message);
+        }
+    }
 }
                             </div>
                         </div>
                     </div>
                 </section>
 
+                <!-- Database Access -->
                 <section class="mtm-slide-up">
                     <div class="mtm-card">
                         <div class="mtm-card-header">
@@ -215,33 +345,53 @@ public SampleViewModel()
                                 <ul>
                                     <li><strong>Prohibited:</strong> Direct SQL queries in code (SELECT, INSERT, UPDATE, DELETE)</li>
                                     <li><strong>Required:</strong> Use stored procedure calls via Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</li>
+                                    <li><strong>Available:</strong> 12 comprehensive procedures in Documentation/Development/Database_Files/New_Stored_Procedures.sql</li>
                                 </ul>
                             </div>
 
-                            <h4>Correct Pattern</h4>
+                            <h4>Correct Pattern (.NET 8)</h4>
                             <div class="mtm-code">
-// CORRECT: Using stored procedure
-var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-    Model_AppVariables.ConnectionString,
-    "sp_ProcedureName",
-    new Dictionary&lt;string, object&gt; 
+// ✅ CORRECT: Using stored procedure with modern C#
+public async Task<Result<InventoryItem>> GetInventoryItemAsync(string partId, CancellationToken cancellationToken = default)
+{
+    try 
     {
-        ["Parameter1"] = value1,
-        ["Parameter2"] = value2
-    }
-);
+        var parameters = new Dictionary<string, object> 
+        {
+            ["p_PartID"] = partId
+        };
 
-// PROHIBITED: Direct SQL
-// var query = "SELECT * FROM table WHERE column = @value"; // ❌ NEVER DO THIS
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            Model_AppVariables.ConnectionString,
+            "inv_inventory_Get_ByPartID",
+            parameters
+        );
+
+        return result.Status switch
+        {
+            0 => Result<InventoryItem>.Success(MapToInventoryItem(result.Data)),
+            1 => Result<InventoryItem>.Warning("Item not found"),
+            _ => Result<InventoryItem>.Failure(result.Message)
+        };
+    }
+    catch (Exception ex)
+    {
+        return Result<InventoryItem>.Failure($"Database error: {ex.Message}");
+    }
+}
+
+// ❌ PROHIBITED: Direct SQL
+// var query = "SELECT * FROM inventory WHERE part_id = @partId"; // NEVER DO THIS
                             </div>
                         </div>
                     </div>
                 </section>
 
+                <!-- MTM Business Logic -->
                 <section class="mtm-slide-up">
                     <div class="mtm-card">
                         <div class="mtm-card-header">
-                            <div class="mtm-card-icon">⚡</div>
+                            <div class="mtm-card-icon">🎯</div>
                             <h3 class="mtm-card-title">MTM Business Logic Rules</h3>
                         </div>
                         <div class="mtm-card-content">
@@ -250,21 +400,62 @@ var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                                 <p><strong>TransactionType is determined by the USER'S INTENT, NOT the Operation number.</strong></p>
                             </div>
 
-                            <h4>Correct TransactionType Logic</h4>
-                            <ul>
-                                <li><strong>IN:</strong> User is adding stock to inventory (regardless of operation number)</li>
-                                <li><strong>OUT:</strong> User is removing stock from inventory (regardless of operation number)</li>
-                                <li><strong>TRANSFER:</strong> User is moving stock from one location to another (regardless of operation number)</li>
-                            </ul>
+                            <h4>Correct TransactionType Logic (.NET 8)</h4>
+                            <div class="mtm-code">
+public enum UserAction { AddStock, RemoveStock, TransferStock }
 
-                            <h4>MTM Operation Numbers</h4>
-                            <p>Operation numbers ("90", "100", "110", etc.) are <strong>workflow step identifiers</strong>, NOT transaction type indicators:</p>
-                            <ul>
-                                <li>Operations represent manufacturing or processing steps</li>
-                                <li>They help track which stage of production a part is in</li>
-                                <li>They do NOT determine whether inventory is being added, removed, or transferred</li>
-                                <li>The same operation number can be used with any TransactionType depending on user intent</li>
-                            </ul>
+public static TransactionType GetTransactionTypeForAction(UserAction action) => action switch
+{
+    UserAction.AddStock => TransactionType.IN,      // User adding stock
+    UserAction.RemoveStock => TransactionType.OUT,  // User removing stock  
+    UserAction.TransferStock => TransactionType.TRANSFER, // User moving stock
+    _ => throw new ArgumentException($"Unknown user action: {action}")
+};
+
+// Operation numbers are workflow step identifiers only
+public record InventoryOperation(string OperationCode, string Description, int Sequence)
+{
+    public static readonly InventoryOperation[] StandardOperations = 
+    [
+        new("90", "Receiving", 1),
+        new("100", "Initial Processing", 2),
+        new("110", "Quality Control", 3),
+        new("120", "Final Assembly", 4)
+    ];
+}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Cross-Reference Links -->
+                <section class="mtm-slide-up">
+                    <div class="mtm-card">
+                        <div class="mtm-card-header">
+                            <div class="mtm-card-icon">🔗</div>
+                            <h3 class="mtm-card-title">Related Documentation</h3>
+                        </div>
+                        <div class="mtm-card-content">
+                            <div class="grid grid-2">
+                                <div>
+                                    <h4>GitHub Instructions</h4>
+                                    <ul>
+                                        <li><a href="../../.github/copilot-instructions.md">Master Instructions</a></li>
+                                        <li><a href="../../.github/codingconventions.instruction.md">Detailed Coding Standards</a></li>
+                                        <li><a href="../../.github/ui-generation.instruction.md">UI Generation Patterns</a></li>
+                                        <li><a href="../../.github/errorhandler.instruction.md">Error Handling Guide</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Development Documentation</h4>
+                                    <ul>
+                                        <li><a href="../../ViewModels/README.md">ViewModel Patterns</a></li>
+                                        <li><a href="../../Views/README.md">View Implementation</a></li>
+                                        <li><a href="../../Models/README.md">Model Definitions</a></li>
+                                        <li><a href="../../Documentation/Development/Database_Files/README_NewProcedures.md">Database Procedures</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>

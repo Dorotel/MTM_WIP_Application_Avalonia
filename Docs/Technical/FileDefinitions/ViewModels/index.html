@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewModels - Technical Documentation | MTM WIP Application</title>
+    <meta name="description" content="Technical documentation for ReactiveUI ViewModels in the MTM WIP Application">
+    <style>
+        /* MTM Technical Documentation Theme */
+        :root {
+            --background-primary: #0d1117;
+            --background-secondary: #161b22;
+            --background-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --text-accent: #58a6ff;
+            --accent-gold: #ffd700;
+            --accent-gold-dark: #daa520;
+            --mtm-purple: #4b45ed;
+            --mtm-magenta: #ba45ed;
+            --border-primary: #30363d;
+            --border-accent: #ffd700;
+            --success-color: #238636;
+            --warning-color: #d29922;
+            --danger-color: #da3633;
+            --code-bg: #0d1117;
+            --code-border: #21262d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Segoe UI Mono', 'Roboto Mono', monospace;
+            background: var(--background-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--background-secondary), var(--background-tertiary));
+            border-bottom: 2px solid var(--accent-gold);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .breadcrumb {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--background-secondary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--accent-gold);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .viewmodel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .viewmodel-card {
+            background: var(--background-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 5px solid var(--accent-gold);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .viewmodel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .viewmodel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .viewmodel-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .viewmodel-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .viewmodel-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .viewmodel-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .viewmodel-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.6;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .viewmodel-details {
+            background: var(--background-tertiary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-title {
+            color: var(--text-accent);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .detail-list {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .detail-list ul {
+            margin-left: 1.5rem;
+        }
+
+        .detail-list li {
+            margin-bottom: 0.3rem;
+        }
+
+        .viewmodel-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            background: var(--background-tertiary);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .action-link:hover {
+            background: var(--accent-gold);
+            color: var(--background-primary);
+        }
+
+        .action-link.primary {
+            background: var(--mtm-purple);
+            color: white;
+        }
+
+        .action-link.primary:hover {
+            background: var(--mtm-magenta);
+        }
+
+        .action-icon {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .pattern-overview {
+            background: var(--background-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-left: 5px solid var(--mtm-purple);
+        }
+
+        .footer {
+            background: var(--background-secondary);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-primary);
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer a {
+            color: var(--accent-gold);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--mtm-purple);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .viewmodel-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .viewmodel-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>??? ViewModels</h1>
+            <p class="subtitle">ReactiveUI ViewModels implementing MVVM patterns for Avalonia UI</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <nav class="breadcrumb">
+            ?? <a href="../index.html">Technical Home</a> 
+            > <a href="index.html">File Definitions</a>
+            > <strong>ViewModels</strong>
+        </nav>
+
+        <section class="pattern-overview">
+            <h2 style="color: var(--mtm-purple); margin-bottom: 1.5rem; font-family: 'Segoe UI', sans-serif;">??? MVVM Architecture with ReactiveUI</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-family: 'Segoe UI', sans-serif;">
+                All ViewModels in the MTM application follow the <strong>Model-View-ViewModel (MVVM)</strong> pattern using 
+                <strong>ReactiveUI</strong> for reactive programming. This ensures clean separation of concerns and testable, 
+                maintainable code.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                <div style="background: var(--background-tertiary); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">? Reactive Properties</h3>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.9rem;">
+                        <li>RaiseAndSetIfChanged for property updates</li>
+                        <li>WhenAnyValue for property observation</li>
+                        <li>Automatic UI notification</li>
+                    </ul>
+                </div>
+                <div style="background: var(--background-tertiary); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">?? Commands</h3>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.9rem;">
+                        <li>ReactiveCommand for user actions</li>
+                        <li>Async command support</li>
+                        <li>CanExecute reactive conditions</li>
+                    </ul>
+                </div>
+                <div style="background: var(--background-tertiary); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">?? Dependency Injection</h3>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.9rem;">
+                        <li>Constructor-based service injection</li>
+                        <li>Transient ViewModel lifetime</li>
+                        <li>Service layer integration</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="viewmodel-grid">
+            <!-- BaseViewModel -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">???</span>
+                        <span class="viewmodel-name">BaseViewModel</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    Foundation ViewModel providing common ReactiveUI functionality, property change notification, 
+                    and shared infrastructure for all application ViewModels.
+                </p>
+                <div class="viewmodel-details">
+                    <div class="detail-title">?? Planned Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>ReactiveObject inheritance</li>
+                            <li>Common property patterns</li>
+                            <li>Shared command infrastructure</li>
+                            <li>Validation framework integration</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewmodel-actions">
+                    <a href="BaseViewModel.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/ViewModels/BaseViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- MainWindowViewModel -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">??</span>
+                        <span class="viewmodel-name">MainWindowViewModel</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    Primary application ViewModel managing the main window, navigation coordination, 
+                    and global application state presentation.
+                </p>
+                <div class="viewmodel-details">
+                    <div class="detail-title">?? Planned Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>Main window coordination</li>
+                            <li>Navigation state management</li>
+                            <li>Global menu and toolbar commands</li>
+                            <li>Application lifecycle management</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewmodel-actions">
+                    <a href="MainWindowViewModel.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/ViewModels/MainWindowViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- InventoryTabViewModel -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">??</span>
+                        <span class="viewmodel-name">InventoryTabViewModel</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    Inventory display and management ViewModel handling data grids, filtering, 
+                    and inventory-specific user interactions.
+                </p>
+                <div class="viewmodel-details">
+                    <div class="detail-title">?? Planned Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>ObservableCollection inventory binding</li>
+                            <li>Real-time data updates</li>
+                            <li>Filtering and search functionality</li>
+                            <li>Data grid interaction commands</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewmodel-actions">
+                    <a href="InventoryTabViewModel.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/ViewModels/InventoryTabViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- AddItemViewModel -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">?</span>
+                        <span class="viewmodel-name">AddItemViewModel</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    Add inventory item ViewModel with form validation, user input handling, 
+                    and integration with InventoryService for item creation.
+                </p>
+                <div class="viewmodel-details">
+                    <div class="detail-title">?? Planned Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>Form input properties with validation</li>
+                            <li>Add command with async execution</li>
+                            <li>Business rule validation integration</li>
+                            <li>Success/error state management</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewmodel-actions">
+                    <a href="AddItemViewModel.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/ViewModels/AddItemViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- QuickButtonsViewModel -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">?</span>
+                        <span class="viewmodel-name">QuickButtonsViewModel</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    Quick action buttons ViewModel providing rapid access to common inventory operations 
+                    and MTM workflow shortcuts.
+                </p>
+                <div class="viewmodel-details">
+                    <div class="detail-title">?? Planned Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>MTM operation quick commands</li>
+                            <li>Context-sensitive button availability</li>
+                            <li>Workflow integration</li>
+                            <li>Visual state indicators</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewmodel-actions">
+                    <a href="QuickButtonsViewModel.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/ViewModels/QuickButtonsViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- RemoveItemViewModel -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">?</span>
+                        <span class="viewmodel-name">RemoveItemViewModel</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    Remove inventory item ViewModel with quantity validation, confirmation dialogs, 
+                    and integration with inventory removal operations.
+                </p>
+                <div class="viewmodel-details">
+                    <div class="detail-title">?? Planned Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>Stock availability validation</li>
+                            <li>Removal confirmation workflows</li>
+                            <li>Quantity selection and validation</li>
+                            <li>Transaction logging integration</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewmodel-actions">
+                    <a href="RemoveItemViewModel.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/ViewModels/RemoveItemViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- TransferItemViewModel -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">??</span>
+                        <span class="viewmodel-name">TransferItemViewModel</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    Transfer inventory between locations ViewModel with source/destination selection, 
+                    quantity validation, and transfer operation coordination.
+                </p>
+                <div class="viewmodel-details">
+                    <div class="detail-title">?? Planned Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>Location selection and validation</li>
+                            <li>Transfer quantity management</li>
+                            <li>Atomic transfer operations</li>
+                            <li>Transfer history tracking</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewmodel-actions">
+                    <a href="TransferItemViewModel.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/ViewModels/TransferItemViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- TransactionHistoryViewModel -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">??</span>
+                        <span class="viewmodel-name">TransactionHistoryViewModel</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    Transaction history display ViewModel providing audit trail viewing, 
+                    filtering, and transaction detail presentation.
+                </p>
+                <div class="viewmodel-details">
+                    <div class="detail-title">?? Planned Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>Transaction log data binding</li>
+                            <li>Date range and filter controls</li>
+                            <li>Transaction detail views</li>
+                            <li>Export and reporting functionality</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewmodel-actions">
+                    <a href="TransactionHistoryViewModel.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/ViewModels/TransactionHistoryViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- UserManagementViewModel -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">??</span>
+                        <span class="viewmodel-name">UserManagementViewModel</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    User management ViewModel handling user authentication, permissions, 
+                    and user account administration functionality.
+                </p>
+                <div class="viewmodel-details">
+                    <div class="detail-title">?? Planned Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>User login and authentication</li>
+                            <li>Permission and role management</li>
+                            <li>User account administration</li>
+                            <li>Security and access control</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewmodel-actions">
+                    <a href="UserManagementViewModel.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/ViewModels/UserManagementViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- Additional ViewModels -->
+            <article class="viewmodel-card">
+                <div class="viewmodel-header">
+                    <div class="viewmodel-title">
+                        <span class="viewmodel-icon">??</span>
+                        <span class="viewmodel-name">Additional ViewModels</span>
+                    </div>
+                    <span class="viewmodel-status status-pending">PENDING</span>
+                </div>
+                <p class="viewmodel-description">
+                    Additional specialized ViewModels including InventoryViewModel, MainViewModel, and MainViewViewModel 
+                    providing specific functionality for different application areas.
+                </p>
+                <div class="viewmodel-actions">
+                    <a href="InventoryViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        InventoryViewModel
+                    </a>
+                    <a href="MainViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        MainViewModel
+                    </a>
+                    <a href="MainViewViewModel.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        MainViewViewModel
+                    </a>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>
+            MTM WIP Application - ViewModels Technical Documentation •
+            <a href="../index.html">File Definitions</a> •
+            <a href="../../index.html">Technical Home</a>
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            Last Updated: <time datetime="2025-01-27">January 27, 2025</time> •
+            <a href="#" onclick="alert('Technical feedback: Please create an issue in the repository for ViewModel documentation concerns.')">Report ViewModel Issues</a>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add focus management for keyboard navigation
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('focus', function() {
+                    this.style.outline = '2px solid #FFD700';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                link.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+
+            console.log('MTM ViewModels - Technical Documentation Loaded');
+            console.log('ViewModels Count: 12 total');
+            console.log('All Pending Documentation');
+            console.log('Pattern: ReactiveUI MVVM with dependency injection');
+        });
+    </script>
+</body>
+</html>

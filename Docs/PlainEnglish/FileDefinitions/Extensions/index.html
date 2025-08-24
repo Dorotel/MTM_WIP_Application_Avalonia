@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extensions - Plain English | MTM WIP Application</title>
+    <meta name="description" content="Plain English explanations of MTM WIP Application extension methods">
+    <style>
+        /* MTM Brand Colors and Modern Styling */
+        :root {
+            --primary-purple: #4B45ED;
+            --magenta-accent: #BA45ED;
+            --secondary-purple: #8345ED;
+            --blue-accent: #4574ED;
+            --pink-accent: #ED45E7;
+            --light-purple: #B594ED;
+            --background-dark: #1a1a1a;
+            --surface-dark: #2a2a2a;
+            --surface-light: #3a3a3a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --gold-accent: #FFD700;
+            --gold-light: #FFF8DC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--gold-accent), var(--primary-purple));
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--gold-light);
+            font-weight: 300;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .breadcrumb {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--surface-dark);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--gold-accent);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .intro-section {
+            background: var(--surface-dark);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-left: 5px solid var(--gold-accent);
+        }
+
+        .extension-card {
+            background: var(--surface-dark);
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 5px solid var(--gold-accent);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .extension-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .extension-card.available {
+            border-left-color: #22C55E;
+        }
+
+        .extension-card.available:hover {
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        .extension-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .extension-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .extension-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .extension-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .extension-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-available {
+            background: #22C55E;
+            color: white;
+        }
+
+        .extension-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .analogy-box {
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-purple);
+        }
+
+        .analogy-title {
+            color: var(--primary-purple);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .analogy-text {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        .extension-details {
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .detail-title {
+            color: var(--gold-accent);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .detail-list {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .detail-list ul {
+            margin-left: 1.5rem;
+        }
+
+        .detail-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .extension-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            background: var(--surface-light);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .action-link:hover {
+            background: var(--gold-accent);
+            color: var(--background-dark);
+        }
+
+        .action-link.primary {
+            background: var(--primary-purple);
+            color: white;
+        }
+
+        .action-link.primary:hover {
+            background: var(--magenta-accent);
+        }
+
+        .action-icon {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .tech-switch {
+            background: var(--surface-dark);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            border: 2px solid var(--primary-purple);
+        }
+
+        .tech-switch-title {
+            color: var(--primary-purple);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tech-switch-btn {
+            background: var(--primary-purple);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .tech-switch-btn:hover {
+            background: var(--magenta-accent);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            background: var(--surface-dark);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--surface-light);
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+        }
+
+        .footer a {
+            color: var(--gold-accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--primary-purple);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .extension-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>? Extensions</h1>
+            <p>Special tools that add new capabilities to existing systems</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <nav class="breadcrumb">
+            ?? <a href="../index.html">Plain English Home</a> 
+            > <a href="index.html">File Definitions</a>
+            > <strong>Extensions</strong>
+        </nav>
+
+        <section class="intro-section">
+            <h2 style="color: var(--gold-accent); margin-bottom: 1.5rem;">?? What Are Extensions in MTM?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 1.1rem;">
+                Think of extensions as <strong>specialized toolkits</strong> that add new capabilities to existing equipment. 
+                Just like how you might add a special attachment to a machine to give it new functions, 
+                extensions add new features to the software without changing the core system.
+            </p>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                In the MTM system, extensions primarily handle setting up and organizing all the different 
+                components so they work together properly - like the installation crew that connects all 
+                the machines, power, and control systems in a new manufacturing line.
+            </p>
+        </section>
+
+        <div class="tech-switch">
+            <h2 class="tech-switch-title">?? Need Technical Details?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Switch to technical documentation for detailed implementation specifics, code examples, and architectural patterns.
+            </p>
+            <a href="../../../Technical/FileDefinitions/Extensions/index.html" class="tech-switch-btn">
+                ?? Switch to Technical View
+            </a>
+        </div>
+
+        <!-- ServiceCollectionExtensions -->
+        <article class="extension-card available">
+            <div class="extension-header">
+                <div class="extension-title">
+                    <span class="extension-icon">??</span>
+                    <span class="extension-name">Service Collection Extensions</span>
+                </div>
+                <span class="extension-status status-available">AVAILABLE</span>
+            </div>
+            <p class="extension-description">
+                The master setup toolkit that organizes and connects all the different departments (services) 
+                in the MTM software system. Like having an installation crew that knows exactly how to 
+                set up and connect every component in a manufacturing facility.
+            </p>
+            <div class="analogy-box">
+                <div class="analogy-title">Real-World Manufacturing Analogy</div>
+                <div class="analogy-text">
+                    Imagine you're setting up a new manufacturing line. You need specialists who know how to:
+                    Install all the machines, connect the power and control systems, set up the conveyor belts, 
+                    configure the quality control stations, and make sure everything can communicate with everything else. 
+                    This extension is like that specialized installation crew, but for software components.
+                </div>
+            </div>
+            <div class="extension-details">
+                <div class="detail-title">?? What This Extension Does</div>
+                <div class="detail-list">
+                    <ul>
+                        <li><strong>Department Setup:</strong> Organizes all the software "departments" (services) like inventory, users, and transactions</li>
+                        <li><strong>Communication Channels:</strong> Ensures all departments can find and work with each other</li>
+                        <li><strong>Power Connections:</strong> Sets up database connections and configuration settings</li>
+                        <li><strong>Quality Systems:</strong> Installs validation and error handling throughout the system</li>
+                        <li><strong>Performance Optimization:</strong> Adds caching and other performance improvements</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="extension-details">
+                <div class="detail-title">?? Business Benefits</div>
+                <div class="detail-list">
+                    <ul>
+                        <li><strong>Faster Startup:</strong> System comes online quickly and consistently every time</li>
+                        <li><strong>Reliable Operations:</strong> All components are properly connected and tested</li>
+                        <li><strong>Easy Maintenance:</strong> Centralized setup makes updates and changes simpler</li>
+                        <li><strong>Scalable Growth:</strong> Easy to add new capabilities without disrupting existing operations</li>
+                        <li><strong>Quality Assurance:</strong> Built-in validation prevents errors and data problems</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="extension-details">
+                <div class="detail-title">?? How It Works in Daily Operations</div>
+                <div class="detail-list">
+                    <ul>
+                        <li><strong>System Startup:</strong> Automatically configures everything when the application starts</li>
+                        <li><strong>User Access:</strong> Ensures user authentication and permissions are properly set up</li>
+                        <li><strong>Data Handling:</strong> Connects database operations to business logic seamlessly</li>
+                        <li><strong>Error Management:</strong> Provides consistent error handling across all operations</li>
+                        <li><strong>Performance:</strong> Optimizes system performance through proper resource management</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="extension-actions">
+                <a href="ServiceCollectionExtensions.html" class="action-link primary">
+                    <span class="action-icon">??</span>
+                    Learn More
+                </a>
+                <a href="../../../Technical/FileDefinitions/Extensions/ServiceCollectionExtensions.html" class="action-link">
+                    <span class="action-icon">??</span>
+                    Technical Details
+                </a>
+            </div>
+        </article>
+
+        <section style="background: var(--surface-dark); border-radius: 12px; padding: 2rem; margin-top: 3rem; border-left: 5px solid var(--primary-purple);">
+            <h2 style="color: var(--primary-purple); margin-bottom: 1.5rem;">?? How Extensions Help MTM Operations</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.1rem;">
+                Extensions are crucial for maintaining smooth manufacturing operations because they ensure 
+                all software systems work together reliably:
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--gold-accent); margin-bottom: 1rem;">?? Operational Efficiency</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        Properly configured systems start faster, run more reliably, and require less 
+                        troubleshooting, keeping production lines moving smoothly.
+                    </p>
+                </div>
+                <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--gold-accent); margin-bottom: 1rem;">?? Data Integrity</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        Extensions ensure all data validation and business rules are consistently applied, 
+                        preventing errors that could disrupt manufacturing processes.
+                    </p>
+                </div>
+                <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--gold-accent); margin-bottom: 1rem;">?? Easy Maintenance</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        Centralized configuration makes it easier for IT staff to maintain and update 
+                        systems without disrupting ongoing manufacturing operations.
+                    </p>
+                </div>
+                <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--gold-accent); margin-bottom: 1rem;">?? Future Growth</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        Well-designed extensions make it easier to add new capabilities, integrate new 
+                        equipment, or expand operations without major system overhauls.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>
+            MTM WIP Application - Extensions Plain English Documentation �
+            <a href="../index.html">File Definitions</a> �
+            <a href="../../index.html">Plain English Home</a>
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            Last Updated: <time datetime="2025-01-27">January 27, 2025</time> �
+            <a href="#" onclick="alert('Accessibility feedback: Please create an issue in the repository for accessibility concerns.')">Report Accessibility Issues</a>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add focus management for keyboard navigation
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('focus', function() {
+                    this.style.outline = '2px solid #FFD700';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                link.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+
+            console.log('MTM Extensions - Plain English Documentation Loaded');
+            console.log('Extensions Count: 1 (Service Collection Extensions)');
+            console.log('Status: Available');
+            console.log('Focus: System setup and component organization');
+        });
+    </script>
+</body>
+</html>

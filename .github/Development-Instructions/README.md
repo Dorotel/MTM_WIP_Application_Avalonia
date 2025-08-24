@@ -1,38 +1,39 @@
 # Development Instructions
 
-This folder contains development workflow, tools, and infrastructure guidelines for the MTM WIP Application.
+This folder contains workflow setup, error handling implementation, and database integration guidelines for the MTM WIP Application Avalonia.
 
 ## Files in this Category
 
 ### errorhandler.instruction.md
-- **Purpose**: Error handling patterns and logging integration
-- **Key Topics**: Service_ErrorHandler usage, ReactiveUI error handling
-- **Usage**: Reference for implementing error handling in ViewModels and services
+- **Purpose**: Error handling patterns and implementation guidelines
+- **Key Topics**: Error logging, user-friendly messages, exception management
+- **Usage**: Reference when implementing error handling in any component
 
 ### githubworkflow.instruction.md
-- **Purpose**: CI/CD and Git workflow practices
-- **Key Topics**: Branching strategy, deployment procedures, code review standards
-- **Usage**: Reference for development workflow and team collaboration
+- **Purpose**: GitHub Actions and CI/CD pipeline configuration
+- **Key Topics**: Build automation, testing workflows, deployment patterns
+- **Usage**: Setting up and maintaining GitHub workflows
 
-### Related Development Files
-- **Development/Database_Files/**: Database patterns and stored procedure guidelines
-- **Development/Examples/**: Code usage examples and integration patterns
-- **Services/**: Error handling service implementations
+### database-patterns.instruction.md ? **NEW**
+- **Purpose**: Database access patterns and MTM business logic rules
+- **Key Topics**: Stored procedure usage, TransactionType logic, MTM operation numbers
+- **Usage**: Critical reference for all database operations and business logic
 
-## Key Development Patterns
+### templates-documentation.instruction.md ? **NEW**
+- **Purpose**: HTML template usage and documentation migration guidelines
+- **Key Topics**: FileDefinitions templates, PlainEnglish vs Technical documentation
+- **Usage**: When migrating documentation or creating new HTML documentation
 
-### Database Access
-- **Stored Procedures Only**: No direct SQL in application code
-- **Helper_Database_StoredProcedure**: Standard database access pattern
-- **Result<T> Pattern**: Consistent error handling and return types
+## MTM Business Logic Integration
 
-### Error Handling
-- **Service_ErrorHandler**: Centralized error management
-- **ReactiveUI Integration**: Command exception handling
-- **Logging Integration**: Structured logging throughout application
+These development instructions include critical MTM-specific business rules:
+- **TransactionType Logic**: Determined by user intent, NOT operation numbers
+- **Database Access**: Stored procedures only, no direct SQL
+- **Operation Numbers**: Workflow step identifiers, not transaction type indicators
 
 ## Integration Points
 
-- **Core Instructions**: Extends coding conventions with workflow guidance
-- **UI Instructions**: Error presentation and user feedback patterns
-- **Quality Instructions**: Development quality standards and compliance
+- **Core Instructions**: Database patterns extend coding conventions
+- **UI Instructions**: Template systems integrate with UI generation patterns
+- **Quality Instructions**: Error handling patterns support quality standards
+- **Automation Instructions**: Documentation templates support automation workflows

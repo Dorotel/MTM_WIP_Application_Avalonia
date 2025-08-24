@@ -22,11 +22,11 @@ All database operations in the application **MUST** use stored procedures only. 
 ## Development Workflow
 
 ### Making Changes to Database
-1. **New Stored Procedures**: Add to `Development/Database_Files/New_Stored_Procedures.sql`
+1. **New Stored Procedures**: Add to `Documentation/Development/Database_Files/New_Stored_Procedures.sql`
 2. **Updating Existing Procedures**: 
-   - Copy from `Existing_Stored_Procedures.sql` to `Development/Database_Files/Updated_Stored_Procedures.sql`
+   - Copy from `Existing_Stored_Procedures.sql` to `Documentation/Development/Database_Files/Updated_Stored_Procedures.sql`
    - Make modifications in the development file
-3. **Schema Changes**: Update `Development/Database_Files/Development_Database_Schema.sql`
+3. **Schema Changes**: Update `Documentation/Development/Database_Files/Development_Database_Schema.sql`
 
 ### File Organization Rules
 ```
@@ -35,7 +35,7 @@ Database_Files/ (Production - READ ONLY)
 ??? Existing_Stored_Procedures.sql          # READ ONLY - Current production procedures
 ??? README_*.md files                       # Production documentation
 
-Development/Database_Files/ (Development - EDITABLE)
+Documentation/Development/Database_Files/ (Development - EDITABLE)
 ??? Development_Database_Schema.sql         # Development schema changes
 ??? New_Stored_Procedures.sql              # New procedures for development
 ??? Updated_Stored_Procedures.sql          # Modified versions of existing procedures
@@ -43,7 +43,7 @@ Development/Database_Files/ (Development - EDITABLE)
 ```
 
 ### Deployment Process
-1. **Development Phase**: Work in `Development/Database_Files/`
+1. **Development Phase**: Work in `Documentation/Development/Database_Files/`
 2. **Testing Phase**: Validate all procedures in development environment
 3. **Production Deployment**: Copy validated files to `Database_Files/` (production)
 4. **Update Production**: Replace production files with tested versions
@@ -107,7 +107,7 @@ Each SQL file should include:
 - **Performance Notes**: Optimization considerations
 
 ## Related Documentation
-- [Development Database Files](../Development/Database_Files/README.md) - Development workflow details
+- [Development Database Files](../Documentation/Development/Database_Files/README.md) - Development workflow details
 - [Database Operations Prompts](../Docs/database-operations-prompts.md) - Copilot prompts for database work
 - [Copilot Instructions](../.github/copilot-instructions.md) - Complete development guidelines
 

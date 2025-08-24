@@ -560,7 +560,7 @@ public class InventoryTabViewModelTests
 
 - **View Bindings**: See `Views/` directory for AXAML view files
 - **Service Contracts**: `Services/Interfaces/` for service interfaces
-- **UI Documentation**: `Development/UI_Documentation/` for component specifications
+- **UI Documentation**: `Documentation/Development/UI_Documentation/` for component specifications
 - **ReactiveUI Guide**: Official ReactiveUI documentation for advanced patterns
 
 ---

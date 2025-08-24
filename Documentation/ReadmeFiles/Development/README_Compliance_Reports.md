@@ -9,14 +9,15 @@ The MTM WIP Application maintains high code quality through continuous complianc
 ## 📁 **Compliance Report Structure**
 
 ```
-Development/Compliance Reports/
+Documentation/Development/Compliance Reports/
 ├── README.md                                    # This overview document
 ├── Services/
 │   └── README.md                               # Service layer compliance
 ├── ViewModels/
 │   └── README.md                               # ViewModel compliance
 ├── Views/
-│   └── README.md                               # View/UI compliance
+│   ├── Views_Compliance_Report.md             # View/UI compliance report
+│   └── README.md                               # View compliance overview
 ├── Models/
 │   └── README.md                               # Data model compliance
 ├── Database/

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Definitions - Plain English | MTM WIP Application</title>
+    <meta name="description" content="Plain English explanations of MTM WIP Application files organized by category">
+    <style>
+        /* MTM Brand Colors and Modern Styling */
+        :root {
+            --primary-purple: #4B45ED;
+            --magenta-accent: #BA45ED;
+            --secondary-purple: #8345ED;
+            --blue-accent: #4574ED;
+            --pink-accent: #ED45E7;
+            --light-purple: #B594ED;
+            --background-dark: #1a1a1a;
+            --surface-dark: #2a2a2a;
+            --surface-light: #3a3a3a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --gold-accent: #FFD700;
+            --gold-light: #FFF8DC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--gold-accent), var(--primary-purple));
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--gold-light);
+            font-weight: 300;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .breadcrumb {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--surface-dark);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--gold-accent);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .category-card {
+            background: var(--surface-dark);
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 5px solid var(--gold-accent);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .category-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .file-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            background: var(--surface-light);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .file-link:hover {
+            background: var(--gold-accent);
+            color: var(--background-dark);
+            transform: translateX(5px);
+        }
+
+        .file-icon {
+            margin-right: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .switch-view {
+            background: var(--surface-dark);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            border: 2px solid var(--primary-purple);
+        }
+
+        .switch-title {
+            color: var(--primary-purple);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tech-switch-btn {
+            background: var(--primary-purple);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .tech-switch-btn:hover {
+            background: var(--magenta-accent);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            background: var(--surface-dark);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--surface-light);
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+        }
+
+        .footer a {
+            color: var(--gold-accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--primary-purple);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>?? File Definitions</h1>
+            <p>Plain English explanations of MTM WIP Application files</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <nav class="breadcrumb">
+            ?? <a href="../index.html">Plain English Home</a> 
+            > <a href="../../index.html">Documentation Hub</a> 
+            > <strong>File Definitions</strong>
+        </nav>
+
+        <div class="switch-view">
+            <h2 class="switch-title">?? Need Technical Details?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Switch to technical documentation for detailed code analysis and implementation specifics.
+            </p>
+            <a href="../../Technical/FileDefinitions/index.html" class="tech-switch-btn">
+                ?? Switch to Technical View
+            </a>
+        </div>
+
+        <div class="category-grid">
+            <article class="category-card">
+                <div class="category-header">
+                    <span class="category-icon">??</span>
+                    <h2 class="category-title">Services</h2>
+                </div>
+                <p class="category-description">
+                    The "behind-the-scenes" workers that handle business logic, data access, and system operations.
+                    Like the various departments in a manufacturing facility.
+                </p>
+                <nav class="file-list">
+                    <a href="Services/InventoryService.html" class="file-link">
+                        <span class="file-icon">??</span>
+                        Inventory Service
+                    </a>
+                    <a href="Services/DatabaseService.html" class="file-link">
+                        <span class="file-icon">???</span>
+                        Database Service
+                    </a>
+                    <a href="Services/ApplicationStateService.html" class="file-link">
+                        <span class="file-icon">???</span>
+                        Application State Service
+                    </a>
+                    <a href="Services/ConfigurationService.html" class="file-link">
+                        <span class="file-icon">??</span>
+                        Configuration Service
+                    </a>
+                    <a href="Services/NavigationService.html" class="file-link">
+                        <span class="file-icon">??</span>
+                        Navigation Service
+                    </a>
+                    <a href="Services/index.html" class="file-link">
+                        <span class="file-icon">??</span>
+                        View All Services
+                    </a>
+                </nav>
+            </article>
+
+            <article class="category-card">
+                <div class="category-header">
+                    <span class="category-icon">???</span>
+                    <h2 class="category-title">ViewModels</h2>
+                </div>
+                <p class="category-description">
+                    The "control panels" that manage what users see and how they interact with the application.
+                    Like operator workstations in a manufacturing facility.
+                </p>
+                <nav class="file-list">
+                    <a href="ViewModels/AddItemViewModel.html" class="file-link">
+                        <span class="file-icon">?</span>
+                        Add Item ViewModel
+                    </a>
+                    <a href="ViewModels/InventoryTabViewModel.html" class="file-link">
+                        <span class="file-icon">??</span>
+                        Inventory Tab ViewModel
+                    </a>
+                    <a href="ViewModels/BaseViewModel.html" class="file-link">
+                        <span class="file-icon">???</span>
+                        Base ViewModel
+                    </a>
+                    <a href="ViewModels/index.html" class="file-link">
+                        <span class="file-icon">??</span>
+                        View All ViewModels
+                    </a>
+                </nav>
+            </article>
+
+            <article class="category-card">
+                <div class="category-header">
+                    <span class="category-icon">??</span>
+                    <h2 class="category-title">Models</h2>
+                </div>
+                <p class="category-description">
+                    The "blueprints" that define how data is structured and what information the system tracks.
+                    Like engineering specifications for parts and processes.
+                </p>
+                <nav class="file-list">
+                    <a href="Models/Result.html" class="file-link">
+                        <span class="file-icon">?</span>
+                        Result Model
+                    </a>
+                    <a href="Models/index.html" class="file-link">
+                        <span class="file-icon">??</span>
+                        View All Models
+                    </a>
+                </nav>
+            </article>
+
+            <article class="category-card">
+                <div class="category-header">
+                    <span class="category-icon">?</span>
+                    <h2 class="category-title">Extensions</h2>
+                </div>
+                <p class="category-description">
+                    Special tools that extend and enhance the application's capabilities.
+                    Like adding new equipment or upgrading existing machinery.
+                </p>
+                <nav class="file-list">
+                    <a href="Extensions/ServiceCollectionExtensions.html" class="file-link">
+                        <span class="file-icon">??</span>
+                        Service Collection Extensions
+                    </a>
+                    <a href="Extensions/index.html" class="file-link">
+                        <span class="file-icon">??</span>
+                        View All Extensions
+                    </a>
+                </nav>
+            </article>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>
+            MTM WIP Application - File Definitions (Plain English) •
+            <a href="../index.html">Plain English Home</a> •
+            <a href="../../Technical/FileDefinitions/index.html">Technical Documentation</a>
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            Last Updated: <time datetime="2025-01-27">January 27, 2025</time> •
+            <a href="#" onclick="alert('Accessibility feedback: Please create an issue in the repository for accessibility concerns.')">Report Accessibility Issues</a>
+        </p>
+    </footer>
+
+    <script>
+        // Simple accessibility enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add focus management for keyboard navigation
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('focus', function() {
+                    this.style.outline = '2px solid #FFD700';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                link.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+
+            console.log('MTM File Definitions (Plain English) - Documentation Loaded');
+        });
+    </script>
+</body>
+</html>

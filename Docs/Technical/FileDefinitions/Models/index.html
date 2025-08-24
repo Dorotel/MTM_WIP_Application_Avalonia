@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Models - Technical Documentation | MTM WIP Application</title>
+    <meta name="description" content="Technical documentation for data models and entities in the MTM WIP Application">
+    <style>
+        /* MTM Technical Documentation Theme */
+        :root {
+            --background-primary: #0d1117;
+            --background-secondary: #161b22;
+            --background-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --text-accent: #58a6ff;
+            --accent-gold: #ffd700;
+            --accent-gold-dark: #daa520;
+            --mtm-purple: #4b45ed;
+            --mtm-magenta: #ba45ed;
+            --border-primary: #30363d;
+            --border-accent: #ffd700;
+            --success-color: #238636;
+            --warning-color: #d29922;
+            --danger-color: #da3633;
+            --code-bg: #0d1117;
+            --code-border: #21262d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Segoe UI Mono', 'Roboto Mono', monospace;
+            background: var(--background-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--background-secondary), var(--background-tertiary));
+            border-bottom: 2px solid var(--accent-gold);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .breadcrumb {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--background-secondary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--accent-gold);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .model-card {
+            background: var(--background-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 5px solid var(--accent-gold);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .model-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .model-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .model-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .model-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .model-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.6;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .model-details {
+            background: var(--background-tertiary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-title {
+            color: var(--text-accent);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .detail-list {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .detail-list ul {
+            margin-left: 1.5rem;
+        }
+
+        .detail-list li {
+            margin-bottom: 0.3rem;
+        }
+
+        .code-example {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .code-example .keyword {
+            color: #ff7b72;
+        }
+
+        .code-example .type {
+            color: #ffa657;
+        }
+
+        .code-example .string {
+            color: #a5d6ff;
+        }
+
+        .code-example .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .model-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            background: var(--background-tertiary);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .action-link:hover {
+            background: var(--accent-gold);
+            color: var(--background-primary);
+        }
+
+        .action-link.primary {
+            background: var(--mtm-purple);
+            color: white;
+        }
+
+        .action-link.primary:hover {
+            background: var(--mtm-magenta);
+        }
+
+        .action-icon {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .pattern-overview {
+            background: var(--background-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-left: 5px solid var(--mtm-purple);
+        }
+
+        .footer {
+            background: var(--background-secondary);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-primary);
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer a {
+            color: var(--accent-gold);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--mtm-purple);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .model-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .model-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>?? Models</h1>
+            <p class="subtitle">Data models and domain entities with type definitions and validation</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <nav class="breadcrumb">
+            ?? <a href="../index.html">Technical Home</a> 
+            > <a href="index.html">File Definitions</a>
+            > <strong>Models</strong>
+        </nav>
+
+        <section class="pattern-overview">
+            <h2 style="color: var(--mtm-purple); margin-bottom: 1.5rem; font-family: 'Segoe UI', sans-serif;">??? Domain-Driven Design Patterns</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-family: 'Segoe UI', sans-serif;">
+                MTM models follow <strong>Domain-Driven Design (DDD)</strong> principles with clear separation between 
+                business entities, value objects, and service response patterns. All models include validation attributes 
+                and maintain data integrity through type safety.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                <div style="background: var(--background-tertiary); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">?? Business Entities</h3>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.9rem;">
+                        <li>InventoryItem, User, Transaction</li>
+                        <li>Rich domain logic and behavior</li>
+                        <li>Data validation attributes</li>
+                        <li>Entity relationship mapping</li>
+                    </ul>
+                </div>
+                <div style="background: var(--background-tertiary); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">? Result Patterns</h3>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.9rem;">
+                        <li>Result&lt;T&gt; for operation responses</li>
+                        <li>Success/failure state management</li>
+                        <li>Error message handling</li>
+                        <li>Exception-free error handling</li>
+                    </ul>
+                </div>
+                <div style="background: var(--background-tertiary); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">?? Type Safety</h3>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.9rem;">
+                        <li>Strong typing throughout</li>
+                        <li>Nullable reference types</li>
+                        <li>Compile-time error detection</li>
+                        <li>.NET 8 modern patterns</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="model-grid">
+            <!-- Result Model -->
+            <article class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-icon">?</span>
+                        <span class="model-name">Result&lt;T&gt;</span>
+                    </div>
+                    <span class="model-status status-pending">PENDING</span>
+                </div>
+                <p class="model-description">
+                    Generic result pattern for service operation responses. Encapsulates success/failure states 
+                    with typed return values and error messaging, eliminating exception-based error handling.
+                </p>
+                <div class="model-details">
+                    <div class="detail-title">?? Technical Features</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li>Generic type parameter for return values</li>
+                            <li>IsSuccess boolean flag</li>
+                            <li>Value property for successful results</li>
+                            <li>ErrorMessage property for failures</li>
+                            <li>Static factory methods for creation</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="code-example">
+<span class="keyword">public class</span> <span class="type">Result</span>&lt;<span class="type">T</span>&gt;
+{
+    <span class="keyword">public bool</span> IsSuccess { <span class="keyword">get</span>; <span class="keyword">init</span>; }
+    <span class="keyword">public</span> <span class="type">T</span>? Value { <span class="keyword">get</span>; <span class="keyword">init</span>; }
+    <span class="keyword">public string</span>? ErrorMessage { <span class="keyword">get</span>; <span class="keyword">init</span>; }
+    
+    <span class="keyword">public static</span> <span class="type">Result</span>&lt;<span class="type">T</span>&gt; Success(<span class="type">T</span> value) <span class="comment">// Factory methods</span>
+    <span class="keyword">public static</span> <span class="type">Result</span>&lt;<span class="type">T</span>&gt; Failure(<span class="keyword">string</span> error)
+}
+                </div>
+                <div class="model-actions">
+                    <a href="Result.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/Models/Result.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+
+            <!-- CoreModels -->
+            <article class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-icon">??</span>
+                        <span class="model-name">CoreModels</span>
+                    </div>
+                    <span class="model-status status-pending">PENDING</span>
+                </div>
+                <p class="model-description">
+                    Core business entity models including InventoryItem, User, InventoryTransaction, and related 
+                    domain objects. These models represent the fundamental business concepts in the MTM system.
+                </p>
+                <div class="model-details">
+                    <div class="detail-title">?? Business Entities</div>
+                    <div class="detail-list">
+                        <ul>
+                            <li><strong>InventoryItem:</strong> Part ID, Description, Quantity, Location, Operation</li>
+                            <li><strong>User:</strong> User ID, Name, Permissions, Active status</li>
+                            <li><strong>InventoryTransaction:</strong> Transaction logging with audit trail</li>
+                            <li><strong>TransactionType:</strong> Enum for IN, OUT, TRANSFER operations</li>
+                            <li><strong>ValidationResult:</strong> Validation outcome with error messages</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="code-example">
+<span class="keyword">public class</span> <span class="type">InventoryItem</span>
+{
+    [<span class="type">Required</span>] <span class="keyword">public string</span> PartId { <span class="keyword">get</span>; <span class="keyword">set</span>; } = <span class="keyword">string</span>.Empty;
+    [<span class="type">Required</span>] <span class="keyword">public string</span> Description { <span class="keyword">get</span>; <span class="keyword">set</span>; } = <span class="keyword">string</span>.Empty;
+    [<span class="type">Range</span>(0, <span class="keyword">int</span>.MaxValue)] <span class="keyword">public int</span> Quantity { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public string</span> Location { <span class="keyword">get</span>; <span class="keyword">set</span>; } = <span class="keyword">string</span>.Empty;
+    <span class="keyword">public string</span> Operation { <span class="keyword">get</span>; <span class="keyword">set</span>; } = <span class="keyword">string</span>.Empty;
+    <span class="keyword">public</span> <span class="type">DateTime</span> LastUpdated { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public string</span> LastUpdatedBy { <span class="keyword">get</span>; <span class="keyword">set</span>; } = <span class="keyword">string</span>.Empty;
+}
+                </div>
+                <div class="model-actions">
+                    <a href="CoreModels.html" class="action-link primary">
+                        <span class="action-icon">??</span>
+                        View Documentation
+                    </a>
+                    <a href="../../../PlainEnglish/FileDefinitions/Models/CoreModels.html" class="action-link">
+                        <span class="action-icon">??</span>
+                        Plain English
+                    </a>
+                </div>
+            </article>
+        </div>
+
+        <section style="background: var(--background-secondary); border-radius: 12px; padding: 2rem; margin-top: 3rem; border-left: 5px solid var(--mtm-purple);">
+            <h2 style="color: var(--mtm-purple); margin-bottom: 1.5rem; font-family: 'Segoe UI', sans-serif;">?? Model Relationships</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div style="background: var(--background-tertiary); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">?? Inventory Domain</h3>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem;">
+                        <li>InventoryItem ? Core entity</li>
+                        <li>InventoryTransaction ? Audit trail</li>
+                        <li>TransactionType ? Operation classification</li>
+                        <li>Result&lt;InventoryItem&gt; ? Service responses</li>
+                    </ul>
+                </div>
+                <div style="background: var(--background-tertiary); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">?? User Domain</h3>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem;">
+                        <li>User ? Identity and permissions</li>
+                        <li>UserSession ? Authentication state</li>
+                        <li>UserPermissions ? Access control</li>
+                        <li>Result&lt;User&gt; ? Authentication responses</li>
+                    </ul>
+                </div>
+                <div style="background: var(--background-tertiary); padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">? Validation Domain</h3>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem;">
+                        <li>ValidationResult ? Validation outcomes</li>
+                        <li>BusinessRule ? Domain constraints</li>
+                        <li>ValidationError ? Error details</li>
+                        <li>Result&lt;ValidationResult&gt; ? Validation responses</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>
+            MTM WIP Application - Models Technical Documentation �
+            <a href="../index.html">File Definitions</a> �
+            <a href="../../index.html">Technical Home</a>
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            Last Updated: <time datetime="2025-01-27">January 27, 2025</time> �
+            <a href="#" onclick="alert('Technical feedback: Please create an issue in the repository for model documentation concerns.')">Report Model Issues</a>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add focus management for keyboard navigation
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('focus', function() {
+                    this.style.outline = '2px solid #FFD700';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                link.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+
+            console.log('MTM Models - Technical Documentation Loaded');
+            console.log('Models Count: 2 primary (Result<T>, CoreModels)');
+            console.log('Pattern: Domain-Driven Design with Result Pattern');
+            console.log('Framework: .NET 8 with validation attributes');
+        });
+    </script>
+</body>
+</html>
