@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-RemoveItemViewModel - The Warehouse Stock Removal Clerk</title>
+    <meta name="description" content="Plain English explanation of RemoveItemViewModel - The Warehouse Stock Removal Clerk in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, RemoveItemViewModel, inventory removal, stock consumption, plain english">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../../assets/css/responsive.css">
+    
+    <!-- FileDefinitions PlainEnglish Styling -->
+    <style>
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-gold-dark: #DAA520;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-purple: #4B45ED;
+            --mtm-red: #dc3545;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+            backdrop-filter: blur(10px);
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, rgba(75, 69, 237, 0.1) 0%, rgba(186, 69, 237, 0.1) 100%);
+            border: 1px solid var(--mtm-purple);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .analogy-box::before {
+            content: "📤";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--mtm-black);
+            padding: 0 10px;
+            font-size: 1.5em;
+        }
+
+        .workflow-step {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid var(--mtm-gold);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 12px 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-step:hover {
+            background: rgba(255, 215, 0, 0.15);
+            transform: translateX(5px);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.2) 100%);
+            border: 1px solid var(--mtm-red);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--mtm-red);
+        }
+
+        .metric {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(218, 165, 32, 0.2) 100%);
+            padding: 0.75rem 1rem;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 0.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .metric:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(218, 165, 32, 0.3) 100%);
+            transform: scale(1.05);
+        }
+
+        .status-badge {
+            background: linear-gradient(135deg, var(--mtm-red) 0%, #c82333 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 1rem;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            color: var(--mtm-gold);
+            margin-top: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--mtm-gold);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-button {
+                display: block;
+                margin: 0.5rem 0;
+                min-width: auto;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-reference navigation -->
+        <div class="cross-reference-nav">
+            <h3>📋 Quick Navigation</h3>
+            <a href="../../Technical/FileDefinitions/ViewModels/FileDefinitions-RemoveItemViewModel.html" class="nav-button">🔧 Technical View</a>
+            <a href="FileDefinitions-AddItemViewModel.html" class="nav-button">📋 Add Item</a>
+            <a href="../../index.html" class="nav-button">📚 Documentation Home</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="header">
+            <h1>📤 RemoveItemViewModel</h1>
+            <p><strong>The Warehouse Stock Removal Clerk</strong></p>
+            <p>MTM WIP Application Component <span class="status-badge">Outbound Processing</span></p>
+        </div>
+
+        <!-- Real-World Manufacturing Analogy -->
+        <div class="analogy-box">
+            <h2>🏭 Manufacturing Floor Analogy</h2>
+            <p><strong>Think of RemoveItemViewModel as the "Warehouse Stock Removal Clerk"</strong> - the specialized employee who handles the critical task of processing outbound inventory, ensuring accurate tracking when parts leave the warehouse for production use or customer shipments.</p>
+            
+            <div class="workflow-step">
+                <strong>📤 The Removal Clerk's Responsibilities:</strong>
+                <ul>
+                    <li><strong>Stock Verification:</strong> Confirms availability before processing removal requests</li>
+                    <li><strong>Consumption Tracking:</strong> Records exactly what parts are being consumed and by whom</li>
+                    <li><strong>Production Support:</strong> Handles parts going to production lines for manufacturing</li>
+                    <li><strong>Audit Documentation:</strong> Maintains detailed records of all outbound transactions</li>
+                    <li><strong>Inventory Updates:</strong> Ensures system accurately reflects reduced stock levels</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- What This Component Does -->
+        <div class="content-section">
+            <h2>🎯 What This Component Does</h2>
+            <p>RemoveItemViewModel is the <strong>outbound inventory specialist</strong> that handles removing inventory items from the MTM warehouse system. It ensures accurate tracking of parts consumption and maintains audit trails for all outbound transactions.</p>
+
+            <div class="highlight">
+                💡 <strong>Key Principle:</strong> This ViewModel follows the "consumption tracking" pattern - it handles removing stock from inventory with detailed validation to prevent over-consumption and ensure accurate inventory levels.
+            </div>
+
+            <h3>🔄 Stock Removal Process</h3>
+            <div class="workflow-step">
+                <strong>Step 1:</strong> Production request or consumption order is received
+            </div>
+            <div class="workflow-step">
+                <strong>Step 2:</strong> System validates current stock levels and availability
+            </div>
+            <div class="workflow-step">
+                <strong>Step 3:</strong> Clerk confirms part ID, location, operation, and consumption quantity
+            </div>
+            <div class="workflow-step">
+                <strong>Step 4:</strong> System records removal with TransactionType.OUT (always removing stock)
+            </div>
+            <div class="workflow-step">
+                <strong>Step 5:</strong> Inventory levels decrease and consumption audit trail is created
+            </div>
+        </div>
+
+        <!-- MTM-Specific Business Rules -->
+        <div class="content-section">
+            <h2>🏢 MTM-Specific Business Rules</h2>
+            
+            <div class="highlight">
+                🚨 <strong>Critical MTM Rule:</strong> RemoveItemViewModel ALWAYS uses TransactionType.OUT because the user intent is removing stock from inventory, regardless of the operation number or destination.
+            </div>
+
+            <h3>⚠️ Stock Validation Requirements</h3>
+            <div class="warning-box">
+                <strong>Critical Validation Rules:</strong>
+                <ul>
+                    <li><strong>Availability Check:</strong> Cannot remove more than current stock levels</li>
+                    <li><strong>Location Verification:</strong> Stock must exist at specified location</li>
+                    <li><strong>Operation Validation:</strong> Operation number must be valid for the part</li>
+                    <li><strong>Consumption Reason:</strong> Must specify why parts are being removed</li>
+                </ul>
+            </div>
+
+            <h3>📊 Transaction Type Logic</h3>
+            <div class="code-block">
+                ✅ CORRECT: TransactionType = OUT (User is removing stock)
+                ❌ WRONG: Determining TransactionType from Operation number
+                
+                // Operation numbers like "90", "100", "110" indicate WHERE
+                // parts are going in the production process, NOT whether
+                // they're being added or removed from inventory.
+            </div>
+
+            <h3>🔧 Integration Points</h3>
+            <ul>
+                <li><strong>InventoryService:</strong> Validates stock availability and processes removals</li>
+                <li><strong>ApplicationStateService:</strong> Tracks consumption patterns and user context</li>
+                <li><strong>Validation System:</strong> Prevents over-consumption and invalid operations</li>
+                <li><strong>Audit System:</strong> Creates detailed consumption audit trails</li>
+            </ul>
+        </div>
+
+        <!-- Common Use Cases -->
+        <div class="content-section">
+            <h2>🎯 Common Use Cases</h2>
+            
+            <h3>📦 Production Consumption</h3>
+            <div class="workflow-step">
+                <strong>Scenario:</strong> Production line needs 10 widgets from Operation 100 for assembly
+                <br><strong>Process:</strong> Verify 10+ widgets available → Remove 10 → Update inventory levels
+            </div>
+
+            <h3>🚚 Customer Shipments</h3>
+            <div class="workflow-step">
+                <strong>Scenario:</strong> Customer order for finished goods needs to be shipped
+                <br><strong>Process:</strong> Verify finished inventory → Remove for shipment → Create shipping record
+            </div>
+
+            <h3>🔧 Maintenance Consumption</h3>
+            <div class="workflow-step">
+                <strong>Scenario:</strong> Maintenance team needs spare parts for equipment repair
+                <br><strong>Process:</strong> Verify spare parts availability → Remove for maintenance → Track usage
+            </div>
+        </div>
+
+        <!-- Who Uses This Component -->
+        <div class="content-section">
+            <h2>👥 Who Uses This Component</h2>
+            <div class="metric">🏭 Production Supervisors</div>
+            <div class="metric">📦 Shipping Clerks</div>
+            <div class="metric">🔧 Maintenance Staff</div>
+            <div class="metric">📊 Inventory Controllers</div>
+
+            <h3>📈 Business Value</h3>
+            <ul>
+                <li><strong>Accuracy:</strong> Prevents over-consumption with real-time stock validation</li>
+                <li><strong>Traceability:</strong> Complete audit trail for all inventory removals</li>
+                <li><strong>Compliance:</strong> Ensures proper documentation for regulatory requirements</li>
+                <li><strong>Efficiency:</strong> Streamlined process for common consumption patterns</li>
+            </ul>
+        </div>
+
+        <!-- Technical Foundation -->
+        <div class="content-section">
+            <h2>⚙️ Technical Foundation</h2>
+            <p>This component is built using <strong>reactive validation patterns</strong> to ensure stock availability before allowing removal operations:</p>
+
+            <div class="code-block">
+                🏗️ Architecture Pattern: MVVM with Reactive Validation
+                💉 Dependency Injection: Full constructor injection pattern
+                🔄 Real-time Validation: Stock availability checking
+                📝 Audit Logging: Comprehensive consumption tracking
+                🛡️ Error Prevention: Pre-validation to prevent over-consumption
+            </div>
+
+            <h3>🔗 Service Dependencies</h3>
+            <ul>
+                <li><strong>IInventoryService:</strong> Stock validation and removal operations</li>
+                <li><strong>IApplicationStateService:</strong> Current user and session context</li>
+                <li><strong>IValidationService:</strong> Business rule validation for removals</li>
+                <li><strong>ILogger:</strong> Consumption tracking and audit logging</li>
+            </ul>
+        </div>
+
+        <!-- Explore More -->
+        <div class="cross-reference-nav">
+            <h3>🔍 Explore More</h3>
+            <a href="../../Technical/FileDefinitions/ViewModels/FileDefinitions-RemoveItemViewModel.html" class="nav-button">🔧 View Technical Implementation</a>
+            <a href="FileDefinitions-AddItemViewModel.html" class="nav-button">📋 Compare: Add Item ViewModel</a>
+            <a href="FileDefinitions-TransferItemViewModel.html" class="nav-button">🔄 Related: Transfer Item ViewModel</a>
+            <a href="../Services/FileDefinitions-InventoryService.html" class="nav-button">🗃️ Related: Inventory Service</a>
+        </div>
+    </div>
+</body>
+</html>

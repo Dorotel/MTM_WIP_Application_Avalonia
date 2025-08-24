@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-InventoryTabViewModel - The Inventory Control Station</title>
+    <meta name="description" content="Plain English explanation of InventoryTabViewModel - The Inventory Control Station in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, InventoryTabViewModel, inventory control, form management, plain english">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../../assets/css/responsive.css">
+    
+    <!-- FileDefinitions PlainEnglish Styling -->
+    <style>
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-gold-dark: #DAA520;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-purple: #4B45ED;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+            backdrop-filter: blur(10px);
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, rgba(75, 69, 237, 0.1) 0%, rgba(186, 69, 237, 0.1) 100%);
+            border: 1px solid var(--mtm-purple);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .analogy-box::before {
+            content: "🎛️";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--mtm-black);
+            padding: 0 10px;
+            font-size: 1.5em;
+        }
+
+        .workflow-step {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid var(--mtm-gold);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 12px 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--mtm-gold);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 215, 0, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .status-badge {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 1rem;
+        }
+
+        h1, h2, h3 {
+            color: var(--mtm-gold);
+            margin-top: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--mtm-gold);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-button {
+                display: block;
+                margin: 0.5rem 0;
+                min-width: auto;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-reference navigation -->
+        <div class="cross-reference-nav">
+            <h3>📋 Quick Navigation</h3>
+            <a href="../../Technical/FileDefinitions/ViewModels/FileDefinitions-InventoryTabViewModel.html" class="nav-button">🔧 Technical View</a>
+            <a href="FileDefinitions-AddItemViewModel.html" class="nav-button">📋 Add Item</a>
+            <a href="../../index.html" class="nav-button">📚 Documentation Home</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="header">
+            <h1>🎛️ InventoryTabViewModel</h1>
+            <p><strong>The Inventory Control Station</strong></p>
+            <p>MTM WIP Application Component <span class="status-badge">Complex Form Management</span></p>
+        </div>
+
+        <!-- Real-World Manufacturing Analogy -->
+        <div class="analogy-box">
+            <h2>🏭 Manufacturing Floor Analogy</h2>
+            <p><strong>Think of InventoryTabViewModel as the "Inventory Control Station"</strong> - the sophisticated workstation where experienced inventory managers handle complex inventory operations with multiple validation checks and automation features.</p>
+            
+            <div class="workflow-step">
+                <strong>🎛️ The Control Station Features:</strong>
+                <ul>
+                    <li><strong>Multiple Input Panels:</strong> Comprehensive forms with dropdown menus for parts, operations, and locations</li>
+                    <li><strong>Smart Validation:</strong> Real-time checks that prevent invalid entries before they reach the system</li>
+                    <li><strong>Quick Integration:</strong> Connects with Quick Buttons for rapid form population</li>
+                    <li><strong>Auto-Reset:</strong> Smart form clearing with soft/hard reset options for efficiency</li>
+                    <li><strong>Progress Tracking:</strong> Visual feedback and version information for system monitoring</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- What This Component Does -->
+        <div class="content-section">
+            <h2>🎯 What This Component Does</h2>
+            <p>InventoryTabViewModel is the <strong>primary inventory management interface</strong> in the MTM system. It provides a comprehensive form-based approach to inventory operations with advanced validation and automation features.</p>
+
+            <div class="highlight">
+                💡 <strong>Key Principle:</strong> This ViewModel uses reactive programming patterns to provide real-time validation and seamless integration with other MTM components like Quick Buttons.
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>📝 Form Management</h4>
+                    <p>Comprehensive input fields for Part ID, Operation, Location, Quantity, and Notes with real-time validation</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚡ Quick Integration</h4>
+                    <p>Receives input from Quick Buttons to auto-populate forms for frequently used inventory items</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔄 Smart Reset</h4>
+                    <p>Soft reset (clear form) or hard reset (refresh data) based on user needs and shift key detection</p>
+                </div>
+                <div class="feature-card">
+                    <h4>✅ Live Validation</h4>
+                    <p>Real-time form validation that enables/disables save button based on data completeness</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Workflow Process -->
+        <div class="content-section">
+            <h2>🔄 Advanced Workflow Process</h2>
+            
+            <div class="workflow-step">
+                <strong>Step 1: Data Loading</strong> - System loads current parts, operations, and locations from database
+            </div>
+            <div class="workflow-step">
+                <strong>Step 2: Form Population</strong> - User manually enters data OR Quick Button auto-populates form
+            </div>
+            <div class="workflow-step">
+                <strong>Step 3: Real-time Validation</strong> - System validates each field as user types or selects
+            </div>
+            <div class="workflow-step">
+                <strong>Step 4: Save Enable/Disable</strong> - Save button activates only when all required fields are valid
+            </div>
+            <div class="workflow-step">
+                <strong>Step 5: Transaction Processing</strong> - System submits validated data to inventory service
+            </div>
+            <div class="workflow-step">
+                <strong>Step 6: Smart Reset</strong> - Form clears appropriately for next transaction
+            </div>
+        </div>
+
+        <!-- MTM-Specific Business Rules -->
+        <div class="content-section">
+            <h2>🏢 MTM-Specific Features</h2>
+            
+            <div class="highlight">
+                🚨 <strong>Critical Integration:</strong> InventoryTabViewModel works seamlessly with Quick Buttons to pre-populate forms, reducing data entry time by up to 75% for common operations.
+            </div>
+
+            <h3>🔗 Key Integrations</h3>
+            <ul>
+                <li><strong>Quick Buttons Integration:</strong> Receives QuickButtonClickedMessage to auto-populate forms</li>
+                <li><strong>ApplicationStateService:</strong> Manages global state and real-time updates</li>
+                <li><strong>InventoryService:</strong> Handles all database operations through stored procedures</li>
+                <li><strong>Progress Service:</strong> Provides visual feedback during operations</li>
+            </ul>
+
+            <h3>🎯 Smart Reset Functionality</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🔄 Soft Reset (Normal)</h4>
+                    <p>Clears form fields but keeps dropdown data loaded. Perfect for entering multiple similar transactions.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔄 Hard Reset (Shift+Click)</h4>
+                    <p>Reloads all dropdown data from database and clears form. Use when data may have changed.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Who Uses This -->
+        <div class="content-section">
+            <h2>👥 Who Uses This Component</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🏭 Production Supervisors</h3>
+                    <p>Monitor and adjust inventory levels during production runs. Quick access to parts and operation data.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 Warehouse Staff</h3>
+                    <p>Process incoming and outgoing inventory with comprehensive validation to prevent errors.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Inventory Managers</h3>
+                    <p>Perform complex inventory adjustments with full audit trails and real-time validation.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore More -->
+        <div class="cross-reference-nav">
+            <h3>🔍 Explore More</h3>
+            <a href="../../Technical/FileDefinitions/ViewModels/FileDefinitions-InventoryTabViewModel.html" class="nav-button">🔧 View Technical Implementation</a>
+            <a href="FileDefinitions-QuickButtonsViewModel.html" class="nav-button">⚡ Quick Buttons Integration</a>
+            <a href="FileDefinitions-MainViewViewModel.html" class="nav-button">🎛️ Main View Control</a>
+            <a href="../Services/FileDefinitions-InventoryService.html" class="nav-button">🗃️ Inventory Service</a>
+        </div>
+    </div>
+</body>
+</html>

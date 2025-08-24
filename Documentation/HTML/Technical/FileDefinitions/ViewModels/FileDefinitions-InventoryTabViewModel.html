@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-InventoryTabViewModel - Technical Documentation</title>
+    <meta name="description" content="Technical documentation for InventoryTabViewModel - Complex Form Management ViewModel in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, InventoryTabViewModel, form management, reactive programming, technical documentation">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../../assets/css/responsive.css">
+    
+    <!-- FileDefinitions Technical Styling -->
+    <style>
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-tech-blue: #1a73e8;
+            --mtm-purple: #4B45ED;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--mtm-tech-blue) 0%, var(--mtm-purple) 100%);
+            color: var(--mtm-white);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.3);
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, #DAA520 100%);
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-tech-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .property-grid, .command-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .property-card, .command-card {
+            background: rgba(26, 115, 232, 0.1);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .property-card:hover, .command-card:hover {
+            background: rgba(26, 115, 232, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .file-info {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .file-path, .file-type {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        h1, h2, h3 {
+            color: var(--mtm-gold);
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--mtm-tech-blue);
+            padding-bottom: 0.5rem;
+            color: var(--mtm-tech-blue);
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: var(--mtm-gold);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-button {
+                display: block;
+                margin: 0.5rem 0;
+                min-width: auto;
+            }
+            
+            .property-grid, .command-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-reference navigation -->
+        <div class="cross-reference-nav">
+            <h3>📋 Quick Navigation</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-InventoryTabViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="FileDefinitions-QuickButtonsViewModel.html" class="nav-button">⚡ Quick Buttons</a>
+            <a href="../../index.html" class="nav-button">📚 Documentation Home</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="header">
+            <div class="header-content">
+                <div class="icon-container">
+                    <span class="file-icon" style="font-size: 3em;">🎛️</span>
+                </div>
+                <div class="header-text">
+                    <h1>InventoryTabViewModel.cs</h1>
+                    <p class="subtitle">Complex Form Management ViewModel</p>
+                </div>
+            </div>
+            <div class="file-info">
+                <span class="file-path">📁 ViewModels/InventoryTabViewModel.cs</span>
+                <span class="file-type">🎛️ Form Management ViewModel</span>
+            </div>
+        </div>
+
+        <!-- Technical Overview -->
+        <div class="content-section">
+            <h2>🔍 Technical Overview</h2>
+            <p><strong>InventoryTabViewModel</strong> is a complex ReactiveUI-based ViewModel that manages the primary inventory interface. It implements advanced reactive patterns for form validation, Quick Button integration, and real-time data management with sophisticated reset functionality.</p>
+
+            <div class="code-block">
+                <h3>📋 Class Definition</h3>
+                <pre><code>public class InventoryTabViewModel : BaseViewModel
+{
+    private readonly IInventoryService _inventoryService;
+    private readonly IApplicationStateService _applicationState;
+    private readonly IProgressService _progressService;
+    private readonly IMessenger _messenger;
+    
+    public InventoryTabViewModel(
+        IInventoryService inventoryService,
+        IApplicationStateService applicationState,
+        IProgressService progressService,
+        IMessenger messenger,
+        ILogger&lt;InventoryTabViewModel&gt; logger) : base(logger)
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Reactive Properties -->
+        <div class="content-section">
+            <h2>📋 Reactive Properties</h2>
+            
+            <div class="property-grid">
+                <div class="property-card">
+                    <h3>Form Input Properties</h3>
+                    <div class="code-block">
+                        <pre><code>// Observable form inputs
+[Reactive] public string SelectedPartId { get; set; }
+[Reactive] public string SelectedOperation { get; set; }
+[Reactive] public string SelectedLocation { get; set; }
+[Reactive] public int EnteredQuantity { get; set; }
+[Reactive] public string ItemNotes { get; set; }</code></pre>
+                    </div>
+                    <p>Form input fields with reactive property change notifications</p>
+                </div>
+                
+                <div class="property-card">
+                    <h3>Dropdown Collections</h3>
+                    <div class="code-block">
+                        <pre><code>// Observable collections for dropdowns
+[Reactive] public ObservableCollection&lt;string&gt; Parts { get; set; }
+[Reactive] public ObservableCollection&lt;string&gt; Operations { get; set; }
+[Reactive] public ObservableCollection&lt;string&gt; Locations { get; set; }</code></pre>
+                    </div>
+                    <p>Data collections bound to dropdown controls</p>
+                </div>
+                
+                <div class="property-card">
+                    <h3>UI State Properties</h3>
+                    <div class="code-block">
+                        <pre><code>// Computed UI state properties
+public ObservableAsPropertyHelper&lt;bool&gt; _canSave;
+public bool CanSave => _canSave.Value;
+
+public ObservableAsPropertyHelper&lt;string&gt; _versionInfo;
+public string VersionInfo => _versionInfo.Value;</code></pre>
+                    </div>
+                    <p>Computed properties derived from reactive streams</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reactive Commands -->
+        <div class="content-section">
+            <h2>⚡ Reactive Commands</h2>
+            
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>SaveCommand</h3>
+                    <div class="code-block">
+                        <pre><code>SaveCommand = ReactiveCommand.CreateFromTask(
+    SaveInventoryAsync,
+    this.WhenAnyValue(x => x.CanSave));</code></pre>
+                    </div>
+                    <p>Main save operation with reactive can-execute logic</p>
+                </div>
+                
+                <div class="command-card">
+                    <h3>ResetCommand</h3>
+                    <div class="code-block">
+                        <pre><code>ResetCommand = ReactiveCommand.CreateFromTask(
+    ResetFormAsync,
+    Observable.Return(true));</code></pre>
+                    </div>
+                    <p>Smart reset with shift-key detection for hard/soft reset</p>
+                </div>
+                
+                <div class="command-card">
+                    <h3>LoadDataCommand</h3>
+                    <div class="code-block">
+                        <pre><code>LoadDataCommand = ReactiveCommand.CreateFromTask(
+    LoadDropdownDataAsync,
+    Observable.Return(true));</code></pre>
+                    </div>
+                    <p>Loads dropdown data from database</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reactive Programming Implementation -->
+        <div class="content-section">
+            <h2>🔄 Reactive Programming Implementation</h2>
+            
+            <h3>Form Validation Stream</h3>
+            <div class="code-block">
+                <pre><code>// Complex reactive validation logic
+_canSave = this.WhenAnyValue(
+    x => x.SelectedPartId,
+    x => x.SelectedOperation,
+    x => x.SelectedLocation,
+    x => x.EnteredQuantity,
+    (partId, operation, location, quantity) =>
+        !string.IsNullOrWhiteSpace(partId) &&
+        !string.IsNullOrWhiteSpace(operation) &&
+        !string.IsNullOrWhiteSpace(location) &&
+        quantity > 0)
+    .ToProperty(this, x => x.CanSave);</code></pre>
+            </div>
+
+            <h3>Quick Button Integration</h3>
+            <div class="code-block">
+                <pre><code>// Message handling for Quick Button integration
+_messenger.Register&lt;QuickButtonClickedMessage&gt;(this, (recipient, message) =>
+{
+    // Auto-populate form from Quick Button data
+    SelectedPartId = message.PartId;
+    SelectedOperation = message.Operation;
+    SelectedLocation = message.Location;
+    EnteredQuantity = message.DefaultQuantity;
+    
+    Logger.LogInformation("Form auto-populated from Quick Button: {PartId}", message.PartId);
+});</code></pre>
+            </div>
+        </div>
+
+        <!-- Advanced Features -->
+        <div class="content-section">
+            <h2>🚧 Advanced Features</h2>
+            
+            <h3>Smart Reset Functionality</h3>
+            <div class="code-block">
+                <pre><code>private async Task ResetFormAsync()
+{
+    try
+    {
+        // Detect shift key for hard vs soft reset
+        bool isHardReset = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+        
+        if (isHardReset)
+        {
+            Logger.LogInformation("Performing hard reset - reloading all data");
+            await LoadDropdownDataAsync();
+        }
+        else
+        {
+            Logger.LogInformation("Performing soft reset - clearing form only");
+        }
+        
+        // Clear form fields
+        SelectedPartId = string.Empty;
+        SelectedOperation = string.Empty;
+        SelectedLocation = string.Empty;
+        EnteredQuantity = 0;
+        ItemNotes = string.Empty;
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Error during form reset");
+    }
+}</code></pre>
+            </div>
+
+            <h3>Progress Integration</h3>
+            <div class="code-block">
+                <pre><code>private async Task SaveInventoryAsync()
+{
+    try
+    {
+        _progressService.ShowProgress("Saving inventory item...");
+        
+        var result = await _inventoryService.SaveInventoryAsync(new InventoryRequest
+        {
+            PartId = SelectedPartId,
+            Operation = SelectedOperation,
+            Location = SelectedLocation,
+            Quantity = EnteredQuantity,
+            Notes = ItemNotes,
+            UserId = _applicationState.CurrentUser.Id
+        });
+        
+        if (result.IsSuccess)
+        {
+            _progressService.ShowSuccess("Inventory saved successfully");
+            await ResetFormAsync(); // Soft reset after successful save
+        }
+        else
+        {
+            _progressService.ShowError($"Save failed: {result.ErrorMessage}");
+        }
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Error saving inventory");
+        _progressService.ShowError("An error occurred while saving");
+    }
+    finally
+    {
+        _progressService.HideProgress();
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- MTM Business Rules -->
+        <div class="content-section">
+            <h2>📋 MTM Business Rules Implementation</h2>
+            
+            <div class="property-card">
+                <h3>🚨 Critical Implementation Rules</h3>
+                <ul>
+                    <li><strong>Reactive Validation:</strong> Form validation must be reactive and real-time</li>
+                    <li><strong>Quick Button Integration:</strong> Must support message-based form population</li>
+                    <li><strong>Smart Reset:</strong> Distinguish between soft reset (clear form) and hard reset (reload data)</li>
+                    <li><strong>Progress Feedback:</strong> Provide visual feedback for all async operations</li>
+                    <li><strong>Error Handling:</strong> Comprehensive error handling with user feedback</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Related Components -->
+        <div class="content-section">
+            <h2>🔗 Related Components</h2>
+            <div class="command-grid">
+                <div class="command-card">
+                    <h3>🔗 Service Dependencies</h3>
+                    <ul>
+                        <li><strong>IInventoryService:</strong> Core business logic</li>
+                        <li><strong>IApplicationStateService:</strong> Global state management</li>
+                        <li><strong>IProgressService:</strong> UI progress feedback</li>
+                        <li><strong>IMessenger:</strong> Quick Button communication</li>
+                    </ul>
+                </div>
+                <div class="command-card">
+                    <h3>📨 Message Contracts</h3>
+                    <ul>
+                        <li><strong>QuickButtonClickedMessage:</strong> Receives Quick Button data</li>
+                        <li><strong>InventoryUpdatedMessage:</strong> Notifies inventory changes</li>
+                        <li><strong>FormResetMessage:</strong> Handles external reset requests</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore More -->
+        <div class="cross-reference-nav">
+            <h3>🔍 Explore More</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-InventoryTabViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="FileDefinitions-QuickButtonsViewModel.html" class="nav-button">⚡ Quick Buttons ViewModel</a>
+            <a href="FileDefinitions-BaseViewModel.html" class="nav-button">🎯 Base ViewModel</a>
+            <a href="../Services/FileDefinitions-InventoryService.html" class="nav-button">🗃️ Inventory Service</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-RemoveItemViewModel - Technical Documentation</title>
+    <meta name="description" content="Technical documentation for RemoveItemViewModel - Inventory Removal ViewModel in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, RemoveItemViewModel, inventory removal, stock validation, technical documentation">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../../assets/css/responsive.css">
+    
+    <!-- FileDefinitions Technical Styling -->
+    <style>
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-tech-blue: #1a73e8;
+            --mtm-purple: #4B45ED;
+            --mtm-red: #dc3545;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--mtm-tech-blue) 0%, var(--mtm-purple) 100%);
+            color: var(--mtm-white);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.3);
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, #DAA520 100%);
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-tech-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .method-grid, .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .method-card, .property-card {
+            background: rgba(26, 115, 232, 0.1);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .method-card:hover, .property-card:hover {
+            background: rgba(26, 115, 232, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .validation-card {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid var(--mtm-red);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .file-info {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .file-path, .file-type {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        h1, h2, h3 {
+            color: var(--mtm-gold);
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--mtm-tech-blue);
+            padding-bottom: 0.5rem;
+            color: var(--mtm-tech-blue);
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: var(--mtm-gold);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-button {
+                display: block;
+                margin: 0.5rem 0;
+                min-width: auto;
+            }
+            
+            .method-grid, .property-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-reference navigation -->
+        <div class="cross-reference-nav">
+            <h3>📋 Quick Navigation</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-RemoveItemViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="FileDefinitions-AddItemViewModel.html" class="nav-button">📋 Add Item ViewModel</a>
+            <a href="../../index.html" class="nav-button">📚 Documentation Home</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="header">
+            <div class="header-content">
+                <div class="icon-container">
+                    <span class="file-icon" style="font-size: 3em;">📤</span>
+                </div>
+                <div class="header-text">
+                    <h1>RemoveItemViewModel.cs</h1>
+                    <p class="subtitle">Inventory Removal ViewModel Implementation</p>
+                </div>
+            </div>
+            <div class="file-info">
+                <span class="file-path">📁 ViewModels/RemoveItemViewModel.cs</span>
+                <span class="file-type">📤 Removal Management ViewModel</span>
+            </div>
+        </div>
+
+        <!-- Technical Overview -->
+        <div class="content-section">
+            <h2>🔍 Technical Overview</h2>
+            <p><strong>RemoveItemViewModel</strong> is a ReactiveUI-based ViewModel that inherits from <code>BaseViewModel</code> and manages inventory removal operations with comprehensive stock validation and consumption tracking. It implements reactive validation patterns to prevent over-consumption and ensure accurate inventory management.</p>
+
+            <div class="code-block">
+                <h3>📋 Class Definition</h3>
+                <pre><code>public class RemoveItemViewModel : BaseViewModel
+{
+    private readonly IInventoryService _inventoryService;
+    private readonly IApplicationStateService _applicationState;
+    private readonly IValidationService _validationService;
+    
+    public RemoveItemViewModel(
+        IInventoryService inventoryService,
+        IApplicationStateService applicationState,
+        IValidationService validationService,
+        ILogger&lt;RemoveItemViewModel&gt; logger) : base(logger)
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Stock Validation Implementation -->
+        <div class="content-section">
+            <h2>🔍 Stock Validation Implementation</h2>
+            
+            <h3>Real-time Stock Availability Checking</h3>
+            <div class="code-block">
+                <pre><code>// Reactive stock validation stream
+private ObservableAsPropertyHelper&lt;bool&gt; _canRemove;
+public bool CanRemove => _canRemove.Value;
+
+// Complex validation logic combining multiple factors
+_canRemove = this.WhenAnyValue(
+    x => x.SelectedPartId,
+    x => x.SelectedLocation,
+    x => x.EnteredQuantity,
+    x => x.CurrentStockLevel,
+    (partId, location, quantity, stockLevel) =>
+        !string.IsNullOrWhiteSpace(partId) &&
+        !string.IsNullOrWhiteSpace(location) &&
+        quantity > 0 &&
+        quantity <= stockLevel && // Critical: Cannot remove more than available
+        stockLevel > 0)
+    .ToProperty(this, x => x.CanRemove);</code></pre>
+            </div>
+
+            <h3>Dynamic Stock Level Updates</h3>
+            <div class="code-block">
+                <pre><code>// Auto-update stock levels when part/location changes
+this.WhenAnyValue(x => x.SelectedPartId, x => x.SelectedLocation)
+    .Where(tuple => !string.IsNullOrWhiteSpace(tuple.Item1) && 
+                    !string.IsNullOrWhiteSpace(tuple.Item2))
+    .SelectMany(async tuple => await GetCurrentStockAsync(tuple.Item1, tuple.Item2))
+    .ObserveOn(RxApp.MainThreadScheduler)
+    .Subscribe(stockLevel => CurrentStockLevel = stockLevel)
+    .DisposeWith(Disposables);</code></pre>
+            </div>
+        </div>
+
+        <!-- Service Integration -->
+        <div class="content-section">
+            <h2>🔗 Service Integration</h2>
+            
+            <h3>Inventory Service Integration</h3>
+            <div class="code-block">
+                <pre><code>private async Task RemoveInventoryItemAsync()
+{
+    try
+    {
+        // Pre-validation before attempting removal
+        var validationResult = await _validationService.ValidateRemovalAsync(new RemovalValidationRequest
+        {
+            PartId = SelectedPartId,
+            Location = SelectedLocation,
+            RequestedQuantity = EnteredQuantity,
+            Operation = SelectedOperation
+        });
+
+        if (!validationResult.IsValid)
+        {
+            Logger.LogWarning("Removal validation failed: {Errors}", 
+                string.Join(", ", validationResult.Errors));
+            return;
+        }
+
+        // Execute removal operation
+        var result = await _inventoryService.RemoveItemAsync(new RemoveItemRequest
+        {
+            PartId = SelectedPartId,
+            Operation = SelectedOperation, // Workflow step, not transaction indicator
+            Quantity = EnteredQuantity,
+            Location = SelectedLocation,
+            TransactionType = TransactionType.OUT, // Always OUT for removals
+            UserId = _applicationState.CurrentUser.Id,
+            ConsumptionReason = ConsumptionReason,
+            Notes = ItemNotes
+        });
+
+        if (result.IsSuccess)
+        {
+            Logger.LogInformation("Successfully removed {Quantity} of {PartId} from {Location}", 
+                EnteredQuantity, SelectedPartId, SelectedLocation);
+            
+            // Update local stock level
+            CurrentStockLevel -= EnteredQuantity;
+            await RefreshData();
+        }
+        else
+        {
+            Logger.LogError("Failed to remove inventory item: {ErrorMessage}", result.ErrorMessage);
+        }
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Error removing inventory item");
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Reactive Properties -->
+        <div class="content-section">
+            <h2>📋 Reactive Properties</h2>
+            
+            <div class="property-grid">
+                <div class="property-card">
+                    <h3>Form Input Properties</h3>
+                    <div class="code-block">
+                        <pre><code>[Reactive] public string SelectedPartId { get; set; }
+[Reactive] public string SelectedOperation { get; set; }
+[Reactive] public string SelectedLocation { get; set; }
+[Reactive] public int EnteredQuantity { get; set; }
+[Reactive] public string ConsumptionReason { get; set; }
+[Reactive] public string ItemNotes { get; set; }</code></pre>
+                    </div>
+                    <p>User input properties with reactive change notifications</p>
+                </div>
+                
+                <div class="property-card">
+                    <h3>Validation Properties</h3>
+                    <div class="code-block">
+                        <pre><code>[Reactive] public int CurrentStockLevel { get; set; }
+[Reactive] public bool IsStockAvailable { get; set; }
+[Reactive] public string ValidationMessage { get; set; }
+
+// Computed validation state
+public ObservableAsPropertyHelper&lt;bool&gt; _canRemove;
+public bool CanRemove => _canRemove.Value;</code></pre>
+                    </div>
+                    <p>Real-time validation state properties</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Critical Validation Rules -->
+        <div class="content-section">
+            <h2>⚠️ Critical Validation Rules</h2>
+            
+            <div class="validation-card">
+                <h3>🚨 Stock Availability Rules</h3>
+                <ul>
+                    <li><strong>Quantity Validation:</strong> EnteredQuantity ≤ CurrentStockLevel</li>
+                    <li><strong>Positive Quantity:</strong> EnteredQuantity > 0</li>
+                    <li><strong>Location Existence:</strong> SelectedLocation must have stock</li>
+                    <li><strong>Part Validation:</strong> SelectedPartId must exist in system</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+                <h3>Validation Implementation</h3>
+                <pre><code>private async Task&lt;bool&gt; ValidateRemovalAsync()
+{
+    // Check current stock level
+    var currentStock = await _inventoryService.GetStockLevelAsync(SelectedPartId, SelectedLocation);
+    
+    if (currentStock < EnteredQuantity)
+    {
+        ValidationMessage = $"Insufficient stock. Available: {currentStock}, Requested: {EnteredQuantity}";
+        return false;
+    }
+    
+    // Check if part exists at location
+    if (currentStock == 0)
+    {
+        ValidationMessage = $"No stock available for {SelectedPartId} at {SelectedLocation}";
+        return false;
+    }
+    
+    // Additional business rule validations
+    var businessValidation = await _validationService.ValidateBusinessRulesAsync(
+        SelectedPartId, SelectedOperation, ConsumptionReason);
+    
+    if (!businessValidation.IsValid)
+    {
+        ValidationMessage = businessValidation.ErrorMessage;
+        return false;
+    }
+    
+    ValidationMessage = string.Empty;
+    return true;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- MTM Business Rules -->
+        <div class="content-section">
+            <h2>📋 MTM Business Rules Implementation</h2>
+            
+            <div class="method-grid">
+                <div class="method-card">
+                    <h3>🚨 Critical Implementation Rules</h3>
+                    <ul>
+                        <li><strong>TransactionType.OUT:</strong> Always use OUT for inventory removals</li>
+                        <li><strong>Stock Validation:</strong> Prevent over-consumption with real-time checking</li>
+                        <li><strong>Operation Context:</strong> Operation numbers indicate workflow step, not transaction type</li>
+                        <li><strong>Consumption Tracking:</strong> Always include consumption reason and user context</li>
+                        <li><strong>Audit Logging:</strong> Comprehensive logging for all removal operations</li>
+                    </ul>
+                </div>
+                
+                <div class="method-card">
+                    <h3>⚠️ Validation Requirements</h3>
+                    <ul>
+                        <li><strong>Pre-flight Validation:</strong> Check stock before UI enables removal</li>
+                        <li><strong>Real-time Updates:</strong> Refresh stock levels when part/location changes</li>
+                        <li><strong>Business Rules:</strong> Validate consumption reason and operation context</li>
+                        <li><strong>User Authorization:</strong> Verify user permissions for removal operations</li>
+                        <li><strong>Audit Trail:</strong> Log all validation attempts and outcomes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Handling -->
+        <div class="content-section">
+            <h2>🛡️ Error Handling Implementation</h2>
+            
+            <div class="code-block">
+                <h3>Comprehensive Error Handling</h3>
+                <pre><code>// Error handling for reactive commands
+RemoveCommand = ReactiveCommand.CreateFromTask(
+    RemoveInventoryItemAsync,
+    this.WhenAnyValue(x => x.CanRemove));
+
+// Handle command execution errors
+RemoveCommand.ThrownExceptions
+    .ObserveOn(RxApp.MainThreadScheduler)
+    .Subscribe(ex =>
+    {
+        Logger.LogError(ex, "Error during inventory removal operation");
+        ValidationMessage = "An error occurred during removal. Please try again.";
+        
+        // Reset UI state on error
+        IsProcessing = false;
+    })
+    .DisposeWith(Disposables);
+
+// Handle validation errors
+this.WhenAnyValue(x => x.CanRemove)
+    .Where(canRemove => !canRemove && !string.IsNullOrEmpty(SelectedPartId))
+    .Subscribe(_ => UpdateValidationMessage())
+    .DisposeWith(Disposables);</code></pre>
+            </div>
+        </div>
+
+        <!-- Related Components -->
+        <div class="content-section">
+            <h2>🔗 Related Components</h2>
+            <div class="method-grid">
+                <div class="method-card">
+                    <h3>🔗 Service Dependencies</h3>
+                    <ul>
+                        <li><strong>IInventoryService:</strong> Core removal operations and stock queries</li>
+                        <li><strong>IValidationService:</strong> Business rule validation</li>
+                        <li><strong>IApplicationStateService:</strong> User context and session management</li>
+                        <li><strong>ILogger:</strong> Audit logging and error tracking</li>
+                    </ul>
+                </div>
+                <div class="method-card">
+                    <h3>📊 Related ViewModels</h3>
+                    <ul>
+                        <li><strong>AddItemViewModel:</strong> Opposite operation (adding inventory)</li>
+                        <li><strong>TransferItemViewModel:</strong> Movement between locations</li>
+                        <li><strong>InventoryTabViewModel:</strong> Parent container for inventory operations</li>
+                        <li><strong>TransactionHistoryViewModel:</strong> Displays removal audit trail</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore More -->
+        <div class="cross-reference-nav">
+            <h3>🔍 Explore More</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-RemoveItemViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="FileDefinitions-AddItemViewModel.html" class="nav-button">📋 Add Item ViewModel</a>
+            <a href="FileDefinitions-TransferItemViewModel.html" class="nav-button">🔄 Transfer Item ViewModel</a>
+            <a href="../Services/FileDefinitions-InventoryService.html" class="nav-button">🗃️ Inventory Service</a>
+        </div>
+    </div>
+</body>
+</html>
