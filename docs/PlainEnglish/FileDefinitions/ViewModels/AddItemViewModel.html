@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AddItemViewModel - The Warehouse Stock Addition Clerk</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+        .nav-section {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #FFD700;
+        }
+        .nav-button {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+        }
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #FFD700;
+        }
+        .highlight {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+        .code-block {
+            background: #2d2d2d;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        .workflow-step {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 3px solid #FFD700;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .analogy-box {
+            background: linear-gradient(135deg, #4a4a4a 0%, #6a6a6a 100%);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #FFD700;
+        }
+        h1, h2, h3 { color: #FFD700; }
+        .metric { 
+            background: rgba(255, 215, 0, 0.2); 
+            padding: 0.5rem; 
+            border-radius: 5px; 
+            display: inline-block; 
+            margin: 0.25rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .status-badge {
+            background: #28a745;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏭 AddItemViewModel - The Warehouse Stock Addition Clerk</h1>
+        <p><strong>MTM WIP Application Component</strong> | <span class="status-badge">Simple Addition ViewModel</span></p>
+    </div>
+
+    <div class="nav-section">
+        <h3>📋 Quick Navigation</h3>
+        <a href="../../../Technical/FileDefinitions/AddItemViewModel.html" class="nav-button" accesskey="t">🔧 Technical View (Alt+T)</a>
+        <a href="../../index.html" class="nav-button">📚 Documentation Home</a>
+        <a href="../../../index.html" class="nav-button">🏠 Main Documentation</a>
+    </div>
+
+    <div class="analogy-box">
+        <h2>🏭 Real-World Manufacturing Analogy</h2>
+        <p><strong>Think of AddItemViewModel as the "Warehouse Stock Addition Clerk"</strong> - the specialized employee who handles the simple but critical task of adding new inventory to the warehouse system.</p>
+        
+        <div class="workflow-step">
+            <strong>📋 The Addition Clerk's Responsibilities:</strong>
+            <ul>
+                <li><strong>Receiving Deliveries:</strong> Accepts new inventory shipments and logs them into the system</li>
+                <li><strong>Validation Checks:</strong> Ensures part numbers, quantities, and locations are correct before entry</li>
+                <li><strong>System Updates:</strong> Uses the warehouse management system to record new stock additions</li>
+                <li><strong>Documentation:</strong> Maintains records of all stock additions for audit trails</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>🎯 What This Component Does</h2>
+        <p>AddItemViewModel is the simple, focused component that handles <strong>adding new inventory items</strong> to the MTM warehouse system. It's designed to be straightforward and user-friendly for warehouse staff.</p>
+
+        <div class="highlight">
+            💡 <strong>Key Principle:</strong> This ViewModel follows the "single responsibility" pattern - it only handles adding items, nothing else. This keeps the interface clean and reduces training time for warehouse staff.
+        </div>
+
+        <h3>🔄 How Stock Addition Works</h3>
+        <div class="workflow-step">
+            <strong>Step 1:</strong> Warehouse clerk receives new inventory (finished parts, raw materials, or components)
+        </div>
+        <div class="workflow-step">
+            <strong>Step 2:</strong> Clerk opens the Add Item screen in the MTM system
+        </div>
+        <div class="workflow-step">
+            <strong>Step 3:</strong> System validates all inputs (part ID, quantity, location, operation number)
+        </div>
+        <div class="workflow-step">
+            <strong>Step 4:</strong> System records the addition with TransactionType.IN (always adding stock)
+        </div>
+        <div class="workflow-step">
+            <strong>Step 5:</strong> Inventory levels update automatically and audit trail is created
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>🏢 MTM-Specific Business Rules</h2>
+        
+        <div class="highlight">
+            🚨 <strong>Critical MTM Rule:</strong> AddItemViewModel ALWAYS uses TransactionType.IN because the user intent is adding stock to inventory, regardless of the operation number.
+        </div>
+
+        <h3>📊 Transaction Type Logic</h3>
+        <div class="code-block">
+            ✅ CORRECT: TransactionType = IN (User is adding stock)
+            ❌ WRONG: Determining TransactionType from Operation number
+            
+            // Operation numbers like "90", "100", "110" are workflow steps,
+            // NOT indicators of whether stock is being added or removed.
+        </div>
+
+        <h3>🔧 Integration Points</h3>
+        <ul>
+            <li><strong>InventoryService:</strong> Handles the actual database operations through stored procedures</li>
+            <li><strong>ApplicationStateService:</strong> Maintains current user context and session information</li>
+            <li><strong>Quick Buttons:</strong> Can populate this form for frequently added items</li>
+            <li><strong>Validation System:</strong> Ensures all required fields are present and valid</li>
+        </ul>
+    </div>
+
+    <div class="content-section">
+        <h2>👥 Who Uses This Component</h2>
+        <div class="metric">🏭 Warehouse Clerks</div>
+        <div class="metric">📦 Receiving Staff</div>
+        <div class="metric">🔧 Production Workers</div>
+        <div class="metric">📊 Inventory Managers</div>
+
+        <h3>📈 Business Value</h3>
+        <ul>
+            <li><strong>Accuracy:</strong> Reduces data entry errors with validation and simple interface</li>
+            <li><strong>Speed:</strong> Streamlined workflow for common task of adding inventory</li>
+            <li><strong>Traceability:</strong> Every addition creates an audit trail for compliance</li>
+            <li><strong>Integration:</strong> Works seamlessly with MTM's existing manufacturing processes</li>
+        </ul>
+    </div>
+
+    <div class="content-section">
+        <h2>⚙️ Technical Foundation</h2>
+        <p>This component is built using <strong>modern MVVM architecture</strong> with dependency injection, ensuring it's maintainable and testable:</p>
+
+        <div class="code-block">
+            🏗️ Architecture Pattern: MVVM (Model-View-ViewModel)
+            💉 Dependency Injection: Full constructor injection
+            🔄 Reactive Framework: ReactiveUI for modern UI patterns
+            📝 Logging: Comprehensive logging for troubleshooting
+            🛡️ Error Handling: Null checks and defensive programming
+        </div>
+
+        <h3>🔗 Service Dependencies</h3>
+        <ul>
+            <li><strong>IInventoryService:</strong> Handles all database operations via stored procedures</li>
+            <li><strong>IApplicationStateService:</strong> Provides current user and session context</li>
+            <li><strong>ILogger:</strong> Enables detailed troubleshooting and audit logging</li>
+        </ul>
+    </div>
+
+    <div class="nav-section">
+        <h3>🔍 Explore More</h3>
+        <a href="../../../Technical/FileDefinitions/AddItemViewModel.html" class="nav-button">🔧 View Technical Implementation</a>
+        <a href="InventoryTabViewModel.html" class="nav-button">📋 Related: Inventory Tab</a>
+        <a href="../Services/InventoryService.html" class="nav-button">🗃️ Related: Inventory Service</a>
+        <a href="MainViewViewModel.html" class="nav-button">🎛️ Related: Main View Control</a>
+    </div>
+</body>
+</html>

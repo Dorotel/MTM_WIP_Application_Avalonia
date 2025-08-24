@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransferItemViewModel - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔄 TransferItemViewModel - Technical Documentation</h1>
+            <div class="nav-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/TransferItemViewModel.html" class="nav-link plain-english">📖 Plain English Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Technical Overview -->
+            <section class="doc-section">
+                <h2>🔧 Technical Implementation</h2>
+                <div class="code-block">
+                    <h3>Namespace & Dependencies</h3>
+                    <pre><code>namespace MTM_WIP_Application_Avalonia.ViewModels
+using ReactiveUI;
+using Microsoft.Extensions.Logging;
+using MTM.Services.IInventoryService;
+using System.Reactive;
+using System.Reactive.Linq;</code></pre>
+                </div>
+
+                <div class="technical-details">
+                    <h3>Class Definition</h3>
+                    <ul>
+                        <li><strong>Base Class:</strong> BaseViewModel (ReactiveUI foundation)</li>
+                        <li><strong>Pattern:</strong> MVVM with Complex Reactive Logic</li>
+                        <li><strong>DI Dependencies:</strong> IInventoryService, ILogger&lt;TransferItemViewModel&gt;</li>
+                        <li><strong>Purpose:</strong> Handles inventory transfers between locations</li>
+                        <li><strong>Complexity:</strong> Dual-location validation with stock verification</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Observable Properties -->
+            <section class="doc-section">
+                <h2>🔄 Observable Properties</h2>
+                <div class="property-grid">
+                    <div class="property-item">
+                        <h4>PartId (string)</h4>
+                        <p><strong>Reactive Property:</strong> Part identification for transfer</p>
+                        <p><strong>Validation:</strong> Required, must exist in inventory system</p>
+                        <p><strong>UI Binding:</strong> TextBox with barcode scanning support</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>Operation (string)</h4>
+                        <p><strong>Reactive Property:</strong> Manufacturing operation workflow step</p>
+                        <p><strong>Range:</strong> "90", "100", "110", etc.</p>
+                        <p><strong>UI Binding:</strong> ComboBox with operation lookup</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>Quantity (int)</h4>
+                        <p><strong>Reactive Property:</strong> Amount to transfer</p>
+                        <p><strong>Validation:</strong> Positive integer, ≤ FromLocation stock</p>
+                        <p><strong>UI Binding:</strong> NumericUpDown with real-time validation</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>FromLocation (string)</h4>
+                        <p><strong>Reactive Property:</strong> Source location for transfer</p>
+                        <p><strong>Validation:</strong> Must exist, must have sufficient stock</p>
+                        <p><strong>UI Binding:</strong> ComboBox with stock level display</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>ToLocation (string)</h4>
+                        <p><strong>Reactive Property:</strong> Destination location for transfer</p>
+                        <p><strong>Validation:</strong> Must exist, must be different from FromLocation</p>
+                        <p><strong>UI Binding:</strong> ComboBox filtered to exclude FromLocation</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>FromLocationStock (int)</h4>
+                        <p><strong>Computed Property:</strong> Available stock at source location</p>
+                        <p><strong>Updates:</strong> When PartId, Operation, or FromLocation changes</p>
+                        <p><strong>UI Display:</strong> Real-time stock indicator</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>ToLocationStock (int)</h4>
+                        <p><strong>Computed Property:</strong> Current stock at destination</p>
+                        <p><strong>Purpose:</strong> Information display for transfer planning</p>
+                        <p><strong>UI Display:</strong> Destination stock level indicator</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>IsLoading (bool)</h4>
+                        <p><strong>Reactive Property:</strong> Transfer operation in progress</p>
+                        <p><strong>UI Impact:</strong> Disables form, shows progress</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>AvailableLocations (ObservableCollection)</h4>
+                        <p><strong>Collection Property:</strong> All valid transfer locations</p>
+                        <p><strong>Updates:</strong> Filtered based on current selections</p>
+                        <p><strong>UI Binding:</strong> ComboBox ItemsSource</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reactive Commands -->
+            <section class="doc-section">
+                <h2>⚡ Reactive Commands</h2>
+                <div class="command-grid">
+                    <div class="command-item">
+                        <h4>TransferStockCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>CanExecute:</strong> Complex multi-field validation</p>
+                        <p><strong>Implementation:</strong></p>
+                        <div class="code-block">
+                            <pre><code>TransferStockCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    try 
+    {
+        IsLoading = true;
+        
+        var result = await _inventoryService.TransferStockAsync(
+            partId: PartId,
+            operation: Operation,
+            quantity: Quantity, 
+            fromLocation: FromLocation,
+            toLocation: ToLocation,
+            userId: CurrentUserId);
+            
+        if (result.IsSuccess)
+        {
+            await RefreshStockLevels();
+            ClearForm();
+            ShowSuccessMessage($"Transferred {Quantity} units from {FromLocation} to {ToLocation}");
+        }
+        else
+        {
+            ShowErrorMessage(result.ErrorMessage);
+        }
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Transfer operation failed");
+        ShowErrorMessage("Transfer failed. Please try again.");
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+}, canExecuteTransfer);</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>SwapLocationsCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Swaps FromLocation and ToLocation values</p>
+                        <p><strong>Validation:</strong> Both locations must be selected</p>
+                        <p><strong>UI Enhancement:</strong> Provides quick location reversal</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>RefreshStockCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Updates stock levels for both locations</p>
+                        <p><strong>Trigger:</strong> Manual refresh or location changes</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ClearFormCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Resets all fields to default state</p>
+                        <p><strong>Always Enabled:</strong> No preconditions</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Complex Validation Logic -->
+            <section class="doc-section">
+                <h2>✅ Complex Validation Implementation</h2>
+                <div class="code-block">
+                    <h3>Multi-Field Reactive Validation</h3>
+                    <pre><code>// Transfer Command CanExecute Logic
+var canExecuteTransfer = this.WhenAnyValue(
+    vm => vm.PartId,
+    vm => vm.Operation,
+    vm => vm.Quantity,
+    vm => vm.FromLocation,
+    vm => vm.ToLocation,
+    vm => vm.FromLocationStock,
+    vm => vm.IsLoading,
+    (partId, operation, quantity, fromLoc, toLoc, fromStock, loading) =>
+        !string.IsNullOrWhiteSpace(partId) &&
+        !string.IsNullOrWhiteSpace(operation) &&
+        !string.IsNullOrWhiteSpace(fromLoc) &&
+        !string.IsNullOrWhiteSpace(toLoc) &&
+        fromLoc != toLoc &&  // Locations must be different
+        quantity > 0 &&
+        quantity <= fromStock &&
+        !loading);
+
+// Stock Level Updates
+this.WhenAnyValue(vm => vm.PartId, vm => vm.Operation, vm => vm.FromLocation)
+    .Where(x => !string.IsNullOrWhiteSpace(x.Item1) && 
+                !string.IsNullOrWhiteSpace(x.Item2) && 
+                !string.IsNullOrWhiteSpace(x.Item3))
+    .Throttle(TimeSpan.FromMilliseconds(500))
+    .ObserveOn(RxApp.MainThreadScheduler)
+    .Subscribe(async _ => await RefreshFromLocationStock());
+
+this.WhenAnyValue(vm => vm.PartId, vm => vm.Operation, vm => vm.ToLocation)
+    .Where(x => !string.IsNullOrWhiteSpace(x.Item1) && 
+                !string.IsNullOrWhiteSpace(x.Item2) && 
+                !string.IsNullOrWhiteSpace(x.Item3))
+    .Throttle(TimeSpan.FromMilliseconds(500))
+    .ObserveOn(RxApp.MainThreadScheduler)
+    .Subscribe(async _ => await RefreshToLocationStock());
+
+// Location Filtering
+this.WhenAnyValue(vm => vm.FromLocation)
+    .Subscribe(fromLoc => 
+    {
+        // Filter ToLocation options to exclude FromLocation
+        var filteredLocations = AllLocations
+            .Where(loc => loc != fromLoc)
+            .ToList();
+        AvailableToLocations.Clear();
+        AvailableToLocations.AddRange(filteredLocations);
+    });</code></pre>
+                </div>
+
+                <div class="validation-rules">
+                    <h3>Business Validation Rules</h3>
+                    <ul>
+                        <li><strong>Location Differentiation:</strong> FromLocation ≠ ToLocation</li>
+                        <li><strong>Stock Sufficiency:</strong> Quantity ≤ FromLocationStock</li>
+                        <li><strong>Location Existence:</strong> Both locations must be valid</li>
+                        <li><strong>Operation Validity:</strong> Operation must be valid workflow step</li>
+                        <li><strong>Part Existence:</strong> PartId must exist with stock at FromLocation</li>
+                        <li><strong>Positive Transfer:</strong> Quantity must be greater than 0</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Database Operations -->
+            <section class="doc-section">
+                <h2>🗄️ Database Integration</h2>
+                <div class="database-operations">
+                    <h3>Service Layer Calls</h3>
+                    <div class="code-block">
+                        <pre><code>// Transfer Stock Operation (via IInventoryService)
+await _inventoryService.TransferStockAsync(
+    partId: PartId,
+    operation: Operation,
+    quantity: Quantity,
+    fromLocation: FromLocation,
+    toLocation: ToLocation,
+    userId: CurrentUserId);
+
+// Stock Level Lookups
+var fromStock = await _inventoryService.GetStockLevelAsync(
+    PartId, Operation, FromLocation);
+var toStock = await _inventoryService.GetStockLevelAsync(
+    PartId, Operation, ToLocation);
+
+FromLocationStock = fromStock?.Quantity ?? 0;
+ToLocationStock = toStock?.Quantity ?? 0;
+
+// Location Master Lookup
+var locations = await _inventoryService.GetValidLocationsAsync();
+AvailableLocations.Clear();
+AvailableLocations.AddRange(locations);</code></pre>
+                    </div>
+
+                    <h3>Expected Stored Procedures</h3>
+                    <ul>
+                        <li><strong>inv_inventory_Transfer_Stock:</strong> Main transfer operation (atomic)</li>
+                        <li><strong>inv_inventory_Get_StockLevel:</strong> Individual location stock lookup</li>
+                        <li><strong>inv_locations_Get_Valid:</strong> Active location master</li>
+                        <li><strong>sys_audit_Log_Transfer:</strong> Transfer audit trail logging</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- UI Integration -->
+            <section class="doc-section">
+                <h2>🎨 Advanced UI Integration</h2>
+                <div class="ui-integration">
+                    <h3>Dual-Location Display Pattern</h3>
+                    <div class="code-block">
+                        <pre><code>&lt;!-- From Location with Stock Display --&gt;
+&lt;Grid ColumnDefinitions="*,Auto"&gt;
+    &lt;ComboBox Grid.Column="0" 
+              ItemsSource="{Binding AvailableLocations}"
+              SelectedItem="{Binding FromLocation}"
+              Watermark="Select source location"/&gt;
+    &lt;TextBlock Grid.Column="1" 
+               Text="{Binding FromLocationStock, StringFormat='Stock: {0}'}"
+               Classes="stock-indicator"/&gt;
+&lt;/Grid&gt;
+
+&lt;!-- Transfer Direction Indicator --&gt;
+&lt;StackPanel Orientation="Horizontal" HorizontalAlignment="Center"&gt;
+    &lt;TextBlock Text="{Binding FromLocation}" FontWeight="Bold"/&gt;
+    &lt;Path Data="M0,0 L10,5 L0,10" Fill="Blue" Margin="10,0"/&gt;
+    &lt;TextBlock Text="{Binding ToLocation}" FontWeight="Bold"/&gt;
+    &lt;Button Content="⇄" Command="{Binding SwapLocationsCommand}" 
+            ToolTip.Tip="Swap locations" Margin="10,0,0,0"/&gt;
+&lt;/StackPanel&gt;
+
+&lt;!-- Quantity with Max Validation --&gt;
+&lt;NumericUpDown Value="{Binding Quantity}"
+               Maximum="{Binding FromLocationStock}"
+               Minimum="1"
+               IsEnabled="{Binding !IsLoading}"/&gt;
+&lt;TextBlock Text="{Binding FromLocationStock, 
+                          StringFormat='Max available: {0} units'}"
+           Classes="validation-hint"/&gt;
+
+&lt;!-- Transfer Button --&gt;
+&lt;Button Content="Transfer Stock"
+        Command="{Binding TransferStockCommand}"
+        Classes="primary transfer"
+        IsVisible="{Binding !IsLoading}"/&gt;</code></pre>
+                    </div>
+
+                    <h3>Visual Transfer Feedback</h3>
+                    <ul>
+                        <li><strong>Stock Level Indicators:</strong> Color-coded stock levels (red/yellow/green)</li>
+                        <li><strong>Transfer Direction Arrow:</strong> Visual indication of transfer flow</li>
+                        <li><strong>Real-time Validation:</strong> Immediate feedback on quantity limits</li>
+                        <li><strong>Location Filtering:</strong> ToLocation automatically excludes FromLocation</li>
+                        <li><strong>Swap Button:</strong> Quick location reversal for bidirectional transfers</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Error Handling -->
+            <section class="doc-section">
+                <h2>🚨 Error Handling & Edge Cases</h2>
+                <div class="error-handling">
+                    <h3>Transfer-Specific Error Scenarios</h3>
+                    <ul>
+                        <li><strong>Insufficient Stock:</strong> FromLocation doesn't have enough inventory</li>
+                        <li><strong>Same Location Transfer:</strong> Attempt to transfer to same location</li>
+                        <li><strong>Invalid Locations:</strong> Source or destination location doesn't exist</li>
+                        <li><strong>Concurrent Transfers:</strong> Stock level changes during transfer</li>
+                        <li><strong>Database Transaction Failure:</strong> Partial transfer completion</li>
+                    </ul>
+
+                    <div class="code-block">
+                        <h3>Comprehensive Error Handling</h3>
+                        <pre><code>TransferStockCommand.ThrownExceptions
+    .Subscribe(ex =>
+    {
+        Logger.LogError(ex, "Transfer stock operation failed: {PartId} from {FromLocation} to {ToLocation}", 
+                       PartId, FromLocation, ToLocation);
+        
+        var userMessage = ex switch
+        {
+            InsufficientStockException => 
+                $"Only {FromLocationStock} units available at {FromLocation}",
+            SameLocationTransferException => 
+                "Cannot transfer to the same location",
+            InvalidLocationException invalidEx => 
+                $"Location '{invalidEx.LocationName}' is not valid",
+            ConcurrentModificationException => 
+                "Stock levels changed. Please refresh and try again.",
+            DatabaseTransactionException => 
+                "Transfer failed due to system error. Please verify stock levels.",
+            _ => "Transfer failed. Please check all fields and try again."
+        };
+        
+        ShowErrorMessage(userMessage);
+        IsLoading = false;
+    });</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance Considerations -->
+            <section class="doc-section">
+                <h2>⚡ Performance & Optimization</h2>
+                <div class="performance-notes">
+                    <h3>Reactive Performance Optimizations</h3>
+                    <ul>
+                        <li><strong>Throttled Stock Lookups:</strong> 500ms throttle prevents excessive database calls</li>
+                        <li><strong>Selective Updates:</strong> Only refresh stock when location/part changes</li>
+                        <li><strong>Location Caching:</strong> Location master cached for session duration</li>
+                        <li><strong>Debounced Validation:</strong> Real-time validation without overwhelming UI</li>
+                        <li><strong>Background Refresh:</strong> Stock updates on background thread</li>
+                    </ul>
+
+                    <h3>Memory & Resource Management</h3>
+                    <ul>
+                        <li><strong>Collection Reuse:</strong> Location collections reused, not recreated</li>
+                        <li><strong>Subscription Cleanup:</strong> All reactive streams properly disposed</li>
+                        <li><strong>Command Lifecycle:</strong> Commands disposed with ViewModel</li>
+                        <li><strong>Event Weak References:</strong> Prevent memory leaks in event handling</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Integration Points -->
+            <section class="doc-section">
+                <h2>🔗 System Integration Points</h2>
+                <div class="integration-grid">
+                    <div class="integration-item">
+                        <h4>QuickButtonsViewModel</h4>
+                        <p>Receives pre-configured transfer operations</p>
+                        <p>Updates quick action patterns after successful transfers</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>InventoryTabViewModel</h4>
+                        <p>Coordinates with Add/Remove operations for workflow</p>
+                        <p>Manages tab state and transfer operation context</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>TransactionHistoryViewModel</h4>
+                        <p>Shows detailed transfer audit trail</p>
+                        <p>Refreshes automatically after transfer completion</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>InventoryViewModel</h4>
+                        <p>Reflects real-time inventory changes from transfers</p>
+                        <p>Provides transfer initiation from inventory grid</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>🔄 Technical Documentation | 🏭 MTM WIP Application | ⚡ Powered by Avalonia UI + ReactiveUI</p>
+            <div class="footer-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/TransferItemViewModel.html">📖 Plain English Version</a>
+                <a href="../../../Technical/index.html">📚 Technical Documentation Index</a>
+                <a href="../../../index.html">🏠 Documentation Home</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

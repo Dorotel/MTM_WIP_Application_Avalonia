@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MainViewModel.cs - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <style>
+        .method-signature { background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; font-family: 'Courier New', monospace; margin: 10px 0; }
+        .parameter-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        .parameter-table th, .parameter-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .parameter-table th { background-color: #f2f2f2; }
+        .nav-button { display: inline-block; padding: 8px 16px; margin: 5px; background: linear-gradient(45deg, #1a1a1a, #333); color: #FFD700; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .nav-button:hover { background: linear-gradient(45deg, #333, #555); }
+        .code-example { background: #1e1e1e; color: #dcdcdc; padding: 15px; border-radius: 5px; margin: 10px 0; overflow-x: auto; }
+        .dependency-highlight { background: #4CAF50; color: white; padding: 5px; border-radius: 3px; }
+        .reactive-pattern { background: #9C27B0; color: white; padding: 5px; border-radius: 3px; }
+        .mvvm-architecture { background: #FF5722; color: white; padding: 8px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>MainViewModel.cs</h1>
+            <h2>Technical Implementation Documentation</h2>
+            <p class="subtitle">Central coordination ViewModel with full dependency injection and ReactiveUI integration</p>
+            
+            <div class="navigation-section">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/MainViewModel.html" class="nav-button">🎯 Plain English View (Alt+P)</a>
+                <a href="../../index.html" class="nav-button">📂 Back to Technical Index</a>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <div class="summary-box">
+                <h3>🔧 Technical Overview</h3>
+                <p>Primary ViewModel class implementing MVVM pattern with ReactiveUI, comprehensive dependency injection, and centralized application coordination. Serves as the main entry point for UI logic and orchestrates interaction between navigation, application state, and business services.</p>
+            </div>
+
+            <div class="mvvm-architecture">
+                🏗️ MVVM ARCHITECTURE: MainViewModel serves as the primary View-Model coordinator, implementing ReactiveUI patterns with full separation of concerns
+            </div>
+
+            <div class="section">
+                <h3>📦 Class Definition</h3>
+                
+                <div class="method-signature">
+                    public class MainViewModel : BaseViewModel
+                    {
+                        private readonly INavigationService _navigationService;
+                        private readonly IApplicationStateService _applicationState;
+                        private readonly MTM.Services.IInventoryService _inventoryService;
+                    }
+                </div>
+
+                <div class="dependency-highlight">Dependency Injection Pattern</div>
+                <p>Uses constructor injection with interface-based dependencies for loose coupling and testability.</p>
+            </div>
+
+            <div class="section">
+                <h3>🔧 Constructor & Dependency Injection</h3>
+
+                <div class="method-signature">
+                    public MainViewModel(
+                        INavigationService navigationService,
+                        IApplicationStateService applicationState,
+                        MTM.Services.IInventoryService inventoryService,
+                        ILogger&lt;MainViewModel&gt; logger) : base(logger)
+                </div>
+
+                <table class="parameter-table">
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>navigationService</td>
+                        <td>INavigationService</td>
+                        <td>Handles screen transitions and UI navigation</td>
+                    </tr>
+                    <tr>
+                        <td>applicationState</td>
+                        <td>IApplicationStateService</td>
+                        <td>Manages global application state and user session</td>
+                    </tr>
+                    <tr>
+                        <td>inventoryService</td>
+                        <td>MTM.Services.IInventoryService</td>
+                        <td>Provides inventory business logic and data operations</td>
+                    </tr>
+                    <tr>
+                        <td>logger</td>
+                        <td>ILogger&lt;MainViewModel&gt;</td>
+                        <td>Structured logging for debugging and monitoring</td>
+                    </tr>
+                </table>
+
+                <h4>Constructor Implementation</h4>
+                <div class="code-example">
+<pre>
+public MainViewModel(
+    INavigationService navigationService,
+    IApplicationStateService applicationState,
+    MTM.Services.IInventoryService inventoryService,
+    ILogger&lt;MainViewModel&gt; logger) : base(logger)
+{
+    _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+    _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+    _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
+
+    Logger.LogInformation("MainViewModel initialized with dependency injection");
+
+    // Initialize commands and setup
+    InitializeCommands();
+}
+</pre>
+                </div>
+
+                <p><strong>Null Safety:</strong> All dependencies validated with ArgumentNullException for fail-fast behavior.</p>
+            </div>
+
+            <div class="section">
+                <h3>⚡ Command Initialization</h3>
+
+                <h4>InitializeCommands()</h4>
+                <div class="method-signature">
+                    private void InitializeCommands()
+                    {
+                        // TODO: Initialize ReactiveCommands with injected services
+                    }
+                </div>
+
+                <p><strong>Purpose:</strong> Sets up all ReactiveCommands and reactive properties for UI binding</p>
+
+                <div class="reactive-pattern">ReactiveUI Pattern</div>
+                <p>Commands will be implemented using ReactiveCommand for async support and automatic UI updates.</p>
+
+                <h4>Expected Command Structure</h4>
+                <div class="code-example">
+<pre>
+// Example ReactiveCommand implementation pattern
+public ReactiveCommand&lt;Unit, Unit&gt; NavigateToInventoryCommand { get; private set; }
+public ReactiveCommand&lt;Unit, Unit&gt; RefreshApplicationStateCommand { get; private set; }
+public ReactiveCommand&lt;string, Unit&gt; NavigateToScreenCommand { get; private set; }
+
+private void InitializeCommands()
+{
+    // Navigation commands
+    NavigateToInventoryCommand = ReactiveCommand.CreateFromTask(async () =>
+    {
+        await _navigationService.NavigateToAsync&lt;InventoryViewModel&gt;();
+    });
+
+    // Application state commands
+    RefreshApplicationStateCommand = ReactiveCommand.CreateFromTask(async () =>
+    {
+        await _applicationState.RefreshAsync();
+    });
+
+    // Parameterized navigation
+    NavigateToScreenCommand = ReactiveCommand.CreateFromTask&lt;string&gt;(async screenName =>
+    {
+        await _navigationService.NavigateToScreenAsync(screenName);
+    });
+
+    // Error handling for all commands
+    Observable.Merge(
+        NavigateToInventoryCommand.ThrownExceptions,
+        RefreshApplicationStateCommand.ThrownExceptions,
+        NavigateToScreenCommand.ThrownExceptions)
+    .Subscribe(ex =>
+    {
+        Logger.LogError(ex, "Command execution failed in MainViewModel");
+        // Handle error appropriately
+    });
+}
+</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>🏗️ Architecture Patterns</h3>
+
+                <h4>MVVM Implementation</h4>
+                <ul>
+                    <li><strong>View Independence:</strong> No direct references to UI elements or controls</li>
+                    <li><strong>Data Binding:</strong> Properties and commands exposed for XAML binding</li>
+                    <li><strong>Command Pattern:</strong> All user actions handled through ReactiveCommands</li>
+                    <li><strong>Property Notifications:</strong> Automatic UI updates via ReactiveUI property changes</li>
+                </ul>
+
+                <h4>Dependency Injection Benefits</h4>
+                <ul>
+                    <li><strong>Testability:</strong> Easy to mock dependencies for unit testing</li>
+                    <li><strong>Loose Coupling:</strong> Depends on interfaces, not concrete implementations</li>
+                    <li><strong>Extensibility:</strong> New services can be added without changing constructor signature (via DI container)</li>
+                    <li><strong>Configuration:</strong> Service behavior can be modified via DI container configuration</li>
+                </ul>
+
+                <h4>Reactive Programming Integration</h4>
+                <div class="code-example">
+<pre>
+// Reactive property patterns (when implemented)
+private string _currentScreen = string.Empty;
+public string CurrentScreen
+{
+    get => _currentScreen;
+    set => this.RaiseAndSetIfChanged(ref _currentScreen, value);
+}
+
+// Derived properties using OAPH (ObservableAsPropertyHelper)
+private readonly ObservableAsPropertyHelper&lt;bool&gt; _isInventoryAccessible;
+public bool IsInventoryAccessible => _isInventoryAccessible.Value;
+
+// In constructor/initialization:
+_isInventoryAccessible = _applicationState
+    .WhenAnyValue(state => state.CurrentUser)
+    .Select(user => user?.HasInventoryAccess ?? false)
+    .ToProperty(this, vm => vm.IsInventoryAccessible, initialValue: false);
+</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>🔗 Service Integration Patterns</h3>
+
+                <h4>Navigation Service Integration</h4>
+                <div class="code-example">
+<pre>
+// Type-safe navigation to specific ViewModels
+await _navigationService.NavigateToAsync&lt;InventoryViewModel&gt;();
+await _navigationService.NavigateToAsync&lt;UserManagementViewModel&gt;();
+
+// Parameterized navigation
+await _navigationService.NavigateToAsync&lt;TransactionHistoryViewModel&gt;(
+    new { PartId = selectedPartId });
+
+// Back navigation
+await _navigationService.GoBackAsync();
+</pre>
+                </div>
+
+                <h4>Application State Integration</h4>
+                <div class="code-example">
+<pre>
+// Current user access
+var currentUser = _applicationState.CurrentUser;
+
+// Reactive subscriptions to state changes
+_applicationState.WhenAnyValue(state => state.CurrentUser)
+    .Subscribe(user => 
+    {
+        Logger.LogInformation("Current user changed: {Username}", user?.UserName ?? "None");
+        // Update UI accordingly
+    });
+
+// Connection status monitoring
+_applicationState.WhenAnyValue(state => state.IsConnected)
+    .Subscribe(connected =>
+    {
+        Logger.LogInformation("Connection status changed: {Status}", connected);
+        // Update UI connection indicators
+    });
+</pre>
+                </div>
+
+                <h4>Inventory Service Integration</h4>
+                <div class="code-example">
+<pre>
+// Inventory operations through service layer
+var inventoryResult = await _inventoryService.GetInventoryByPartIdAsync(partId);
+if (inventoryResult.IsSuccess)
+{
+    var inventory = inventoryResult.Value;
+    // Process inventory data
+}
+else
+{
+    Logger.LogError("Failed to retrieve inventory: {Error}", inventoryResult.ErrorMessage);
+    // Handle error
+}
+</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>📊 BaseViewModel Inheritance</h3>
+
+                <h4>Inherited Functionality</h4>
+                <ul>
+                    <li><strong>Logging Infrastructure:</strong> ILogger&lt;T&gt; instance for structured logging</li>
+                    <li><strong>Error Handling:</strong> Common error handling patterns and methods</li>
+                    <li><strong>ReactiveObject:</strong> Property change notification and reactive programming support</li>
+                    <li><strong>Disposal Pattern:</strong> Proper resource cleanup and subscription disposal</li>
+                </ul>
+
+                <h4>Base Class Integration</h4>
+                <div class="code-example">
+<pre>
+// Inherits from BaseViewModel which provides:
+public abstract class BaseViewModel : ReactiveObject, IDisposable
+{
+    protected ILogger Logger { get; }
+    
+    protected BaseViewModel(ILogger logger)
+    {
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+    
+    // Common functionality available to MainViewModel:
+    // - Error handling methods
+    // - Logging helpers
+    // - Resource disposal
+    // - Reactive programming utilities
+}
+</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>🧪 Testing Considerations</h3>
+
+                <h4>Unit Testing Support</h4>
+                <ul>
+                    <li><strong>Mockable Dependencies:</strong> All dependencies are interfaces that can be mocked</li>
+                    <li><strong>Parameterless Constructor:</strong> Not provided - requires DI container or manual injection for testing</li>
+                    <li><strong>Testable Commands:</strong> ReactiveCommands can be tested independently</li>
+                    <li><strong>Observable Testing:</strong> ReactiveUI provides testing utilities for reactive patterns</li>
+                </ul>
+
+                <h4>Test Example Structure</h4>
+                <div class="code-example">
+<pre>
+[Test]
+public void MainViewModel_Constructor_InitializesCorrectly()
+{
+    // Arrange
+    var mockNavigation = new Mock&lt;INavigationService&gt;();
+    var mockAppState = new Mock&lt;IApplicationStateService&gt;();
+    var mockInventory = new Mock&lt;MTM.Services.IInventoryService&gt;();
+    var mockLogger = new Mock&lt;ILogger&lt;MainViewModel&gt;&gt;();
+
+    // Act
+    var viewModel = new MainViewModel(
+        mockNavigation.Object,
+        mockAppState.Object,
+        mockInventory.Object,
+        mockLogger.Object);
+
+    // Assert
+    Assert.NotNull(viewModel);
+    mockLogger.Verify(logger => logger.LogInformation(
+        It.Is&lt;string&gt;(s => s.Contains("MainViewModel initialized"))), 
+        Times.Once);
+}
+</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>⚡ Performance Considerations</h3>
+                <ul>
+                    <li><strong>Lazy Initialization:</strong> Commands and properties initialized on-demand where appropriate</li>
+                    <li><strong>Reactive Subscriptions:</strong> Proper disposal of reactive subscriptions to prevent memory leaks</li>
+                    <li><strong>Service Caching:</strong> Dependencies injected once and reused throughout ViewModel lifetime</li>
+                    <li><strong>Async Commands:</strong> Non-blocking operations using ReactiveCommand.CreateFromTask</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>🔧 MTM Integration Guidelines</h3>
+                <ul>
+                    <li><strong>Service Registration:</strong> Must be registered in DI container as Transient (new instance per request)</li>
+                    <li><strong>Interface Dependencies:</strong> All dependencies use MTM-defined interfaces</li>
+                    <li><strong>Error Handling:</strong> All operations should use MTM Result&lt;T&gt; pattern where applicable</li>
+                    <li><strong>Logging Standards:</strong> Follows MTM logging conventions with structured logging</li>
+                    <li><strong>Business Logic Separation:</strong> No business logic in ViewModel - delegates to services</li>
+                </ul>
+            </div>
+
+            <div class="keyboard-shortcuts">
+                <h3>⌨️ Quick Navigation</h3>
+                <ul>
+                    <li><strong>Alt + P:</strong> Switch to Plain English Documentation</li>
+                    <li><strong>Alt + T:</strong> Stay on Technical View</li>
+                    <li><strong>Ctrl + F:</strong> Search this page</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                window.location.href = '../../../PlainEnglish/FileDefinitions/ViewModels/MainViewModel.html';
+            } else if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                // Already on Technical view
+            }
+        });
+    </script>
+</body>
+</html>

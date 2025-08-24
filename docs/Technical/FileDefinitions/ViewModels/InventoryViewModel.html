@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InventoryViewModel - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📦 InventoryViewModel - Technical Documentation</h1>
+            <div class="nav-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/InventoryViewModel.html" class="nav-link plain-english">📖 Plain English Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Technical Overview -->
+            <section class="doc-section">
+                <h2>🔧 Technical Implementation</h2>
+                <div class="code-block">
+                    <h3>Namespace & Dependencies</h3>
+                    <pre><code>namespace MTM_WIP_Application_Avalonia.ViewModels
+using ReactiveUI;
+using Microsoft.Extensions.Logging;
+using MTM.Services.IInventoryService;
+using MTM_WIP_Application_Avalonia.Services.IApplicationStateService;
+using System.Collections.ObjectModel;
+using System.Reactive;</code></pre>
+                </div>
+
+                <div class="technical-details">
+                    <h3>Class Definition</h3>
+                    <ul>
+                        <li><strong>Base Class:</strong> BaseViewModel (ReactiveUI foundation)</li>
+                        <li><strong>Pattern:</strong> MVVM with DataGrid Binding and Filtering</li>
+                        <li><strong>DI Dependencies:</strong> IInventoryService, IApplicationStateService, ILogger</li>
+                        <li><strong>Purpose:</strong> Comprehensive inventory display and management interface</li>
+                        <li><strong>Complexity:</strong> High - complex filtering, sorting, and data virtualization</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Observable Properties -->
+            <section class="doc-section">
+                <h2>🔄 Observable Properties</h2>
+                <div class="property-grid">
+                    <div class="property-item">
+                        <h4>InventoryItems (ObservableCollection)</h4>
+                        <p><strong>Collection Property:</strong> Main inventory data source</p>
+                        <p><strong>Type:</strong> ObservableCollection&lt;InventoryItemViewModel&gt;</p>
+                        <p><strong>UI Binding:</strong> DataGrid ItemsSource</p>
+                        <p><strong>Features:</strong> Supports filtering, sorting, virtualization</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>FilteredItems (ReadOnlyObservableCollection)</h4>
+                        <p><strong>Derived Property:</strong> Filtered view of InventoryItems</p>
+                        <p><strong>Updates:</strong> When filters or search criteria change</p>
+                        <p><strong>UI Binding:</strong> Actual DataGrid display source</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>SearchText (string)</h4>
+                        <p><strong>Reactive Property:</strong> Global search filter</p>
+                        <p><strong>Searches:</strong> PartId, Description, Location</p>
+                        <p><strong>UI Binding:</strong> SearchBox Text property</p>
+                        <p><strong>Debounced:</strong> 300ms delay to prevent excessive filtering</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>OperationFilter (string)</h4>
+                        <p><strong>Reactive Property:</strong> Filter by operation number</p>
+                        <p><strong>Values:</strong> "All", "90", "100", "110", etc.</p>
+                        <p><strong>UI Binding:</strong> ComboBox SelectedItem</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>LocationFilter (string)</h4>
+                        <p><strong>Reactive Property:</strong> Filter by location</p>
+                        <p><strong>Source:</strong> Populated from available locations</p>
+                        <p><strong>UI Binding:</strong> ComboBox with location lookup</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>StockLevelFilter (StockLevelType)</h4>
+                        <p><strong>Reactive Property:</strong> Filter by stock status</p>
+                        <p><strong>Values:</strong> All, Critical, Low, Good, Excess</p>
+                        <p><strong>UI Binding:</strong> ComboBox with visual indicators</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>SelectedItem (InventoryItemViewModel)</h4>
+                        <p><strong>Reactive Property:</strong> Currently selected grid row</p>
+                        <p><strong>UI Binding:</strong> DataGrid SelectedItem</p>
+                        <p><strong>Context Actions:</strong> Enables item-specific operations</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>IsLoading (bool)</h4>
+                        <p><strong>Reactive Property:</strong> Data loading indicator</p>
+                        <p><strong>UI Impact:</strong> Shows progress bar, disables controls</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>TotalItems (int)</h4>
+                        <p><strong>Computed Property:</strong> Count of all inventory items</p>
+                        <p><strong>UI Display:</strong> Status bar information</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>FilteredCount (int)</h4>
+                        <p><strong>Computed Property:</strong> Count of filtered/visible items</p>
+                        <p><strong>UI Display:</strong> "Showing X of Y items" indicator</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reactive Commands -->
+            <section class="doc-section">
+                <h2>⚡ Reactive Commands</h2>
+                <div class="command-grid">
+                    <div class="command-item">
+                        <h4>LoadInventoryCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Loads all inventory data from database</p>
+                        <p><strong>Implementation:</strong></p>
+                        <div class="code-block">
+                            <pre><code>LoadInventoryCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    try
+    {
+        IsLoading = true;
+        
+        var inventoryData = await _inventoryService.GetAllInventoryAsync();
+        
+        InventoryItems.Clear();
+        foreach (var item in inventoryData)
+        {
+            InventoryItems.Add(new InventoryItemViewModel(item));
+        }
+        
+        await LoadFiltersAsync();
+        Logger.LogInformation("Loaded {Count} inventory items", InventoryItems.Count);
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Failed to load inventory data");
+        throw;
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+});</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>RefreshCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Refreshes inventory data from database</p>
+                        <p><strong>Maintains:</strong> Current filters and selection state</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ClearFiltersCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Resets all filters to default values</p>
+                        <p><strong>Always Enabled:</strong> No preconditions</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ExportInventoryCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Exports current filtered view to CSV/Excel</p>
+                        <p><strong>Includes:</strong> Applies current filters to export</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>AddStockCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;InventoryItemViewModel, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Quick add stock for selected item</p>
+                        <p><strong>Navigation:</strong> Opens AddItemViewModel with pre-filled data</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>RemoveStockCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;InventoryItemViewModel, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Quick remove stock for selected item</p>
+                        <p><strong>Validation:</strong> Checks sufficient stock before proceeding</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>TransferStockCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;InventoryItemViewModel, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Quick transfer stock for selected item</p>
+                        <p><strong>Navigation:</strong> Opens TransferItemViewModel with pre-filled data</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ViewHistoryCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;InventoryItemViewModel, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Shows transaction history for selected item</p>
+                        <p><strong>Filter:</strong> Filters history by PartId + Operation + Location</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Advanced Filtering System -->
+            <section class="doc-section">
+                <h2>🔍 Advanced Filtering Implementation</h2>
+                <div class="code-block">
+                    <h3>Reactive Filtering Pipeline</h3>
+                    <pre><code>// Multi-field Reactive Filtering
+private void SetupFiltering()
+{
+    var filterObservable = this.WhenAnyValue(
+        vm => vm.SearchText,
+        vm => vm.OperationFilter,
+        vm => vm.LocationFilter,
+        vm => vm.StockLevelFilter,
+        (search, operation, location, stockLevel) => 
+            new FilterCriteria(search, operation, location, stockLevel))
+        .Throttle(TimeSpan.FromMilliseconds(300))
+        .ObserveOn(RxApp.MainThreadScheduler);
+    
+    filterObservable.Subscribe(criteria => ApplyFilters(criteria));
+}
+
+// Filter Application Logic
+private void ApplyFilters(FilterCriteria criteria)
+{
+    var filtered = InventoryItems.Where(item =>
+    {
+        // Text Search
+        if (!string.IsNullOrWhiteSpace(criteria.SearchText))
+        {
+            var searchLower = criteria.SearchText.ToLowerInvariant();
+            if (!item.PartId.ToLowerInvariant().Contains(searchLower) &&
+                !item.Description.ToLowerInvariant().Contains(searchLower) &&
+                !item.Location.ToLowerInvariant().Contains(searchLower))
+                return false;
+        }
+        
+        // Operation Filter
+        if (criteria.Operation != "All" && item.Operation != criteria.Operation)
+            return false;
+            
+        // Location Filter
+        if (criteria.Location != "All" && item.Location != criteria.Location)
+            return false;
+            
+        // Stock Level Filter
+        if (criteria.StockLevel != StockLevelType.All)
+        {
+            var itemStockLevel = GetStockLevelType(item.Quantity, item.MinimumStock, item.ReorderPoint);
+            if (itemStockLevel != criteria.StockLevel)
+                return false;
+        }
+        
+        return true;
+    });
+    
+    FilteredItems.Clear();
+    foreach (var item in filtered)
+    {
+        FilteredItems.Add(item);
+    }
+    
+    FilteredCount = FilteredItems.Count;
+}
+
+// Stock Level Classification
+private StockLevelType GetStockLevelType(int quantity, int minimum, int reorderPoint)
+{
+    if (quantity <= minimum) return StockLevelType.Critical;
+    if (quantity <= reorderPoint) return StockLevelType.Low;
+    if (quantity > reorderPoint * 3) return StockLevelType.Excess;
+    return StockLevelType.Good;
+}</code></pre>
+                </div>
+
+                <div class="filtering-features">
+                    <h3>Filter Capabilities</h3>
+                    <ul>
+                        <li><strong>Text Search:</strong> Searches across PartId, Description, and Location</li>
+                        <li><strong>Operation Filtering:</strong> Filter by specific workflow operations</li>
+                        <li><strong>Location Filtering:</strong> Show items from specific warehouse locations</li>
+                        <li><strong>Stock Level Filtering:</strong> Filter by stock status (Critical/Low/Good/Excess)</li>
+                        <li><strong>Composite Filtering:</strong> All filters work together simultaneously</li>
+                        <li><strong>Real-time Updates:</strong> Filters applied as user types with 300ms debounce</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Data Grid Integration -->
+            <section class="doc-section">
+                <h2>📊 DataGrid Integration</h2>
+                <div class="code-block">
+                    <h3>InventoryItemViewModel Structure</h3>
+                    <pre><code>public class InventoryItemViewModel : ReactiveObject
+{
+    public string PartId { get; set; }
+    public string Description { get; set; }
+    public string Operation { get; set; }
+    public string Location { get; set; }
+    public int Quantity { get; set; }
+    public int MinimumStock { get; set; }
+    public int ReorderPoint { get; set; }
+    public DateTime LastUpdated { get; set; }
+    public string LastUpdatedBy { get; set; }
+    
+    // Computed Properties
+    public StockLevelType StockLevel => GetStockLevel();
+    public string StockStatusText => GetStockStatusText();
+    public IBrush StockStatusBrush => GetStockStatusBrush();
+    
+    // Quick Action Commands
+    public ReactiveCommand&lt;Unit, Unit&gt; QuickAddCommand { get; }
+    public ReactiveCommand&lt;Unit, Unit&gt; QuickRemoveCommand { get; }
+    public ReactiveCommand&lt;Unit, Unit&gt; QuickTransferCommand { get; }
+}</code></pre>
+                </div>
+
+                <div class="ui-integration">
+                    <h3>AXAML DataGrid Binding</h3>
+                    <div class="code-block">
+                        <pre><code>&lt;!-- Main Inventory DataGrid --&gt;
+&lt;DataGrid ItemsSource="{Binding FilteredItems}"
+          SelectedItem="{Binding SelectedItem}"
+          IsReadOnly="True"
+          GridLinesVisibility="Horizontal"
+          HeadersVisibility="Column"&gt;
+    
+    &lt;DataGrid.Columns&gt;
+        &lt;DataGridTextColumn Header="Part ID" 
+                            Binding="{Binding PartId}"
+                            MinWidth="120"/&gt;
+        &lt;DataGridTextColumn Header="Description" 
+                            Binding="{Binding Description}"
+                            MinWidth="200"/&gt;
+        &lt;DataGridTextColumn Header="Operation" 
+                            Binding="{Binding Operation}"
+                            MinWidth="80"/&gt;
+        &lt;DataGridTextColumn Header="Location" 
+                            Binding="{Binding Location}"
+                            MinWidth="120"/&gt;
+        &lt;DataGridTextColumn Header="Quantity" 
+                            Binding="{Binding Quantity}"
+                            MinWidth="80"/&gt;
+        &lt;DataGridTemplateColumn Header="Status" MinWidth="120"&gt;
+            &lt;DataGridTemplateColumn.CellTemplate&gt;
+                &lt;DataTemplate&gt;
+                    &lt;Border Background="{Binding StockStatusBrush}"
+                            CornerRadius="4" Padding="8,4"&gt;
+                        &lt;TextBlock Text="{Binding StockStatusText}"
+                                   Foreground="White"
+                                   FontWeight="SemiBold"/&gt;
+                    &lt;/Border&gt;
+                &lt;/DataTemplate&gt;
+            &lt;/DataGridTemplateColumn.CellTemplate&gt;
+        &lt;/DataGridTemplateColumn&gt;
+        &lt;DataGridTextColumn Header="Last Updated" 
+                            Binding="{Binding LastUpdated, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"
+                            MinWidth="140"/&gt;
+    &lt;/DataGrid.Columns&gt;
+    
+    &lt;!-- Context Menu for Quick Actions --&gt;
+    &lt;DataGrid.ContextMenu&gt;
+        &lt;ContextMenu&gt;
+            &lt;MenuItem Header="Add Stock" Command="{Binding AddStockCommand}"/&gt;
+            &lt;MenuItem Header="Remove Stock" Command="{Binding RemoveStockCommand}"/&gt;
+            &lt;MenuItem Header="Transfer Stock" Command="{Binding TransferStockCommand}"/&gt;
+            &lt;Separator/&gt;
+            &lt;MenuItem Header="View History" Command="{Binding ViewHistoryCommand}"/&gt;
+            &lt;MenuItem Header="Export Selected" Command="{Binding ExportSelectedCommand}"/&gt;
+        &lt;/ContextMenu&gt;
+    &lt;/DataGrid.ContextMenu&gt;
+&lt;/DataGrid&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Database Operations -->
+            <section class="doc-section">
+                <h2>🗄️ Database Integration</h2>
+                <div class="database-operations">
+                    <h3>Service Layer Calls</h3>
+                    <div class="code-block">
+                        <pre><code>// Load All Inventory
+var inventoryItems = await _inventoryService.GetAllInventoryAsync();
+
+// Load with Filtering (for performance)
+var filteredItems = await _inventoryService.GetInventoryByFiltersAsync(
+    operation: OperationFilter != "All" ? OperationFilter : null,
+    location: LocationFilter != "All" ? LocationFilter : null,
+    stockLevelMin: GetMinStockForFilter(StockLevelFilter));
+
+// Get Available Filters
+var operations = await _inventoryService.GetAvailableOperationsAsync();
+var locations = await _inventoryService.GetAvailableLocationsAsync();
+
+// Stock Level Lookup
+var stockInfo = await _inventoryService.GetStockInfoAsync(partId, operation, location);</code></pre>
+                    </div>
+
+                    <h3>Expected Stored Procedures</h3>
+                    <ul>
+                        <li><strong>inv_inventory_Get_All:</strong> Main inventory data retrieval</li>
+                        <li><strong>inv_inventory_Get_ByFilters:</strong> Filtered inventory query</li>
+                        <li><strong>inv_operations_Get_Available:</strong> Operation filter options</li>
+                        <li><strong>inv_locations_Get_Available:</strong> Location filter options</li>
+                        <li><strong>inv_inventory_Get_StockInfo:</strong> Detailed stock information</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Performance Optimization -->
+            <section class="doc-section">
+                <h2>⚡ Performance Optimization</h2>
+                <div class="performance-notes">
+                    <h3>Data Virtualization</h3>
+                    <ul>
+                        <li><strong>Virtual DataGrid:</strong> Only renders visible rows for large datasets</li>
+                        <li><strong>Lazy Loading:</strong> Loads inventory in chunks of 1000 items</li>
+                        <li><strong>Background Refresh:</strong> Updates data on background thread</li>
+                        <li><strong>Incremental Updates:</strong> Only updates changed items rather than full reload</li>
+                    </ul>
+
+                    <h3>Filter Performance</h3>
+                    <ul>
+                        <li><strong>Debounced Search:</strong> 300ms delay prevents excessive filtering</li>
+                        <li><strong>Index Optimization:</strong> Filters use indexed properties for fast lookup</li>
+                        <li><strong>Parallel Filtering:</strong> Multiple filters applied in parallel</li>
+                        <li><strong>Result Caching:</strong> Caches filter results for repeated queries</li>
+                    </ul>
+
+                    <h3>Memory Management</h3>
+                    <ul>
+                        <li><strong>Observable Collection Optimization:</strong> Efficient add/remove operations</li>
+                        <li><strong>ViewModel Recycling:</strong> Reuses InventoryItemViewModel instances</li>
+                        <li><strong>Event Cleanup:</strong> Properly disposes all reactive subscriptions</li>
+                        <li><strong>Weak References:</strong> Event handlers use weak references</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Error Handling -->
+            <section class="doc-section">
+                <h2>🚨 Error Handling</h2>
+                <div class="error-handling">
+                    <div class="code-block">
+                        <h3>Comprehensive Error Management</h3>
+                        <pre><code>// Global Error Handling
+LoadInventoryCommand.ThrownExceptions
+    .Merge(RefreshCommand.ThrownExceptions)
+    .Subscribe(ex =>
+    {
+        Logger.LogError(ex, "Inventory operation failed");
+        
+        var userMessage = ex switch
+        {
+            DatabaseConnectionException => 
+                "Cannot connect to inventory database. Please check your connection.",
+            TimeoutException => 
+                "Inventory loading timed out. Please try again or use filters to reduce data.",
+            UnauthorizedAccessException => 
+                "You don't have permission to view inventory data.",
+            InvalidOperationException invalidEx when invalidEx.Message.Contains("filter") =>
+                "Invalid filter criteria. Please check your filter settings.",
+            _ => "Failed to load inventory data. Please try again."
+        };
+        
+        ShowErrorMessage(userMessage);
+        IsLoading = false;
+    });
+
+// Partial Load Recovery
+private async Task AttemptPartialLoad()
+{
+    try
+    {
+        // Try loading with basic filters if full load fails
+        var essentialItems = await _inventoryService.GetCriticalInventoryAsync();
+        InventoryItems.Clear();
+        InventoryItems.AddRange(essentialItems.Select(i => new InventoryItemViewModel(i)));
+        
+        ShowWarningMessage("Showing critical inventory only due to loading issues.");
+    }
+    catch
+    {
+        ShowErrorMessage("Cannot load any inventory data. Please contact support.");
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Integration Points -->
+            <section class="doc-section">
+                <h2>🔗 System Integration Points</h2>
+                <div class="integration-grid">
+                    <div class="integration-item">
+                        <h4>AddItemViewModel</h4>
+                        <p>Receives pre-filled part information for adding stock to existing items</p>
+                        <p>Refreshes inventory display after successful stock additions</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>RemoveItemViewModel</h4>
+                        <p>Pre-populates with selected item data for stock removal</p>
+                        <p>Validates sufficient stock before allowing removal operations</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>TransferItemViewModel</h4>
+                        <p>Initiates transfers with source item and location data</p>
+                        <p>Updates multiple location entries after transfer completion</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>TransactionHistoryViewModel</h4>
+                        <p>Filters history to show transactions for selected inventory item</p>
+                        <p>Provides detailed audit trail for inventory changes</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>QuickButtonsViewModel</h4>
+                        <p>Configures quick actions based on frequently accessed inventory items</p>
+                        <p>Updates quick action patterns based on inventory usage</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>📦 Technical Documentation | 🏭 MTM WIP Application | ⚡ Powered by Avalonia UI + ReactiveUI</p>
+            <div class="footer-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/InventoryViewModel.html">📖 Plain English Version</a>
+                <a href="../../../Technical/index.html">📚 Technical Documentation Index</a>
+                <a href="../../../index.html">🏠 Documentation Home</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

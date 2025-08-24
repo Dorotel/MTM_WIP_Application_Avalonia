@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Interfaces - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔌 Service Interfaces - Technical Documentation</h1>
+            <div class="nav-links">
+                <a href="../../../PlainEnglish/FileDefinitions/Services/ServiceInterfaces.html" class="nav-link plain-english">📖 Plain English Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Technical Overview -->
+            <section class="doc-section">
+                <h2>🔧 Technical Overview</h2>
+                <div class="code-block">
+                    <h3>Interface Architecture</h3>
+                    <pre><code>// File Locations
+MTM_WIP_Application_Avalonia/Services/Interfaces/
+├── IBusinessServices.cs      // Business logic abstractions
+├── ICoreServices.cs          // Infrastructure service abstractions  
+└── INavigationService.cs     // UI navigation abstractions</code></pre>
+                </div>
+
+                <div class="technical-details">
+                    <h3>Design Principles</h3>
+                    <ul>
+                        <li><strong>Dependency Inversion:</strong> High-level modules depend on abstractions, not concretions</li>
+                        <li><strong>Interface Segregation:</strong> Clients depend only on interfaces they use</li>
+                        <li><strong>Single Responsibility:</strong> Each interface has one reason to change</li>
+                        <li><strong>Open/Closed Principle:</strong> Open for extension, closed for modification</li>
+                        <li><strong>Testability:</strong> Enables comprehensive unit testing through mocking</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- IBusinessServices Interface -->
+            <section class="doc-section">
+                <h2>🏢 IBusinessServices Interface</h2>
+                <div class="code-block">
+                    <h3>Primary Interface Definition</h3>
+                    <pre><code>namespace MTM.Services
+{
+    /// &lt;summary&gt;
+    /// Interface for inventory management operations following MTM business patterns.
+    /// &lt;/summary&gt;
+    public interface IInventoryService
+    {
+        // Inventory Retrieval Operations
+        Task&lt;Result&lt;List&lt;InventoryItem&gt;&gt;&gt; GetInventoryAsync(CancellationToken cancellationToken = default);
+        Task&lt;Result&lt;InventoryItem?&gt;&gt; GetInventoryItemAsync(string partId, CancellationToken cancellationToken = default);
+        Task&lt;Result&lt;List&lt;InventoryItem&gt;&gt;&gt; SearchInventoryAsync(string searchTerm, CancellationToken cancellationToken = default);
+        
+        // Stock Management Operations
+        Task&lt;Result&gt; AddStockAsync(string partId, string operation, int quantity, string location, string userId);
+        Task&lt;Result&gt; RemoveStockAsync(string partId, string operation, int quantity, string location, string userId);
+        Task&lt;Result&gt; TransferStockAsync(string partId, string operation, int quantity, string fromLocation, string toLocation, string userId);
+        
+        // Validation and Business Rules
+        Task&lt;Result&lt;bool&gt;&gt; ValidateStockOperationAsync(string partId, string operation, string location, int quantity);
+        Task&lt;Result&lt;int&gt;&gt; GetAvailableStockAsync(string partId, string operation, string location);
+        
+        // Metadata Operations
+        Task&lt;Result&lt;List&lt;string&gt;&gt;&gt; GetAvailableOperationsAsync();
+        Task&lt;Result&lt;List&lt;string&gt;&gt;&gt; GetAvailableLocationsAsync();
+    }
+
+    /// &lt;summary&gt;
+    /// Interface for user management and authentication operations.
+    /// &lt;/summary&gt;
+    public interface IUserService
+    {
+        // User Authentication
+        Task&lt;Result&lt;User&gt;&gt; AuthenticateAsync(string username, string password);
+        Task&lt;Result&gt; LogoutAsync(string userId);
+        
+        // User Management (Admin Operations)
+        Task&lt;Result&lt;List&lt;User&gt;&gt;&gt; GetAllUsersAsync();
+        Task&lt;Result&lt;User&gt;&gt; CreateUserAsync(User user);
+        Task&lt;Result&gt; UpdateUserAsync(User user);
+        Task&lt;Result&gt; DeactivateUserAsync(string userId);
+        
+        // Permission Management
+        Task&lt;Result&lt;List&lt;string&gt;&gt;&gt; GetUserPermissionsAsync(string userId);
+        Task&lt;Result&gt; UpdateUserPermissionsAsync(string userId, List&lt;string&gt; permissions);
+        
+        // Security Operations
+        Task&lt;Result&gt; ResetPasswordAsync(string userId);
+        Task&lt;Result&gt; UnlockUserAsync(string userId);
+        Task&lt;Result&gt; ForcePasswordChangeAsync(string userId);
+    }
+
+    /// &lt;summary&gt;
+    /// Interface for transaction history and audit trail operations.
+    /// &lt;/summary&gt;
+    public interface ITransactionService
+    {
+        // Transaction Retrieval
+        Task&lt;Result&lt;List&lt;Transaction&gt;&gt;&gt; GetTransactionHistoryAsync(TransactionFilter filter);
+        Task&lt;Result&lt;Transaction&gt;&gt; GetTransactionByIdAsync(string transactionId);
+        Task&lt;Result&lt;List&lt;Transaction&gt;&gt;&gt; GetUserTransactionsAsync(string userId, DateTime? startDate = null, DateTime? endDate = null);
+        
+        // Transaction Recording
+        Task&lt;Result&gt; RecordTransactionAsync(Transaction transaction);
+        Task&lt;Result&gt; RecordBulkTransactionsAsync(List&lt;Transaction&gt; transactions);
+        
+        // Audit and Reporting
+        Task&lt;Result&lt;List&lt;AuditEntry&gt;&gt;&gt; GetAuditTrailAsync(string entityId, string entityType);
+        Task&lt;Result&lt;TransactionSummary&gt;&gt; GetTransactionSummaryAsync(DateTime startDate, DateTime endDate);
+    }
+}</code></pre>
+                </div>
+
+                <div class="interface-benefits">
+                    <h3>Business Service Benefits</h3>
+                    <ul>
+                        <li><strong>Domain Isolation:</strong> Business logic separated from infrastructure concerns</li>
+                        <li><strong>Testability:</strong> Business rules can be unit tested independently</li>
+                        <li><strong>Flexibility:</strong> Can swap implementations (e.g., different databases) without changing business logic</li>
+                        <li><strong>Consistency:</strong> Enforces consistent data access patterns across application</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ICoreServices Interface -->
+            <section class="doc-section">
+                <h2>🔧 ICoreServices Interface</h2>
+                <div class="code-block">
+                    <h3>Core Infrastructure Interfaces</h3>
+                    <pre><code>namespace MTM.Core.Services
+{
+    /// &lt;summary&gt;
+    /// Interface for database connection and transaction management.
+    /// &lt;/summary&gt;
+    public interface IDatabaseService
+    {
+        // Connection Management
+        Task&lt;Result&gt; TestConnectionAsync();
+        Task&lt;Result&gt; InitializeConnectionAsync(string connectionString);
+        Task&lt;Result&gt; CloseConnectionAsync();
+        
+        // Stored Procedure Execution
+        Task&lt;Result&lt;DataTable&gt;&gt; ExecuteStoredProcedureAsync(string procedureName, Dictionary&lt;string, object&gt; parameters);
+        Task&lt;Result&lt;T&gt;&gt; ExecuteScalarAsync&lt;T&gt;(string procedureName, Dictionary&lt;string, object&gt; parameters);
+        Task&lt;Result&gt; ExecuteNonQueryAsync(string procedureName, Dictionary&lt;string, object&gt; parameters);
+        
+        // Transaction Management
+        Task&lt;Result&lt;IDbTransaction&gt;&gt; BeginTransactionAsync();
+        Task&lt;Result&gt; CommitTransactionAsync(IDbTransaction transaction);
+        Task&lt;Result&gt; RollbackTransactionAsync(IDbTransaction transaction);
+    }
+
+    /// &lt;summary&gt;
+    /// Interface for application logging and diagnostics.
+    /// &lt;/summary&gt;
+    public interface ILoggingService
+    {
+        // Standard Logging
+        void LogInformation(string message, params object[] args);
+        void LogWarning(string message, params object[] args);
+        void LogError(Exception exception, string message, params object[] args);
+        void LogDebug(string message, params object[] args);
+        
+        // Structured Logging
+        Task LogStructuredAsync(LogLevel level, string messageTemplate, object data);
+        Task LogBusinessEventAsync(string eventType, object eventData, string userId = null);
+        Task LogSecurityEventAsync(string eventType, object eventData, string userId = null);
+        
+        // Log Management
+        Task&lt;Result&lt;List&lt;LogEntry&gt;&gt;&gt; GetLogsAsync(DateTime startDate, DateTime endDate, LogLevel? level = null);
+        Task&lt;Result&gt; PurgeLogsAsync(DateTime beforeDate);
+    }
+
+    /// &lt;summary&gt;
+    /// Interface for configuration management and settings.
+    /// &lt;/summary&gt;
+    public interface IConfigurationService
+    {
+        // Configuration Retrieval
+        T GetSetting&lt;T&gt;(string key, T defaultValue = default);
+        Task&lt;Result&lt;T&gt;&gt; GetSettingAsync&lt;T&gt;(string key);
+        Task&lt;Result&lt;Dictionary&lt;string, object&gt;&gt;&gt; GetAllSettingsAsync();
+        
+        // Configuration Updates
+        Task&lt;Result&gt; SetSettingAsync&lt;T&gt;(string key, T value);
+        Task&lt;Result&gt; SetMultipleSettingsAsync(Dictionary&lt;string, object&gt; settings);
+        
+        // Configuration Validation
+        Task&lt;Result&gt; ValidateConfigurationAsync();
+        Task&lt;Result&lt;List&lt;ConfigurationIssue&gt;&gt;&gt; GetConfigurationIssuesAsync();
+        
+        // Environment Management
+        string GetEnvironment();
+        bool IsProduction();
+        bool IsDevelopment();
+    }
+
+    /// &lt;summary&gt;
+    /// Interface for caching operations and performance optimization.
+    /// &lt;/summary&gt;
+    public interface ICacheService
+    {
+        // Basic Cache Operations
+        Task&lt;T&gt; GetAsync&lt;T&gt;(string key);
+        Task SetAsync&lt;T&gt;(string key, T value, TimeSpan? expiration = null);
+        Task RemoveAsync(string key);
+        Task RemoveByPatternAsync(string pattern);
+        
+        // Cache Management
+        Task ClearAllAsync();
+        Task&lt;bool&gt; ExistsAsync(string key);
+        Task&lt;TimeSpan?&gt; GetExpirationAsync(string key);
+        
+        // Performance Monitoring
+        Task&lt;CacheStatistics&gt; GetStatisticsAsync();
+        Task ResetStatisticsAsync();
+    }
+
+    /// &lt;summary&gt;
+    /// Interface for data validation and business rule enforcement.
+    /// &lt;/summary&gt;
+    public interface IValidationService
+    {
+        // Entity Validation
+        Task&lt;ValidationResult&gt; ValidateAsync&lt;T&gt;(T entity);
+        Task&lt;ValidationResult&gt; ValidatePropertyAsync&lt;T&gt;(T entity, string propertyName, object value);
+        
+        // Business Rule Validation
+        Task&lt;ValidationResult&gt; ValidateBusinessRulesAsync&lt;T&gt;(T entity, string operation);
+        Task&lt;ValidationResult&gt; ValidateInventoryOperationAsync(InventoryOperation operation);
+        
+        // Custom Validation
+        void RegisterValidator&lt;T&gt;(IValidator&lt;T&gt; validator);
+        Task&lt;ValidationResult&gt; ValidateWithCustomRulesAsync&lt;T&gt;(T entity, params string[] ruleNames);
+    }
+}</code></pre>
+                </div>
+
+                <div class="core-benefits">
+                    <h3>Core Service Benefits</h3>
+                    <ul>
+                        <li><strong>Infrastructure Abstraction:</strong> Hide complex infrastructure details from business logic</li>
+                        <li><strong>Cross-Cutting Concerns:</strong> Handle logging, caching, validation consistently</li>
+                        <li><strong>Performance Optimization:</strong> Enable caching and performance monitoring</li>
+                        <li><strong>Monitoring and Diagnostics:</strong> Comprehensive logging and health monitoring</li>
+                        <li><strong>Configuration Management:</strong> Centralized configuration with environment support</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- INavigationService Interface -->
+            <section class="doc-section">
+                <h2>🧭 INavigationService Interface</h2>
+                <div class="code-block">
+                    <h3>Navigation Service Interface</h3>
+                    <pre><code>namespace MTM_WIP_Application_Avalonia.Services.Interfaces
+{
+    /// &lt;summary&gt;
+    /// Interface for application navigation and view management.
+    /// &lt;/summary&gt;
+    public interface INavigationService
+    {
+        // Basic Navigation
+        Task NavigateToAsync(string viewName, object parameter = null);
+        Task NavigateToAsync&lt;T&gt;(object parameter = null) where T : class;
+        Task GoBackAsync();
+        Task GoForwardAsync();
+        
+        // Modal Navigation
+        Task&lt;TResult&gt; ShowDialogAsync&lt;TResult&gt;(string dialogName, object parameter = null);
+        Task&lt;TResult&gt; ShowDialogAsync&lt;TDialog, TResult&gt;(object parameter = null) where TDialog : class;
+        Task CloseDialogAsync&lt;TResult&gt;(TResult result);
+        
+        // Tab Navigation
+        Task OpenTabAsync(string tabName, object parameter = null);
+        Task CloseTabAsync(string tabName);
+        Task SwitchToTabAsync(string tabName);
+        Task&lt;bool&gt; IsTabOpenAsync(string tabName);
+        
+        // Navigation State
+        bool CanGoBack { get; }
+        bool CanGoForward { get; }
+        string CurrentView { get; }
+        IReadOnlyList&lt;string&gt; NavigationHistory { get; }
+        
+        // Navigation Events
+        event EventHandler&lt;NavigationEventArgs&gt; Navigating;
+        event EventHandler&lt;NavigationEventArgs&gt; Navigated;
+        event EventHandler&lt;NavigationFailedEventArgs&gt; NavigationFailed;
+        
+        // View Management
+        Task RegisterViewAsync&lt;TView, TViewModel&gt;() where TView : class where TViewModel : class;
+        Task UnregisterViewAsync&lt;TView&gt;() where TView : class;
+        Task&lt;bool&gt; IsViewRegisteredAsync&lt;TView&gt;() where TView : class;
+        
+        // Parameter Passing
+        Task SetParameterAsync(string key, object value);
+        Task&lt;T&gt; GetParameterAsync&lt;T&gt;(string key);
+        Task ClearParametersAsync();
+        
+        // Deep Linking
+        Task NavigateToUrlAsync(string url);
+        Task&lt;string&gt; GetCurrentUrlAsync();
+        Task RegisterRouteAsync(string route, Type viewType);
+        
+        // State Management
+        Task SaveNavigationStateAsync();
+        Task RestoreNavigationStateAsync();
+        Task ClearNavigationStateAsync();
+    }
+
+    /// &lt;summary&gt;
+    /// Event arguments for navigation events.
+    /// &lt;/summary&gt;
+    public class NavigationEventArgs : EventArgs
+    {
+        public string FromView { get; set; }
+        public string ToView { get; set; }
+        public object Parameter { get; set; }
+        public bool Cancel { get; set; }
+    }
+
+    /// &lt;summary&gt;
+    /// Event arguments for navigation failure events.
+    /// &lt;/summary&gt;
+    public class NavigationFailedEventArgs : EventArgs
+    {
+        public string TargetView { get; set; }
+        public object Parameter { get; set; }
+        public Exception Exception { get; set; }
+        public string ErrorMessage { get; set; }
+    }
+}</code></pre>
+                </div>
+
+                <div class="navigation-benefits">
+                    <h3>Navigation Service Benefits</h3>
+                    <ul>
+                        <li><strong>Decoupled Navigation:</strong> ViewModels don't need direct references to Views</li>
+                        <li><strong>Centralized Control:</strong> All navigation logic in one place</li>
+                        <li><strong>Parameter Passing:</strong> Type-safe parameter passing between views</li>
+                        <li><strong>State Management:</strong> Automatic save/restore of navigation state</li>
+                        <li><strong>Deep Linking:</strong> Support for URL-based navigation</li>
+                        <li><strong>Event Driven:</strong> Navigation events for coordination and logging</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Dependency Injection Integration -->
+            <section class="doc-section">
+                <h2>💉 Dependency Injection Integration</h2>
+                <div class="code-block">
+                    <h3>Service Registration Patterns</h3>
+                    <pre><code>// In ServiceCollectionExtensions.cs
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddMTMServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Core Infrastructure Services
+        services.AddSingleton&lt;IDatabaseService, DatabaseService&gt;();
+        services.AddSingleton&lt;ILoggingService, LoggingService&gt;();
+        services.AddSingleton&lt;IConfigurationService, ConfigurationService&gt;();
+        services.AddSingleton&lt;ICacheService, MemoryCacheService&gt;();
+        services.AddScoped&lt;IValidationService, ValidationService&gt;();
+        
+        // Business Services
+        services.AddScoped&lt;IInventoryService, InventoryService&gt;();
+        services.AddScoped&lt;IUserService, UserService&gt;();
+        services.AddScoped&lt;ITransactionService, TransactionService&gt;();
+        
+        // UI Services
+        services.AddSingleton&lt;INavigationService, NavigationService&gt;();
+        
+        return services;
+    }
+}
+
+// Interface Implementation Validation
+public static class ServiceValidation
+{
+    public static void ValidateServiceRegistration(IServiceProvider serviceProvider)
+    {
+        // Verify all required interfaces are registered
+        var requiredServices = new[]
+        {
+            typeof(IDatabaseService),
+            typeof(IInventoryService),
+            typeof(IUserService),
+            typeof(ITransactionService),
+            typeof(INavigationService),
+            typeof(ILoggingService),
+            typeof(IConfigurationService),
+            typeof(ICacheService),
+            typeof(IValidationService)
+        };
+        
+        foreach (var serviceType in requiredServices)
+        {
+            var service = serviceProvider.GetService(serviceType);
+            if (service == null)
+            {
+                throw new InvalidOperationException($"Required service {serviceType.Name} is not registered");
+            }
+        }
+    }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Testing Support -->
+            <section class="doc-section">
+                <h2>🧪 Testing Support</h2>
+                <div class="code-block">
+                    <h3>Mock Implementation Examples</h3>
+                    <pre><code>// Example Mock Implementations for Testing
+public class MockInventoryService : IInventoryService
+{
+    private readonly List&lt;InventoryItem&gt; _mockData = new();
+    
+    public async Task&lt;Result&lt;List&lt;InventoryItem&gt;&gt;&gt; GetInventoryAsync(CancellationToken cancellationToken = default)
+    {
+        await Task.Delay(100, cancellationToken); // Simulate async operation
+        return Result.Success(_mockData.ToList());
+    }
+    
+    public async Task&lt;Result&gt; AddStockAsync(string partId, string operation, int quantity, string location, string userId)
+    {
+        await Task.Delay(50);
+        
+        var existingItem = _mockData.FirstOrDefault(i => i.PartId == partId && i.Operation == operation && i.Location == location);
+        if (existingItem != null)
+        {
+            existingItem.Quantity += quantity;
+        }
+        else
+        {
+            _mockData.Add(new InventoryItem
+            {
+                PartId = partId,
+                Operation = operation,
+                Quantity = quantity,
+                Location = location,
+                LastUpdatedBy = userId,
+                LastUpdated = DateTime.UtcNow
+            });
+        }
+        
+        return Result.Success();
+    }
+    
+    // ... other interface methods
+}
+
+// Test Usage
+[Test]
+public async Task AddItemViewModel_ShouldAddInventory_WhenValidDataProvided()
+{
+    // Arrange
+    var mockInventoryService = new MockInventoryService();
+    var viewModel = new AddItemViewModel(mockInventoryService, Mock.Of&lt;INavigationService&gt;(), Mock.Of&lt;ILogger&lt;AddItemViewModel&gt;&gt;());
+    
+    viewModel.PartId = "TEST-001";
+    viewModel.Operation = "90";
+    viewModel.Quantity = 10;
+    viewModel.Location = "BIN-A01";
+    
+    // Act
+    await viewModel.AddStockCommand.Execute();
+    
+    // Assert
+    var inventory = await mockInventoryService.GetInventoryAsync();
+    Assert.That(inventory.IsSuccess, Is.True);
+    Assert.That(inventory.Data.Count, Is.EqualTo(1));
+    Assert.That(inventory.Data[0].PartId, Is.EqualTo("TEST-001"));
+}</code></pre>
+                </div>
+
+                <div class="testing-benefits">
+                    <h3>Testing Benefits</h3>
+                    <ul>
+                        <li><strong>Unit Test Isolation:</strong> Test individual components without dependencies</li>
+                        <li><strong>Mock Implementations:</strong> Create predictable test scenarios</li>
+                        <li><strong>Integration Testing:</strong> Test interface contracts between components</li>
+                        <li><strong>Performance Testing:</strong> Mock slow operations for consistent test timing</li>
+                        <li><strong>Error Simulation:</strong> Test error handling without real failures</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Interface Evolution -->
+            <section class="doc-section">
+                <h2>🔄 Interface Evolution and Versioning</h2>
+                <div class="code-block">
+                    <h3>Backwards Compatible Evolution</h3>
+                    <pre><code>// Version 1.0 Interface
+public interface IInventoryService
+{
+    Task&lt;Result&gt; AddStockAsync(string partId, string operation, int quantity, string location, string userId);
+}
+
+// Version 1.1 - Adding Optional Parameters (Backwards Compatible)
+public interface IInventoryService
+{
+    Task&lt;Result&gt; AddStockAsync(string partId, string operation, int quantity, string location, string userId);
+    Task&lt;Result&gt; AddStockAsync(string partId, string operation, int quantity, string location, string userId, string workOrderNumber = null);
+}
+
+// Version 2.0 - Breaking Change (New Interface)
+public interface IInventoryServiceV2 : IInventoryService
+{
+    Task&lt;Result&gt; AddStockWithValidationAsync(InventoryAddRequest request);
+}
+
+// Implementation Migration Pattern
+public class InventoryService : IInventoryService, IInventoryServiceV2
+{
+    // Implement both interfaces for transition period
+    public async Task&lt;Result&gt; AddStockAsync(string partId, string operation, int quantity, string location, string userId)
+    {
+        // Legacy implementation - delegate to new method
+        var request = new InventoryAddRequest(partId, operation, quantity, location, userId);
+        return await AddStockWithValidationAsync(request);
+    }
+    
+    public async Task&lt;Result&gt; AddStockWithValidationAsync(InventoryAddRequest request)
+    {
+        // New implementation with enhanced validation
+        // ... implementation
+    }
+}</code></pre>
+                </div>
+
+                <div class="evolution-strategies">
+                    <h3>Evolution Strategies</h3>
+                    <ul>
+                        <li><strong>Additive Changes:</strong> Add new methods without removing existing ones</li>
+                        <li><strong>Default Parameters:</strong> Use optional parameters to extend existing methods</li>
+                        <li><strong>Interface Inheritance:</strong> Create new interfaces that extend existing ones</li>
+                        <li><strong>Version Suffixes:</strong> Use V2, V3 suffixes for breaking changes</li>
+                        <li><strong>Adapter Pattern:</strong> Wrap old interfaces to support new contracts</li>
+                        <li><strong>Deprecation Warnings:</strong> Mark obsolete methods with clear migration paths</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Performance Considerations -->
+            <section class="doc-section">
+                <h2>⚡ Performance Considerations</h2>
+                <div class="performance-guidelines">
+                    <h3>Interface Design for Performance</h3>
+                    <ul>
+                        <li><strong>Async by Default:</strong> All I/O operations should be asynchronous</li>
+                        <li><strong>Cancellation Support:</strong> Include CancellationToken parameters for long-running operations</li>
+                        <li><strong>Batch Operations:</strong> Provide bulk operation methods to reduce round trips</li>
+                        <li><strong>Lazy Loading:</strong> Support optional loading of related data</li>
+                        <li><strong>Paging Support:</strong> Include pagination parameters for large data sets</li>
+                        <li><strong>Caching Integration:</strong> Design interfaces to support caching strategies</li>
+                    </ul>
+
+                    <h3>Resource Management</h3>
+                    <ul>
+                        <li><strong>Disposable Resources:</strong> Implement IDisposable for resources that need cleanup</li>
+                        <li><strong>Connection Pooling:</strong> Design database interfaces to support connection pooling</li>
+                        <li><strong>Memory Efficiency:</strong> Use streaming APIs for large data transfers</li>
+                        <li><strong>Configuration Caching:</strong> Cache configuration values to avoid repeated database calls</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Integration Points -->
+            <section class="doc-section">
+                <h2>🔗 System Integration Points</h2>
+                <div class="integration-grid">
+                    <div class="integration-item">
+                        <h4>ViewModels</h4>
+                        <p>All ViewModels depend on business service interfaces for data operations</p>
+                        <p>Navigation between views coordinated through INavigationService</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>Business Services</h4>
+                        <p>Business services depend on core service interfaces for infrastructure</p>
+                        <p>Cross-cutting concerns handled through core service abstractions</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>Infrastructure Services</h4>
+                        <p>Concrete implementations of core service interfaces</p>
+                        <p>Platform-specific implementations (database, logging, caching)</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>Dependency Injection Container</h4>
+                        <p>All interfaces registered and resolved through DI container</p>
+                        <p>Lifecycle management (Singleton, Scoped, Transient) defined by registration</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>🔌 Technical Documentation | 🏭 MTM WIP Application | ⚡ Powered by Avalonia UI + ReactiveUI</p>
+            <div class="footer-links">
+                <a href="../../../PlainEnglish/FileDefinitions/Services/ServiceInterfaces.html">📖 Plain English Version</a>
+                <a href="../../../Technical/index.html">📚 Technical Documentation Index</a>
+                <a href="../../../index.html">🏠 Documentation Home</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

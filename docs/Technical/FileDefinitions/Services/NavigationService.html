@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NavigationService - Technical Documentation | MTM WIP Application</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <style>
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 16px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+        .method-signature {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 8px 0;
+        }
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+        .parameter-table th,
+        .parameter-table td {
+            border: 1px solid #e1e8ed;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .parameter-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .event-pattern {
+            background: linear-gradient(135deg, #fff0e6 0%, #ffe6cc 100%);
+            border-left: 4px solid #ff9900;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 4px;
+        }
+        .avalonia-note {
+            background: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav class="breadcrumb">
+                <a href="../../../index.html">📚 Documentation Hub</a>
+                <span>›</span>
+                <a href="../../index.html">🔧 Technical</a>
+                <span>›</span>
+                <a href="../Services.html">⚙️ Services</a>
+                <span>›</span>
+                <span>🧭 NavigationService</span>
+            </nav>
+            <div class="header-actions">
+                <a href="../../../PlainEnglish/FileDefinitions/Services/NavigationService.html" class="btn btn-secondary">
+                    📖 Switch to Plain English
+                </a>
+            </div>
+            <h1>🧭 NavigationService Technical Documentation</h1>
+            <p class="subtitle">Event-driven navigation service for Avalonia UI with ViewModel-based routing</p>
+        </header>
+
+        <main>
+            <!-- Class Overview -->
+            <section>
+                <h2>📋 Class Overview</h2>
+                
+                <div class="code-block">
+                    <strong>Namespace:</strong> MTM_WIP_Application_Avalonia.Services<br>
+                    <strong>Implements:</strong> INavigationService<br>
+                    <strong>Dependencies:</strong> ILogger&lt;NavigationService&gt;<br>
+                    <strong>Pattern:</strong> Event-driven navigation with decoupled architecture
+                </div>
+
+                <div class="method-signature">
+public class NavigationService : INavigationService
+{
+    private readonly ILogger&lt;NavigationService&gt; _logger;
+    
+    public bool CanGoBack { get; private set; }
+    public event EventHandler&lt;NavigationEventArgs&gt;? NavigationRequested;
+    
+    public NavigationService(ILogger&lt;NavigationService&gt; logger)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+}</div>
+
+                <div class="card">
+                    <h3>🔧 Constructor</h3>
+                    <div class="method-signature">
+public NavigationService(ILogger&lt;NavigationService&gt; logger)
+</div>
+                    <p><strong>Purpose:</strong> Initializes the navigation service with logging support</p>
+                    <ul>
+                        <li>Validates logger dependency injection</li>
+                        <li>Initializes CanGoBack state to false</li>
+                        <li>Prepares event infrastructure for navigation requests</li>
+                        <li>Sets up logging for navigation tracking and debugging</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Event-Driven Architecture -->
+            <section class="event-pattern">
+                <h2>📢 Event-Driven Navigation Pattern</h2>
+                
+                <h3>🔗 Decoupled Architecture</h3>
+                <p><strong>NavigationService uses an event-driven pattern to decouple navigation logic from view management:</strong></p>
+                
+                <div class="code-block">
+// NavigationService publishes navigation requests
+public event EventHandler&lt;NavigationEventArgs&gt;? NavigationRequested;
+
+// MainWindow or Shell subscribes to handle navigation
+public MainWindow()
+{
+    var navigationService = Program.GetService&lt;INavigationService&gt;();
+    navigationService.NavigationRequested += OnNavigationRequested;
+}
+
+private void OnNavigationRequested(object? sender, NavigationEventArgs e)
+{
+    // Handle the navigation request by changing the current view
+    if (e.ViewModelType != null)
+    {
+        var viewModel = Program.GetService(e.ViewModelType);
+        CurrentView = viewModel;
+    }
+}</div>
+
+                <h3>💡 Benefits of Event-Driven Pattern</h3>
+                <ul>
+                    <li><strong>Loose Coupling:</strong> NavigationService doesn't need to know about UI implementation</li>
+                    <li><strong>Testability:</strong> Easy to unit test navigation logic independently</li>
+                    <li><strong>Flexibility:</strong> Different UI containers can handle navigation differently</li>
+                    <li><strong>Extensibility:</strong> Multiple handlers can respond to navigation events</li>
+                </ul>
+            </section>
+
+            <!-- Core Methods -->
+            <section>
+                <h2>🔧 Core Methods</h2>
+
+                <!-- NavigateTo Generic -->
+                <div class="card">
+                    <h3>🎯 NavigateTo&lt;TViewModel&gt;()</h3>
+                    <div class="method-signature">
+public void NavigateTo&lt;TViewModel&gt;() where TViewModel : class
+</div>
+                    <p><strong>Purpose:</strong> Type-safe navigation to a specific ViewModel type</p>
+                    
+                    <h4>📋 Implementation</h4>
+                    <div class="code-block">
+public void NavigateTo&lt;TViewModel&gt;() where TViewModel : class
+{
+    NavigateTo(typeof(TViewModel));
+}</div>
+
+                    <h4>💡 Usage Examples</h4>
+                    <div class="code-block">
+// Navigate to specific ViewModels
+_navigationService.NavigateTo&lt;InventoryViewModel&gt;();
+_navigationService.NavigateTo&lt;AddItemViewModel&gt;();
+_navigationService.NavigateTo&lt;UserManagementViewModel&gt;();
+_navigationService.NavigateTo&lt;TransactionHistoryViewModel&gt;();
+
+// From ViewModels using dependency injection
+public class MainViewModel : BaseViewModel
+{
+    private readonly INavigationService _navigationService;
+    
+    public ReactiveCommand&lt;Unit, Unit&gt; NavigateToInventoryCommand { get; }
+    
+    public MainViewModel(INavigationService navigationService)
+    {
+        _navigationService = navigationService;
+        
+        NavigateToInventoryCommand = ReactiveCommand.Create(() =&gt;
+        {
+            _navigationService.NavigateTo&lt;InventoryViewModel&gt;();
+        });
+    }
+}</div>
+
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Benefit</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Generic Type Safety</td>
+                                <td>Compile-time validation</td>
+                                <td>Prevent navigation to non-existent ViewModels</td>
+                            </tr>
+                            <tr>
+                                <td>IntelliSense Support</td>
+                                <td>Auto-completion</td>
+                                <td>Developer productivity and error reduction</td>
+                            </tr>
+                            <tr>
+                                <td>Refactoring Safety</td>
+                                <td>Rename detection</td>
+                                <td>ViewModel renames automatically update navigation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- NavigateTo Type -->
+                <div class="card">
+                    <h3>📋 NavigateTo(Type viewModelType)</h3>
+                    <div class="method-signature">
+public void NavigateTo(Type viewModelType)
+</div>
+                    <p><strong>Purpose:</strong> Runtime navigation using Type objects for dynamic scenarios</p>
+                    
+                    <h4>📋 Implementation</h4>
+                    <div class="code-block">
+public void NavigateTo(Type viewModelType)
+{
+    _logger.LogInformation("Navigating to {ViewModelType}", viewModelType.Name);
+    
+    NavigationRequested?.Invoke(this, new NavigationEventArgs
+    {
+        ViewModelType = viewModelType
+    });
+}</div>
+
+                    <h4>💡 Dynamic Navigation Scenarios</h4>
+                    <div class="code-block">
+// Navigation based on user role
+Type GetViewModelForUserRole(UserRole role)
+{
+    return role switch
+    {
+        UserRole.Administrator =&gt; typeof(AdminDashboardViewModel),
+        UserRole.Operator =&gt; typeof(OperatorDashboardViewModel),
+        UserRole.Viewer =&gt; typeof(ViewerDashboardViewModel),
+        _ =&gt; typeof(LoginViewModel)
+    };
+}
+
+var viewModelType = GetViewModelForUserRole(currentUser.Role);
+_navigationService.NavigateTo(viewModelType);
+
+// Navigation from configuration
+var screenMapping = configuration.GetSection("Navigation:ScreenMappings");
+var viewModelTypeName = screenMapping["MainScreen"];
+var viewModelType = Type.GetType(viewModelTypeName);
+if (viewModelType != null)
+{
+    _navigationService.NavigateTo(viewModelType);
+}</div>
+                </div>
+
+                <!-- NavigateTo String -->
+                <div class="card">
+                    <h3>📝 NavigateTo(string viewName)</h3>
+                    <div class="method-signature">
+public void NavigateTo(string viewName)
+</div>
+                    <p><strong>Purpose:</strong> String-based navigation for configuration-driven or legacy scenarios</p>
+                    
+                    <h4>📋 Implementation</h4>
+                    <div class="code-block">
+public void NavigateTo(string viewName)
+{
+    _logger.LogInformation("Navigating to view {ViewName}", viewName);
+    
+    NavigationRequested?.Invoke(this, new NavigationEventArgs
+    {
+        ViewName = viewName
+    });
+}</div>
+
+                    <h4>💡 String-Based Navigation Use Cases</h4>
+                    <div class="code-block">
+// Configuration-driven navigation
+_navigationService.NavigateTo("Inventory");
+_navigationService.NavigateTo("Reports");
+_navigationService.NavigateTo("UserManagement");
+
+// Menu-driven navigation
+public class MenuItem
+{
+    public string Title { get; set; }
+    public string NavigationTarget { get; set; }
+    public string IconPath { get; set; }
+}
+
+var menuItems = new[]
+{
+    new MenuItem { Title = "Inventory", NavigationTarget = "InventoryView" },
+    new MenuItem { Title = "Transactions", NavigationTarget = "TransactionHistoryView" },
+    new MenuItem { Title = "Reports", NavigationTarget = "ReportsView" }
+};
+
+// Handle menu click
+void OnMenuItemClick(MenuItem item)
+{
+    _navigationService.NavigateTo(item.NavigationTarget);
+}</div>
+                </div>
+
+                <!-- GoBack -->
+                <div class="card">
+                    <h3>↩️ GoBack()</h3>
+                    <div class="method-signature">
+public void GoBack()
+public bool CanGoBack { get; private set; }
+</div>
+                    <p><strong>Purpose:</strong> Navigate back to the previous screen in the navigation stack</p>
+                    
+                    <h4>📋 Current Implementation</h4>
+                    <div class="code-block">
+public void GoBack()
+{
+    if (CanGoBack)
+    {
+        _logger.LogInformation("Navigating back");
+        // TODO: Implement back navigation with stack management
+    }
+}</div>
+
+                    <h4>🔄 Planned Back Navigation Implementation</h4>
+                    <div class="code-block">
+// Enhanced implementation with navigation stack
+public class NavigationService : INavigationService
+{
+    private readonly Stack&lt;NavigationHistoryItem&gt; _navigationStack = new();
+    
+    public bool CanGoBack =&gt; _navigationStack.Count &gt; 1;
+    
+    public void NavigateTo&lt;TViewModel&gt;() where TViewModel : class
+    {
+        // Push current state to stack before navigating
+        if (_currentViewModel != null)
+        {
+            _navigationStack.Push(new NavigationHistoryItem
+            {
+                ViewModelType = _currentViewModel.GetType(),
+                State = SerializeViewModelState(_currentViewModel),
+                Timestamp = DateTime.UtcNow
+            });
+        }
+        
+        // Continue with navigation...
+        NavigateTo(typeof(TViewModel));
+    }
+    
+    public void GoBack()
+    {
+        if (CanGoBack)
+        {
+            var previousItem = _navigationStack.Pop();
+            
+            NavigationRequested?.Invoke(this, new NavigationEventArgs
+            {
+                ViewModelType = previousItem.ViewModelType,
+                RestoreState = previousItem.State,
+                IsBackNavigation = true
+            });
+            
+            _logger.LogInformation("Navigated back to {ViewModelType}", 
+                previousItem.ViewModelType.Name);
+        }
+    }
+}</div>
+                </div>
+            </section>
+
+            <!-- Navigation Event Args -->
+            <section>
+                <h2>📡 NavigationEventArgs Structure</h2>
+                
+                <div class="card">
+                    <h3>📋 Event Data Contract</h3>
+                    <div class="method-signature">
+public class NavigationEventArgs : EventArgs
+{
+    public Type? ViewModelType { get; set; }
+    public string? ViewName { get; set; }
+    public bool IsBackNavigation { get; set; } = false;
+    public object? NavigationParameters { get; set; }
+    public object? RestoreState { get; set; }
+}</div>
+
+                    <h4>📊 Property Descriptions</h4>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Type</th>
+                                <th>Purpose</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ViewModelType</td>
+                                <td>Type?</td>
+                                <td>Target ViewModel type for type-safe navigation</td>
+                                <td>typeof(InventoryViewModel)</td>
+                            </tr>
+                            <tr>
+                                <td>ViewName</td>
+                                <td>string?</td>
+                                <td>Target view name for string-based navigation</td>
+                                <td>"InventoryView"</td>
+                            </tr>
+                            <tr>
+                                <td>IsBackNavigation</td>
+                                <td>bool</td>
+                                <td>Indicates if this is a back navigation</td>
+                                <td>true for GoBack() calls</td>
+                            </tr>
+                            <tr>
+                                <td>NavigationParameters</td>
+                                <td>object?</td>
+                                <td>Parameters to pass to target ViewModel</td>
+                                <td>{ PartId = "12345" }</td>
+                            </tr>
+                            <tr>
+                                <td>RestoreState</td>
+                                <td>object?</td>
+                                <td>Serialized state to restore on back navigation</td>
+                                <td>Saved filter criteria</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Avalonia Integration -->
+            <section class="avalonia-note">
+                <h2>🎨 Avalonia UI Integration</h2>
+                
+                <h3>🖼️ MainWindow Navigation Handling</h3>
+                <div class="code-block">
+public partial class MainWindow : Window
+{
+    private readonly INavigationService _navigationService;
+    private readonly IServiceProvider _serviceProvider;
+    
+    public MainWindow()
+    {
+        InitializeComponent();
+        
+        _navigationService = Program.GetService&lt;INavigationService&gt;();
+        _serviceProvider = Program.GetServiceProvider();
+        
+        // Subscribe to navigation events
+        _navigationService.NavigationRequested += OnNavigationRequested;
+        
+        // Set initial view
+        DataContext = Program.GetService&lt;MainWindowViewModel&gt;();
+    }
+    
+    private void OnNavigationRequested(object? sender, NavigationEventArgs e)
+    {
+        try
+        {
+            object? viewModel = null;
+            
+            // Resolve ViewModel by Type
+            if (e.ViewModelType != null)
+            {
+                viewModel = _serviceProvider.GetService(e.ViewModelType);
+            }
+            // Resolve ViewModel by string name (requires mapping)
+            else if (!string.IsNullOrEmpty(e.ViewName))
+            {
+                viewModel = ResolveViewModelByName(e.ViewName);
+            }
+            
+            if (viewModel != null)
+            {
+                // Pass navigation parameters if provided
+                if (e.NavigationParameters != null && viewModel is INavigationAware navAware)
+                {
+                    await navAware.OnNavigatedToAsync(e.NavigationParameters);
+                }
+                
+                // Update current view (triggers UI update through binding)
+                if (DataContext is MainWindowViewModel mainVM)
+                {
+                    mainVM.CurrentView = viewModel;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Navigation failed to {Target}", 
+                e.ViewModelType?.Name ?? e.ViewName ?? "Unknown");
+        }
+    }
+}</div>
+
+                <h3>📋 ViewModel-to-View Mapping</h3>
+                <div class="code-block">
+// Automatic View resolution by convention
+public class ViewLocator : IDataTemplate
+{
+    public Control Build(object? data)
+    {
+        if (data is null)
+            return new TextBlock { Text = "No ViewModel" };
+            
+        var name = data.GetType().FullName!.Replace("ViewModel", "View");
+        var type = Type.GetType(name);
+        
+        if (type != null)
+        {
+            return (Control)Activator.CreateInstance(type)!;
+        }
+        
+        return new TextBlock { Text = $"Not Found: {name}" };
+    }
+    
+    public bool Match(object? data) =&gt; data is ReactiveObject;
+}</div>
+            </section>
+
+            <!-- Service Registration -->
+            <section>
+                <h2>🏗️ Dependency Injection Registration</h2>
+                
+                <div class="card">
+                    <h3>⚙️ Service Registration Pattern</h3>
+                    <div class="code-block">
+// In Program.cs or ServiceCollectionExtensions
+public static void ConfigureServices(IServiceCollection services)
+{
+    // Register NavigationService as Singleton
+    services.AddSingleton&lt;INavigationService, NavigationService&gt;();
+    
+    // Register all ViewModels as Transient (new instance each navigation)
+    services.AddTransient&lt;MainViewModel&gt;();
+    services.AddTransient&lt;InventoryViewModel&gt;();
+    services.AddTransient&lt;AddItemViewModel&gt;();
+    services.AddTransient&lt;RemoveItemViewModel&gt;();
+    services.AddTransient&lt;TransferItemViewModel&gt;();
+    services.AddTransient&lt;TransactionHistoryViewModel&gt;();
+    services.AddTransient&lt;UserManagementViewModel&gt;();
+    
+    // Register logging
+    services.AddLogging(builder =&gt;
+    {
+        builder.AddConsole();
+        builder.SetMinimumLevel(LogLevel.Information);
+    });
+}</div>
+
+                    <h4>💡 Service Lifetime Considerations</h4>
+                    <ul>
+                        <li><strong>NavigationService:</strong> Singleton - single instance manages all navigation</li>
+                        <li><strong>ViewModels:</strong> Transient - fresh instance for each navigation</li>
+                        <li><strong>MainWindow:</strong> Singleton - single main window handles navigation events</li>
+                        <li><strong>Logger:</strong> Singleton - shared logging infrastructure</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Testing -->
+            <section>
+                <h2>🧪 Testing Patterns</h2>
+                
+                <div class="card">
+                    <h3>✅ Unit Testing Navigation</h3>
+                    <div class="code-block">
+[Test]
+public void NavigateTo_Generic_RaisesEventWithCorrectType()
+{
+    // Arrange
+    var logger = new Mock&lt;ILogger&lt;NavigationService&gt;&gt;();
+    var service = new NavigationService(logger.Object);
+    
+    NavigationEventArgs? receivedArgs = null;
+    service.NavigationRequested += (sender, args) =&gt; receivedArgs = args;
+    
+    // Act
+    service.NavigateTo&lt;InventoryViewModel&gt;();
+    
+    // Assert
+    Assert.IsNotNull(receivedArgs);
+    Assert.AreEqual(typeof(InventoryViewModel), receivedArgs.ViewModelType);
+    Assert.IsNull(receivedArgs.ViewName);
+}
+
+[Test]
+public void NavigateTo_String_RaisesEventWithCorrectViewName()
+{
+    // Arrange
+    var logger = new Mock&lt;ILogger&lt;NavigationService&gt;&gt;();
+    var service = new NavigationService(logger.Object);
+    
+    NavigationEventArgs? receivedArgs = null;
+    service.NavigationRequested += (sender, args) =&gt; receivedArgs = args;
+    
+    // Act
+    service.NavigateTo("InventoryView");
+    
+    // Assert
+    Assert.IsNotNull(receivedArgs);
+    Assert.IsNull(receivedArgs.ViewModelType);
+    Assert.AreEqual("InventoryView", receivedArgs.ViewName);
+}</div>
+                </div>
+
+                <div class="card">
+                    <h3>🧪 Integration Testing</h3>
+                    <div class="code-block">
+[Test]
+public async Task MainWindow_NavigationEvent_UpdatesCurrentView()
+{
+    // Arrange
+    var serviceProvider = CreateTestServiceProvider();
+    var navigationService = serviceProvider.GetService&lt;INavigationService&gt;();
+    var mainWindow = new MainWindow();
+    
+    // Act
+    navigationService.NavigateTo&lt;InventoryViewModel&gt;();
+    
+    // Wait for UI update
+    await Task.Delay(100);
+    
+    // Assert
+    var mainViewModel = mainWindow.DataContext as MainWindowViewModel;
+    Assert.IsNotNull(mainViewModel);
+    Assert.IsInstanceOf&lt;InventoryViewModel&gt;(mainViewModel.CurrentView);
+}</div>
+                </div>
+            </section>
+
+            <!-- Performance Considerations -->
+            <section>
+                <h2>⚡ Performance Optimization</h2>
+                
+                <div class="card">
+                    <h3>🚀 Navigation Performance</h3>
+                    <ul>
+                        <li><strong>Lazy Loading:</strong> ViewModels created only when needed</li>
+                        <li><strong>Event Efficiency:</strong> Single event handler pattern minimizes overhead</li>
+                        <li><strong>Memory Management:</strong> Transient ViewModels prevent memory accumulation</li>
+                        <li><strong>Async Navigation:</strong> Non-blocking navigation for responsive UI</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>💾 Memory Optimization</h3>
+                    <ul>
+                        <li><strong>ViewModel Disposal:</strong> Proper disposal of ReactiveUI subscriptions</li>
+                        <li><strong>Event Unsubscription:</strong> Clean event handler removal</li>
+                        <li><strong>Navigation Stack:</strong> Limited history to prevent memory growth</li>
+                        <li><strong>State Serialization:</strong> Efficient state storage for back navigation</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Quick Navigation -->
+            <section>
+                <h2>🧭 Related Documentation</h2>
+                <div class="grid-3">
+                    <a href="../../../PlainEnglish/FileDefinitions/Services/NavigationService.html" class="nav-card">
+                        <h3>📖 Plain English</h3>
+                        <p>Business-friendly explanation</p>
+                    </a>
+                    <a href="../ViewModels/MainWindowViewModel.html" class="nav-card">
+                        <h3>🏠 MainWindowViewModel</h3>
+                        <p>Navigation event handler</p>
+                    </a>
+                    <a href="../ViewModels/BaseViewModel.html" class="nav-card">
+                        <h3>🎯 BaseViewModel</h3>
+                        <p>Navigation consumer pattern</p>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>🏭 MTM WIP Application | NavigationService Technical Documentation</p>
+            <p>🔧 Technical Documentation | <a href="../../../PlainEnglish/FileDefinitions/Services/NavigationService.html">Switch to Plain English View</a></p>
+        </footer>
+    </div>
+</body>
+</html>

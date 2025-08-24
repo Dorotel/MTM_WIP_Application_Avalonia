@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InventoryTabViewModel - Technical Documentation</title>
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">🔧 MTM Technical Docs</div>
+        <div class="nav-links">
+            <a href="../../index.html">🏠 Home</a>
+            <a href="../../PlainEnglish/index.html">📖 Plain English</a>
+            <a href="../index.html">🔧 Technical</a>
+            <a href="#" onclick="switchToPlainEnglish()" title="Switch to Plain English View (Alt+P)">📖 Plain English</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Header Section -->
+        <header class="header-section">
+            <div class="header-content">
+                <div class="icon-container">
+                    <span class="file-icon">📊</span>
+                </div>
+                <div class="header-text">
+                    <h1>InventoryTabViewModel.cs</h1>
+                    <p class="subtitle">Complex Inventory Management ViewModel</p>
+                </div>
+            </div>
+            <div class="file-info">
+                <span class="file-path">📁 ViewModels/InventoryTabViewModel.cs</span>
+                <span class="file-type">🔧 ReactiveUI ViewModel</span>
+            </div>
+        </header>
+
+        <!-- Technical Overview -->
+        <section class="content-section">
+            <h2>🔍 Technical Overview</h2>
+            <div class="info-box info-primary">
+                <p><strong>InventoryTabViewModel</strong> is a comprehensive ReactiveUI ViewModel that inherits directly from <code>ReactiveObject</code> and manages the UI logic for inventory form operations. It features advanced reactive programming patterns, event-driven communication, and complex validation logic.</p>
+            </div>
+
+            <div class="code-block">
+                <h3>📋 Class Definition</h3>
+                <pre><code>public class InventoryTabViewModel : ReactiveObject
+{
+    // Observable collections for ComboBoxes
+    public ObservableCollection&lt;string&gt; PartOptions { get; } = new();
+    public ObservableCollection&lt;string&gt; OperationOptions { get; } = new();
+    public ObservableCollection&lt;string&gt; LocationOptions { get; } = new();
+    
+    // Events for inter-component communication
+    public event EventHandler&lt;InventoryItemSavedEventArgs&gt;? InventoryItemSaved;
+    public event EventHandler? PanelToggleRequested;
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Properties Analysis -->
+        <section class="content-section">
+            <h2>🏗️ Property Architecture</h2>
+            <div class="property-grid">
+                <div class="property-section">
+                    <h3>📝 Form Properties</h3>
+                    <div class="code-block">
+                        <pre><code>// Reactive properties with change notifications
+private string? _selectedPart;
+public string? SelectedPart
+{
+    get => _selectedPart;
+    set => this.RaiseAndSetIfChanged(ref _selectedPart, value);
+}
+
+private string? _selectedOperation;
+public string? SelectedOperation
+{
+    get => _selectedOperation;
+    set => this.RaiseAndSetIfChanged(ref _selectedOperation, value);
+}
+
+private string? _selectedLocation;
+public string? SelectedLocation
+{
+    get => _selectedLocation;
+    set => this.RaiseAndSetIfChanged(ref _selectedLocation, value);
+}
+
+private string _quantity = string.Empty;
+public string Quantity
+{
+    get => _quantity;
+    set => this.RaiseAndSetIfChanged(ref _quantity, value);
+}
+
+private string _notes = string.Empty;
+public string Notes
+{
+    get => _notes;
+    set => this.RaiseAndSetIfChanged(ref _notes, value);
+}</code></pre>
+                    </div>
+                </div>
+                <div class="property-section">
+                    <h3>📊 Computed Properties</h3>
+                    <div class="code-block">
+                        <pre><code>// ObservableAsPropertyHelper for computed properties
+private readonly ObservableAsPropertyHelper&lt;bool&gt; _canSave;
+public bool CanSave => _canSave.Value;
+
+// Version display property
+private string _versionText = "Version: 4.6.0.0";
+public string VersionText
+{
+    get => _versionText;
+    set => this.RaiseAndSetIfChanged(ref _versionText, value);
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reactive Programming Patterns -->
+        <section class="content-section">
+            <h2>⚡ Reactive Programming Implementation</h2>
+            <div class="reactive-patterns">
+                <h3>🔍 Complex Validation Logic</h3>
+                <div class="code-block">
+                    <pre><code>// Multi-property validation using WhenAnyValue
+_canSave = this.WhenAnyValue(
+        vm => vm.SelectedPart,
+        vm => vm.SelectedOperation,
+        vm => vm.SelectedLocation,
+        vm => vm.Quantity,
+        (part, operation, location, quantity) =>
+            !string.IsNullOrWhiteSpace(part) &&
+            !string.IsNullOrWhiteSpace(operation) &&
+            !string.IsNullOrWhiteSpace(location) &&
+            IsValidQuantity(quantity))
+    .ToProperty(this, vm => vm.CanSave);
+
+private bool IsValidQuantity(string? quantity)
+{
+    if (string.IsNullOrWhiteSpace(quantity))
+        return false;
+    
+    return int.TryParse(quantity, out int result) && result > 0;
+}</code></pre>
+                </div>
+
+                <h3>⚡ Command Implementation</h3>
+                <div class="code-block">
+                    <pre><code>// Conditional command execution
+SaveCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    await SaveInventoryItemAsync();
+}, this.WhenAnyValue(vm => vm.CanSave));
+
+// Simple async commands
+ResetCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    await ResetFormAsync();
+});
+
+LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    await LoadComboBoxDataAsync();
+});
+
+// Synchronous commands
+AdvancedEntryCommand = ReactiveCommand.Create(() =>
+{
+    // TODO: Open advanced inventory features
+});
+
+TogglePanelCommand = ReactiveCommand.Create(() =>
+{
+    PanelToggleRequested?.Invoke(this, EventArgs.Empty);
+});</code></pre>
+                </div>
+
+                <h3>🚨 Error Handling Pattern</h3>
+                <div class="code-block">
+                    <pre><code>// Centralized error handling using reactive streams
+SaveCommand.ThrownExceptions.Subscribe(HandleException);
+ResetCommand.ThrownExceptions.Subscribe(HandleException);
+LoadDataCommand.ThrownExceptions.Subscribe(HandleException);
+
+private void HandleException(Exception ex)
+{
+    // TODO: Log and present user-friendly error
+    // await _errorService.LogErrorAsync(ex);
+    // Show user-friendly message
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Event-Driven Architecture -->
+        <section class="content-section">
+            <h2>🔗 Event-Driven Communication</h2>
+            <div class="event-details">
+                <h3>📤 Event Definitions</h3>
+                <div class="code-block">
+                    <pre><code>// Events for inter-component communication
+public event EventHandler&lt;InventoryItemSavedEventArgs&gt;? InventoryItemSaved;
+public event EventHandler? PanelToggleRequested;
+
+// Custom event args for inventory operations
+public class InventoryItemSavedEventArgs : EventArgs
+{
+    public string PartId { get; set; } = string.Empty;
+    public string Operation { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public string Notes { get; set; } = string.Empty;
+}</code></pre>
+                </div>
+
+                <h3>🔥 Event Firing Implementation</h3>
+                <div class="code-block">
+                    <pre><code>private async Task SaveInventoryItemAsync()
+{
+    // Database operation (TODO: implement with stored procedures)
+    await Task.CompletedTask;
+
+    // Fire event for system integration (e.g., Quick Buttons)
+    InventoryItemSaved?.Invoke(this, new InventoryItemSavedEventArgs
+    {
+        PartId = SelectedPart ?? string.Empty,
+        Operation = SelectedOperation ?? string.Empty,
+        Location = SelectedLocation ?? string.Empty,
+        Quantity = int.TryParse(Quantity, out int qty) ? qty : 0,
+        Notes = Notes
+    });
+
+    // Auto-reset after successful save
+    await ResetFormAsync(soft: true);
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Management -->
+        <section class="content-section">
+            <h2>📊 Data Management Implementation</h2>
+            <div class="data-patterns">
+                <h3>🔄 Form Reset Logic</h3>
+                <div class="code-block">
+                    <pre><code>private async Task ResetFormAsync(bool soft = true)
+{
+    // TODO: Check if Shift key is pressed for hard reset
+    // Hard reset refreshes ComboBox data from database
+    
+    // Clear all form fields
+    SelectedPart = null;
+    SelectedOperation = null;
+    SelectedLocation = null;
+    Quantity = string.Empty;
+    Notes = string.Empty;
+
+    if (!soft)
+    {
+        // Hard reset - reload all ComboBox data from database
+        await LoadComboBoxDataAsync();
+    }
+
+    await Task.CompletedTask;
+}</code></pre>
+                </div>
+
+                <h3>📥 Data Loading Pattern</h3>
+                <div class="code-block">
+                    <pre><code>private async Task LoadComboBoxDataAsync()
+{
+    // TODO: Implement database loading with stored procedures
+    // var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    //     Model_AppVariables.ConnectionString,
+    //     "sys_parts_Get_All",
+    //     new Dictionary&lt;string, object&gt;()
+    // );
+    // 
+    // var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    //     Model_AppVariables.ConnectionString,
+    //     "sys_operations_Get_All",
+    //     new Dictionary&lt;string, object&gt;()
+    // );
+    //
+    // var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    //     Model_AppVariables.ConnectionString,
+    //     "sys_locations_Get_All",
+    //     new Dictionary&lt;string, object&gt;()
+    // );
+
+    await Task.CompletedTask;
+    LoadSampleData(); // Temporary implementation
+}</code></pre>
+                </div>
+
+                <h3>📋 Sample Data Implementation</h3>
+                <div class="code-block">
+                    <pre><code>private void LoadSampleData()
+{
+    // Clear existing data
+    PartOptions.Clear();
+    OperationOptions.Clear();
+    LocationOptions.Clear();
+
+    // Sample parts (MTM naming convention)
+    var sampleParts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005" };
+    foreach (var part in sampleParts)
+    {
+        PartOptions.Add(part);
+    }
+
+    // Sample operations (workflow step numbers)
+    var sampleOperations = new[] { "90", "100", "110", "120", "130" };
+    foreach (var operation in sampleOperations)
+    {
+        OperationOptions.Add(operation);
+    }
+
+    // Sample locations (work center naming)
+    var sampleLocations = new[] { "WC01", "WC02", "WC03", "WC04", "WC05" };
+    foreach (var location in sampleLocations)
+    {
+        LocationOptions.Add(location);
+    }
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- MTM Business Rules -->
+        <section class="content-section">
+            <h2>📋 MTM Business Rules Implementation</h2>
+            <div class="rules-container">
+                <div class="rule-box rule-critical">
+                    <h3>🚨 Critical Implementation Rules</h3>
+                    <ul>
+                        <li><strong>TransactionType.IN:</strong> All inventory additions must use IN transaction type</li>
+                        <li><strong>Stored Procedures:</strong> Database operations via stored procedures only</li>
+                        <li><strong>Operation Numbers:</strong> Treat operations as workflow steps, not transaction indicators</li>
+                        <li><strong>Event Communication:</strong> Use events for inter-component communication</li>
+                    </ul>
+                </div>
+                <div class="rule-box rule-warning">
+                    <h3>⚠️ Validation Implementation</h3>
+                    <ul>
+                        <li><strong>Required Fields:</strong> Part, Operation, Location, Quantity all required</li>
+                        <li><strong>Quantity Validation:</strong> Must parse to positive integer</li>
+                        <li><strong>Real-time Validation:</strong> Use WhenAnyValue for reactive validation</li>
+                        <li><strong>Command Enabling:</strong> Save command only enabled when validation passes</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Future Implementation -->
+        <section class="content-section">
+            <h2>🚧 Implementation Completion Requirements</h2>
+            <div class="requirements-grid">
+                <div class="requirement-card">
+                    <h3>💉 Service Injection</h3>
+                    <ul>
+                        <li>Inject <code>IInventoryService</code> for database operations</li>
+                        <li>Inject <code>IProgressService</code> for operation feedback</li>
+                        <li>Inject <code>IQuickButtonsService</code> for integration</li>
+                        <li>Add proper constructor with dependency injection</li>
+                    </ul>
+                </div>
+                <div class="requirement-card">
+                    <h3>🗄️ Database Integration</h3>
+                    <ul>
+                        <li>Replace sample data with stored procedure calls</li>
+                        <li>Implement proper error handling for database operations</li>
+                        <li>Add transaction logging and audit trails</li>
+                        <li>Support for dynamic data loading and refresh</li>
+                    </ul>
+                </div>
+                <div class="requirement-card">
+                    <h3>🔧 Advanced Features</h3>
+                    <ul>
+                        <li>Implement AdvancedEntryCommand functionality</li>
+                        <li>Add keyboard shortcut support (Shift+Reset for hard reset)</li>
+                        <li>Enhanced error messaging and user feedback</li>
+                        <li>Integration with application-wide state management</li>
+                    </ul>
+                </div>
+                <div class="requirement-card">
+                    <h3>🎨 UI Integration</h3>
+                    <ul>
+                        <li>Bind to corresponding AXAML view</li>
+                        <li>Implement proper data templates for ComboBoxes</li>
+                        <li>Add visual validation feedback</li>
+                        <li>Support for theme and styling integration</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Files -->
+        <section class="content-section">
+            <h2>🔗 Related Files & Dependencies</h2>
+            <div class="nav-grid">
+                <a href="AddItemViewModel.html" class="nav-card">
+                    <div class="nav-icon">📝</div>
+                    <div class="nav-content">
+                        <h3>AddItemViewModel.cs</h3>
+                        <p>Simpler inventory addition ViewModel for basic operations</p>
+                    </div>
+                </a>
+                <a href="QuickButtonsViewModel.html" class="nav-card">
+                    <div class="nav-icon">⚡</div>
+                    <div class="nav-content">
+                        <h3>QuickButtonsViewModel.cs</h3>
+                        <p>Quick buttons component that integrates via events</p>
+                    </div>
+                </a>
+                <a href="InventoryService.html" class="nav-card">
+                    <div class="nav-icon">🏪</div>
+                    <div class="nav-content">
+                        <h3>InventoryService.cs</h3>
+                        <p>Business service for inventory operations (to be injected)</p>
+                    </div>
+                </a>
+                <a href="../../../Views/InventoryTabView.axaml" class="nav-card">
+                    <div class="nav-icon">🎨</div>
+                    <div class="nav-content">
+                        <h3>InventoryTabView.axaml</h3>
+                        <p>Associated UI view with form layout and bindings</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>📚 Documentation</h3>
+                    <ul>
+                        <li><a href="../../PlainEnglish/index.html">Plain English Docs</a></li>
+                        <li><a href="../index.html">Technical Docs</a></li>
+                        <li><a href="../../index.html">Documentation Home</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>🔧 Development</h3>
+                    <ul>
+                        <li><a href="#" onclick="switchToPlainEnglish()">Plain English View</a></li>
+                        <li><a href="../../../README.md">Project README</a></li>
+                        <li><a href="../../../Development/">Development Docs</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MTM WIP Application - Technical Documentation</p>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        function switchToPlainEnglish() {
+            window.location.href = '../../PlainEnglish/InventoryTabViewModel.html';
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                switchToPlainEnglish();
+            }
+        });
+    </script>
+</body>
+</html>

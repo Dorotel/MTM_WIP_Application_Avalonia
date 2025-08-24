@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransactionHistoryViewModel - Plain English Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📜 TransactionHistoryViewModel - Plain English Guide</h1>
+            <div class="nav-links">
+                <a href="../../../Technical/FileDefinitions/ViewModels/TransactionHistoryViewModel.html" class="nav-link technical">🔧 Technical Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- What This Does -->
+            <section class="doc-section">
+                <h2>🤔 What Does This Do?</h2>
+                <div class="explanation-box">
+                    <p>Think of the <strong>TransactionHistoryViewModel</strong> as the <strong>factory's activity logbook</strong> - a detailed record of everything that has happened with inventory. This is like a security camera system that records every single move, addition, removal, or transfer of parts in the warehouse.</p>
+                    
+                    <p>When supervisors or managers need to investigate what happened with inventory, this screen shows them:</p>
+                    <ul>
+                        <li>📝 <strong>What was done</strong> (added, removed, transferred)</li>
+                        <li>👤 <strong>Who did it</strong> (which worker performed the action)</li>
+                        <li>🕒 <strong>When it happened</strong> (exact date and time)</li>
+                        <li>📦 <strong>Which parts</strong> (part numbers and quantities)</li>
+                        <li>📍 <strong>Where it happened</strong> (locations involved)</li>
+                        <li>💼 <strong>Why it was done</strong> (work order, operation, etc.)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Real-World Example -->
+            <section class="doc-section">
+                <h2>🏭 Real-World Manufacturing Example</h2>
+                <div class="example-scenario">
+                    <h3>Scenario: Investigating Missing Parts</h3>
+                    <p><strong>Sarah, the quality manager</strong>, gets a report that some critical bearings are missing from the production line and needs to trace what happened.</p>
+                    
+                    <div class="workflow-steps">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <div class="step-content">
+                                <h4>Open Transaction History</h4>
+                                <p>Sarah opens the Transaction History screen to investigate the missing bearings issue.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <div class="step-content">
+                                <h4>Search for the Part</h4>
+                                <p>She types "BEARING-001" in the search box to see all recent activity for this specific part.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <div class="step-content">
+                                <h4>Review Recent Activity</h4>
+                                <p>The screen shows that yesterday at 2:30 PM, Mike removed 15 bearings from BIN-A12 for Operation 100.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <div class="step-content">
+                                <h4>Check the Details</h4>
+                                <p>Sarah clicks on that transaction to see more details: it was for Work Order #W2024-0156, and the removal was properly authorized.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">5</span>
+                            <div class="step-content">
+                                <h4>Solve the Mystery</h4>
+                                <p>The investigation reveals the bearings were legitimately used for production, not missing. Sarah can now update the production team with this information.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Features -->
+            <section class="doc-section">
+                <h2>⭐ Key Features for Workers</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <h4>🔍 Advanced Search & Filter</h4>
+                        <p>Search by part number, user name, date range, transaction type, or work order. Find exactly what you're looking for quickly.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>📅 Date Range Selection</h4>
+                        <p>View transactions from today, this week, this month, or any custom date range. Perfect for shift reports or monthly audits.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>📊 Transaction Details</h4>
+                        <p>Click any transaction to see complete details including work orders, approval information, and exact timestamps.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>📤 Export Capabilities</h4>
+                        <p>Export transaction history to Excel or PDF for reports, audits, or sharing with other departments.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>🔄 Real-Time Updates</h4>
+                        <p>New transactions appear automatically - no need to refresh. Always shows the most current activity.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h4>👤 User Accountability</h4>
+                        <p>Every transaction shows exactly who performed it, ensuring full accountability and traceability.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- What Workers See -->
+            <section class="doc-section">
+                <h2>👀 What Workers See on Screen</h2>
+                <div class="ui-description">
+                    <h3>Transaction History Grid</h3>
+                    <div class="grid-example">
+                        <table class="example-table">
+                            <thead>
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Type</th>
+                                    <th>Part ID</th>
+                                    <th>Quantity</th>
+                                    <th>Location</th>
+                                    <th>User</th>
+                                    <th>Operation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="transaction-add">
+                                    <td>01/15/2024 08:30</td>
+                                    <td>➕ ADD</td>
+                                    <td>BOLT-M12-50</td>
+                                    <td>+100</td>
+                                    <td>BIN-A15</td>
+                                    <td>Mike S.</td>
+                                    <td>90</td>
+                                </tr>
+                                <tr class="transaction-remove">
+                                    <td>01/15/2024 14:15</td>
+                                    <td>➖ REMOVE</td>
+                                    <td>BEARING-001</td>
+                                    <td>-15</td>
+                                    <td>BIN-A12</td>
+                                    <td>Lisa R.</td>
+                                    <td>100</td>
+                                </tr>
+                                <tr class="transaction-transfer">
+                                    <td>01/15/2024 16:45</td>
+                                    <td>🔄 TRANSFER</td>
+                                    <td>WASHER-12</td>
+                                    <td>50</td>
+                                    <td>BIN-B03 → WORK-05</td>
+                                    <td>John D.</td>
+                                    <td>90</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Filter and Search Panel</h3>
+                    <ul>
+                        <li><strong>Date Range Picker:</strong> Select start and end dates for the search</li>
+                        <li><strong>Transaction Type Filter:</strong> Show only ADD, REMOVE, or TRANSFER transactions</li>
+                        <li><strong>Part Search:</strong> Type part number or description to filter</li>
+                        <li><strong>User Filter:</strong> See transactions by specific workers</li>
+                        <li><strong>Operation Filter:</strong> Show only specific manufacturing operations</li>
+                        <li><strong>Export Button:</strong> Download the filtered results to Excel or PDF</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Business Rules -->
+            <section class="doc-section">
+                <h2>📋 MTM Business Rules</h2>
+                <div class="business-rules">
+                    <h3>Transaction Recording Rules</h3>
+                    <ul>
+                        <li><strong>📝 Complete Records:</strong> Every inventory change is automatically recorded</li>
+                        <li><strong>🔒 Immutable History:</strong> Transaction records cannot be changed or deleted</li>
+                        <li><strong>👤 User Tracking:</strong> All transactions linked to the worker who performed them</li>
+                        <li><strong>🕒 Timestamp Accuracy:</strong> All times recorded in company timezone</li>
+                    </ul>
+                    
+                    <h3>Access Control Rules</h3>
+                    <ul>
+                        <li><strong>👁️ View Access:</strong> All workers can view transaction history</li>
+                        <li><strong>📊 Export Rights:</strong> Only supervisors and managers can export data</li>
+                        <li><strong>🔍 Full Search:</strong> Managers can search across all users and dates</li>
+                        <li><strong>📱 Personal View:</strong> Regular workers see their own transactions by default</li>
+                    </ul>
+                    
+                    <h3>Audit and Compliance</h3>
+                    <ul>
+                        <li><strong>📋 Audit Trail:</strong> Supports internal audits and quality inspections</li>
+                        <li><strong>🏭 Shift Reports:</strong> Generate shift-by-shift activity summaries</li>
+                        <li><strong>📊 Performance Metrics:</strong> Track productivity and error rates</li>
+                        <li><strong>🔐 Data Retention:</strong> History kept for minimum 7 years per company policy</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Common Tasks -->
+            <section class="doc-section">
+                <h2>🎯 Common Daily Tasks</h2>
+                <div class="tasks-grid">
+                    <div class="task-item">
+                        <h4>Shift Activity Review</h4>
+                        <p>Supervisors review what happened during the previous shift by filtering transactions by date and time range.</p>
+                    </div>
+                    
+                    <div class="task-item">
+                        <h4>Part Investigation</h4>
+                        <p>When there are questions about specific parts, workers search the history to see all recent activity for those items.</p>
+                    </div>
+                    
+                    <div class="task-item">
+                        <h4>User Activity Check</h4>
+                        <p>Managers check what transactions specific workers performed, especially for training or performance reviews.</p>
+                    </div>
+                    
+                    <div class="task-item">
+                        <h4>Audit Preparation</h4>
+                        <p>Export transaction data for internal audits, quality reviews, or compliance reporting.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section class="doc-section">
+                <h2>🔧 Common Issues & Solutions</h2>
+                <div class="troubleshooting">
+                    <div class="issue-item">
+                        <h4>❓ "I can't find a transaction I know happened"</h4>
+                        <p><strong>Solution:</strong> Check your date range - it might be outside the current search dates. Try expanding the date range or searching by part number.</p>
+                    </div>
+                    
+                    <div class="issue-item">
+                        <h4>❓ "The list is too long to find what I need"</h4>
+                        <p><strong>Solution:</strong> Use the filters to narrow down the results. Filter by transaction type, specific parts, or the user who performed the action.</p>
+                    </div>
+                    
+                    <div class="issue-item">
+                        <h4>❓ "I can't export the data"</h4>
+                        <p><strong>Solution:</strong> Check if you have export permissions. If you're a supervisor or manager and still can't export, contact IT support.</p>
+                    </div>
+                    
+                    <div class="issue-item">
+                        <h4>❓ "The times look wrong"</h4>
+                        <p><strong>Solution:</strong> All times are shown in company timezone. If you're working different shifts, the times might look different than expected.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Integration -->
+            <section class="doc-section">
+                <h2>🔗 How This Connects to Other Screens</h2>
+                <div class="integration-info">
+                    <h3>Connected Features</h3>
+                    <ul>
+                        <li><strong>Inventory Screen:</strong> Click on any inventory item to see its transaction history</li>
+                        <li><strong>Add/Remove/Transfer Screens:</strong> Every action on these screens creates entries in transaction history</li>
+                        <li><strong>Quick Buttons:</strong> Quick button actions are tracked and appear in the history</li>
+                        <li><strong>User Management:</strong> Transaction history shows what each user has been doing</li>
+                    </ul>
+                    
+                    <h3>Data Sources</h3>
+                    <ul>
+                        <li><strong>Transaction Database:</strong> Real-time connection to the main transaction log</li>
+                        <li><strong>User Directory:</strong> Shows full names instead of just user IDs</li>
+                        <li><strong>Parts Master:</strong> Displays part descriptions along with part numbers</li>
+                        <li><strong>Work Order System:</strong> Links transactions to specific work orders when applicable</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Reporting Features -->
+            <section class="doc-section">
+                <h2>📊 Reporting and Analysis Features</h2>
+                <div class="reporting-features">
+                    <h3>Available Reports</h3>
+                    <ul>
+                        <li><strong>📅 Daily Activity Report:</strong> Summary of all transactions for a specific day</li>
+                        <li><strong>👤 User Activity Report:</strong> What each worker did during a time period</li>
+                        <li><strong>📦 Part Movement Report:</strong> All activity for specific parts</li>
+                        <li><strong>🏭 Operation Report:</strong> Transaction summary by manufacturing operation</li>
+                    </ul>
+                    
+                    <h3>Analysis Capabilities</h3>
+                    <ul>
+                        <li><strong>📈 Trend Analysis:</strong> See patterns in inventory movement over time</li>
+                        <li><strong>🔍 Error Detection:</strong> Identify unusual transactions or patterns</li>
+                        <li><strong>⚡ Performance Metrics:</strong> Track how quickly workers process transactions</li>
+                        <li><strong>📊 Volume Analysis:</strong> Understand which parts move most frequently</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>📜 Plain English Documentation | 🏭 MTM WIP Application | 👷‍♂️ Made for Workers</p>
+            <div class="footer-links">
+                <a href="../../../Technical/FileDefinitions/ViewModels/TransactionHistoryViewModel.html">🔧 Technical Version</a>
+                <a href="../../../PlainEnglish/index.html">📚 Plain English Documentation Index</a>
+                <a href="../../../index.html">🏠 Documentation Home</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

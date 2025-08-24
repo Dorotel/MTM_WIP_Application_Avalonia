@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConfigurationService - Technical Documentation | MTM WIP Application</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <style>
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 16px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+        .method-signature {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 8px 0;
+        }
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+        .parameter-table th,
+        .parameter-table td {
+            border: 1px solid #e1e8ed;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .parameter-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .configuration-example {
+            background: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 4px;
+        }
+        .security-warning {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border: 2px solid #e53e3e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav class="breadcrumb">
+                <a href="../../../index.html">📚 Documentation Hub</a>
+                <span>›</span>
+                <a href="../../index.html">🔧 Technical</a>
+                <span>›</span>
+                <a href="../Services.html">⚙️ Services</a>
+                <span>›</span>
+                <span>⚙️ ConfigurationService</span>
+            </nav>
+            <div class="header-actions">
+                <a href="../../../PlainEnglish/FileDefinitions/Services/ConfigurationService.html" class="btn btn-secondary">
+                    📖 Switch to Plain English
+                </a>
+            </div>
+            <h1>⚙️ ConfigurationService Technical Documentation</h1>
+            <p class="subtitle">Strongly-typed configuration access with validation and environment-specific overrides</p>
+        </header>
+
+        <main>
+            <!-- Class Overview -->
+            <section>
+                <h2>📋 Class Overview</h2>
+                
+                <div class="code-block">
+                    <strong>Namespace:</strong> MTM.Services<br>
+                    <strong>Implements:</strong> IConfigurationService<br>
+                    <strong>Dependencies:</strong> IConfiguration, ILogger&lt;ConfigurationService&gt;, IOptionsMonitor&lt;MTMSettings&gt;
+                </div>
+
+                <div class="method-signature">
+public class ConfigurationService : IConfigurationService
+{
+    private readonly IConfiguration _configuration;
+    private readonly ILogger&lt;ConfigurationService&gt; _logger;
+    private readonly IOptionsMonitor&lt;MTMSettings&gt; _mtmSettings;
+}</div>
+
+                <div class="card">
+                    <h3>🔧 Constructor Injection</h3>
+                    <div class="method-signature">
+public ConfigurationService(
+    IConfiguration configuration,
+    ILogger&lt;ConfigurationService&gt; logger,
+    IOptionsMonitor&lt;MTMSettings&gt; mtmSettings)
+</div>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>configuration</td>
+                                <td>IConfiguration</td>
+                                <td>Microsoft.Extensions.Configuration provider</td>
+                            </tr>
+                            <tr>
+                                <td>logger</td>
+                                <td>ILogger&lt;ConfigurationService&gt;</td>
+                                <td>Structured logging for configuration access</td>
+                            </tr>
+                            <tr>
+                                <td>mtmSettings</td>
+                                <td>IOptionsMonitor&lt;MTMSettings&gt;</td>
+                                <td>Strongly-typed MTM configuration with change notifications</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Configuration Structure -->
+            <section>
+                <h2>📁 Configuration File Structure</h2>
+                
+                <div class="configuration-example">
+                    <h3>📋 Complete appsettings.json Structure</h3>
+                    <div class="code-block">
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=MTM_WIP;Uid=mtm_user;Pwd=${DB_PASSWORD};",
+    "ReadOnlyConnection": "Server=localhost;Database=MTM_WIP_RO;Uid=mtm_readonly;Pwd=${DB_RO_PASSWORD};"
+  },
+  "MTM": {
+    "ApplicationName": "MTM WIP Application",
+    "Version": "1.0.0",
+    "Environment": "Development",
+    "Features": {
+      "EnableAdvancedReporting": true,
+      "EnableAuditLogging": true,
+      "EnablePerformanceMonitoring": false
+    },
+    "UI": {
+      "DefaultTheme": "Purple",
+      "SessionTimeout": "01:00:00",
+      "MaxConcurrentUsers": 100
+    }
+  },
+  "Database": {
+    "CommandTimeout": 30,
+    "MaxRetryAttempts": 3,
+    "ConnectionPool": {
+      "MinPoolSize": 5,
+      "MaxPoolSize": 100,
+      "ConnectionLifetime": "00:15:00"
+    },
+    "HealthCheck": {
+      "Interval": "00:05:00",
+      "Timeout": "00:00:10"
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "MTM": "Debug",
+      "Microsoft": "Warning",
+      "System": "Warning"
+    },
+    "File": {
+      "Path": "logs/mtm-wip-{Date}.txt",
+      "MaxFileSize": "10MB",
+      "RetainedFileCountLimit": 30
+    }
+  },
+  "Security": {
+    "Authentication": {
+      "TokenExpiration": "08:00:00",
+      "RefreshTokenExpiration": "7.00:00:00",
+      "RequireHttps": true
+    },
+    "Authorization": {
+      "DefaultRole": "Operator",
+      "AdminRole": "Administrator",
+      "RequireUserApproval": true
+    }
+  },
+  "Integration": {
+    "ExternalAPIs": {
+      "ERPSystemURL": "https://erp.mtm.com/api",
+      "QualitySystemURL": "https://quality.mtm.com/api",
+      "ReportingSystemURL": "https://reports.mtm.com/api"
+    },
+    "FileProcessing": {
+      "ImportPath": "data/import",
+      "ExportPath": "data/export",
+      "ArchivePath": "data/archive",
+      "MaxFileSize": "50MB"
+    }
+  }
+}</div>
+                </div>
+
+                <div class="card">
+                    <h3>🌍 Environment-Specific Overrides</h3>
+                    
+                    <h4>🔧 appsettings.Development.json</h4>
+                    <div class="code-block">
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=dev-db;Database=MTM_WIP_DEV;Uid=dev_user;Pwd=dev_password;"
+  },
+  "MTM": {
+    "Environment": "Development",
+    "Features": {
+      "EnablePerformanceMonitoring": true
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "MTM": "Trace"
+    }
+  },
+  "Security": {
+    "Authentication": {
+      "RequireHttps": false
+    }
+  }
+}</div>
+                    
+                    <h4>🏭 appsettings.Production.json</h4>
+                    <div class="code-block">
+{
+  "MTM": {
+    "Environment": "Production",
+    "Features": {
+      "EnablePerformanceMonitoring": true
+    }
+  },
+  "Database": {
+    "ConnectionPool": {
+      "MinPoolSize": 10,
+      "MaxPoolSize": 200
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning",
+      "MTM": "Information"
+    }
+  }
+}</div>
+                </div>
+            </section>
+
+            <!-- Core Methods -->
+            <section>
+                <h2>🔧 Core Methods</h2>
+
+                <!-- GetValue -->
+                <div class="card">
+                    <h3>📋 GetValue</h3>
+                    <div class="method-signature">
+public string? GetValue(string key)
+public T? GetValue&lt;T&gt;(string key)
+public T GetValue&lt;T&gt;(string key, T defaultValue)
+</div>
+                    <p><strong>Purpose:</strong> Retrieves configuration values with type safety and default value support</p>
+                    
+                    <h4>📋 Implementation Details</h4>
+                    <ul>
+                        <li>Uses Microsoft.Extensions.Configuration IConfiguration provider</li>
+                        <li>Supports hierarchical key notation (e.g., "Database:CommandTimeout")</li>
+                        <li>Automatic type conversion for primitive types</li>
+                        <li>Null-safe with optional default values</li>
+                        <li>Logs all configuration access for audit trails</li>
+                    </ul>
+
+                    <h4>💡 Usage Examples</h4>
+                    <div class="code-block">
+// String value with null handling
+var connectionString = _configService.GetValue("ConnectionStrings:DefaultConnection");
+
+// Typed value with default
+var timeout = _configService.GetValue("Database:CommandTimeout", 30);
+
+// Complex hierarchical key
+var maxUsers = _configService.GetValue&lt;int&gt;("MTM:UI:MaxConcurrentUsers", 50);
+
+// Boolean feature flags
+var enableReporting = _configService.GetValue("MTM:Features:EnableAdvancedReporting", false);</div>
+                </div>
+
+                <!-- GetSection -->
+                <div class="card">
+                    <h3>🗂️ GetSection</h3>
+                    <div class="method-signature">
+public IConfigurationSection GetSection(string key)
+public T GetSection&lt;T&gt;(string key) where T : class, new()
+</div>
+                    <p><strong>Purpose:</strong> Retrieves entire configuration sections for complex objects</p>
+                    
+                    <h4>💡 Usage Examples</h4>
+                    <div class="code-block">
+// Get database configuration section
+var databaseSection = _configService.GetSection("Database");
+var commandTimeout = databaseSection.GetValue&lt;int&gt;("CommandTimeout");
+
+// Bind to strongly-typed object
+public class DatabaseSettings
+{
+    public int CommandTimeout { get; set; }
+    public int MaxRetryAttempts { get; set; }
+    public ConnectionPoolSettings ConnectionPool { get; set; }
+}
+
+var dbSettings = _configService.GetSection&lt;DatabaseSettings&gt;("Database");</div>
+                </div>
+
+                <!-- Validation -->
+                <div class="card">
+                    <h3>✅ ValidateConfiguration</h3>
+                    <div class="method-signature">
+public async Task&lt;Result&lt;bool&gt;&gt; ValidateConfigurationAsync()
+public Result&lt;bool&gt; ValidateRequiredSettings()
+</div>
+                    <p><strong>Purpose:</strong> Validates configuration integrity and required settings</p>
+                    
+                    <h4>🔍 Validation Checks</h4>
+                    <ul>
+                        <li><strong>Required Settings:</strong> Verifies critical configuration values exist</li>
+                        <li><strong>Format Validation:</strong> Checks connection strings, URLs, and file paths</li>
+                        <li><strong>Range Validation:</strong> Ensures numeric values are within acceptable ranges</li>
+                        <li><strong>Dependency Validation:</strong> Verifies related settings are consistent</li>
+                        <li><strong>Security Validation:</strong> Checks for secure configuration patterns</li>
+                    </ul>
+
+                    <div class="code-block">
+public class ConfigurationValidator
+{
+    public static ValidationResult ValidateConnectionString(string connectionString)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            return ValidationResult.Failure("Connection string is required");
+            
+        if (!connectionString.Contains("Server="))
+            return ValidationResult.Failure("Connection string must specify Server");
+            
+        if (!connectionString.Contains("Database="))
+            return ValidationResult.Failure("Connection string must specify Database");
+            
+        return ValidationResult.Success();
+    }
+}</div>
+                </div>
+            </section>
+
+            <!-- Strongly-Typed Configuration -->
+            <section>
+                <h2>🏗️ Strongly-Typed Configuration Classes</h2>
+                
+                <div class="card">
+                    <h3>📊 MTMSettings Class</h3>
+                    <div class="method-signature">
+public class MTMSettings
+{
+    public string ApplicationName { get; set; } = "MTM WIP Application";
+    public string Version { get; set; } = "1.0.0";
+    public string Environment { get; set; } = "Development";
+    
+    public FeatureSettings Features { get; set; } = new();
+    public UISettings UI { get; set; } = new();
+}
+
+public class FeatureSettings
+{
+    public bool EnableAdvancedReporting { get; set; } = true;
+    public bool EnableAuditLogging { get; set; } = true;
+    public bool EnablePerformanceMonitoring { get; set; } = false;
+}
+
+public class UISettings
+{
+    public string DefaultTheme { get; set; } = "Purple";
+    public TimeSpan SessionTimeout { get; set; } = TimeSpan.FromHours(1);
+    public int MaxConcurrentUsers { get; set; } = 100;
+}
+</div>
+                </div>
+
+                <div class="card">
+                    <h3>⚙️ Service Registration Pattern</h3>
+                    <div class="code-block">
+// In Program.cs or ServiceCollectionExtensions
+services.Configure&lt;MTMSettings&gt;(configuration.GetSection("MTM"));
+services.Configure&lt;DatabaseSettings&gt;(configuration.GetSection("Database"));
+services.Configure&lt;SecuritySettings&gt;(configuration.GetSection("Security"));
+
+// Options validation
+services.AddOptions&lt;MTMSettings&gt;()
+    .Bind(configuration.GetSection("MTM"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+// Register ConfigurationService
+services.AddSingleton&lt;IConfigurationService, ConfigurationService&gt;();</div>
+                </div>
+            </section>
+
+            <!-- Security Considerations -->
+            <section class="security-warning">
+                <h2>🛡️ Security Implementation</h2>
+                
+                <h3>🔒 Secret Management</h3>
+                <div class="code-block">
+// Environment variable substitution
+"ConnectionStrings": {
+    "DefaultConnection": "Server=${DB_SERVER};Database=${DB_NAME};Uid=${DB_USER};Pwd=${DB_PASSWORD};"
+}
+
+// Azure Key Vault integration
+public void ConfigureServices(IServiceCollection services)
+{
+    if (Environment.IsProduction())
+    {
+        var keyVaultUrl = configuration["KeyVault:VaultUrl"];
+        var credential = new DefaultAzureCredential();
+        
+        configuration.AddAzureKeyVault(new Uri(keyVaultUrl), credential);
+    }
+}</div>
+
+                <h3>🔍 Configuration Access Logging</h3>
+                <div class="code-block">
+public string? GetValue(string key)
+{
+    try
+    {
+        var value = _configuration[key];
+        
+        // Log access but never log the actual value for security
+        _logger.LogDebug("Configuration access: {Key} - {HasValue}", 
+            key, value != null ? "HasValue" : "Null");
+            
+        return value;
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Failed to retrieve configuration value for key: {Key}", key);
+        return null;
+    }
+}</div>
+            </section>
+
+            <!-- Change Monitoring -->
+            <section>
+                <h2>🔄 Configuration Change Monitoring</h2>
+                
+                <div class="card">
+                    <h3>📡 Hot Reload Support</h3>
+                    <div class="code-block">
+public class ConfigurationService : IConfigurationService, IDisposable
+{
+    private readonly IDisposable _changeTokenRegistration;
+    
+    public ConfigurationService(IConfiguration configuration, IOptionsMonitor&lt;MTMSettings&gt; mtmSettings)
+    {
+        _configuration = configuration;
+        _mtmSettings = mtmSettings;
+        
+        // Register for configuration changes
+        _changeTokenRegistration = mtmSettings.OnChange((settings, name) =&gt;
+        {
+            _logger.LogInformation("MTM configuration changed: {SettingsName}", name);
+            OnConfigurationChanged?.Invoke(settings);
+        });
+    }
+    
+    public event Action&lt;MTMSettings&gt;? OnConfigurationChanged;
+    
+    public void Dispose()
+    {
+        _changeTokenRegistration?.Dispose();
+    }
+}</div>
+                </div>
+
+                <div class="card">
+                    <h3>📊 Configuration Monitoring Patterns</h3>
+                    <div class="code-block">
+// Service that responds to configuration changes
+public class DatabaseService : IDisposable
+{
+    private readonly IConfigurationService _configService;
+    private string _connectionString;
+    
+    public DatabaseService(IConfigurationService configService)
+    {
+        _configService = configService;
+        _connectionString = configService.GetValue("ConnectionStrings:DefaultConnection");
+        
+        // Subscribe to configuration changes
+        configService.OnConfigurationChanged += OnConfigurationChanged;
+    }
+    
+    private void OnConfigurationChanged(MTMSettings newSettings)
+    {
+        var newConnectionString = _configService.GetValue("ConnectionStrings:DefaultConnection");
+        if (newConnectionString != _connectionString)
+        {
+            _connectionString = newConnectionString;
+            // Reinitialize connection pool with new settings
+            ResetConnectionPool();
+        }
+    }
+}</div>
+                </div>
+            </section>
+
+            <!-- Testing -->
+            <section>
+                <h2>🧪 Testing Patterns</h2>
+                
+                <div class="card">
+                    <h3>✅ Unit Testing Configuration</h3>
+                    <div class="code-block">
+[Test]
+public void GetValue_ExistingKey_ReturnsValue()
+{
+    // Arrange
+    var configData = new Dictionary&lt;string, string&gt;
+    {
+        ["Database:CommandTimeout"] = "30",
+        ["MTM:ApplicationName"] = "Test App"
+    };
+    
+    var configuration = new ConfigurationBuilder()
+        .AddInMemoryCollection(configData)
+        .Build();
+        
+    var logger = new Mock&lt;ILogger&lt;ConfigurationService&gt;&gt;();
+    var mtmSettings = new Mock&lt;IOptionsMonitor&lt;MTMSettings&gt;&gt;();
+    
+    var service = new ConfigurationService(configuration, logger.Object, mtmSettings.Object);
+    
+    // Act
+    var result = service.GetValue&lt;int&gt;("Database:CommandTimeout", 0);
+    
+    // Assert
+    Assert.AreEqual(30, result);
+}</div>
+                </div>
+
+                <div class="card">
+                    <h3>🧪 Integration Testing</h3>
+                    <div class="code-block">
+[Test]
+public async Task ValidateConfiguration_ProductionSettings_PassesValidation()
+{
+    // Arrange
+    var builder = new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json")
+        .AddJsonFile("appsettings.Production.json")
+        .AddEnvironmentVariables();
+        
+    var configuration = builder.Build();
+    var service = CreateConfigurationService(configuration);
+    
+    // Act
+    var result = await service.ValidateConfigurationAsync();
+    
+    // Assert
+    Assert.IsTrue(result.IsSuccess);
+    Assert.IsNotNull(service.GetValue("ConnectionStrings:DefaultConnection"));
+}</div>
+                </div>
+            </section>
+
+            <!-- Performance Considerations -->
+            <section>
+                <h2>⚡ Performance Optimization</h2>
+                
+                <div class="card">
+                    <h3>💾 Configuration Caching</h3>
+                    <ul>
+                        <li><strong>IOptionsMonitor&lt;T&gt;:</strong> Provides efficient caching with change notifications</li>
+                        <li><strong>Singleton Registration:</strong> ConfigurationService registered as singleton for performance</li>
+                        <li><strong>Lazy Loading:</strong> Configuration sections loaded on-demand</li>
+                        <li><strong>Memory Optimization:</strong> Configuration values cached in memory for fast access</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>🔄 Change Detection Efficiency</h3>
+                    <ul>
+                        <li><strong>File Watcher:</strong> Uses native file system notifications for change detection</li>
+                        <li><strong>Selective Reloading:</strong> Only reloads changed configuration sections</li>
+                        <li><strong>Debouncing:</strong> Multiple rapid changes are batched together</li>
+                        <li><strong>Background Processing:</strong> Configuration reloading doesn't block main thread</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Quick Navigation -->
+            <section>
+                <h2>🧭 Related Documentation</h2>
+                <div class="grid-3">
+                    <a href="../../../PlainEnglish/FileDefinitions/Services/ConfigurationService.html" class="nav-card">
+                        <h3>📖 Plain English</h3>
+                        <p>Business-friendly explanation</p>
+                    </a>
+                    <a href="DatabaseService.html" class="nav-card">
+                        <h3>🗄️ DatabaseService</h3>
+                        <p>Major consumer of ConfigurationService</p>
+                    </a>
+                    <a href="../Extensions/ServiceCollectionExtensions.html" class="nav-card">
+                        <h3>🔧 ServiceCollectionExtensions</h3>
+                        <p>DI registration patterns</p>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>🏭 MTM WIP Application | ConfigurationService Technical Documentation</p>
+            <p>🔧 Technical Documentation | <a href="../../../PlainEnglish/FileDefinitions/Services/ConfigurationService.html">Switch to Plain English View</a></p>
+        </footer>
+    </div>
+</body>
+</html>

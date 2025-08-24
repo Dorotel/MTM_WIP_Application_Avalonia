@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InventoryService.cs - Technical Documentation</title>
+    <meta name="description" content="Technical documentation for the InventoryService class in the MTM WIP Application">
+    <style>
+        /* MTM Technical Documentation Theme */
+        :root {
+            --background-primary: #0d1117;
+            --background-secondary: #161b22;
+            --background-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --text-accent: #58a6ff;
+            --accent-gold: #ffd700;
+            --accent-gold-dark: #daa520;
+            --mtm-purple: #4b45ed;
+            --mtm-magenta: #ba45ed;
+            --border-primary: #30363d;
+            --border-accent: #ffd700;
+            --success-color: #238636;
+            --warning-color: #d29922;
+            --danger-color: #da3633;
+            --code-bg: #0d1117;
+            --code-border: #21262d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Segoe UI Mono', 'Roboto Mono', monospace;
+            background: var(--background-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--background-secondary), var(--background-tertiary));
+            border-bottom: 2px solid var(--accent-gold);
+            padding: 2rem 0;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .class-signature {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--text-accent);
+            margin-top: 1rem;
+        }
+
+        .navigation {
+            background: var(--background-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--accent-gold);
+            color: var(--background-primary);
+        }
+
+        .doc-type-toggle {
+            background: var(--mtm-purple);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .doc-type-toggle:hover {
+            background: var(--mtm-magenta);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: var(--background-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .sidebar h3 {
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            color: var(--accent-gold);
+        }
+
+        .content {
+            min-width: 0;
+        }
+
+        .section {
+            background: var(--background-secondary);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--accent-gold);
+        }
+
+        .section h2 {
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .section h3 {
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            margin: 1.5rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .code-block .type {
+            color: #ffa657;
+        }
+
+        .code-block .method {
+            color: #d2a8ff;
+        }
+
+        .method-item {
+            background: var(--background-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .method-signature {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-accent);
+        }
+
+        .method-name {
+            color: var(--accent-gold);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .method-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .parameter-list {
+            background: var(--background-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .parameter-item {
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .parameter-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .parameter-name {
+            color: var(--text-accent);
+            font-weight: 600;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .parameter-type {
+            color: var(--warning-color);
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .dependency-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .dependency-item {
+            background: var(--background-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .dependency-name {
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .dependency-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .implementation-note {
+            background: var(--background-tertiary);
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .implementation-note::before {
+            content: '⚠️ ';
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        .performance-note {
+            background: var(--background-tertiary);
+            border-left: 4px solid var(--success-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .performance-note::before {
+            content: '⚡ ';
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .security-note {
+            background: var(--background-tertiary);
+            border-left: 4px solid var(--danger-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .security-note::before {
+            content: '🔒 ';
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        .footer {
+            background: var(--background-secondary);
+            border-top: 1px solid var(--border-primary);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer a {
+            color: var(--accent-gold);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 250px 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>InventoryService.cs</h1>
+            <p class="subtitle">Service for inventory management operations following MTM business patterns</p>
+            <div class="class-signature">
+                <span class="keyword">public class</span> <span class="type">InventoryService</span> : <span class="type">IInventoryService</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="navigation">
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">📁 Services</a>
+                <a href="../index.html" class="nav-link">🔧 Technical Home</a>
+                <a href="../../CoreFiles/Services/index.html" class="nav-link">📄 Core Files</a>
+            </div>
+            <a href="../../PlainEnglish/FileDefinitions/Services/InventoryService.html" class="doc-type-toggle">
+                📝 Switch to Plain English
+            </a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <aside class="sidebar">
+            <h3>Quick Navigation</h3>
+            <ul>
+                <li><a href="#overview">Class Overview</a></li>
+                <li><a href="#dependencies">Dependencies</a></li>
+                <li><a href="#constructor">Constructor</a></li>
+                <li><a href="#methods">Public Methods</a></li>
+                <li><a href="#implementation">Implementation Details</a></li>
+                <li><a href="#performance">Performance Notes</a></li>
+                <li><a href="#security">Security Considerations</a></li>
+            </ul>
+            
+            <h3>Methods</h3>
+            <ul>
+                <li><a href="#get-inventory-async">GetInventoryAsync</a></li>
+                <li><a href="#get-inventory-item-async">GetInventoryItemAsync</a></li>
+                <li><a href="#add-inventory-item-async">AddInventoryItemAsync</a></li>
+                <li><a href="#update-inventory-item-async">UpdateInventoryItemAsync</a></li>
+                <li><a href="#add-stock-async">AddStockAsync</a></li>
+                <li><a href="#remove-stock-async">RemoveStockAsync</a></li>
+                <li><a href="#transfer-stock-async">TransferStockAsync</a></li>
+                <li><a href="#get-inventory-by-location-async">GetInventoryByLocationAsync</a></li>
+                <li><a href="#get-inventory-by-operation-async">GetInventoryByOperationAsync</a></li>
+                <li><a href="#process-operation-async">ProcessOperationAsync</a></li>
+            </ul>
+        </aside>
+
+        <div class="content">
+            <section id="overview" class="section">
+                <h2>🏗️ Class Overview</h2>
+                <p>
+                    The <code>InventoryService</code> class implements the <code>IInventoryService</code> interface and provides 
+                    comprehensive inventory management functionality for the MTM WIP Application. This service follows domain-driven 
+                    design principles and integrates with the existing infrastructure including logging, error handling, and database services.
+                </p>
+
+                <h3>Architecture Pattern</h3>
+                <p>
+                    This service implements the <strong>Repository Pattern</strong> with <strong>Result Pattern</strong> for error handling. 
+                    All database operations return <code>Result&lt;T&gt;</code> objects that encapsulate both success states and error conditions, 
+                    enabling robust error handling throughout the application stack.
+                </p>
+
+                <h3>Key Design Principles</h3>
+                <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                    <li><strong>Single Responsibility:</strong> Focused exclusively on inventory management operations</li>
+                    <li><strong>Dependency Injection:</strong> All dependencies injected through constructor</li>
+                    <li><strong>Async/Await Pattern:</strong> All methods are asynchronous with cancellation token support</li>
+                    <li><strong>Comprehensive Logging:</strong> Detailed logging at all operation levels</li>
+                    <li><strong>Data Validation:</strong> Integrated validation service for data integrity</li>
+                    <li><strong>Transaction Safety:</strong> All operations support database transactions</li>
+                </ul>
+            </section>
+
+            <section id="dependencies" class="section">
+                <h2>🔗 Dependencies</h2>
+                <p>
+                    The service requires four key dependencies injected through the constructor, following the 
+                    <strong>Explicit Dependencies Principle</strong>:
+                </p>
+
+                <div class="dependency-list">
+                    <div class="dependency-item">
+                        <div class="dependency-name">IDatabaseService</div>
+                        <div class="dependency-description">
+                            Provides database connectivity and query execution capabilities. Handles connection management, 
+                            query parameterization, and result mapping.
+                        </div>
+                    </div>
+                    <div class="dependency-item">
+                        <div class="dependency-name">ITransactionService</div>
+                        <div class="dependency-description">
+                            Manages inventory transaction logging for audit trails. Records all inventory movements 
+                            with transaction types (IN, OUT, TRANSFER) and user attribution.
+                        </div>
+                    </div>
+                    <div class="dependency-item">
+                        <div class="dependency-name">IValidationService</div>
+                        <div class="dependency-description">
+                            Validates inventory items before database operations. Ensures data integrity and business 
+                            rule compliance before persisting changes.
+                        </div>
+                    </div>
+                    <div class="dependency-item">
+                        <div class="dependency-name">ILogger&lt;InventoryService&gt;</div>
+                        <div class="dependency-description">
+                            Provides structured logging capabilities. Records operation details, performance metrics, 
+                            and error conditions for monitoring and debugging.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="implementation-note">
+                    <strong>Implementation Note:</strong> The service integrates with existing <code>LoggingUtility</code> 
+                    and <code>Service_ErrorHandler</code> infrastructure while maintaining modern dependency injection patterns.
+                </div>
+            </section>
+
+            <section id="constructor" class="section">
+                <h2>🔧 Constructor</h2>
+                <div class="method-signature">
+<span class="keyword">public</span> <span class="method">InventoryService</span>(
+    <span class="type">IDatabaseService</span> databaseService,
+    <span class="type">ITransactionService</span> transactionService,
+    <span class="type">IValidationService</span> validationService,
+    <span class="type">ILogger&lt;InventoryService&gt;</span> logger)
+                </div>
+
+                <p>
+                    Initializes a new instance of the InventoryService with required dependencies. All parameters are required 
+                    and stored as private readonly fields to ensure immutability and thread safety.
+                </p>
+
+                <div class="parameter-list">
+                    <div class="parameter-item">
+                        <div class="parameter-name">databaseService</div>
+                        <div class="parameter-type">IDatabaseService</div>
+                        <div>Database abstraction layer for executing queries and commands</div>
+                    </div>
+                    <div class="parameter-item">
+                        <div class="parameter-name">transactionService</div>
+                        <div class="parameter-type">ITransactionService</div>
+                        <div>Service for logging inventory transactions and maintaining audit trails</div>
+                    </div>
+                    <div class="parameter-item">
+                        <div class="parameter-name">validationService</div>
+                        <div class="parameter-type">IValidationService</div>
+                        <div>Service for validating inventory items and business rules</div>
+                    </div>
+                    <div class="parameter-item">
+                        <div class="parameter-name">logger</div>
+                        <div class="parameter-type">ILogger&lt;InventoryService&gt;</div>
+                        <div>Structured logger instance for this service</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="methods" class="section">
+                <h2>📋 Public Methods</h2>
+
+                <div id="get-inventory-async" class="method-item">
+                    <div class="method-name">GetInventoryAsync</div>
+                    <div class="method-signature">
+<span class="keyword">public async</span> <span class="type">Task&lt;Result&lt;List&lt;InventoryItem&gt;&gt;&gt;</span> <span class="method">GetInventoryAsync</span>(
+    <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+                    </div>
+                    <div class="method-description">
+                        Retrieves all inventory items from the database, ordered by PartId and Operation. 
+                        Returns a complete dataset suitable for inventory reports and overview displays.
+                    </div>
+                    
+                    <h4>Implementation Details</h4>
+                    <div class="code-block">
+<span class="comment">// Query execution with comprehensive error handling</span>
+<span class="keyword">const string</span> query = <span class="string">@"
+    SELECT PartId, Description, Quantity, Location, Operation, 
+           LastUpdated, LastUpdatedBy, UnitCost, UnitOfMeasure
+    FROM Inventory 
+    ORDER BY PartId, Operation"</span>;
+
+<span class="keyword">var</span> result = <span class="keyword">await</span> _databaseService.ExecuteQueryAsync&lt;InventoryItem&gt;(
+    query, cancellationToken: cancellationToken);
+                    </div>
+
+                    <div class="performance-note">
+                        <strong>Performance:</strong> This method loads the entire inventory dataset. For large inventories, 
+                        consider implementing pagination or filtering mechanisms to improve performance.
+                    </div>
+                </div>
+
+                <div id="get-inventory-item-async" class="method-item">
+                    <div class="method-name">GetInventoryItemAsync</div>
+                    <div class="method-signature">
+<span class="keyword">public async</span> <span class="type">Task&lt;Result&lt;InventoryItem?&gt;&gt;</span> <span class="method">GetInventoryItemAsync</span>(
+    <span class="type">string</span> partId, 
+    <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+                    </div>
+                    <div class="method-description">
+                        Retrieves a specific inventory item by Part ID. Includes comprehensive validation and error handling 
+                        for missing or invalid part identifiers.
+                    </div>
+
+                    <h4>Validation Logic</h4>
+                    <div class="code-block">
+<span class="keyword">if</span> (<span class="type">string</span>.IsNullOrWhiteSpace(partId))
+{
+    <span class="keyword">return</span> <span class="type">Result&lt;InventoryItem?&gt;</span>.Failure(<span class="string">"Part ID cannot be empty"</span>);
+}
+                    </div>
+
+                    <h4>Database Query</h4>
+                    <div class="code-block">
+<span class="keyword">const string</span> query = <span class="string">@"
+    SELECT PartId, Description, Quantity, Location, Operation, 
+           LastUpdated, LastUpdatedBy, UnitCost, UnitOfMeasure
+    FROM Inventory 
+    WHERE PartId = @PartId"</span>;
+                    </div>
+                </div>
+
+                <div id="add-inventory-item-async" class="method-item">
+                    <div class="method-name">AddInventoryItemAsync</div>
+                    <div class="method-signature">
+<span class="keyword">public async</span> <span class="type">Task&lt;Result&gt;</span> <span class="method">AddInventoryItemAsync</span>(
+    <span class="type">InventoryItem</span> item, 
+    <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+                    </div>
+                    <div class="method-description">
+                        Adds a new inventory item to the database with comprehensive validation and transaction logging. 
+                        Automatically sets the LastUpdated timestamp and logs the operation as an IN transaction.
+                    </div>
+
+                    <h4>Validation Pipeline</h4>
+                    <div class="code-block">
+<span class="comment">// Null check</span>
+<span class="keyword">if</span> (item == <span class="keyword">null</span>) 
+    <span class="keyword">return</span> <span class="type">Result</span>.Failure(<span class="string">"Inventory item cannot be null"</span>);
+
+<span class="comment">// Business rule validation</span>
+<span class="keyword">var</span> validationResult = <span class="keyword">await</span> _validationService.ValidateAsync(item, cancellationToken);
+<span class="keyword">if</span> (!validationResult.IsSuccess || !validationResult.Value!.IsValid)
+{
+    <span class="keyword">var</span> errors = <span class="type">string</span>.Join(<span class="string">", "</span>, validationResult.Value?.ErrorMessages ?? 
+                      <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Validation failed"</span> });
+    <span class="keyword">return</span> <span class="type">Result</span>.Failure(<span class="string">$"Validation failed: {errors}"</span>);
+}
+                    </div>
+
+                    <h4>Transaction Logging</h4>
+                    <div class="code-block">
+<span class="comment">// Automatic transaction logging for audit trail</span>
+<span class="keyword">var</span> transaction = <span class="keyword">new</span> <span class="type">InventoryTransaction</span>
+{
+    PartId = item.PartId,
+    TransactionType = <span class="type">TransactionType</span>.IN, <span class="comment">// Adding stock</span>
+    Operation = item.Operation,
+    Quantity = item.Quantity,
+    Location = item.Location,
+    UserId = item.LastUpdatedBy,
+    TransactionDate = <span class="type">DateTime</span>.UtcNow
+};
+
+<span class="keyword">await</span> _transactionService.LogTransactionAsync(transaction, cancellationToken);
+                    </div>
+
+                    <div class="implementation-note">
+                        <strong>MTM Business Logic:</strong> This method automatically logs an IN transaction when adding new inventory, 
+                        following the MTM principle that TransactionType is determined by user intent, not operation number.
+                    </div>
+                </div>
+
+                <div id="add-stock-async" class="method-item">
+                    <div class="method-name">AddStockAsync</div>
+                    <div class="method-signature">
+<span class="keyword">public async</span> <span class="type">Task&lt;Result&gt;</span> <span class="method">AddStockAsync</span>(
+    <span class="type">string</span> partId, <span class="type">string</span> operation, <span class="type">int</span> quantity, 
+    <span class="type">string</span> location, <span class="type">string</span> userId, 
+    <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+                    </div>
+                    <div class="method-description">
+                        Increases the quantity of an existing inventory item. Handles both existing item updates and new item creation 
+                        with comprehensive validation and transaction logging.
+                    </div>
+
+                    <h4>Core Logic Flow</h4>
+                    <div class="code-block">
+<span class="comment">// 1. Comprehensive parameter validation</span>
+<span class="comment">// 2. Check if inventory item exists</span>
+<span class="keyword">var</span> existingItem = <span class="keyword">await</span> GetInventoryItemAsync(partId, cancellationToken);
+
+<span class="keyword">if</span> (existingItem.IsSuccess && existingItem.Value != <span class="keyword">null</span>)
+{
+    <span class="comment">// Update existing item quantity</span>
+    existingItem.Value.Quantity += quantity;
+    <span class="keyword">await</span> UpdateInventoryItemAsync(existingItem.Value, cancellationToken);
+}
+<span class="keyword">else</span>
+{
+    <span class="comment">// Create new inventory item</span>
+    <span class="keyword">var</span> newItem = <span class="keyword">new</span> <span class="type">InventoryItem</span> { /* initialization */ };
+    <span class="keyword">await</span> AddInventoryItemAsync(newItem, cancellationToken);
+}
+                    </div>
+
+                    <div class="security-note">
+                        <strong>Security:</strong> All user inputs are validated and parameterized to prevent SQL injection attacks. 
+                        User ID is logged for audit trail and accountability.
+                    </div>
+                </div>
+
+                <div id="remove-stock-async" class="method-item">
+                    <div class="method-name">RemoveStockAsync</div>
+                    <div class="method-signature">
+<span class="keyword">public async</span> <span class="type">Task&lt;Result&gt;</span> <span class="method">RemoveStockAsync</span>(
+    <span class="type">string</span> partId, <span class="type">string</span> operation, <span class="type">int</span> quantity, 
+    <span class="type">string</span> location, <span class="type">string</span> userId, 
+    <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+                    </div>
+                    <div class="method-description">
+                        Decreases the quantity of an inventory item with business rule validation to prevent negative inventory. 
+                        Includes comprehensive checks for sufficient stock before removal.
+                    </div>
+
+                    <h4>Business Rule Validation</h4>
+                    <div class="code-block">
+<span class="comment">// Check if sufficient stock is available</span>
+<span class="keyword">if</span> (existingItem.Value.Quantity &lt; quantity)
+{
+    <span class="keyword">return</span> <span class="type">Result</span>.Failure(
+        <span class="string">$"Insufficient stock. Available: {existingItem.Value.Quantity}, Requested: {quantity}"</span>);
+}
+
+<span class="comment">// Update quantity and timestamp</span>
+existingItem.Value.Quantity -= quantity;
+existingItem.Value.LastUpdated = <span class="type">DateTime</span>.UtcNow;
+existingItem.Value.LastUpdatedBy = userId;
+                    </div>
+
+                    <div class="implementation-note">
+                        <strong>Transaction Type:</strong> Always logs as OUT transaction regardless of operation number, 
+                        following MTM business logic where TransactionType represents user intent.
+                    </div>
+                </div>
+
+                <div id="transfer-stock-async" class="method-item">
+                    <div class="method-name">TransferStockAsync</div>
+                    <div class="method-signature">
+<span class="keyword">public async</span> <span class="type">Task&lt;Result&gt;</span> <span class="method">TransferStockAsync</span>(
+    <span class="type">string</span> partId, <span class="type">string</span> operation, <span class="type">int</span> quantity, 
+    <span class="type">string</span> fromLocation, <span class="type">string</span> toLocation, <span class="type">string</span> userId, 
+    <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+                    </div>
+                    <div class="method-description">
+                        Moves inventory between locations without changing total quantity. Implements atomic operations 
+                        to ensure data consistency during transfers.
+                    </div>
+
+                    <h4>Atomic Transfer Logic</h4>
+                    <div class="code-block">
+<span class="comment">// 1. Validate source location has sufficient stock</span>
+<span class="comment">// 2. Remove stock from source location</span>
+<span class="keyword">var</span> removeResult = <span class="keyword">await</span> RemoveStockAsync(partId, operation, quantity, 
+                                              fromLocation, userId, cancellationToken);
+
+<span class="comment">// 3. Add stock to destination location</span>
+<span class="keyword">if</span> (removeResult.IsSuccess)
+{
+    <span class="keyword">var</span> addResult = <span class="keyword">await</span> AddStockAsync(partId, operation, quantity, 
+                                            toLocation, userId, cancellationToken);
+    
+    <span class="comment">// 4. Log as TRANSFER transaction</span>
+    <span class="keyword">await</span> LogTransferTransaction(/* parameters */);
+}
+                    </div>
+                </div>
+
+                <div id="process-operation-async" class="method-item">
+                    <div class="method-name">ProcessOperationAsync</div>
+                    <div class="method-signature">
+<span class="keyword">public async</span> <span class="type">Task&lt;Result&gt;</span> <span class="method">ProcessOperationAsync</span>(
+    <span class="type">string</span> partId, <span class="type">string</span> operation, <span class="type">int</span> quantity, 
+    <span class="type">string</span> location, <span class="type">string</span> userId, 
+    <span class="type">CancellationToken</span> cancellationToken = <span class="keyword">default</span>)
+                    </div>
+                    <div class="method-description">
+                        Processes MTM manufacturing operations (e.g., "90", "100", "110") for specific parts. 
+                        Currently implemented as a placeholder that adds stock, but designed for future stored procedure integration.
+                    </div>
+
+                    <div class="implementation-note">
+                        <strong>TODO:</strong> This method contains a placeholder implementation. The comment indicates it should 
+                        be replaced with a stored procedure call: <code>inv_inventory_Process_Operation</code>
+                    </div>
+
+                    <div class="code-block">
+<span class="comment">// TODO: Implement via stored procedure call instead of direct logic</span>
+<span class="comment">// await _databaseService.ExecuteStoredProcedureAsync("inv_inventory_Process_Operation", parameters);</span>
+
+<span class="comment">// Current placeholder implementation</span>
+<span class="keyword">var</span> addStockResult = <span class="keyword">await</span> AddStockAsync(partId, operation, quantity, location, userId, cancellationToken);
+                    </div>
+                </div>
+            </section>
+
+            <section id="implementation" class="section">
+                <h2>⚙️ Implementation Details</h2>
+
+                <h3>Error Handling Strategy</h3>
+                <p>
+                    The service implements a comprehensive error handling strategy using the Result Pattern:
+                </p>
+                <div class="code-block">
+<span class="keyword">try</span>
+{
+    <span class="comment">// Operation logic</span>
+    <span class="keyword">var</span> result = <span class="keyword">await</span> _databaseService.ExecuteQueryAsync&lt;T&gt;(query, parameters, cancellationToken);
+    
+    <span class="keyword">if</span> (!result.IsSuccess)
+    {
+        _logger.LogError(<span class="string">"Operation failed: {Error}"</span>, result.ErrorMessage);
+        <span class="keyword">return</span> <span class="type">Result&lt;T&gt;</span>.Failure(result.ErrorMessage ?? <span class="string">"Operation failed"</span>);
+    }
+    
+    _logger.LogInformation(<span class="string">"Operation successful"</span>);
+    <span class="keyword">return</span> <span class="type">Result&lt;T&gt;</span>.Success(result.Value);
+}
+<span class="keyword">catch</span> (<span class="type">Exception</span> ex)
+{
+    _logger.LogError(ex, <span class="string">"Unexpected error during operation"</span>);
+    <span class="keyword">return</span> <span class="type">Result&lt;T&gt;</span>.Failure(<span class="string">$"Operation failed: {ex.Message}"</span>);
+}
+                </div>
+
+                <h3>Logging Strategy</h3>
+                <p>
+                    Structured logging is implemented throughout the service with different log levels:
+                </p>
+                <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                    <li><strong>Information:</strong> Successful operations, method entry/exit, business metrics</li>
+                    <li><strong>Warning:</strong> Recoverable errors, validation failures, business rule violations</li>
+                    <li><strong>Error:</strong> Database errors, unexpected exceptions, system failures</li>
+                </ul>
+
+                <h3>Transaction Integration</h3>
+                <p>
+                    All inventory modifications are logged through the <code>ITransactionService</code> for audit compliance:
+                </p>
+                <div class="code-block">
+<span class="keyword">var</span> transaction = <span class="keyword">new</span> <span class="type">InventoryTransaction</span>
+{
+    PartId = partId,
+    TransactionType = <span class="type">TransactionType</span>.IN, <span class="comment">// Based on user intent</span>
+    Operation = operation, <span class="comment">// Workflow step identifier</span>
+    Quantity = quantity,
+    Location = location,
+    UserId = userId,
+    TransactionDate = <span class="type">DateTime</span>.UtcNow
+};
+
+<span class="keyword">await</span> _transactionService.LogTransactionAsync(transaction, cancellationToken);
+                </div>
+            </section>
+
+            <section id="performance" class="section">
+                <h2>⚡ Performance Considerations</h2>
+
+                <h3>Database Query Optimization</h3>
+                <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                    <li><strong>Parameterized Queries:</strong> All queries use parameters to enable query plan caching</li>
+                    <li><strong>Selective Columns:</strong> Queries only select required columns to minimize data transfer</li>
+                    <li><strong>Proper Indexing:</strong> Queries are designed to leverage database indexes on PartId, Location, Operation</li>
+                    <li><strong>Connection Pooling:</strong> Leverages database service connection pooling for efficiency</li>
+                </ul>
+
+                <h3>Asynchronous Operations</h3>
+                <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                    <li><strong>Non-blocking I/O:</strong> All database operations are asynchronous</li>
+                    <li><strong>Cancellation Support:</strong> All methods support cancellation tokens for responsive UI</li>
+                    <li><strong>Task Composition:</strong> Complex operations compose multiple async tasks efficiently</li>
+                </ul>
+
+                <div class="performance-note">
+                    <strong>Performance Recommendation:</strong> For large inventory datasets, consider implementing 
+                    pagination in the <code>GetInventoryAsync</code> method to improve response times and reduce memory usage.
+                </div>
+            </section>
+
+            <section id="security" class="section">
+                <h2>🔒 Security Considerations</h2>
+
+                <h3>SQL Injection Prevention</h3>
+                <p>
+                    All database operations use parameterized queries through the <code>IDatabaseService</code> abstraction:
+                </p>
+                <div class="code-block">
+<span class="comment">// Secure parameterized query</span>
+<span class="keyword">const string</span> query = <span class="string">@"SELECT * FROM Inventory WHERE PartId = @PartId"</span>;
+<span class="keyword">var</span> result = <span class="keyword">await</span> _databaseService.ExecuteQueryAsync&lt;InventoryItem&gt;(
+    query, 
+    <span class="keyword">new</span> { PartId = partId }, <span class="comment">// Automatic parameterization</span>
+    cancellationToken);
+                </div>
+
+                <h3>Input Validation</h3>
+                <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                    <li><strong>Null Checks:</strong> All public methods validate null parameters</li>
+                    <li><strong>String Validation:</strong> Empty/whitespace string validation for required fields</li>
+                    <li><strong>Range Validation:</strong> Quantity and numeric field validation</li>
+                    <li><strong>Business Rule Validation:</strong> Integration with <code>IValidationService</code></li>
+                </ul>
+
+                <h3>Audit Trail</h3>
+                <ul style="color: var(--text-secondary); margin-left: 2rem;">
+                    <li><strong>User Tracking:</strong> All operations record the executing user ID</li>
+                    <li><strong>Transaction Logging:</strong> Complete audit trail of all inventory changes</li>
+                    <li><strong>Timestamp Recording:</strong> UTC timestamps for all operations</li>
+                    <li><strong>Operation Context:</strong> Operation numbers and location tracking</li>
+                </ul>
+
+                <div class="security-note">
+                    <strong>Security Best Practice:</strong> Always validate user permissions before executing inventory 
+                    operations in the calling application layer. This service assumes authorized access.
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>
+            MTM WIP Application - InventoryService Technical Documentation •
+            <a href="../../index.html">Documentation Home</a> •
+            <a href="../../PlainEnglish/FileDefinitions/Services/InventoryService.html">Plain English Documentation</a>
+        </p>
+        <p>
+            Generated: <time datetime="2025-01-27">January 27, 2025</time> •
+            <a href="#" onclick="alert('For technical feedback, please create an issue in the repository.')">Technical Feedback</a>
+        </p>
+    </footer>
+
+    <script>
+        // Enhanced technical documentation features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Syntax highlighting for code blocks
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(block => {
+                // Add copy functionality
+                const copyButton = document.createElement('button');
+                copyButton.textContent = '📋 Copy';
+                copyButton.style.cssText = `
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    background: var(--accent-gold);
+                    color: var(--background-primary);
+                    border: none;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 0.8rem;
+                    cursor: pointer;
+                `;
+                
+                block.style.position = 'relative';
+                block.appendChild(copyButton);
+                
+                copyButton.addEventListener('click', function() {
+                    navigator.clipboard.writeText(block.textContent.replace('📋 Copy', '').trim());
+                    copyButton.textContent = '✅ Copied';
+                    setTimeout(() => {
+                        copyButton.textContent = '📋 Copy';
+                    }, 2000);
+                });
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Alt + P = Switch to Plain English
+                if (e.altKey && e.key === 'p') {
+                    e.preventDefault();
+                    window.location.href = '../../PlainEnglish/FileDefinitions/Services/InventoryService.html';
+                }
+                // Alt + H = Go home
+                if (e.altKey && e.key === 'h') {
+                    e.preventDefault();
+                    window.location.href = '../../index.html';
+                }
+            });
+
+            // Smooth scrolling for sidebar navigation
+            document.querySelectorAll('.sidebar a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            console.log('MTM InventoryService - Technical Documentation Loaded');
+            console.log('File: Services/InventoryService.cs');
+            console.log('Methods Documented: 10');
+            console.log('Documentation Type: Technical');
+        });
+    </script>
+</body>
+</html>

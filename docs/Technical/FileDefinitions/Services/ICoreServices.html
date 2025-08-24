@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICoreServices - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔧 ICoreServices - Technical Documentation</h1>
+            <div class="nav-links">
+                <a href="../../../PlainEnglish/FileDefinitions/Services/ICoreServices.html" class="nav-link plain-english">📖 Plain English Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Interface Overview -->
+            <section class="doc-section">
+                <h2>🔧 Interface Definition</h2>
+                <div class="code-section">
+                    <h3>ICoreServices Interface Contract</h3>
+                    <pre><code>namespace MTM.Core.Services
+{
+    /// &lt;summary&gt;
+    /// Core infrastructure services interface providing foundational capabilities
+    /// for the MTM WIP Application. Defines essential services for database access,
+    /// configuration management, logging, caching, security, and validation.
+    /// &lt;/summary&gt;
+    public interface ICoreServices
+    {
+        // Database Services
+        IDatabaseService Database { get; }
+        IDbConnectionFactory ConnectionFactory { get; }
+        DatabaseTransactionService TransactionService { get; }
+
+        // Configuration Services
+        IConfigurationService Configuration { get; }
+        IApplicationStateService ApplicationState { get; }
+
+        // Logging and Monitoring Services
+        ILogger Logger { get; }
+        ILoggingUtility LoggingUtility { get; }
+
+        // Caching Services
+        ICacheService Cache { get; }
+        IMemoryCache MemoryCache { get; }
+
+        // Security Services
+        ISecurityService Security { get; }
+        IAuthenticationService Authentication { get; }
+        IAuthorizationService Authorization { get; }
+
+        // Validation Services
+        IValidationService Validation { get; }
+        IDataValidationService DataValidation { get; }
+
+        // Utility Services
+        ISerializationService Serialization { get; }
+        ICompressionService Compression { get; }
+        IEncryptionService Encryption { get; }
+
+        // Health and Monitoring
+        Task&lt;Result&lt;HealthCheckResult&gt;&gt; PerformHealthCheckAsync();
+        Task&lt;Result&lt;ServiceStatus&gt;&gt; GetServiceStatusAsync();
+        Task&lt;Result&lt;PerformanceMetrics&gt;&gt; GetPerformanceMetricsAsync();
+    }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Core Infrastructure Services -->
+            <section class="doc-section">
+                <h2>🗄️ Database Infrastructure</h2>
+                
+                <div class="service-detail">
+                    <h3>IDatabaseService</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> Primary database interaction service for MTM WIP operations.</p>
+                        <div class="code-section">
+                            <pre><code>public interface IDatabaseService
+{
+    Task&lt;Result&lt;DataTable&gt;&gt; ExecuteStoredProcedureAsync(string procedureName, 
+        Dictionary&lt;string, object&gt; parameters);
+    Task&lt;Result&lt;T&gt;&gt; ExecuteScalarAsync&lt;T&gt;(string procedureName, 
+        Dictionary&lt;string, object&gt; parameters);
+    Task&lt;Result&gt; ExecuteNonQueryAsync(string procedureName, 
+        Dictionary&lt;string, object&gt; parameters);
+    Task&lt;Result&lt;IDbConnection&gt;&gt; GetConnectionAsync();
+    Task&lt;Result&gt; TestConnectionAsync();
+}</code></pre>
+                        </div>
+                        <p><strong>Implementation Requirements:</strong></p>
+                        <ul>
+                            <li>All database operations use stored procedures exclusively</li>
+                            <li>Connection pooling with proper disposal patterns</li>
+                            <li>Transaction support with rollback capabilities</li>
+                            <li>Parameter sanitization and SQL injection prevention</li>
+                            <li>Comprehensive error logging and monitoring</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-detail">
+                    <h3>IDbConnectionFactory</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> Factory for creating and managing database connections.</p>
+                        <div class="code-section">
+                            <pre><code>public interface IDbConnectionFactory
+{
+    IDbConnection CreateConnection();
+    IDbConnection CreateConnection(string connectionString);
+    Task&lt;IDbConnection&gt; CreateConnectionAsync();
+    void DisposeConnection(IDbConnection connection);
+    string GetConnectionString();
+    Task&lt;bool&gt; ValidateConnectionAsync(string connectionString);
+}</code></pre>
+                        </div>
+                        <p><strong>Configuration Support:</strong></p>
+                        <ul>
+                            <li>Multiple connection string environments (Development, Production)</li>
+                            <li>Connection string encryption for security</li>
+                            <li>Connection pooling optimization</li>
+                            <li>Failover and retry logic</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-detail">
+                    <h3>DatabaseTransactionService</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> Manages complex multi-step database transactions.</p>
+                        <div class="code-section">
+                            <pre><code>public class DatabaseTransactionService
+{
+    Task&lt;Result&lt;IDbTransaction&gt;&gt; BeginTransactionAsync();
+    Task&lt;Result&gt; CommitTransactionAsync(IDbTransaction transaction);
+    Task&lt;Result&gt; RollbackTransactionAsync(IDbTransaction transaction);
+    Task&lt;Result&gt; ExecuteInTransactionAsync&lt;T&gt;(Func&lt;IDbTransaction, Task&lt;T&gt;&gt; operation);
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuration Infrastructure -->
+            <section class="doc-section">
+                <h2>⚙️ Configuration Infrastructure</h2>
+                
+                <div class="service-detail">
+                    <h3>IConfigurationService</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> Centralized configuration management for MTM application settings.</p>
+                        <div class="code-section">
+                            <pre><code>public interface IConfigurationService
+{
+    T GetValue&lt;T&gt;(string key);
+    T GetValue&lt;T&gt;(string key, T defaultValue);
+    Task&lt;Result&gt; SetValueAsync&lt;T&gt;(string key, T value);
+    Task&lt;Result&gt; ReloadConfigurationAsync();
+    Task&lt;Result&lt;Dictionary&lt;string, object&gt;&gt;&gt; GetAllSettingsAsync();
+    string GetConnectionString(string name);
+    bool IsFeatureEnabled(string featureName);
+}</code></pre>
+                        </div>
+                        <p><strong>Configuration Sources:</strong></p>
+                        <ul>
+                            <li>appsettings.json for application settings</li>
+                            <li>Environment variables for deployment-specific values</li>
+                            <li>Database configuration for user preferences</li>
+                            <li>Azure Key Vault integration for sensitive settings</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-detail">
+                    <h3>IApplicationStateService</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> Manages application-wide state and session information.</p>
+                        <div class="code-section">
+                            <pre><code>public interface IApplicationStateService
+{
+    Task&lt;Result&lt;User&gt;&gt; GetCurrentUserAsync();
+    Task&lt;Result&gt; SetCurrentUserAsync(User user);
+    Task&lt;Result&lt;Dictionary&lt;string, object&gt;&gt;&gt; GetApplicationStateAsync();
+    Task&lt;Result&gt; UpdateApplicationStateAsync(string key, object value);
+    Task&lt;Result&gt; ClearApplicationStateAsync();
+    bool IsUserLoggedIn();
+    Task&lt;Result&gt; LogoutUserAsync();
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Logging and Monitoring -->
+            <section class="doc-section">
+                <h2>📊 Logging and Monitoring Infrastructure</h2>
+                
+                <div class="service-detail">
+                    <h3>ILoggingUtility</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> Enhanced logging capabilities for MTM-specific operations.</p>
+                        <div class="code-section">
+                            <pre><code>public interface ILoggingUtility
+{
+    Task LogInventoryOperationAsync(InventoryOperation operation);
+    Task LogUserActionAsync(string userId, string action, object details);
+    Task LogErrorWithContextAsync(Exception ex, Dictionary&lt;string, object&gt; context);
+    Task LogPerformanceMetricAsync(string operation, TimeSpan duration);
+    Task LogSecurityEventAsync(SecurityEvent securityEvent);
+    Task&lt;Result&lt;LogAnalytics&gt;&gt; GenerateLogAnalyticsAsync(DateRange range);
+}</code></pre>
+                        </div>
+                        <p><strong>Logging Destinations:</strong></p>
+                        <ul>
+                            <li>Local file system with rotation policies</li>
+                            <li>Database logging for audit trails</li>
+                            <li>Azure Application Insights for cloud monitoring</li>
+                            <li>Windows Event Log for system integration</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Caching Infrastructure -->
+            <section class="doc-section">
+                <h2>💾 Caching Infrastructure</h2>
+                
+                <div class="service-detail">
+                    <h3>ICacheService</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> High-performance caching for frequently accessed MTM data.</p>
+                        <div class="code-section">
+                            <pre><code>public interface ICacheService
+{
+    Task&lt;Result&lt;T&gt;&gt; GetAsync&lt;T&gt;(string key);
+    Task&lt;Result&gt; SetAsync&lt;T&gt;(string key, T value, TimeSpan? expiration = null);
+    Task&lt;Result&gt; RemoveAsync(string key);
+    Task&lt;Result&gt; ClearAsync();
+    Task&lt;Result&lt;bool&gt;&gt; ExistsAsync(string key);
+    Task&lt;Result&lt;CacheStatistics&gt;&gt; GetStatisticsAsync();
+}</code></pre>
+                        </div>
+                        <p><strong>Caching Strategies:</strong></p>
+                        <ul>
+                            <li>In-memory caching for frequently accessed data</li>
+                            <li>Distributed caching for multi-instance deployments</li>
+                            <li>Cache-aside pattern with fallback to database</li>
+                            <li>Intelligent cache invalidation for data consistency</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Infrastructure -->
+            <section class="doc-section">
+                <h2>🔒 Security Infrastructure</h2>
+                
+                <div class="service-detail">
+                    <h3>ISecurityService</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> Comprehensive security services for MTM application protection.</p>
+                        <div class="code-section">
+                            <pre><code>public interface ISecurityService
+{
+    Task&lt;Result&lt;string&gt;&gt; EncryptAsync(string plainText);
+    Task&lt;Result&lt;string&gt;&gt; DecryptAsync(string encryptedText);
+    Task&lt;Result&lt;string&gt;&gt; HashPasswordAsync(string password);
+    Task&lt;Result&lt;bool&gt;&gt; VerifyPasswordAsync(string password, string hash);
+    Task&lt;Result&lt;SecurityToken&gt;&gt; GenerateTokenAsync(User user);
+    Task&lt;Result&lt;ClaimsPrincipal&gt;&gt; ValidateTokenAsync(string token);
+}</code></pre>
+                        </div>
+                        <p><strong>Security Features:</strong></p>
+                        <ul>
+                            <li>AES-256 encryption for sensitive data</li>
+                            <li>bcrypt password hashing with salt</li>
+                            <li>JWT token-based authentication</li>
+                            <li>Role-based authorization framework</li>
+                            <li>Security audit logging</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-detail">
+                    <h3>IAuthenticationService</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> User authentication and session management.</p>
+                        <div class="code-section">
+                            <pre><code>public interface IAuthenticationService
+{
+    Task&lt;Result&lt;AuthenticationResult&gt;&gt; AuthenticateAsync(string username, string password);
+    Task&lt;Result&gt; LogoutAsync(string sessionId);
+    Task&lt;Result&lt;bool&gt;&gt; IsAuthenticatedAsync(string sessionId);
+    Task&lt;Result&gt; RefreshSessionAsync(string sessionId);
+    Task&lt;Result&lt;SessionInfo&gt;&gt; GetSessionInfoAsync(string sessionId);
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-detail">
+                    <h3>IAuthorizationService</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> Role-based access control and permissions management.</p>
+                        <div class="code-section">
+                            <pre><code>public interface IAuthorizationService
+{
+    Task&lt;Result&lt;bool&gt;&gt; HasPermissionAsync(string userId, string permission);
+    Task&lt;Result&lt;bool&gt;&gt; IsInRoleAsync(string userId, string role);
+    Task&lt;Result&lt;IEnumerable&lt;string&gt;&gt;&gt; GetUserPermissionsAsync(string userId);
+    Task&lt;Result&lt;IEnumerable&lt;string&gt;&gt;&gt; GetUserRolesAsync(string userId);
+    Task&lt;Result&gt; GrantPermissionAsync(string userId, string permission);
+    Task&lt;Result&gt; RevokePermissionAsync(string userId, string permission);
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Validation Infrastructure -->
+            <section class="doc-section">
+                <h2>✅ Validation Infrastructure</h2>
+                
+                <div class="service-detail">
+                    <h3>IValidationService</h3>
+                    <div class="service-info">
+                        <p><strong>Purpose:</strong> Comprehensive data validation and business rule enforcement.</p>
+                        <div class="code-section">
+                            <pre><code>public interface IValidationService
+{
+    Task&lt;Result&lt;ValidationResult&gt;&gt; ValidateAsync&lt;T&gt;(T entity);
+    Task&lt;Result&lt;ValidationResult&gt;&gt; ValidateAsync&lt;T&gt;(T entity, string ruleSet);
+    Task&lt;Result&lt;ValidationResult&gt;&gt; ValidatePropertyAsync&lt;T&gt;(T entity, string propertyName);
+    Task&lt;Result&lt;bool&gt;&gt; IsValidAsync&lt;T&gt;(T entity);
+    ValidationResult ValidateRequired(string value, string fieldName);
+    ValidationResult ValidateRange(int value, int min, int max, string fieldName);
+    ValidationResult ValidateEmail(string email);
+    ValidationResult ValidatePhoneNumber(string phoneNumber);
+}</code></pre>
+                        </div>
+                        <p><strong>Validation Features:</strong></p>
+                        <ul>
+                            <li>FluentValidation integration for complex rules</li>
+                            <li>Custom MTM business rule validators</li>
+                            <li>Data annotation support</li>
+                            <li>Cross-field validation capabilities</li>
+                            <li>Localized error messages</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Service Registration -->
+            <section class="doc-section">
+                <h2>🔄 Service Registration and DI</h2>
+                
+                <div class="code-section">
+                    <h3>ServiceCollectionExtensions Registration</h3>
+                    <pre><code>public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddMTMCoreServices(this IServiceCollection services, 
+        IConfiguration configuration)
+    {
+        // Database Services
+        services.AddScoped&lt;IDatabaseService, DatabaseService&gt;();
+        services.AddScoped&lt;IDbConnectionFactory, MySqlConnectionFactory&gt;();
+        services.AddScoped&lt;DatabaseTransactionService&gt;();
+
+        // Configuration Services
+        services.AddSingleton&lt;IConfigurationService, ConfigurationService&gt;();
+        services.AddSingleton&lt;IApplicationStateService, ApplicationStateService&gt;();
+
+        // Logging Services
+        services.AddScoped&lt;ILoggingUtility, LoggingUtility&gt;();
+
+        // Caching Services
+        services.AddSingleton&lt;ICacheService, MemoryCacheService&gt;();
+        services.AddMemoryCache();
+
+        // Security Services
+        services.AddScoped&lt;ISecurityService, SecurityService&gt;();
+        services.AddScoped&lt;IAuthenticationService, AuthenticationService&gt;();
+        services.AddScoped&lt;IAuthorizationService, AuthorizationService&gt;();
+
+        // Validation Services
+        services.AddScoped&lt;IValidationService, FluentValidationService&gt;();
+        services.AddScoped&lt;IDataValidationService, DataValidationService&gt;();
+
+        // Core Services Aggregate
+        services.AddScoped&lt;ICoreServices, CoreServicesAggregate&gt;();
+
+        return services;
+    }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Performance Requirements -->
+            <section class="doc-section">
+                <h2>📈 Performance and Monitoring</h2>
+                
+                <div class="performance-grid">
+                    <div class="perf-metric">
+                        <h4>🎯 Response Time Targets</h4>
+                        <ul>
+                            <li>Database operations: &lt; 500ms</li>
+                            <li>Cache operations: &lt; 50ms</li>
+                            <li>Authentication: &lt; 1 second</li>
+                            <li>Configuration reads: &lt; 100ms</li>
+                        </ul>
+                    </div>
+
+                    <div class="perf-metric">
+                        <h4>🔄 Throughput Requirements</h4>
+                        <ul>
+                            <li>Database connections: 100 concurrent</li>
+                            <li>Cache operations: 1000 ops/second</li>
+                            <li>Log writes: 500 events/second</li>
+                            <li>Authentication checks: 200/second</li>
+                        </ul>
+                    </div>
+
+                    <div class="perf-metric">
+                        <h4>📊 Monitoring Metrics</h4>
+                        <ul>
+                            <li>Response time percentiles (P50, P95, P99)</li>
+                            <li>Error rates by service</li>
+                            <li>Cache hit/miss ratios</li>
+                            <li>Database connection pool usage</li>
+                        </ul>
+                    </div>
+
+                    <div class="perf-metric">
+                        <h4>🛡️ Reliability Standards</h4>
+                        <ul>
+                            <li>99.9% uptime requirement</li>
+                            <li>Graceful degradation patterns</li>
+                            <li>Circuit breaker implementations</li>
+                            <li>Automatic retry mechanisms</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Health Monitoring -->
+            <section class="doc-section">
+                <h2>🏥 Health Check Implementation</h2>
+                
+                <div class="code-section">
+                    <h3>Service Health Monitoring</h3>
+                    <pre><code>public class CoreServicesHealthCheck : IHealthCheck
+{
+    public async Task&lt;HealthCheckResult&gt; CheckHealthAsync(HealthCheckContext context, 
+        CancellationToken cancellationToken)
+    {
+        var checks = new List&lt;(string Name, Task&lt;bool&gt; Check)&gt;
+        {
+            ("Database", CheckDatabaseHealthAsync()),
+            ("Cache", CheckCacheHealthAsync()),
+            ("Configuration", CheckConfigurationHealthAsync()),
+            ("Security", CheckSecurityHealthAsync())
+        };
+
+        var results = await Task.WhenAll(checks.Select(c =&gt; c.Check));
+        var failures = checks.Where((c, i) =&gt; !results[i]).Select(c =&gt; c.Name);
+
+        return failures.Any() 
+            ? HealthCheckResult.Unhealthy($"Failed services: {string.Join(", ", failures)}")
+            : HealthCheckResult.Healthy("All core services operational");
+    }
+}</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>📍 <strong>Navigation:</strong> 
+                <a href="../../../PlainEnglish/FileDefinitions/Services/ICoreServices.html">Plain English Guide</a> | 
+                <a href="../../../index.html">Documentation Home</a> | 
+                <a href="../../../Technical/index.html">Technical Index</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

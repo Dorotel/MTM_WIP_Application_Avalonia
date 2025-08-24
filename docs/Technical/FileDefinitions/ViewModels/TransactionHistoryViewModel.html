@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransactionHistoryViewModel - Technical Documentation</title>
+    <link rel="stylesheet" href="../../../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📜 TransactionHistoryViewModel - Technical Documentation</h1>
+            <div class="nav-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/TransactionHistoryViewModel.html" class="nav-link plain-english">📖 Plain English Version</a>
+                <a href="../../../index.html" class="nav-link">🏠 Documentation Home</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Technical Overview -->
+            <section class="doc-section">
+                <h2>🔧 Technical Implementation</h2>
+                <div class="code-block">
+                    <h3>Namespace & Dependencies</h3>
+                    <pre><code>namespace MTM_WIP_Application_Avalonia.ViewModels
+using ReactiveUI;
+using Microsoft.Extensions.Logging;
+using MTM.Services.ITransactionService;
+using MTM_WIP_Application_Avalonia.Services.IApplicationStateService;
+using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Linq;</code></pre>
+                </div>
+
+                <div class="technical-details">
+                    <h3>Class Definition</h3>
+                    <ul>
+                        <li><strong>Base Class:</strong> BaseViewModel (ReactiveUI foundation)</li>
+                        <li><strong>Pattern:</strong> MVVM with Advanced Filtering and Export Capabilities</li>
+                        <li><strong>DI Dependencies:</strong> ITransactionService, IApplicationStateService, ILogger</li>
+                        <li><strong>Purpose:</strong> Comprehensive transaction audit trail and reporting interface</li>
+                        <li><strong>Data Volume:</strong> High - designed for large transaction datasets with pagination</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Observable Properties -->
+            <section class="doc-section">
+                <h2>🔄 Observable Properties</h2>
+                <div class="property-grid">
+                    <div class="property-item">
+                        <h4>Transactions (ObservableCollection)</h4>
+                        <p><strong>Collection Property:</strong> Main transaction data source</p>
+                        <p><strong>Type:</strong> ObservableCollection&lt;TransactionViewModel&gt;</p>
+                        <p><strong>UI Binding:</strong> DataGrid ItemsSource</p>
+                        <p><strong>Pagination:</strong> Loads in chunks for performance</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>FilteredTransactions (ReadOnlyObservableCollection)</h4>
+                        <p><strong>Derived Property:</strong> Filtered view of Transactions</p>
+                        <p><strong>Updates:</strong> When filter criteria change</p>
+                        <p><strong>UI Binding:</strong> Actual DataGrid display source</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>StartDate (DateTime)</h4>
+                        <p><strong>Reactive Property:</strong> Date range filter start</p>
+                        <p><strong>Default:</strong> 30 days ago</p>
+                        <p><strong>UI Binding:</strong> DatePicker SelectedDate</p>
+                        <p><strong>Validation:</strong> Must be ≤ EndDate</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>EndDate (DateTime)</h4>
+                        <p><strong>Reactive Property:</strong> Date range filter end</p>
+                        <p><strong>Default:</strong> Today + 1 day</p>
+                        <p><strong>UI Binding:</strong> DatePicker SelectedDate</p>
+                        <p><strong>Validation:</strong> Must be ≥ StartDate</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>TransactionTypeFilter (TransactionType?)</h4>
+                        <p><strong>Reactive Property:</strong> Filter by transaction type</p>
+                        <p><strong>Values:</strong> null (All), IN, OUT, TRANSFER</p>
+                        <p><strong>UI Binding:</strong> ComboBox SelectedItem</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>UserFilter (string)</h4>
+                        <p><strong>Reactive Property:</strong> Filter by user name</p>
+                        <p><strong>Source:</strong> Populated from available users</p>
+                        <p><strong>UI Binding:</strong> ComboBox with user lookup</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>PartIdFilter (string)</h4>
+                        <p><strong>Reactive Property:</strong> Filter by part number</p>
+                        <p><strong>UI Binding:</strong> TextBox with search functionality</p>
+                        <p><strong>Search:</strong> Supports partial matching</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>OperationFilter (string)</h4>
+                        <p><strong>Reactive Property:</strong> Filter by operation number</p>
+                        <p><strong>Values:</strong> "All", "90", "100", "110", etc.</p>
+                        <p><strong>UI Binding:</strong> ComboBox SelectedItem</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>SelectedTransaction (TransactionViewModel)</h4>
+                        <p><strong>Reactive Property:</strong> Currently selected row</p>
+                        <p><strong>UI Binding:</strong> DataGrid SelectedItem</p>
+                        <p><strong>Detail View:</strong> Enables transaction detail display</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>IsLoading (bool)</h4>
+                        <p><strong>Reactive Property:</strong> Data loading indicator</p>
+                        <p><strong>UI Impact:</strong> Shows progress bar, disables controls</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>TotalCount (int)</h4>
+                        <p><strong>Computed Property:</strong> Total transaction count</p>
+                        <p><strong>UI Display:</strong> Status bar information</p>
+                    </div>
+
+                    <div class="property-item">
+                        <h4>FilteredCount (int)</h4>
+                        <p><strong>Computed Property:</strong> Count of filtered results</p>
+                        <p><strong>UI Display:</strong> "Showing X of Y transactions" indicator</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reactive Commands -->
+            <section class="doc-section">
+                <h2>⚡ Reactive Commands</h2>
+                <div class="command-grid">
+                    <div class="command-item">
+                        <h4>LoadTransactionsCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Loads transaction data with current filters</p>
+                        <p><strong>Implementation:</strong></p>
+                        <div class="code-block">
+                            <pre><code>LoadTransactionsCommand = ReactiveCommand.CreateFromTask(async () =>
+{
+    try
+    {
+        IsLoading = true;
+        
+        var filter = new TransactionFilter
+        {
+            StartDate = StartDate,
+            EndDate = EndDate,
+            TransactionType = TransactionTypeFilter,
+            UserId = UserFilter != "All" ? UserFilter : null,
+            PartId = !string.IsNullOrWhiteSpace(PartIdFilter) ? PartIdFilter : null,
+            Operation = OperationFilter != "All" ? OperationFilter : null
+        };
+        
+        var transactions = await _transactionService.GetTransactionHistoryAsync(filter);
+        
+        Transactions.Clear();
+        foreach (var transaction in transactions)
+        {
+            Transactions.Add(new TransactionViewModel(transaction));
+        }
+        
+        Logger.LogInformation("Loaded {Count} transactions", Transactions.Count);
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Failed to load transactions");
+        throw;
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+});</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>RefreshCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Refreshes transaction data with current filters</p>
+                        <p><strong>Auto-Refresh:</strong> Triggered when filters change</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ClearFiltersCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;Unit, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Resets all filters to default values</p>
+                        <p><strong>Default State:</strong> Last 30 days, all types, all users</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ExportCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;string, Unit&gt;</p>
+                        <p><strong>Parameter:</strong> Export format ("Excel", "PDF", "CSV")</p>
+                        <p><strong>Purpose:</strong> Exports filtered transactions to file</p>
+                        <p><strong>Permission:</strong> Requires export permissions</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>ViewDetailsCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;TransactionViewModel, Unit&gt;</p>
+                        <p><strong>Purpose:</strong> Shows detailed transaction information</p>
+                        <p><strong>Display:</strong> Opens detail dialog or panel</p>
+                    </div>
+
+                    <div class="command-item">
+                        <h4>SetDateRangeCommand</h4>
+                        <p><strong>Type:</strong> ReactiveCommand&lt;string, Unit&gt;</p>
+                        <p><strong>Parameter:</strong> Preset range ("Today", "Week", "Month")</p>
+                        <p><strong>Purpose:</strong> Quick date range selection</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Advanced Filtering System -->
+            <section class="doc-section">
+                <h2>🔍 Advanced Filtering Implementation</h2>
+                <div class="code-block">
+                    <h3>Multi-Criteria Reactive Filtering</h3>
+                    <pre><code>// Reactive Filter Setup
+private void SetupFiltering()
+{
+    var filterObservable = this.WhenAnyValue(
+        vm => vm.StartDate,
+        vm => vm.EndDate,
+        vm => vm.TransactionTypeFilter,
+        vm => vm.UserFilter,
+        vm => vm.PartIdFilter,
+        vm => vm.OperationFilter,
+        (start, end, type, user, part, operation) => 
+            new TransactionFilter(start, end, type, user, part, operation))
+        .Throttle(TimeSpan.FromMilliseconds(500))
+        .Where(filter => filter.IsValid)
+        .ObserveOn(RxApp.MainThreadScheduler);
+    
+    filterObservable.Subscribe(async filter => await ApplyFiltersAsync(filter));
+}
+
+// Server-Side Filtering (for performance)
+private async Task ApplyFiltersAsync(TransactionFilter filter)
+{
+    try
+    {
+        IsLoading = true;
+        
+        // Use server-side filtering for large datasets
+        var filteredTransactions = await _transactionService.GetFilteredTransactionsAsync(filter);
+        
+        // Update collection on UI thread
+        Transactions.Clear();
+        foreach (var transaction in filteredTransactions)
+        {
+            Transactions.Add(new TransactionViewModel(transaction));
+        }
+        
+        FilteredCount = Transactions.Count;
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Failed to apply filters: {@Filter}", filter);
+        ShowErrorMessage("Failed to apply filters. Please try again.");
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+}
+
+// Transaction Filter Validation
+public class TransactionFilter
+{
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public TransactionType? TransactionType { get; set; }
+    public string? UserId { get; set; }
+    public string? PartId { get; set; }
+    public string? Operation { get; set; }
+    
+    public bool IsValid => 
+        StartDate <= EndDate && 
+        (EndDate - StartDate).TotalDays <= 365; // Prevent excessive date ranges
+}</code></pre>
+                </div>
+
+                <div class="filtering-features">
+                    <h3>Filter Capabilities</h3>
+                    <ul>
+                        <li><strong>Date Range:</strong> Flexible date selection with validation</li>
+                        <li><strong>Transaction Type:</strong> Filter by IN, OUT, TRANSFER, or ALL</li>
+                        <li><strong>User Filtering:</strong> Show transactions by specific users</li>
+                        <li><strong>Part Search:</strong> Partial matching on part numbers</li>
+                        <li><strong>Operation Filtering:</strong> Filter by manufacturing operation</li>
+                        <li><strong>Composite Filters:</strong> All filters work together simultaneously</li>
+                        <li><strong>Server-Side Processing:</strong> Efficient for large datasets</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Transaction ViewModel -->
+            <section class="doc-section">
+                <h2>📊 Transaction Data Model</h2>
+                <div class="code-block">
+                    <h3>TransactionViewModel Structure</h3>
+                    <pre><code>public class TransactionViewModel : ReactiveObject
+{
+    public string TransactionId { get; set; }
+    public DateTime Timestamp { get; set; }
+    public TransactionType Type { get; set; }
+    public string PartId { get; set; }
+    public string PartDescription { get; set; }
+    public int Quantity { get; set; }
+    public string Operation { get; set; }
+    public string Location { get; set; }
+    public string? ToLocation { get; set; } // For transfers
+    public string UserId { get; set; }
+    public string UserName { get; set; }
+    public string? WorkOrderNumber { get; set; }
+    public string? Comments { get; set; }
+    
+    // Computed Properties
+    public string TypeDisplayText => Type switch
+    {
+        TransactionType.IN => "➕ ADD",
+        TransactionType.OUT => "➖ REMOVE", 
+        TransactionType.TRANSFER => "🔄 TRANSFER",
+        _ => "❓ UNKNOWN"
+    };
+    
+    public IBrush TypeBrush => Type switch
+    {
+        TransactionType.IN => Brushes.Green,
+        TransactionType.OUT => Brushes.Red,
+        TransactionType.TRANSFER => Brushes.Blue,
+        _ => Brushes.Gray
+    };
+    
+    public string LocationDisplay => Type == TransactionType.TRANSFER 
+        ? $"{Location} → {ToLocation}"
+        : Location;
+    
+    public string QuantityDisplay => Type == TransactionType.OUT 
+        ? $"-{Quantity}"
+        : $"+{Quantity}";
+    
+    // Commands
+    public ReactiveCommand&lt;Unit, Unit&gt; ViewDetailsCommand { get; }
+    public ReactiveCommand&lt;Unit, Unit&gt; ViewRelatedCommand { get; }
+}</code></pre>
+                </div>
+
+                <div class="ui-integration">
+                    <h3>AXAML DataGrid Binding</h3>
+                    <div class="code-block">
+                        <pre><code>&lt;!-- Transaction History DataGrid --&gt;
+&lt;DataGrid ItemsSource="{Binding FilteredTransactions}"
+          SelectedItem="{Binding SelectedTransaction}"
+          IsReadOnly="True"
+          GridLinesVisibility="Horizontal"&gt;
+    
+    &lt;DataGrid.Columns&gt;
+        &lt;DataGridTextColumn Header="Date/Time" 
+                            Binding="{Binding Timestamp, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"
+                            MinWidth="140"/&gt;
+        &lt;DataGridTemplateColumn Header="Type" MinWidth="100"&gt;
+            &lt;DataGridTemplateColumn.CellTemplate&gt;
+                &lt;DataTemplate&gt;
+                    &lt;TextBlock Text="{Binding TypeDisplayText}"
+                               Foreground="{Binding TypeBrush}"
+                               FontWeight="SemiBold"/&gt;
+                &lt;/DataTemplate&gt;
+            &lt;/DataGridTemplateColumn.CellTemplate&gt;
+        &lt;/DataGridTemplateColumn&gt;
+        &lt;DataGridTextColumn Header="Part ID" 
+                            Binding="{Binding PartId}"
+                            MinWidth="120"/&gt;
+        &lt;DataGridTextColumn Header="Description" 
+                            Binding="{Binding PartDescription}"
+                            MinWidth="200"/&gt;
+        &lt;DataGridTextColumn Header="Quantity" 
+                            Binding="{Binding QuantityDisplay}"
+                            MinWidth="80"/&gt;
+        &lt;DataGridTextColumn Header="Location" 
+                            Binding="{Binding LocationDisplay}"
+                            MinWidth="150"/&gt;
+        &lt;DataGridTextColumn Header="User" 
+                            Binding="{Binding UserName}"
+                            MinWidth="100"/&gt;
+        &lt;DataGridTextColumn Header="Operation" 
+                            Binding="{Binding Operation}"
+                            MinWidth="80"/&gt;
+    &lt;/DataGrid.Columns&gt;
+    
+    &lt;DataGrid.ContextMenu&gt;
+        &lt;ContextMenu&gt;
+            &lt;MenuItem Header="View Details" Command="{Binding ViewDetailsCommand}"/&gt;
+            &lt;MenuItem Header="View Related Transactions" Command="{Binding ViewRelatedCommand}"/&gt;
+            &lt;Separator/&gt;
+            &lt;MenuItem Header="Copy Transaction ID" Command="{Binding CopyIdCommand}"/&gt;
+        &lt;/ContextMenu&gt;
+    &lt;/DataGrid.ContextMenu&gt;
+&lt;/DataGrid&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Export Functionality -->
+            <section class="doc-section">
+                <h2>📤 Export and Reporting</h2>
+                <div class="code-block">
+                    <h3>Multi-Format Export Implementation</h3>
+                    <pre><code>// Export Command Implementation
+ExportCommand = ReactiveCommand.CreateFromTask&lt;string&gt;(async format =>
+{
+    try
+    {
+        var exportData = FilteredTransactions.Select(t => new
+        {
+            DateTime = t.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"),
+            Type = t.TypeDisplayText,
+            PartId = t.PartId,
+            Description = t.PartDescription,
+            Quantity = t.QuantityDisplay,
+            Location = t.LocationDisplay,
+            User = t.UserName,
+            Operation = t.Operation,
+            WorkOrder = t.WorkOrderNumber ?? "",
+            Comments = t.Comments ?? ""
+        }).ToList();
+        
+        var fileName = $"TransactionHistory_{DateTime.Now:yyyyMMdd_HHmmss}";
+        
+        switch (format.ToUpperInvariant())
+        {
+            case "EXCEL":
+                await ExportToExcelAsync(exportData, $"{fileName}.xlsx");
+                break;
+            case "CSV":
+                await ExportToCsvAsync(exportData, $"{fileName}.csv");
+                break;
+            case "PDF":
+                await ExportToPdfAsync(exportData, $"{fileName}.pdf");
+                break;
+        }
+        
+        ShowSuccessMessage($"Export completed: {fileName}");
+        Logger.LogInformation("Exported {Count} transactions to {Format}", exportData.Count, format);
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Export failed for format: {Format}", format);
+        ShowErrorMessage($"Export failed: {ex.Message}");
+    }
+}, this.WhenAnyValue(vm => vm.FilteredCount, count => count > 0));
+
+// Permission-based Export Access
+private bool CanExport()
+{
+    var currentUser = _applicationState.CurrentUser;
+    return currentUser?.HasPermission("EXPORT_TRANSACTIONS") == true;
+}</code></pre>
+                </div>
+
+                <div class="export-features">
+                    <h3>Export Capabilities</h3>
+                    <ul>
+                        <li><strong>Excel Export:</strong> Full formatting with charts and summaries</li>
+                        <li><strong>CSV Export:</strong> Simple data format for import into other systems</li>
+                        <li><strong>PDF Export:</strong> Professional reports with company branding</li>
+                        <li><strong>Filtered Data:</strong> Exports only currently filtered/visible data</li>
+                        <li><strong>Permission Control:</strong> Export restricted to authorized users</li>
+                        <li><strong>Audit Trail:</strong> Export actions logged for compliance</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Database Operations -->
+            <section class="doc-section">
+                <h2>🗄️ Database Integration</h2>
+                <div class="database-operations">
+                    <h3>Service Layer Calls</h3>
+                    <div class="code-block">
+                        <pre><code>// Transaction History Retrieval
+var transactions = await _transactionService.GetTransactionHistoryAsync(filter);
+
+// Filtered History (Server-side)
+var filteredTransactions = await _transactionService.GetFilteredTransactionsAsync(
+    startDate: StartDate,
+    endDate: EndDate,
+    transactionType: TransactionTypeFilter,
+    userId: UserFilter,
+    partId: PartIdFilter,
+    operation: OperationFilter);
+
+// Transaction Detail Lookup
+var transactionDetail = await _transactionService.GetTransactionDetailAsync(transactionId);
+
+// Related Transactions
+var relatedTransactions = await _transactionService.GetRelatedTransactionsAsync(
+    partId, operation, location, timeWindow: TimeSpan.FromHours(24));</code></pre>
+                    </div>
+
+                    <h3>Expected Stored Procedures</h3>
+                    <ul>
+                        <li><strong>sys_transactions_Get_History:</strong> Main transaction history retrieval</li>
+                        <li><strong>sys_transactions_Get_Filtered:</strong> Server-side filtered query</li>
+                        <li><strong>sys_transactions_Get_Detail:</strong> Detailed transaction information</li>
+                        <li><strong>sys_transactions_Get_Related:</strong> Related transaction lookup</li>
+                        <li><strong>sys_users_Get_TransactionUsers:</strong> Users who have made transactions</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Performance Optimization -->
+            <section class="doc-section">
+                <h2>⚡ Performance Optimization</h2>
+                <div class="performance-notes">
+                    <h3>Large Dataset Handling</h3>
+                    <ul>
+                        <li><strong>Server-Side Filtering:</strong> Database-level filtering for performance</li>
+                        <li><strong>Pagination:</strong> Loads data in manageable chunks</li>
+                        <li><strong>Virtual Scrolling:</strong> UI virtualization for large result sets</li>
+                        <li><strong>Background Loading:</strong> Data loaded on background thread</li>
+                        <li><strong>Caching:</strong> Filter results cached for repeated queries</li>
+                    </ul>
+
+                    <h3>UI Responsiveness</h3>
+                    <ul>
+                        <li><strong>Throttled Filtering:</strong> 500ms delay prevents excessive queries</li>
+                        <li><strong>Progressive Loading:</strong> Shows partial results while loading</li>
+                        <li><strong>Async Operations:</strong> All database calls asynchronous</li>
+                        <li><strong>Memory Management:</strong> Old data cleared when applying new filters</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Integration Points -->
+            <section class="doc-section">
+                <h2>🔗 System Integration Points</h2>
+                <div class="integration-grid">
+                    <div class="integration-item">
+                        <h4>All Transaction-Creating ViewModels</h4>
+                        <p>Automatically reflects new transactions from Add/Remove/Transfer operations</p>
+                        <p>Real-time updates when new transactions are committed</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>InventoryViewModel</h4>
+                        <p>Provides transaction history context for inventory items</p>
+                        <p>Enables drill-down from inventory to transaction details</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>UserManagementViewModel</h4>
+                        <p>Shows user activity patterns and transaction volume</p>
+                        <p>Supports user performance analysis and audit requirements</p>
+                    </div>
+
+                    <div class="integration-item">
+                        <h4>Reporting Systems</h4>
+                        <p>Serves as data source for management reports and compliance audits</p>
+                        <p>Integrates with external reporting and analytics tools</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>📜 Technical Documentation | 🏭 MTM WIP Application | ⚡ Powered by Avalonia UI + ReactiveUI</p>
+            <div class="footer-links">
+                <a href="../../../PlainEnglish/FileDefinitions/ViewModels/TransactionHistoryViewModel.html">📖 Plain English Version</a>
+                <a href="../../../Technical/index.html">📚 Technical Documentation Index</a>
+                <a href="../../../index.html">🏠 Documentation Home</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
