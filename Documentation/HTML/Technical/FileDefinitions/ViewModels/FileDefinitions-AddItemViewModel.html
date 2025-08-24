@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-AddItemViewModel - Technical Documentation</title>
+    <meta name="description" content="Technical documentation for AddItemViewModel - Inventory Addition ViewModel Implementation in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, AddItemViewModel, ViewModel, technical documentation, MVVM, ReactiveUI">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../../assets/css/responsive.css">
+    
+    <!-- Additional MTM Styling for FileDefinitions -->
+    <style>
+        /* FileDefinitions-specific styling for Technical version */
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-gold-dark: #DAA520;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-gray: #CCCCCC;
+            --mtm-purple: #4B45ED;
+            --mtm-magenta: #BA45ED;
+            --mtm-tech-blue: #1a73e8;
+            --mtm-tech-green: #137333;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--mtm-tech-blue) 0%, var(--mtm-purple) 100%);
+            color: var(--mtm-white);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.3);
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+            background: linear-gradient(135deg, var(--mtm-gold-dark) 0%, var(--mtm-gold) 100%);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-tech-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .dependency-grid, .pattern-grid, .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .dependency-card, .pattern-card, .requirement-card {
+            background: rgba(26, 115, 232, 0.1);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .dependency-card:hover, .pattern-card:hover, .requirement-card:hover {
+            background: rgba(26, 115, 232, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(26, 115, 232, 0.2);
+        }
+
+        .rule-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .rule-critical {
+            border-left-color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .rule-warning {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .file-info {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .file-path, .file-type {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .nav-card {
+            background: rgba(75, 69, 237, 0.1);
+            border: 1px solid rgba(75, 69, 237, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: var(--mtm-white);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-card:hover {
+            background: rgba(75, 69, 237, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(75, 69, 237, 0.3);
+        }
+
+        .nav-icon {
+            font-size: 2em;
+            min-width: 60px;
+        }
+
+        h1, h2, h3 {
+            color: var(--mtm-gold);
+            margin-top: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--mtm-tech-blue);
+            padding-bottom: 0.5rem;
+            color: var(--mtm-tech-blue);
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            color: var(--mtm-purple);
+            margin-bottom: 0.5rem;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: var(--mtm-gold);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 1.5rem 1rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+            
+            .nav-button {
+                display: block;
+                margin: 0.5rem 0;
+                min-width: auto;
+            }
+            
+            .dependency-grid, .pattern-grid, .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-reference navigation (to be populated in Phase3) -->
+        <div class="cross-reference-nav">
+            <h3>📋 Quick Navigation</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-AddItemViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="../Services/FileDefinitions-InventoryService.html" class="nav-button">🗃️ Inventory Service</a>
+            <a href="../../index.html" class="nav-button">📚 Documentation Home</a>
+            <a href="../../../index.html" class="nav-button">🏠 Main Documentation</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="header">
+            <div class="header-content">
+                <div class="icon-container">
+                    <span class="file-icon" style="font-size: 3em;">📝</span>
+                </div>
+                <div class="header-text">
+                    <h1>AddItemViewModel.cs</h1>
+                    <p class="subtitle">Inventory Addition ViewModel Implementation</p>
+                </div>
+            </div>
+            <div class="file-info">
+                <span class="file-path">📁 ViewModels/AddItemViewModel.cs</span>
+                <span class="file-type">🔧 ViewModel Class</span>
+            </div>
+        </div>
+
+        <!-- Technical Overview -->
+        <div class="content-section">
+            <h2>🔍 Technical Overview</h2>
+            <div class="info-box info-primary">
+                <p><strong>AddItemViewModel</strong> is a ReactiveUI-based ViewModel that inherits from <code>BaseViewModel</code> and manages the UI logic for adding inventory items to the MTM WIP system. It uses dependency injection for service management and follows the MVVM pattern for clean separation of concerns.</p>
+            </div>
+
+            <div class="code-block">
+                <h3>📋 Class Definition</h3>
+                <pre><code>public class AddItemViewModel : BaseViewModel
+{
+    private readonly MTM.Services.IInventoryService _inventoryService;
+    private readonly IApplicationStateService _applicationState;
+    
+    public AddItemViewModel(
+        MTM.Services.IInventoryService inventoryService,
+        IApplicationStateService applicationState,
+        ILogger&lt;AddItemViewModel&gt; logger) : base(logger)
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Constructor Analysis -->
+        <div class="content-section">
+            <h2>🏗️ Constructor & Dependency Injection</h2>
+            <div class="implementation-details">
+                <h3>📥 Injected Dependencies</h3>
+                <div class="dependency-grid">
+                    <div class="dependency-card">
+                        <h4>MTM.Services.IInventoryService</h4>
+                        <p><strong>Purpose:</strong> Core inventory management operations</p>
+                        <p><strong>Usage:</strong> Adding items, validation, database operations</p>
+                        <p><strong>Type:</strong> Business Logic Service</p>
+                    </div>
+                    <div class="dependency-card">
+                        <h4>IApplicationStateService</h4>
+                        <p><strong>Purpose:</strong> Global application state management</p>
+                        <p><strong>Usage:</strong> Real-time updates, state synchronization</p>
+                        <p><strong>Type:</strong> Infrastructure Service</p>
+                    </div>
+                    <div class="dependency-card">
+                        <h4>ILogger&lt;AddItemViewModel&gt;</h4>
+                        <p><strong>Purpose:</strong> Logging and diagnostics</p>
+                        <p><strong>Usage:</strong> Error logging, operation tracking</p>
+                        <p><strong>Type:</strong> Infrastructure Service (via BaseViewModel)</p>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <h3>🔧 Constructor Implementation</h3>
+                    <pre><code>public AddItemViewModel(
+    MTM.Services.IInventoryService inventoryService,
+    IApplicationStateService applicationState,
+    ILogger&lt;AddItemViewModel&gt; logger) : base(logger)
+{
+    // Null guard validation
+    _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
+    _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+
+    // Initialization logging
+    Logger.LogInformation("AddItemViewModel initialized with dependency injection");
+
+    // Command and property setup
+    InitializeCommands();
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Patterns -->
+        <div class="content-section">
+            <h2>⚙️ Implementation Patterns</h2>
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <h3>🏗️ MVVM Architecture</h3>
+                    <ul>
+                        <li>Inherits from <code>BaseViewModel</code></li>
+                        <li>Uses ReactiveUI for property change notifications</li>
+                        <li>Implements command pattern for user interactions</li>
+                        <li>Clean separation between UI and business logic</li>
+                    </ul>
+                </div>
+                <div class="pattern-card">
+                    <h3>💉 Dependency Injection</h3>
+                    <ul>
+                        <li>Constructor-based injection</li>
+                        <li>Null guard validation for all dependencies</li>
+                        <li>Service lifetime managed by DI container</li>
+                        <li>Follows MTM service registration patterns</li>
+                    </ul>
+                </div>
+                <div class="pattern-card">
+                    <h3>📝 Logging Integration</h3>
+                    <ul>
+                        <li>Structured logging through ILogger</li>
+                        <li>Initialization tracking</li>
+                        <li>Error logging and diagnostics</li>
+                        <li>Audit trail for inventory operations</li>
+                    </ul>
+                </div>
+                <div class="pattern-card">
+                    <h3>🔧 Command Initialization</h3>
+                    <ul>
+                        <li>Deferred command setup via <code>InitializeCommands()</code></li>
+                        <li>ReactiveCommand implementation</li>
+                        <li>Async operation support</li>
+                        <li>Error handling and validation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Integration -->
+        <div class="content-section">
+            <h2>🔗 Service Integration</h2>
+            <div class="integration-details">
+                <h3>📊 InventoryService Integration</h3>
+                <div class="code-block">
+                    <pre><code>// Typical inventory addition pattern
+private async Task AddInventoryItemAsync()
+{
+    try
+    {
+        var result = await _inventoryService.AddItemAsync(new AddItemRequest
+        {
+            PartId = SelectedPartId,
+            Operation = SelectedOperation, // Workflow step number
+            Quantity = EnteredQuantity,
+            Location = SelectedLocation,
+            TransactionType = TransactionType.IN, // Always IN for additions
+            UserId = _applicationState.CurrentUser.Id,
+            Notes = ItemNotes
+        });
+
+        if (result.IsSuccess)
+        {
+            Logger.LogInformation($"Successfully added {EnteredQuantity} of {SelectedPartId}");
+            await RefreshData();
+        }
+        else
+        {
+            Logger.LogWarning($"Failed to add inventory item: {result.ErrorMessage}");
+            // Handle error display
+        }
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Error adding inventory item");
+        // Handle exception
+    }
+}</code></pre>
+                </div>
+
+                <h3>🌐 ApplicationStateService Integration</h3>
+                <div class="code-block">
+                    <pre><code>// State management integration
+private void UpdateApplicationState()
+{
+    _applicationState.UpdateLastInventoryAction(new InventoryAction
+    {
+        ActionType = "ADD",
+        PartId = SelectedPartId,
+        Quantity = EnteredQuantity,
+        Timestamp = DateTime.UtcNow,
+        UserId = _applicationState.CurrentUser.Id
+    });
+
+    // Trigger real-time updates across the application
+    _applicationState.NotifyInventoryChanged();
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Future Implementation -->
+        <div class="content-section">
+            <h2>🚧 Future Implementation Requirements</h2>
+            <div class="requirements-grid">
+                <div class="requirement-card">
+                    <h3>📋 Form Properties</h3>
+                    <ul>
+                        <li><code>SelectedPartId</code> - Part selection with validation</li>
+                        <li><code>SelectedOperation</code> - Operation number selection</li>
+                        <li><code>SelectedLocation</code> - Location selection</li>
+                        <li><code>EnteredQuantity</code> - Quantity with numeric validation</li>
+                        <li><code>ItemNotes</code> - Optional notes field</li>
+                    </ul>
+                </div>
+                <div class="requirement-card">
+                    <h3>⚡ Command Properties</h3>
+                    <ul>
+                        <li><code>AddItemCommand</code> - Main addition command</li>
+                        <li><code>ResetFormCommand</code> - Form reset functionality</li>
+                        <li><code>LoadDataCommand</code> - Load dropdown data</li>
+                        <li><code>ValidateCommand</code> - Form validation</li>
+                    </ul>
+                </div>
+                <div class="requirement-card">
+                    <h3>🔍 Validation Logic</h3>
+                    <ul>
+                        <li>Part ID existence validation</li>
+                        <li>Operation number format validation</li>
+                        <li>Quantity positive integer validation</li>
+                        <li>Location availability validation</li>
+                        <li>User authorization validation</li>
+                    </ul>
+                </div>
+                <div class="requirement-card">
+                    <h3>🔄 Reactive Patterns</h3>
+                    <ul>
+                        <li><code>WhenAnyValue</code> for form validation</li>
+                        <li><code>ObservableAsPropertyHelper</code> for computed properties</li>
+                        <li>Exception handling subscriptions</li>
+                        <li>Property change notifications</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- MTM Business Rules -->
+        <div class="content-section">
+            <h2>📋 MTM Business Rules Implementation</h2>
+            <div class="rules-container">
+                <div class="rule-box rule-critical">
+                    <h3>🚨 Critical Implementation Rules</h3>
+                    <ul>
+                        <li><strong>TransactionType.IN:</strong> Always use IN for inventory additions</li>
+                        <li><strong>Stored Procedures:</strong> All database operations via stored procedures only</li>
+                        <li><strong>Operation Numbers:</strong> Treat as workflow step identifiers, not transaction types</li>
+                        <li><strong>User Context:</strong> Always include current user in operations</li>
+                    </ul>
+                </div>
+                <div class="rule-box rule-warning">
+                    <h3>⚠️ Validation Requirements</h3>
+                    <ul>
+                        <li><strong>Required Fields:</strong> PartId, Operation, Location, Quantity</li>
+                        <li><strong>Quantity Validation:</strong> Must be positive integer</li>
+                        <li><strong>Authorization:</strong> User must have ADD_INVENTORY permission</li>
+                        <li><strong>Data Integrity:</strong> Validate against existing parts and locations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Files -->
+        <div class="content-section">
+            <h2>🔗 Related Files & Dependencies</h2>
+            <div class="nav-grid">
+                <a href="FileDefinitions-BaseViewModel.html" class="nav-card">
+                    <div class="nav-icon">🏗️</div>
+                    <div class="nav-content">
+                        <h3>BaseViewModel.cs</h3>
+                        <p>Base class providing common ViewModel functionality and logging</p>
+                    </div>
+                </a>
+                <a href="../Services/FileDefinitions-InventoryService.html" class="nav-card">
+                    <div class="nav-icon">🏪</div>
+                    <div class="nav-content">
+                        <h3>InventoryService.cs</h3>
+                        <p>Business service for inventory management operations</p>
+                    </div>
+                </a>
+                <a href="../Services/FileDefinitions-ApplicationStateService.html" class="nav-card">
+                    <div class="nav-icon">🌐</div>
+                    <div class="nav-content">
+                        <h3>ApplicationStateService.cs</h3>
+                        <p>Global application state management service</p>
+                    </div>
+                </a>
+                <a href="FileDefinitions-MainViewViewModel.html" class="nav-card">
+                    <div class="nav-icon">🎛️</div>
+                    <div class="nav-content">
+                        <h3>MainViewViewModel.cs</h3>
+                        <p>Main application view controller ViewModel</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Explore More -->
+        <div class="cross-reference-nav">
+            <h3>🔍 Explore More</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-AddItemViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="FileDefinitions-RemoveItemViewModel.html" class="nav-button">🗑️ Remove Item ViewModel</a>
+            <a href="FileDefinitions-TransferItemViewModel.html" class="nav-button">🔄 Transfer Item ViewModel</a>
+            <a href="FileDefinitions-InventoryTabViewModel.html" class="nav-button">📋 Inventory Tab ViewModel</a>
+        </div>
+    </div>
+</body>
+</html>

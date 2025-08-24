@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-BaseViewModel - Technical Documentation</title>
+    <meta name="description" content="Technical documentation for BaseViewModel - Abstract Base Class for all ViewModels in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, BaseViewModel, abstract base class, ReactiveUI, technical documentation">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../../assets/css/responsive.css">
+    
+    <!-- FileDefinitions Technical Styling -->
+    <style>
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-tech-blue: #1a73e8;
+            --mtm-purple: #4B45ED;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--mtm-tech-blue) 0%, var(--mtm-purple) 100%);
+            color: var(--mtm-white);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.3);
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, #DAA520 100%);
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-tech-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .method-grid, .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .method-card, .property-card {
+            background: rgba(26, 115, 232, 0.1);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .method-card:hover, .property-card:hover {
+            background: rgba(26, 115, 232, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .file-info {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .file-path, .file-type {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        .class-signature {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--mtm-tech-blue);
+        }
+
+        h1, h2, h3 {
+            color: var(--mtm-gold);
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--mtm-tech-blue);
+            padding-bottom: 0.5rem;
+            color: var(--mtm-tech-blue);
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: var(--mtm-gold);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-button {
+                display: block;
+                margin: 0.5rem 0;
+                min-width: auto;
+            }
+            
+            .method-grid, .property-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-reference navigation -->
+        <div class="cross-reference-nav">
+            <h3>📋 Quick Navigation</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-BaseViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="../Services/FileDefinitions-LoggingUtility.html" class="nav-button">📝 Logging Service</a>
+            <a href="../../index.html" class="nav-button">📚 Documentation Home</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="header">
+            <div class="header-content">
+                <div class="icon-container">
+                    <span class="file-icon" style="font-size: 3em;">🎯</span>
+                </div>
+                <div class="header-text">
+                    <h1>BaseViewModel.cs</h1>
+                    <p class="subtitle">Abstract Base Class for All ViewModels</p>
+                </div>
+            </div>
+            <div class="file-info">
+                <span class="file-path">📁 ViewModels/BaseViewModel.cs</span>
+                <span class="file-type">🏗️ Abstract Base Class</span>
+            </div>
+        </div>
+
+        <!-- Class Overview -->
+        <div class="content-section">
+            <h2>📋 Class Overview</h2>
+            <div class="class-signature">
+                <pre><code>public abstract class BaseViewModel : ReactiveObject, IDisposable</code></pre>
+            </div>
+            <p>Abstract base class providing common functionality for all ViewModels in the MTM WIP Application. Implements the ReactiveUI pattern with proper resource disposal and logging infrastructure.</p>
+        </div>
+
+        <!-- Architecture & Design -->
+        <div class="content-section">
+            <h2>🏗️ Architecture & Design</h2>
+            <div class="method-grid">
+                <div class="method-card">
+                    <h3>📐 Design Patterns</h3>
+                    <ul>
+                        <li><strong>Template Method Pattern:</strong> Defines common structure for all ViewModels</li>
+                        <li><strong>Dependency Injection:</strong> Constructor injection for ILogger</li>
+                        <li><strong>Observer Pattern:</strong> Inherits from ReactiveObject for property notifications</li>
+                        <li><strong>Disposable Pattern:</strong> Implements IDisposable for resource cleanup</li>
+                    </ul>
+                </div>
+                <div class="method-card">
+                    <h3>🎯 MVVM Role</h3>
+                    <ul>
+                        <li><strong>Base ViewModel:</strong> Foundation for all screen controllers</li>
+                        <li><strong>ReactiveUI Integration:</strong> Provides reactive property change notifications</li>
+                        <li><strong>Logging Infrastructure:</strong> Standardized logging across all ViewModels</li>
+                        <li><strong>Resource Management:</strong> Ensures proper cleanup and disposal</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Constructor -->
+        <div class="content-section">
+            <h2>🏗️ Constructor</h2>
+            <div class="code-block">
+                <h3>Constructor Signature</h3>
+                <pre><code>protected BaseViewModel(ILogger logger)
+{
+    Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    Logger.LogDebug("BaseViewModel instance created: {Type}", GetType().Name);
+    
+    // Initialize reactive subscription container
+    _disposables = new CompositeDisposable();
+}</code></pre>
+            </div>
+            
+            <div class="method-card">
+                <h4>Parameters</h4>
+                <ul>
+                    <li><strong>logger (ILogger):</strong> Dependency injected logger instance for the specific ViewModel type</li>
+                </ul>
+                <h4>Behavior</h4>
+                <ul>
+                    <li>Validates logger parameter with null guard</li>
+                    <li>Logs ViewModel instantiation for debugging</li>
+                    <li>Initializes CompositeDisposable for subscription management</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Protected Properties -->
+        <div class="content-section">
+            <h2>📋 Protected Properties</h2>
+            <div class="property-grid">
+                <div class="property-card">
+                    <h3>Logger</h3>
+                    <div class="code-block">
+                        <pre><code>protected ILogger Logger { get; }</code></pre>
+                    </div>
+                    <p><strong>Purpose:</strong> Provides logging capabilities to all derived ViewModels</p>
+                    <p><strong>Usage:</strong> Log operations, errors, and debugging information</p>
+                    <p><strong>Accessibility:</strong> Protected - available to inheriting classes only</p>
+                </div>
+                <div class="property-card">
+                    <h3>Disposables</h3>
+                    <div class="code-block">
+                        <pre><code>protected CompositeDisposable Disposables { get; }</code></pre>
+                    </div>
+                    <p><strong>Purpose:</strong> Container for managing reactive subscriptions</p>
+                    <p><strong>Usage:</strong> Add reactive subscriptions for automatic disposal</p>
+                    <p><strong>Pattern:</strong> Disposables.Add(subscription) for cleanup</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Functionality -->
+        <div class="content-section">
+            <h2>⚙️ Core Functionality</h2>
+            
+            <h3>🔄 Reactive Property Management</h3>
+            <div class="code-block">
+                <pre><code>// Inherited from ReactiveObject
+// Provides INotifyPropertyChanged implementation
+// Enables reactive property binding in MVVM
+
+// Example usage in derived classes:
+private string _someProperty;
+public string SomeProperty
+{
+    get => _someProperty;
+    set => this.RaiseAndSetIfChanged(ref _someProperty, value);
+}</code></pre>
+            </div>
+
+            <h3>🧹 Resource Disposal</h3>
+            <div class="code-block">
+                <pre><code>public void Dispose()
+{
+    Dispose(true);
+    GC.SuppressFinalize(this);
+}
+
+protected virtual void Dispose(bool disposing)
+{
+    if (disposing && !_disposed)
+    {
+        Logger.LogDebug("Disposing BaseViewModel: {Type}", GetType().Name);
+        
+        // Dispose all managed reactive subscriptions
+        _disposables?.Dispose();
+        
+        _disposed = true;
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Usage Patterns -->
+        <div class="content-section">
+            <h2>🔧 Usage Patterns</h2>
+            
+            <h3>📝 Typical Derived Class Implementation</h3>
+            <div class="code-block">
+                <pre><code>public class AddItemViewModel : BaseViewModel
+{
+    public AddItemViewModel(
+        IInventoryService inventoryService,
+        ILogger&lt;AddItemViewModel&gt; logger) : base(logger)
+    {
+        // Null guard validations
+        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
+        
+        // Initialize commands and reactive subscriptions
+        InitializeCommands();
+        SetupReactiveSubscriptions();
+    }
+    
+    private void SetupReactiveSubscriptions()
+    {
+        // Add subscriptions to Disposables for automatic cleanup
+        this.WhenAnyValue(x => x.SomeProperty)
+            .Subscribe(value => HandlePropertyChange(value))
+            .DisposeWith(Disposables);
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- MTM Best Practices -->
+        <div class="content-section">
+            <h2>📋 MTM Best Practices</h2>
+            
+            <div class="method-card">
+                <h3>🚨 Critical Implementation Rules</h3>
+                <ul>
+                    <li><strong>Always call base constructor:</strong> Ensure logging is properly initialized</li>
+                    <li><strong>Use Disposables collection:</strong> Add all reactive subscriptions for proper cleanup</li>
+                    <li><strong>Null guard all dependencies:</strong> Validate constructor parameters</li>
+                    <li><strong>Log significant operations:</strong> Use Logger for debugging and audit trails</li>
+                </ul>
+            </div>
+            
+            <div class="method-card">
+                <h3>⚠️ Common Pitfalls to Avoid</h3>
+                <ul>
+                    <li><strong>Memory Leaks:</strong> Always dispose reactive subscriptions</li>
+                    <li><strong>Missing Logging:</strong> Don't skip logger parameter validation</li>
+                    <li><strong>Incorrect Disposal:</strong> Don't override Dispose() without calling base</li>
+                    <li><strong>Threading Issues:</strong> Use UI thread for property changes</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Related Classes -->
+        <div class="content-section">
+            <h2>🔗 Related Classes & Dependencies</h2>
+            <div class="method-grid">
+                <div class="method-card">
+                    <h3>📦 Framework Dependencies</h3>
+                    <ul>
+                        <li><strong>ReactiveUI.ReactiveObject:</strong> Base class for reactive properties</li>
+                        <li><strong>System.IDisposable:</strong> Interface for resource cleanup</li>
+                        <li><strong>Microsoft.Extensions.Logging.ILogger:</strong> Logging infrastructure</li>
+                        <li><strong>System.Reactive.Disposables.CompositeDisposable:</strong> Subscription container</li>
+                    </ul>
+                </div>
+                <div class="method-card">
+                    <h3>🎯 Inheriting ViewModels</h3>
+                    <ul>
+                        <li><strong>AddItemViewModel:</strong> Inventory addition functionality</li>
+                        <li><strong>RemoveItemViewModel:</strong> Inventory removal functionality</li>
+                        <li><strong>TransferItemViewModel:</strong> Inventory transfer functionality</li>
+                        <li><strong>MainViewViewModel:</strong> Main application view controller</li>
+                        <li><strong>InventoryTabViewModel:</strong> Inventory tab management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore More -->
+        <div class="cross-reference-nav">
+            <h3>🔍 Explore More</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-BaseViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="FileDefinitions-AddItemViewModel.html" class="nav-button">📋 Add Item ViewModel</a>
+            <a href="FileDefinitions-MainViewViewModel.html" class="nav-button">🎛️ Main View ViewModel</a>
+            <a href="../Services/FileDefinitions-LoggingUtility.html" class="nav-button">📝 Logging Utility</a>
+        </div>
+    </div>
+</body>
+</html>

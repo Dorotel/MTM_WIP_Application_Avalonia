@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-AddItemViewModel - The Warehouse Stock Addition Clerk</title>
+    <meta name="description" content="Plain English explanation of AddItemViewModel - The Warehouse Stock Addition Clerk in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, AddItemViewModel, ViewModel, plain english, business explanation">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../../assets/css/responsive.css">
+    
+    <!-- Additional MTM Styling for FileDefinitions -->
+    <style>
+        /* FileDefinitions-specific styling for PlainEnglish version */
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-gold-dark: #DAA520;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-gray: #CCCCCC;
+            --mtm-purple: #4B45ED;
+            --mtm-magenta: #BA45ED;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+            background: linear-gradient(135deg, var(--mtm-gold-dark) 0%, var(--mtm-gold) 100%);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+            backdrop-filter: blur(10px);
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, rgba(75, 69, 237, 0.1) 0%, rgba(186, 69, 237, 0.1) 100%);
+            border: 1px solid var(--mtm-purple);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .analogy-box::before {
+            content: "🏭";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--mtm-black);
+            padding: 0 10px;
+            font-size: 1.5em;
+        }
+
+        .workflow-step {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid var(--mtm-gold);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 12px 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-step:hover {
+            background: rgba(255, 215, 0, 0.15);
+            transform: translateX(5px);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, var(--mtm-gold-dark) 100%);
+            color: var(--mtm-black);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .metric {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(218, 165, 32, 0.2) 100%);
+            padding: 0.75rem 1rem;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 0.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .metric:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(218, 165, 32, 0.3) 100%);
+            transform: scale(1.05);
+        }
+
+        .status-badge {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 1rem;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            color: var(--mtm-gold);
+            margin-top: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--mtm-gold);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 1.5rem 1rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+            
+            .nav-button {
+                display: block;
+                margin: 0.5rem 0;
+                min-width: auto;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-reference navigation (to be populated in Phase3) -->
+        <div class="cross-reference-nav">
+            <h3>📋 Quick Navigation</h3>
+            <a href="../../Technical/FileDefinitions/ViewModels/FileDefinitions-AddItemViewModel.html" class="nav-button">🔧 Technical View</a>
+            <a href="../FileDefinitions-Services.html" class="nav-button">🗃️ Services</a>
+            <a href="../../index.html" class="nav-button">📚 Documentation Home</a>
+            <a href="../../../index.html" class="nav-button">🏠 Main Documentation</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="header">
+            <h1>🏭 AddItemViewModel</h1>
+            <p><strong>The Warehouse Stock Addition Clerk</strong></p>
+            <p>MTM WIP Application Component <span class="status-badge">Simple Addition ViewModel</span></p>
+        </div>
+
+        <!-- Real-World Manufacturing Analogy -->
+        <div class="analogy-box">
+            <h2>🏭 Real-World Manufacturing Analogy</h2>
+            <p><strong>Think of AddItemViewModel as the "Warehouse Stock Addition Clerk"</strong> - the specialized employee who handles the simple but critical task of adding new inventory to the warehouse system.</p>
+            
+            <div class="workflow-step">
+                <strong>📋 The Addition Clerk's Responsibilities:</strong>
+                <ul>
+                    <li><strong>Receiving Deliveries:</strong> Accepts new inventory shipments and logs them into the system</li>
+                    <li><strong>Validation Checks:</strong> Ensures part numbers, quantities, and locations are correct before entry</li>
+                    <li><strong>System Updates:</strong> Uses the warehouse management system to record new stock additions</li>
+                    <li><strong>Documentation:</strong> Maintains records of all stock additions for audit trails</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- What This Component Does -->
+        <div class="content-section">
+            <h2>🎯 What This Component Does</h2>
+            <p>AddItemViewModel is the simple, focused component that handles <strong>adding new inventory items</strong> to the MTM warehouse system. It's designed to be straightforward and user-friendly for warehouse staff.</p>
+
+            <div class="highlight">
+                💡 <strong>Key Principle:</strong> This ViewModel follows the "single responsibility" pattern - it only handles adding items, nothing else. This keeps the interface clean and reduces training time for warehouse staff.
+            </div>
+
+            <h3>🔄 How Stock Addition Works</h3>
+            <div class="workflow-step">
+                <strong>Step 1:</strong> Warehouse clerk receives new inventory (finished parts, raw materials, or components)
+            </div>
+            <div class="workflow-step">
+                <strong>Step 2:</strong> Clerk opens the Add Item screen in the MTM system
+            </div>
+            <div class="workflow-step">
+                <strong>Step 3:</strong> System validates all inputs (part ID, quantity, location, operation number)
+            </div>
+            <div class="workflow-step">
+                <strong>Step 4:</strong> System records the addition with TransactionType.IN (always adding stock)
+            </div>
+            <div class="workflow-step">
+                <strong>Step 5:</strong> Inventory levels update automatically and audit trail is created
+            </div>
+        </div>
+
+        <!-- MTM-Specific Business Rules -->
+        <div class="content-section">
+            <h2>🏢 MTM-Specific Business Rules</h2>
+            
+            <div class="highlight">
+                🚨 <strong>Critical MTM Rule:</strong> AddItemViewModel ALWAYS uses TransactionType.IN because the user intent is adding stock to inventory, regardless of the operation number.
+            </div>
+
+            <h3>📊 Transaction Type Logic</h3>
+            <div class="code-block">
+                ✅ CORRECT: TransactionType = IN (User is adding stock)
+                ❌ WRONG: Determining TransactionType from Operation number
+                
+                // Operation numbers like "90", "100", "110" are workflow steps,
+                // NOT indicators of whether stock is being added or removed.
+            </div>
+
+            <h3>🔧 Integration Points</h3>
+            <ul>
+                <li><strong>InventoryService:</strong> Handles the actual database operations through stored procedures</li>
+                <li><strong>ApplicationStateService:</strong> Maintains current user context and session information</li>
+                <li><strong>Quick Buttons:</strong> Can populate this form for frequently added items</li>
+                <li><strong>Validation System:</strong> Ensures all required fields are present and valid</li>
+            </ul>
+        </div>
+
+        <!-- Who Uses This Component -->
+        <div class="content-section">
+            <h2>👥 Who Uses This Component</h2>
+            <div class="metric">🏭 Warehouse Clerks</div>
+            <div class="metric">📦 Receiving Staff</div>
+            <div class="metric">🔧 Production Workers</div>
+            <div class="metric">📊 Inventory Managers</div>
+
+            <h3>📈 Business Value</h3>
+            <ul>
+                <li><strong>Accuracy:</strong> Reduces data entry errors with validation and simple interface</li>
+                <li><strong>Speed:</strong> Streamlined workflow for common task of adding inventory</li>
+                <li><strong>Traceability:</strong> Every addition creates an audit trail for compliance</li>
+                <li><strong>Integration:</strong> Works seamlessly with MTM's existing manufacturing processes</li>
+            </ul>
+        </div>
+
+        <!-- Technical Foundation -->
+        <div class="content-section">
+            <h2>⚙️ Technical Foundation</h2>
+            <p>This component is built using <strong>modern MVVM architecture</strong> with dependency injection, ensuring it's maintainable and testable:</p>
+
+            <div class="code-block">
+                🏗️ Architecture Pattern: MVVM (Model-View-ViewModel)
+                💉 Dependency Injection: Full constructor injection
+                🔄 Reactive Framework: ReactiveUI for modern UI patterns
+                📝 Logging: Comprehensive logging for troubleshooting
+                🛡️ Error Handling: Null checks and defensive programming
+            </div>
+
+            <h3>🔗 Service Dependencies</h3>
+            <ul>
+                <li><strong>IInventoryService:</strong> Handles all database operations via stored procedures</li>
+                <li><strong>IApplicationStateService:</strong> Provides current user and session context</li>
+                <li><strong>ILogger:</strong> Enables detailed troubleshooting and audit logging</li>
+            </ul>
+        </div>
+
+        <!-- Explore More -->
+        <div class="cross-reference-nav">
+            <h3>🔍 Explore More</h3>
+            <a href="../../Technical/FileDefinitions/ViewModels/FileDefinitions-AddItemViewModel.html" class="nav-button">🔧 View Technical Implementation</a>
+            <a href="FileDefinitions-InventoryTabViewModel.html" class="nav-button">📋 Related: Inventory Tab</a>
+            <a href="../Services/FileDefinitions-InventoryService.html" class="nav-button">🗃️ Related: Inventory Service</a>
+            <a href="FileDefinitions-MainViewViewModel.html" class="nav-button">🎛️ Related: Main View Control</a>
+        </div>
+    </div>
+</body>
+</html>
