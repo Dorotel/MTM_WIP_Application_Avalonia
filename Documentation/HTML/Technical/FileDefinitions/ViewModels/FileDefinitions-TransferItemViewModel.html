@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileDefinitions-TransferItemViewModel - Technical Documentation</title>
+    <meta name="description" content="Technical documentation for TransferItemViewModel - Inventory Transfer ViewModel in the MTM WIP Application">
+    <meta name="keywords" content="MTM, WIP, TransferItemViewModel, inventory transfer, dual-location updates, technical documentation">
+    
+    <!-- MTM CSS Files - All Four Required -->
+    <link rel="stylesheet" href="../../../assets/css/modern-styles.css">
+    <link rel="stylesheet" href="../../../assets/css/mtm-theme.css">
+    <link rel="stylesheet" href="../../../assets/css/plain-english.css">
+    <link rel="stylesheet" href="../../../assets/css/responsive.css">
+    
+    <!-- FileDefinitions Technical Styling -->
+    <style>
+        :root {
+            --mtm-gold: #FFD700;
+            --mtm-black: #000000;
+            --mtm-white: #FFFFFF;
+            --mtm-tech-blue: #1a73e8;
+            --mtm-purple: #4B45ED;
+            --mtm-blue: #007bff;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--mtm-black) 0%, #1a1a1a 100%);
+            color: var(--mtm-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--mtm-tech-blue) 0%, var(--mtm-purple) 100%);
+            color: var(--mtm-white);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.3);
+        }
+
+        .cross-reference-nav {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-gold);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--mtm-gold) 0%, #DAA520 100%);
+            color: var(--mtm-black);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            display: inline-block;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--mtm-tech-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .method-grid, .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .method-card, .property-card {
+            background: rgba(26, 115, 232, 0.1);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .method-card:hover, .property-card:hover {
+            background: rgba(26, 115, 232, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .file-info {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .file-path, .file-type {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        .atomic-transaction {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.1) 0%, rgba(0, 123, 255, 0.2) 100%);
+            border: 1px solid var(--mtm-blue);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--mtm-blue);
+        }
+
+        h1, h2, h3 {
+            color: var(--mtm-gold);
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--mtm-tech-blue);
+            padding-bottom: 0.5rem;
+            color: var(--mtm-tech-blue);
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: var(--mtm-gold);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-button {
+                display: block;
+                margin: 0.5rem 0;
+                min-width: auto;
+            }
+            
+            .method-grid, .property-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cross-reference navigation -->
+        <div class="cross-reference-nav">
+            <h3>📋 Quick Navigation</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-TransferItemViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="FileDefinitions-AddItemViewModel.html" class="nav-button">📋 Add Item ViewModel</a>
+            <a href="FileDefinitions-RemoveItemViewModel.html" class="nav-button">📤 Remove Item ViewModel</a>
+            <a href="../../index.html" class="nav-button">📚 Documentation Home</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="header">
+            <div class="header-content">
+                <div class="icon-container">
+                    <span class="file-icon" style="font-size: 3em;">🔄</span>
+                </div>
+                <div class="header-text">
+                    <h1>TransferItemViewModel.cs</h1>
+                    <p class="subtitle">Inventory Transfer ViewModel Implementation</p>
+                </div>
+            </div>
+            <div class="file-info">
+                <span class="file-path">📁 ViewModels/TransferItemViewModel.cs</span>
+                <span class="file-type">🔄 Transfer Management ViewModel</span>
+            </div>
+        </div>
+
+        <!-- Technical Overview -->
+        <div class="content-section">
+            <h2>🔍 Technical Overview</h2>
+            <p><strong>TransferItemViewModel</strong> is a ReactiveUI-based ViewModel that manages complex dual-location inventory transfers. It implements atomic transaction patterns to ensure data consistency when moving inventory between locations, with comprehensive validation and audit trail creation.</p>
+
+            <div class="code-block">
+                <h3>📋 Class Definition</h3>
+                <pre><code>public class TransferItemViewModel : BaseViewModel
+{
+    private readonly IInventoryService _inventoryService;
+    private readonly ILocationService _locationService;
+    private readonly IApplicationStateService _applicationState;
+    private readonly ITransactionService _transactionService;
+    
+    public TransferItemViewModel(
+        IInventoryService inventoryService,
+        ILocationService locationService,
+        IApplicationStateService applicationState,
+        ITransactionService transactionService,
+        ILogger&lt;TransferItemViewModel&gt; logger) : base(logger)
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Atomic Transfer Implementation -->
+        <div class="content-section">
+            <h2>⚛️ Atomic Transfer Implementation</h2>
+            
+            <div class="atomic-transaction">
+                <h3>🔒 Dual-Location Atomic Update</h3>
+                <p>The core challenge of inventory transfers is ensuring that the removal from source location and addition to destination location happen atomically - both succeed or both fail.</p>
+            </div>
+
+            <div class="code-block">
+                <h3>Main Transfer Operation</h3>
+                <pre><code>private async Task TransferInventoryItemAsync()
+{
+    try
+    {
+        // Comprehensive pre-validation
+        var validationResult = await ValidateTransferAsync();
+        if (!validationResult.IsValid)
+        {
+            Logger.LogWarning("Transfer validation failed: {Errors}", 
+                string.Join(", ", validationResult.Errors));
+            return;
+        }
+
+        // Execute atomic transfer operation
+        var result = await _inventoryService.TransferItemAsync(new TransferItemRequest
+        {
+            PartId = SelectedPartId,
+            Operation = SelectedOperation, // Workflow context, not transaction type
+            Quantity = EnteredQuantity,
+            FromLocation = FromLocation,
+            ToLocation = ToLocation,
+            TransactionType = TransactionType.TRANSFER, // Always TRANSFER
+            UserId = _applicationState.CurrentUser.Id,
+            TransferReason = TransferReason,
+            Notes = ItemNotes
+        });
+
+        if (result.IsSuccess)
+        {
+            Logger.LogInformation("Successfully transferred {Quantity} of {PartId} from {FromLocation} to {ToLocation}", 
+                EnteredQuantity, SelectedPartId, FromLocation, ToLocation);
+            
+            // Update local cache
+            await RefreshStockLevels();
+            await ClearForm();
+        }
+        else
+        {
+            Logger.LogError("Transfer failed: {ErrorMessage}", result.ErrorMessage);
+            DisplayErrorMessage = result.ErrorMessage;
+        }
+    }
+    catch (Exception ex)
+    {
+        Logger.LogError(ex, "Error during inventory transfer");
+        DisplayErrorMessage = "An error occurred during transfer. Please try again.";
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Reactive Properties -->
+        <div class="content-section">
+            <h2>📋 Reactive Properties</h2>
+            
+            <div class="property-grid">
+                <div class="property-card">
+                    <h3>Transfer Input Properties</h3>
+                    <div class="code-block">
+                        <pre><code>[Reactive] public string SelectedPartId { get; set; }
+[Reactive] public string SelectedOperation { get; set; }
+[Reactive] public string FromLocation { get; set; }
+[Reactive] public string ToLocation { get; set; }
+[Reactive] public int EnteredQuantity { get; set; }
+[Reactive] public string TransferReason { get; set; }
+[Reactive] public string ItemNotes { get; set; }</code></pre>
+                    </div>
+                    <p>Form input properties for transfer operation</p>
+                </div>
+                
+                <div class="property-card">
+                    <h3>Validation State Properties</h3>
+                    <div class="code-block">
+                        <pre><code>[Reactive] public int FromLocationStock { get; set; }
+[Reactive] public bool IsFromLocationValid { get; set; }
+[Reactive] public bool IsToLocationValid { get; set; }
+[Reactive] public string DisplayErrorMessage { get; set; }
+
+// Computed validation
+public ObservableAsPropertyHelper&lt;bool&gt; _canTransfer;
+public bool CanTransfer => _canTransfer.Value;</code></pre>
+                    </div>
+                    <p>Real-time validation and state management</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comprehensive Validation -->
+        <div class="content-section">
+            <h2>🔍 Comprehensive Validation Logic</h2>
+            
+            <h3>Multi-Layer Validation Implementation</h3>
+            <div class="code-block">
+                <pre><code>// Complex reactive validation combining multiple streams
+_canTransfer = this.WhenAnyValue(
+    x => x.SelectedPartId,
+    x => x.FromLocation,
+    x => x.ToLocation,
+    x => x.EnteredQuantity,
+    x => x.FromLocationStock,
+    x => x.IsFromLocationValid,
+    x => x.IsToLocationValid,
+    (partId, fromLoc, toLoc, quantity, stock, fromValid, toValid) =>
+        !string.IsNullOrWhiteSpace(partId) &&
+        !string.IsNullOrWhiteSpace(fromLoc) &&
+        !string.IsNullOrWhiteSpace(toLoc) &&
+        fromLoc != toLoc && // Cannot transfer to same location
+        quantity > 0 &&
+        quantity <= stock && // Cannot transfer more than available
+        fromValid &&
+        toValid &&
+        stock > 0)
+    .ToProperty(this, x => x.CanTransfer);
+
+// Dynamic stock level updates for FROM location
+this.WhenAnyValue(x => x.SelectedPartId, x => x.FromLocation)
+    .Where(tuple => !string.IsNullOrWhiteSpace(tuple.Item1) && 
+                    !string.IsNullOrWhiteSpace(tuple.Item2))
+    .SelectMany(async tuple => await GetStockLevelAsync(tuple.Item1, tuple.Item2))
+    .ObserveOn(RxApp.MainThreadScheduler)
+    .Subscribe(stock => FromLocationStock = stock)
+    .DisposeWith(Disposables);
+
+// Location validation streams
+this.WhenAnyValue(x => x.FromLocation)
+    .Where(loc => !string.IsNullOrWhiteSpace(loc))
+    .SelectMany(async loc => await _locationService.ValidateLocationAsync(loc))
+    .ObserveOn(RxApp.MainThreadScheduler)
+    .Subscribe(isValid => IsFromLocationValid = isValid)
+    .DisposeWith(Disposables);
+
+this.WhenAnyValue(x => x.ToLocation)
+    .Where(loc => !string.IsNullOrWhiteSpace(loc))
+    .SelectMany(async loc => await _locationService.ValidateLocationAsync(loc))
+    .ObserveOn(RxApp.MainThreadScheduler)
+    .Subscribe(isValid => IsToLocationValid = isValid)
+    .DisposeWith(Disposables);</code></pre>
+            </div>
+        </div>
+
+        <!-- Service Integration Patterns -->
+        <div class="content-section">
+            <h2>🔗 Service Integration Patterns</h2>
+            
+            <h3>Location Service Integration</h3>
+            <div class="code-block">
+                <pre><code>private async Task&lt;ValidationResult&gt; ValidateTransferAsync()
+{
+    var validationResult = new ValidationResult();
+    
+    // Validate FROM location has sufficient stock
+    var fromStock = await _inventoryService.GetStockLevelAsync(SelectedPartId, FromLocation);
+    if (fromStock < EnteredQuantity)
+    {
+        validationResult.AddError($"Insufficient stock at {FromLocation}. Available: {fromStock}");
+    }
+    
+    // Validate TO location exists and is accessible
+    var toLocationValid = await _locationService.CanReceiveInventoryAsync(ToLocation, SelectedPartId);
+    if (!toLocationValid)
+    {
+        validationResult.AddError($"Destination location {ToLocation} cannot receive {SelectedPartId}");
+    }
+    
+    // Validate business rules for transfer
+    var businessValidation = await _transactionService.ValidateTransferRulesAsync(
+        SelectedPartId, FromLocation, ToLocation, SelectedOperation);
+    
+    if (!businessValidation.IsValid)
+    {
+        validationResult.AddErrors(businessValidation.Errors);
+    }
+    
+    return validationResult;
+}</code></pre>
+            </div>
+
+            <h3>Transaction Service Integration</h3>
+            <div class="code-block">
+                <pre><code>// Atomic transaction coordination
+private async Task&lt;TransferResult&gt; ExecuteAtomicTransferAsync(TransferItemRequest request)
+{
+    // Begin distributed transaction
+    using var transaction = await _transactionService.BeginTransactionAsync();
+    
+    try
+    {
+        // Step 1: Remove from source location
+        var removeResult = await _inventoryService.RemoveFromLocationAsync(
+            request.PartId, request.FromLocation, request.Quantity, transaction);
+        
+        if (!removeResult.IsSuccess)
+        {
+            await transaction.RollbackAsync();
+            return TransferResult.Failed(removeResult.ErrorMessage);
+        }
+        
+        // Step 2: Add to destination location
+        var addResult = await _inventoryService.AddToLocationAsync(
+            request.PartId, request.ToLocation, request.Quantity, transaction);
+        
+        if (!addResult.IsSuccess)
+        {
+            await transaction.RollbackAsync();
+            return TransferResult.Failed(addResult.ErrorMessage);
+        }
+        
+        // Step 3: Create transfer audit record
+        var auditResult = await _transactionService.CreateTransferAuditAsync(request, transaction);
+        
+        if (!auditResult.IsSuccess)
+        {
+            await transaction.RollbackAsync();
+            return TransferResult.Failed("Failed to create audit record");
+        }
+        
+        // All operations successful - commit transaction
+        await transaction.CommitAsync();
+        return TransferResult.Success();
+    }
+    catch (Exception ex)
+    {
+        await transaction.RollbackAsync();
+        Logger.LogError(ex, "Error during atomic transfer execution");
+        return TransferResult.Failed("Transaction failed due to system error");
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- MTM Business Rules -->
+        <div class="content-section">
+            <h2>📋 MTM Business Rules Implementation</h2>
+            
+            <div class="method-grid">
+                <div class="method-card">
+                    <h3>🚨 Critical Implementation Rules</h3>
+                    <ul>
+                        <li><strong>TransactionType.TRANSFER:</strong> Always use TRANSFER for location movements</li>
+                        <li><strong>Atomic Operations:</strong> All dual-location updates must be atomic</li>
+                        <li><strong>Stock Validation:</strong> Prevent transfers exceeding available stock</li>
+                        <li><strong>Location Validation:</strong> Ensure both locations are valid and accessible</li>
+                        <li><strong>Same-Location Prevention:</strong> Cannot transfer to the same location</li>
+                    </ul>
+                </div>
+                
+                <div class="method-card">
+                    <h3>⚠️ Validation Requirements</h3>
+                    <ul>
+                        <li><strong>Real-time Stock Updates:</strong> FROM location stock updated as part/location changes</li>
+                        <li><strong>Location Accessibility:</strong> Validate user permissions for both locations</li>
+                        <li><strong>Business Rules:</strong> Check workflow-specific transfer restrictions</li>
+                        <li><strong>Audit Trail:</strong> Comprehensive logging for all transfer attempts</li>
+                        <li><strong>Error Recovery:</strong> Rollback mechanisms for failed transfers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Handling & Recovery -->
+        <div class="content-section">
+            <h2>🛡️ Error Handling & Recovery</h2>
+            
+            <div class="code-block">
+                <h3>Comprehensive Error Handling</h3>
+                <pre><code>// Command error handling
+TransferCommand = ReactiveCommand.CreateFromTask(
+    TransferInventoryItemAsync,
+    this.WhenAnyValue(x => x.CanTransfer));
+
+// Handle transfer command exceptions
+TransferCommand.ThrownExceptions
+    .ObserveOn(RxApp.MainThreadScheduler)
+    .Subscribe(ex =>
+    {
+        Logger.LogError(ex, "Transfer command execution failed");
+        DisplayErrorMessage = "Transfer failed. Please check the details and try again.";
+        IsProcessing = false;
+    })
+    .DisposeWith(Disposables);
+
+// Handle validation errors with user feedback
+this.WhenAnyValue(x => x.CanTransfer)
+    .Where(canTransfer => !canTransfer)
+    .Subscribe(_ => UpdateValidationErrorMessage())
+    .DisposeWith(Disposables);
+
+private void UpdateValidationErrorMessage()
+{
+    if (string.IsNullOrWhiteSpace(SelectedPartId))
+        DisplayErrorMessage = "Please select a part ID";
+    else if (string.IsNullOrWhiteSpace(FromLocation))
+        DisplayErrorMessage = "Please select a FROM location";
+    else if (string.IsNullOrWhiteSpace(ToLocation))
+        DisplayErrorMessage = "Please select a TO location";
+    else if (FromLocation == ToLocation)
+        DisplayErrorMessage = "FROM and TO locations cannot be the same";
+    else if (EnteredQuantity <= 0)
+        DisplayErrorMessage = "Transfer quantity must be greater than 0";
+    else if (EnteredQuantity > FromLocationStock)
+        DisplayErrorMessage = $"Cannot transfer {EnteredQuantity}. Only {FromLocationStock} available.";
+    else
+        DisplayErrorMessage = string.Empty;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Related Components -->
+        <div class="content-section">
+            <h2>🔗 Related Components</h2>
+            <div class="method-grid">
+                <div class="method-card">
+                    <h3>🔗 Service Dependencies</h3>
+                    <ul>
+                        <li><strong>IInventoryService:</strong> Core transfer operations and stock management</li>
+                        <li><strong>ILocationService:</strong> Location validation and accessibility checks</li>
+                        <li><strong>ITransactionService:</strong> Atomic transaction coordination</li>
+                        <li><strong>IApplicationStateService:</strong> User context and session management</li>
+                        <li><strong>ILogger:</strong> Comprehensive audit logging</li>
+                    </ul>
+                </div>
+                <div class="method-card">
+                    <h3>📊 Related ViewModels</h3>
+                    <ul>
+                        <li><strong>AddItemViewModel:</strong> Complementary inventory addition</li>
+                        <li><strong>RemoveItemViewModel:</strong> Complementary inventory removal</li>
+                        <li><strong>InventoryTabViewModel:</strong> Parent container for inventory operations</li>
+                        <li><strong>TransactionHistoryViewModel:</strong> Transfer audit trail display</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore More -->
+        <div class="cross-reference-nav">
+            <h3>🔍 Explore More</h3>
+            <a href="../../PlainEnglish/FileDefinitions/ViewModels/FileDefinitions-TransferItemViewModel.html" class="nav-button">📖 Plain English View</a>
+            <a href="FileDefinitions-AddItemViewModel.html" class="nav-button">📋 Add Item ViewModel</a>
+            <a href="FileDefinitions-RemoveItemViewModel.html" class="nav-button">📤 Remove Item ViewModel</a>
+            <a href="../Services/FileDefinitions-InventoryService.html" class="nav-button">🗃️ Inventory Service</a>
+        </div>
+    </div>
+</body>
+</html>
