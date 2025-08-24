@@ -686,3 +686,202 @@ a:hover {
 .p-4 { padding: var(--space-4); }
 .p-6 { padding: var(--space-6); }
 .p-8 { padding: var(--space-8); }
+
+/* ==========================================================================
+   RESPONSIVE ENHANCEMENTS FOR MODERN STYLES
+   ========================================================================== */
+
+/* Mobile-first responsive typography improvements */
+@media (max-width: 480px) {
+  /* Smaller typography for very small screens */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  
+  /* Improved mobile buttons */
+  .btn,
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    margin-bottom: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.9rem;
+  }
+  
+  /* Mobile card adjustments */
+  .card {
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  
+  /* Mobile form improvements */
+  .form-group {
+    margin-bottom: var(--space-4);
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: var(--space-3);
+    font-size: 1rem;
+  }
+}
+
+/* Tablet responsive improvements */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet-optimized grid */
+  .grid-responsive {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+  
+  /* Tablet button improvements */
+  .btn,
+  .btn-primary,
+  .btn-secondary {
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--space-3);
+    min-width: 120px;
+  }
+  
+  /* Tablet card layouts */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+  }
+}
+
+/* Desktop responsive improvements */
+@media (min-width: 1024px) {
+  /* Desktop grid systems */
+  .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-8);
+  }
+  
+  .grid-4-desktop {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+  }
+  
+  /* Desktop navigation improvements */
+  .nav-horizontal {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+  
+  /* Desktop card optimizations */
+  .card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-8);
+  }
+  
+  /* Desktop form layouts */
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+  }
+}
+
+/* Large desktop optimizations */
+@media (min-width: 1200px) {
+  .container-lg {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+  }
+  
+  .grid-5-desktop {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-6);
+  }
+  
+  .card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--space-10);
+  }
+}
+
+/* Cross-browser responsive image support */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.responsive-media {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  overflow: hidden;
+}
+
+.responsive-media iframe,
+.responsive-media video,
+.responsive-media embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Responsive tables */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .table-responsive table {
+    min-width: 500px;
+  }
+}
+
+/* Enhanced focus management for mobile */
+@media (max-width: 768px) {
+  :focus {
+    outline: 3px solid var(--mtm-primary);
+    outline-offset: 3px;
+  }
+  
+  .btn:focus,
+  .form-control:focus {
+    outline: 3px solid var(--mtm-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* Touch-friendly interactive elements */
+@media (pointer: coarse) {
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .form-control,
+  input,
+  button {
+    min-height: 44px; /* Apple's recommended touch target size */
+  }
+  
+  .nav-link {
+    padding: var(--space-4) var(--space-3);
+  }
+}
+
+/* High DPI display optimizations */
+@media (min-resolution: 2dppx) {
+  /* Ensure crisp borders on high DPI displays */
+  .card,
+  .btn,
+  .form-control {
+    border-width: 0.5px;
+  }
+}

@@ -662,3 +662,480 @@
     color: #4B45ED !important;
   }
 }
+
+/* ==========================================================================
+   MTM RESPONSIVE DESIGN ENHANCEMENTS
+   ========================================================================== */
+
+/* Mobile-first MTM component improvements */
+@media (max-width: 480px) {
+  /* Extra small mobile optimizations */
+  .mtm-hero {
+    padding: var(--space-6) var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+  
+  .mtm-hero-title {
+    font-size: 1.75rem;
+    margin-bottom: var(--space-3);
+  }
+  
+  .mtm-hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: var(--space-4);
+  }
+  
+  .mtm-hero-actions {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .mtm-btn {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-2);
+  }
+  
+  .mtm-card {
+    padding: var(--space-3);
+    margin-bottom: var(--space-4);
+    border-radius: var(--radius-md);
+  }
+  
+  .mtm-card-title {
+    font-size: 1.125rem;
+  }
+  
+  .mtm-nav {
+    width: 100%;
+    position: relative;
+    transform: none;
+  }
+  
+  .mtm-nav-brand {
+    padding: var(--space-3);
+    font-size: 1rem;
+  }
+  
+  .mtm-nav-link {
+    padding: var(--space-3);
+    font-size: 0.9rem;
+  }
+  
+  .mtm-table {
+    font-size: 0.8rem;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+  }
+  
+  .mtm-table th,
+  .mtm-table td {
+    padding: var(--space-2);
+    min-width: 100px;
+  }
+  
+  .mtm-code {
+    font-size: 0.8rem;
+    padding: var(--space-3);
+    overflow-x: auto;
+  }
+}
+
+/* Mobile landscape improvements */
+@media (min-width: 481px) and (max-width: 767px) {
+  .mtm-hero {
+    padding: var(--space-8) var(--space-4);
+  }
+  
+  .mtm-hero-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+  
+  .mtm-btn {
+    width: auto;
+    min-width: 120px;
+    flex: 0 1 auto;
+  }
+  
+  .mtm-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+/* Tablet portrait enhancements */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mtm-hero {
+    padding: var(--space-10) var(--space-6);
+  }
+  
+  .mtm-hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .mtm-hero-subtitle {
+    font-size: 1.25rem;
+  }
+  
+  .mtm-btn {
+    padding: var(--space-4) var(--space-6);
+    font-size: 1rem;
+    min-width: 140px;
+  }
+  
+  .mtm-card {
+    padding: var(--space-6);
+  }
+  
+  .mtm-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+  }
+  
+  .mtm-nav {
+    width: 280px;
+  }
+  
+  .mtm-nav-brand {
+    padding: var(--space-5);
+    font-size: 1.125rem;
+  }
+  
+  .mtm-nav-link {
+    padding: var(--space-4);
+    font-size: 1rem;
+  }
+  
+  .mtm-table th,
+  .mtm-table td {
+    padding: var(--space-4);
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1024px) {
+  .mtm-hero {
+    padding: var(--space-12) var(--space-8);
+    margin-bottom: var(--space-10);
+  }
+  
+  .mtm-hero-title {
+    font-size: 3rem;
+    margin-bottom: var(--space-4);
+  }
+  
+  .mtm-hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-6);
+  }
+  
+  .mtm-hero-actions {
+    gap: var(--space-4);
+  }
+  
+  .mtm-btn {
+    padding: var(--space-4) var(--space-8);
+    font-size: 1.125rem;
+    min-width: 160px;
+  }
+  
+  .mtm-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(255, 215, 0, 0.4);
+  }
+  
+  .mtm-card {
+    padding: var(--space-8);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .mtm-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(255, 215, 0, 0.3);
+  }
+  
+  .mtm-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-8);
+  }
+  
+  .mtm-nav {
+    width: 320px;
+  }
+  
+  .mtm-nav-brand {
+    padding: var(--space-6);
+    font-size: 1.25rem;
+  }
+  
+  .mtm-nav-link {
+    padding: var(--space-4) var(--space-6);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .mtm-nav-link:hover {
+    background: rgba(255, 215, 0, 0.1);
+    padding-left: var(--space-8);
+  }
+  
+  .mtm-table {
+    font-size: 1rem;
+  }
+  
+  .mtm-table th,
+  .mtm-table td {
+    padding: var(--space-5);
+  }
+  
+  .mtm-code {
+    font-size: 0.9rem;
+    padding: var(--space-5);
+  }
+}
+
+/* Large desktop enhancements */
+@media (min-width: 1200px) {
+  .mtm-hero {
+    padding: var(--space-16) var(--space-10);
+    margin-bottom: var(--space-12);
+  }
+  
+  .mtm-hero-title {
+    font-size: 3.5rem;
+    margin-bottom: var(--space-5);
+  }
+  
+  .mtm-hero-subtitle {
+    font-size: 1.75rem;
+    margin-bottom: var(--space-8);
+  }
+  
+  .mtm-btn {
+    padding: var(--space-5) var(--space-10);
+    font-size: 1.25rem;
+    min-width: 180px;
+  }
+  
+  .mtm-card {
+    padding: var(--space-10);
+  }
+  
+  .mtm-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: var(--space-10);
+  }
+  
+  .mtm-nav {
+    width: 360px;
+  }
+  
+  .mtm-nav-brand {
+    padding: var(--space-8);
+    font-size: 1.5rem;
+  }
+  
+  .mtm-nav-link {
+    padding: var(--space-5) var(--space-8);
+    font-size: 1.125rem;
+  }
+}
+
+/* MTM Cross-Reference Navigation Responsive */
+.mtm-cross-reference {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-6) 0;
+  padding: var(--space-4);
+  background: rgba(255, 215, 0, 0.05);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.mtm-cross-ref-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--mtm-gold);
+  color: var(--mtm-black);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  text-align: center;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.mtm-cross-ref-btn:hover {
+  background: var(--mtm-gold-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+  border-color: var(--mtm-gold-dark);
+}
+
+@media (max-width: 480px) {
+  .mtm-cross-reference {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .mtm-cross-ref-btn {
+    width: 100%;
+    min-width: auto;
+    padding: var(--space-3);
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .mtm-cross-ref-btn {
+    min-width: 140px;
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-base);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mtm-cross-ref-btn {
+    min-width: 160px;
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--text-lg);
+  }
+}
+
+/* MTM Responsive Table Enhancements */
+@media (max-width: 767px) {
+  .mtm-table-responsive {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .mtm-table-responsive .mtm-table {
+    min-width: 600px;
+  }
+  
+  .mtm-table-stack {
+    display: block;
+  }
+  
+  .mtm-table-stack thead {
+    display: none;
+  }
+  
+  .mtm-table-stack tbody,
+  .mtm-table-stack tr,
+  .mtm-table-stack td {
+    display: block;
+    width: 100%;
+  }
+  
+  .mtm-table-stack tr {
+    border: 2px solid var(--mtm-gold);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-4);
+    padding: var(--space-4);
+    background: var(--bg-primary);
+  }
+  
+  .mtm-table-stack td {
+    border: none;
+    padding: var(--space-2) 0;
+    text-align: left;
+  }
+  
+  .mtm-table-stack td:before {
+    content: attr(data-label) ": ";
+    font-weight: 700;
+    color: var(--mtm-gold-dark);
+  }
+}
+
+/* MTM Component Grid Responsive Behavior */
+.mtm-grid-1 { grid-template-columns: 1fr; }
+
+@media (min-width: 480px) {
+  .mtm-grid-2-mobile-l { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 768px) {
+  .mtm-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .mtm-grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .mtm-grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .mtm-grid-5 { grid-template-columns: repeat(5, 1fr); }
+}
+
+@media (min-width: 1200px) {
+  .mtm-grid-6 { grid-template-columns: repeat(6, 1fr); }
+}
+
+/* MTM Business Metrics Responsive */
+.mtm-business-metrics {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .mtm-business-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .mtm-business-metrics {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-5);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mtm-business-metrics {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+  }
+}
+
+/* Touch-friendly improvements for MTM components */
+@media (pointer: coarse) {
+  .mtm-btn,
+  .mtm-nav-link,
+  .mtm-cross-ref-btn {
+    min-height: 44px;
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .mtm-table th,
+  .mtm-table td {
+    padding: var(--space-4);
+  }
+}
+
+/* High contrast support for MTM components */
+@media (prefers-contrast: high) {
+  .mtm-btn,
+  .mtm-card,
+  .mtm-cross-ref-btn {
+    border-width: 3px;
+  }
+  
+  .mtm-nav-link {
+    border-left: 4px solid transparent;
+  }
+  
+  .mtm-nav-link:hover,
+  .mtm-nav-link.active {
+    border-left-color: var(--mtm-gold);
+  }
+}
