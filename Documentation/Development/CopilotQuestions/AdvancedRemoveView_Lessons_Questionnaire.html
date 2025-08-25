@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdvancedRemoveView Implementation Lessons - Configuration Questionnaire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a0dad 0%, #4a0880 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #6a0dad 0%, #8a2be2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            margin-top: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: #6a0dad;
+        }
+
+        .section h2 {
+            color: #6a0dad;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h2::before {
+            content: '??';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .question-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .question {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            border-color: #6a0dad;
+            background: #f8f4ff;
+        }
+
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            margin-right: 12px;
+            scale: 1.2;
+            accent-color: #6a0dad;
+        }
+
+        .option.selected {
+            border-color: #6a0dad;
+            background: #f8f4ff;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #6a0dad;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #6a0dad;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a0b9d;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .status.warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .priority-high {
+            border-left: 4px solid #dc3545;
+            padding-left: 16px;
+        }
+
+        .priority-medium {
+            border-left: 4px solid #ffc107;
+            padding-left: 16px;
+        }
+
+        .priority-low {
+            border-left: 4px solid #28a745;
+            padding-left: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>?? AdvancedRemoveView Implementation Lessons</h1>
+            <p>Configuration Questionnaire for Instruction File Updates</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Section 1: Layout and Sizing Issues -->
+            <div class="section priority-high">
+                <h2>Layout and Sizing Standards</h2>
+                
+                <div class="question-group">
+                    <div class="question">1. What should be the default approach for preventing scrollbars in Avalonia views?</div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="scrollbar_prevention" value="compact_design">
+                            Use compact design with reduced margins, padding, and font sizes
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="scrollbar_prevention" value="responsive_grid">
+                            Implement responsive grid layouts that adapt to screen size
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="scrollbar_prevention" value="scrollviewer">
+                            Always wrap content in ScrollViewer with auto scrollbars
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="scrollbar_prevention" value="fixed_sizes">
+                            Use fixed control sizes that fit within standard screen dimensions
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">2. What should be the standard font sizes for compact MTM designs?</div>
+                    <div class="code-block">
+Current successful sizes from AdvancedRemoveView:
+- Button text: FontSize="10"
+- Input text: FontSize="10" 
+- DataGrid text: FontSize="9"
+- Label text: FontSize="10"
+- Title text: FontSize="16"
+- Icon sizes: Width="12" Height="12"
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="checkbox" name="font_standards" value="use_current">
+                            Adopt these sizes as standard for compact views
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="font_standards" value="create_styles">
+                            Create reusable styles with these sizes
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="font_standards" value="responsive_sizes">
+                            Make font sizes responsive based on view type
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">3. What margin/padding standards should we establish?</div>
+                    <div class="code-block">
+Current successful spacing from AdvancedRemoveView:
+- Main margin: Margin="8"
+- Border padding: Padding="6-8" 
+- Element spacing: Spacing="6-8"
+- Button heights: Height="28"
+- Input heights: MinHeight="26"
+                    </div>
+                    <textarea placeholder="Describe the spacing standards that should be documented..."></textarea>
+                </div>
+            </div>
+
+            <!-- Section 2: Date Control Patterns -->
+            <div class="section priority-high">
+                <h2>Date Control Implementation</h2>
+                
+                <div class="question-group">
+                    <div class="question">4. What should be the standard pattern for date input controls?</div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="date_pattern" value="readonly_textbox_flyout">
+                            Read-only TextBox with DatePicker flyout (current implementation)
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="date_pattern" value="direct_datepicker">
+                            Direct DatePicker controls
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="date_pattern" value="editable_textbox">
+                            Editable TextBox with validation
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="date_pattern" value="hybrid_approach">
+                            Choice based on context (compact vs full views)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">5. Should we create a reusable DateSelector UserControl?</div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="date_usercontrol" value="yes_create">
+                            Yes, create a standardized DateSelector control
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="date_usercontrol" value="no_inline">
+                            No, keep inline implementations for flexibility
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="date_usercontrol" value="template_only">
+                            Create templates/styles but not UserControls
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Error Handling Patterns -->
+            <div class="section priority-medium">
+                <h2>Error Handling and Exception Management</h2>
+                
+                <div class="question-group">
+                    <div class="question">6. What error handling patterns worked best in AdvancedRemoveView?</div>
+                    <div class="code-block">
+Key patterns that resolved FormatException issues:
+1. Enhanced exception handling in View code-behind
+2. Thread-safe UI updates with RxApp.MainThreadScheduler
+3. Comprehensive command exception wiring
+4. Specific exception type categorization
+5. Proper LinearGradientBrush syntax for Avalonia
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="checkbox" name="error_patterns" value="mandatory_exception_handling">
+                            Make comprehensive exception handling mandatory for all Views
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="error_patterns" value="base_view_class">
+                            Create a BaseView class with standard error handling
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="error_patterns" value="reactive_extensions">
+                            Expand ReactiveUIExtensions with error handling helpers
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">7. Should we document specific Avalonia gotchas we discovered?</div>
+                    <div class="code-block">
+Critical issues discovered:
+- Invalid Linear() gradient syntax causes FormatException
+- Proper syntax: LinearGradientBrush with StartPoint/EndPoint
+- FallbackValue type mismatches in bindings
+- Thread safety issues with ReactiveUI commands
+                    </div>
+                    <textarea placeholder="List other Avalonia-specific issues to document..."></textarea>
+                </div>
+            </div>
+
+            <!-- Section 4: AXAML Generation Standards -->
+            <div class="section priority-medium">
+                <h2>AXAML Generation and Binding Patterns</h2>
+                
+                <div class="question-group">
+                    <div class="question">8. What binding patterns should be standardized?</div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="checkbox" name="binding_patterns" value="compiled_bindings_mandatory">
+                            Make x:CompileBindings="True" mandatory for all Views
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="binding_patterns" value="proper_fallbacks">
+                            Document proper FallbackValue usage by type
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="binding_patterns" value="string_formatting">
+                            Standardize StringFormat patterns for dates, numbers
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="binding_patterns" value="mode_specifications">
+                            Document when to use OneWay vs TwoWay bindings
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">9. Should we create standard MTM control styles?</div>
+                    <div class="code-block">
+Successful styles from AdvancedRemoveView:
+- MTMPrimaryButton, MTMSecondaryButton, MTMDangerButton
+- MTMTextBox, MTMAutoCompleteBox
+- MTMVerticalGradientBrush, MTMHorizontalGradientBrush
+- Compact sizing with consistent purple theme
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="standard_styles" value="global_resource_dictionary">
+                            Create global ResourceDictionary with all MTM styles
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="standard_styles" value="per_view_styles">
+                            Keep styles local to each view for customization
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="standard_styles" value="theme_system">
+                            Implement full theme system with style inheritance
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Performance and Architecture -->
+            <div class="section priority-low">
+                <h2>Performance and Architecture Improvements</h2>
+                
+                <div class="question-group">
+                    <div class="question">10. What performance optimizations should be standard?</div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="checkbox" name="performance" value="virtualization">
+                            Use virtualization for DataGrids and large collections
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="performance" value="lazy_loading">
+                            Implement lazy loading for expensive operations
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="performance" value="memory_management">
+                            Standardize disposal patterns and memory management
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="performance" value="reactive_optimization">
+                            Optimize ReactiveUI subscriptions and observables
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">11. What architectural patterns should we emphasize?</div>
+                    <textarea placeholder="Describe architectural improvements based on AdvancedRemoveView experience..."></textarea>
+                </div>
+            </div>
+
+            <!-- Section 6: Documentation and Future Views -->
+            <div class="section priority-high">
+                <h2>Documentation and Future Development</h2>
+                
+                <div class="question-group">
+                    <div class="question">12. Which instruction files need immediate updates?</div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="checkbox" name="instruction_updates" value="ui_instructions">
+                            .github/UI-Instructions/ui-generation.instruction.md
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="instruction_updates" value="core_instructions">
+                            .github/Core-Instructions/ files
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="instruction_updates" value="development_instructions">
+                            .github/Development-Instructions/ files
+                        </label>
+                        <label class="option">
+                            <input type="checkbox" name="instruction_updates" value="main_copilot_instructions">
+                            .github/copilot-instructions.md
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">13. What should be the priority for the next view development?</div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="next_priority" value="create_base_classes">
+                            Create base classes and common controls first
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="next_priority" value="continue_views">
+                            Continue with next view using current patterns
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="next_priority" value="refactor_existing">
+                            Refactor existing views with new standards
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="next_priority" value="documentation_first">
+                            Complete documentation updates before new development
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">14. Additional considerations for instruction file updates:</div>
+                    <textarea placeholder="Any other important patterns, gotchas, or standards that should be documented based on the AdvancedRemoveView implementation..."></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" onclick="saveProgress()">Save Progress</button>
+                <button type="button" class="btn btn-primary" onclick="generateInstructions()">Generate Updated Instructions</button>
+            </div>
+
+            <div id="status" class="status" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 0;
+        const totalSections = 6;
+
+        function updateProgress() {
+            const answered = document.querySelectorAll('input:checked').length;
+            const total = document.querySelectorAll('input[type="radio"], input[type="checkbox"]').length;
+            const progress = (answered / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Add event listeners to all inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('change', updateProgress);
+        });
+
+        function saveProgress() {
+            const formData = new FormData();
+            const inputs = document.querySelectorAll('input:checked, textarea');
+            
+            inputs.forEach(input => {
+                if (input.type === 'textarea' || input.checked) {
+                    formData.append(input.name || 'textarea', input.value);
+                }
+            });
+
+            const status = document.getElementById('status');
+            status.className = 'status success';
+            status.textContent = 'Progress saved successfully!';
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        function generateInstructions() {
+            const answers = gatherAnswers();
+            
+            if (validateAnswers(answers)) {
+                const status = document.getElementById('status');
+                status.className = 'status success';
+                status.innerHTML = `
+                    <strong>Instructions Generated!</strong><br>
+                    The following files will be updated:<br>
+                    • UI Generation Instructions<br>
+                    • Error Handling Patterns<br>
+                    • AXAML Standards<br>
+                    • Performance Guidelines
+                `;
+                status.style.display = 'block';
+            } else {
+                const status = document.getElementById('status');
+                status.className = 'status warning';
+                status.textContent = 'Please complete all high-priority sections before generating instructions.';
+                status.style.display = 'block';
+            }
+        }
+
+        function gatherAnswers() {
+            const answers = {};
+            const inputs = document.querySelectorAll('input:checked, textarea');
+            
+            inputs.forEach(input => {
+                if (input.type === 'textarea') {
+                    answers[input.name || 'textarea_' + Math.random()] = input.value;
+                } else if (input.checked) {
+                    answers[input.name] = input.value;
+                }
+            });
+            
+            return answers;
+        }
+
+        function validateAnswers(answers) {
+            const required = ['scrollbar_prevention', 'date_pattern', 'instruction_updates', 'next_priority'];
+            return required.every(field => answers[field]);
+        }
+
+        // Initialize progress
+        updateProgress();
+    </script>
+</body>
+</html>

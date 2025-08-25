@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="800"
@@ -11,12 +12,18 @@
              x:DataType="vm:AdvancedInventoryViewModel">
 
 	<Grid RowDefinitions="Auto,*" Margin="8">
-		<!-- Title -->
-		<TextBlock Grid.Row="0"
-			   Text="Advanced Inventory Entry"
-			   FontSize="14"
-			   FontWeight="SemiBold"
-			   Margin="4,0,0,8"/>
+		<!-- Title with Icon -->
+		<StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="4,0,0,8">
+			<materialIcons:MaterialIcon Kind="PackageVariantClosed" 
+										Width="16" 
+										Height="16" 
+										Foreground="#6a0dad"
+										VerticalAlignment="Center"/>
+			<TextBlock Text="Advanced Inventory Entry"
+					   FontSize="14"
+					   FontWeight="SemiBold"
+					   VerticalAlignment="Center"/>
+		</StackPanel>
 
 		<!-- Main Panel with Tabs -->
 		<Border Grid.Row="1"
@@ -34,7 +41,13 @@
 				</TabControl.Styles>
 
 				<!-- Tab 1: Single Item, Multiple Times -->
-				<TabItem Header="Single Item, Multiple Times">
+				<TabItem>
+					<TabItem.Header>
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<materialIcons:MaterialIcon Kind="Repeat" Width="14" Height="14" VerticalAlignment="Center"/>
+							<TextBlock Text="Single Item, Multiple Times" VerticalAlignment="Center"/>
+						</StackPanel>
+					</TabItem.Header>
 					<Grid Margin="6"
 						  ColumnDefinitions="1*,2*"
 						  ColumnSpacing="12"
@@ -48,41 +61,79 @@
 								Padding="8">
 							<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
 								  RowSpacing="8">
-								<AutoCompleteBox Grid.Row="0" 
-												 Watermark="Enter Part Number"
-												 HorizontalAlignment="Stretch"
-												 ItemsSource="{Binding PartIDOptions}" 
-												 SelectedItem="{Binding SelectedPartID, Mode=TwoWay}"/>
+								<!-- Part Number with Icon -->
+								<Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="Tag" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<AutoCompleteBox Grid.Column="1" 
+													 Watermark="Enter Part Number"
+													 HorizontalAlignment="Stretch"
+													 ItemsSource="{Binding PartIDOptions}" 
+													 SelectedItem="{Binding SelectedPartID, Mode=TwoWay}"/>
+								</Grid>
 
-								<AutoCompleteBox Grid.Row="1"
-												 Watermark="Enter Operation"
-												 HorizontalAlignment="Stretch"
-												 ItemsSource="{Binding OperationOptions}" 
-												 SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"/>
+								<!-- Operation with Icon -->
+								<Grid Grid.Row="1" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="Cog" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<AutoCompleteBox Grid.Column="1"
+													 Watermark="Enter Operation"
+													 HorizontalAlignment="Stretch"
+													 ItemsSource="{Binding OperationOptions}" 
+													 SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"/>
+								</Grid>
 
-								<TextBox Grid.Row="2" 
-										 Watermark="Enter Valid Quantity"
-										 HorizontalAlignment="Stretch"
-										 Text="{Binding QuantityText, Mode=TwoWay}"/>
+								<!-- Quantity with Icon -->
+								<Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="Counter" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<TextBox Grid.Column="1" 
+											 Watermark="Enter Valid Quantity"
+											 HorizontalAlignment="Stretch"
+											 Text="{Binding QuantityText, Mode=TwoWay}"/>
+								</Grid>
 
-								<AutoCompleteBox Grid.Row="3"
-												 Watermark="Enter Location"
-												 HorizontalAlignment="Stretch"
-												 ItemsSource="{Binding LocationOptions}" 
-												 SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"/>
+								<!-- Location with Icon -->
+								<Grid Grid.Row="3" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="MapMarker" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<AutoCompleteBox Grid.Column="1"
+													 Watermark="Enter Location"
+													 HorizontalAlignment="Stretch"
+													 ItemsSource="{Binding LocationOptions}" 
+													 SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"/>
+								</Grid>
 
-								<TextBox Grid.Row="4" 
-										 Watermark="How Many Transactions"
-										 HorizontalAlignment="Stretch"
-										 Text="{Binding RepeatTimesText, Mode=TwoWay}"/>
+								<!-- Repeat Times with Icon -->
+								<Grid Grid.Row="4" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="Repeat" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<TextBox Grid.Column="1" 
+											 Watermark="How Many Transactions"
+											 HorizontalAlignment="Stretch"
+											 Text="{Binding RepeatTimesText, Mode=TwoWay}"/>
+								</Grid>
 
-								<TextBox Grid.Row="5" 
-										 Watermark="Notes"
-										 HorizontalAlignment="Stretch"
-										 AcceptsReturn="True" 
-										 MinHeight="120"/>
+								<!-- Notes with Icon -->
+								<Grid Grid.Row="5" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="NoteText" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Top" Margin="0,4,0,0"/>
+									<TextBox Grid.Column="1" 
+											 Watermark="Notes"
+											 HorizontalAlignment="Stretch"
+											 AcceptsReturn="True" 
+											 MinHeight="120"/>
+								</Grid>
 
-								<Button Grid.Row="6" Content="Send to Preview" HorizontalAlignment="Stretch"/>
+								<!-- Send to Preview Button with Icon -->
+								<Button Grid.Row="6" HorizontalAlignment="Stretch"
+										Background="#6a0dad" Foreground="White"
+										BorderBrush="#6a0dad" BorderThickness="1">
+									<StackPanel Orientation="Horizontal" Spacing="6">
+										<materialIcons:MaterialIcon Kind="Send" Width="14" Height="14"/>
+										<TextBlock Text="Send to Preview"/>
+									</StackPanel>
+								</Button>
 							</Grid>
 						</Border>
 
@@ -93,7 +144,12 @@
 								CornerRadius="2"
 								Padding="8">
 							<Grid RowDefinitions="Auto,*,Auto" RowSpacing="8">
-								<TextBlock Text="Transaction Preview" FontWeight="SemiBold"/>
+								<!-- Preview Title with Icon -->
+								<StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6">
+									<materialIcons:MaterialIcon Kind="Eye" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<TextBlock Text="Transaction Preview" FontWeight="SemiBold" VerticalAlignment="Center"/>
+								</StackPanel>
 
 								<!-- Simple preview grid to match appearance -->
 								<DataGrid Grid.Row="1"
@@ -109,9 +165,35 @@
 								</DataGrid>
 
 								<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
-									<Button Content="Save All" Width="120" Command="{Binding AddMultipleTimesCommand}"/>
-									<Button Content="Reset" Width="120" Command="{Binding ResetMultipleTimesCommand}"/>
-									<Button Content="Back to Normal" Width="140" Command="{Binding BackToNormalCommand}"/>
+									<!-- Save All Button with Icon -->
+									<Button Width="120" Command="{Binding AddMultipleTimesCommand}"
+											Background="#28a745" Foreground="White"
+											BorderBrush="#28a745" BorderThickness="1">
+										<StackPanel Orientation="Horizontal" Spacing="4">
+											<materialIcons:MaterialIcon Kind="ContentSave" Width="12" Height="12"/>
+											<TextBlock Text="Save All"/>
+										</StackPanel>
+									</Button>
+									
+									<!-- Reset Button with Icon -->
+									<Button Width="120" Command="{Binding ResetMultipleTimesCommand}"
+											Background="#ffc107" Foreground="Black"
+											BorderBrush="#ffc107" BorderThickness="1">
+										<StackPanel Orientation="Horizontal" Spacing="4">
+											<materialIcons:MaterialIcon Kind="Refresh" Width="12" Height="12"/>
+											<TextBlock Text="Reset"/>
+										</StackPanel>
+									</Button>
+									
+									<!-- Back to Normal Button with Icon -->
+									<Button Width="140" Command="{Binding BackToNormalCommand}"
+											Background="#6c757d" Foreground="White"
+											BorderBrush="#6c757d" BorderThickness="1">
+										<StackPanel Orientation="Horizontal" Spacing="4">
+											<materialIcons:MaterialIcon Kind="ArrowLeft" Width="12" Height="12"/>
+											<TextBlock Text="Back to Normal"/>
+										</StackPanel>
+									</Button>
 								</StackPanel>
 							</Grid>
 						</Border>
@@ -119,7 +201,13 @@
 				</TabItem>
 
 				<!-- Tab 2: Same Item, Multiple Locations -->
-				<TabItem Header="Same Item, Multiple Locations">
+				<TabItem>
+					<TabItem.Header>
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<materialIcons:MaterialIcon Kind="MapMarkerMultiple" Width="14" Height="14" VerticalAlignment="Center"/>
+							<TextBlock Text="Same Item, Multiple Locations" VerticalAlignment="Center"/>
+						</StackPanel>
+					</TabItem.Header>
 					<Grid Margin="6"
 						  ColumnDefinitions="1*,2*"
 						  ColumnSpacing="12"
@@ -133,36 +221,69 @@
 								Padding="8">
 							<Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto"
 								  RowSpacing="8">
-								<AutoCompleteBox Grid.Row="0"
-												 Watermark="Enter Part Number"
-												 HorizontalAlignment="Stretch"
-												 ItemsSource="{Binding PartIDOptions}" 
-												 SelectedItem="{Binding MultiLocationPartID, Mode=TwoWay}"/>
+								<!-- Part Number with Icon -->
+								<Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="Tag" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<AutoCompleteBox Grid.Column="1"
+													 Watermark="Enter Part Number"
+													 HorizontalAlignment="Stretch"
+													 ItemsSource="{Binding PartIDOptions}" 
+													 SelectedItem="{Binding MultiLocationPartID, Mode=TwoWay}"/>
+								</Grid>
 
-								<AutoCompleteBox Grid.Row="1"
-												 Watermark="Enter Operation"
-												 HorizontalAlignment="Stretch"
-												 ItemsSource="{Binding OperationOptions}" 
-												 SelectedItem="{Binding MultiLocationOperation, Mode=TwoWay}"/>
+								<!-- Operation with Icon -->
+								<Grid Grid.Row="1" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="Cog" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<AutoCompleteBox Grid.Column="1"
+													 Watermark="Enter Operation"
+													 HorizontalAlignment="Stretch"
+													 ItemsSource="{Binding OperationOptions}" 
+													 SelectedItem="{Binding MultiLocationOperation, Mode=TwoWay}"/>
+								</Grid>
 
-								<TextBox Grid.Row="2" 
-										 Watermark="Enter Valid Quantity"
-										 HorizontalAlignment="Stretch"
-										 Text="{Binding MultiLocationQuantityText, Mode=TwoWay}"/>
+								<!-- Quantity with Icon -->
+								<Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="Counter" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<TextBox Grid.Column="1" 
+											 Watermark="Enter Valid Quantity"
+											 HorizontalAlignment="Stretch"
+											 Text="{Binding MultiLocationQuantityText, Mode=TwoWay}"/>
+								</Grid>
 
-								<AutoCompleteBox Grid.Row="3"
-												 Watermark="Enter Location"
-												 HorizontalAlignment="Stretch"
-												 ItemsSource="{Binding LocationOptions}" 
-												 SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"/>
+								<!-- Location with Icon -->
+								<Grid Grid.Row="3" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="MapMarker" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<AutoCompleteBox Grid.Column="1"
+													 Watermark="Enter Location"
+													 HorizontalAlignment="Stretch"
+													 ItemsSource="{Binding LocationOptions}" 
+													 SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"/>
+								</Grid>
 
-								<TextBox Grid.Row="4" 
-										 Watermark="Notes"
-										 HorizontalAlignment="Stretch"
-										 AcceptsReturn="True" 
-										 MinHeight="120"/>
+								<!-- Notes with Icon -->
+								<Grid Grid.Row="4" ColumnDefinitions="Auto,*" ColumnSpacing="6">
+									<materialIcons:MaterialIcon Grid.Column="0" Kind="NoteText" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Top" Margin="0,4,0,0"/>
+									<TextBox Grid.Column="1" 
+											 Watermark="Notes"
+											 HorizontalAlignment="Stretch"
+											 AcceptsReturn="True" 
+											 MinHeight="120"/>
+								</Grid>
 
-								<Button Grid.Row="5" Content="Send to Preview" HorizontalAlignment="Stretch"/>
+								<!-- Send to Preview Button with Icon -->
+								<Button Grid.Row="5" HorizontalAlignment="Stretch"
+										Background="#6a0dad" Foreground="White"
+										BorderBrush="#6a0dad" BorderThickness="1">
+									<StackPanel Orientation="Horizontal" Spacing="6">
+										<materialIcons:MaterialIcon Kind="Send" Width="14" Height="14"/>
+										<TextBlock Text="Send to Preview"/>
+									</StackPanel>
+								</Button>
 							</Grid>
 						</Border>
 
@@ -173,7 +294,12 @@
 								CornerRadius="2"
 								Padding="8">
 							<Grid RowDefinitions="Auto,*,Auto" RowSpacing="8">
-								<TextBlock Text="Transaction Preview" FontWeight="SemiBold"/>
+								<!-- Preview Title with Icon -->
+								<StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6">
+									<materialIcons:MaterialIcon Kind="Eye" Width="14" Height="14" 
+																Foreground="#6a0dad" VerticalAlignment="Center"/>
+									<TextBlock Text="Transaction Preview" FontWeight="SemiBold" VerticalAlignment="Center"/>
+								</StackPanel>
 
 								<!-- Preview Grid -->
 								<DataGrid Grid.Row="1"
@@ -189,9 +315,35 @@
 								</DataGrid>
 
 								<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
-									<Button Content="Save All" Width="120" Command="{Binding AddToMultipleLocationsCommand}"/>
-									<Button Content="Reset" Width="120" Command="{Binding ResetMultipleLocationsCommand}"/>
-									<Button Content="Back to Normal" Width="140" Command="{Binding BackToNormalCommand}"/>
+									<!-- Save All Button with Icon -->
+									<Button Width="120" Command="{Binding AddToMultipleLocationsCommand}"
+											Background="#28a745" Foreground="White"
+											BorderBrush="#28a745" BorderThickness="1">
+										<StackPanel Orientation="Horizontal" Spacing="4">
+											<materialIcons:MaterialIcon Kind="ContentSave" Width="12" Height="12"/>
+											<TextBlock Text="Save All"/>
+										</StackPanel>
+									</Button>
+									
+									<!-- Reset Button with Icon -->
+									<Button Width="120" Command="{Binding ResetMultipleLocationsCommand}"
+											Background="#ffc107" Foreground="Black"
+											BorderBrush="#ffc107" BorderThickness="1">
+										<StackPanel Orientation="Horizontal" Spacing="4">
+											<materialIcons:MaterialIcon Kind="Refresh" Width="12" Height="12"/>
+											<TextBlock Text="Reset"/>
+										</StackPanel>
+									</Button>
+									
+									<!-- Back to Normal Button with Icon -->
+									<Button Width="140" Command="{Binding BackToNormalCommand}"
+											Background="#6c757d" Foreground="White"
+											BorderBrush="#6c757d" BorderThickness="1">
+										<StackPanel Orientation="Horizontal" Spacing="4">
+											<materialIcons:MaterialIcon Kind="ArrowLeft" Width="12" Height="12"/>
+											<TextBlock Text="Back to Normal"/>
+										</StackPanel>
+									</Button>
 								</StackPanel>
 							</Grid>
 						</Border>

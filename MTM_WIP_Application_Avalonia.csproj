@@ -44,6 +44,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.8" />
@@ -72,45 +73,45 @@
     <None Include=".github\Automation-Instructions\issue-pr-creation.instruction.md" />
     <None Include=".github\Automation-Instructions\personas.instruction.md" />
     <None Include=".github\Automation-Instructions\README.md" />
-    <None Include=".github\copilot-commands.md" />
     <None Include=".github\copilot-instructions.md" />
-    <None Include=".github\copilot-training.md" />
     <None Include=".github\Core-Instructions\codingconventions.instruction.md" />
     <None Include=".github\Core-Instructions\dependency-injection.instruction.md" />
     <None Include=".github\Core-Instructions\naming.conventions.instruction.md" />
     <None Include=".github\Core-Instructions\project-structure.instruction.md" />
     <None Include=".github\Core-Instructions\README.md" />
-    <None Include=".github\custom-prompts-examples.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ContextMenuIntegration.prompt.md" />
+    <None Include=".github\Custom-Prompts\custom-prompts-examples.md" />
     <None Include=".github\Custom-Prompts\CustomPrompt_Create_CRUDOperations.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ErrorSystemPlaceholder.prompt.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_HotkeySystem.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ErrorSystemPlaceholder.md" />
     <None Include=".github\Custom-Prompts\CustomPrompt_Create_Issue.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ModernLayoutPattern.prompt.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ReactiveUIViewModel.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ModernLayoutPattern.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_ReactiveUIViewModel.md" />
     <None Include=".github\Custom-Prompts\CustomPrompt_Create_StoredProcedure.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_UIElement.prompt.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Create_UIElementFromMarkdown.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_UIElement.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Create_UIElementFromMarkdown.md" />
     <None Include=".github\Custom-Prompts\CustomPrompt_Database_ErrorHandling.md" />
     <None Include=".github\Custom-Prompts\CustomPrompt_Document_DatabaseSchema.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Implement_ResultPatternSystem.prompt.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Implement_ResultPatternSystem.md" />
     <None Include=".github\Custom-Prompts\CustomPrompt_Update_StoredProcedure.md" />
-    <None Include=".github\Custom-Prompts\CustomPrompt_Verify_CodeCompliance.prompt.md" />
-    <None Include=".github\Custom-Prompts\README.md" />
+    <None Include=".github\Custom-Prompts\CustomPrompt_Verify_CodeCompliance.md" />
     <None Include=".github\Development-Instructions\database-patterns.instruction.md" />
     <None Include=".github\Development-Instructions\errorhandler.instruction.md" />
     <None Include=".github\Development-Instructions\githubworkflow.instruction.md" />
     <None Include=".github\Development-Instructions\README.md" />
     <None Include=".github\Development-Instructions\templates-documentation.instruction.md" />
+    <None Include=".github\Custom-Prompts\MTM_Hotkey_Reference.md" />
     <None Include=".github\Quality-Instructions\needsrepair.instruction.md" />
     <None Include=".github\Quality-Instructions\README.md" />
+    <None Include=".github\Custom-Prompts\README.md" />
     <None Include=".github\UI-Instructions\README.md" />
     <None Include=".github\UI-Instructions\ui-generation.instruction.md" />
     <None Include=".github\UI-Instructions\ui-mapping.instruction.md" />
+	    <None Include=".github\UI-Instructions\ui-styling.instruction.md" />	  
+	  
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include=".vscode\" />
     <Folder Include="docs\" />
+    <Folder Include="Documentation\Development\CopilotQuestions\Answered\" />
   </ItemGroup>
 </Project>

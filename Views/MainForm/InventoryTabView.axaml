@@ -92,13 +92,21 @@
         HorizontalAlignment="Stretch" 
         VerticalAlignment="Stretch">
     
-    <!-- Header -->
-    <TextBlock Grid.Row="0"
-               Text="Inventory Entry"
-               FontSize="14"
-               FontWeight="SemiBold"
-               Margin="8,8,8,4"
-               Foreground="{DynamicResource ForegroundBrush}"/>
+    <!-- Header with simple icon -->
+    <StackPanel Grid.Row="0" 
+                Orientation="Horizontal" 
+                Margin="8,8,8,4"
+                HorizontalAlignment="Left">
+      <TextBlock Text="📦" 
+                 FontSize="20"
+                 VerticalAlignment="Center"
+                 Margin="0,0,8,0"/>
+      <TextBlock Text="Inventory Entry"
+                 FontSize="14"
+                 FontWeight="SemiBold"
+                 VerticalAlignment="Center"
+                 Foreground="{DynamicResource ForegroundBrush}"/>
+    </StackPanel>
     
     <!-- Main input fields area -->
     <Grid Grid.Row="1" 
@@ -109,9 +117,16 @@
           VerticalAlignment="Stretch">
       
       <!-- Part Number -->
-      <TextBlock Grid.Row="0" Grid.Column="0"
-                 Classes="field-label"
-                 Text="Part Number:"/>
+      <StackPanel Grid.Row="0" Grid.Column="0" 
+                  Orientation="Horizontal" 
+                  Classes="field-label">
+        <TextBlock Text="🏷️" 
+                   FontSize="16"
+                   VerticalAlignment="Center"
+                   Margin="0,0,4,0"/>
+        <TextBlock Text="Part Number:"
+                   VerticalAlignment="Center"/>
+      </StackPanel>
       <ComboBox Grid.Row="0" Grid.Column="1"
                 PlaceholderText="Select Part ID"
                 Classes="input-field" 
@@ -123,9 +138,16 @@
                 ToolTip.Tip="Select or enter a part number"/>
 
       <!-- Operation -->
-      <TextBlock Grid.Row="1" Grid.Column="0"
-                 Classes="field-label"
-                 Text="Operation:"/>
+      <StackPanel Grid.Row="1" Grid.Column="0" 
+                  Orientation="Horizontal" 
+                  Classes="field-label">
+        <TextBlock Text="⚙️" 
+                   FontSize="16"
+                   VerticalAlignment="Center"
+                   Margin="0,0,4,0"/>
+        <TextBlock Text="Operation:"
+                   VerticalAlignment="Center"/>
+      </StackPanel>
       <ComboBox Grid.Row="1" Grid.Column="1" 
                 HorizontalAlignment="Stretch"
                 Classes="input-field"
@@ -136,9 +158,16 @@
                 ToolTip.Tip="Select an operation number"/>
 
       <!-- Quantity -->
-      <TextBlock Grid.Row="2" Grid.Column="0"
-                 Classes="field-label"
-                 Text="Quantity:"/>
+      <StackPanel Grid.Row="2" Grid.Column="0" 
+                  Orientation="Horizontal" 
+                  Classes="field-label">
+        <TextBlock Text="🔢" 
+                   FontSize="16"
+                   VerticalAlignment="Center"
+                   Margin="0,0,4,0"/>
+        <TextBlock Text="Quantity:"
+                   VerticalAlignment="Center"/>
+      </StackPanel>
       <TextBox Grid.Row="2" Grid.Column="1"
                Classes="input-field"
                HorizontalAlignment="Stretch"
@@ -148,9 +177,16 @@
                ToolTip.Tip="Enter numeric quantity"/>
 
       <!-- Location -->
-      <TextBlock Grid.Row="3" Grid.Column="0"
-                 Classes="field-label"
-                 Text="Location:"/>
+      <StackPanel Grid.Row="3" Grid.Column="0" 
+                  Orientation="Horizontal" 
+                  Classes="field-label">
+        <TextBlock Text="📍" 
+                   FontSize="16"
+                   VerticalAlignment="Center"
+                   Margin="0,0,4,0"/>
+        <TextBlock Text="Location:"
+                   VerticalAlignment="Center"/>
+      </StackPanel>
       <ComboBox Grid.Row="3" Grid.Column="1"
                 Classes="input-field"
                 PlaceholderText="Select Location"
@@ -160,13 +196,20 @@
                 SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"
                 ToolTip.Tip="Select a location"/>
 
-      <!-- Notes section header -->
-      <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
-                 Text="Notes"
-                 FontSize="12"
-                 FontWeight="Medium"
-                 Margin="4,8,4,4"
-                 HorizontalAlignment="Center"/>
+      <!-- Notes section header with icon -->
+      <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                  Orientation="Horizontal"
+                  HorizontalAlignment="Center"
+                  Margin="4,8,4,4">
+        <TextBlock Text="📝" 
+                   FontSize="16"
+                   VerticalAlignment="Center"
+                   Margin="0,0,4,0"/>
+        <TextBlock Text="Notes"
+                   FontSize="12"
+                   FontWeight="Medium"
+                   VerticalAlignment="Center"/>
+      </StackPanel>
 
       <!-- Notes text area - stretches to fill remaining space -->
       <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
@@ -184,23 +227,31 @@
                VerticalAlignment="Stretch"/>
     </Grid>
 
-    <!-- Action buttons row -->
+    <!-- Action buttons row with simple icons -->
     <Grid Grid.Row="2" 
           ColumnDefinitions="Auto,Auto,*,Auto,Auto"
           Margin="8,4">
       
       <Button Grid.Column="0"
               Classes="action-button primary"
-              Content="Save"
               Command="{Binding SaveCommand}"
               IsEnabled="{Binding CanSave}"
-              ToolTip.Tip="Save inventory item (Enter)"/>
+              ToolTip.Tip="Save inventory item (Enter)">
+        <StackPanel Orientation="Horizontal" Spacing="4">
+          <TextBlock Text="💾" FontSize="16"/>
+          <TextBlock Text="Save"/>
+        </StackPanel>
+      </Button>
 
       <Button Grid.Column="1"
               Classes="action-button secondary"
-              Content="Advanced"
               Command="{Binding AdvancedEntryCommand}"
-              ToolTip.Tip="Open advanced inventory features"/>
+              ToolTip.Tip="Open advanced inventory features">
+        <StackPanel Orientation="Horizontal" Spacing="4">
+          <TextBlock Text="🔧" FontSize="16"/>
+          <TextBlock Text="Advanced"/>
+        </StackPanel>
+      </Button>
 
       <!-- Version display -->
       <TextBlock Grid.Column="2"
@@ -213,17 +264,21 @@
 
       <Button Grid.Column="3"
               Classes="action-button secondary"
-              Content="Reset"
               Command="{Binding ResetCommand}"
-              ToolTip.Tip="Reset form (F5) / Hard reset (Shift+F5)"/>
+              ToolTip.Tip="Reset form (F5) / Hard reset (Shift+F5)">
+        <StackPanel Orientation="Horizontal" Spacing="4">
+          <TextBlock Text="🔄" FontSize="16"/>
+          <TextBlock Text="Reset"/>
+        </StackPanel>
+      </Button>
 
       <Button Grid.Column="4"
               Classes="action-button secondary"
-              Content="⚙"
               Command="{Binding TogglePanelCommand}"
               ToolTip.Tip="Toggle right panel"
-              FontSize="14"
-              MinWidth="36"/>
+              MinWidth="36">
+        <TextBlock Text="⚙" FontSize="14"/>
+      </Button>
     </Grid>
 
     <!-- Keyboard shortcuts info -->

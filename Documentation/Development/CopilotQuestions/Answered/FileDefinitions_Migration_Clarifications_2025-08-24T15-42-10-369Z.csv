@@ -1,7 +1,0 @@
-Question_ID,Category,Question,Answer,Notes
-"A1","File_Naming_Clarification","File naming convention for migrated FileDefinitions","FILEDEFINITIONS_PREFIX","also change existing files that do not match this naming convention, and update the html files that link to them as well"
-"A2","CSS_Reference_Clarification","Which CSS files to reference from Documentation/HTML/assets/css/","ALL_THREE",""
-"A3","Navigation_Button_Placement","Where to place cross-reference navigation buttons","TOP_OF_PAGE","make sure all HTML files follow this same pattern (even the files that are already in the migrated folders)"
-"A4","PlainEnglish_Content_Strategy","Technical detail level for PlainEnglish non-developer content","PROCESS_ORIENTED",""
-"A5","Mobile_Responsiveness_Validation","Action if existing files are not responsive","UPGRADE_ALL",""
-"A6","Archive_Implementation","How to handle Docs folder archival/removal","CREATE_ARCHIVE_THEN_DELETE",""

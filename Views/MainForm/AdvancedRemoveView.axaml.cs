@@ -3,6 +3,10 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using System;
 using System.Threading.Tasks;
+using ReactiveUI;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Concurrency;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -18,13 +22,23 @@ public partial class AdvancedRemoveView : UserControl
 {
     private readonly ILogger<AdvancedRemoveView>? _logger;
     private AdvancedRemoveViewModel? _viewModel;
+    private readonly CompositeDisposable _compositeDisposable = new();
 
     public AdvancedRemoveView()
     {
-        InitializeComponent();
-        
-        // Set up event handlers for advanced removal features
-        SetupAdvancedRemovalFeatures();
+        try
+        {
+            InitializeComponent();
+            
+            // Set up event handlers for advanced removal features
+            SetupAdvancedRemovalFeatures();
+        }
+        catch (Exception ex)
+        {
+            // Log critical initialization error
+            System.Diagnostics.Debug.WriteLine($"AdvancedRemoveView initialization error: {ex.Message}");
+            throw;
+        }
     }
 
     public AdvancedRemoveView(ILogger<AdvancedRemoveView> logger) : this()
@@ -63,6 +77,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to setup advanced removal features");
+            // Don't rethrow here to allow the view to continue initializing
         }
     }
 
@@ -79,12 +94,16 @@ public partial class AdvancedRemoveView : UserControl
                 UnwireViewModelEvents(_viewModel);
             }
 
-            // Wire up new ViewModel events
+            // Wire up new ViewModel events with enhanced error handling
             if (DataContext is AdvancedRemoveViewModel viewModel)
             {
                 _viewModel = viewModel;
                 WireViewModelEvents(viewModel);
                 _logger?.LogInformation("AdvancedRemoveViewModel connected successfully");
+            }
+            else if (DataContext != null)
+            {
+                _logger?.LogWarning("DataContext is not AdvancedRemoveViewModel. Type: {Type}", DataContext.GetType().Name);
             }
         }
         catch (Exception ex)
@@ -94,23 +113,136 @@ public partial class AdvancedRemoveView : UserControl
     }
 
     /// <summary>
-    /// Wires up ViewModel events for advanced removal operations
+    /// Wires up ViewModel events for advanced removal operations with proper error handling
     /// </summary>
     private void WireViewModelEvents(AdvancedRemoveViewModel viewModel)
     {
-        // Wire up progress events for long-running removal operations
-        // Note: Progress integration would be implemented here when available
-        
-        // Wire up bulk removal operation events
-        // Note: Bulk removal progress tracking would be implemented here
-        
-        // Wire up undo operation events
-        // Note: Undo operation notifications would be implemented here
-        
-        // Wire up removal history events
-        // Note: History tracking events would be implemented here
-        
-        _logger?.LogDebug("ViewModel events wired successfully");
+        try
+        {
+            // Subscribe to command exceptions to prevent ReactiveUI pipeline breaks
+            WireCommandExceptions(viewModel.LoadDataCommand, "LoadData");
+            WireCommandExceptions(viewModel.SearchCommand, "Search");
+            WireCommandExceptions(viewModel.UndoRemovalCommand, "UndoRemoval");
+            WireCommandExceptions(viewModel.RemoveSelectedCommand, "RemoveSelected");
+            WireCommandExceptions(viewModel.ToggleFilterPanelCommand, "ToggleFilterPanel");
+            WireCommandExceptions(viewModel.BackToNormalCommand, "BackToNormal");
+            WireCommandExceptions(viewModel.PrintRemovalSummaryCommand, "PrintRemovalSummary");
+            WireCommandExceptions(viewModel.ClearCommand, "Clear");
+            
+            _logger?.LogDebug("ViewModel events wired successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error wiring ViewModel events");
+        }
+    }
+
+    /// <summary>
+    /// Helper method to wire command exceptions safely
+    /// </summary>
+    private void WireCommandExceptions(ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit>? command, string commandName)
+    {
+        if (command == null) 
+        {
+            _logger?.LogWarning("Command {CommandName} is null, skipping exception wiring", commandName);
+            return;
+        }
+
+        try
+        {
+            command.ThrownExceptions
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(ex => HandleCommandException(commandName, ex))
+                .DisposeWith(_compositeDisposable);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error wiring command {CommandName} exceptions", commandName);
+        }
+    }
+
+    /// <summary>
+    /// Handles command exceptions to prevent ReactiveUI pipeline breaks
+    /// Enhanced with better error categorization and logging
+    /// </summary>
+    private void HandleCommandException(string commandName, Exception ex)
+    {
+        try
+        {
+            // Log the exception with context
+            _logger?.LogError(ex, "Command {CommandName} encountered an error: {Message}", commandName, ex.Message);
+            
+            // Handle specific exception types that commonly cause FormatExceptions
+            switch (ex)
+            {
+                case FormatException formatEx:
+                    _logger?.LogError(formatEx, "Format exception in command {CommandName}. This may be related to string formatting or data binding issues", commandName);
+                    break;
+                case InvalidCastException castEx:
+                    _logger?.LogError(castEx, "Invalid cast exception in command {CommandName}. This may be related to data type conversion issues", commandName);
+                    break;
+                case ArgumentException argEx:
+                    _logger?.LogError(argEx, "Argument exception in command {CommandName}. This may be related to invalid parameter values", commandName);
+                    break;
+                case NullReferenceException nullEx:
+                    _logger?.LogError(nullEx, "Null reference exception in command {CommandName}. Check for uninitialized objects", commandName);
+                    break;
+                default:
+                    _logger?.LogError(ex, "Unhandled exception in command {CommandName}", commandName);
+                    break;
+            }
+            
+            // Update ViewModel status if available and safe to do so
+            if (_viewModel != null)
+            {
+                try
+                {
+                    // Use Dispatcher for UI thread safety
+                    RxApp.MainThreadScheduler.Schedule(() =>
+                    {
+                        try
+                        {
+                            _viewModel.StatusMessage = $"Error in {commandName}: {GetUserFriendlyErrorMessage(ex)}";
+                            _viewModel.IsBusy = false;
+                        }
+                        catch (Exception statusEx)
+                        {
+                            _logger?.LogError(statusEx, "Error updating ViewModel status after command exception");
+                        }
+                    });
+                }
+                catch (Exception schedulerEx)
+                {
+                    _logger?.LogError(schedulerEx, "Error scheduling status update on main thread");
+                }
+            }
+        }
+        catch (Exception handlerEx)
+        {
+            // Critical: Exception in exception handler
+            _logger?.LogCritical(handlerEx, "Critical error in exception handler for command {CommandName}", commandName);
+            
+            // Last resort - write to debug output
+            System.Diagnostics.Debug.WriteLine($"Critical exception handling error for {commandName}: {handlerEx.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Converts technical exceptions to user-friendly messages
+    /// </summary>
+    private static string GetUserFriendlyErrorMessage(Exception ex)
+    {
+        return ex switch
+        {
+            FormatException => "Invalid data format. Please check your input values.",
+            InvalidCastException => "Data type mismatch. Please refresh and try again.",
+            ArgumentException => "Invalid input provided. Please check your entries.",
+            NullReferenceException => "Required data is missing. Please refresh and try again.",
+            TimeoutException => "Operation timed out. Please try again.",
+            UnauthorizedAccessException => "Access denied. Please check your permissions.",
+            InvalidOperationException => "Operation cannot be completed in current state. Please try again.",
+            _ => "An unexpected error occurred. Please try again."
+        };
     }
 
     /// <summary>
@@ -118,8 +250,16 @@ public partial class AdvancedRemoveView : UserControl
     /// </summary>
     private void UnwireViewModelEvents(AdvancedRemoveViewModel viewModel)
     {
-        // Unwire all event handlers to prevent memory leaks
-        _logger?.LogDebug("ViewModel events unwired successfully");
+        try
+        {
+            // Dispose all subscriptions safely
+            _compositeDisposable.Clear();
+            _logger?.LogDebug("ViewModel events unwired successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error unwiring ViewModel events");
+        }
     }
 
     /// <summary>
@@ -436,6 +576,7 @@ public partial class AdvancedRemoveView : UserControl
 
             // Cleanup any resources
             this.DataContextChanged -= OnDataContextChanged;
+            _compositeDisposable?.Dispose();
             
             _logger?.LogInformation("AdvancedRemoveView cleanup completed");
         }

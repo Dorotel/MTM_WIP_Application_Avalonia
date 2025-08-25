@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
              xmlns:controls="using:Avalonia.Controls"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="600"
@@ -146,18 +147,26 @@
       <Button Grid.Column="4"
               x:Name="Control_RemoveTab_Button_Search"
               Classes="action-button primary"
-              Content="Search"
               Command="{Binding SearchCommand}"
               ToolTip.Tip="Search inventory (F5)"
-              Margin="8,4,4,4"/>
+              Margin="8,4,4,4">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Magnify" Width="16" Height="16"/>
+          <TextBlock Text="Search" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
 
       <!-- Reset Button -->
       <Button Grid.Column="5"
               x:Name="Control_RemoveTab_Button_Reset"
               Classes="action-button secondary"
-              Content="Reset"
               Command="{Binding ResetCommand}"
-              ToolTip.Tip="Reset search criteria and refresh all data"/>
+              ToolTip.Tip="Reset search criteria and refresh all data">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Refresh" Width="16" Height="16"/>
+          <TextBlock Text="Reset" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
     </Grid>
 
     <!-- Data Display Area - stretches to fill remaining space -->
@@ -207,11 +216,11 @@
                   CornerRadius="4"
                   Width="120" Height="120"
                   HorizontalAlignment="Center">
-            <TextBlock Text="??"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       FontSize="48"
-                       Opacity="0.6"/>
+            <materialIcons:MaterialIcon Kind="DatabaseSearchOutline" 
+                                        Width="48" Height="48" 
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Opacity="0.6"/>
           </Border>
           <TextBlock Text="No inventory items found"
                      HorizontalAlignment="Center"
@@ -230,46 +239,63 @@
       <Button Grid.Column="0"
               x:Name="Control_RemoveTab_Button_Delete"
               Classes="action-button danger"
-              Content="Delete"
               Command="{Binding DeleteCommand}"
               IsEnabled="{Binding CanDelete}"
-              ToolTip.Tip="Remove selected items (Delete key)"/>
+              ToolTip.Tip="Remove selected items (Delete key)">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Delete" Width="16" Height="16"/>
+          <TextBlock Text="Delete" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
 
       <!-- Undo Button -->
       <Button Grid.Column="1"
               x:Name="Control_RemoveTab_Button_Undo"
               Classes="action-button secondary"
-              Content="Undo"
               Command="{Binding UndoCommand}"
               IsEnabled="{Binding CanUndo}"
-              ToolTip.Tip="Restore last removed items (Ctrl+Z)"/>
+              ToolTip.Tip="Restore last removed items (Ctrl+Z)">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Undo" Width="16" Height="16"/>
+          <TextBlock Text="Undo" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
 
       <!-- Advanced Item Removal Button -->
       <Button Grid.Column="2"
               x:Name="Control_RemoveTab_Button_AdvancedItemRemoval"
               Classes="action-button secondary"
-              Content="Advanced"
               Command="{Binding AdvancedRemovalCommand}"
-              ToolTip.Tip="Open advanced removal features"/>
+              ToolTip.Tip="Open advanced removal features">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Cog" Width="16" Height="16"/>
+          <TextBlock Text="Advanced" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
 
       <!-- Print Button -->
       <Button Grid.Column="3"
               x:Name="Control_RemoveTab_Button_Print"
               Classes="action-button secondary"
-              Content="Print"
               Command="{Binding PrintCommand}"
               IsEnabled="{Binding HasInventoryItems}"
-              ToolTip.Tip="Print current inventory view (Ctrl+P)"/>
+              ToolTip.Tip="Print current inventory view (Ctrl+P)">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Printer" Width="16" Height="16"/>
+          <TextBlock Text="Print" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
 
       <!-- Toggle Right Panel Button -->
       <Button Grid.Column="5"
               x:Name="Control_RemoveTab_Button_Toggle_RightPanel"
               Classes="action-button secondary"
-              Content="?"
               Command="{Binding TogglePanelCommand}"
               ToolTip.Tip="Toggle quick actions panel"
               FontSize="14"
-              MinWidth="36"/>
+              MinWidth="36">
+        <materialIcons:MaterialIcon Kind="Menu" Width="16" Height="16"/>
+      </Button>
     </Grid>
   </Grid>
 </UserControl>

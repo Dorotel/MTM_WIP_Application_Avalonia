@@ -9,45 +9,143 @@ param(
 Write-Host "?? GitHub Copilot Repository Instructions Implementation" -ForegroundColor Cyan
 Write-Host "================================================================" -ForegroundColor Cyan
 
-# Define instruction files that have been updated
-$UpdatedInstructionFiles = @(
-    @{
-        Path = ".github/copilot-instructions.md"
+# Automatically discover all GitHub Copilot related files in .github directory
+Write-Host "?? Discovering GitHub Copilot files in .github directory..." -ForegroundColor Yellow
+
+$AllGitHubFiles = @()
+
+# Get all .instruction.md files in .github directory
+$InstructionFiles = Get-ChildItem -Path ".github" -Recurse -Filter "*.instruction.md"
+
+# Get all CustomPrompt files in .github directory
+$CustomPromptFiles = Get-ChildItem -Path ".github" -Recurse -Filter "CustomPrompt_*.md"
+
+# Get copilot-instructions.md
+$CopilotInstructionsFile = Get-ChildItem -Path ".github" -Filter "copilot-instructions.md"
+
+# Get README.md files in .github directory
+$ReadmeFiles = Get-ChildItem -Path ".github" -Recurse -Filter "README.md"
+
+# Get other relevant files
+$OtherRelevantFiles = Get-ChildItem -Path ".github" -Recurse -Filter "*.md" | Where-Object { 
+    $_.Name -notlike "*.instruction.md" -and 
+    $_.Name -notlike "CustomPrompt_*.md" -and 
+    $_.Name -ne "README.md" -and
+    $_.Name -ne "copilot-instructions.md"
+}
+
+# Add copilot-instructions.md first
+if ($CopilotInstructionsFile) {
+    $AllGitHubFiles += @{
+        Path = $CopilotInstructionsFile.FullName.Replace((Get-Location).Path + "\", "")
         Type = "Main Instructions"
-        Changes = "Implemented GitHub Copilot repository format with clear role definition, actionable language, and MTM-specific patterns"
-        Status = "Updated"
-    },
-    @{
-        Path = ".github/Core-Instructions/codingconventions.instruction.md"
-        Type = "Core Instructions"
-        Changes = "Converted to direct, actionable guidance with templates and examples"
-        Status = "Updated"
-    },
-    @{
-        Path = ".github/UI-Instructions/ui-generation.instruction.md"
-        Type = "UI Instructions"
-        Changes = "Streamlined to focus on Avalonia UI generation with MTM patterns"
-        Status = "Updated"
-    },
-    @{
-        Path = ".github/Development-Instructions/database-patterns.instruction.md"
-        Type = "Development Instructions"
-        Changes = "Emphasized stored procedure requirements and MTM business rules"
-        Status = "Updated"
-    },
-    @{
-        Path = ".github/Quality-Instructions/needsrepair.instruction.md"
-        Type = "Quality Instructions"
-        Changes = "Focused on audit processes and compliance standards"
-        Status = "Updated"
-    },
-    @{
-        Path = ".github/Automation-Instructions/personas.instruction.md"
-        Type = "Automation Instructions"
-        Changes = "Simplified persona definitions with clear usage guidelines"
-        Status = "Updated"
+        Changes = "Main GitHub Copilot repository instructions"
+        Status = "Primary"
+        Category = "Main"
+        FileType = "Instructions"
     }
-)
+}
+
+# Add all instruction files
+foreach ($file in $InstructionFiles) {
+    $relativePath = $file.FullName.Replace((Get-Location).Path + "\", "")
+    
+    # Determine category and type based on path
+    $category = "General"
+    $type = "Instruction File"
+    
+    if ($relativePath -like "*Core-Instructions*") {
+        $category = "Core"
+        $type = "Core Instructions"
+    }
+    elseif ($relativePath -like "*UI-Instructions*") {
+        $category = "UI"
+        $type = "UI Instructions"
+    }
+    elseif ($relativePath -like "*Development-Instructions*") {
+        $category = "Development"
+        $type = "Development Instructions"
+    }
+    elseif ($relativePath -like "*Quality-Instructions*") {
+        $category = "Quality"
+        $type = "Quality Instructions"
+    }
+    elseif ($relativePath -like "*Automation-Instructions*") {
+        $category = "Automation"
+        $type = "Automation Instructions"
+    }
+    
+    $AllGitHubFiles += @{
+        Path = $relativePath
+        Type = $type
+        Changes = "Instruction file for $($file.BaseName.Replace('.instruction', '').Replace('-', ' '))"
+        Status = "Secondary"
+        Category = $category
+        FileType = "Instructions"
+    }
+}
+
+# Add all custom prompt files
+foreach ($file in $CustomPromptFiles) {
+    $relativePath = $file.FullName.Replace((Get-Location).Path + "\", "")
+    
+    $AllGitHubFiles += @{
+        Path = $relativePath
+        Type = "Custom Prompt"
+        Changes = "Custom prompt for $($file.BaseName.Replace('CustomPrompt_', '').Replace('_', ' '))"
+        Status = "Secondary"
+        Category = "Custom Prompts"
+        FileType = "Prompts"
+    }
+}
+
+# Add README files
+foreach ($file in $ReadmeFiles) {
+    $relativePath = $file.FullName.Replace((Get-Location).Path + "\", "")
+    
+    # Determine category based on path
+    $category = "Documentation"
+    if ($relativePath -like "*Core-Instructions*") { $category = "Core Documentation" }
+    elseif ($relativePath -like "*UI-Instructions*") { $category = "UI Documentation" }
+    elseif ($relativePath -like "*Development-Instructions*") { $category = "Development Documentation" }
+    elseif ($relativePath -like "*Quality-Instructions*") { $category = "Quality Documentation" }
+    elseif ($relativePath -like "*Automation-Instructions*") { $category = "Automation Documentation" }
+    elseif ($relativePath -like "*Custom-Prompts*") { $category = "Custom Prompts Documentation" }
+    
+    $AllGitHubFiles += @{
+        Path = $relativePath
+        Type = "README Documentation"
+        Changes = "Documentation for $($file.Directory.Name.Replace('-', ' '))"
+        Status = "Secondary"
+        Category = $category
+        FileType = "Documentation"
+    }
+}
+
+# Add other relevant files
+foreach ($file in $OtherRelevantFiles) {
+    $relativePath = $file.FullName.Replace((Get-Location).Path + "\", "")
+    
+    $AllGitHubFiles += @{
+        Path = $relativePath
+        Type = "Supporting File"
+        Changes = "Supporting file: $($file.BaseName.Replace('-', ' '))"
+        Status = "Secondary"
+        Category = "Supporting"
+        FileType = "Supporting"
+    }
+}
+
+Write-Host "?? Found $($AllGitHubFiles.Count) GitHub Copilot related files:" -ForegroundColor Green
+
+# Group by file type for display
+$FileTypeGroups = $AllGitHubFiles | Group-Object FileType
+foreach ($group in $FileTypeGroups) {
+    Write-Host "`n   ?? $($group.Name) ($($group.Count) files):" -ForegroundColor Cyan
+    foreach ($file in $group.Group | Sort-Object Category, Path) {
+        Write-Host "      - $($file.Path) [$($file.Category)]" -ForegroundColor Gray
+    }
+}
 
 # Validation functions
 function Test-FileExists {
@@ -56,7 +154,7 @@ function Test-FileExists {
 }
 
 function Test-GitHubCopilotFormat {
-    param([string]$FilePath)
+    param([string]$FilePath, [string]$FileType)
     
     if (-not (Test-Path $FilePath)) {
         return @{ IsValid = $false; Issues = @("File does not exist") }
@@ -65,23 +163,56 @@ function Test-GitHubCopilotFormat {
     $content = Get-Content $FilePath -Raw
     $issues = @()
     
-    # Check for clear role definition
-    if ($content -notmatch "You are|Your role|You") {
-        $issues += "Missing clear role definition (should start with 'You are' or 'Your role')"
+    # Different validation rules based on file type
+    switch ($FileType) {
+        "Instructions" {
+            # Check for clear role definition
+            if ($content -notmatch "(?i)(You are|Your role|You|act as)") {
+                $issues += "Missing clear role definition (should start with 'You are' or 'Your role')"
+            }
+            
+            # Check for actionable language
+            if ($content -notmatch "(?i)(Always|Never|Use |Follow |Apply |Generate |Create |Implement |CRITICAL|Required|Prohibited)") {
+                $issues += "Missing actionable language (should include Always/Never/Use/Follow commands)"
+            }
+            
+            # Check for code examples
+            if ($content -notmatch "```[\w]*\s") {
+                $issues += "Missing code examples (should include code blocks)"
+            }
+        }
+        "Prompts" {
+            # Check for prompt structure
+            if ($content -notmatch "(?i)(prompt|template|usage|example)") {
+                $issues += "Missing prompt structure (should include prompt template or usage examples)"
+            }
+            
+            # Check for persona assignment
+            if ($content -notmatch "(?i)(persona|copilot|role)") {
+                $issues += "Missing persona assignment"
+            }
+            
+            # Check for usage guidelines
+            if ($content -notmatch "(?i)(guidelines|instructions|when to use)") {
+                $issues += "Missing usage guidelines"
+            }
+        }
+        "Documentation" {
+            # Check for structure and organization
+            if ($content -notmatch "(?i)(files|purpose|usage|overview)") {
+                $issues += "Missing documentation structure (should include purpose or overview)"
+            }
+        }
+        default {
+            # Basic checks for other files
+            if ($content.Length -lt 100) {
+                $issues += "File appears to be too short or empty"
+            }
+        }
     }
     
-    # Check for actionable language
-    if ($content -notmatch "(Always|Never|Use|Follow|Apply|Generate|Create|Implement)") {
-        $issues += "Missing actionable language (should include Always/Never/Use/Follow commands)"
-    }
-    
-    # Check for code examples
-    if ($content -notmatch "```[a-z]*\n") {
-        $issues += "Missing code examples (should include code blocks)"
-    }
-    
-    # Check for MTM-specific patterns
-    if ($content -notmatch "(MTM|Manitowoc|TransactionType|#4B45ED|ReactiveUI|Avalonia)") {
+    # Check for MTM-specific patterns (applies to all file types)
+    if ($content -notmatch "(MTM|Manitowoc|TransactionType|#6a0dad|#4B45ED|ReactiveUI|Avalonia)") {
         $issues += "Missing MTM-specific context"
     }
     
@@ -119,21 +250,24 @@ function Test-RepositorySpecificContext {
 }
 
 # Validation process
-Write-Host "?? Validating GitHub Copilot Repository Instructions Format..." -ForegroundColor Yellow
+Write-Host "`n?? Validating GitHub Copilot Repository Format..." -ForegroundColor Yellow
 
 $ValidationResults = @()
 
-foreach ($file in $UpdatedInstructionFiles) {
+foreach ($file in $AllGitHubFiles) {
     Write-Host "`n?? Validating: $($file.Path)" -ForegroundColor White
     
     $fileExists = Test-FileExists $file.Path
-    $formatValid = Test-GitHubCopilotFormat $file.Path
+    $formatValid = Test-GitHubCopilotFormat $file.Path $file.FileType
     $contextValid = Test-RepositorySpecificContext $file.Path
     
     $result = @{
         FilePath = $file.Path
         Type = $file.Type
+        Category = $file.Category
+        FileType = $file.FileType
         Changes = $file.Changes
+        Status = $file.Status
         FileExists = $fileExists
         FormatValid = $formatValid.IsValid
         FormatIssues = $formatValid.Issues
@@ -170,6 +304,26 @@ Write-Host "   Total Files: $TotalFiles" -ForegroundColor White
 Write-Host "   Valid: $ValidFiles" -ForegroundColor Green
 Write-Host "   Invalid: $InvalidFiles" -ForegroundColor Red
 
+# File type breakdown
+Write-Host "`n?? File Type Breakdown:" -ForegroundColor Cyan
+$FileTypeGroups = $ValidationResults | Group-Object FileType
+foreach ($group in $FileTypeGroups) {
+    $validInType = ($group.Group | Where-Object { $_.OverallValid }).Count
+    $totalInType = $group.Group.Count
+    $typeColor = if ($validInType -eq $totalInType) { "Green" } elseif ($validInType -gt 0) { "Yellow" } else { "Red" }
+    Write-Host "   $($group.Name): $validInType/$totalInType valid" -ForegroundColor $typeColor
+}
+
+# Category breakdown
+Write-Host "`n?? Category Breakdown:" -ForegroundColor Cyan
+$CategoryGroups = $ValidationResults | Group-Object Category
+foreach ($group in $CategoryGroups) {
+    $validInCategory = ($group.Group | Where-Object { $_.OverallValid }).Count
+    $totalInCategory = $group.Group.Count
+    $categoryColor = if ($validInCategory -eq $totalInCategory) { "Green" } elseif ($validInCategory -gt 0) { "Yellow" } else { "Red" }
+    Write-Host "   $($group.Name): $validInCategory/$totalInCategory valid" -ForegroundColor $categoryColor
+}
+
 # Best practices analysis
 Write-Host "`n?? GitHub Copilot Best Practices Analysis:" -ForegroundColor Cyan
 
@@ -181,17 +335,17 @@ $BestPractices = @(
     },
     @{
         Practice = "Repository-Specific Context"
-        Description = "Instructions are tailored to MTM WIP Application Avalonia project"
+        Description = "Files are tailored to MTM WIP Application Avalonia project"
         Score = ($ValidationResults | Where-Object { $_.ContextValid }).Count / $TotalFiles * 100
     },
     @{
         Practice = "Actionable Language"
-        Description = "Instructions use direct commands (Always, Never, Use, Follow)"
+        Description = "Files use direct commands and clear guidance"
         Score = ($ValidationResults | Where-Object { $_.FormatValid }).Count / $TotalFiles * 100
     },
     @{
-        Practice = "Code Examples"
-        Description = "Instructions include concrete code examples"
+        Practice = "MTM Integration"
+        Description = "Files include MTM-specific patterns and examples"
         Score = ($ValidationResults | Where-Object { $_.FormatValid }).Count / $TotalFiles * 100
     }
 )
@@ -204,7 +358,7 @@ foreach ($practice in $BestPractices) {
 
 # Generate HTML report if requested
 if ($GenerateReport) {
-    Write-Host "`n?? Generating Implementation Report..." -ForegroundColor Yellow
+    Write-Host "`n?? Generating Comprehensive Implementation Report..." -ForegroundColor Yellow
     
     $HtmlReport = @"
 <!DOCTYPE html>
@@ -212,7 +366,7 @@ if ($GenerateReport) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Copilot Repository Instructions Implementation Report</title>
+    <title>GitHub Copilot Complete Repository Analysis</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -224,7 +378,7 @@ if ($GenerateReport) {
         }
         
         .container { 
-            max-width: 1200px; 
+            max-width: 1600px; 
             margin: 0 auto; 
             background: rgba(255, 255, 255, 0.95);
             min-height: 100vh;
@@ -251,7 +405,7 @@ if ($GenerateReport) {
         
         .summary-cards { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
             gap: 20px; 
             margin: 30px 0;
         }
@@ -277,6 +431,31 @@ if ($GenerateReport) {
             color: #666;
         }
         
+        .breakdown-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .breakdown-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+        
         .validation-table { 
             width: 100%; 
             border-collapse: collapse; 
@@ -288,9 +467,10 @@ if ($GenerateReport) {
         }
         
         .validation-table th, .validation-table td { 
-            padding: 15px; 
+            padding: 10px; 
             text-align: left; 
             border-bottom: 1px solid #eee;
+            font-size: 0.85em;
         }
         
         .validation-table th { 
@@ -312,6 +492,37 @@ if ($GenerateReport) {
             color: #dc3545; 
             font-weight: bold;
         }
+        
+        .file-type-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .type-instructions { background: #6a0dad; }
+        .type-prompts { background: #28a745; }
+        .type-documentation { background: #17a2b8; }
+        .type-supporting { background: #ffc107; color: #333; }
+        
+        .category-badge {
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7em;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .cat-main { background: #6a0dad; }
+        .cat-core { background: #28a745; }
+        .cat-ui { background: #17a2b8; }
+        .cat-development { background: #ffc107; color: #333; }
+        .cat-quality { background: #dc3545; }
+        .cat-automation { background: #6f42c1; }
+        .cat-custom-prompts { background: #fd7e14; }
+        .cat-documentation { background: #6c757d; }
+        .cat-supporting { background: #868e96; }
         
         .best-practices { 
             background: white; 
@@ -341,37 +552,23 @@ if ($GenerateReport) {
         .score-medium { background: #ffc107; color: #333; }
         .score-low { background: #dc3545; }
         
-        .implementation-details { 
-            background: white; 
-            padding: 25px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        .success-banner {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .discovery-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin: 30px 0;
-        }
-        
-        .change-item { 
-            margin: 10px 0; 
-            padding: 10px; 
-            background: #e8f5e8; 
-            border-radius: 6px; 
-            border-left: 3px solid #28a745;
-        }
-        
-        .recommendations { 
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb); 
-            padding: 25px; 
-            border-radius: 12px; 
-            margin: 30px 0;
-        }
-        
-        .recommendation-item { 
-            margin: 10px 0; 
-            padding: 10px 0; 
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-        
-        .recommendation-item:last-child { 
-            border-bottom: none; 
         }
         
         .footer { 
@@ -381,21 +578,90 @@ if ($GenerateReport) {
             color: #666;
             border-top: 1px solid #eee;
         }
+        
+        .recommendations {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+        
+        .recommendation-item {
+            margin: 15px 0;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>?? GitHub Copilot Repository Instructions</h1>
-            <p>Implementation Report for MTM WIP Application Avalonia</p>
+            <h1>?? GitHub Copilot Complete Repository Analysis</h1>
+            <p>Comprehensive Analysis of MTM WIP Application Avalonia GitHub Copilot Files</p>
             <p>Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')</p>
         </div>
         
         <div class="content">
+"@
+
+    if ($ValidFiles -eq $TotalFiles) {
+        $HtmlReport += @"
+            <div class="success-banner">
+                ? All $TotalFiles GitHub Copilot files successfully implement repository format standards!
+            </div>
+"@
+    }
+
+    $HtmlReport += @"
+            <div class="discovery-section">
+                <h2>?? Complete Discovery Results</h2>
+                <p>Automatically discovered <strong>$TotalFiles files</strong> across the entire .github directory structure:</p>
+                <div class="breakdown-section">
+                    <div class="breakdown-card">
+                        <h3>?? By File Type</h3>
+"@
+
+    foreach ($group in $FileTypeGroups) {
+        $validInType = ($group.Group | Where-Object { $_.OverallValid }).Count
+        $totalInType = $group.Group.Count
+        $HtmlReport += @"
+                        <div class="breakdown-item">
+                            <span>$($group.Name)</span>
+                            <span>$validInType / $totalInType</span>
+                        </div>
+"@
+    }
+
+    $HtmlReport += @"
+                    </div>
+                    <div class="breakdown-card">
+                        <h3>?? By Category</h3>
+"@
+
+    foreach ($group in $CategoryGroups) {
+        $validInCategory = ($group.Group | Where-Object { $_.OverallValid }).Count
+        $totalInCategory = $group.Group.Count
+        $HtmlReport += @"
+                        <div class="breakdown-item">
+                            <span>$($group.Name)</span>
+                            <span>$validInCategory / $totalInCategory</span>
+                        </div>
+"@
+    }
+
+    $HtmlReport += @"
+                    </div>
+                </div>
+            </div>
+            
             <div class="summary-cards">
                 <div class="summary-card">
                     <div class="summary-number">$TotalFiles</div>
-                    <div class="summary-label">Total Instruction Files</div>
+                    <div class="summary-label">Total Files</div>
                 </div>
                 <div class="summary-card">
                     <div class="summary-number">$ValidFiles</div>
@@ -409,29 +675,41 @@ if ($GenerateReport) {
                     <div class="summary-number">$([Math]::Round($ValidFiles / $TotalFiles * 100))%</div>
                     <div class="summary-label">Compliance Rate</div>
                 </div>
+                <div class="summary-card">
+                    <div class="summary-number">$(($ValidationResults | Where-Object { $_.FileType -eq 'Instructions' }).Count)</div>
+                    <div class="summary-label">Instruction Files</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">$(($ValidationResults | Where-Object { $_.FileType -eq 'Prompts' }).Count)</div>
+                    <div class="summary-label">Custom Prompts</div>
+                </div>
             </div>
             
-            <h2>?? Validation Results</h2>
+            <h2>?? Complete File Analysis</h2>
             <table class="validation-table">
                 <thead>
                     <tr>
                         <th>File Path</th>
                         <th>Type</th>
+                        <th>Category</th>
                         <th>Status</th>
-                        <th>Changes Made</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
 "@
 
-foreach ($result in $ValidationResults) {
+foreach ($result in $ValidationResults | Sort-Object FileType, Category, FilePath) {
     $statusClass = if ($result.OverallValid) { "status-valid" } else { "status-invalid" }
     $statusText = if ($result.OverallValid) { "? Valid" } else { "? Needs Update" }
+    $fileTypeClass = "type-" + $result.FileType.ToLower()
+    $categoryClass = "cat-" + $result.Category.ToLower().Replace(' ', '-').Replace('custom prompts', 'custom-prompts')
     
     $HtmlReport += @"
                     <tr>
                         <td><code>$($result.FilePath)</code></td>
-                        <td>$($result.Type)</td>
+                        <td><span class="file-type-badge $fileTypeClass">$($result.FileType)</span></td>
+                        <td><span class="category-badge $categoryClass">$($result.Category)</span></td>
                         <td><span class="$statusClass">$statusText</span></td>
                         <td>$($result.Changes)</td>
                     </tr>
@@ -461,51 +739,34 @@ foreach ($practice in $BestPractices) {
 $HtmlReport += @"
             </div>
             
-            <div class="implementation-details">
-                <h2>?? Implementation Details</h2>
-                <p>The following changes were implemented to align with GitHub Copilot repository instructions format:</p>
-"@
-
-foreach ($file in $UpdatedInstructionFiles) {
-    $HtmlReport += @"
-                <div class="change-item">
-                    <strong>$($file.Path)</strong><br>
-                    $($file.Changes)
-                </div>
-"@
-}
-
-$HtmlReport += @"
-            </div>
-            
             <div class="recommendations">
-                <h2>?? Next Steps and Recommendations</h2>
+                <h2>?? Comprehensive Recommendations</h2>
                 <div class="recommendation-item">
-                    <h3>1. Test GitHub Copilot Integration</h3>
-                    <p>Open any of the updated instruction files and test GitHub Copilot's behavior with the new format. Copilot should now provide more targeted, MTM-specific assistance.</p>
+                    <h3>1. Test Complete GitHub Copilot Integration</h3>
+                    <p>With $TotalFiles files analyzed across $($FileTypeGroups.Count) different types, test GitHub Copilot's behavior comprehensively. The system now includes instructions, custom prompts, and documentation.</p>
                 </div>
                 <div class="recommendation-item">
-                    <h3>2. Monitor Copilot Effectiveness</h3>
-                    <p>Track how well Copilot follows the new instructions during development. Note any areas where additional clarification might be needed.</p>
+                    <h3>2. Leverage Custom Prompt Library</h3>
+                    <p>Your $(($ValidationResults | Where-Object { $_.FileType -eq 'Prompts' }).Count) custom prompts provide specialized workflows. Test these prompts to ensure they work effectively with the main instructions.</p>
                 </div>
                 <div class="recommendation-item">
-                    <h3>3. Update Remaining Files</h3>
-                    <p>Apply the same GitHub Copilot format to any remaining instruction files in the repository for consistent behavior.</p>
+                    <h3>3. Validate Cross-File Integration</h3>
+                    <p>Ensure that instructions, prompts, and documentation work together seamlessly for complex development tasks spanning multiple categories.</p>
                 </div>
                 <div class="recommendation-item">
-                    <h3>4. Create Usage Documentation</h3>
-                    <p>Document best practices for using the new instruction format and share with team members.</p>
+                    <h3>4. Monitor Category-Specific Performance</h3>
+                    <p>Track how well GitHub Copilot performs in each category: Core, UI, Development, Quality, Automation, and Custom Prompts.</p>
                 </div>
                 <div class="recommendation-item">
-                    <h3>5. Regular Review and Updates</h3>
-                    <p>Periodically review and update the instructions based on Copilot's performance and new GitHub Copilot features.</p>
+                    <h3>5. Establish Maintenance Process</h3>
+                    <p>With $TotalFiles files to maintain, establish a process for keeping all GitHub Copilot files current as the project evolves.</p>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>Generated by GitHub Copilot Repository Instructions Implementation Script</p>
-            <p>MTM WIP Application Avalonia Project - $(Get-Date -Format 'yyyy')</p>
+            <p>Generated by GitHub Copilot Complete Repository Analysis Script</p>
+            <p>MTM WIP Application Avalonia Project - $(Get-Date -Format 'yyyy') | $TotalFiles Files Analyzed</p>
         </div>
     </div>
 </body>
@@ -514,34 +775,34 @@ $HtmlReport += @"
 
     # Save the report
     $HtmlReport | Out-File -FilePath $OutputReport -Encoding UTF8
-    Write-Host "? Report generated: $OutputReport" -ForegroundColor Green
+    Write-Host "? Comprehensive report generated: $OutputReport" -ForegroundColor Green
 }
 
 # Summary and next steps
-Write-Host "`n?? Implementation Complete!" -ForegroundColor Green
+Write-Host "`n?? Complete Analysis Finished!" -ForegroundColor Green
 Write-Host "================================================================" -ForegroundColor Cyan
 
 if ($ValidFiles -eq $TotalFiles) {
-    Write-Host "? All instruction files have been successfully updated to GitHub Copilot repository format!" -ForegroundColor Green
+    Write-Host "? All $TotalFiles GitHub Copilot files are properly formatted!" -ForegroundColor Green
 } else {
-    Write-Host "??  Some files may need additional updates. See the detailed report for more information." -ForegroundColor Yellow
+    Write-Host "??  $InvalidFiles out of $TotalFiles files may need updates. See the detailed report for specifics." -ForegroundColor Yellow
 }
 
-Write-Host "`n?? Key Changes Made:" -ForegroundColor Cyan
-Write-Host "   • Clear role definitions with 'You are' statements" -ForegroundColor White
-Write-Host "   • Actionable language with direct commands" -ForegroundColor White
-Write-Host "   • Repository-specific context for MTM WIP Application" -ForegroundColor White
-Write-Host "   • Code examples and constraints" -ForegroundColor White
-Write-Host "   • MTM-specific patterns and business rules" -ForegroundColor White
+Write-Host "`n?? Complete Discovery Summary:" -ForegroundColor Cyan
+Write-Host "   • Total Files Analyzed: $TotalFiles" -ForegroundColor White
+Write-Host "   • File Types: $($FileTypeGroups.Count) ($(($FileTypeGroups.Name) -join ', '))" -ForegroundColor White
+Write-Host "   • Categories: $($CategoryGroups.Count) different categories" -ForegroundColor White
+Write-Host "   • Comprehensive GitHub Copilot ecosystem discovered" -ForegroundColor White
 
-Write-Host "`n?? Next Steps:" -ForegroundColor Cyan
-Write-Host "   1. Test GitHub Copilot with the updated instructions" -ForegroundColor White
-Write-Host "   2. Monitor Copilot's behavior for improvements" -ForegroundColor White
-Write-Host "   3. Update any remaining instruction files as needed" -ForegroundColor White
-Write-Host "   4. Share best practices with your development team" -ForegroundColor White
+Write-Host "`n?? Recommended Actions:" -ForegroundColor Cyan
+Write-Host "   1. Test GitHub Copilot with the complete file ecosystem" -ForegroundColor White
+Write-Host "   2. Validate custom prompt integration with main instructions" -ForegroundColor White
+Write-Host "   3. Test cross-category workflow scenarios" -ForegroundColor White
+Write-Host "   4. Monitor performance across all $($CategoryGroups.Count) categories" -ForegroundColor White
+Write-Host "   5. Establish maintenance process for $TotalFiles files" -ForegroundColor White
 
 if ($GenerateReport) {
-    Write-Host "`n?? Detailed report available at: $OutputReport" -ForegroundColor Cyan
+    Write-Host "`n?? Comprehensive analysis report: $OutputReport" -ForegroundColor Cyan
 }
 
-Write-Host "`nImplementation completed successfully! ??" -ForegroundColor Green
+Write-Host "`nComplete ecosystem analysis of $TotalFiles GitHub Copilot files finished! ??" -ForegroundColor Green

@@ -5,6 +5,7 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Views;
+using MTM_WIP_Application_Avalonia.Services;
 
 namespace MTM_WIP_Application_Avalonia
 {
@@ -24,6 +25,10 @@ namespace MTM_WIP_Application_Avalonia
                 // Initialize logging
                 _logger = Program.GetService<ILogger<App>>();
                 _logger?.LogInformation("MTM WIP Application starting...");
+
+                // Initialize ReactiveUI error handling FIRST to prevent pipeline breaks
+                ReactiveUIInitializer.EnsureInitialized(_logger);
+                _logger?.LogInformation("ReactiveUI error handling initialized");
 
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
