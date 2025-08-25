@@ -12,323 +12,293 @@
              x:CompileBindings="True"
              x:DataType="vm:RemoveItemViewModel">
 
-  <!-- Modern MTM Remove Inventory Interface -->
-  <ScrollViewer Classes="mtm-content">
-    <StackPanel Spacing="24" Margin="24">
-      
-      <!-- Hero Section with MTM Gradient -->
-      <Border Classes="mtm-hero-card" 
-              Height="140">
-        <Grid Margin="32">
-          <StackPanel VerticalAlignment="Center" Spacing="8">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <TextBlock Text="➖" FontSize="28"/>
-              <TextBlock Text="Inventory Removal"
-                         FontSize="24"
-                         FontWeight="Bold"
-                         Foreground="{DynamicResource MTM.LightTextBrush}"/>
-            </StackPanel>
-            <TextBlock Text="Search and remove inventory items from the system with full tracking"
-                       FontSize="14"
-                       Foreground="{DynamicResource MTM.LightTextBrush}"
-                       Opacity="0.9"/>
-          </StackPanel>
-        </Grid>
-      </Border>
-      
-      <!-- Search Card -->
-      <Border Classes="mtm-card-elevated">
-        <Grid RowDefinitions="Auto,24,Auto" Margin="32">
-          
-          <!-- Search Header -->
-          <Grid Grid.Row="0" ColumnDefinitions="Auto,16,*,Auto">
-            <Border Grid.Column="0"
-                    Background="{DynamicResource MTM.ErrorBrush}"
-                    CornerRadius="8"
-                    Width="40" Height="40">
-              <TextBlock Text="🔍" 
-                         FontSize="20"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"/>
-            </Border>
-            
-            <StackPanel Grid.Column="2" Spacing="4">
-              <TextBlock Text="Search Inventory"
-                         FontSize="18"
-                         FontWeight="SemiBold"
-                         Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
-              <TextBlock Text="Find items to remove from inventory"
-                         FontSize="13"
-                         Foreground="{DynamicResource MTM.SecondaryTextBrush}"/>
-            </StackPanel>
-            
-            <!-- Quick Clear Button -->
-            <Button Grid.Column="3"
-                    Classes="mtm-secondary"
-                    Command="{Binding ResetCommand}"
-                    ToolTip.Tip="Clear search criteria"
-                    Padding="8"
-                    MinWidth="0">
-              <TextBlock Text="🗑️" FontSize="14"/>
-            </Button>
-          </Grid>
-          
-          <!-- Search Controls -->
-          <Grid Grid.Row="2" 
-                RowDefinitions="Auto,16,Auto"
-                ColumnDefinitions="Auto,24,*,24,Auto,24,*">
-            
-            <!-- Part ID Search -->
-            <StackPanel Grid.Row="0" Grid.Column="0" 
-                        Orientation="Horizontal" 
-                        Spacing="8"
-                        VerticalAlignment="Center">
-              <TextBlock Text="🏷️" FontSize="16"/>
-              <TextBlock Text="Part Number"
-                         FontWeight="Medium"
-                         Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
-            </StackPanel>
-            <ComboBox Grid.Row="0" Grid.Column="2"
-                      Classes="mtm-combo"
-                      PlaceholderText="Select or search part ID..."
-                      ItemsSource="{Binding PartOptions}"
-                      SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
-                      IsTextSearchEnabled="True"
-                      ToolTip.Tip="Select or search for a part number"/>
+  <UserControl.Styles>
+    <!-- Input field styles with MTM theme -->
+    <Style Selector="ComboBox.input-field">
+      <Setter Property="Margin" Value="4"/>
+      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+    </Style>
+    
+    <!-- Label styles -->
+    <Style Selector="TextBlock.field-label">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="4,0"/>
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+    </Style>
 
-            <!-- Operation Search -->
-            <StackPanel Grid.Row="0" Grid.Column="4" 
-                        Orientation="Horizontal" 
-                        Spacing="8"
-                        VerticalAlignment="Center">
-              <TextBlock Text="⚙️" FontSize="16"/>
-              <TextBlock Text="Operation"
-                         FontWeight="Medium"
-                         Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
-            </StackPanel>
-            <ComboBox Grid.Row="0" Grid.Column="6"
-                      Classes="mtm-combo"
-                      PlaceholderText="Select operation..."
-                      ItemsSource="{Binding OperationOptions}"
-                      SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
-                      ToolTip.Tip="Select an operation number (optional)"/>
-            
-            <!-- Search Actions -->
-            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="7"
-                        Orientation="Horizontal" 
-                        Spacing="12"
-                        HorizontalAlignment="Right">
-              <Button Classes="mtm-secondary"
-                      Command="{Binding ResetCommand}"
-                      ToolTip.Tip="Reset search criteria and refresh all data">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                  <TextBlock Text="🔄" FontSize="14"/>
-                  <TextBlock Text="Reset"/>
-                </StackPanel>
-              </Button>
-              
-              <Button Classes="mtm-primary"
-                      Command="{Binding SearchCommand}"
-                      ToolTip.Tip="Search inventory (F5)">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                  <TextBlock Text="🔍" FontSize="14"/>
-                  <TextBlock Text="Search"/>
-                </StackPanel>
-              </Button>
-            </StackPanel>
-          </Grid>
-        </Grid>
-      </Border>
-      
-      <!-- Results Card -->
-      <Border Classes="mtm-card-elevated">
-        <Grid RowDefinitions="Auto,24,Auto,24,Auto" Margin="32">
-          
-          <!-- Results Header -->
-          <Grid Grid.Row="0" ColumnDefinitions="Auto,16,*,Auto">
-            <Border Grid.Column="0"
-                    Background="{DynamicResource MTM.InfoBrush}"
-                    CornerRadius="8"
-                    Width="40" Height="40">
-              <TextBlock Text="📊" 
-                         FontSize="20"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"/>
-            </Border>
-            
-            <StackPanel Grid.Column="2" Spacing="4">
-              <TextBlock Text="Search Results"
-                         FontSize="18"
-                         FontWeight="SemiBold"
-                         Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
-              <TextBlock Text="{Binding InventoryItems.Count, StringFormat='{}{0} items found'}"
-                         FontSize="13"
-                         Foreground="{DynamicResource MTM.SecondaryTextBrush}"/>
-            </StackPanel>
-            
-            <!-- Export Button -->
-            <Button Grid.Column="3"
-                    Classes="mtm-secondary"
-                    Command="{Binding PrintCommand}"
-                    IsEnabled="{Binding HasInventoryItems}"
-                    ToolTip.Tip="Print current inventory view (Ctrl+P)">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="🖨️" FontSize="14"/>
-                <TextBlock Text="Print"/>
-              </StackPanel>
-            </Button>
-          </Grid>
-          
-          <!-- Data Grid Container -->
-          <Grid Grid.Row="2">
-            <!-- Data Grid -->
-            <DataGrid ItemsSource="{Binding InventoryItems}"
-                      SelectedItem="{Binding SelectedItem}"
-                      IsVisible="{Binding HasInventoryItems}"
-                      Classes="mtm-grid"
-                      AutoGenerateColumns="False"
-                      SelectionMode="Extended"
-                      GridLinesVisibility="Horizontal"
-                      HeadersVisibility="Column"
-                      Background="{DynamicResource MTM.CardBackgroundBrush}"
-                      MinHeight="300">
-              <DataGrid.Columns>
-                <DataGridTextColumn Header="📍 Location" 
-                                    Binding="{Binding Location}" 
-                                    Width="*"/>
-                <DataGridTextColumn Header="🏷️ Part ID" 
-                                    Binding="{Binding PartId}" 
-                                    Width="*"/>
-                <DataGridTextColumn Header="⚙️ Operation" 
-                                    Binding="{Binding Operation}" 
-                                    Width="Auto"/>
-                <DataGridTextColumn Header="🔢 Quantity" 
-                                    Binding="{Binding Quantity}" 
-                                    Width="Auto"/>
-                <DataGridTextColumn Header="📝 Notes" 
-                                    Binding="{Binding Notes}" 
-                                    Width="2*"/>
-              </DataGrid.Columns>
-            </DataGrid>
+    <!-- Button styles -->
+    <Style Selector="Button.action-button">
+      <Setter Property="Padding" Value="12,6"/>
+      <Setter Property="Margin" Value="4"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="MinWidth" Value="80"/>
+    </Style>
+    
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.PrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.primary:disabled">
+      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryDisabledBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.SecondaryTextBrush}"/>
+    </Style>
 
-            <!-- Empty State -->
-            <StackPanel IsVisible="{Binding !HasInventoryItems}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Spacing="16">
-              <Border Background="{DynamicResource MTM.PrimaryLightBrush}"
-                      CornerRadius="60"
-                      Width="120" Height="120"
-                      HorizontalAlignment="Center">
-                <TextBlock Text="🔍" 
-                           FontSize="48"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource MTM.PrimaryBrush}"/>
-              </Border>
-              <StackPanel Spacing="8">
-                <TextBlock Text="No inventory items found"
-                           HorizontalAlignment="Center"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
-                <TextBlock Text="Try adjusting your search criteria or use the reset button"
-                           HorizontalAlignment="Center"
-                           FontSize="12"
-                           Foreground="{DynamicResource MTM.SecondaryTextBrush}"
-                           TextAlignment="Center"
-                           MaxWidth="250"/>
-              </StackPanel>
-            </StackPanel>
-          </Grid>
-          
-          <!-- Action Panel -->
-          <Grid Grid.Row="4" ColumnDefinitions="*,Auto,Auto,Auto">
-            <!-- Selection Info -->
-            <StackPanel Grid.Column="0" 
-                        Orientation="Horizontal" 
-                        Spacing="8"
-                        VerticalAlignment="Center"
-                        IsVisible="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
-              <Border Background="{DynamicResource MTM.InfoLightBrush}"
-                      CornerRadius="12"
-                      Padding="8,4">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                  <TextBlock Text="✓" FontSize="12" Foreground="{DynamicResource MTM.InfoTextBrush}"/>
-                  <TextBlock Text="Selected:" FontSize="12" Foreground="{DynamicResource MTM.InfoTextBrush}"/>
-                  <TextBlock Text="{Binding SelectedItem.PartId}" 
-                             FontWeight="SemiBold" 
-                             FontSize="12"
-                             Foreground="{DynamicResource MTM.InfoTextBrush}"/>
-                </StackPanel>
-              </Border>
-            </StackPanel>
-            
-            <!-- Action Buttons -->
-            <Button Grid.Column="1"
-                    Classes="mtm-secondary"
-                    Command="{Binding UndoCommand}"
-                    IsEnabled="{Binding CanUndo}"
-                    ToolTip.Tip="Restore last removed items (Ctrl+Z)">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="↶" FontSize="14"/>
-                <TextBlock Text="Undo"/>
-              </StackPanel>
-            </Button>
-            
-            <Button Grid.Column="2"
-                    Classes="mtm-secondary"
-                    Command="{Binding AdvancedRemovalCommand}"
-                    ToolTip.Tip="Open advanced removal features">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="🔧" FontSize="14"/>
-                <TextBlock Text="Advanced"/>
-              </StackPanel>
-            </Button>
-            
-            <Button Grid.Column="3"
-                    Classes="mtm-danger"
-                    Command="{Binding DeleteCommand}"
-                    IsEnabled="{Binding CanDelete}"
-                    ToolTip.Tip="Remove selected items (Delete key)">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="🗑️" FontSize="14"/>
-                <TextBlock Text="Remove"/>
-              </StackPanel>
-            </Button>
-          </Grid>
-        </Grid>
-      </Border>
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Button.secondary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+    </Style>
+
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="{DynamicResource MTM.ErrorBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.ErrorBrush}"/>
+    </Style>
+    <Style Selector="Button.danger:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM.ErrorHoverBrush}"/>
+    </Style>
+
+    <Style Selector="DataGrid">
+      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+      <Setter Property="HeadersVisibility" Value="Column"/>
+      <Setter Property="CanUserReorderColumns" Value="True"/>
+      <Setter Property="CanUserResizeColumns" Value="True"/>
+      <Setter Property="CanUserSortColumns" Value="True"/>
+      <Setter Property="SelectionMode" Value="Extended"/>
+    </Style>
+
+    <!-- Nothing found image style -->
+    <Style Selector="Image.nothing-found">
+      <Setter Property="Width" Value="120"/>
+      <Setter Property="Height" Value="120"/>
+      <Setter Property="Opacity" Value="0.6"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+  </UserControl.Styles>
+
+  <!-- Responsive layout that stretches to fill available space -->
+  <Grid RowDefinitions="Auto,Auto,*,Auto"
+        HorizontalAlignment="Stretch" 
+        VerticalAlignment="Stretch">
+    
+    <!-- Header -->
+    <TextBlock Grid.Row="0"
+               Text="Inventory Removal"
+               FontSize="14"
+               FontWeight="SemiBold"
+               Margin="8,8,8,4"
+               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+    
+    <!-- Search Controls Row -->
+    <Grid Grid.Row="1" 
+          ColumnDefinitions="Auto,*,Auto,*,Auto,Auto"
+          Margin="8,4">
       
-      <!-- Quick Info Panel -->
-      <Border Classes="mtm-card"
-              Background="{DynamicResource MTM.WarningLightBrush}">
-        <Grid ColumnDefinitions="Auto,16,*,Auto" Margin="20">
-          <TextBlock Grid.Column="0" 
-                     Text="⚠️" 
-                     FontSize="20"
-                     VerticalAlignment="Center"/>
-          
-          <StackPanel Grid.Column="2" Spacing="4">
-            <TextBlock Text="Removal Warning"
-                       FontWeight="SemiBold"
-                       FontSize="13"
-                       Foreground="{DynamicResource MTM.WarningTextBrush}"/>
-            <TextBlock Text="Deleted items can be restored using the Undo button until the session ends"
-                       FontSize="11"
-                       Foreground="{DynamicResource MTM.WarningTextBrush}"/>
-          </StackPanel>
-          
-          <Button Grid.Column="3"
-                  Classes="mtm-secondary"
-                  Command="{Binding TogglePanelCommand}"
-                  ToolTip.Tip="Toggle quick actions panel"
-                  Padding="8,4"
-                  MinWidth="0">
-            <TextBlock Text="⚙️" FontSize="12"/>
-          </Button>
-        </Grid>
-      </Border>
-    </StackPanel>
-  </ScrollViewer>
+      <!-- Part ID ComboBox -->
+      <TextBlock Grid.Column="0"
+                 Classes="field-label"
+                 Text="Part ID:"/>
+      <ComboBox Grid.Column="1"
+                x:Name="Control_RemoveTab_ComboBox_Part"
+                Classes="input-field"
+                PlaceholderText="Select Part ID"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding PartOptions}"
+                SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
+                IsTextSearchEnabled="True"
+                ToolTip.Tip="Select or search for a part number"/>
+
+      <!-- Operation ComboBox -->
+      <TextBlock Grid.Column="2"
+                 Classes="field-label"
+                 Text="Operation:"
+                 Margin="16,0,4,0"/>
+      <ComboBox Grid.Column="3"
+                x:Name="Control_RemoveTab_ComboBox_Operation"
+                Classes="input-field"
+                PlaceholderText="Select Operation"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding OperationOptions}"
+                SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
+                ToolTip.Tip="Select an operation number (optional)"/>
+
+      <!-- Search Button -->
+      <Button Grid.Column="4"
+              x:Name="Control_RemoveTab_Button_Search"
+              Classes="action-button primary"
+              Command="{Binding SearchCommand}"
+              ToolTip.Tip="Search inventory (F5)"
+              Margin="8,4,4,4">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Magnify" Width="16" Height="16"/>
+          <TextBlock Text="Search" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
+
+      <!-- Reset Button -->
+      <Button Grid.Column="5"
+              x:Name="Control_RemoveTab_Button_Reset"
+              Classes="action-button secondary"
+              Command="{Binding ResetCommand}"
+              ToolTip.Tip="Reset search criteria and refresh all data">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Refresh" Width="16" Height="16"/>
+          <TextBlock Text="Reset" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
+    </Grid>
+
+    <!-- Data Display Area - stretches to fill remaining space -->
+    <Grid Grid.Row="2" 
+          Margin="8"
+          VerticalAlignment="Stretch"
+          HorizontalAlignment="Stretch">
+      <!-- DataGridView Panel -->
+      <Panel x:Name="Control_RemoveTab_Panel_DataGridView">
+        <!-- Main DataGrid - stretches to fill all available space -->
+        <DataGrid x:Name="Control_RemoveTab_DataGridView_Main"
+                  ItemsSource="{Binding InventoryItems}"
+                  SelectedItem="{Binding SelectedItem}"
+                  IsVisible="{Binding HasInventoryItems}"
+                  AutoGenerateColumns="False"
+                  SelectionMode="Extended"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Location" 
+                                Binding="{Binding Location}" 
+                                Width="*"/>
+            <DataGridTextColumn Header="Part ID" 
+                                Binding="{Binding PartId}" 
+                                Width="*"/>
+            <DataGridTextColumn Header="Operation" 
+                                Binding="{Binding Operation}" 
+                                Width="Auto"/>
+            <DataGridTextColumn Header="Quantity" 
+                                Binding="{Binding Quantity}" 
+                                Width="Auto"/>
+            <DataGridTextColumn Header="Notes" 
+                                Binding="{Binding Notes}" 
+                                Width="2*"/>
+          </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Nothing Found Image -->
+        <StackPanel x:Name="Control_RemoveTab_Image_NothingFound"
+                   Classes="nothing-found"
+                   IsVisible="{Binding !HasInventoryItems}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Orientation="Vertical"
+                   Spacing="8">
+          <Border Background="{DynamicResource MTM.BorderBrush}"
+                  CornerRadius="4"
+                  Width="120" Height="120"
+                  HorizontalAlignment="Center">
+            <materialIcons:MaterialIcon Kind="DatabaseSearchOutline" 
+                                        Width="48" Height="48" 
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Opacity="0.6"/>
+          </Border>
+          <TextBlock Text="No inventory items found"
+                     HorizontalAlignment="Center"
+                     FontSize="12"
+                     Opacity="0.6"
+                     Foreground="{DynamicResource MTM.SecondaryTextBrush}"/>
+        </StackPanel>
+      </Panel>
+    </Grid>
+
+    <!-- Action Controls Row -->
+    <Grid Grid.Row="3" 
+          ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto"
+          Margin="8,4">
+      
+      <!-- Delete Button -->
+      <Button Grid.Column="0"
+              x:Name="Control_RemoveTab_Button_Delete"
+              Classes="action-button danger"
+              Command="{Binding DeleteCommand}"
+              IsEnabled="{Binding CanDelete}"
+              ToolTip.Tip="Remove selected items (Delete key)">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Delete" Width="16" Height="16"/>
+          <TextBlock Text="Delete" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
+
+      <!-- Undo Button -->
+      <Button Grid.Column="1"
+              x:Name="Control_RemoveTab_Button_Undo"
+              Classes="action-button secondary"
+              Command="{Binding UndoCommand}"
+              IsEnabled="{Binding CanUndo}"
+              ToolTip.Tip="Restore last removed items (Ctrl+Z)">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Undo" Width="16" Height="16"/>
+          <TextBlock Text="Undo" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
+
+      <!-- Advanced Item Removal Button -->
+      <Button Grid.Column="2"
+              x:Name="Control_RemoveTab_Button_AdvancedItemRemoval"
+              Classes="action-button secondary"
+              Command="{Binding AdvancedRemovalCommand}"
+              ToolTip.Tip="Open advanced removal features">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Cog" Width="16" Height="16"/>
+          <TextBlock Text="Advanced" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
+
+      <!-- Print Button -->
+      <Button Grid.Column="3"
+              x:Name="Control_RemoveTab_Button_Print"
+              Classes="action-button secondary"
+              Command="{Binding PrintCommand}"
+              IsEnabled="{Binding HasInventoryItems}"
+              ToolTip.Tip="Print current inventory view (Ctrl+P)">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <materialIcons:MaterialIcon Kind="Printer" Width="16" Height="16"/>
+          <TextBlock Text="Print" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Button>
+
+      <!-- Toggle Right Panel Button -->
+      <Button Grid.Column="5"
+              x:Name="Control_RemoveTab_Button_Toggle_RightPanel"
+              Classes="action-button secondary"
+              Command="{Binding TogglePanelCommand}"
+              ToolTip.Tip="Toggle quick actions panel"
+              FontSize="14"
+              MinWidth="36">
+        <materialIcons:MaterialIcon Kind="Menu" Width="16" Height="16"/>
+      </Button>
+    </Grid>
+  </Grid>
 </UserControl>

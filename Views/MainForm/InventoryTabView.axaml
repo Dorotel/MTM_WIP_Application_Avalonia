@@ -10,6 +10,79 @@
              x:CompileBindings="True"
              x:DataType="vm:InventoryTabViewModel">
 
+  <UserControl.Styles>
+    <!-- Input field styles with MTM theme integration -->
+    <Style Selector="ComboBox.input-field">
+      <Setter Property="Margin" Value="4"/>
+      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+    </Style>
+    <Style Selector="ComboBox.input-field.error">
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.ErrorBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM.ErrorLightBrush}"/>
+    </Style>
+    
+    <Style Selector="TextBox.input-field">
+      <Setter Property="Margin" Value="4"/>
+      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+    </Style>
+    <Style Selector="TextBox.input-field.error">
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.ErrorBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM.ErrorLightBrush}"/>
+    </Style>
+
+    <!-- Label styles -->
+    <Style Selector="TextBlock.field-label">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="4,0"/>
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+    </Style>
+
+    <!-- Button styles with MTM theme -->
+    <Style Selector="Button.action-button">
+      <Setter Property="Padding" Value="12,6"/>
+      <Setter Property="Margin" Value="4"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="MinWidth" Value="80"/>
+    </Style>
+    
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.PrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.primary:disabled">
+      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryDisabledBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.SecondaryTextBrush}"/>
+    </Style>
+
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Button.secondary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+    </Style>
+  </UserControl.Styles>
+
   <!-- Responsive layout that stretches to fill available space -->
   <Grid RowDefinitions="Auto,*,Auto,Auto" 
         HorizontalAlignment="Stretch" 
@@ -52,7 +125,7 @@
       </StackPanel>
       <ComboBox Grid.Row="0" Grid.Column="1"
                 PlaceholderText="Select Part ID"
-                Classes="mtm-combo" 
+                Classes="input-field" 
                 x:Name="PartComboBox"
                 HorizontalAlignment="Stretch"
                 ItemsSource="{Binding PartOptions}"
@@ -73,7 +146,7 @@
       </StackPanel>
       <ComboBox Grid.Row="1" Grid.Column="1" 
                 HorizontalAlignment="Stretch"
-                Classes="mtm-combo"
+                Classes="input-field"
                 PlaceholderText="Select Operation"
                 x:Name="OperationComboBox"
                 ItemsSource="{Binding OperationOptions}"
@@ -92,7 +165,7 @@
                    VerticalAlignment="Center"/>
       </StackPanel>
       <TextBox Grid.Row="2" Grid.Column="1"
-               Classes="mtm-input"
+               Classes="input-field"
                HorizontalAlignment="Stretch"
                x:Name="QuantityTextBox"
                Text="{Binding Quantity, Mode=TwoWay}"
@@ -111,7 +184,7 @@
                    VerticalAlignment="Center"/>
       </StackPanel>
       <ComboBox Grid.Row="3" Grid.Column="1"
-                Classes="mtm-combo"
+                Classes="input-field"
                 PlaceholderText="Select Location"
                 HorizontalAlignment="Stretch"
                 x:Name="LocationComboBox"
@@ -131,7 +204,8 @@
         <TextBlock Text="Notes"
                    FontSize="12"
                    FontWeight="Medium"
-                   VerticalAlignment="Center"/>
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
       </StackPanel>
 
       <!-- Notes text area - stretches to fill remaining space -->
@@ -156,7 +230,7 @@
           Margin="8,4">
       
       <Button Grid.Column="0"
-              Classes="mtm-primary"
+              Classes="action-button primary"
               Command="{Binding SaveCommand}"
               IsEnabled="{Binding CanSave}"
               ToolTip.Tip="Save inventory item (Enter)">
@@ -167,7 +241,7 @@
       </Button>
 
       <Button Grid.Column="1"
-              Classes="mtm-secondary"
+              Classes="action-button secondary"
               Command="{Binding AdvancedEntryCommand}"
               ToolTip.Tip="Open advanced inventory features">
         <StackPanel Orientation="Horizontal" Spacing="4">
@@ -183,10 +257,11 @@
                  Opacity="0.7"
                  VerticalAlignment="Center"
                  HorizontalAlignment="Center"
-                 Margin="8,0"/>
+                 Margin="8,0"
+                 Foreground="{DynamicResource MTM.SecondaryTextBrush}"/>
 
       <Button Grid.Column="3"
-              Classes="mtm-secondary"
+              Classes="action-button secondary"
               Command="{Binding ResetCommand}"
               ToolTip.Tip="Reset form (F5) / Hard reset (Shift+F5)">
         <StackPanel Orientation="Horizontal" Spacing="4">
@@ -196,7 +271,7 @@
       </Button>
 
       <Button Grid.Column="4"
-              Classes="mtm-secondary"
+              Classes="action-button secondary"
               Command="{Binding TogglePanelCommand}"
               ToolTip.Tip="Toggle right panel"
               MinWidth="36">
@@ -210,6 +285,7 @@
                FontSize="10"
                Opacity="0.6"
                HorizontalAlignment="Center"
-               Margin="8,4"/>
+               Margin="8,4"
+               Foreground="{DynamicResource MTM.SecondaryTextBrush}"/>
   </Grid>
 </UserControl>

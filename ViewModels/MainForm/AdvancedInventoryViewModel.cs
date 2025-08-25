@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using ReactiveUI;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using Avalonia;
+using Avalonia.Controls;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -22,6 +24,14 @@ public class AdvancedInventoryViewModel : BaseViewModel
     public ObservableCollection<string> PartIDOptions { get; } = new();
     public ObservableCollection<string> OperationOptions { get; } = new();
     public ObservableCollection<string> LocationOptions { get; } = new();
+
+    #region Filter Panel Properties
+    public bool IsFilterPanelExpanded { get => _isFilterPanelExpanded; set => this.RaiseAndSetIfChanged(ref _isFilterPanelExpanded, value); }
+    public string FilterPanelWidth => IsFilterPanelExpanded ? "200" : "32";
+    public string CollapseButtonIcon => IsFilterPanelExpanded ? "ChevronLeft" : "ChevronRight";
+    
+    private bool _isFilterPanelExpanded = true;
+    #endregion
 
     #region Multiple Times
     public string? SelectedPartID { get => _selectedPartID; set => this.RaiseAndSetIfChanged(ref _selectedPartID, value); }
@@ -101,6 +111,7 @@ public class AdvancedInventoryViewModel : BaseViewModel
     public ReactiveCommand<Unit, Unit> ClearAllLocationsCommand { get; private set; } = null!;
     public ReactiveCommand<Unit, Unit> ImportFromExcelCommand { get; private set; } = null!;
     public ReactiveCommand<Unit, Unit> BackToNormalCommand { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> ToggleFilterPanelCommand { get; private set; } = null!;
     #endregion
 
     public event EventHandler? BackToNormalRequested;
@@ -110,6 +121,16 @@ public class AdvancedInventoryViewModel : BaseViewModel
 
     private readonly ObservableAsPropertyHelper<bool> _canAddToMultipleLocations;
     public bool CanAddToMultipleLocations => _canAddToMultipleLocations.Value;
+
+    // Design-time constructor
+    public AdvancedInventoryViewModel() : this(CreateDesignTimeLogger<AdvancedInventoryViewModel>())
+    {
+        // Only initialize for design-time
+        if (IsDesignMode())
+        {
+            InitializeDesignTimeData();
+        }
+    }
 
     public AdvancedInventoryViewModel(ILogger<AdvancedInventoryViewModel> logger) : base(logger)
     {
@@ -129,21 +150,82 @@ public class AdvancedInventoryViewModel : BaseViewModel
         this.WhenAnyValue(vm => vm.RepeatTimes).Subscribe(_ => this.RaisePropertyChanged(nameof(RepeatTimesText)));
         this.WhenAnyValue(vm => vm.MultiLocationQuantity).Subscribe(_ => this.RaisePropertyChanged(nameof(MultiLocationQuantityText)));
 
-        InitializeCommands();
-
-        Observable.Merge(
-            LoadDataCommand.ThrownExceptions,
-            AddMultipleTimesCommand.ThrownExceptions,
-            AddToMultipleLocationsCommand.ThrownExceptions,
-            ImportFromExcelCommand.ThrownExceptions
-        ).Subscribe(ex =>
+        // Wire up filter panel property changes
+        this.WhenAnyValue(vm => vm.IsFilterPanelExpanded).Subscribe(_ => 
         {
-            Logger.LogError(ex, "AdvancedInventoryViewModel error");
-            IsBusy = false;
-            StatusMessage = $"Error: {ex.Message}";
+            this.RaisePropertyChanged(nameof(FilterPanelWidth));
+            this.RaisePropertyChanged(nameof(CollapseButtonIcon));
         });
 
-        _ = LoadDataCommand.Execute();
+        InitializeCommands();
+
+        // Handle error subscription safely
+        try
+        {
+            Observable.Merge(
+                LoadDataCommand.ThrownExceptions,
+                AddMultipleTimesCommand.ThrownExceptions,
+                AddToMultipleLocationsCommand.ThrownExceptions,
+                ImportFromExcelCommand.ThrownExceptions,
+                ToggleFilterPanelCommand.ThrownExceptions
+            ).Subscribe(ex =>
+            {
+                Logger.LogError(ex, "AdvancedInventoryViewModel error");
+                IsBusy = false;
+                StatusMessage = $"Error: {ex.Message}";
+            });
+
+            // Only execute LoadDataCommand if not in design mode
+            if (!IsDesignMode())
+            {
+                _ = LoadDataCommand.Execute();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during AdvancedInventoryViewModel initialization");
+        }
+    }
+
+    private static bool IsDesignMode()
+    {
+        try
+        {
+            return Design.IsDesignMode;
+        }
+        catch
+        {
+            // Fallback if Design class isn't available
+            return false;
+        }
+    }
+
+    private void InitializeDesignTimeData()
+    {
+        // Populate design-time data
+        foreach (var p in new[] { "PART001", "PART002", "PART003" }) PartIDOptions.Add(p);
+        foreach (var o in new[] { "90", "100", "110" }) OperationOptions.Add(o);
+        foreach (var l in new[] { "WC01", "WC02", "WC03" }) LocationOptions.Add(l);
+        foreach (var l in LocationOptions) AvailableLocations.Add(l);
+        
+        // Set some sample data
+        SelectedPartID = "PART001";
+        SelectedOperation = "90";
+        SelectedLocation = "WC01";
+        StatusMessage = "Design Mode - Ready";
+    }
+
+    private static ILogger<T> CreateDesignTimeLogger<T>()
+    {
+        try
+        {
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            return loggerFactory.CreateLogger<T>();
+        }
+        catch
+        {
+            return Microsoft.Extensions.Logging.Abstractions.NullLogger<T>.Instance;
+        }
     }
 
     private void InitializeCommands()
@@ -233,6 +315,11 @@ public class AdvancedInventoryViewModel : BaseViewModel
         BackToNormalCommand = ReactiveCommand.Create(() =>
         {
             BackToNormalRequested?.Invoke(this, EventArgs.Empty);
+        });
+
+        ToggleFilterPanelCommand = ReactiveCommand.Create(() =>
+        {
+            IsFilterPanelExpanded = !IsFilterPanelExpanded;
         });
     }
 
