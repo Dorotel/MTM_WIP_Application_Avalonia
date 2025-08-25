@@ -35,6 +35,58 @@ public string? Description { get; set; }
 public record InventoryItem(string PartId, string Operation, int Quantity);
 ```
 
+## Service Organization Standards - CRITICAL
+
+### **📋 SERVICE FILE ORGANIZATION RULE**
+All service classes of the same category MUST be in the same .cs file. Interfaces must be in the `Services/Interfaces/` folder.
+
+```csharp
+// ✅ CORRECT: Multiple related services in one file
+// File: Services/UserServices.cs
+namespace MTM.Services
+{
+    public class UserService : IUserService
+    {
+        // Primary user management implementation
+    }
+
+    public class UserValidationService : IUserValidationService  
+    {
+        // User validation implementation
+    }
+
+    public class UserAuditService : IUserAuditService
+    {
+        // User audit implementation
+    }
+}
+
+// ✅ CORRECT: Interfaces in separate files
+// File: Services/Interfaces/IUserService.cs
+namespace MTM.Services.Interfaces
+{
+    public interface IUserService
+    {
+        // Interface definition
+    }
+}
+```
+
+### **❌ NEVER Do This**:
+```csharp
+// WRONG: One service per file
+// File: Services/UserService.cs - Only UserService
+// File: Services/UserValidationService.cs - Only UserValidationService 
+// File: Services/UserAuditService.cs - Only UserAuditService
+```
+
+### **📋 Service Category Guidelines**:
+- **UserServices.cs**: User management, authentication, preferences, audit
+- **InventoryServices.cs**: Inventory CRUD, validation, reporting
+- **TransactionServices.cs**: Transaction processing, history, validation
+- **LocationServices.cs**: Location management, validation, hierarchy
+- **SystemServices.cs**: Configuration, caching, logging, error handling
+
 ## ViewModel Template - Always Use This Pattern
 
 ```csharp
@@ -188,6 +240,7 @@ Create modern interfaces with:
 5. **Apply MTM styling** - Purple theme and card layouts
 6. **Include error handling** - Subscribe to ThrownExceptions
 7. **Use async patterns** - ReactiveCommand.CreateFromTask for async operations
+8. **📋 Group services by category** - Multiple related services in one file
 
 ## Never Do
 
@@ -196,6 +249,7 @@ Create modern interfaces with:
 - Skip error handling in commands
 - Use hard-coded colors (use DynamicResource)
 - Register services individually (use AddMTMServices pattern)
+- **📋 Create separate files for related services** - Group by category instead
 
 ## Always Do
 
@@ -204,3 +258,5 @@ Create modern interfaces with:
 - Include proper error handling and logging preparation
 - Use modern card-based layouts with proper spacing
 - Follow established naming conventions (View/ViewModel pairs)
+- **📋 Group related service implementations in category files**
+- **📋 Keep service interfaces in separate files for clarity**

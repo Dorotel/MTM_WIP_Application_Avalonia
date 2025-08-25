@@ -126,21 +126,21 @@ namespace MTM.Services
         /// Executes a stored procedure with status output parameters.
         /// Returns both the result set and status information from the procedure.
         /// </summary>
-        public async Task<Result<StoredProcedureResult<T>>> ExecuteStoredProcedureWithStatusAsync<T>(
+        public async Task<Result<MTM.Core.Services.StoredProcedureResult<T>>> ExecuteStoredProcedureWithStatusAsync<T>(
             string procedureName,
             Dictionary<string, object>? parameters = null,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(procedureName))
             {
-                return Result<StoredProcedureResult<T>>.Failure("Stored procedure name cannot be empty");
+                return Result<MTM.Core.Services.StoredProcedureResult<T>>.Failure("Stored procedure name cannot be empty");
             }
 
             if (IsSqlQuery(procedureName))
             {
                 var errorMsg = "SECURITY VIOLATION: Direct SQL execution is prohibited. Only stored procedure names are allowed.";
                 _logger.LogError("Attempted SQL injection or policy violation: {ProcedureName}", procedureName);
-                return Result<StoredProcedureResult<T>>.Failure(errorMsg);
+                return Result<MTM.Core.Services.StoredProcedureResult<T>>.Failure(errorMsg);
             }
 
             try
@@ -171,7 +171,7 @@ namespace MTM.Services
                     commandType: CommandType.StoredProcedure,
                     commandTimeout: _commandTimeout);
 
-                var procedureResult = new StoredProcedureResult<T>
+                var procedureResult = new MTM.Core.Services.StoredProcedureResult<T>
                 {
                     Data = results.ToList(),
                     Status = dynParams.Get<int>("p_Status"),
@@ -190,12 +190,12 @@ namespace MTM.Services
                 _logger.LogDebug("Stored procedure with status executed successfully, Status: {Status}, Rows: {Count}", 
                     procedureResult.Status, procedureResult.Data.Count);
                 
-                return Result<StoredProcedureResult<T>>.Success(procedureResult);
+                return Result<MTM.Core.Services.StoredProcedureResult<T>>.Success(procedureResult);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Stored procedure with status execution failed");
-                return Result<StoredProcedureResult<T>>.Failure($"Stored procedure execution failed: {ex.Message}");
+                return Result<MTM.Core.Services.StoredProcedureResult<T>>.Failure($"Stored procedure execution failed: {ex.Message}");
             }
         }
 
@@ -366,6 +366,91 @@ namespace MTM.Services
         }
 
         /// <summary>
+        /// DEPRECATED: This method is provided for backward compatibility only.
+        /// DO NOT USE: Direct query execution violates the "no hard-coded MySQL" rule.
+        /// Use ExecuteStoredProcedureAsync instead.
+        /// </summary>
+        public async Task<Result<List<T>>> ExecuteQueryAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default)
+        {
+            _logger.LogWarning("DEPRECATED METHOD CALLED: ExecuteQueryAsync - Use ExecuteStoredProcedureAsync instead");
+            
+            // Security validation: Prevent direct SQL execution
+            if (IsSqlQuery(query))
+            {
+                var errorMsg = "SECURITY VIOLATION: Direct SQL execution is prohibited. Use ExecuteStoredProcedureAsync instead.";
+                _logger.LogError("Attempted deprecated SQL execution: {Query}", query);
+                return Result<List<T>>.Failure(errorMsg);
+            }
+
+            // If it's actually a stored procedure name, redirect to the proper method
+            var parameters_dict = ConvertParametersToDict(parameters);
+            return await ExecuteStoredProcedureAsync<T>(query, parameters_dict, cancellationToken);
+        }
+
+        /// <summary>
+        /// DEPRECATED: This method is provided for backward compatibility only.
+        /// DO NOT USE: Direct command execution violates the "no hard-coded MySQL" rule.
+        /// Use ExecuteStoredProcedureNonQueryAsync instead.
+        /// </summary>
+        public async Task<Result<int>> ExecuteNonQueryAsync(string command, object? parameters = null, CancellationToken cancellationToken = default)
+        {
+            _logger.LogWarning("DEPRECATED METHOD CALLED: ExecuteNonQueryAsync - Use ExecuteStoredProcedureNonQueryAsync instead");
+            
+            // Security validation: Prevent direct SQL execution
+            if (IsSqlQuery(command))
+            {
+                var errorMsg = "SECURITY VIOLATION: Direct command execution is prohibited. Use ExecuteStoredProcedureNonQueryAsync instead.";
+                _logger.LogError("Attempted deprecated command execution: {Command}", command);
+                return Result<int>.Failure(errorMsg);
+            }
+
+            // If it's actually a stored procedure name, redirect to the proper method
+            var parameters_dict = ConvertParametersToDict(parameters);
+            return await ExecuteStoredProcedureNonQueryAsync(command, parameters_dict, cancellationToken);
+        }
+
+        /// <summary>
+        /// DEPRECATED: This method is provided for backward compatibility only.
+        /// DO NOT USE: Direct scalar query execution violates the "no hard-coded MySQL" rule.
+        /// Use ExecuteStoredProcedureScalarAsync instead.
+        /// </summary>
+        public async Task<Result<T?>> ExecuteScalarAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default)
+        {
+            _logger.LogWarning("DEPRECATED METHOD CALLED: ExecuteScalarAsync - Use ExecuteStoredProcedureScalarAsync instead");
+            
+            // Security validation: Prevent direct SQL execution
+            if (IsSqlQuery(query))
+            {
+                var errorMsg = "SECURITY VIOLATION: Direct scalar query execution is prohibited. Use ExecuteStoredProcedureScalarAsync instead.";
+                _logger.LogError("Attempted deprecated scalar query execution: {Query}", query);
+                return Result<T?>.Failure(errorMsg);
+            }
+
+            // If it's actually a stored procedure name, redirect to the proper method
+            var parameters_dict = ConvertParametersToDict(parameters);
+            return await ExecuteStoredProcedureScalarAsync<T>(query, parameters_dict, cancellationToken);
+        }
+
+        /// <summary>
+        /// Helper method to convert anonymous object parameters to Dictionary format.
+        /// </summary>
+        private static Dictionary<string, object>? ConvertParametersToDict(object? parameters)
+        {
+            if (parameters == null)
+                return null;
+
+            if (parameters is Dictionary<string, object> dict)
+                return dict;
+
+            var result = new Dictionary<string, object>();
+            foreach (var prop in parameters.GetType().GetProperties())
+            {
+                result[prop.Name] = prop.GetValue(parameters) ?? DBNull.Value;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Validates that the input is a procedure name and not SQL code.
         /// Prevents SQL injection and enforces stored procedure usage.
         /// </summary>
@@ -405,103 +490,6 @@ namespace MTM.Services
             };
         }
 
-        #region DEPRECATED METHODS - DO NOT USE
-
-        /// <summary>
-        /// DEPRECATED: This method is provided for backward compatibility only.
-        /// DO NOT USE: Direct query execution violates the "no hard-coded MySQL" rule.
-        /// Use ExecuteStoredProcedureAsync instead.
-        /// </summary>
-        // [Obsolete("Direct query execution is prohibited. Use ExecuteStoredProcedureAsync instead.", error: true)]
-        public async Task<Result<List<T>>> ExecuteQueryAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default)
-        {
-            // Temporarily allow for migration - TODO: Replace all usage with stored procedures
-            _logger.LogWarning("DEPRECATED: Direct SQL query execution detected. This should be replaced with stored procedures.");
-            
-            try
-            {
-                using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync(cancellationToken);
-
-                var results = await connection.QueryAsync<T>(query, parameters, commandTimeout: _commandTimeout);
-                return Result<List<T>>.Success(results.ToList());
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Direct query execution failed: {Query}", query);
-                return Result<List<T>>.Failure($"Query execution failed: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// DEPRECATED: This method is provided for backward compatibility only.
-        /// DO NOT USE: Direct command execution violates the "no hard-coded MySQL" rule.
-        /// Use ExecuteStoredProcedureNonQueryAsync instead.
-        /// </summary>
-        // [Obsolete("Direct command execution is prohibited. Use ExecuteStoredProcedureNonQueryAsync instead.", error: true)]
-        public async Task<Result<int>> ExecuteNonQueryAsync(string command, object? parameters = null, CancellationToken cancellationToken = default)
-        {
-            // Temporarily allow for migration - TODO: Replace all usage with stored procedures
-            _logger.LogWarning("DEPRECATED: Direct SQL command execution detected. This should be replaced with stored procedures.");
-            
-            try
-            {
-                using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync(cancellationToken);
-
-                var affectedRows = await connection.ExecuteAsync(command, parameters, commandTimeout: _commandTimeout);
-                return Result<int>.Success(affectedRows);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Direct command execution failed: {Command}", command);
-                return Result<int>.Failure($"Command execution failed: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// DEPRECATED: This method is provided for backward compatibility only.
-        /// DO NOT USE: Direct scalar query execution violates the "no hard-coded MySQL" rule.
-        /// Use ExecuteStoredProcedureScalarAsync instead.
-        /// </summary>
-        // [Obsolete("Direct scalar query execution is prohibited. Use ExecuteStoredProcedureScalarAsync instead.", error: true)]
-        public async Task<Result<T?>> ExecuteScalarAsync<T>(string query, object? parameters = null, CancellationToken cancellationToken = default)
-        {
-            // Temporarily allow for migration - TODO: Replace all usage with stored procedures
-            _logger.LogWarning("DEPRECATED: Direct SQL scalar query execution detected. This should be replaced with stored procedures.");
-            
-            try
-            {
-                using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync(cancellationToken);
-
-                var result = await connection.QuerySingleOrDefaultAsync<T>(query, parameters, commandTimeout: _commandTimeout);
-                return Result<T?>.Success(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Direct scalar query execution failed: {Query}", query);
-                return Result<T?>.Failure($"Scalar query execution failed: {ex.Message}");
-            }
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Masks sensitive information in connection string for logging.
-        /// </summary>
-        private static string MaskConnectionString(string connectionString)
-        {
-            if (string.IsNullOrWhiteSpace(connectionString))
-                return "null";
-
-            // Simple masking - replace password value
-            return System.Text.RegularExpressions.Regex.Replace(
-                connectionString, 
-                @"password\s*=\s*[^;]*", 
-                "password=***", 
-                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-        }
     }
 
     /// <summary>

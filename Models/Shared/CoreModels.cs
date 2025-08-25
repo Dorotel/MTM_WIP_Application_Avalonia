@@ -379,6 +379,47 @@ namespace MTM.Models
 
     #endregion
 
+    #region Database Result Models
+
+    /// <summary>
+    /// Represents the result of a stored procedure execution with status and output parameters.
+    /// Used by DatabaseService for stored procedure operations.
+    /// </summary>
+    public class DatabaseStoredProcedureResult<T>
+    {
+        public List<T> Data { get; set; } = new List<T>();
+        public int Status { get; set; }
+        public string? ErrorMessage { get; set; }
+        public bool IsSuccess => Status == 0; // MTM convention: 0 = success
+        public Dictionary<string, object> OutputParameters { get; set; } = new Dictionary<string, object>();
+        public int RowsAffected => Data.Count;
+
+        /// <summary>
+        /// Gets a typed output parameter value.
+        /// </summary>
+        public TParam? GetOutputParameter<TParam>(string parameterName)
+        {
+            if (OutputParameters.TryGetValue(parameterName, out var value))
+            {
+                if (value is TParam typedValue)
+                    return typedValue;
+                
+                try
+                {
+                    return (TParam)Convert.ChangeType(value, typeof(TParam));
+                }
+                catch
+                {
+                    return default(TParam);
+                }
+            }
+            
+            return default(TParam);
+        }
+    }
+
+    #endregion
+
     #region MTM-Specific Business Models
 
     /// <summary>

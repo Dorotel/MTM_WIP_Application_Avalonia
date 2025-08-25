@@ -1,7 +1,18 @@
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
-* text=auto
+* text=auto eol=crlf
+
+###############################################################################
+# Force UTF-8 encoding for text files
+###############################################################################
+*.md text eol=crlf
+*.txt text eol=crlf
+*.json text eol=crlf
+*.xml text eol=crlf
+*.cs text eol=crlf
+*.csproj text eol=crlf
+*.sln text eol=crlf
 
 ###############################################################################
 # Set default behavior for command prompt diff.

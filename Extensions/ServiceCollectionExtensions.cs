@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,6 +50,9 @@ namespace MTM.Extensions
             services.AddScoped<IInventoryService, InventoryService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITransactionService, TransactionService>();
+
+            // Add UI and theme services
+            services.AddSingleton<IThemeService, ThemeService>();
 
             // Add caching services
             services.AddMemoryCache();
@@ -161,7 +165,12 @@ namespace MTM.Extensions
         public Task<Result<ValidationResult>> ValidateAsync<T>(T entity, CancellationToken cancellationToken = default) 
         {
             // TODO: Implement using FluentValidation or similar
-            return Task.FromResult(Result<ValidationResult>.Success(ValidationResult.Success()));
+            var validationResult = new ValidationResult
+            {
+                IsValid = true,
+                Errors = new List<string>()
+            };
+            return Task.FromResult(Result<ValidationResult>.Success(validationResult));
         }
 
         public Task<Result<bool>> ValidateRuleAsync(string ruleName, object context, CancellationToken cancellationToken = default) 

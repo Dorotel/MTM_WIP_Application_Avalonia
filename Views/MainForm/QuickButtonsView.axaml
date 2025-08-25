@@ -21,19 +21,19 @@
       <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="CornerRadius" Value="6"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
       <Setter Property="MinHeight" Value="50"/>
     </Style>
     <Style Selector="Button.quick-button:pointerover">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryDarkBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM.PrimaryBrush}"/>
     </Style>
     <Style Selector="Button.quick-button:pressed">
-      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryDarkBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM.SecondaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
     </Style>
   </UserControl.Styles>
 
@@ -42,87 +42,87 @@
     <!-- Fixed dimensions for scaling reference -->
     <Grid Width="300" Height="600">
       <!-- MTM styled container - Full height layout -->
-  <Border Background="Transparent"
-          CornerRadius="6"
-          Padding="8">
-    <!-- Quick Buttons Area - Now fills the entire available space -->
-    <ItemsControl ItemsSource="{Binding QuickButtons}">
-      <!-- Use UniformGrid to distribute buttons evenly across available height -->
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <UniformGrid Rows="10" Columns="1"/>
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
-      <ItemsControl.ItemTemplate>
-        <DataTemplate DataType="vm:QuickButtonItemViewModel">
-          <Button Classes="quick-button"
-                  Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
-                  CommandParameter="{Binding}"
-                  ToolTip.Tip="{Binding ToolTipText}"
-                  Margin="0,0,0,2">
-            <Button.ContextMenu>
-              <ContextMenu>
-                <MenuItem Header="Edit Button"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).EditButtonCommand}"
-                          CommandParameter="{Binding}"/>
-                <MenuItem Header="Remove Button"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RemoveButtonCommand}"
-                          CommandParameter="{Binding}"/>
-                <Separator/>
-                <MenuItem Header="Refresh Buttons"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RefreshButtonsCommand}"/>
-                <MenuItem Header="Clear All Buttons"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ClearAllButtonsCommand}"/>
-                <MenuItem Header="Reset Order"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ResetOrderCommand}"/>
-              </ContextMenu>
-            </Button.ContextMenu>
-            <Grid ColumnDefinitions="Auto,8,*,Auto">
-              <!-- Position indicator with MTM accent -->
-              <Border Grid.Column="0"
-                      Background="{DynamicResource AccentBrush}"
-                      CornerRadius="3"
-                      Width="26"
-                      Height="26"
-                      VerticalAlignment="Center">
-                <TextBlock Text="{Binding Position}"
-                           Foreground="{DynamicResource PrimaryDarkBrush}"
-                           FontSize="12"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-              </Border>
-              
-              <!-- Button content -->
-              <StackPanel Grid.Column="2" Spacing="3" VerticalAlignment="Center">
-                <TextBlock Text="{Binding DisplayText}"
-                           FontWeight="Medium"
-                           FontSize="13"
-                           Foreground="{Binding $parent[Button].Foreground}"
-                           TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding SubText}"
-                           FontSize="11"
-                           Foreground="{Binding $parent[Button].Foreground}"
-                           Opacity="0.7"
-                           TextWrapping="Wrap"/>
-              </StackPanel>
-              
-              <!-- Operation indicator -->
-              <TextBlock Grid.Column="3"
-                         Text="{Binding Operation}"
-                         FontSize="10"
-                         FontWeight="Bold"
-                         Foreground="{Binding $parent[Button].Foreground}"
-                         Opacity="0.6"
-                         VerticalAlignment="Center"
-                         Margin="4,0,0,0"
-                         IsVisible="{Binding !IsEmpty}"/>
-            </Grid>
-          </Button>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
-  </Border>
+      <Border Background="Transparent"
+              CornerRadius="6"
+              Padding="8">
+        <!-- Quick Buttons Area - Now fills the entire available space -->
+        <ItemsControl ItemsSource="{Binding QuickButtons}">
+          <!-- Use UniformGrid to distribute buttons evenly across available height -->
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Rows="10" Columns="1"/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:QuickButtonItemViewModel">
+              <Button Classes="quick-button"
+                      Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
+                      CommandParameter="{Binding}"
+                      ToolTip.Tip="{Binding ToolTipText}"
+                      Margin="0,0,0,2">
+                <Button.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Header="Edit Button"
+                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).EditButtonCommand}"
+                              CommandParameter="{Binding}"/>
+                    <MenuItem Header="Remove Button"
+                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RemoveButtonCommand}"
+                              CommandParameter="{Binding}"/>
+                    <Separator/>
+                    <MenuItem Header="Refresh Buttons"
+                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RefreshButtonsCommand}"/>
+                    <MenuItem Header="Clear All Buttons"
+                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ClearAllButtonsCommand}"/>
+                    <MenuItem Header="Reset Order"
+                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ResetOrderCommand}"/>
+                  </ContextMenu>
+                </Button.ContextMenu>
+                <Grid ColumnDefinitions="Auto,8,*,Auto">
+                  <!-- Position indicator with MTM accent -->
+                  <Border Grid.Column="0"
+                          Background="{DynamicResource MTM.PrimaryBrush}"
+                          CornerRadius="3"
+                          Width="26"
+                          Height="26"
+                          VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Position}"
+                               Foreground="{DynamicResource MTM.LightTextBrush}"
+                               FontSize="12"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                  </Border>
+                  
+                  <!-- Button content -->
+                  <StackPanel Grid.Column="2" Spacing="3" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding DisplayText}"
+                               FontWeight="Medium"
+                               FontSize="13"
+                               Foreground="{Binding $parent[Button].Foreground}"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding SubText}"
+                               FontSize="11"
+                               Foreground="{Binding $parent[Button].Foreground}"
+                               Opacity="0.7"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+                  
+                  <!-- Operation indicator -->
+                  <TextBlock Grid.Column="3"
+                             Text="{Binding Operation}"
+                             FontSize="10"
+                             FontWeight="Bold"
+                             Foreground="{Binding $parent[Button].Foreground}"
+                             Opacity="0.6"
+                             VerticalAlignment="Center"
+                             Margin="4,0,0,0"
+                             IsVisible="{Binding !IsEmpty}"/>
+                </Grid>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Border>
     </Grid>
   </Viewbox>
 </UserControl>

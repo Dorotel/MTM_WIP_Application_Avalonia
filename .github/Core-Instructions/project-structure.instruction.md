@@ -28,6 +28,70 @@ Database_Files/
 - Never modify files in `Database_Files/` directly
 - Use `Development/Database_Files/` for new development work
 
+### **Services Directory Organization (CRITICAL)**
+
+**?? SERVICE FILE ORGANIZATION RULE**:
+All service classes of the same category MUST be in the same .cs file. Interfaces remain in the `Services/Interfaces/` folder.
+
+**? CORRECT Service Organization**:
+```
+Services/
+??? Interfaces/              # All service interfaces (separate files)
+?   ??? IUserService.cs
+?   ??? IInventoryService.cs
+?   ??? ITransactionService.cs
+?   ??? ILocationService.cs
+??? UserServices.cs          # ALL user-related service implementations
+??? InventoryServices.cs     # ALL inventory-related service implementations
+??? TransactionServices.cs   # ALL transaction-related service implementations
+??? LocationServices.cs      # ALL location-related service implementations
+```
+
+**? INCORRECT Service Organization**:
+```
+Services/
+??? UserService.cs           # Single service per file (WRONG)
+??? UserValidationService.cs # Related services separated (WRONG)
+??? UserAuditService.cs      # Related services separated (WRONG)
+```
+
+**?? Service Category Examples**:
+- **User Services**: `UserService`, `UserValidationService`, `UserAuditService`, `UserPreferencesService`
+- **Inventory Services**: `InventoryService`, `InventoryValidationService`, `InventoryReportService`
+- **Transaction Services**: `TransactionService`, `TransactionHistoryService`, `TransactionValidationService`
+- **Location Services**: `LocationService`, `LocationValidationService`, `LocationManagementService`
+
+**?? Implementation Pattern**:
+```csharp
+// File: Services/UserServices.cs
+namespace MTM.Services
+{
+    /// <summary>
+    /// Primary user management service
+    /// </summary>
+    public class UserService : IUserService
+    {
+        // Main user service implementation
+    }
+
+    /// <summary>
+    /// User validation service
+    /// </summary>
+    public class UserValidationService : IUserValidationService
+    {
+        // User validation implementation
+    }
+
+    /// <summary>
+    /// User audit service
+    /// </summary>
+    public class UserAuditService : IUserAuditService
+    {
+        // User audit implementation
+    }
+}
+```
+
 ### **Documentation Directory Structure**
 ```
 Documentation/
@@ -94,7 +158,7 @@ Documentation/
 ### **Development Directory Structure**
 ```
 Development/
-??? Database_Files/          # ?? Development database files (EDITABLE)
+??? Database_Files/          # ??? Development database files (EDITABLE)
 ?   ??? Development_Database_Schema.sql   # Development schema changes
 ?   ??? New_Stored_Procedures.sql        # New procedures for development
 ?   ??? Updated_Stored_Procedures.sql    # Modified existing procedures
@@ -107,24 +171,33 @@ Development/
 
 **?? IMPORTANT**: Custom prompts and compliance reports have been moved to `Documentation/Development/` for better organization and consistency with the overall documentation structure.
 
-## **File Placement Guidelines**
+### **File Placement Guidelines**
 
 ### **New Components**
 - **Views**: Place in `Views/` folder with `.axaml` extension
 - **ViewModels**: Place in `ViewModels/` folder with `ViewModel.cs` suffix
-- **Services**: Place in `Services/` folder with `Service.cs` suffix
+- **Service Interfaces**: Place in `Services/Interfaces/` folder with `I[Category]Service.cs` naming
+- **Service Implementations**: Place in `Services/` folder grouped by category (e.g., `UserServices.cs`, `InventoryServices.cs`)
 - **Models**: Place in `Models/` folder with descriptive names
 
-### **Documentation**
-- **Component-specific instructions**: `Development/UI_Documentation/`
-- **Code examples**: `Development/Examples/`
-- **API documentation**: `Development/Docs/`
-- **Visual references**: `Development/UI_Screenshots/`
-- **?? System upgrade summaries**: `Documentation/Development/Updates/`
-- **Feature enhancement documentation**: `Documentation/Development/Updates/`
-- **Change logs and migration guides**: `Documentation/Development/Updates/`
-- **?? Compliance reports and quality analysis**: `Documentation/Development/Compliance Reports/[Component]/`
-- **?? Custom development prompts**: `Documentation/Development/Custom_Prompts/`
+### **Service Organization Rules**
+
+**?? Interface Placement**:
+- All service interfaces go in `Services/Interfaces/` as separate files
+- Use naming pattern: `I[Category]Service.cs` (e.g., `IUserService.cs`)
+- One interface per file for clarity and maintainability
+
+**?? Implementation Placement**:
+- All implementations of the same category go in one file
+- Use naming pattern: `[Category]Services.cs` (e.g., `UserServices.cs`)
+- Multiple related service classes per file for logical grouping
+
+**?? Service Categories**:
+- **User Management**: Authentication, preferences, audit, validation
+- **Inventory Management**: CRUD operations, validation, reporting
+- **Transaction Management**: Processing, history, validation
+- **Location Management**: CRUD operations, validation, hierarchy
+- **System Services**: Configuration, caching, logging, error handling
 
 ### **Documentation Update Files (MANDATORY PLACEMENT)**
 **Location**: `Documentation/Development/Updates/`
@@ -273,6 +346,8 @@ Development/
 - **Consistent structure**: Follow established patterns across all components
 - **Clear dependencies**: Use dependency injection for service relationships
 - **Proper layering**: Maintain separation between UI, business logic, and data access
+- **Service grouping**: Keep related service implementations together in category files
+- **Interface separation**: Maintain clear interface contracts in separate files
 - **?? Change documentation**: Document all major changes in appropriate update summaries
 - **?? Quality tracking**: Regularly assess compliance and generate reports
 

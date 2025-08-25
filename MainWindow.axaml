@@ -12,11 +12,13 @@
         Title="MTM WIP Application"
         Width="1200"
         Height="700"
-        Background="{DynamicResource ContentBackgroundBrush}">
+        Background="{DynamicResource MTM.AppBackgroundBrush}">
 
-	<!-- Main window with MTM styling -->
-	<Border Background="{DynamicResource ContentBackgroundBrush}"
-	        CornerRadius="0">
-		<ContentControl Content="{Binding CurrentView}"/>
-	</Border>
+    <!-- Main Window Content with Fixed Scaling -->
+    <Border Background="{DynamicResource MTM.AppBackgroundBrush}"
+            CornerRadius="0">
+        <ContentControl Content="{Binding CurrentView}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"/>
+    </Border>
 </Window>

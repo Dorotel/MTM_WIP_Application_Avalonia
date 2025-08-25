@@ -26,134 +26,173 @@
   <!-- MANDATORY: Viewbox wrapper for proportional scaling -->
   <Viewbox Stretch="Uniform" StretchDirection="Both">
     <!-- Fixed dimensions for scaling reference -->
-    <Grid Width="1200" Height="700" RowDefinitions="Auto,*,Auto" Background="{DynamicResource ContentBackgroundBrush}">
-    <!-- Menu (MenuStrip) with MTM styling -->
-    <Border Grid.Row="0" 
-            Background="{DynamicResource PrimaryDarkBrush}"
-            BoxShadow="0 1 3 0 #22000000">
-      <Menu Background="Transparent" Foreground="{DynamicResource LightTextBrush}">
-        <MenuItem Header="_File" Foreground="{DynamicResource LightTextBrush}">
-          <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
-          <Separator/>
-          <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
-        </MenuItem>
-        <MenuItem Header="_View" Foreground="{DynamicResource LightTextBrush}">
-          <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
-        </MenuItem>
-        <!-- Development builds only -->
-        <MenuItem Header="_Help" 
-                  Foreground="{DynamicResource LightTextBrush}"
-                  IsVisible="{Binding ShowDevelopmentMenu}">
-          <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
-        </MenuItem>
-      </Menu>
-    </Border>
-
-    <!-- Main area (SplitContainer) -->
-    <Grid Grid.Row="1">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition Width="Auto"/>
-      </Grid.ColumnDefinitions>
+    <Grid Width="1200" Height="700" RowDefinitions="Auto,*,Auto" Background="{DynamicResource MTM.AppBackgroundBrush}">
       
-      <!-- Left panel: TabControl with MTM styling -->
-      <Border Grid.Column="0" 
-              Background="{DynamicResource CardBackgroundBrush}"
-              CornerRadius="8"
-              Margin="8"
-              BoxShadow="0 2 8 0 #11000000">
-        <TabControl x:Name="MainForm_TabControl"
-                    SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
-                    Background="Transparent">
-          <TabItem Header="Inventory">
-            <Border Padding="16">
-              <!-- Control_InventoryTab placeholder -->
-              <ContentControl Content="{Binding InventoryContent}"/>
-            </Border>
-          </TabItem>
-          <TabItem Header="Remove">
-            <Border Padding="16">
-              <!-- Control_RemoveTab placeholder -->
-              <ContentControl Content="{Binding RemoveContent}"/>
-            </Border>
-          </TabItem>
-          <TabItem Header="Transfer">
-            <Border Padding="16">
-              <!-- Control_TransferTab placeholder -->
-              <ContentControl Content="{Binding TransferContent}"/>
-            </Border>
-          </TabItem>
-        </TabControl>
+      <!-- Header Menu with MTM Branding -->
+      <Border Grid.Row="0" 
+              Background="{DynamicResource MTM.HeaderBackgroundBrush}"
+              Padding="24,16"
+              BoxShadow="0 2 8 0 #1A000000">
+        <Menu Background="Transparent" Foreground="{DynamicResource MTM.LightTextBrush}">
+          <MenuItem Header="_File" Foreground="{DynamicResource MTM.LightTextBrush}">
+            <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
+            <Separator/>
+            <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+          </MenuItem>
+          <MenuItem Header="_View" Foreground="{DynamicResource MTM.LightTextBrush}">
+            <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
+          </MenuItem>
+          <!-- Development builds only -->
+          <MenuItem Header="_Help" 
+                    Foreground="{DynamicResource MTM.LightTextBrush}"
+                    IsVisible="{Binding ShowDevelopmentMenu}">
+            <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
+          </MenuItem>
+        </Menu>
       </Border>
 
-      <!-- Splitter with MTM styling - only visible when panel is visible -->
-      <GridSplitter Grid.Column="1"
-                    Background="{DynamicResource AccentBrush}"
-                    ResizeDirection="Columns"
-                    ShowsPreview="True"
-                    HorizontalAlignment="Stretch"
-                    Width="6"
-                    CornerRadius="3"
-                    IsVisible="{Binding IsAdvancedPanelVisible}"/>
+      <!-- Main Content Area -->
+      <Grid Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Left Panel: Modern Tab Control with MTM Styling -->
+        <Border Grid.Column="0" 
+                Background="{DynamicResource MTM.CardBackgroundBrush}"
+                CornerRadius="8"
+                Margin="16"
+                BoxShadow="0 2 8 0 #11000000">
+          <TabControl x:Name="MainForm_TabControl"
+                      SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
+                      Background="Transparent">
+            <TabItem Header="📦 Inventory">
+              <Border Padding="16">
+                <!-- Control_InventoryTab placeholder -->
+                <ContentControl Content="{Binding InventoryContent}"/>
+              </Border>
+            </TabItem>
+            <TabItem Header="➖ Remove">
+              <Border Padding="16">
+                <!-- Control_RemoveTab placeholder -->
+                <ContentControl Content="{Binding RemoveContent}"/>
+              </Border>
+            </TabItem>
+            <TabItem Header="↔️ Transfer">
+              <Border Padding="16">
+                <!-- Control_TransferTab placeholder -->
+                <ContentControl Content="{Binding TransferContent}"/>
+              </Border>
+            </TabItem>
+          </TabControl>
+        </Border>
 
-      <!-- Right panel: Quick Actions with MTM styling -->
-      <Border Grid.Column="2"
-              Background="{DynamicResource CardBackgroundBrush}"
-              CornerRadius="8"
-              Margin="0,8,8,8"
-              BoxShadow="0 2 8 0 #11000000"
-              IsVisible="{Binding IsAdvancedPanelVisible}"
-              Width="300">
-        <!-- Quick Actions content without header -->
-        <ScrollViewer Padding="8">
-          <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"/>
-        </ScrollViewer>
+        <!-- Modern Splitter with MTM Styling -->
+        <GridSplitter Grid.Column="1"
+                      Background="{DynamicResource MTM.PrimaryBrush}"
+                      ResizeDirection="Columns"
+                      ShowsPreview="True"
+                      HorizontalAlignment="Stretch"
+                      Width="6"
+                      CornerRadius="3"
+                      IsVisible="{Binding IsAdvancedPanelVisible}"
+                      Margin="4,16"/>
+
+        <!-- Right Panel: Quick Actions with Modern Styling -->
+        <Border Grid.Column="2"
+                Background="{DynamicResource MTM.CardBackgroundBrush}"
+                CornerRadius="8"
+                Margin="0,16,16,16"
+                BoxShadow="0 2 8 0 #11000000"
+                IsVisible="{Binding IsAdvancedPanelVisible}"
+                Width="300">
+          <!-- Quick Actions Content -->
+          <ScrollViewer Padding="8">
+            <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"/>
+          </ScrollViewer>
+        </Border>
+      </Grid>
+
+      <!-- Modern Status Bar with MTM Styling -->
+      <Border Grid.Row="2"
+              Background="{DynamicResource MTM.StatusBarBackgroundBrush}"
+              Padding="24,12">
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="24">
+          <!-- Connection Status with Icon -->
+          <Border Grid.Column="0" 
+                  Background="{DynamicResource MTM.PrimaryDarkBrush}"
+                  Padding="12,6"
+                  CornerRadius="20">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="🔗" FontSize="14"/>
+              <TextBlock Text="Connection:" 
+                         Foreground="{DynamicResource MTM.LightTextBrush}" 
+                         Opacity="0.8"
+                         FontSize="12"/>
+              <TextBlock Text="{Binding ConnectionStatus}"
+                         Foreground="{DynamicResource MTM.LightPurpleBrush}"
+                         FontWeight="SemiBold"
+                         FontSize="12"/>
+            </StackPanel>
+          </Border>
+
+          <!-- Progress Bar Area -->
+          <StackPanel Grid.Column="1" 
+                      Orientation="Horizontal" 
+                      Spacing="12" 
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center">
+            <!-- Connection Strength -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="Signal" 
+                         Foreground="{DynamicResource MTM.LightTextBrush}" 
+                         Opacity="0.8"
+                         FontSize="11"/>
+              <ProgressBar Minimum="0" Maximum="100" 
+                           Width="100" Height="8" 
+                           Value="{Binding ConnectionStrength}"
+                           Foreground="{DynamicResource MTM.LightPurpleBrush}"
+                           Background="{DynamicResource MTM.PrimaryDarkBrush}"
+                           CornerRadius="4"/>
+            </StackPanel>
+
+            <!-- Main Progress -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="Progress" 
+                         Foreground="{DynamicResource MTM.LightTextBrush}" 
+                         Opacity="0.8"
+                         FontSize="11"/>
+              <ProgressBar Minimum="0" Maximum="100"
+                           Width="120" Height="8"
+                           Value="{Binding ProgressValue}"
+                           Foreground="{DynamicResource MTM.MagentaAccentBrush}"
+                           Background="{DynamicResource MTM.PrimaryDarkBrush}"
+                           CornerRadius="4"/>
+            </StackPanel>
+          </StackPanel>
+
+          <!-- Status Text with Modern Styling -->
+          <Border Grid.Column="2" 
+                  Background="{DynamicResource MTM.CardBackgroundBrush}"
+                  Padding="12,6"
+                  CornerRadius="6">
+            <TextBlock Text="{Binding StatusText}"
+                       Foreground="{DynamicResource MTM.PrimaryTextBrush}"
+                       FontSize="12"
+                       VerticalAlignment="Center"/>
+          </Border>
+
+          <!-- Version Info -->
+          <TextBlock Grid.Column="3"
+                     Text="MTM WIP v1.0"
+                     Foreground="{DynamicResource MTM.LightTextBrush}"
+                     Opacity="0.6"
+                     FontSize="10"
+                     VerticalAlignment="Center"/>
+        </Grid>
       </Border>
     </Grid>
-
-    <!-- Status bar (StatusStrip) with MTM styling -->
-    <Border Grid.Row="2"
-            Background="{DynamicResource StatusBarBackgroundBrush}"
-            Padding="16,8">
-      <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="16">
-        <!-- Connection status -->
-        <StackPanel Orientation="Horizontal" Spacing="8" Grid.Column="0">
-          <TextBlock Text="Connection:" 
-                     Foreground="{DynamicResource LightTextBrush}" 
-                     Opacity="0.8"/>
-          <TextBlock Text="{Binding ConnectionStatus}"
-                     Foreground="{DynamicResource AccentBrush}"
-                     FontWeight="Medium"/>
-        </StackPanel>
-
-        <!-- Connection strength -->
-        <StackPanel Orientation="Horizontal" Spacing="8" Grid.Column="1" VerticalAlignment="Center">
-          <TextBlock Text="Signal" 
-                     Foreground="{DynamicResource LightTextBrush}" 
-                     Opacity="0.8"/>
-          <ProgressBar Minimum="0" Maximum="100" 
-                       Width="120" Height="12" 
-                       Value="{Binding ConnectionStrength}"
-                       Foreground="{DynamicResource AccentBrush}"
-                       Background="{DynamicResource SecondaryDarkBrush}"/>
-        </StackPanel>
-
-        <!-- Progress -->
-        <ProgressBar Grid.Column="2"
-                     Minimum="0" Maximum="100"
-                     Height="14"
-                     Value="{Binding ProgressValue}"
-                     Foreground="{DynamicResource AccentBrush}"
-                     Background="{DynamicResource SecondaryDarkBrush}"/>
-
-        <!-- Status text -->
-        <TextBlock Grid.Column="3"
-                   Text="{Binding StatusText}"
-                   Foreground="{DynamicResource LightTextBrush}"
-                   VerticalAlignment="Center"/>
-      </Grid>
-    </Border>
-  </Grid>
   </Viewbox>
 </UserControl>

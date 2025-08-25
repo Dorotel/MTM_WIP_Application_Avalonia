@@ -8,13 +8,41 @@
 - **Views (AXAML):** `{Name}View.axaml` (e.g., `MainView.axaml`, `InventoryView.axaml`)
 - **ViewModels:** `{Name}ViewModel.cs` (e.g., `MainViewModel.cs`, `InventoryViewModel.cs`)
 - **Models:** `{Name}Model.cs` or just `{Name}.cs` for simple models
-- **Services:** `{Name}Service.cs` or `I{Name}Service.cs` for interfaces
+- **Service Interfaces:** `I{Name}Service.cs` (e.g., `IUserService.cs`, `IInventoryService.cs`)
+- **Service Implementations:** `{Category}Services.cs` (e.g., `UserServices.cs`, `InventoryServices.cs`)
+
+### **📋 SERVICE FILE ORGANIZATION RULE - CRITICAL**
+All service classes of the same category MUST be in the same .cs file. Interfaces remain in the `Services/Interfaces/` folder.
+
+**✅ CORRECT Service File Naming**:
+```
+Services/
+├── Interfaces/
+│   ├── IUserService.cs              # Single interface per file
+│   ├── IUserValidationService.cs    # Single interface per file
+│   ├── IUserAuditService.cs         # Single interface per file
+│   ├── IInventoryService.cs         # Single interface per file
+│   └── ITransactionService.cs       # Single interface per file
+├── UserServices.cs                  # ALL user-related implementations
+├── InventoryServices.cs             # ALL inventory-related implementations
+├── TransactionServices.cs           # ALL transaction-related implementations
+└── LocationServices.cs              # ALL location-related implementations
+```
+
+**❌ INCORRECT Service File Naming**:
+```
+Services/
+├── UserService.cs                   # WRONG: One service per file
+├── UserValidationService.cs         # WRONG: Related services separated
+├── UserAuditService.cs              # WRONG: Related services separated
+```
 
 ### **Core Naming Standards**
 - **Views**: `{Name}View.axaml` (e.g., `MainView.axaml`)
 - **ViewModels**: `{Name}ViewModel.cs` (e.g., `MainViewModel.cs`)
 - **Models**: `{Name}Model.cs` or just `{Name}.cs` for simple models
-- **Services**: `{Name}Service.cs` or `I{Name}Service.cs` for interfaces
+- **Service Interfaces**: `I{Name}Service.cs` (separate files)
+- **Service Implementations**: `{Category}Services.cs` (grouped by category)
 - **Stored Procedures**: `{module}_{action}_{details}` (e.g., `inv_inventory_Get_ByPartID`)
 
 ### Directory Structure
@@ -23,6 +51,7 @@
 /ViewModels/      # ViewModels using ReactiveUI
 /Models/          # Data models and business entities
 /Services/        # Business logic and data access services
+  /Interfaces/    # Service interfaces (separate files)
 /Resources/       # Styles, themes, and assets
 ```
 
@@ -78,19 +107,39 @@ public string FullName => _fullName.Value;
 
 ### Service Interfaces
 ```csharp
-// Interface with "I" prefix
-public interface IDataService { }
-public interface IErrorService { }
-public interface IProgressService { }
+// Interface with "I" prefix - separate files in Services/Interfaces/
+public interface IUserService { }
+public interface IUserValidationService { }
+public interface IUserAuditService { }
+public interface IInventoryService { }
+public interface ITransactionService { }
 ```
 
-### Service Implementations
+### Service Implementations - Category-Based Files
 ```csharp
-// Implementation without "I" prefix
-public class DataService : IDataService { }
-public class ErrorService : IErrorService { }
-public class ProgressService : IProgressService { }
+// File: Services/UserServices.cs - ALL user-related services
+namespace MTM.Services
+{
+    public class UserService : IUserService { }
+    public class UserValidationService : IUserValidationService { }
+    public class UserAuditService : IUserAuditService { }
+}
+
+// File: Services/InventoryServices.cs - ALL inventory-related services
+namespace MTM.Services
+{
+    public class InventoryService : IInventoryService { }
+    public class InventoryValidationService : IInventoryValidationService { }
+    public class InventoryReportService : IInventoryReportService { }
+}
 ```
+
+### **📋 Service Category Naming Guidelines**:
+- **UserServices.cs**: User management, authentication, preferences, audit, validation
+- **InventoryServices.cs**: Inventory CRUD, validation, reporting, analysis
+- **TransactionServices.cs**: Transaction processing, history, validation, reporting
+- **LocationServices.cs**: Location management, validation, hierarchy
+- **SystemServices.cs**: Configuration, caching, logging, error handling
 
 ## MTM Data Patterns
 

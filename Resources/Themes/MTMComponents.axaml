@@ -1,0 +1,375 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ================================================================== -->
+    <!-- MTM COMPONENT STYLES - Modern UI Design System                    -->
+    <!-- ================================================================== -->
+    <!-- Generated: December 19, 2024                                      -->
+    <!-- Version: 1.0 - Complete Component Library                         -->
+    <!-- ================================================================== -->
+
+    <!-- ================================================================== -->
+    <!-- BUTTON STYLES                                                     -->
+    <!-- ================================================================== -->
+    
+    <!-- Primary Button -->
+    <Style Selector="Button.mtm-primary">
+        <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    
+    <Style Selector="Button.mtm-primary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource MTM.PrimaryHoverBrush}"/>
+        <Setter Property="RenderTransform" Value="scale(1.02)"/>
+    </Style>
+    
+    <Style Selector="Button.mtm-primary:pressed">
+        <Setter Property="Background" Value="{DynamicResource MTM.PrimaryPressedBrush}"/>
+        <Setter Property="RenderTransform" Value="scale(0.98)"/>
+    </Style>
+    
+    <Style Selector="Button.mtm-primary:disabled">
+        <Setter Property="Background" Value="{DynamicResource MTM.PrimaryDisabledBrush}"/>
+        <Setter Property="Opacity" Value="0.6"/>
+    </Style>
+    
+    <!-- Secondary Button -->
+    <Style Selector="Button.mtm-secondary">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryBrush}"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.PrimaryBrush}"/>
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    
+    <Style Selector="Button.mtm-secondary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+    </Style>
+    
+    <Style Selector="Button.mtm-secondary:pressed">
+        <Setter Property="Background" Value="{DynamicResource MTM.PrimaryPressedBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+    </Style>
+    
+    <!-- Success Button -->
+    <Style Selector="Button.mtm-success">
+        <Setter Property="Background" Value="{DynamicResource MTM.SuccessBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    
+    <Style Selector="Button.mtm-success:pointerover">
+        <Setter Property="Background" Value="{DynamicResource MTM.SuccessHoverBrush}"/>
+    </Style>
+    
+    <!-- Danger Button -->
+    <Style Selector="Button.mtm-danger">
+        <Setter Property="Background" Value="{DynamicResource MTM.ErrorBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    
+    <Style Selector="Button.mtm-danger:pointerover">
+        <Setter Property="Background" Value="{DynamicResource MTM.ErrorHoverBrush}"/>
+    </Style>
+    
+    <!-- ================================================================== -->
+    <!-- CARD STYLES                                                       -->
+    <!-- ================================================================== -->
+    
+    <!-- Standard Card -->
+    <Style Selector="Border.mtm-card">
+        <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="20"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+    </Style>
+    
+    <!-- Elevated Card -->
+    <Style Selector="Border.mtm-card-elevated">
+        <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="24"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    
+    <!-- Hero Card -->
+    <Style Selector="Border.mtm-hero-card">
+        <Setter Property="Background" Value="{DynamicResource MTM.HeroGradientBrush}"/>
+        <Setter Property="CornerRadius" Value="16"/>
+        <Setter Property="Padding" Value="32"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    
+    <!-- Compact Card -->
+    <Style Selector="Border.mtm-card-compact">
+        <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="12"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+    </Style>
+    
+    <!-- ================================================================== -->
+    <!-- INPUT CONTROLS                                                    -->
+    <!-- ================================================================== -->
+    
+    <!-- TextBox -->
+    <Style Selector="TextBox.mtm-input">
+        <Setter Property="Background" Value="{DynamicResource MTM.InputBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.InputBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="12,10"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="MinHeight" Value="40"/>
+    </Style>
+    
+    <Style Selector="TextBox.mtm-input:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.InputFocusBrush}"/>
+    </Style>
+    
+    <!-- ComboBox -->
+    <Style Selector="ComboBox.mtm-combo">
+        <Setter Property="Background" Value="{DynamicResource MTM.InputBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.InputBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="12,10"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="MinHeight" Value="40"/>
+    </Style>
+    
+    <Style Selector="ComboBox.mtm-combo:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.InputFocusBrush}"/>
+    </Style>
+    
+    <!-- ================================================================== -->
+    <!-- NAVIGATION STYLES                                                 -->
+    <!-- ================================================================== -->
+    
+    <!-- Tab Navigation -->
+    <Style Selector="RadioButton.mtm-nav-tab">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.SecondaryTextBrush}"/>
+        <Setter Property="Padding" Value="16,12"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="MinHeight" Value="44"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    
+    <Style Selector="RadioButton.mtm-nav-tab:checked">
+        <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+    </Style>
+    
+    <Style Selector="RadioButton.mtm-nav-tab:pointerover">
+        <Setter Property="Background" Value="{DynamicResource MTM.SelectionLightBrush}"/>
+    </Style>
+    
+    <!-- Sidebar Navigation -->
+    <Style Selector="RadioButton.mtm-nav-sidebar">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+        <Setter Property="Padding" Value="20,16"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    
+    <Style Selector="RadioButton.mtm-nav-sidebar:checked">
+        <Setter Property="Background" Value="{DynamicResource MTM.LightPurpleBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryDarkBrush}"/>
+    </Style>
+    
+    <Style Selector="RadioButton.mtm-nav-sidebar:pointerover">
+        <Setter Property="Background" Value="#40FFFFFF"/>
+    </Style>
+    
+    <!-- ================================================================== -->
+    <!-- DATA DISPLAY STYLES                                               -->
+    <!-- ================================================================== -->
+    
+    <!-- DataGrid -->
+    <Style Selector="DataGrid.mtm-grid">
+        <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="CanUserReorderColumns" Value="True"/>
+        <Setter Property="CanUserResizeColumns" Value="True"/>
+        <Setter Property="CanUserSortColumns" Value="True"/>
+    </Style>
+    
+    <!-- ListBox -->
+    <Style Selector="ListBox.mtm-list">
+        <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="8"/>
+    </Style>
+    
+    <!-- ================================================================== -->
+    <!-- STATUS AND FEEDBACK STYLES                                        -->
+    <!-- ================================================================== -->
+    
+    <!-- Success Panel -->
+    <Style Selector="Border.mtm-success">
+        <Setter Property="Background" Value="{DynamicResource MTM.SuccessLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.SuccessBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+    
+    <!-- Warning Panel -->
+    <Style Selector="Border.mtm-warning">
+        <Setter Property="Background" Value="{DynamicResource MTM.WarningLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.WarningBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+    
+    <!-- Error Panel -->
+    <Style Selector="Border.mtm-error">
+        <Setter Property="Background" Value="{DynamicResource MTM.ErrorLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.ErrorBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+    
+    <!-- Info Panel -->
+    <Style Selector="Border.mtm-info">
+        <Setter Property="Background" Value="{DynamicResource MTM.InfoLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.InfoBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+    
+    <!-- ================================================================== -->
+    <!-- LAYOUT STYLES                                                     -->
+    <!-- ================================================================== -->
+    
+    <!-- Sidebar Layout -->
+    <Style Selector="Border.mtm-sidebar">
+        <Setter Property="Background" Value="{DynamicResource MTM.SidebarGradientBrush}"/>
+        <Setter Property="Width" Value="240"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+    
+    <!-- Content Area -->
+    <Style Selector="Border.mtm-content">
+        <Setter Property="Background" Value="{DynamicResource MTM.AppBackgroundBrush}"/>
+        <Setter Property="Padding" Value="24"/>
+    </Style>
+    
+    <!-- Header -->
+    <Style Selector="Border.mtm-header">
+        <Setter Property="Background" Value="{DynamicResource MTM.HeaderBackgroundBrush}"/>
+        <Setter Property="Padding" Value="24,16"/>
+    </Style>
+    
+    <!-- ================================================================== -->
+    <!-- UTILITY STYLES                                                    -->
+    <!-- ================================================================== -->
+    
+    <!-- Loading Spinner -->
+    <Style Selector="Border.mtm-loading">
+        <Setter Property="Background" Value="{DynamicResource MTM.OverlayBackgroundBrush}"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="20"/>
+    </Style>
+    
+    <!-- Separator -->
+    <Style Selector="Separator.mtm-separator">
+        <Setter Property="Background" Value="{DynamicResource MTM.SeparatorBrush}"/>
+        <Setter Property="Height" Value="1"/>
+        <Setter Property="Margin" Value="0,8"/>
+    </Style>
+    
+    <!-- Tooltip -->
+    <Style Selector="ToolTip.mtm-tooltip">
+        <Setter Property="Background" Value="{DynamicResource MTM.PrimaryDarkBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+    
+    <!-- ================================================================== -->
+    <!-- LEGACY COMPATIBILITY                                              -->
+    <!-- ================================================================== -->
+    
+    <!-- Legacy class mappings for backward compatibility -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    
+    <Style Selector="Button.secondary">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+        <Setter Property="Padding" Value="12,6"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+    </Style>
+    
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+        <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+    
+    <Style Selector="RadioButton.nav-item">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+    </Style>
+
+</Styles>

@@ -32,6 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaXaml Include="Resources\Themes\MTMComponents.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTMTheme.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.4" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.4" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
@@ -69,6 +74,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include=".github\all-copilot-files-list.instructions.md" />
     <None Include=".github\Automation-Instructions\customprompts.instruction.md" />
     <None Include=".github\Automation-Instructions\issue-pr-creation.instruction.md" />
     <None Include=".github\Automation-Instructions\personas.instruction.md" />
@@ -99,6 +105,8 @@
     <None Include=".github\Development-Instructions\README.md" />
     <None Include=".github\Development-Instructions\templates-documentation.instruction.md" />
     <None Include=".github\Custom-Prompts\MTM_Hotkey_Reference.md" />
+    <None Include=".github\document-reorganization.instructions.md" />
+    <None Include=".github\missing-components.instruction.md" />
     <None Include=".github\Quality-Instructions\needsrepair.instruction.md" />
     <None Include=".github\Quality-Instructions\README.md" />
     <None Include=".github\Custom-Prompts\README.md" />
@@ -110,8 +118,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include=".vscode\" />
-    <Folder Include="docs\" />
+    <Folder Include="Documentation\Development\Agent_Issues\" />
     <Folder Include="Documentation\Development\CopilotQuestions\Answered\" />
+    <Folder Include="Documentation\Development\Reports\" />
+    <Folder Include="Documentation\Development\Updates\" />
   </ItemGroup>
 </Project>

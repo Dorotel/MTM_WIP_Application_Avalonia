@@ -1,0 +1,209 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ================================================================== -->
+    <!-- MTM WIP Application Purple Brand Theme System                     -->
+    <!-- ================================================================== -->
+    <!-- Generated: December 19, 2024                                      -->
+    <!-- Version: 1.0 - Complete Theme Implementation                      -->
+    <!-- ================================================================== -->
+
+    <!-- ================================================================== -->
+    <!-- PRIMARY MTM COLOR PALETTE                                         -->
+    <!-- ================================================================== -->
+    
+    <!-- Core MTM Brand Colors -->
+    <SolidColorBrush x:Key="MTM.PrimaryBrush" Color="#4B45ED"/>
+    <SolidColorBrush x:Key="MTM.SecondaryBrush" Color="#8345ED"/>
+    <SolidColorBrush x:Key="MTM.MagentaAccentBrush" Color="#BA45ED"/>
+    <SolidColorBrush x:Key="MTM.BlueAccentBrush" Color="#4574ED"/>
+    <SolidColorBrush x:Key="MTM.PinkAccentBrush" Color="#ED45E7"/>
+    <SolidColorBrush x:Key="MTM.LightPurpleBrush" Color="#B594ED"/>
+    
+    <!-- Extended Palette -->
+    <SolidColorBrush x:Key="MTM.PrimaryDarkBrush" Color="#2D1B69"/>
+    <SolidColorBrush x:Key="MTM.PrimaryLightBrush" Color="#E8E5FF"/>
+    <SolidColorBrush x:Key="MTM.PrimaryExtraLightBrush" Color="#F8F7FF"/>
+    
+    <!-- ================================================================== -->
+    <!-- INTERACTIVE STATE COLORS                                          -->
+    <!-- ================================================================== -->
+    
+    <!-- Hover States -->
+    <SolidColorBrush x:Key="MTM.PrimaryHoverBrush" Color="#5A51F0"/>
+    <SolidColorBrush x:Key="MTM.SecondaryHoverBrush" Color="#9354F0"/>
+    <SolidColorBrush x:Key="MTM.MagentaHoverBrush" Color="#C754F0"/>
+    
+    <!-- Pressed States -->
+    <SolidColorBrush x:Key="MTM.PrimaryPressedBrush" Color="#3B35E0"/>
+    <SolidColorBrush x:Key="MTM.SecondaryPressedBrush" Color="#7235E0"/>
+    <SolidColorBrush x:Key="MTM.MagentaPressedBrush" Color="#A935E0"/>
+    
+    <!-- Disabled States -->
+    <SolidColorBrush x:Key="MTM.PrimaryDisabledBrush" Color="#B594ED"/>
+    <SolidColorBrush x:Key="MTM.SecondaryDisabledBrush" Color="#D4C4F7"/>
+    
+    <!-- ================================================================== -->
+    <!-- GRADIENT BRUSHES                                                   -->
+    <!-- ================================================================== -->
+    
+    <!-- Primary MTM Gradient (Horizontal) -->
+    <LinearGradientBrush x:Key="MTM.PrimaryGradientBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#4B45ED" Offset="0"/>
+        <GradientStop Color="#8345ED" Offset="0.5"/>
+        <GradientStop Color="#BA45ED" Offset="1"/>
+    </LinearGradientBrush>
+    
+    <!-- Hero Section Gradient (Diagonal) -->
+    <LinearGradientBrush x:Key="MTM.HeroGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#4574ED" Offset="0"/>
+        <GradientStop Color="#4B45ED" Offset="0.3"/>
+        <GradientStop Color="#8345ED" Offset="0.7"/>
+        <GradientStop Color="#BA45ED" Offset="1"/>
+    </LinearGradientBrush>
+    
+    <!-- Sidebar Gradient (Vertical) -->
+    <LinearGradientBrush x:Key="MTM.SidebarGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#2D1B69" Offset="0"/>
+        <GradientStop Color="#4B45ED" Offset="1"/>
+    </LinearGradientBrush>
+    
+    <!-- Card Hover Gradient -->
+    <LinearGradientBrush x:Key="MTM.CardHoverGradientBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#4B45ED" Offset="0"/>
+        <GradientStop Color="#BA45ED" Offset="1"/>
+    </LinearGradientBrush>
+    
+    <!-- ================================================================== -->
+    <!-- UI LAYOUT COLORS                                                  -->
+    <!-- ================================================================== -->
+    
+    <!-- Background Colors -->
+    <SolidColorBrush x:Key="MTM.AppBackgroundBrush" Color="#F8F7FF"/>
+    <SolidColorBrush x:Key="MTM.ContentBackgroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MTM.SidebarBackgroundBrush" Color="#2D1B69"/>
+    <SolidColorBrush x:Key="MTM.HeaderBackgroundBrush" Color="#4B45ED"/>
+    <SolidColorBrush x:Key="MTM.FooterBackgroundBrush" Color="#2D1B69"/>
+    <SolidColorBrush x:Key="MTM.StatusBarBackgroundBrush" Color="#2D1B69"/>
+    
+    <!-- Card and Panel Colors -->
+    <SolidColorBrush x:Key="MTM.CardBackgroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MTM.PanelBackgroundBrush" Color="#FAFAFA"/>
+    <SolidColorBrush x:Key="MTM.ModalBackgroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MTM.OverlayBackgroundBrush" Color="#80000000"/>
+    
+    <!-- Border Colors -->
+    <SolidColorBrush x:Key="MTM.BorderBrush" Color="#E8E5FF"/>
+    <SolidColorBrush x:Key="MTM.BorderDarkBrush" Color="#D4C4F7"/>
+    <SolidColorBrush x:Key="MTM.SeparatorBrush" Color="#E8E5FF"/>
+    <SolidColorBrush x:Key="MTM.OutlineBrush" Color="#B594ED"/>
+    
+    <!-- ================================================================== -->
+    <!-- TEXT COLORS                                                        -->
+    <!-- ================================================================== -->
+    
+    <!-- Primary Text -->
+    <SolidColorBrush x:Key="MTM.PrimaryTextBrush" Color="#2D1B69"/>
+    <SolidColorBrush x:Key="MTM.SecondaryTextBrush" Color="#666666"/>
+    <SolidColorBrush x:Key="MTM.TertiaryTextBrush" Color="#999999"/>
+    <SolidColorBrush x:Key="MTM.LightTextBrush" Color="#FFFFFF"/>
+    
+    <!-- Specialized Text -->
+    <SolidColorBrush x:Key="MTM.AccentTextBrush" Color="#4B45ED"/>
+    <SolidColorBrush x:Key="MTM.LinkTextBrush" Color="#4574ED"/>
+    <SolidColorBrush x:Key="MTM.DisabledTextBrush" Color="#CCCCCC"/>
+    <SolidColorBrush x:Key="MTM.PlaceholderTextBrush" Color="#AAAAAA"/>
+    
+    <!-- Status Text Colors -->
+    <SolidColorBrush x:Key="MTM.SuccessTextBrush" Color="#28A745"/>
+    <SolidColorBrush x:Key="MTM.WarningTextBrush" Color="#FFC107"/>
+    <SolidColorBrush x:Key="MTM.ErrorTextBrush" Color="#DC3545"/>
+    <SolidColorBrush x:Key="MTM.InfoTextBrush" Color="#17A2B8"/>
+    
+    <!-- ================================================================== -->
+    <!-- SEMANTIC COLORS                                                   -->
+    <!-- ================================================================== -->
+    
+    <!-- Success Colors -->
+    <SolidColorBrush x:Key="MTM.SuccessBrush" Color="#28A745"/>
+    <SolidColorBrush x:Key="MTM.SuccessLightBrush" Color="#D4F6D4"/>
+    <SolidColorBrush x:Key="MTM.SuccessHoverBrush" Color="#218838"/>
+    
+    <!-- Warning Colors -->
+    <SolidColorBrush x:Key="MTM.WarningBrush" Color="#FFC107"/>
+    <SolidColorBrush x:Key="MTM.WarningLightBrush" Color="#FFF3CD"/>
+    <SolidColorBrush x:Key="MTM.WarningHoverBrush" Color="#E0A800"/>
+    
+    <!-- Error/Danger Colors -->
+    <SolidColorBrush x:Key="MTM.ErrorBrush" Color="#DC3545"/>
+    <SolidColorBrush x:Key="MTM.ErrorLightBrush" Color="#F8D7DA"/>
+    <SolidColorBrush x:Key="MTM.ErrorHoverBrush" Color="#C82333"/>
+    
+    <!-- Info Colors -->
+    <SolidColorBrush x:Key="MTM.InfoBrush" Color="#17A2B8"/>
+    <SolidColorBrush x:Key="MTM.InfoLightBrush" Color="#D1ECF1"/>
+    <SolidColorBrush x:Key="MTM.InfoHoverBrush" Color="#138496"/>
+    
+    <!-- ================================================================== -->
+    <!-- COMPONENT-SPECIFIC COLORS                                         -->
+    <!-- ================================================================== -->
+    
+    <!-- Button Colors -->
+    <SolidColorBrush x:Key="MTM.ButtonPrimaryBrush" Color="#4B45ED"/>
+    <SolidColorBrush x:Key="MTM.ButtonSecondaryBrush" Color="#8345ED"/>
+    <SolidColorBrush x:Key="MTM.ButtonDangerBrush" Color="#DC3545"/>
+    <SolidColorBrush x:Key="MTM.ButtonSuccessBrush" Color="#28A745"/>
+    
+    <!-- Input Colors -->
+    <SolidColorBrush x:Key="MTM.InputBackgroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MTM.InputBorderBrush" Color="#E8E5FF"/>
+    <SolidColorBrush x:Key="MTM.InputFocusBrush" Color="#4B45ED"/>
+    <SolidColorBrush x:Key="MTM.InputErrorBrush" Color="#DC3545"/>
+    
+    <!-- Selection Colors -->
+    <SolidColorBrush x:Key="MTM.SelectionBrush" Color="#4B45ED"/>
+    <SolidColorBrush x:Key="MTM.SelectionLightBrush" Color="#E8E5FF"/>
+    <SolidColorBrush x:Key="MTM.HighlightBrush" Color="#B594ED"/>
+    
+    <!-- ================================================================== -->
+    <!-- LEGACY COMPATIBILITY ALIASES                                      -->
+    <!-- ================================================================== -->
+    <!-- These maintain backward compatibility with existing code -->
+    
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#4B45ED"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#4B45ED"/>
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#8345ED"/>
+    <SolidColorBrush x:Key="MagentaAccentBrush" Color="#BA45ED"/>
+    <SolidColorBrush x:Key="BlueAccentBrush" Color="#4574ED"/>
+    <SolidColorBrush x:Key="PinkAccentBrush" Color="#ED45E7"/>
+    <SolidColorBrush x:Key="LightPurpleBrush" Color="#B594ED"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#2D1B69"/>
+    <SolidColorBrush x:Key="SecondaryDarkBrush" Color="#1A1B1C"/>
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#BA45ED"/>
+    <SolidColorBrush x:Key="AccentPressedBrush" Color="#8345ED"/>
+    <SolidColorBrush x:Key="AccentDisabledBrush" Color="#B594ED"/>
+    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#2D1B69"/>
+    <SolidColorBrush x:Key="ContentBackgroundBrush" Color="#F8F7FF"/>
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="StatusBarBackgroundBrush" Color="#2D1B69"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="#E8E5FF"/>
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#2D1B69"/>
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#666666"/>
+    <SolidColorBrush x:Key="LightTextBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ForegroundBrush" Color="#2D1B69"/>
+    
+    <!-- Legacy Gradients -->
+    <LinearGradientBrush x:Key="PrimaryGradientBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#4B45ED" Offset="0"/>
+        <GradientStop Color="#BA45ED" Offset="0.5"/>
+        <GradientStop Color="#8345ED" Offset="1"/>
+    </LinearGradientBrush>
+    
+    <LinearGradientBrush x:Key="HeroGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#4574ED" Offset="0"/>
+        <GradientStop Color="#4B45ED" Offset="0.3"/>
+        <GradientStop Color="#8345ED" Offset="0.7"/>
+        <GradientStop Color="#BA45ED" Offset="1"/>
+    </LinearGradientBrush>
+
+</ResourceDictionary>

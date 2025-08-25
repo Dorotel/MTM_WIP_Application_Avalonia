@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Views;
 using ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
@@ -31,7 +32,7 @@ public class MainWindowViewModel : BaseViewModel
         Logger.LogInformation("MainWindowViewModel initialized with dependency injection");
 
         // Set MainView as the current content - TODO: Get this from DI container
-        CurrentView = new Views.MainView
+        CurrentView = new MainView
         {
             // TODO: DataContext should be injected MainViewViewModel
             DataContext = Program.GetService<MainViewViewModel>()

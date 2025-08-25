@@ -11,38 +11,43 @@
         <!-- Material Icons Styles - REQUIRED for Material.Icons.Avalonia -->
         <materialIcons:MaterialIconStyles />
         
-        <!-- MTM Button Styles -->
+        <!-- MTM Theme System Integration -->
+        <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml"/>
+        
+        <!-- Legacy Button Styles for Backward Compatibility -->
         <Style Selector="Button.primary">
-            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
             <Setter Property="Padding" Value="16,8"/>
             <Setter Property="CornerRadius" Value="6"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="Cursor" Value="Hand"/>
         </Style>
         <Style Selector="Button.primary:pointerover">
-            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource MTM.PrimaryHoverBrush}"/>
         </Style>
         <Style Selector="Button.primary:pressed">
-            <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource MTM.PrimaryPressedBrush}"/>
         </Style>
 
         <Style Selector="Button.secondary">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
             <Setter Property="Padding" Value="12,6"/>
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
         </Style>
         <Style Selector="Button.secondary:pointerover">
-            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MTM.PrimaryBrush}"/>
         </Style>
 
         <Style Selector="Border.card">
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="BoxShadow" Value="0 2 8 0 #11000000"/>
         </Style>
@@ -51,60 +56,24 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Padding" Value="12,8"/>
             <Setter Property="CornerRadius" Value="6"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
         </Style>
         <Style Selector="RadioButton.nav-item:checked">
-            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
         </Style>
     </Application.Styles>
 
     <Application.Resources>
-        <!-- MTM WIP Application Purple Color Scheme -->
-        <!-- Primary Colors -->
-        <SolidColorBrush x:Key="PrimaryBrush" Color="#4B45ED"/>
-        <SolidColorBrush x:Key="AccentBrush" Color="#4B45ED"/>
-        <SolidColorBrush x:Key="SecondaryBrush" Color="#8345ED"/>
-        <SolidColorBrush x:Key="MagentaAccentBrush" Color="#BA45ED"/>
-        <SolidColorBrush x:Key="BlueAccentBrush" Color="#4574ED"/>
-        <SolidColorBrush x:Key="PinkAccentBrush" Color="#ED45E7"/>
-        <SolidColorBrush x:Key="LightPurpleBrush" Color="#B594ED"/>
-        
-        <!-- Legacy brush names for backward compatibility -->
-        <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#2D1B69"/>
-        <SolidColorBrush x:Key="SecondaryDarkBrush" Color="#1A1B1C"/>
-        
-        <!-- Hover and interaction states -->
-        <SolidColorBrush x:Key="AccentHoverBrush" Color="#BA45ED"/>
-        <SolidColorBrush x:Key="AccentPressedBrush" Color="#8345ED"/>
-        <SolidColorBrush x:Key="AccentDisabledBrush" Color="#B594ED"/>
-        
-        <!-- Primary MTM Purple Gradient -->
-        <LinearGradientBrush x:Key="PrimaryGradientBrush" StartPoint="0,0" EndPoint="1,0">
-            <GradientStop Color="#4B45ED" Offset="0"/>
-            <GradientStop Color="#BA45ED" Offset="0.5"/>
-            <GradientStop Color="#8345ED" Offset="1"/>
-        </LinearGradientBrush>
-        
-        <!-- Hero/Banner Gradient -->
-        <LinearGradientBrush x:Key="HeroGradientBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#4574ED" Offset="0"/>
-            <GradientStop Color="#4B45ED" Offset="0.3"/>
-            <GradientStop Color="#8345ED" Offset="0.7"/>
-            <GradientStop Color="#BA45ED" Offset="1"/>
-        </LinearGradientBrush>
-        
-        <!-- UI Theme Colors -->
-        <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#2D1B69"/>
-        <SolidColorBrush x:Key="ContentBackgroundBrush" Color="#F8F7FF"/>
-        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="StatusBarBackgroundBrush" Color="#2D1B69"/>
-        <SolidColorBrush x:Key="BorderBrush" Color="#E8E5FF"/>
-        
-        <!-- Text Colors -->
-        <SolidColorBrush x:Key="PrimaryTextBrush" Color="#2D1B69"/>
-        <SolidColorBrush x:Key="SecondaryTextBrush" Color="#666666"/>
-        <SolidColorBrush x:Key="LightTextBrush" Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="ForegroundBrush" Color="#2D1B69"/>
+        <!-- Include MTM Theme Resources -->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMTheme.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Additional legacy aliases for backward compatibility -->
+            <SolidColorBrush x:Key="MTM.BackgroundBrush" Color="#F8F7FF"/>
+            <SolidColorBrush x:Key="MTM.LightBackgroundBrush" Color="#FAFAFA"/>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

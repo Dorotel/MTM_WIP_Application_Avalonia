@@ -1,4 +1,4 @@
-﻿# GitHub Copilot Instructions for MTM WIP Application Avalonia
+# GitHub Copilot Instructions for MTM WIP Application Avalonia
 
 You are an expert Avalonia UI developer working on the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System. This is a .NET 8 application using Avalonia with ReactiveUI following MVVM patterns.
 
@@ -10,6 +10,36 @@ You are an expert Avalonia UI developer working on the MTM (Manitowoc Tool and M
 - **UI Framework**: Avalonia (not WPF or WinForms) with compiled bindings and DynamicResource patterns
 
 ## Critical Requirements - Always Follow
+
+### Service Organization Rule (CRITICAL)
+**📋 SERVICE FILE ORGANIZATION RULE**: All service classes of the same category MUST be in the same .cs file. Interfaces remain in the `Services/Interfaces/` folder.
+
+```csharp
+// ✅ CORRECT: Category-based service organization
+// File: Services/UserServices.cs
+namespace MTM.Services
+{
+    public class UserService : IUserService { /* implementation */ }
+    public class UserValidationService : IUserValidationService { /* implementation */ }
+    public class UserAuditService : IUserAuditService { /* implementation */ }
+}
+
+// File: Services/Interfaces/IUserService.cs
+namespace MTM.Services.Interfaces
+{
+    public interface IUserService { /* interface definition */ }
+}
+
+// ❌ WRONG: One service per file
+// Services/UserService.cs - Only UserService (INCORRECT)
+// Services/UserValidationService.cs - Only UserValidationService (INCORRECT)
+```
+
+**Service Categories**:
+- **UserServices.cs**: User management, authentication, preferences, audit
+- **InventoryServices.cs**: Inventory CRUD, validation, reporting
+- **TransactionServices.cs**: Transaction processing, history, validation
+- **LocationServices.cs**: Location management, validation, hierarchy
 
 ### TransactionType Business Logic (CRITICAL)
 ```csharp
@@ -40,7 +70,8 @@ services.AddScoped<ILocationService, LocationService>();
 ```csharp
 // CORRECT: Use stored procedures only
 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-    "sp_GetInventoryByPart", 
+    Model_AppVariables.ConnectionString,
+    "inv_inventory_Add_Item",
     parameters
 );
 
@@ -106,6 +137,13 @@ public class InventoryViewModel : ReactiveObject
 4. **Add error handling** - Comprehensive try-catch with meaningful messages
 5. **Follow separation** - No UI dependencies in business logic
 
+### When generating services:
+1. **📋 Group by category** - Multiple related services in one file
+2. **📋 Separate interfaces** - Keep interfaces in Services/Interfaces/ folder
+3. **Follow DI patterns** - Use constructor injection and proper lifetimes
+4. **Use stored procedures** - Never direct SQL queries
+5. **Implement proper error handling** - Use Result<T> pattern
+
 ## MTM-Specific Data Patterns
 
 ### Part Information
@@ -163,35 +201,67 @@ public static class Program
 
 Reference these organized instruction files for detailed guidance:
 
-- **Core-Instructions/**: Coding patterns, naming standards, project structure
-- **UI-Instructions/**: Avalonia AXAML generation, WinForms conversion, MTM design system  
-- **Development-Instructions/**: Error handling, database patterns, workflow setup
-- **Quality-Instructions/**: Compliance verification, quality standards
-- **Automation-Instructions/**: Custom prompts, personas, workflow automation
+### **Core Infrastructure Instructions**
+- **[dependency-injection.instruction.md](.github/Core-Instructions/dependency-injection.instruction.md)** - Service registration patterns, AddMTMServices() usage
+- **[codingconventions.instruction.md](.github/Core-Instructions/codingconventions.instruction.md)** - .NET 8 coding standards and ReactiveUI patterns
+- **[project-structure.instruction.md](.github/Core-Instructions/project-structure.instruction.md)** - Project organization and file structure
+- **[naming.conventions.instruction.md](.github/Core-Instructions/naming.conventions.instruction.md)** - MTM naming conventions and standards
+- **[database-patterns.instruction.md](.github/Development-Instructions/database-patterns.instruction.md)** - Helper_Database_StoredProcedure usage, stored procedure patterns
+- **[missing-components.instruction.md](.github/missing-components.instruction.md)** - Current implementation status, Phase 1 completion tracking
 
-## Required Dependencies
-```xml
-<PackageReference Include="Avalonia" Version="11.0.0" />
-<PackageReference Include="Avalonia.Desktop" Version="11.0.0" />
-<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />
-<PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
-<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-```
+### **UI Generation Instructions**
+- **[ui-generation.instruction.md](.github/UI-Instructions/ui-generation.instruction.md)** - Avalonia AXAML generation patterns
+- **[ui-mapping.instruction.md](.github/UI-Instructions/ui-mapping.instruction.md)** - UI component mapping and conversion
+- **[ui-styling.instruction.md](.github/UI-Instructions/ui-styling.instruction.md)** - MTM design system and styling patterns
 
-## Never Do
-- Use WPF or WinForms patterns in Avalonia code
-- Write direct SQL queries - always use stored procedures
-- Register services individually - use AddMTMServices()
-- Determine TransactionType from operation numbers
-- Ask clarification questions in chat when HTML questionnaire is appropriate
-- Modify .md files without updating corresponding HTML files
+### **Development Instructions**
+- **[errorhandler.instruction.md](.github/Development-Instructions/errorhandler.instruction.md)** - Error handling patterns and logging
+- **[templates-documentation.instruction.md](.github/Development-Instructions/templates-documentation.instruction.md)** - Documentation template patterns
+- **[githubworkflow.instruction.md](.github/Development-Instructions/githubworkflow.instruction.md)** - GitHub workflow and development processes
 
-## Always Do
-- Use Avalonia-specific controls and syntax
-- Follow MVVM with ReactiveUI patterns
-- Apply MTM business rules correctly
-- Use compiled bindings in AXAML
-- Implement proper error handling and logging
-- Follow established naming conventions
-- Validate data accuracy when updating documentation
+### **Quality Assurance Instructions**
+- **[needsrepair.instruction.md](.github/Quality-Instructions/needsrepair.instruction.md)** - Quality assurance and repair guidelines
+
+### **Automation Instructions**
+- **[customprompts.instruction.md](.github/Automation-Instructions/customprompts.instruction.md)** - Available custom prompts and workflows
+- **[personas.instruction.md](.github/Automation-Instructions/personas.instruction.md)** - GitHub Copilot personas and role definitions
+- **[issue-pr-creation.instruction.md](.github/Automation-Instructions/issue-pr-creation.instruction.md)** - Automated issue and PR creation
+
+### **Custom Prompts Library**
+#### **Core Workflow Prompts**
+- **[CustomPrompt_Create_ReactiveUIViewModel.md](.github/Custom-Prompts/CustomPrompt_Create_ReactiveUIViewModel.md)** - ReactiveUI ViewModel generation
+- **[CustomPrompt_Verify_CodeCompliance.md](.github/Custom-Prompts/CustomPrompt_Verify_CodeCompliance.md)** - Code compliance verification
+- **[CustomPrompt_Create_Issue.md](.github/Custom-Prompts/CustomPrompt_Create_Issue.md)** - GitHub issue creation
+
+#### **UI Development Prompts**
+- **[CustomPrompt_Create_UIElement.md](.github/Custom-Prompts/CustomPrompt_Create_UIElement.md)** - UI element generation
+- **[CustomPrompt_Create_UIElementFromMarkdown.md](.github/Custom-Prompts/CustomPrompt_Create_UIElementFromMarkdown.md)** - UI from markdown generation
+- **[CustomPrompt_Create_ModernLayoutPattern.md](.github/Custom-Prompts/CustomPrompt_Create_ModernLayoutPattern.md)** - Modern layout patterns
+
+#### **Database and System Prompts**
+- **[CustomPrompt_Create_StoredProcedure.md](.github/Custom-Prompts/CustomPrompt_Create_StoredProcedure.md)** - Stored procedure generation
+- **[CustomPrompt_Database_ErrorHandling.md](.github/Custom-Prompts/CustomPrompt_Database_ErrorHandling.md)** - Database error handling
+- **[CustomPrompt_Create_CRUDOperations.md](.github/Custom-Prompts/CustomPrompt_Create_CRUDOperations.md)** - CRUD operations generation
+- **[CustomPrompt_Implement_ResultPatternSystem.md](.github/Custom-Prompts/CustomPrompt_Implement_ResultPatternSystem.md)** - Result pattern implementation
+
+#### **Development Enhancement Prompts**
+- **[CustomPrompt_Create_HotkeySystem.md](.github/Custom-Prompts/CustomPrompt_Create_HotkeySystem.md)** - Hotkey system implementation
+- **[CustomPrompt_Create_ErrorSystemPlaceholder.md](.github/Custom-Prompts/CustomPrompt_Create_ErrorSystemPlaceholder.md)** - Error system placeholders
+- **[CustomPrompt_Document_DatabaseSchema.md](.github/Custom-Prompts/CustomPrompt_Document_DatabaseSchema.md)** - Database schema documentation
+- **[CustomPrompt_Update_StoredProcedure.md](.github/Custom-Prompts/CustomPrompt_Update_StoredProcedure.md)** - Stored procedure updates
+
+#### **Supporting Resources**
+- **[custom-prompts-examples.md](.github/Custom-Prompts/custom-prompts-examples.md)** - Examples and usage patterns
+- **[MTM_Hotkey_Reference.md](.github/Custom-Prompts/MTM_Hotkey_Reference.md)** - MTM hotkey reference guide
+
+### **Directory Documentation**
+- **[Core-Instructions README](.github/Core-Instructions/README.md)** - Core instructions overview
+- **[UI-Instructions README](.github/UI-Instructions/README.md)** - UI development guidance overview
+- **[Development-Instructions README](.github/Development-Instructions/README.md)** - Development processes overview
+- **[Quality-Instructions README](.github/Quality-Instructions/README.md)** - Quality standards overview
+- **[Automation-Instructions README](.github/Automation-Instructions/README.md)** - Automation workflows overview
+- **[Custom-Prompts README](.github/Custom-Prompts/README.md)** - Custom prompts collection overview
+
+### **Visual Studio Integration**
+- **[copilot-vs2022-config.md](copilot-vs2022-config.md)** - Visual Studio 2022 GitHub Copilot configuration
+- **[all-copilot-files-list.instructions.md](.github/all-copilot-files-list.instructions.md)** - Complete file inventory
