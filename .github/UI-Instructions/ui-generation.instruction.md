@@ -1,8 +1,24 @@
 # GitHub Copilot Instructions: Avalonia UI Generation for MTM WIP Application
 
-You are generating Avalonia UI components for the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using .NET 8, MVVM with ReactiveUI, and MTM purple theme.
+<details>
+<summary><strong>🚨 CRITICAL: AVLN2000 Error Prevention</strong></summary>
 
-## Your UI Generation Rules
+**BEFORE generating ANY AXAML code, ALWAYS consult [avalonia-xaml-syntax.instruction.md](avalonia-xaml-syntax.instruction.md) to prevent AVLN2000 compilation errors.**
+
+### Most Common AVLN2000 Causes:
+1. **Using WPF XAML syntax instead of Avalonia AXAML syntax**
+2. **Using `Name` property on Grid definitions** - Use `x:Name` only
+3. **Wrong namespace**: Use `xmlns="https://github.com/avaloniaui"` (NOT WPF namespace)
+4. **Incorrect Grid syntax**: Use `ColumnDefinitions="Auto,*"` attribute form when possible
+
+**Always reference the AVLN2000 prevention guide first!**
+
+</details>
+
+<details>
+<summary><strong>🎯 Your UI Generation Rules</strong></summary>
+
+You are generating Avalonia UI components for the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using .NET 8, MVVM with ReactiveUI, and MTM purple theme.
 
 ### Always generate these file pairs:
 - `Views/{Name}View.axaml` - Avalonia UI markup with compiled bindings
@@ -56,7 +72,10 @@ public class {Name}ViewModel : ReactiveObject
 }
 ```
 
-## MTM UI Design Standards
+</details>
+
+<details>
+<summary><strong>🎨 MTM UI Design Standards</strong></summary>
 
 ### Apply MTM purple theme with these colors:
 - **Primary Purple**: #4B45ED for buttons and accents
@@ -80,7 +99,10 @@ public class {Name}ViewModel : ReactiveObject
 - Content spacing: `Spacing="12"` on StackPanels
 - Control margins: `Margin="0,0,0,8"` for bottom spacing
 
-## MTM Data Patterns
+</details>
+
+<details>
+<summary><strong>📊 MTM Data Patterns</strong></summary>
 
 ### Use these MTM business object patterns:
 ```csharp
@@ -97,7 +119,10 @@ public class PartInfo
 var operations = new[] { "90", "100", "110", "120" };
 ```
 
-## Component Generation Rules
+</details>
+
+<details>
+<summary><strong>🔧 Component Generation Rules</strong></summary>
 
 ### When creating from markdown files:
 1. **Parse component hierarchy** - Extract structure and convert to Avalonia AXAML
@@ -130,7 +155,10 @@ var operations = new[] { "90", "100", "110", "120" };
 </ItemsControl>
 ```
 
-## Layout Patterns
+</details>
+
+<details>
+<summary><strong>📐 Layout Patterns</strong></summary>
 
 ### Use sidebar + content layout for main windows:
 ```xml
@@ -161,7 +189,10 @@ var operations = new[] { "90", "100", "110", "120" };
 </Border>
 ```
 
-## ReactiveUI Integration
+</details>
+
+<details>
+<summary><strong>⚡ ReactiveUI Integration</strong></summary>
 
 ### Use these command patterns:
 ```csharp
@@ -194,7 +225,10 @@ QuickActionExecuted?.Invoke(this, new QuickActionExecutedEventArgs
 });
 ```
 
-## Database Integration Preparation
+</details>
+
+<details>
+<summary><strong>🗄️ Database Integration Preparation</strong></summary>
 
 ### Leave database operations as TODO comments:
 ```csharp
@@ -215,9 +249,13 @@ public {Name}ViewModel(/* TODO: Inject services when available */)
 }
 ```
 
-## Code Generation Standards
+</details>
+
+<details>
+<summary><strong>✅ Code Generation Standards</strong></summary>
 
 ### Always include:
+- **AVLN2000 Prevention**: Reference [avalonia-xaml-syntax.instruction.md](avalonia-xaml-syntax.instruction.md) before coding
 - Compiled bindings with x:CompileBindings="True" and x:DataType
 - Error handling for all commands via ThrownExceptions
 - Proper disposal preparation for ViewModels
@@ -226,17 +264,24 @@ public {Name}ViewModel(/* TODO: Inject services when available */)
 - Responsive layout patterns
 
 ### Never include:
+- **WPF XAML syntax** - Always use Avalonia AXAML (prevents AVLN2000)
 - Business logic in View code-behind
 - Direct SQL queries (use stored procedures only)
 - Hard-coded colors (use DynamicResource)
 - WPF or WinForms syntax
 
-## Quality Standards
+</details>
+
+<details>
+<summary><strong>🎯 Quality Standards</strong></summary>
 
 Generate clean, modern Avalonia UI that:
+- **Prevents AVLN2000 errors** by following Avalonia AXAML syntax rules
 - Uses MTM purple theme consistently
 - Follows MVVM patterns strictly
 - Includes proper error handling preparation
 - Uses reactive programming paradigms
 - Applies modern card-based layouts
 - Supports responsive design principles
+
+</details>

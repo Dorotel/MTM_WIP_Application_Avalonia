@@ -3,6 +3,9 @@
 ## Instructions
 Use this prompt when you need to create a new UI element based on existing instruction files and mapping.
 
+## ⚠️ CRITICAL: AVLN2000 Error Prevention
+**BEFORE using this prompt, ALWAYS consult [../UI-Instructions/avalonia-xaml-syntax.instruction.md](../UI-Instructions/avalonia-xaml-syntax.instruction.md) to prevent AVLN2000 compilation errors.**
+
 ## Persona
 **UI Architect Copilot**  
 *(See [personas-instruction.md](../../.github/personas.instruction.md) for role details)*
@@ -11,30 +14,30 @@ Use this prompt when you need to create a new UI element based on existing instr
 
 ```
 Create a new UI element for [source] using the mapped .instructions.md and screenshot.  
-Follow all naming and UI layout conventions. Only include navigation logic and event stubs as per our standards.
+Follow AVLN2000 prevention guidelines and all naming and UI layout conventions. Only include navigation logic and event stubs as per our standards.
 ```
 
 ## Purpose
-For generating Avalonia controls or views based on mapping and instructions.
+For generating Avalonia controls or views based on mapping and instructions while preventing AVLN2000 errors.
 
 ## Usage Examples
 
 ### Example 1: Create Main Control
 ```
 Create a new UI element for Control_MainInventory using the mapped .instructions.md and screenshot.  
-Follow all naming and UI layout conventions. Only include navigation logic and event stubs as per our standards.
+Follow AVLN2000 prevention guidelines and all naming and UI layout conventions. Only include navigation logic and event stubs as per our standards.
 ```
 
 ### Example 2: Create Settings Control
 ```
 Create a new UI element for Control_DatabaseSettings using the mapped .instructions.md and screenshot.  
-Follow all naming and UI layout conventions. Only include navigation logic and event stubs as per our standards.
+Follow AVLN2000 prevention guidelines and all naming and UI layout conventions. Only include navigation logic and event stubs as per our standards.
 ```
 
 ## Guidelines
 
 ### What This Prompt Creates
-- Avalonia AXAML view files
+- Avalonia AXAML view files (AVLN2000-safe)
 - ReactiveUI ViewModel classes
 - Proper MVVM binding structure
 - Navigation event handlers only
@@ -47,11 +50,14 @@ Follow all naming and UI layout conventions. Only include navigation logic and e
 - Complex calculations
 
 ### Technical Requirements
+- **AVLN2000 Prevention**: Use Avalonia AXAML syntax, never WPF XAML
 - Must use `.instructions.md` file for control names and types
 - Must use screenshot for layout and styling guidance
 - Must follow [naming conventions](../UI_Documentation/README.md)
 - Must implement compiled bindings with `x:CompileBindings="True"`
 - Must use ReactiveUI patterns (RaiseAndSetIfChanged, ReactiveCommand)
+- **Grid Syntax**: Use `ColumnDefinitions="Auto,*"` attribute form when possible
+- **No Grid Names**: Never use `Name` property on ColumnDefinition/RowDefinition
 
 ### MTM-Specific Requirements
 - Apply MTM purple color scheme (#4B45ED, #BA45ED, #8345ED)
@@ -60,6 +66,7 @@ Follow all naming and UI layout conventions. Only include navigation logic and e
 - Include TODO comments for service injection points
 
 ## Related Files
+- **[../UI-Instructions/avalonia-xaml-syntax.instruction.md](../UI-Instructions/avalonia-xaml-syntax.instruction.md)** - **CRITICAL**: AVLN2000 error prevention
 - `.github/ui-generation.instruction.md` - UI generation guidelines
 - `.github/naming.conventions.instruction.md` - Naming conventions
 - `Documentation/Development/UI_Documentation/` - Component specifications
@@ -71,8 +78,12 @@ This prompt integrates with:
 - Component hierarchies from `.instructions.md` files
 - MTM design system and color schemes
 - ReactiveUI and Avalonia UI frameworks
+- AVLN2000 error prevention guidelines
 
 ## Quality Checklist
+- [ ] **AVLN2000 Prevention**: Avalonia AXAML syntax used (not WPF)
+- [ ] **Grid Syntax**: No `Name` properties on Grid definitions
+- [ ] **Namespaces**: Correct Avalonia namespace used
 - [ ] Control names match `.instructions.md` specifications
 - [ ] Layout matches screenshot reference
 - [ ] Navigation logic implemented correctly

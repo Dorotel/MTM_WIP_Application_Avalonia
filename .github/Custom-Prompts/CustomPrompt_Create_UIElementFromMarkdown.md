@@ -3,6 +3,9 @@
 ## Instructions
 Use this prompt when you need to generate Avalonia AXAML and ReactiveUI ViewModels from parsed markdown instruction files with component hierarchies.
 
+## ⚠️ CRITICAL: AVLN2000 Error Prevention
+**BEFORE using this prompt, ALWAYS consult [../UI-Instructions/avalonia-xaml-syntax.instruction.md](../UI-Instructions/avalonia-xaml-syntax.instruction.md) to prevent AVLN2000 compilation errors.**
+
 ## Persona
 **UI Architect Copilot + ReactiveUI Specialist**  
 *(See [personas-instruction.md](../../.github/personas.instruction.md) for role details)*
@@ -10,20 +13,20 @@ Use this prompt when you need to generate Avalonia AXAML and ReactiveUI ViewMode
 ## Prompt Template
 
 ```
-Create UI Element from [filename].md following MTM-specific UI generation guidelines.  
+Create UI Element from [filename].md following MTM-specific UI generation guidelines and AVLN2000 prevention rules.  
 Parse the markdown component structure and generate both AXAML view and ReactiveUI ViewModel.  
 Include MTM data patterns (Part ID, Operation numbers), context menu integration, and space optimization.  
 Follow the MTM purple color scheme and modern layout patterns. Leave business logic as TODO comments.
 ```
 
 ## Purpose
-For generating Avalonia AXAML and ReactiveUI ViewModels from parsed markdown files with component hierarchies.
+For generating Avalonia AXAML and ReactiveUI ViewModels from parsed markdown files with component hierarchies while preventing AVLN2000 errors.
 
 ## Usage Examples
 
 ### Example 1: Quick Buttons Component
 ```
-Create UI Element from Control_QuickButtons.instructions.md following MTM-specific UI generation guidelines.  
+Create UI Element from Control_QuickButtons.instructions.md following MTM-specific UI generation guidelines and AVLN2000 prevention rules.  
 Parse the markdown component structure and generate both AXAML view and ReactiveUI ViewModel.  
 Include MTM data patterns (Part ID, Operation numbers), context menu integration, and space optimization.  
 Follow the MTM purple color scheme and modern layout patterns. Leave business logic as TODO comments.
@@ -31,13 +34,20 @@ Follow the MTM purple color scheme and modern layout patterns. Leave business lo
 
 ### Example 2: Inventory Tab Component
 ```
-Create UI Element from Control_InventoryTab.instructions.md following MTM-specific UI generation guidelines.  
+Create UI Element from Control_InventoryTab.instructions.md following MTM-specific UI generation guidelines and AVLN2000 prevention rules.  
 Parse the markdown component structure and generate both AXAML view and ReactiveUI ViewModel.  
 Include MTM data patterns (Part ID, Operation numbers), context menu integration, and space optimization.  
 Follow the MTM purple color scheme and modern layout patterns. Leave business logic as TODO comments.
 ```
 
 ## Guidelines
+
+### AVLN2000 Prevention Requirements
+1. **Use Avalonia AXAML syntax** - Never WPF XAML
+2. **Grid Definitions**: Use `ColumnDefinitions="Auto,*"` attribute form when possible
+3. **No Grid Names**: Never use `Name` property on ColumnDefinition/RowDefinition
+4. **Correct Namespaces**: Use `xmlns="https://github.com/avaloniaui"`
+5. **Control Equivalents**: Use Avalonia controls (TextBlock instead of Label)
 
 ### Markdown Parsing Requirements
 1. **Extract UI Element Name**: Use as base for file naming
@@ -48,7 +58,7 @@ Follow the MTM purple color scheme and modern layout patterns. Leave business lo
 
 ### Generated File Structure
 ```
-Views/{Name}View.axaml - Avalonia UI markup
+Views/{Name}View.axaml - Avalonia UI markup (AVLN2000-safe)
 ViewModels/{Name}ViewModel.cs - ReactiveUI ViewModel
 ```
 
@@ -56,16 +66,17 @@ ViewModels/{Name}ViewModel.cs - ReactiveUI ViewModel
 **Markdown Structure:**
 ```
 Control_QuickButtons
-??? quickButtons List<Button> (10 buttons maximum)
-?   ??? Button[0] - Position 1: (Operation) - [PartID x Quantity]
-?   ??? Button[9] - Position 10: (Operation) - [PartID x Quantity]
-??? Context Menu (Right-click)
-    ??? Edit Button
-    ??? Remove Button
+├── quickButtons List<Button> (10 buttons maximum)
+│   ├── Button[0] - Position 1: (Operation) - [PartID x Quantity]
+│   └── Button[9] - Position 10: (Operation) - [PartID x Quantity]
+└── Context Menu (Right-click)
+    ├── Edit Button
+    └── Remove Button
 ```
 
-**Generated Avalonia Structure:**
+**Generated Avalonia Structure (AVLN2000-Safe):**
 ```xml
+<!-- CORRECT: Avalonia AXAML syntax -->
 <ItemsControl ItemsSource="{Binding QuickButtons}">
     <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
@@ -153,15 +164,20 @@ LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
 
 ## Technical Requirements
 
-### AXAML View Template
+### AXAML View Template (AVLN2000-Safe)
 ```xml
+<!-- CORRECT: Avalonia AXAML with proper namespaces -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:YourApp.ViewModels"
              x:Class="YourApp.Views.{Name}View"
              x:DataType="vm:{Name}ViewModel"
              x:CompileBindings="True">
-    <!-- UI Elements here -->
+    
+    <!-- CORRECT: Use attribute syntax for simple grids -->
+    <Grid RowDefinitions="*,Auto" ColumnDefinitions="Auto,*">
+        <!-- UI Elements here -->
+    </Grid>
 </UserControl>
 ```
 
@@ -207,12 +223,16 @@ public class {Name}ViewModel : ReactiveObject
 ```
 
 ## Related Files
+- **[../UI-Instructions/avalonia-xaml-syntax.instruction.md](../UI-Instructions/avalonia-xaml-syntax.instruction.md)** - **CRITICAL**: AVLN2000 error prevention
 - `Documentation/Development/UI_Documentation/Controls/` - Component instruction files
 - `.github/ui-generation.instruction.md` - UI generation guidelines
 - `.github/copilot-instructions.md` - MTM business logic rules
 - `.github/naming.conventions.instruction.md` - Naming standards
 
 ## Quality Checklist
+- [ ] **AVLN2000 Prevention**: Avalonia AXAML syntax used (not WPF)
+- [ ] **Grid Syntax**: No `Name` properties on Grid definitions
+- [ ] **Namespaces**: Correct Avalonia namespace used
 - [ ] Markdown structure parsed correctly
 - [ ] Component hierarchy mapped to Avalonia
 - [ ] MTM data patterns implemented

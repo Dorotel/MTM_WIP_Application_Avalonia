@@ -1,5 +1,6 @@
 using System;
 using System.Reactive;
+using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
@@ -53,6 +54,20 @@ public class MainViewViewModel : BaseViewModel
     }
 
     public string AdvancedPanelToggleText => IsAdvancedPanelVisible ? "Hide" : "Show";
+
+    // Collapsible QuickActions Panel Properties
+    private bool _isQuickActionsPanelExpanded = true;
+    public bool IsQuickActionsPanelExpanded
+    {
+        get => _isQuickActionsPanelExpanded;
+        set => this.RaiseAndSetIfChanged(ref _isQuickActionsPanelExpanded, value);
+    }
+
+    // QuickActions Panel Width - expands/collapses based on state (returns GridLength compatible values)
+    public GridLength QuickActionsPanelWidth => IsQuickActionsPanelExpanded ? new GridLength(240) : new GridLength(32);
+
+    // QuickActions Collapse Button Icon
+    public string QuickActionsCollapseButtonIcon => IsQuickActionsPanelExpanded ? "▶" : "◀";
 
     // Inventory Mode Management
     private bool _isAdvancedInventoryMode;
@@ -122,6 +137,7 @@ public class MainViewViewModel : BaseViewModel
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
     public ReactiveCommand<Unit, Unit> ToggleAdvancedPanelCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleQuickActionsPanelCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenAboutCommand { get; }
     public ReactiveCommand<Unit, Unit> SwitchToAdvancedInventoryCommand { get; }
     public ReactiveCommand<Unit, Unit> SwitchToNormalInventoryCommand { get; }
@@ -223,6 +239,12 @@ public class MainViewViewModel : BaseViewModel
             IsAdvancedPanelVisible = !IsAdvancedPanelVisible;
         });
 
+        ToggleQuickActionsPanelCommand = ReactiveCommand.Create(() =>
+        {
+            IsQuickActionsPanelExpanded = !IsQuickActionsPanelExpanded;
+            Logger.LogInformation("QuickActions panel toggled: {IsExpanded}", IsQuickActionsPanelExpanded);
+        });
+
         SwitchToAdvancedInventoryCommand = ReactiveCommand.Create(() =>
         {
             IsAdvancedInventoryMode = true;
@@ -259,6 +281,14 @@ public class MainViewViewModel : BaseViewModel
         this.WhenAnyValue(x => x.IsAdvancedPanelVisible)
             .Subscribe(_ => this.RaisePropertyChanged(nameof(AdvancedPanelToggleText)));
 
+        // Subscribe to QuickActions panel state changes to update derived properties
+        this.WhenAnyValue(x => x.IsQuickActionsPanelExpanded)
+            .Subscribe(_ => 
+            {
+                this.RaisePropertyChanged(nameof(QuickActionsPanelWidth));
+                this.RaisePropertyChanged(nameof(QuickActionsCollapseButtonIcon));
+            });
+
         // Subscribe to tab changes to trigger appropriate actions
         this.WhenAnyValue(x => x.SelectedTabIndex)
             .Subscribe(OnTabSelectionChanged);
@@ -285,7 +315,7 @@ public class MainViewViewModel : BaseViewModel
         var allCommands = new[]
         {
             OpenSettingsCommand, ExitCommand, OpenPersonalHistoryCommand,
-            RefreshCommand, CancelCommand, ToggleAdvancedPanelCommand, OpenAboutCommand,
+            RefreshCommand, CancelCommand, ToggleAdvancedPanelCommand, ToggleQuickActionsPanelCommand, OpenAboutCommand,
             SwitchToAdvancedInventoryCommand, SwitchToNormalInventoryCommand,
             SwitchToAdvancedRemoveCommand, SwitchToNormalRemoveCommand
         };

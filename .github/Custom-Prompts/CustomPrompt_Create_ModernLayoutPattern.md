@@ -3,6 +3,9 @@
 ## Instructions
 Use this prompt when you need to generate modern Avalonia layouts with sidebars, cards, and hero sections using MTM design patterns.
 
+## ⚠️ CRITICAL: AVLN2000 Error Prevention
+**BEFORE using this prompt, ALWAYS consult [../UI-Instructions/avalonia-xaml-syntax.instruction.md](../UI-Instructions/avalonia-xaml-syntax.instruction.md) to prevent AVLN2000 compilation errors.**
+
 ## Persona
 **UI Architect Copilot + Design System Specialist**  
 *(See [personas-instruction.md](../../.github/personas.instruction.md) for role details)*
@@ -10,20 +13,20 @@ Use this prompt when you need to generate modern Avalonia layouts with sidebars,
 ## Prompt Template
 
 ```
-Generate a modern Avalonia layout using MTM design patterns.  
+Generate a modern Avalonia layout using MTM design patterns and AVLN2000 prevention rules.  
 Include sidebar navigation (240px width), card-based content with rounded corners and shadows,  
 hero sections with MTM purple gradients, and proper spacing using Grid layouts.  
 Apply the MTM color scheme and ensure responsive design principles.
 ```
 
 ## Purpose
-For generating modern Avalonia layouts with sidebars, cards, and hero sections using MTM design patterns.
+For generating modern Avalonia layouts with sidebars, cards, and hero sections using MTM design patterns while preventing AVLN2000 errors.
 
 ## Usage Examples
 
 ### Example 1: Main Application Window
 ```
-Generate a modern Avalonia layout for the main application window using MTM design patterns.  
+Generate a modern Avalonia layout for the main application window using MTM design patterns and AVLN2000 prevention rules.  
 Include sidebar navigation (240px width), card-based content with rounded corners and shadows,  
 hero sections with MTM purple gradients, and proper spacing using Grid layouts.  
 Apply the MTM color scheme and ensure responsive design principles.
@@ -31,7 +34,7 @@ Apply the MTM color scheme and ensure responsive design principles.
 
 ### Example 2: Dashboard Layout
 ```
-Generate a modern Avalonia dashboard layout using MTM design patterns.  
+Generate a modern Avalonia dashboard layout using MTM design patterns and AVLN2000 prevention rules.  
 Include sidebar navigation, card-based widgets with rounded corners and shadows,  
 hero banner with MTM purple gradients, and responsive Grid layouts.  
 Apply the MTM color scheme and ensure proper spacing throughout.
@@ -39,8 +42,16 @@ Apply the MTM color scheme and ensure proper spacing throughout.
 
 ## Guidelines
 
-### Modern Application Layout Template
+### AVLN2000 Prevention Requirements
+1. **Use Avalonia AXAML syntax** - Never WPF XAML
+2. **Grid Definitions**: Use `ColumnDefinitions="240,*"` attribute form when possible
+3. **No Grid Names**: Never use `Name` property on ColumnDefinition/RowDefinition
+4. **Correct Namespaces**: Use `xmlns="https://github.com/avaloniaui"`
+5. **Control Equivalents**: Use Avalonia controls (TextBlock instead of Label)
+
+### Modern Application Layout Template (AVLN2000-Safe)
 ```xml
+<!-- CORRECT: Avalonia AXAML with proper namespace -->
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="MTM_WIP_Application_Avalonia.MainWindow"
@@ -48,6 +59,7 @@ Apply the MTM color scheme and ensure proper spacing throughout.
         Width="1200" Height="700"
         Background="{DynamicResource BackgroundBrush}">
     
+    <!-- CORRECT: Use attribute syntax for Grid definitions -->
     <Grid ColumnDefinitions="240,*">
         <!-- Sidebar Navigation -->
         <Border Grid.Column="0" 
@@ -127,18 +139,17 @@ Apply the MTM color scheme and ensure proper spacing throughout.
         </Border>
         
         <!-- Main Content Area -->
-        <Grid Grid.Column="1" Background="{DynamicResource ContentBackgroundBrush}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <!-- CORRECT: Use attribute syntax for Grid definitions -->
+        <Grid Grid.Column="1" 
+              Background="{DynamicResource ContentBackgroundBrush}"
+              RowDefinitions="Auto,*,Auto">
             
             <!-- Content Header -->
             <Border Grid.Row="0" 
                     Background="{DynamicResource CardBackgroundBrush}"
                     Padding="24,16"
                     BoxShadow="0 1 3 0 #11000000">
+                <!-- CORRECT: Use attribute syntax for simple grids -->
                 <Grid ColumnDefinitions="*,Auto">
                     <!-- Breadcrumb -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
@@ -174,6 +185,7 @@ Apply the MTM color scheme and ensure proper spacing throughout.
                     Padding="16,8"
                     BorderThickness="0,1,0,0"
                     BorderBrush="{DynamicResource BorderBrush}">
+                <!-- CORRECT: Use attribute syntax for simple grids -->
                 <Grid ColumnDefinitions="*,Auto,Auto">
                     <!-- Status Message -->
                     <TextBlock Grid.Column="0" 
@@ -206,7 +218,7 @@ Apply the MTM color scheme and ensure proper spacing throughout.
 </Window>
 ```
 
-### Card-Based Content Layout
+### Card-Based Content Layout (AVLN2000-Safe)
 ```xml
 <!-- Hero Banner with MTM Purple Gradient -->
 <Border CornerRadius="12" 
@@ -240,10 +252,15 @@ Apply the MTM color scheme and ensure proper spacing throughout.
     </Grid>
 </Border>
 
-<!-- Feature Cards Grid -->
-<Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*" ColumnSpacing="24" RowSpacing="24">
+<!-- Feature Cards Grid - CORRECT: Attribute syntax -->
+<Grid RowDefinitions="Auto,Auto" 
+      ColumnDefinitions="*,*,*" 
+      ColumnSpacing="24" 
+      RowSpacing="24">
+    
     <!-- Inventory Card -->
     <Border Grid.Row="0" Grid.Column="0" Classes="feature-card">
+        <!-- CORRECT: Attribute syntax for card grid -->
         <Grid RowDefinitions="Auto,16,Auto,24,*">
             <!-- Card Header with Icon -->
             <Grid Grid.Row="0" ColumnDefinitions="Auto,12,*">
@@ -438,12 +455,17 @@ Apply the MTM color scheme and ensure proper spacing throughout.
 - **Color Usage**: MTM purple for primary actions, gradients for hero sections
 
 ## Related Files
+- **[../UI-Instructions/avalonia-xaml-syntax.instruction.md](../UI-Instructions/avalonia-xaml-syntax.instruction.md)** - **CRITICAL**: AVLN2000 error prevention
 - `.github/ui-generation.instruction.md` - UI generation guidelines
 - `.github/copilot-instructions.md` - MTM color scheme and design patterns
 - `Resources/Themes/` - Theme resource definitions
 - `Views/` - Implementation examples
 
 ## Quality Checklist
+- [ ] **AVLN2000 Prevention**: Avalonia AXAML syntax used (not WPF)
+- [ ] **Grid Syntax**: Attribute syntax used for Grid definitions
+- [ ] **No Grid Names**: No `Name` properties on Grid definitions
+- [ ] **Namespaces**: Correct Avalonia namespace used
 - [ ] Sidebar navigation implemented with 240px width
 - [ ] Card-based content with rounded corners and shadows
 - [ ] Hero sections with MTM purple gradients

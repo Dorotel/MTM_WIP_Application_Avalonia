@@ -4,115 +4,260 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
              mc:Ignorable="d"
-             d:DesignWidth="300"
+             d:DesignWidth="240"
              d:DesignHeight="600"
              x:Class="MTM_WIP_Application_Avalonia.Views.QuickButtonsView"
              x:CompileBindings="True"
              x:DataType="vm:QuickButtonsViewModel">
 
+  <UserControl.Resources>
+    <!-- Black, White, Gold Color Scheme - Consistent with MainView -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#FFD700"/>           <!-- Gold -->
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#DAA520"/>       <!-- Dark Gold -->
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#F5F5DC"/>         <!-- Beige -->
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>    <!-- White -->
+    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Light Gray -->
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#000000"/>       <!-- Black Text -->
+    <SolidColorBrush x:Key="LightTextBrush" Color="#FFFFFF"/>         <!-- White Text -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#4169E1"/>            <!-- Royal Blue for icons -->
+    <SolidColorBrush x:Key="HoverBrush" Color="#F0F8FF"/>             <!-- Alice Blue for hover -->
+  </UserControl.Resources>
+
   <UserControl.Styles>
-    <!-- MTM Quick button style - Optimized for proper spacing -->
+    <!-- Quick button style - Black, White, Gold theme with blue accents -->
     <Style Selector="Button.quick-button">
-      <Setter Property="Padding" Value="8,8"/>
-      <Setter Property="Margin" Value="4,2"/>
+      <Setter Property="Padding" Value="6,6"/>
+      <Setter Property="Margin" Value="2,1"/>
       <Setter Property="HorizontalAlignment" Value="Stretch"/>
       <Setter Property="VerticalAlignment" Value="Stretch"/>
       <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
-      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="Cursor" Value="Hand"/>
     </Style>
     <Style Selector="Button.quick-button:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
+      <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
     </Style>
     <Style Selector="Button.quick-button:pressed">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+      <Setter Property="Background" Value="{StaticResource SecondaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+    </Style>
+
+    <!-- Position indicator style -->
+    <Style Selector="Border.position-indicator">
+      <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+      <Setter Property="CornerRadius" Value="2"/>
+      <Setter Property="Width" Value="20"/>
+      <Setter Property="Height" Value="20"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- Content text styles -->
+    <Style Selector="TextBlock.primary-text">
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+      <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+
+    <Style Selector="TextBlock.secondary-text">
+      <Setter Property="FontSize" Value="9"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="Opacity" Value="0.7"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+      <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+
+    <Style Selector="TextBlock.operation-text">
+      <Setter Property="FontSize" Value="8"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="2,0,0,0"/>
+    </Style>
+
+    <!-- Drag and drop styling -->
+    <Style Selector="Button.draggable-button">
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    
+    <Style Selector="Button.draggable-button:pointerover Border.drag-handle">
+      <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+    </Style>
+    
+    <Style Selector="Button.selected-for-drag">
+      <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+    
+    <Style Selector="Button.dragging">
+      <Setter Property="Opacity" Value="0.7"/>
+      <Setter Property="RenderTransform" Value="scale(1.05)"/>
+    </Style>
+    
+    <Style Selector="Button.drop-target">
+      <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="BorderThickness" Value="2"/>
     </Style>
   </UserControl.Styles>
 
-  <!-- Main container with light padding for breathing room -->
-  <Grid Margin="4">
-    <!-- Quick Buttons Area with proper spacing -->
-    <ItemsControl ItemsSource="{Binding QuickButtons}">
-      <!-- Use UniformGrid with 10 rows for even distribution -->
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <UniformGrid Rows="10" Columns="1"/>
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
-      <ItemsControl.ItemTemplate>
-        <DataTemplate DataType="vm:QuickButtonItemViewModel">
-          <Button Classes="quick-button"
-                  Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
-                  CommandParameter="{Binding}"
-                  ToolTip.Tip="{Binding ToolTipText}">
-            <Button.ContextMenu>
-              <ContextMenu>
-                <MenuItem Header="Edit Button"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).EditButtonCommand}"
-                          CommandParameter="{Binding}"/>
-                <MenuItem Header="Remove Button"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RemoveButtonCommand}"
-                          CommandParameter="{Binding}"/>
-                <Separator/>
-                <MenuItem Header="Refresh Buttons"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RefreshButtonsCommand}"/>
-                <MenuItem Header="Clear All Buttons"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ClearAllButtonsCommand}"/>
-                <MenuItem Header="Reset Order"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ResetOrderCommand}"/>
-              </ContextMenu>
-            </Button.ContextMenu>
-            <Grid ColumnDefinitions="Auto,8,*,Auto">
-              <!-- Position indicator with MTM accent -->
-              <Border Grid.Column="0"
-                      Background="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
-                      CornerRadius="3"
-                      Width="24"
-                      Height="24"
-                      VerticalAlignment="Center">
-                <TextBlock Text="{Binding Position}"
-                           Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
-                           FontSize="11"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-              </Border>
-              
-              <!-- Button content -->
-              <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
-                <TextBlock Text="{Binding DisplayText}"
-                           FontWeight="Medium"
-                           FontSize="12"
-                           Foreground="{Binding $parent[Button].Foreground}"
-                           TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding SubText}"
-                           FontSize="10"
-                           Foreground="{Binding $parent[Button].Foreground}"
-                           Opacity="0.7"
-                           TextWrapping="Wrap"/>
-              </StackPanel>
-              
-              <!-- Operation indicator -->
-              <TextBlock Grid.Column="3"
-                         Text="{Binding Operation}"
-                         FontSize="9"
-                         FontWeight="Bold"
-                         Foreground="{Binding $parent[Button].Foreground}"
-                         Opacity="0.6"
-                         VerticalAlignment="Center"
-                         Margin="4,0,0,0"
-                         IsVisible="{Binding !IsEmpty}"/>
-            </Grid>
-          </Button>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
+  <!-- Main container optimized for narrow width -->
+  <Grid Margin="2">
+    <!-- Header Section (Optional - can be added for consistency) -->
+    <Grid RowDefinitions="Auto,*">
+      <!-- Quick Actions Header (matching AdvancedRemoveView pattern) -->
+      <Border Grid.Row="0"
+              Background="{StaticResource PrimaryBrush}"
+              CornerRadius="4,4,0,0"
+              Padding="8,4"
+              Margin="0,0,0,2">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <!-- Blue Icon -->
+          <TextBlock Grid.Column="0"
+                     Text="⚡"
+                     FontSize="12"
+                     Foreground="{StaticResource AccentBrush}"
+                     VerticalAlignment="Center"
+                     Margin="0,0,6,0"
+                     ToolTip.Tip="Quick Actions"/>
+          
+          <!-- Title -->
+          <TextBlock Grid.Column="1"
+                     Text="Quick Actions"
+                     FontSize="10"
+                     FontWeight="SemiBold"
+                     Foreground="{StaticResource PrimaryTextBrush}"
+                     VerticalAlignment="Center"/>
+          
+          <!-- Count -->
+          <StackPanel Grid.Column="2" 
+                      Orientation="Horizontal" 
+                      Spacing="3">
+            <TextBlock Text="{Binding NonEmptyQuickButtonsCount}"
+                       FontSize="9"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource AccentBrush}"
+                       VerticalAlignment="Center"/>
+            <TextBlock Text="actions"
+                       FontSize="8"
+                       Foreground="{StaticResource PrimaryTextBrush}"
+                       Opacity="0.7"
+                       VerticalAlignment="Center"/>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- Quick Buttons Area with compact spacing and drag/drop support -->
+      <ItemsControl Grid.Row="1" ItemsSource="{Binding NonEmptyQuickButtons}">
+        <!-- Use StackPanel for dynamic vertical layout with drag/drop -->
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Vertical" Spacing="2"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="vm:QuickButtonItemViewModel">
+            <Button Classes="quick-button draggable-button"
+                    Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
+                    CommandParameter="{Binding}"
+                    ToolTip.Tip="{Binding ToolTipText}"
+                    PointerPressed="OnButtonPointerPressed"
+                    PointerMoved="OnButtonPointerMoved"
+                    PointerReleased="OnButtonPointerReleased">
+              <Button.ContextMenu>
+                <ContextMenu>
+                  <MenuItem Header="📝 Edit Button"
+                            Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).EditButtonCommand}"
+                            CommandParameter="{Binding}"
+                            ToolTip.Tip="Modify this quick action"/>
+                  <MenuItem Header="🗑️ Remove Button"
+                            Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RemoveButtonCommand}"
+                            CommandParameter="{Binding}"
+                            ToolTip.Tip="Delete this quick action"/>
+                  <Separator/>
+                  <MenuItem Header="↑ Move Up"
+                            Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).MoveButtonUpCommand}"
+                            CommandParameter="{Binding}"
+                            ToolTip.Tip="Move button up in order"/>
+                  <MenuItem Header="↓ Move Down"
+                            Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).MoveButtonDownCommand}"
+                            CommandParameter="{Binding}"
+                            ToolTip.Tip="Move button down in order"/>
+                  <Separator/>
+                  <MenuItem Header="🔄 Refresh Buttons"
+                            Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RefreshButtonsCommand}"
+                            ToolTip.Tip="Reload quick actions from database"/>
+                  <MenuItem Header="🧹 Clear All Buttons"
+                            Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ClearAllButtonsCommand}"
+                            ToolTip.Tip="Remove all quick actions"/>
+                  <MenuItem Header="↕️ Reset Order"
+                            Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ResetOrderCommand}"
+                            ToolTip.Tip="Restore default button order"/>
+                </ContextMenu>
+              </Button.ContextMenu>
+              <Grid ColumnDefinitions="Auto,6,*,Auto">
+                <!-- Drag handle indicator -->
+                <Border Grid.Column="0" Classes="position-indicator drag-handle">
+                  <Grid>
+                    <!-- Position number -->
+                    <TextBlock Text="{Binding Position}"
+                               Foreground="{StaticResource LightTextBrush}"
+                               FontSize="10"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               ToolTip.Tip="Drag to reorder"/>
+                    <!-- Drag dots overlay -->
+                    <Canvas HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                            Width="6" Height="6" Margin="0,0,2,2">
+                      <Ellipse Width="1" Height="1" Fill="{StaticResource LightTextBrush}" 
+                               Canvas.Left="0" Canvas.Top="0" Opacity="0.6"/>
+                      <Ellipse Width="1" Height="1" Fill="{StaticResource LightTextBrush}" 
+                               Canvas.Left="2" Canvas.Top="0" Opacity="0.6"/>
+                      <Ellipse Width="1" Height="1" Fill="{StaticResource LightTextBrush}" 
+                               Canvas.Left="4" Canvas.Top="0" Opacity="0.6"/>
+                      <Ellipse Width="1" Height="1" Fill="{StaticResource LightTextBrush}" 
+                               Canvas.Left="0" Canvas.Top="2" Opacity="0.6"/>
+                      <Ellipse Width="1" Height="1" Fill="{StaticResource LightTextBrush}" 
+                               Canvas.Left="2" Canvas.Top="2" Opacity="0.6"/>
+                      <Ellipse Width="1" Height="1" Fill="{StaticResource LightTextBrush}" 
+                               Canvas.Left="4" Canvas.Top="2" Opacity="0.6"/>
+                      <Ellipse Width="1" Height="1" Fill="{StaticResource LightTextBrush}" 
+                               Canvas.Left="0" Canvas.Top="4" Opacity="0.6"/>
+                      <Ellipse Width="1" Height="1" Fill="{StaticResource LightTextBrush}" 
+                               Canvas.Left="2" Canvas.Top="4" Opacity="0.6"/>
+                      <Ellipse Width="1" Height="1" Fill="{StaticResource LightTextBrush}" 
+                               Canvas.Left="4" Canvas.Top="4" Opacity="0.6"/>
+                    </Canvas>
+                  </Grid>
+                </Border>
+                
+                <!-- Button content with proper styling -->
+                <StackPanel Grid.Column="2" Spacing="1" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding DisplayText}"
+                             Classes="primary-text"/>
+                  <TextBlock Text="{Binding SubText}"
+                             Classes="secondary-text"/>
+                </StackPanel>
+                
+                <!-- Operation indicator with blue color -->
+                <TextBlock Grid.Column="3"
+                           Text="{Binding Operation}"
+                           Classes="operation-text"
+                           ToolTip.Tip="Operation Number"/>
+              </Grid>
+            </Button>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Grid>
   </Grid>
 </UserControl>

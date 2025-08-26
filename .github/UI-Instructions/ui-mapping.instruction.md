@@ -1,23 +1,42 @@
-<!-- Copilot: Reading ui-mapping.instruction.md — UI Mapping Reference (Avalonia) -->
 # UI Mapping Reference (Avalonia)
+
+<details>
+<summary><strong>🚨 CRITICAL: AVLN2000 Error Prevention</strong></summary>
+
+**BEFORE using any UI mapping, ALWAYS consult [avalonia-xaml-syntax.instruction.md](avalonia-xaml-syntax.instruction.md) to prevent AVLN2000 compilation errors.**
+
+**Key Prevention Rules:**
+- Never use `Name` property on Grid definitions - Use `x:Name` only
+- Use Avalonia namespace: `xmlns="https://github.com/avaloniaui"` (NOT WPF)
+- Use `ColumnDefinitions="Auto,*"` attribute syntax when possible
+- Use Avalonia control equivalents (TextBlock instead of Label)
+
+</details>
+
+<details>
+<summary><strong>📋 UI Mapping Overview</strong></summary>
 
 This file lists the mappings between `.instructions.md` files and corresponding screenshots in `UI_Winform_Screenshots/`.
 
-> For control and event naming, see [naming-conventions.instruction.md](naming-conventions.instruction.md).
+> For control and event naming, see [naming-conventions.instruction.md](../Core-Instructions/naming-conventions.instruction.md).
+> For AVLN2000 error prevention, see [avalonia-xaml-syntax.instruction.md](avalonia-xaml-syntax.instruction.md).
 
-## Common Controls Mapping (WinForms → Avalonia)
+</details>
 
-| WinForms Control | Avalonia Control | Notes |
-|------------------|-----------------|-------|
+<details>
+<summary><strong>🔄 Common Controls Mapping (WinForms → Avalonia)</strong></summary>
+
+| WinForms Control | Avalonia Control | AVLN2000 Prevention Notes |
+|------------------|-----------------|---------------------------|
 | `Form` | `Window` or `UserControl` | Use Window for main app, UserControl for components |
-| `TableLayoutPanel` | `Grid` with RowDefinitions/ColumnDefinitions | More flexible layout system |
+| `TableLayoutPanel` | `Grid` with RowDefinitions/ColumnDefinitions | **Use `ColumnDefinitions="Auto,*"` syntax - NO Name property** |
 | `SplitContainer` | `Grid` with `GridSplitter` | Add GridSplitter between rows/columns |
 | `TabControl` | `TabControl` with `TabItem` | Similar API, use Header property |
 | `MenuStrip` | `Menu` with `MenuItem` | Simplified menu structure |
 | `StatusStrip` | `DockPanel` with `TextBlock` at bottom | Custom implementation needed |
 | `ProgressBar` | `ProgressBar` | Direct equivalent |
-| `Label` | `TextBlock` or `Label` | TextBlock for display, Label for form labels |
-| `TextBox` | `TextBox` | Direct equivalent with additional properties |
+| `Label` | `TextBlock` or `Label` | **Use TextBlock for display to prevent AVLN2000** |
+| `TextBox` | `TextBox` | Direct equivalent |
 | `Button` | `Button` | Direct equivalent |
 | `ComboBox` | `ComboBox` | Direct equivalent |
 | `DataGridView` | `DataGrid` | Direct equivalent with different column setup |
@@ -28,7 +47,10 @@ This file lists the mappings between `.instructions.md` files and corresponding 
 | `ListBox` | `ListBox` | Direct equivalent |
 | `TreeView` | `TreeView` | Direct equivalent |
 
-## MTM-Specific Control Hierarchies
+</details>
+
+<details>
+<summary><strong>🏗️ MTM-Specific Control Hierarchies</strong></summary>
 
 ### Component Hierarchy Mapping
 When parsing MD files with component structures like:
@@ -42,7 +64,7 @@ Control_QuickButtons
     └── Remove Button
 ```
 
-Generate Avalonia structure:
+Generate Avalonia structure (AVLN2000-safe):
 ```xml
 <ItemsControl ItemsSource="{Binding QuickButtons}">
     <ItemsControl.ItemsPanel>
@@ -86,11 +108,15 @@ For components with management features, prefer context menus over separate butt
 </Button.ContextMenu>
 ```
 
-## Modern UI Pattern Mappings
+</details>
 
-### Main Window Layout Pattern
+<details>
+<summary><strong>🎨 Modern UI Pattern Mappings</strong></summary>
+
+### Main Window Layout Pattern (AVLN2000-Safe)
 Replace traditional WinForms with modern sidebar + content pattern:
 ```xml
+<!-- CORRECT: Avalonia Grid syntax -->
 <Grid ColumnDefinitions="240,*">
     <!-- Sidebar Navigation -->
     <Border Grid.Column="0" 
@@ -100,12 +126,9 @@ Replace traditional WinForms with modern sidebar + content pattern:
     </Border>
     
     <!-- Main Content Area -->
-    <Grid Grid.Column="1" Background="{DynamicResource ContentBackgroundBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid Grid.Column="1" 
+          Background="{DynamicResource ContentBackgroundBrush}"
+          RowDefinitions="Auto,*,Auto">
         
         <!-- Content Header -->
         <Border Grid.Row="0" Background="{DynamicResource CardBackgroundBrush}"/>
@@ -205,7 +228,10 @@ Replace traditional headers with gradient banners:
 </Border>
 ```
 
-## Screenshot-to-Instruction Relationships
+</details>
+
+<details>
+<summary><strong>📸 Screenshot-to-Instruction Relationships</strong></summary>
 
 ### Settings View Control Screenshots
 
@@ -252,14 +278,22 @@ Replace traditional headers with gradient banners:
 | View_Transactions.png     | UI_Documentation/Views/TransactionsView.instructions.md           |
 | View_Settings.png         | UI_Documentation/Views/SettingsView.instructions.md               |
 
-## Space Optimization Patterns
+</details>
+
+<details>
+<summary><strong>📏 Space Optimization Patterns</strong></summary>
+
 When removing UI elements, optimize space usage:
 - Use `UniformGrid` for equal distribution
 - Implement `VerticalAlignment="Stretch"` for full height usage
 - Remove `ScrollViewer` when all items fit in available space
 - Increase font sizes and padding when more space is available
 
-## Event-Driven Communication Patterns
+</details>
+
+<details>
+<summary><strong>🔌 Event-Driven Communication Patterns</strong></summary>
+
 For inter-component communication described in MD files:
 ```csharp
 // Events for parent-child communication
@@ -274,12 +308,19 @@ QuickActionExecuted?.Invoke(this, new QuickActionExecutedEventArgs
 });
 ```
 
-## Usage Guidelines
+</details>
+
+<details>
+<summary><strong>📋 Usage Guidelines</strong></summary>
 
 **How to use:**  
-When creating a UI element, always refer to the mapped screenshot for layout and style, and the `.instructions.md` file for control/event details.
+1. **FIRST**: Check [avalonia-xaml-syntax.instruction.md](avalonia-xaml-syntax.instruction.md) for AVLN2000 prevention
+2. When creating a UI element, refer to the mapped screenshot for layout and style
+3. Use the `.instructions.md` file for control/event details
+4. Apply the WinForms → Avalonia control mapping table
 
 **Priority Rules:**
+- **AVLN2000 Prevention**: Always use Avalonia AXAML syntax, never WPF XAML
 - If Markdown and screenshot disagree, prioritize the screenshot for layout
 - Preserve control names/events from the Markdown
 - Apply modern Avalonia patterns where appropriate
@@ -288,4 +329,7 @@ When creating a UI element, always refer to the mapped screenshot for layout and
 - Follow the WinForms → Avalonia control mapping table
 
 > For complete UI generation guidelines, see [ui-generation.instruction.md](ui-generation.instruction.md).
-> For control and event naming conventions, see [naming-conventions.instruction.md](naming-conventions.instruction.md)
+> For AVLN2000 error prevention, see [avalonia-xaml-syntax.instruction.md](avalonia-xaml-syntax.instruction.md).
+> For control and event naming conventions, see [naming-conventions.instruction.md](../Core-Instructions/naming-conventions.instruction.md)
+
+</details>

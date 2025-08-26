@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -17,6 +18,13 @@ public class QuickButtonsViewModel : ReactiveObject
     // Observable collections
     public ObservableCollection<QuickButtonItemViewModel> QuickButtons { get; } = new();
 
+    // Computed property to count non-empty quick buttons
+    public int NonEmptyQuickButtonsCount => QuickButtons.Count(button => !button.IsEmpty);
+
+    // Computed property to get non-empty quick buttons for display
+    public IEnumerable<QuickButtonItemViewModel> NonEmptyQuickButtons => 
+        QuickButtons.Where(button => !button.IsEmpty);
+
     // Event to notify the parent about quick action execution
     public event EventHandler<QuickActionExecutedEventArgs>? QuickActionExecuted;
 
@@ -29,6 +37,10 @@ public class QuickButtonsViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> ManageButtonsCommand { get; }
     public ReactiveCommand<Unit, Unit> ResetOrderCommand { get; }
     public ReactiveCommand<Unit, Unit> ModifyModeCommand { get; }
+    
+    // Manual reordering commands
+    public ReactiveCommand<QuickButtonItemViewModel, Unit> MoveButtonUpCommand { get; }
+    public ReactiveCommand<QuickButtonItemViewModel, Unit> MoveButtonDownCommand { get; }
 
     public QuickButtonsViewModel()
     {
@@ -63,6 +75,24 @@ public class QuickButtonsViewModel : ReactiveObject
             await ResetButtonOrderAsync();
         });
 
+        // Manual reordering commands
+        MoveButtonUpCommand = ReactiveCommand.Create<QuickButtonItemViewModel>((button) =>
+        {
+            MoveButtonUp(button);
+        });
+
+        MoveButtonDownCommand = ReactiveCommand.Create<QuickButtonItemViewModel>((button) =>
+        {
+            MoveButtonDown(button);
+        });
+
+        // Handle collection changes to update count
+        QuickButtons.CollectionChanged += (sender, e) =>
+        {
+            this.RaisePropertyChanged(nameof(NonEmptyQuickButtonsCount));
+            this.RaisePropertyChanged(nameof(NonEmptyQuickButtons));
+        };
+
         // Error handling for all commands
         RefreshButtonsCommand.ThrownExceptions.Subscribe(HandleException);
         ExecuteQuickActionCommand.ThrownExceptions.Subscribe(HandleException);
@@ -70,6 +100,8 @@ public class QuickButtonsViewModel : ReactiveObject
         RemoveButtonCommand.ThrownExceptions.Subscribe(HandleException);
         ClearAllButtonsCommand.ThrownExceptions.Subscribe(HandleException);
         ResetOrderCommand.ThrownExceptions.Subscribe(HandleException);
+        MoveButtonUpCommand.ThrownExceptions.Subscribe(HandleException);
+        MoveButtonDownCommand.ThrownExceptions.Subscribe(HandleException);
 
         // Load initial data
         LoadSampleData();
@@ -149,13 +181,15 @@ public class QuickButtonsViewModel : ReactiveObject
         
         for (int i = 1; i <= 10; i++)
         {
+            QuickButtonItemViewModel button;
+            
             if (i <= 7) // Show 7 sample buttons, leave 3 empty slots
             {
                 var operation = sampleOperations[(i - 1) % sampleOperations.Length];
                 var partId = sampleParts[i - 1];
                 var quantity = i * 5;
                 
-                QuickButtons.Add(new QuickButtonItemViewModel
+                button = new QuickButtonItemViewModel
                 {
                     Position = i,
                     PartId = partId,
@@ -164,12 +198,12 @@ public class QuickButtonsViewModel : ReactiveObject
                     DisplayText = $"{partId}",
                     SubText = $"{quantity} parts.",
                     ToolTipText = $"Position {i}: Click to populate Part ID: {partId}, Operation: {operation}, Quantity: {quantity} in the active tab. Right-click for options."
-                });
+                };
             }
             else
             {
                 // Empty slot
-                QuickButtons.Add(new QuickButtonItemViewModel
+                button = new QuickButtonItemViewModel
                 {
                     Position = i,
                     PartId = string.Empty,
@@ -178,9 +212,26 @@ public class QuickButtonsViewModel : ReactiveObject
                     DisplayText = "Empty Slot",
                     SubText = "Click to assign",
                     ToolTipText = $"Empty slot {i} - Click to assign a quick action. Right-click for options."
-                });
+                };
             }
+            
+            // Subscribe to property changes to update count
+            button.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName == nameof(QuickButtonItemViewModel.PartId) || 
+                    e.PropertyName == nameof(QuickButtonItemViewModel.Operation))
+                {
+                    this.RaisePropertyChanged(nameof(NonEmptyQuickButtonsCount));
+                    this.RaisePropertyChanged(nameof(NonEmptyQuickButtons));
+                }
+            };
+            
+            QuickButtons.Add(button);
         }
+        
+        // Raise initial count update
+        this.RaisePropertyChanged(nameof(NonEmptyQuickButtonsCount));
+        this.RaisePropertyChanged(nameof(NonEmptyQuickButtons));
     }
 
     /// <summary>
@@ -239,6 +290,57 @@ public class QuickButtonsViewModel : ReactiveObject
                 firstButton.SubText = $"{quantity} parts.";
                 firstButton.ToolTipText = $"Position 1: Click to populate Part ID: {partId}, Operation: {operation}, Quantity: {quantity} in the active tab. Right-click for options.";
             }
+        }
+    }
+
+    /// <summary>
+    /// Reorders a button from one position to another (used by drag and drop)
+    /// </summary>
+    public void ReorderButton(int fromPosition, int toPosition)
+    {
+        if (fromPosition == toPosition) return;
+
+        var fromButton = QuickButtons.FirstOrDefault(b => b.Position == fromPosition);
+        var toButton = QuickButtons.FirstOrDefault(b => b.Position == toPosition);
+        
+        if (fromButton == null || toButton == null) return;
+
+        // TODO: Implement Dao_QuickButtons.ReorderButtonAsync()
+        
+        // Perform the swap locally
+        var fromIndex = QuickButtons.IndexOf(fromButton);
+        var toIndex = QuickButtons.IndexOf(toButton);
+        
+        if (fromIndex >= 0 && toIndex >= 0)
+        {
+            QuickButtons.Move(fromIndex, toIndex);
+            UpdateButtonPositions();
+        }
+    }
+
+    /// <summary>
+    /// Moves a button up one position in the list
+    /// </summary>
+    private void MoveButtonUp(QuickButtonItemViewModel button)
+    {
+        var currentIndex = QuickButtons.IndexOf(button);
+        if (currentIndex > 0)
+        {
+            QuickButtons.Move(currentIndex, currentIndex - 1);
+            UpdateButtonPositions();
+        }
+    }
+
+    /// <summary>
+    /// Moves a button down one position in the list
+    /// </summary>
+    private void MoveButtonDown(QuickButtonItemViewModel button)
+    {
+        var currentIndex = QuickButtons.IndexOf(button);
+        if (currentIndex < QuickButtons.Count - 1)
+        {
+            QuickButtons.Move(currentIndex, currentIndex + 1);
+            UpdateButtonPositions();
         }
     }
 }

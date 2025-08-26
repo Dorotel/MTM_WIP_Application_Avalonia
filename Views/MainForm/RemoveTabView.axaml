@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
-             xmlns:controls="using:Avalonia.Controls"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d"
              d:DesignWidth="800"
@@ -12,293 +11,356 @@
              x:CompileBindings="True"
              x:DataType="vm:RemoveItemViewModel">
 
+  <UserControl.Resources>
+    <!-- Black, White, Gold Color Scheme -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#FFD700"/>           <!-- Gold -->
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#DAA520"/>       <!-- Dark Gold -->
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#F5F5DC"/>         <!-- Beige -->
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>    <!-- White -->
+    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Light Gray -->
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#000000"/>       <!-- Black Text -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#4169E1"/>            <!-- Royal Blue for icons -->
+    <SolidColorBrush x:Key="ErrorBrush" Color="#DC143C"/>             <!-- Crimson -->
+  </UserControl.Resources>
+
   <UserControl.Styles>
-    <!-- Input field styles with MTM theme -->
-    <Style Selector="ComboBox.input-field">
-      <Setter Property="Margin" Value="4"/>
-      <Setter Property="Padding" Value="8,4"/>
-      <Setter Property="FontSize" Value="12"/>
+    <!-- Compact Input Styles -->
+    <Style Selector="TextBox.input-field">
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-    </Style>
-    
-    <!-- Label styles -->
-    <Style Selector="TextBlock.field-label">
-      <Setter Property="FontSize" Value="12"/>
-      <Setter Property="FontWeight" Value="Medium"/>
-      <Setter Property="VerticalAlignment" Value="Center"/>
-      <Setter Property="Margin" Value="4,0"/>
-      <Setter Property="HorizontalAlignment" Value="Right"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="Padding" Value="6,3"/>
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="MinHeight" Value="24"/>
+      <Setter Property="Margin" Value="2"/>
     </Style>
 
-    <!-- Button styles -->
+    <Style Selector="ComboBox.input-field">
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="Padding" Value="6,3"/>
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="MinHeight" Value="24"/>
+      <Setter Property="Margin" Value="2"/>
+    </Style>
+
+    <!-- Compact Button Styles -->
     <Style Selector="Button.action-button">
-      <Setter Property="Padding" Value="12,6"/>
-      <Setter Property="Margin" Value="4"/>
-      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Padding" Value="6,3"/>
+      <Setter Property="Margin" Value="2"/>
+      <Setter Property="FontSize" Value="10"/>
       <Setter Property="FontWeight" Value="Medium"/>
-      <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="MinWidth" Value="80"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="MinHeight" Value="24"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
+      <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.primary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
-    </Style>
-    <Style Selector="Button.primary:disabled">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryDisabledBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
+      <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
     </Style>
 
     <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+      <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
     </Style>
 
     <Style Selector="Button.danger">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-    </Style>
-    <Style Selector="Button.danger:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorHoverBrush}"/>
+      <Setter Property="Background" Value="{StaticResource ErrorBrush}"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
+    <!-- DataGrid styling -->
     <Style Selector="DataGrid">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="GridLinesVisibility" Value="Horizontal"/>
       <Setter Property="HeadersVisibility" Value="Column"/>
       <Setter Property="CanUserReorderColumns" Value="True"/>
       <Setter Property="CanUserResizeColumns" Value="True"/>
       <Setter Property="CanUserSortColumns" Value="True"/>
+      <Setter Property="IsReadOnly" Value="True"/>
       <Setter Property="SelectionMode" Value="Extended"/>
-    </Style>
-
-    <!-- Nothing found image style -->
-    <Style Selector="Image.nothing-found">
-      <Setter Property="Width" Value="120"/>
-      <Setter Property="Height" Value="120"/>
-      <Setter Property="Opacity" Value="0.6"/>
-      <Setter Property="HorizontalAlignment" Value="Center"/>
-      <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
   </UserControl.Styles>
 
-  <!-- Responsive layout that stretches to fill available space -->
-  <Grid RowDefinitions="Auto,Auto,*,Auto"
+  <!-- Main container -->
+  <Grid RowDefinitions="*,Auto" 
         HorizontalAlignment="Stretch" 
-        VerticalAlignment="Stretch">
-    
-    <!-- Header -->
-    <TextBlock Grid.Row="0"
-               Text="Inventory Removal"
-               FontSize="14"
-               FontWeight="SemiBold"
-               Margin="8,8,8,4"
-               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-    
-    <!-- Search Controls Row -->
-    <Grid Grid.Row="1" 
-          ColumnDefinitions="Auto,*,Auto,*,Auto,Auto"
-          Margin="8,4">
-      
-      <!-- Part ID ComboBox -->
-      <TextBlock Grid.Column="0"
-                 Classes="field-label"
-                 Text="Part ID:"/>
-      <ComboBox Grid.Column="1"
-                x:Name="Control_RemoveTab_ComboBox_Part"
-                Classes="input-field"
-                PlaceholderText="Select Part ID"
-                HorizontalAlignment="Stretch"
-                ItemsSource="{Binding PartOptions}"
-                SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
-                IsTextSearchEnabled="True"
-                ToolTip.Tip="Select or search for a part number"/>
+        VerticalAlignment="Stretch"
+        Margin="0"
+        Background="{StaticResource CardBackgroundBrush}">
 
-      <!-- Operation ComboBox -->
-      <TextBlock Grid.Column="2"
-                 Classes="field-label"
-                 Text="Operation:"
-                 Margin="16,0,4,0"/>
-      <ComboBox Grid.Column="3"
-                x:Name="Control_RemoveTab_ComboBox_Operation"
-                Classes="input-field"
-                PlaceholderText="Select Operation"
-                HorizontalAlignment="Stretch"
-                ItemsSource="{Binding OperationOptions}"
-                SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
-                ToolTip.Tip="Select an operation number (optional)"/>
+    <!-- Main Panel -->
+    <Border Grid.Row="0"
+            Background="{StaticResource CardBackgroundBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="4"
+            Margin="4"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+      <Grid ColumnSpacing="6">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="280"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Left Panel: Search Criteria -->
+        <Border Grid.Column="0"
+                Background="{StaticResource CardBackgroundBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4">
+          <Grid ColumnDefinitions="Auto,*">
+            <!-- Vertical Header Bar -->
+            <Border Grid.Column="0"
+                    Background="{StaticResource PrimaryBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,0,1,0"
+                    Width="32"
+                    CornerRadius="4,0,0,4">
+              <Grid RowDefinitions="*,Auto,*">
+                <!-- Remove Icon -->
+                <materialIcons:MaterialIcon Grid.Row="1"
+                                            Kind="Delete"
+                                            Width="14"
+                                            Height="14"
+                                            Foreground="{StaticResource AccentBrush}"
+                                            HorizontalAlignment="Center"
+                                            ToolTip.Tip="Remove Panel"/>
+              </Grid>
+            </Border>
 
-      <!-- Search Button -->
-      <Button Grid.Column="4"
-              x:Name="Control_RemoveTab_Button_Search"
-              Classes="action-button primary"
-              Command="{Binding SearchCommand}"
-              ToolTip.Tip="Search inventory (F5)"
-              Margin="8,4,4,4">
-        <StackPanel Orientation="Horizontal" Spacing="6">
-          <materialIcons:MaterialIcon Kind="Magnify" Width="16" Height="16"/>
-          <TextBlock Text="Search" VerticalAlignment="Center"/>
+            <!-- Search Criteria Content -->
+            <Border Grid.Column="1" Padding="6,4">
+              <StackPanel Spacing="6">
+                
+                <!-- Part ID -->
+                <StackPanel>
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3" Margin="0,0,0,1">
+                    <materialIcons:MaterialIcon Grid.Column="0"
+                                                Kind="Identifier"
+                                                Width="10"
+                                                Height="10"
+                                                Foreground="{StaticResource AccentBrush}"
+                                                VerticalAlignment="Center"
+                                                ToolTip.Tip="Part ID"/>
+                  </Grid>
+                  <ComboBox ItemsSource="{Binding PartOptions}"
+                            SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
+                            Classes="input-field"
+                            HorizontalAlignment="Stretch"
+                            IsTextSearchEnabled="True"
+                            PlaceholderText="Select part ID..."
+                            ToolTip.Tip="Select part to remove"/>
+                </StackPanel>
+
+                <!-- Operation -->
+                <StackPanel>
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3" Margin="0,0,0,1">
+                    <materialIcons:MaterialIcon Grid.Column="0"
+                                                Kind="Cog"
+                                                Width="10"
+                                                Height="10"
+                                                Foreground="{StaticResource AccentBrush}"
+                                                VerticalAlignment="Center"
+                                                ToolTip.Tip="Operation"/>
+                  </Grid>
+                  <ComboBox ItemsSource="{Binding OperationOptions}"
+                            SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
+                            Classes="input-field"
+                            HorizontalAlignment="Stretch"
+                            PlaceholderText="Select operation..."
+                            ToolTip.Tip="Select operation (optional)"/>
+                </StackPanel>
+
+              </StackPanel>
+            </Border>
+          </Grid>
+        </Border>
+
+        <!-- Right Panel: Inventory Grid -->
+        <Border Grid.Column="1"
+                Background="{StaticResource CardBackgroundBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="4">
+          <Grid RowDefinitions="Auto,*">
+            <!-- Grid Header -->
+            <Border Grid.Row="0" 
+                    Background="{StaticResource PrimaryBrush}"
+                    CornerRadius="3"
+                    Padding="6,4"
+                    Margin="0,0,0,4">
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <materialIcons:MaterialIcon Grid.Column="0"
+                                            Kind="ViewList"
+                                            Width="14"
+                                            Height="14"
+                                            Foreground="{StaticResource AccentBrush}"
+                                            VerticalAlignment="Center"
+                                            Margin="0,0,4,0"/>
+                <TextBlock Grid.Column="1"
+                           Text="Available Inventory"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource PrimaryTextBrush}"
+                           VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="2" 
+                            Orientation="Horizontal" 
+                            Spacing="3">
+                  <TextBlock Text="{Binding InventoryItems.Count}"
+                             FontSize="10"
+                             FontWeight="Bold"
+                             Foreground="{StaticResource AccentBrush}"
+                             VerticalAlignment="Center"/>
+                  <TextBlock Text="items"
+                             FontSize="9"
+                             Foreground="{StaticResource PrimaryTextBrush}"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+              </Grid>
+            </Border>
+            
+            <!-- Data Grid -->
+            <DataGrid Grid.Row="1"
+                      ItemsSource="{Binding InventoryItems}"
+                      SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                      AutoGenerateColumns="False"
+                      FontSize="9"
+                      RowHeight="20">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="80"/>
+                <DataGridTextColumn Header="Part" Binding="{Binding PartId}" Width="80"/>
+                <DataGridTextColumn Header="Op" Binding="{Binding Operation}" Width="35"/>
+                <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="40"/>
+                <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*"/>
+                <DataGridTextColumn Header="Date" Binding="{Binding LastUpdated, StringFormat='{}{0:MM/dd/yy}'}" Width="50"/>
+              </DataGrid.Columns>
+            </DataGrid>
+          </Grid>
+        </Border>
+
+      </Grid>
+    </Border>
+
+    <!-- Compact Bottom Action Panel -->
+    <Border Grid.Row="1"
+            Background="{StaticResource CardBackgroundBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="6"
+            Margin="4,0,4,4">
+      <Grid ColumnDefinitions="*,Auto">
+        <!-- Left side buttons -->
+        <StackPanel Grid.Column="0" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Left" 
+                    Spacing="4">
+          <Button Classes="action-button primary"
+                  Width="60" 
+                  Height="24"
+                  Command="{Binding SearchCommand}"
+                  ToolTip.Tip="Search inventory">
+            <StackPanel Orientation="Horizontal" Spacing="3"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="Magnify" Width="10" Height="10"/>
+              <TextBlock Text="Search" FontSize="9"/>
+            </StackPanel>
+          </Button>
+          <Button Classes="action-button danger"
+                  Width="60" 
+                  Height="24"
+                  Command="{Binding DeleteCommand}"
+                  IsEnabled="{Binding CanDelete}"
+                  ToolTip.Tip="Remove selected items">
+            <StackPanel Orientation="Horizontal" Spacing="3"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="Delete" Width="10" Height="10"/>
+              <TextBlock Text="Delete" FontSize="9"/>
+            </StackPanel>
+          </Button>
+          <Button Classes="action-button secondary"
+                  Width="50" 
+                  Height="24"
+                  Command="{Binding UndoCommand}"
+                  IsEnabled="{Binding CanUndo}"
+                  ToolTip.Tip="Undo last removal">
+            <StackPanel Orientation="Horizontal" Spacing="3"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="Undo" Width="10" Height="10"/>
+              <TextBlock Text="Undo" FontSize="9"/>
+            </StackPanel>
+          </Button>
+          <Button Classes="action-button secondary"
+                  Width="50" 
+                  Height="24"
+                  Command="{Binding ResetCommand}"
+                  ToolTip.Tip="Reset form">
+            <StackPanel Orientation="Horizontal" Spacing="3"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="Refresh" Width="10" Height="10"/>
+              <TextBlock Text="Reset" FontSize="9"/>
+            </StackPanel>
+          </Button>
+          <Button Classes="action-button secondary"
+                  Width="70" 
+                  Height="24"
+                  Command="{Binding AdvancedRemovalCommand}"
+                  ToolTip.Tip="Advanced removal features">
+            <StackPanel Orientation="Horizontal" Spacing="3"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="Settings" Width="10" Height="10"/>
+              <TextBlock Text="Advanced" FontSize="9"/>
+            </StackPanel>
+          </Button>
+          <Button Classes="action-button secondary"
+                  Width="50" 
+                  Height="24"
+                  Command="{Binding PrintCommand}"
+                  ToolTip.Tip="Print report">
+            <StackPanel Orientation="Horizontal" Spacing="3"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="Printer" Width="10" Height="10"/>
+              <TextBlock Text="Print" FontSize="9"/>
+            </StackPanel>
+          </Button>
         </StackPanel>
-      </Button>
 
-      <!-- Reset Button -->
-      <Button Grid.Column="5"
-              x:Name="Control_RemoveTab_Button_Reset"
-              Classes="action-button secondary"
-              Command="{Binding ResetCommand}"
-              ToolTip.Tip="Reset search criteria and refresh all data">
-        <StackPanel Orientation="Horizontal" Spacing="6">
-          <materialIcons:MaterialIcon Kind="Refresh" Width="16" Height="16"/>
-          <TextBlock Text="Reset" VerticalAlignment="Center"/>
-        </StackPanel>
-      </Button>
-    </Grid>
-
-    <!-- Data Display Area - stretches to fill remaining space -->
-    <Grid Grid.Row="2" 
-          Margin="8"
-          VerticalAlignment="Stretch"
-          HorizontalAlignment="Stretch">
-      <!-- DataGridView Panel -->
-      <Panel x:Name="Control_RemoveTab_Panel_DataGridView">
-        <!-- Main DataGrid - stretches to fill all available space -->
-        <DataGrid x:Name="Control_RemoveTab_DataGridView_Main"
-                  ItemsSource="{Binding InventoryItems}"
-                  SelectedItem="{Binding SelectedItem}"
-                  IsVisible="{Binding HasInventoryItems}"
-                  AutoGenerateColumns="False"
-                  SelectionMode="Extended"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch">
-          <DataGrid.Columns>
-            <DataGridTextColumn Header="Location" 
-                                Binding="{Binding Location}" 
-                                Width="*"/>
-            <DataGridTextColumn Header="Part ID" 
-                                Binding="{Binding PartId}" 
-                                Width="*"/>
-            <DataGridTextColumn Header="Operation" 
-                                Binding="{Binding Operation}" 
-                                Width="Auto"/>
-            <DataGridTextColumn Header="Quantity" 
-                                Binding="{Binding Quantity}" 
-                                Width="Auto"/>
-            <DataGridTextColumn Header="Notes" 
-                                Binding="{Binding Notes}" 
-                                Width="2*"/>
-          </DataGrid.Columns>
-        </DataGrid>
-
-        <!-- Nothing Found Image -->
-        <StackPanel x:Name="Control_RemoveTab_Image_NothingFound"
-                   Classes="nothing-found"
-                   IsVisible="{Binding !HasInventoryItems}"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Orientation="Vertical"
-                   Spacing="8">
-          <Border Background="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                  CornerRadius="4"
-                  Width="120" Height="120"
-                  HorizontalAlignment="Center">
-            <materialIcons:MaterialIcon Kind="DatabaseSearchOutline" 
-                                        Width="48" Height="48" 
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Opacity="0.6"/>
-          </Border>
-          <TextBlock Text="No inventory items found"
-                     HorizontalAlignment="Center"
-                     FontSize="12"
-                     Opacity="0.6"
-                     Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
-        </StackPanel>
-      </Panel>
-    </Grid>
-
-    <!-- Action Controls Row -->
-    <Grid Grid.Row="3" 
-          ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto"
-          Margin="8,4">
-      
-      <!-- Delete Button -->
-      <Button Grid.Column="0"
-              x:Name="Control_RemoveTab_Button_Delete"
-              Classes="action-button danger"
-              Command="{Binding DeleteCommand}"
-              IsEnabled="{Binding CanDelete}"
-              ToolTip.Tip="Remove selected items (Delete key)">
-        <StackPanel Orientation="Horizontal" Spacing="6">
-          <materialIcons:MaterialIcon Kind="Delete" Width="16" Height="16"/>
-          <TextBlock Text="Delete" VerticalAlignment="Center"/>
-        </StackPanel>
-      </Button>
-
-      <!-- Undo Button -->
-      <Button Grid.Column="1"
-              x:Name="Control_RemoveTab_Button_Undo"
-              Classes="action-button secondary"
-              Command="{Binding UndoCommand}"
-              IsEnabled="{Binding CanUndo}"
-              ToolTip.Tip="Restore last removed items (Ctrl+Z)">
-        <StackPanel Orientation="Horizontal" Spacing="6">
-          <materialIcons:MaterialIcon Kind="Undo" Width="16" Height="16"/>
-          <TextBlock Text="Undo" VerticalAlignment="Center"/>
-        </StackPanel>
-      </Button>
-
-      <!-- Advanced Item Removal Button -->
-      <Button Grid.Column="2"
-              x:Name="Control_RemoveTab_Button_AdvancedItemRemoval"
-              Classes="action-button secondary"
-              Command="{Binding AdvancedRemovalCommand}"
-              ToolTip.Tip="Open advanced removal features">
-        <StackPanel Orientation="Horizontal" Spacing="6">
-          <materialIcons:MaterialIcon Kind="Cog" Width="16" Height="16"/>
-          <TextBlock Text="Advanced" VerticalAlignment="Center"/>
-        </StackPanel>
-      </Button>
-
-      <!-- Print Button -->
-      <Button Grid.Column="3"
-              x:Name="Control_RemoveTab_Button_Print"
-              Classes="action-button secondary"
-              Command="{Binding PrintCommand}"
-              IsEnabled="{Binding HasInventoryItems}"
-              ToolTip.Tip="Print current inventory view (Ctrl+P)">
-        <StackPanel Orientation="Horizontal" Spacing="6">
-          <materialIcons:MaterialIcon Kind="Printer" Width="16" Height="16"/>
-          <TextBlock Text="Print" VerticalAlignment="Center"/>
-        </StackPanel>
-      </Button>
-
-      <!-- Toggle Right Panel Button -->
-      <Button Grid.Column="5"
-              x:Name="Control_RemoveTab_Button_Toggle_RightPanel"
-              Classes="action-button secondary"
-              Command="{Binding TogglePanelCommand}"
-              ToolTip.Tip="Toggle quick actions panel"
-              FontSize="14"
-              MinWidth="36">
-        <materialIcons:MaterialIcon Kind="Menu" Width="16" Height="16"/>
-      </Button>
-    </Grid>
+        <!-- Right side - toggle button -->
+        <Button Grid.Column="1"
+                Classes="action-button secondary"
+                Width="24" 
+                Height="24"
+                Command="{Binding TogglePanelCommand}"
+                ToolTip.Tip="Toggle panel">
+          <materialIcons:MaterialIcon Kind="DotsVertical" Width="10" Height="10"/>
+        </Button>
+      </Grid>
+    </Border>
   </Grid>
 </UserControl>

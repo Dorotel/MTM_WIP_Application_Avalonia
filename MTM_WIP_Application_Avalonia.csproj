@@ -110,6 +110,7 @@
     <None Include=".github\Quality-Instructions\needsrepair.instruction.md" />
     <None Include=".github\Quality-Instructions\README.md" />
     <None Include=".github\Custom-Prompts\README.md" />
+    <None Include=".github\UI-Instructions\avalonia-xaml-syntax.instruction.md" />
     <None Include=".github\UI-Instructions\README.md" />
     <None Include=".github\UI-Instructions\ui-generation.instruction.md" />
     <None Include=".github\UI-Instructions\ui-mapping.instruction.md" />

@@ -14,6 +14,22 @@ You are an expert Avalonia UI developer working on the MTM (Manitowoc Tool and M
 </details>
 
 <details>
+<summary><strong>🚨 CRITICAL: AVLN2000 Error Prevention</strong></summary>
+
+**BEFORE generating ANY AXAML code, consult [avalonia-xaml-syntax.instruction.md](.github/UI-Instructions/avalonia-xaml-syntax.instruction.md) to prevent AVLN2000 compilation errors.**
+
+### Key Rules to Prevent AVLN2000:
+1. **NEVER use `Name` property on Grid definitions** - Use `x:Name` only
+2. **Use Avalonia namespace**: `xmlns="https://github.com/avaloniaui"` (NOT WPF namespace)
+3. **Grid syntax**: Use `ColumnDefinitions="Auto,*"` attribute form when possible
+4. **Control equivalents**: Use `TextBlock` instead of `Label`, `Flyout` instead of `Popup`
+5. **Always include compiled bindings**: `x:CompileBindings="True"` and `x:DataType="vm:ViewModelName"`
+
+**Reference the complete AVLN2000 prevention guide before any UI generation.**
+
+</details>
+
+<details>
 <summary><strong>📋 Critical Requirements - Always Follow</strong></summary>
 
 ### Service Organization Rule (CRITICAL)
@@ -237,6 +253,52 @@ Section content goes here...
 </details>
 
 <details>
+<summary><strong>📁 Required Instruction Files - ALWAYS REFERENCE</strong></summary>
+
+**🎯 CORE INFRASTRUCTURE (REQUIRED):**
+- [dependency-injection.instruction.md](.github/Core-Instructions/dependency-injection.instruction.md)
+- [codingconventions.instruction.md](.github/Core-Instructions/codingconventions.instruction.md) 
+- [project-structure.instruction.md](.github/Core-Instructions/project-structure.instruction.md)
+- [naming.conventions.instruction.md](.github/Core-Instructions/naming.conventions.instruction.md)
+
+**🚨 UI INSTRUCTIONS (CRITICAL):**
+- [avalonia-xaml-syntax.instruction.md](.github/UI-Instructions/avalonia-xaml-syntax.instruction.md)
+- [ui-generation.instruction.md](.github/UI-Instructions/ui-generation.instruction.md)
+- [ui-mapping.instruction.md](.github/UI-Instructions/ui-mapping.instruction.md)
+- [ui-styling.instruction.md](.github/UI-Instructions/ui-styling.instruction.md)
+
+**⚙️ DEVELOPMENT PATTERNS (REQUIRED):**
+- [database-patterns.instruction.md](.github/Development-Instructions/database-patterns.instruction.md)
+- [errorhandler.instruction.md](.github/Development-Instructions/errorhandler.instruction.md)
+- [templates-documentation.instruction.md](.github/Development-Instructions/templates-documentation.instruction.md)
+- [githubworkflow.instruction.md](.github/Development-Instructions/githubworkflow.instruction.md)
+
+**🎯 QUALITY & AUTOMATION (REQUIRED):**
+- [needsrepair.instruction.md](.github/Quality-Instructions/needsrepair.instruction.md)
+- [customprompts.instruction.md](.github/Automation-Instructions/customprompts.instruction.md)
+- [personas.instruction.md](.github/Automation-Instructions/personas.instruction.md)
+- [issue-pr-creation.instruction.md](.github/Automation-Instructions/issue-pr-creation.instruction.md)
+
+**🔧 ESSENTIAL CUSTOM PROMPTS:**
+- [CustomPrompt_Create_ReactiveUIViewModel.md](.github/Custom-Prompts/CustomPrompt_Create_ReactiveUIViewModel.md)
+- [CustomPrompt_Verify_CodeCompliance.md](.github/Custom-Prompts/CustomPrompt_Verify_CodeCompliance.md)
+- [CustomPrompt_Create_UIElement.md](.github/Custom-Prompts/CustomPrompt_Create_UIElement.md)
+- [CustomPrompt_Create_UIElementFromMarkdown.md](.github/Custom-Prompts/CustomPrompt_Create_UIElementFromMarkdown.md)
+- [CustomPrompt_Create_ModernLayoutPattern.md](.github/Custom-Prompts/CustomPrompt_Create_ModernLayoutPattern.md)
+- [CustomPrompt_Create_StoredProcedure.md](.github/Custom-Prompts/CustomPrompt_Create_StoredProcedure.md)
+- [CustomPrompt_Database_ErrorHandling.md](.github/Custom-Prompts/CustomPrompt_Database_ErrorHandling.md)
+- [CustomPrompt_Create_CRUDOperations.md](.github/Custom-Prompts/CustomPrompt_Create_CRUDOperations.md)
+- [CustomPrompt_Implement_ResultPatternSystem.md](.github/Custom-Prompts/CustomPrompt_Implement_ResultPatternSystem.md)
+
+**📋 SUPPORTING DOCUMENTATION:**
+- [missing-components.instruction.md](.github/missing-components.instruction.md)
+- [custom-prompts-examples.md](.github/Custom-Prompts/custom-prompts-examples.md)
+- [MTM_Hotkey_Reference.md](.github/Custom-Prompts/MTM_Hotkey_Reference.md)
+- [all-copilot-files-list.instructions.md](.github/all-copilot-files-list.instructions.md)
+
+</details>
+
+<details>
 <summary><strong>📁 Specialized Instruction Categories</strong></summary>
 
 Reference these organized instruction files for detailed guidance:
@@ -250,6 +312,7 @@ Reference these organized instruction files for detailed guidance:
 - **[missing-components.instruction.md](.github/missing-components.instruction.md)** - Current implementation status, Phase 1 completion tracking
 
 ### **UI Generation Instructions**
+- **[avalonia-xaml-syntax.instruction.md](.github/UI-Instructions/avalonia-xaml-syntax.instruction.md)** - **CRITICAL**: AVLN2000 error prevention, WPF vs Avalonia AXAML differences
 - **[ui-generation.instruction.md](.github/UI-Instructions/ui-generation.instruction.md)** - Avalonia AXAML generation patterns
 - **[ui-mapping.instruction.md](.github/UI-Instructions/ui-mapping.instruction.md)** - UI component mapping and conversion
 - **[ui-styling.instruction.md](.github/UI-Instructions/ui-styling.instruction.md)** - MTM design system and styling patterns

@@ -1,0 +1,96 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             mc:Ignorable="d"
+             d:DesignWidth="400"
+             d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.CollapsiblePanel">
+
+  <UserControl.Resources>
+    <!-- MTM Color Scheme matching your design -->
+    <SolidColorBrush x:Key="HeaderBrush" Color="#FFD700"/>           <!-- Gold/Yellow header -->
+    <SolidColorBrush x:Key="ContentBackgroundBrush" Color="#F8F9FA"/> <!-- Light gray content background -->
+    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Border color -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#6B7280"/>            <!-- Icon color -->
+    <SolidColorBrush x:Key="HeaderTextBrush" Color="#000000"/>        <!-- Header text color -->
+  </UserControl.Resources>
+
+  <!-- Use explicit template to ensure proper initialization -->
+  <UserControl.Template>
+    <ControlTemplate>
+      <!-- Empty grid that gets configured dynamically by code -->
+      <Grid x:Name="RootGrid">
+        
+        <!-- Gold Header Bar (position determined by HeaderPosition property) -->
+        <Border x:Name="HeaderArea"
+                Background="{StaticResource HeaderBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                MinWidth="40"
+                MinHeight="40">
+          
+          <!-- Fixed vertical layout for header content -->
+          <Grid x:Name="HeaderContentGrid" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="*"/>    <!-- Text area - takes most space -->
+              <RowDefinition Height="24"/>   <!-- Icon area - fixed size -->
+              <RowDefinition Height="24"/>   <!-- Button area - fixed size -->
+            </Grid.RowDefinitions>
+            
+            <!-- Header Text - Always in row 0 (top area) -->
+            <TextBlock x:Name="HeaderText"
+                       Grid.Row="0"
+                       Text="Panel"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource HeaderTextBrush}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       TextAlignment="Center"
+                       Margin="0,8,0,0"/>
+            
+            <!-- Panel Icon - Always in row 1 (middle) -->
+            <materialIcons:MaterialIcon x:Name="PanelIcon"
+                                        Grid.Row="1"
+                                        Kind="FilterVariant"
+                                        Width="16"
+                                        Height="16"
+                                        Foreground="{StaticResource AccentBrush}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+            
+            <!-- Toggle Button - Always in row 2 (bottom) -->
+            <Button x:Name="ToggleButton"
+                    Grid.Row="2"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Width="20"
+                    Height="20"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Click="OnToggleClick"
+                    Cursor="Hand">
+              <materialIcons:MaterialIcon x:Name="ToggleIcon"
+                                          Kind="ChevronRight"
+                                          Width="12"
+                                          Height="12"
+                                          Foreground="{StaticResource AccentBrush}"/>
+            </Button>
+            
+          </Grid>
+        </Border>
+
+        <!-- Content Area (position determined by HeaderPosition property) -->
+        <Border x:Name="ContentArea"
+                Background="{StaticResource ContentBackgroundBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                Padding="16">
+          <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
+        </Border>
+
+      </Grid>
+    </ControlTemplate>
+  </UserControl.Template>
+
+</UserControl>

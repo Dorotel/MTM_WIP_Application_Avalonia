@@ -11,76 +11,95 @@
              x:CompileBindings="True"
              x:DataType="vm:AdvancedInventoryViewModel">
 
+  <UserControl.Resources>
+    <!-- Black, White, Gold Color Scheme -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#FFD700"/>           <!-- Gold -->
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#DAA520"/>       <!-- Dark Gold -->
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#F5F5DC"/>         <!-- Beige -->
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>    <!-- White -->
+    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Light Gray -->
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#000000"/>       <!-- Black Text -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#4169E1"/>            <!-- Royal Blue for icons -->
+    <SolidColorBrush x:Key="SuccessBrush" Color="#228B22"/>           <!-- Forest Green -->
+    <SolidColorBrush x:Key="WarningBrush" Color="#DAA520"/>           <!-- Gold for warning -->
+  </UserControl.Resources>
+
   <UserControl.Styles>
-    <!-- Input field styles with MTM theme integration -->
-    <Style Selector="AutoCompleteBox.input-field">
-      <Setter Property="Margin" Value="2"/>
-      <Setter Property="Padding" Value="6,3"/>
-      <Setter Property="FontSize" Value="11"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-    </Style>
-    
+    <!-- Compact Input Styles -->
     <Style Selector="TextBox.input-field">
-      <Setter Property="Margin" Value="2"/>
-      <Setter Property="Padding" Value="6,3"/>
-      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="Padding" Value="6,3"/>
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="MinHeight" Value="24"/>
+      <Setter Property="Margin" Value="2"/>
     </Style>
 
-    <!-- Button styles with MTM theme -->
+    <Style Selector="AutoCompleteBox.input-field">
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="Padding" Value="6,3"/>
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="MinHeight" Value="24"/>
+      <Setter Property="Margin" Value="2"/>
+    </Style>
+
+    <!-- Compact Button Styles -->
     <Style Selector="Button.action-button">
-      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="Padding" Value="6,3"/>
       <Setter Property="Margin" Value="2"/>
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="FontWeight" Value="Medium"/>
       <Setter Property="CornerRadius" Value="3"/>
-      <Setter Property="MinWidth" Value="60"/>
+      <Setter Property="MinHeight" Value="24"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
+      <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.primary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
+      <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
+    </Style>
+
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Button.secondary:pointerover">
+      <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
     </Style>
 
     <Style Selector="Button.success">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
-    </Style>
-    <Style Selector="Button.success:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SuccessHoverBrush}"/>
+      <Setter Property="Background" Value="{StaticResource SuccessBrush}"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
     <Style Selector="Button.warning">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.DarkTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}"/>
-    </Style>
-
-    <Style Selector="Button.neutral">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryBrush}"/>
-    </Style>
-
-    <!-- Tab control styling -->
-    <Style Selector="TabItem">
-      <Setter Property="FontSize" Value="12"/>
-      <Setter Property="Padding" Value="8,3"/>
+      <Setter Property="Background" Value="{StaticResource WarningBrush}"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
     <!-- DataGrid styling -->
     <Style Selector="DataGrid">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="GridLinesVisibility" Value="Horizontal"/>
@@ -89,490 +108,330 @@
       <Setter Property="CanUserResizeColumns" Value="True"/>
       <Setter Property="CanUserSortColumns" Value="True"/>
       <Setter Property="IsReadOnly" Value="True"/>
+      <Setter Property="SelectionMode" Value="Extended"/>
     </Style>
   </UserControl.Styles>
 
-  <!-- FIXED: Properly contained within tab content with no excessive margins -->
-  <Grid RowDefinitions="Auto,*" 
+  <!-- Main container with proper spacing -->
+  <Grid RowDefinitions="*,Auto" 
         HorizontalAlignment="Stretch" 
         VerticalAlignment="Stretch"
         Margin="0"
-        Background="{DynamicResource MTM_Shared_Logic.AppBackgroundBrush}">
-    
-    <!-- Compact Title with Icon -->
-    <StackPanel Grid.Row="0" 
-                Orientation="Horizontal" 
-                Spacing="6" 
-                Margin="4,4,4,6"
-                HorizontalAlignment="Left">
-      <materialIcons:MaterialIcon Kind="PackageVariantClosed" 
-                                  Width="14" 
-                                  Height="14" 
-                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
-                                  VerticalAlignment="Center"/>
-      <TextBlock Text="Advanced Inventory Entry"
-                 FontSize="13"
-                 FontWeight="SemiBold"
-                 VerticalAlignment="Center"
-                 Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-    </StackPanel>
+        Background="{StaticResource CardBackgroundBrush}">
 
-    <!-- Main Panel with Tabs - Properly docked -->
-    <Border Grid.Row="1"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+    <!-- Main Panel -->
+    <Border Grid.Row="0"
+            Background="{StaticResource CardBackgroundBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
             BorderThickness="1"
             CornerRadius="4"
-            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
             Padding="4"
-            Margin="4,0,4,4"
+            Margin="4"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
-      <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <!-- Tab 1: Single Item, Multiple Times -->
-        <TabItem>
-          <TabItem.Header>
-            <StackPanel Orientation="Horizontal" Spacing="4">
-              <materialIcons:MaterialIcon Kind="Repeat" Width="12" Height="12" VerticalAlignment="Center"/>
-              <TextBlock Text="Single Item, Multiple Times" VerticalAlignment="Center" FontSize="11"/>
-            </StackPanel>
-          </TabItem.Header>
-          <Grid Margin="2" ColumnSpacing="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="{Binding FilterPanelWidth}"/>
-              <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-            <!-- Collapsible Left Panel -->
+      <Grid ColumnSpacing="6">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="{Binding FilterPanelWidth}"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Left Panel: Advanced Entry Form -->
+        <Border Grid.Column="0"
+                Background="{StaticResource CardBackgroundBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4">
+          <Grid ColumnDefinitions="Auto,*">
+            <!-- Vertical Header Bar -->
             <Border Grid.Column="0"
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="3">
-              <Grid ColumnDefinitions="Auto,*">
-                <!-- Compact Vertical Header Bar -->
-                <Border Grid.Column="0"
-                        Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
-                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                        BorderThickness="0,0,1,0"
-                        Width="32"
-                        CornerRadius="3,0,0,3">
-                  <Grid RowDefinitions="*,Auto,Auto,*">
-                    <!-- Form Icon -->
-                    <materialIcons:MaterialIcon Grid.Row="1"
-                                                Kind="FormSelect"
-                                                Width="14"
-                                                Height="14"
-                                                Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
-                                                HorizontalAlignment="Center"
-                                                Margin="0,0,0,3"/>
-                    
-                    <!-- Toggle Button -->
-                    <Button Grid.Row="2"
-                            Command="{Binding ToggleFilterPanelCommand}"
-                            Width="20"
-                            Height="20"
-                            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                            Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
-                            BorderThickness="1"
-                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                            CornerRadius="10"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Margin="6,0,6,6"
-                            Cursor="Hand"
-                            ToolTip.Tip="Toggle Form Panel">
-                      <materialIcons:MaterialIcon Kind="{Binding CollapseButtonIcon}"
-                                                  Width="10"
-                                                  Height="10"/>
-                    </Button>
-                  </Grid>
-                </Border>
-
-                <!-- Original Form Content -->
-                <Border Grid.Column="1"
-                        IsVisible="{Binding IsFilterPanelExpanded}"
-                        Padding="6"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch">
-                  <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
-                        RowSpacing="4">
-                    <!-- Part Number with Icon -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="Tag" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                      <AutoCompleteBox Grid.Column="1" 
-                                       Watermark="Enter Part Number"
-                                       HorizontalAlignment="Stretch"
-                                       Classes="input-field"
-                                       ItemsSource="{Binding PartIDOptions}" 
-                                       SelectedItem="{Binding SelectedPartID, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Operation with Icon -->
-                    <Grid Grid.Row="1" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="Cog" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                      <AutoCompleteBox Grid.Column="1"
-                                       Watermark="Enter Operation"
-                                       HorizontalAlignment="Stretch"
-                                       Classes="input-field"
-                                       ItemsSource="{Binding OperationOptions}" 
-                                       SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Quantity with Icon -->
-                    <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="Counter" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                      <TextBox Grid.Column="1" 
-                               Watermark="Enter Valid Quantity"
-                               HorizontalAlignment="Stretch"
-                               Classes="input-field"
-                               Text="{Binding QuantityText, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Location with Icon -->
-                    <Grid Grid.Row="3" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="MapMarker" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                      <AutoCompleteBox Grid.Column="1"
-                                       Watermark="Enter Location"
-                                       HorizontalAlignment="Stretch"
-                                       Classes="input-field"
-                                       ItemsSource="{Binding LocationOptions}" 
-                                       SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Repeat Times with Icon -->
-                    <Grid Grid.Row="4" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="Repeat" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                      <TextBox Grid.Column="1" 
-                               Watermark="How Many Transactions"
-                               HorizontalAlignment="Stretch"
-                               Classes="input-field"
-                               Text="{Binding RepeatTimesText, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Notes with Icon -->
-                    <Grid Grid.Row="5" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="NoteText" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Top" Margin="0,3,0,0"/>
-                      <TextBox Grid.Column="1" 
-                               Watermark="Notes"
-                               HorizontalAlignment="Stretch"
-                               Classes="input-field"
-                               AcceptsReturn="True" 
-                               MinHeight="80"
-                               VerticalAlignment="Stretch"/>
-                    </Grid>
-
-                    <!-- Send to Preview Button with Icon -->
-                    <Button Grid.Row="6" 
-                            HorizontalAlignment="Stretch"
-                            Classes="action-button primary"
-                            Command="{Binding AddMultipleTimesCommand}"
-                            IsEnabled="{Binding CanAddMultipleTimes}">
-                      <StackPanel Orientation="Horizontal" Spacing="4">
-                        <materialIcons:MaterialIcon Kind="Send" Width="12" Height="12"/>
-                        <TextBlock Text="Send to Preview"/>
-                      </StackPanel>
-                    </Button>
-                  </Grid>
-                </Border>
+                    Background="{StaticResource PrimaryBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,0,1,0"
+                    Width="32"
+                    CornerRadius="4,0,0,4">
+              <Grid RowDefinitions="*,Auto,Auto,*">
+                <!-- Advanced Icon -->
+                <materialIcons:MaterialIcon Grid.Row="1"
+                                            Kind="Settings"
+                                            Width="14"
+                                            Height="14"
+                                            Foreground="{StaticResource AccentBrush}"
+                                            HorizontalAlignment="Center"
+                                            Margin="0,0,0,3"
+                                            ToolTip.Tip="Advanced Entry"/>
+                
+                <!-- Toggle Button -->
+                <Button Grid.Row="2"
+                        Command="{Binding ToggleFilterPanelCommand}"
+                        Width="20"
+                        Height="20"
+                        Background="{StaticResource CardBackgroundBrush}"
+                        Foreground="{StaticResource AccentBrush}"
+                        BorderThickness="1"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        CornerRadius="10"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Margin="6,0,6,6"
+                        Cursor="Hand"
+                        ToolTip.Tip="Toggle Entry Panel">
+                  <materialIcons:MaterialIcon Kind="{Binding CollapseButtonIcon}"
+                                              Width="10"
+                                              Height="10"/>
+                </Button>
               </Grid>
             </Border>
 
-            <!-- Right Card: Preview -->
+            <!-- Advanced Entry Content -->
             <Border Grid.Column="1"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="3"
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    Padding="6"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch">
-              <Grid RowDefinitions="Auto,*,Auto" RowSpacing="4">
-                <!-- Preview Title with Icon -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="4">
-                  <materialIcons:MaterialIcon Kind="Eye" Width="12" Height="12" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                  <TextBlock Text="Transaction Preview" 
-                             FontWeight="SemiBold" 
-                             FontSize="12"
-                             VerticalAlignment="Center"
-                             Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    IsVisible="{Binding IsFilterPanelExpanded}"
+                    Padding="6,4">
+              <StackPanel Spacing="6">
+                
+                <!-- Part Number -->
+                <StackPanel>
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3" Margin="0,0,0,1">
+                    <materialIcons:MaterialIcon Grid.Column="0"
+                                                Kind="Identifier"
+                                                Width="10"
+                                                Height="10"
+                                                Foreground="{StaticResource AccentBrush}"
+                                                VerticalAlignment="Center"
+                                                ToolTip.Tip="Part ID"/>
+                  </Grid>
+                  <AutoCompleteBox ItemsSource="{Binding PartIDOptions}"
+                                   SelectedItem="{Binding SelectedPartID, Mode=TwoWay}"
+                                   Classes="input-field"
+                                   HorizontalAlignment="Stretch"
+                                   Watermark="Enter part ID..."
+                                   ToolTip.Tip="Select or enter part number"/>
                 </StackPanel>
 
-                <!-- Simple preview grid -->
-                <DataGrid Grid.Row="1"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          FontSize="10"
-                          RowHeight="22"
-                          ItemsSource="{Binding SelectedLocations}">
-                  <DataGrid.Columns>
-                    <DataGridTextColumn Header="Part" Binding="{Binding .}" Width="*"/>
-                    <DataGridTextColumn Header="Operation" Binding="{Binding .}" Width="Auto"/>
-                    <DataGridTextColumn Header="Location" Binding="{Binding .}" Width="*"/>
-                    <DataGridTextColumn Header="Quantity" Binding="{Binding .}" Width="Auto"/>
-                  </DataGrid.Columns>
-                </DataGrid>
-
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="4">
-                  <!-- Save All Button with Icon -->
-                  <Button Width="80" 
-                          Classes="action-button success"
-                          Command="{Binding AddMultipleTimesCommand}"
-                          IsEnabled="{Binding CanAddMultipleTimes}">
-                    <StackPanel Orientation="Horizontal" Spacing="3">
-                      <materialIcons:MaterialIcon Kind="ContentSave" Width="10" Height="10"/>
-                      <TextBlock Text="Save All"/>
-                    </StackPanel>
-                  </Button>
-                  
-                  <!-- Reset Button with Icon -->
-                  <Button Width="80" 
-                          Classes="action-button warning"
-                          Command="{Binding ResetMultipleTimesCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="3">
-                      <materialIcons:MaterialIcon Kind="Refresh" Width="10" Height="10"/>
-                      <TextBlock Text="Reset"/>
-                    </StackPanel>
-                  </Button>
-                  
-                  <!-- Back to Normal Button with Icon -->
-                  <Button Width="100" 
-                          Classes="action-button neutral"
-                          Command="{Binding BackToNormalCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="3">
-                      <materialIcons:MaterialIcon Kind="ArrowLeft" Width="10" Height="10"/>
-                      <TextBlock Text="Back to Normal"/>
-                    </StackPanel>
-                  </Button>
+                <!-- Operation -->
+                <StackPanel>
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3" Margin="0,0,0,1">
+                    <materialIcons:MaterialIcon Grid.Column="0"
+                                                Kind="Cog"
+                                                Width="10"
+                                                Height="10"
+                                                Foreground="{StaticResource AccentBrush}"
+                                                VerticalAlignment="Center"
+                                                ToolTip.Tip="Operation"/>
+                  </Grid>
+                  <AutoCompleteBox ItemsSource="{Binding OperationOptions}"
+                                   SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
+                                   Classes="input-field"
+                                   HorizontalAlignment="Stretch"
+                                   Watermark="Enter operation..."
+                                   ToolTip.Tip="Select operation number"/>
                 </StackPanel>
-              </Grid>
+
+                <!-- Quantity -->
+                <StackPanel>
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3" Margin="0,0,0,1">
+                    <materialIcons:MaterialIcon Grid.Column="0"
+                                                Kind="Counter"
+                                                Width="10"
+                                                Height="10"
+                                                Foreground="{StaticResource AccentBrush}"
+                                                VerticalAlignment="Center"
+                                                ToolTip.Tip="Quantity"/>
+                  </Grid>
+                  <TextBox Text="{Binding QuantityText, Mode=TwoWay}"
+                           Classes="input-field"
+                           HorizontalAlignment="Stretch"
+                           Watermark="Enter quantity..."
+                           ToolTip.Tip="Enter numeric quantity"/>
+                </StackPanel>
+
+                <!-- Location -->
+                <StackPanel>
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3" Margin="0,0,0,1">
+                    <materialIcons:MaterialIcon Grid.Column="0"
+                                                Kind="MapMarker"
+                                                Width="10"
+                                                Height="10"
+                                                Foreground="{StaticResource AccentBrush}"
+                                                VerticalAlignment="Center"
+                                                ToolTip.Tip="Location"/>
+                  </Grid>
+                  <AutoCompleteBox ItemsSource="{Binding LocationOptions}"
+                                   SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"
+                                   Classes="input-field"
+                                   HorizontalAlignment="Stretch"
+                                   Watermark="Enter location..."
+                                   ToolTip.Tip="Select location"/>
+                </StackPanel>
+
+                <!-- Repeat Times -->
+                <StackPanel>
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3" Margin="0,0,0,1">
+                    <materialIcons:MaterialIcon Grid.Column="0"
+                                                Kind="Repeat"
+                                                Width="10"
+                                                Height="10"
+                                                Foreground="{StaticResource AccentBrush}"
+                                                VerticalAlignment="Center"
+                                                ToolTip.Tip="Repeat Count"/>
+                  </Grid>
+                  <TextBox Text="{Binding RepeatTimesText, Mode=TwoWay}"
+                           Classes="input-field"
+                           HorizontalAlignment="Stretch"
+                           Watermark="How many times..."
+                           ToolTip.Tip="Number of transactions to create"/>
+                </StackPanel>
+
+                <!-- Notes -->
+                <StackPanel>
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3" Margin="0,0,0,1">
+                    <materialIcons:MaterialIcon Grid.Column="0"
+                                                Kind="NoteText"
+                                                Width="10"
+                                                Height="10"
+                                                Foreground="{StaticResource AccentBrush}"
+                                                VerticalAlignment="Top"
+                                                Margin="0,4,0,0"
+                                                ToolTip.Tip="Notes"/>
+                  </Grid>
+                  <TextBox Classes="input-field"
+                           HorizontalAlignment="Stretch"
+                           AcceptsReturn="True"
+                           TextWrapping="Wrap"
+                           MinHeight="60"
+                           Watermark="Optional notes..."
+                           ToolTip.Tip="Additional notes or comments"/>
+                </StackPanel>
+
+              </StackPanel>
             </Border>
           </Grid>
-        </TabItem>
+        </Border>
 
-        <!-- Tab 2: Same Item, Multiple Locations -->
-        <TabItem>
-          <TabItem.Header>
-            <StackPanel Orientation="Horizontal" Spacing="4">
-              <materialIcons:MaterialIcon Kind="MapMarkerMultiple" Width="12" Height="12" VerticalAlignment="Center"/>
-              <TextBlock Text="Same Item, Multiple Locations" VerticalAlignment="Center" FontSize="11"/>
-            </StackPanel>
-          </TabItem.Header>
-          <Grid Margin="2" ColumnSpacing="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="{Binding FilterPanelWidth}"/>
-              <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-            <!-- Collapsible Left Panel -->
-            <Border Grid.Column="0"
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="3">
-              <Grid ColumnDefinitions="Auto,*">
-                <!-- Compact Vertical Header Bar -->
-                <Border Grid.Column="0"
-                        Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
-                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                        BorderThickness="0,0,1,0"
-                        Width="32"
-                        CornerRadius="3,0,0,3">
-                  <Grid RowDefinitions="*,Auto,Auto,*">
-                    <!-- Form Icon -->
-                    <materialIcons:MaterialIcon Grid.Row="1"
-                                                Kind="FormSelect"
-                                                Width="14"
-                                                Height="14"
-                                                Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
-                                                HorizontalAlignment="Center"
-                                                Margin="0,0,0,3"/>
-                    
-                    <!-- Toggle Button -->
-                    <Button Grid.Row="2"
-                            Command="{Binding ToggleFilterPanelCommand}"
-                            Width="20"
-                            Height="20"
-                            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                            Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
-                            BorderThickness="1"
-                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                            CornerRadius="10"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Margin="6,0,6,6"
-                            Cursor="Hand"
-                            ToolTip.Tip="Toggle Form Panel">
-                      <materialIcons:MaterialIcon Kind="{Binding CollapseButtonIcon}"
-                                                  Width="10"
-                                                  Height="10"/>
-                    </Button>
-                  </Grid>
-                </Border>
-
-                <!-- Original Form Content -->
-                <Border Grid.Column="1"
-                        IsVisible="{Binding IsFilterPanelExpanded}"
-                        Padding="6"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch">
-                  <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto"
-                        RowSpacing="4">
-                    <!-- Part Number with Icon -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="Tag" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                      <AutoCompleteBox Grid.Column="1"
-                                       Watermark="Enter Part Number"
-                                       HorizontalAlignment="Stretch"
-                                       Classes="input-field"
-                                       ItemsSource="{Binding PartIDOptions}" 
-                                       SelectedItem="{Binding MultiLocationPartID, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Operation with Icon -->
-                    <Grid Grid.Row="1" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="Cog" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                      <AutoCompleteBox Grid.Column="1"
-                                       Watermark="Enter Operation"
-                                       HorizontalAlignment="Stretch"
-                                       Classes="input-field"
-                                       ItemsSource="{Binding OperationOptions}" 
-                                       SelectedItem="{Binding MultiLocationOperation, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Quantity with Icon -->
-                    <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="Counter" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                      <TextBox Grid.Column="1" 
-                               Watermark="Enter Valid Quantity"
-                               HorizontalAlignment="Stretch"
-                               Classes="input-field"
-                               Text="{Binding MultiLocationQuantityText, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Location with Icon -->
-                    <Grid Grid.Row="3" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="MapMarker" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                      <AutoCompleteBox Grid.Column="1"
-                                       Watermark="Enter Location"
-                                       HorizontalAlignment="Stretch"
-                                       Classes="input-field"
-                                       ItemsSource="{Binding LocationOptions}" 
-                                       SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Notes with Icon -->
-                    <Grid Grid.Row="4" ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                      <materialIcons:MaterialIcon Grid.Column="0" Kind="NoteText" Width="12" Height="12" 
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Top" Margin="0,3,0,0"/>
-                      <TextBox Grid.Column="1" 
-                               Watermark="Notes"
-                               HorizontalAlignment="Stretch"
-                               Classes="input-field"
-                               AcceptsReturn="True" 
-                               MinHeight="80"
-                               VerticalAlignment="Stretch"/>
-                    </Grid>
-
-                    <!-- Send to Preview Button with Icon -->
-                    <Button Grid.Row="5" 
-                            HorizontalAlignment="Stretch"
-                            Classes="action-button primary"
-                            Command="{Binding AddToMultipleLocationsCommand}"
-                            IsEnabled="{Binding CanAddToMultipleLocations}">
-                      <StackPanel Orientation="Horizontal" Spacing="4">
-                        <materialIcons:MaterialIcon Kind="Send" Width="12" Height="12"/>
-                        <TextBlock Text="Send to Preview"/>
-                      </StackPanel>
-                    </Button>
-                  </Grid>
-                </Border>
-              </Grid>
-            </Border>
-
-            <!-- Right Card: Preview -->
-            <Border Grid.Column="1"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                    BorderThickness="1"
+        <!-- Right Panel: Preview Grid -->
+        <Border Grid.Column="1"
+                Background="{StaticResource CardBackgroundBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="4">
+          <Grid RowDefinitions="Auto,*">
+            <!-- Grid Header -->
+            <Border Grid.Row="0" 
+                    Background="{StaticResource PrimaryBrush}"
                     CornerRadius="3"
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    Padding="6"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch">
-              <Grid RowDefinitions="Auto,*,Auto" RowSpacing="4">
-                <!-- Preview Title with Icon -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="4">
-                  <materialIcons:MaterialIcon Kind="Eye" Width="12" Height="12" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" VerticalAlignment="Center"/>
-                  <TextBlock Text="Transaction Preview" 
-                             FontWeight="SemiBold" 
-                             FontSize="12"
-                             VerticalAlignment="Center"
-                             Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                </StackPanel>
-
-                <!-- Preview Grid -->
-                <DataGrid Grid.Row="1"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          FontSize="10"
-                          RowHeight="22"
-                          ItemsSource="{Binding SelectedLocations}">
-                  <DataGrid.Columns>
-                    <DataGridTextColumn Header="Part" Binding="{Binding .}" Width="*"/>
-                    <DataGridTextColumn Header="Operation" Binding="{Binding .}" Width="Auto"/>
-                    <DataGridTextColumn Header="Location" Binding="{Binding .}" Width="*"/>
-                    <DataGridTextColumn Header="Quantity" Binding="{Binding .}" Width="Auto"/>
-                  </DataGrid.Columns>
-                </DataGrid>
-
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="4">
-                  <!-- Save All Button with Icon -->
-                  <Button Width="80" 
-                          Classes="action-button success"
-                          Command="{Binding AddToMultipleLocationsCommand}"
-                          IsEnabled="{Binding CanAddToMultipleLocations}">
-                    <StackPanel Orientation="Horizontal" Spacing="3">
-                      <materialIcons:MaterialIcon Kind="ContentSave" Width="10" Height="10"/>
-                      <TextBlock Text="Save All"/>
-                    </StackPanel>
-                  </Button>
-                  
-                  <!-- Reset Button with Icon -->
-                  <Button Width="80" 
-                          Classes="action-button warning"
-                          Command="{Binding ResetMultipleLocationsCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="3">
-                      <materialIcons:MaterialIcon Kind="Refresh" Width="10" Height="10"/>
-                      <TextBlock Text="Reset"/>
-                    </StackPanel>
-                  </Button>
-                  
-                  <!-- Back to Normal Button with Icon -->
-                  <Button Width="100" 
-                          Classes="action-button neutral"
-                          Command="{Binding BackToNormalCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="3">
-                      <materialIcons:MaterialIcon Kind="ArrowLeft" Width="10" Height="10"/>
-                      <TextBlock Text="Back to Normal"/>
-                    </StackPanel>
-                  </Button>
+                    Padding="6,4"
+                    Margin="0,0,0,4">
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <materialIcons:MaterialIcon Grid.Column="0"
+                                            Kind="Eye"
+                                            Width="14"
+                                            Height="14"
+                                            Foreground="{StaticResource AccentBrush}"
+                                            VerticalAlignment="Center"
+                                            Margin="0,0,4,0"/>
+                <TextBlock Grid.Column="1"
+                           Text="Transaction Preview"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource PrimaryTextBrush}"
+                           VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="2" 
+                            Orientation="Horizontal" 
+                            Spacing="3">
+                  <TextBlock Text="{Binding SelectedLocations.Count}"
+                             FontSize="10"
+                             FontWeight="Bold"
+                             Foreground="{StaticResource AccentBrush}"
+                             VerticalAlignment="Center"/>
+                  <TextBlock Text="items"
+                             FontSize="9"
+                             Foreground="{StaticResource PrimaryTextBrush}"
+                             VerticalAlignment="Center"/>
                 </StackPanel>
               </Grid>
             </Border>
+            
+            <!-- Preview Data Grid -->
+            <DataGrid Grid.Row="1"
+                      ItemsSource="{Binding SelectedLocations}"
+                      AutoGenerateColumns="False"
+                      FontSize="9"
+                      RowHeight="20">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Location" Binding="{Binding .}" Width="*"/>
+              </DataGrid.Columns>
+            </DataGrid>
           </Grid>
-        </TabItem>
-      </TabControl>
+        </Border>
+
+      </Grid>
+    </Border>
+
+    <!-- Compact Bottom Action Panel -->
+    <Border Grid.Row="1"
+            Background="{StaticResource CardBackgroundBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="6"
+            Margin="4,0,4,4">
+      <Grid ColumnDefinitions="*,Auto">
+        <!-- Left side buttons -->
+        <StackPanel Grid.Column="0" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Left" 
+                    Spacing="4">
+          <Button Classes="action-button primary"
+                  Width="80" 
+                  Height="24"
+                  Command="{Binding AddMultipleTimesCommand}"
+                  IsEnabled="{Binding CanAddMultipleTimes}"
+                  ToolTip.Tip="Add to preview">
+            <StackPanel Orientation="Horizontal" Spacing="3"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="Plus" Width="10" Height="10"/>
+              <TextBlock Text="Add Preview" FontSize="9"/>
+            </StackPanel>
+          </Button>
+          <Button Classes="action-button success"
+                  Width="70" 
+                  Height="24"
+                  Command="{Binding AddToMultipleLocationsCommand}"
+                  IsEnabled="{Binding CanAddToMultipleLocations}"
+                  ToolTip.Tip="Save all transactions">
+            <StackPanel Orientation="Horizontal" Spacing="3"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="ContentSave" Width="10" Height="10"/>
+              <TextBlock Text="Save All" FontSize="9"/>
+            </StackPanel>
+          </Button>
+          <Button Classes="action-button warning"
+                  Width="50" 
+                  Height="24"
+                  Command="{Binding ResetMultipleLocationsCommand}"
+                  ToolTip.Tip="Reset form">
+            <StackPanel Orientation="Horizontal" Spacing="3"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="Refresh" Width="10" Height="10"/>
+              <TextBlock Text="Reset" FontSize="9"/>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+
+        <!-- Right side - back button -->
+        <Button Grid.Column="1"
+                Classes="action-button secondary"
+                Width="100" 
+                Height="24"
+                Command="{Binding BackToNormalCommand}"
+                ToolTip.Tip="Back to normal entry">
+          <StackPanel Orientation="Horizontal" Spacing="3"
+                      HorizontalAlignment="Center" VerticalAlignment="Center">
+            <materialIcons:MaterialIcon Kind="ArrowLeft" Width="10" Height="10"/>
+            <TextBlock Text="Back to Normal" FontSize="9"/>
+          </StackPanel>
+        </Button>
+      </Grid>
     </Border>
   </Grid>
 </UserControl>
