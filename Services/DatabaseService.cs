@@ -8,11 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using Dapper;
-using MTM.Models;
-using MTM.Core.Services;
+using MTM_Shared_Logic.Models;
+using MTM_Shared_Logic.Core.Services;
 using System.Linq;
 
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     /// <summary>
     /// Database service implementation providing centralized data access with connection management.
@@ -126,21 +126,21 @@ namespace MTM.Services
         /// Executes a stored procedure with status output parameters.
         /// Returns both the result set and status information from the procedure.
         /// </summary>
-        public async Task<Result<MTM.Core.Services.StoredProcedureResult<T>>> ExecuteStoredProcedureWithStatusAsync<T>(
+        public async Task<Result<MTM_Shared_Logic.Core.Services.StoredProcedureResult<T>>> ExecuteStoredProcedureWithStatusAsync<T>(
             string procedureName,
             Dictionary<string, object>? parameters = null,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(procedureName))
             {
-                return Result<MTM.Core.Services.StoredProcedureResult<T>>.Failure("Stored procedure name cannot be empty");
+                return Result<MTM_Shared_Logic.Core.Services.StoredProcedureResult<T>>.Failure("Stored procedure name cannot be empty");
             }
 
             if (IsSqlQuery(procedureName))
             {
                 var errorMsg = "SECURITY VIOLATION: Direct SQL execution is prohibited. Only stored procedure names are allowed.";
                 _logger.LogError("Attempted SQL injection or policy violation: {ProcedureName}", procedureName);
-                return Result<MTM.Core.Services.StoredProcedureResult<T>>.Failure(errorMsg);
+                return Result<MTM_Shared_Logic.Core.Services.StoredProcedureResult<T>>.Failure(errorMsg);
             }
 
             try
@@ -171,7 +171,7 @@ namespace MTM.Services
                     commandType: CommandType.StoredProcedure,
                     commandTimeout: _commandTimeout);
 
-                var procedureResult = new MTM.Core.Services.StoredProcedureResult<T>
+                var procedureResult = new MTM_Shared_Logic.Core.Services.StoredProcedureResult<T>
                 {
                     Data = results.ToList(),
                     Status = dynParams.Get<int>("p_Status"),
@@ -190,12 +190,12 @@ namespace MTM.Services
                 _logger.LogDebug("Stored procedure with status executed successfully, Status: {Status}, Rows: {Count}", 
                     procedureResult.Status, procedureResult.Data.Count);
                 
-                return Result<MTM.Core.Services.StoredProcedureResult<T>>.Success(procedureResult);
+                return Result<MTM_Shared_Logic.Core.Services.StoredProcedureResult<T>>.Success(procedureResult);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Stored procedure with status execution failed");
-                return Result<MTM.Core.Services.StoredProcedureResult<T>>.Failure($"Stored procedure execution failed: {ex.Message}");
+                return Result<MTM_Shared_Logic.Core.Services.StoredProcedureResult<T>>.Failure($"Stored procedure execution failed: {ex.Message}");
             }
         }
 

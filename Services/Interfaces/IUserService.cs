@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MTM.Models;
+using MTM_Shared_Logic.Models;
 
-namespace MTM.Services.Interfaces
+namespace MTM_Shared_Logic.Services.Interfaces
 {
     /// <summary>
     /// Interface for user management service providing authentication, user data access, and role management.

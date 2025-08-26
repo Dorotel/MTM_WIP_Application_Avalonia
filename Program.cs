@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +8,7 @@ using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
-using MTM.Extensions;
+using MTM_Shared_Logic.Extensions;
 
 namespace MTM_WIP_Application_Avalonia;
 

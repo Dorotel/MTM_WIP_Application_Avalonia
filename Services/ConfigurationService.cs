@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MTM.Models;
-using MTM.Core.Services;
+using MTM_Shared_Logic.Models;
+using MTM_Shared_Logic.Core.Services;
 
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     /// <summary>
     /// Configuration service implementation for reading and managing appsettings.json.
@@ -358,8 +358,8 @@ namespace MTM.Services
 
         public Dictionary<string, LogLevel> CategoryLevels { get; set; } = new()
         {
-            ["MTM.Services"] = LogLevel.Information,
-            ["MTM.ViewModels"] = LogLevel.Warning, 
+            ["MTM_Shared_Logic.Services"] = LogLevel.Information,
+            ["MTM_Shared_Logic.ViewModels"] = LogLevel.Warning, 
             ["Microsoft"] = LogLevel.Warning,
             ["System"] = LogLevel.Error
         };

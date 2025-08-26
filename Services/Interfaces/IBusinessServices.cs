@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MTM.Models;
-using MTM.Core.Services;
+using MTM_Shared_Logic.Models;
+using MTM_Shared_Logic.Core.Services;
 
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     /// <summary>
     /// Interface for inventory management operations following MTM business patterns.

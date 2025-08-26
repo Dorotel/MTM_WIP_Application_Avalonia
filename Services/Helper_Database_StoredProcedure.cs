@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using Dapper;
-using MTM.Models;
+using MTM_Shared_Logic.Models;
 
 namespace MTM_WIP_Application_Avalonia.Services
 {

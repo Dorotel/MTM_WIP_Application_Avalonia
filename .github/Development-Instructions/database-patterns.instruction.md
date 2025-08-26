@@ -96,7 +96,7 @@ var workflowSteps = new[] { "90", "100", "110", "120" }; // String numbers for m
 ### Complete InventoryService Implementation:
 ```csharp
 // ? IMPLEMENTED in Services/InventoryService.cs
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     public class InventoryService : IInventoryService
     {
@@ -114,7 +114,7 @@ namespace MTM.Services
             _logger = logger;
         }
 
-        public async Task<MTM.Models.Result<List<InventoryItem>>> GetInventoryAsync(CancellationToken cancellationToken = default)
+        public async Task<MTM_Shared_Logic.Models.Result<List<InventoryItem>>> GetInventoryAsync(CancellationToken cancellationToken = default)
         {
             try
             {
@@ -128,17 +128,17 @@ namespace MTM.Services
                 if (!result.IsSuccess)
                 {
                     _logger.LogError("Failed to retrieve inventory items: {Error}", result.ErrorMessage);
-                    return MTM.Models.Result<List<InventoryItem>>.Failure(result.ErrorMessage ?? "Failed to retrieve inventory");
+                    return MTM_Shared_Logic.Models.Result<List<InventoryItem>>.Failure(result.ErrorMessage ?? "Failed to retrieve inventory");
                 }
 
                 // Convert DataTable to List<InventoryItem>
                 var inventoryItems = ConvertDataTableToInventoryItems(result.Data);
-                return MTM.Models.Result<List<InventoryItem>>.Success(inventoryItems);
+                return MTM_Shared_Logic.Models.Result<List<InventoryItem>>.Success(inventoryItems);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to retrieve inventory items");
-                return MTM.Models.Result<List<InventoryItem>>.Failure($"Failed to retrieve inventory: {ex.Message}");
+                return MTM_Shared_Logic.Models.Result<List<InventoryItem>>.Failure($"Failed to retrieve inventory: {ex.Message}");
             }
         }
 
@@ -152,7 +152,7 @@ namespace MTM.Services
 ### Always implement based on user intent:
 ```csharp
 // ? Add inventory operation - always IN (user intent: adding stock)
-public async Task<MTM.Models.Result> AddInventoryItemAsync(InventoryItem item, CancellationToken cancellationToken = default)
+public async Task<MTM_Shared_Logic.Models.Result> AddInventoryItemAsync(InventoryItem item, CancellationToken cancellationToken = default)
 {
     var parameters = new Dictionary<string, object>
     {
@@ -172,12 +172,12 @@ public async Task<MTM.Models.Result> AddInventoryItemAsync(InventoryItem item, C
         parameters);
 
     return result.IsSuccess 
-        ? MTM.Models.Result.Success() 
-        : MTM.Models.Result.Failure(result.ErrorMessage ?? "Failed to add inventory item");
+        ? MTM_Shared_Logic.Models.Result.Success() 
+        : MTM_Shared_Logic.Models.Result.Failure(result.ErrorMessage ?? "Failed to add inventory item");
 }
 
 // ? Remove inventory operation - always OUT (user intent: removing stock)
-public async Task<MTM.Models.Result> RemoveInventoryItemAsync(string partId, string location, string operation, int quantity, string userId, string? notes = null, CancellationToken cancellationToken = default)
+public async Task<MTM_Shared_Logic.Models.Result> RemoveInventoryItemAsync(string partId, string location, string operation, int quantity, string userId, string? notes = null, CancellationToken cancellationToken = default)
 {
     var parameters = new Dictionary<string, object>
     {
@@ -202,20 +202,20 @@ public async Task<MTM.Models.Result> RemoveInventoryItemAsync(string partId, str
     if (status != 0)
     {
         var errorMsg = result.GetOutputParameter<string>("p_ErrorMsg") ?? "Unknown error occurred";
-        return MTM.Models.Result.Failure(errorMsg);
+        return MTM_Shared_Logic.Models.Result.Failure(errorMsg);
     }
 
-    return MTM.Models.Result.Success();
+    return MTM_Shared_Logic.Models.Result.Success();
 }
 
 // ? Transfer inventory operation - always TRANSFER (user intent: moving stock)
-public async Task<MTM.Models.Result> TransferInventoryAsync(string partId, string operation, int quantity, string fromLocation, string toLocation, string userId, CancellationToken cancellationToken = default)
+public async Task<MTM_Shared_Logic.Models.Result> TransferInventoryAsync(string partId, string operation, int quantity, string fromLocation, string toLocation, string userId, CancellationToken cancellationToken = default)
 {
     // Get current item batch number for transfer
     var currentItemResult = await GetInventoryItemAsync(partId, cancellationToken);
     if (!currentItemResult.IsSuccess || currentItemResult.Value == null)
     {
-        return MTM.Models.Result.Failure("Part not found in inventory");
+        return MTM_Shared_Logic.Models.Result.Failure("Part not found in inventory");
     }
 
     var parameters = new Dictionary<string, object>
@@ -233,8 +233,8 @@ public async Task<MTM.Models.Result> TransferInventoryAsync(string partId, strin
         parameters);
 
     return result.IsSuccess 
-        ? MTM.Models.Result.Success() 
-        : MTM.Models.Result.Failure(result.ErrorMessage ?? "Failed to transfer inventory");
+        ? MTM_Shared_Logic.Models.Result.Success() 
+        : MTM_Shared_Logic.Models.Result.Failure(result.ErrorMessage ?? "Failed to transfer inventory");
 }
 ```
 
@@ -261,7 +261,7 @@ public class DataTableWithStatus
 
 ### ? Service-level error handling pattern:
 ```csharp
-public async Task<MTM.Models.Result<T>> ExecuteDatabaseOperation<T>(string procedureName, Dictionary<string, object> parameters)
+public async Task<MTM_Shared_Logic.Models.Result<T>> ExecuteDatabaseOperation<T>(string procedureName, Dictionary<string, object> parameters)
 {
     try
     {
@@ -278,18 +278,18 @@ public async Task<MTM.Models.Result<T>> ExecuteDatabaseOperation<T>(string proce
             var data = ConvertToType<T>(result.Data);
             _logger.LogDebug("Stored procedure executed successfully: {ProcedureName}, Rows: {RowCount}", 
                 procedureName, result.RowsAffected);
-            return MTM.Models.Result<T>.Success(data);
+            return MTM_Shared_Logic.Models.Result<T>.Success(data);
         }
 
         _logger.LogError("Stored procedure failed: {ProcedureName}, Error: {Error}", 
             procedureName, result.ErrorMessage);
         
-        return MTM.Models.Result<T>.Failure(result.ErrorMessage ?? "Database operation failed");
+        return MTM_Shared_Logic.Models.Result<T>.Failure(result.ErrorMessage ?? "Database operation failed");
     }
     catch (Exception ex)
     {
         _logger.LogError(ex, "Exception in stored procedure: {ProcedureName}", procedureName);
-        return MTM.Models.Result<T>.Failure($"Database error: {ex.Message}");
+        return MTM_Shared_Logic.Models.Result<T>.Failure($"Database error: {ex.Message}");
     }
 }
 ```
@@ -388,14 +388,14 @@ DELIMITER ;
 ### Using IValidationService integration:
 ```csharp
 // ? Validation integrated into services
-public async Task<MTM.Models.Result> AddInventoryItemAsync(InventoryItem item, CancellationToken cancellationToken = default)
+public async Task<MTM_Shared_Logic.Models.Result> AddInventoryItemAsync(InventoryItem item, CancellationToken cancellationToken = default)
 {
     // Validate the inventory item
     var validationResult = await _validationService.ValidateAsync(item, cancellationToken);
     if (!validationResult.IsSuccess || !validationResult.Value!.IsValid)
     {
         var errors = string.Join(", ", validationResult.Value?.ErrorMessages ?? new List<string> { "Validation failed" });
-        return MTM.Models.Result.Failure($"Validation failed: {errors}");
+        return MTM_Shared_Logic.Models.Result.Failure($"Validation failed: {errors}");
     }
 
     // Proceed with database operation...
@@ -432,5 +432,5 @@ The database access layer is now complete and operational:
 - ? Include comprehensive error handling and logging via ILogger<T>
 - ? Validate inputs before database operations using IValidationService
 - ? Follow MTM data patterns for Part IDs (strings) and Operations (string numbers)
-- ? Use MTM.Models.Result<T> pattern for operation responses
+- ? Use MTM_Shared_Logic.Models.Result<T> pattern for operation responses
 - ? Initialize Helper_Database_StoredProcedure logger during app startup

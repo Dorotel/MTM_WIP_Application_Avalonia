@@ -118,7 +118,7 @@ public interface ITransactionService { }
 ### Service Implementations - Category-Based Files
 ```csharp
 // File: Services/UserServices.cs - ALL user-related services
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     public class UserService : IUserService { }
     public class UserValidationService : IUserValidationService { }
@@ -126,7 +126,7 @@ namespace MTM.Services
 }
 
 // File: Services/InventoryServices.cs - ALL inventory-related services
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     public class InventoryService : IInventoryService { }
     public class InventoryValidationService : IInventoryValidationService { }

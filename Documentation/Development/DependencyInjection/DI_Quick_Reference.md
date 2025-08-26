@@ -5,7 +5,7 @@
 **Copy this exact pattern to avoid runtime errors:**
 
 ```csharp
-using MTM.Extensions; // REQUIRED
+using MTM_Shared_Logic.Extensions; // REQUIRED
 
 private static void ConfigureServices()
 {
@@ -50,14 +50,14 @@ private static void ConfigureServices()
 
 ### Error: "The name 'AddMTMServices' does not exist"
 **Cause**: Missing using statement  
-**Fix**: Add `using MTM.Extensions;` at top of Program.cs
+**Fix**: Add `using MTM_Shared_Logic.Extensions;` at top of Program.cs
 
 ## ? Required Files to Update
 
 When adding DI to a project, update these files:
 
 1. **Program.cs**
-   - Add `using MTM.Extensions;`
+   - Add `using MTM_Shared_Logic.Extensions;`
    - Call `services.AddMTMServices(configuration);`
    - Register all ViewModels
 
@@ -79,9 +79,9 @@ private static void ValidateServiceRegistration()
     try
     {
         // Test critical services
-        var dbService = GetService<MTM.Core.Services.IDatabaseService>();
-        var validationService = GetService<MTM.Core.Services.IValidationService>();
-        var inventoryService = GetService<MTM.Services.IInventoryService>();
+        var dbService = GetService<MTM_Shared_Logic.Core.Services.IDatabaseService>();
+        var validationService = GetService<MTM_Shared_Logic.Core.Services.IValidationService>();
+        var inventoryService = GetService<MTM_Shared_Logic.Services.IInventoryService>();
         var mainWindowViewModel = GetService<MainWindowViewModel>();
         
         Console.WriteLine("? All services resolved successfully!");

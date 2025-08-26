@@ -43,7 +43,7 @@ All service classes of the same category MUST be in the same .cs file. Interface
 ```csharp
 // ✅ CORRECT: Multiple related services in one file
 // File: Services/UserServices.cs
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     public class UserService : IUserService
     {
@@ -63,7 +63,7 @@ namespace MTM.Services
 
 // ✅ CORRECT: Interfaces in separate files
 // File: Services/Interfaces/IUserService.cs
-namespace MTM.Services.Interfaces
+namespace MTM_Shared_Logic.Services.Interfaces
 {
     public interface IUserService
     {

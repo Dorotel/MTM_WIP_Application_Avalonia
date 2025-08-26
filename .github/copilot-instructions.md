@@ -22,7 +22,7 @@ You are an expert Avalonia UI developer working on the MTM (Manitowoc Tool and M
 ```csharp
 // ✅ CORRECT: Category-based service organization
 // File: Services/UserServices.cs
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     public class UserService : IUserService { /* implementation */ }
     public class UserValidationService : IUserValidationService { /* implementation */ }
@@ -30,7 +30,7 @@ namespace MTM.Services
 }
 
 // File: Services/Interfaces/IUserService.cs
-namespace MTM.Services.Interfaces
+namespace MTM_Shared_Logic.Services.Interfaces
 {
     public interface IUserService { /* interface definition */ }
 }

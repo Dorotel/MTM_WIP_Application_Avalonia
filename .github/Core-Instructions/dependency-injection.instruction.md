@@ -10,7 +10,7 @@
 services.AddMTMServices(configuration);
 
 // ? WRONG: Manual registration misses dependencies
-services.AddScoped<MTM.Services.IInventoryService, MTM.Services.InventoryService>(); // Missing IValidationService dependency!
+services.AddScoped<MTM_Shared_Logic.Services.IInventoryService, MTM_Shared_Logic.Services.InventoryService>(); // Missing IValidationService dependency!
 ```
 
 ## **?? SERVICE ORGANIZATION RULE - CRITICAL**
@@ -36,7 +36,7 @@ Services/
 **? CORRECT Implementation Pattern**:
 ```csharp
 // File: Services/UserServices.cs
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     /// <summary>
     /// Primary user management service
@@ -231,16 +231,16 @@ Helper_Database_StoredProcedure.SetLogger(generalLogger);
 ### ? **Error 1: Missing IValidationService**
 ```csharp
 // This will fail at runtime:
-services.AddScoped<MTM.Services.IInventoryService, MTM.Services.InventoryService>();
-// Error: Unable to resolve service for type 'MTM.Core.Services.IValidationService'
+services.AddScoped<MTM_Shared_Logic.Services.IInventoryService, MTM_Shared_Logic.Services.InventoryService>();
+// Error: Unable to resolve service for type 'MTM_Shared_Logic.Core.Services.IValidationService'
 ```
 **? Solution**: Use `services.AddMTMServices(configuration);`
 
 ### ? **Error 2: Missing ICacheService**
 ```csharp
 // This will fail if services depend on caching:
-services.AddScoped<MTM.Services.IUserService, MTM.Services.UserService>();
-// Error: Unable to resolve service for type 'MTM.Core.Services.ICacheService'
+services.AddScoped<MTM_Shared_Logic.Services.IUserService, MTM_Shared_Logic.Services.UserService>();
+// Error: Unable to resolve service for type 'MTM_Shared_Logic.Core.Services.ICacheService'
 ```
 **? Solution**: Use `services.AddMTMServices(configuration);`
 
@@ -256,7 +256,7 @@ var mainWindowViewModel = Program.GetService<MainWindowViewModel>();
 ```csharp
 // CS0103: The name 'AddMTMServices' does not exist in the current context
 ```
-**? Solution**: Add `using MTM.Extensions;` at the top of Program.cs
+**? Solution**: Add `using MTM_Shared_Logic.Extensions;` at the top of Program.cs
 
 ### ? **Error 5: Incorrect Service File Organization**
 ```csharp
@@ -285,7 +285,7 @@ var mainWindowViewModel = Program.GetService<MainWindowViewModel>();
 
 ## **? IMPLEMENTED - Required Using Statements**
 ```csharp
-using MTM.Extensions; // ? For AddMTMServices extension method
+using MTM_Shared_Logic.Extensions; // ? For AddMTMServices extension method
 using MTM_WIP_Application_Avalonia.Services; // ? For Avalonia-specific services
 using MTM_WIP_Application_Avalonia.ViewModels; // ? For ViewModel registration
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm; // ? For specific ViewModels
@@ -298,11 +298,11 @@ All ViewModels should use constructor injection pattern:
 ```csharp
 public class InventoryViewModel : BaseViewModel
 {
-    private readonly MTM.Services.IInventoryService _inventoryService;
+    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
     private readonly INavigationService _navigationService;
 
     public InventoryViewModel(
-        MTM.Services.IInventoryService inventoryService,
+        MTM_Shared_Logic.Services.IInventoryService inventoryService,
         INavigationService navigationService,
         ILogger<InventoryViewModel> logger) : base(logger)
     {
@@ -325,14 +325,14 @@ private static void ValidateServiceRegistration()
     try
     {
         // Test MTM Core Services
-        var dbService = GetService<MTM.Core.Services.IDatabaseService>();
-        var validationService = GetService<MTM.Core.Services.IValidationService>();
-        var cacheService = GetService<MTM.Core.Services.ICacheService>();
+        var dbService = GetService<MTM_Shared_Logic.Core.Services.IDatabaseService>();
+        var validationService = GetService<MTM_Shared_Logic.Core.Services.IValidationService>();
+        var cacheService = GetService<MTM_Shared_Logic.Core.Services.ICacheService>();
         
         // Test MTM Business Services (from category files)
-        var inventoryService = GetService<MTM.Services.IInventoryService>();
-        var userService = GetService<MTM.Services.IUserService>();
-        var transactionService = GetService<MTM.Services.ITransactionService>();
+        var inventoryService = GetService<MTM_Shared_Logic.Services.IInventoryService>();
+        var userService = GetService<MTM_Shared_Logic.Services.IUserService>();
+        var transactionService = GetService<MTM_Shared_Logic.Services.ITransactionService>();
         
         // Test Avalonia Services
         var navigationService = GetService<INavigationService>();
@@ -361,7 +361,7 @@ private static void ValidateServiceRegistration()
 
 1. **? Check service registration order** - `AddMTMServices` must be called before service overrides
 2. **? Verify all ViewModels are registered** - Each ViewModel needs `services.AddTransient<ViewModelName>()`
-3. **? Check using statements** - Ensure `using MTM.Extensions;` is included
+3. **? Check using statements** - Ensure `using MTM_Shared_Logic.Extensions;` is included
 4. **? Review error messages** - DI errors clearly indicate missing service types
 5. **? Use validation method** - `ValidateServiceRegistration()` tests if all services can be resolved
 6. **?? Check service file organization** - Ensure related services are grouped in category files

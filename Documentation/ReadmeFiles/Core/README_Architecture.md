@@ -27,7 +27,7 @@ The MTM WIP Application follows a modern, layered architecture with strict separ
 ├─────────────────────────────────────────────────────────────────┤
 │                         SERVICE LAYER                           │
 ├─────────────────────────────────────────────────────────────────┤
-│  Business Services (MTM.Services namespace)                    │
+│  Business Services (MTM_Shared_Logic.Services namespace)                    │
 │  ├─ IInventoryService - Inventory business logic               │
 │  ├─ IUserService - User management and authentication          │
 │  ├─ ITransactionService - Transaction processing               │

@@ -8,11 +8,11 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 
 public class InventoryViewModel : BaseViewModel
 {
-    private readonly MTM.Services.IInventoryService _inventoryService;
+    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
     private readonly IApplicationStateService _applicationState;
 
     public InventoryViewModel(
-        MTM.Services.IInventoryService inventoryService,
+        MTM_Shared_Logic.Services.IInventoryService inventoryService,
         IApplicationStateService applicationState,
         ILogger<InventoryViewModel> logger) : base(logger)
     {

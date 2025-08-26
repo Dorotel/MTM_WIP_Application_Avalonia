@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ReactiveUI;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM.Models;
+using MTM_Shared_Logic.Models;
 using System.Linq;
 using Avalonia.Controls;
 using Material.Icons;

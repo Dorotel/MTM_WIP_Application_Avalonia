@@ -19,8 +19,8 @@
       <Setter Property="Padding" Value="8,4"/>
       <Setter Property="FontSize" Value="12"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
     </Style>
     
     <!-- Label styles -->
@@ -30,7 +30,7 @@
       <Setter Property="VerticalAlignment" Value="Center"/>
       <Setter Property="Margin" Value="4,0"/>
       <Setter Property="HorizontalAlignment" Value="Right"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
     </Style>
 
     <!-- Button styles -->
@@ -44,41 +44,41 @@
     </Style>
     
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.PrimaryBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
     </Style>
     <Style Selector="Button.primary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
     </Style>
     <Style Selector="Button.primary:disabled">
-      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryDisabledBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.SecondaryTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryDisabledBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
     </Style>
 
     <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
     </Style>
 
     <Style Selector="Button.danger">
-      <Setter Property="Background" Value="{DynamicResource MTM.ErrorBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.ErrorBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
     </Style>
     <Style Selector="Button.danger:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM.ErrorHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorHoverBrush}"/>
     </Style>
 
     <Style Selector="DataGrid">
-      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="GridLinesVisibility" Value="Horizontal"/>
@@ -110,7 +110,7 @@
                FontSize="14"
                FontWeight="SemiBold"
                Margin="8,8,8,4"
-               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
     
     <!-- Search Controls Row -->
     <Grid Grid.Row="1" 
@@ -214,7 +214,7 @@
                    VerticalAlignment="Center"
                    Orientation="Vertical"
                    Spacing="8">
-          <Border Background="{DynamicResource MTM.BorderBrush}"
+          <Border Background="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                   CornerRadius="4"
                   Width="120" Height="120"
                   HorizontalAlignment="Center">
@@ -228,7 +228,7 @@
                      HorizontalAlignment="Center"
                      FontSize="12"
                      Opacity="0.6"
-                     Foreground="{DynamicResource MTM.SecondaryTextBrush}"/>
+                     Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
         </StackPanel>
       </Panel>
     </Grid>

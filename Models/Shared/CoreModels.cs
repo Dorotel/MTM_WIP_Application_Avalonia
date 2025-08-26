@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace MTM.Models
+namespace MTM_Shared_Logic.Models
 {
     /// <summary>
     /// MTM-specific core data models following MTM business patterns.

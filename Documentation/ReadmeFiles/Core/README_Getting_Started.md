@@ -288,7 +288,7 @@ FLUSH PRIVILEGES;
 
 #### **Issue: Dependency Injection Errors**
 ```
-Error: Unable to resolve service for type 'MTM.Core.Services.IValidationService'
+Error: Unable to resolve service for type 'MTM_Shared_Logic.Core.Services.IValidationService'
 ```
 
 **Solution**: Ensure proper service registration in Program.cs:

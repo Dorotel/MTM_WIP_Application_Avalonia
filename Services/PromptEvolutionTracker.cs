@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace MTM.Development.PromptEvolution
+namespace MTM_Shared_Logic.Development.PromptEvolution
 {
     /// <summary>
     /// Tracks custom prompt usage for the MTM Prompt Evolution System

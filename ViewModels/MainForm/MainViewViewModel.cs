@@ -13,7 +13,7 @@ public class MainViewViewModel : BaseViewModel
 {
     private readonly INavigationService _navigationService;
     private readonly IApplicationStateService _applicationState;
-    private readonly MTM.Services.IInventoryService _inventoryService;
+    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
 
     // Tabs
     private int _selectedTabIndex;
@@ -131,7 +131,7 @@ public class MainViewViewModel : BaseViewModel
     public MainViewViewModel(
         INavigationService navigationService,
         IApplicationStateService applicationState,
-        MTM.Services.IInventoryService inventoryService,
+        MTM_Shared_Logic.Services.IInventoryService inventoryService,
         ILogger<MainViewViewModel> logger) : base(logger)
     {
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MTM.Models
+namespace MTM_Shared_Logic.Models
 {
     /// <summary>
     /// Represents the result of an operation that can either succeed or fail.

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     /// <summary>
     /// System configuration service for managing application settings and configuration.

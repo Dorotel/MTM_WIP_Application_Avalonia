@@ -64,7 +64,7 @@ Services/
 **?? Implementation Pattern**:
 ```csharp
 // File: Services/UserServices.cs
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     /// <summary>
     /// Primary user management service

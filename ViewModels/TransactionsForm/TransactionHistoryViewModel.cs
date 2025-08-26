@@ -8,11 +8,11 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 
 public class TransactionHistoryViewModel : BaseViewModel
 {
-    private readonly MTM.Services.ITransactionService _transactionService;
+    private readonly MTM_Shared_Logic.Services.ITransactionService _transactionService;
     private readonly IApplicationStateService _applicationState;
 
     public TransactionHistoryViewModel(
-        MTM.Services.ITransactionService transactionService,
+        MTM_Shared_Logic.Services.ITransactionService transactionService,
         IApplicationStateService applicationState,
         ILogger<TransactionHistoryViewModel> logger) : base(logger)
     {

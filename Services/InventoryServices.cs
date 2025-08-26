@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MTM.Models;
-using MTM.Core.Services;
+using MTM_Shared_Logic.Models;
+using MTM_Shared_Logic.Core.Services;
 using MTM_WIP_Application_Avalonia.Services;
 
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     /// <summary>
     /// Service for inventory management operations following MTM business patterns.

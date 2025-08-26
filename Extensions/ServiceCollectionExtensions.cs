@@ -7,12 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Memory;
-using MTM.Services;
-using MTM.Core.Services;
-using MTM.Models;
-using IDatabaseService = MTM.Core.Services.IDatabaseService;
+using MTM_Shared_Logic.Services;
+using MTM_Shared_Logic.Core.Services;
+using MTM_Shared_Logic.Models;
+using IDatabaseService = MTM_Shared_Logic.Core.Services.IDatabaseService;
 
-namespace MTM.Extensions
+namespace MTM_Shared_Logic.Extensions
 {
     /// <summary>
     /// Extension methods for registering MTM services with dependency injection.

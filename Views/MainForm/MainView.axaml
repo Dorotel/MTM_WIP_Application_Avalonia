@@ -26,25 +26,25 @@
   <!-- MANDATORY: Viewbox wrapper for proportional scaling -->
   <Viewbox Stretch="Uniform" StretchDirection="Both">
     <!-- Fixed dimensions for scaling reference -->
-    <Grid Width="1200" Height="700" RowDefinitions="Auto,*,Auto" Background="{DynamicResource MTM.AppBackgroundBrush}">
+    <Grid Width="1200" Height="700" RowDefinitions="Auto,*,Auto" Background="{DynamicResource MTM_Shared_Logic.AppBackgroundBrush}">
       
       <!-- Header Menu with MTM Branding -->
       <Border Grid.Row="0" 
-              Background="{DynamicResource MTM.HeaderBackgroundBrush}"
+              Background="{DynamicResource MTM_Shared_Logic.HeaderBackgroundBrush}"
               Padding="24,16"
               BoxShadow="0 2 8 0 #1A000000">
-        <Menu Background="Transparent" Foreground="{DynamicResource MTM.LightTextBrush}">
-          <MenuItem Header="_File" Foreground="{DynamicResource MTM.LightTextBrush}">
+        <Menu Background="Transparent" Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}">
+          <MenuItem Header="_File" Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}">
             <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
             <Separator/>
             <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
           </MenuItem>
-          <MenuItem Header="_View" Foreground="{DynamicResource MTM.LightTextBrush}">
+          <MenuItem Header="_View" Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}">
             <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
           </MenuItem>
           <!-- Development builds only -->
           <MenuItem Header="_Help" 
-                    Foreground="{DynamicResource MTM.LightTextBrush}"
+                    Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                     IsVisible="{Binding ShowDevelopmentMenu}">
             <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
           </MenuItem>
@@ -61,7 +61,7 @@
         
         <!-- Left Panel: Modern Tab Control with MTM Styling -->
         <Border Grid.Column="0" 
-                Background="{DynamicResource MTM.CardBackgroundBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                 CornerRadius="8"
                 Margin="16"
                 BoxShadow="0 2 8 0 #11000000">
@@ -91,7 +91,7 @@
 
         <!-- Modern Splitter with MTM Styling -->
         <GridSplitter Grid.Column="1"
-                      Background="{DynamicResource MTM.PrimaryBrush}"
+                      Background="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                       ResizeDirection="Columns"
                       ShowsPreview="True"
                       HorizontalAlignment="Stretch"
@@ -102,7 +102,7 @@
 
         <!-- Right Panel: Quick Actions with Modern Styling -->
         <Border Grid.Column="2"
-                Background="{DynamicResource MTM.CardBackgroundBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                 CornerRadius="8"
                 Margin="0,16,16,16"
                 BoxShadow="0 2 8 0 #11000000"
@@ -117,22 +117,22 @@
 
       <!-- Modern Status Bar with MTM Styling -->
       <Border Grid.Row="2"
-              Background="{DynamicResource MTM.StatusBarBackgroundBrush}"
+              Background="{DynamicResource MTM_Shared_Logic.StatusBarBackgroundBrush}"
               Padding="24,12">
         <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="24">
           <!-- Connection Status with Icon -->
           <Border Grid.Column="0" 
-                  Background="{DynamicResource MTM.PrimaryDarkBrush}"
+                  Background="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"
                   Padding="12,6"
                   CornerRadius="20">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <TextBlock Text="🔗" FontSize="14"/>
               <TextBlock Text="Connection:" 
-                         Foreground="{DynamicResource MTM.LightTextBrush}" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" 
                          Opacity="0.8"
                          FontSize="12"/>
               <TextBlock Text="{Binding ConnectionStatus}"
-                         Foreground="{DynamicResource MTM.LightPurpleBrush}"
+                         Foreground="{DynamicResource MTM_Shared_Logic.LightPurpleBrush}"
                          FontWeight="SemiBold"
                          FontSize="12"/>
             </StackPanel>
@@ -147,39 +147,39 @@
             <!-- Connection Strength -->
             <StackPanel Orientation="Horizontal" Spacing="8">
               <TextBlock Text="Signal" 
-                         Foreground="{DynamicResource MTM.LightTextBrush}" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" 
                          Opacity="0.8"
                          FontSize="11"/>
               <ProgressBar Minimum="0" Maximum="100" 
                            Width="100" Height="8" 
                            Value="{Binding ConnectionStrength}"
-                           Foreground="{DynamicResource MTM.LightPurpleBrush}"
-                           Background="{DynamicResource MTM.PrimaryDarkBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.LightPurpleBrush}"
+                           Background="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"
                            CornerRadius="4"/>
             </StackPanel>
 
             <!-- Main Progress -->
             <StackPanel Orientation="Horizontal" Spacing="8">
               <TextBlock Text="Progress" 
-                         Foreground="{DynamicResource MTM.LightTextBrush}" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" 
                          Opacity="0.8"
                          FontSize="11"/>
               <ProgressBar Minimum="0" Maximum="100"
                            Width="120" Height="8"
                            Value="{Binding ProgressValue}"
-                           Foreground="{DynamicResource MTM.MagentaAccentBrush}"
-                           Background="{DynamicResource MTM.PrimaryDarkBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.MagentaAccentBrush}"
+                           Background="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"
                            CornerRadius="4"/>
             </StackPanel>
           </StackPanel>
 
           <!-- Status Text with Modern Styling -->
           <Border Grid.Column="2" 
-                  Background="{DynamicResource MTM.CardBackgroundBrush}"
+                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                   Padding="12,6"
                   CornerRadius="6">
             <TextBlock Text="{Binding StatusText}"
-                       Foreground="{DynamicResource MTM.PrimaryTextBrush}"
+                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
                        FontSize="12"
                        VerticalAlignment="Center"/>
           </Border>
@@ -187,7 +187,7 @@
           <!-- Version Info -->
           <TextBlock Grid.Column="3"
                      Text="MTM WIP v1.0"
-                     Foreground="{DynamicResource MTM.LightTextBrush}"
+                     Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                      Opacity="0.6"
                      FontSize="10"
                      VerticalAlignment="Center"/>

@@ -8,11 +8,11 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 
 public class UserManagementViewModel : BaseViewModel
 {
-    private readonly MTM.Services.IUserService _userService;
+    private readonly MTM_Shared_Logic.Services.IUserService _userService;
     private readonly IApplicationStateService _applicationState;
 
     public UserManagementViewModel(
-        MTM.Services.IUserService userService,
+        MTM_Shared_Logic.Services.IUserService userService,
         IApplicationStateService applicationState,
         ILogger<UserManagementViewModel> logger) : base(logger)
     {

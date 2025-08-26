@@ -1,4 +1,4 @@
-﻿# MTM WIP Application Avalonia
+# MTM WIP Application Avalonia
 
 ## 🚀 Quick Start with Custom Copilot Commands
 
@@ -398,7 +398,7 @@ mysql -u username -p database_name < Documentation/Development/Database_Files/Up
 
 ```csharp
 // Program.cs with .NET 8 top-level statements
-using MTM.Extensions;
+using MTM_Shared_Logic.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

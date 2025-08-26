@@ -98,26 +98,26 @@ Write-Info "Installing PowerShell module..."
 try {
     # Get the current PowerShell module path
     $ModulePath = $env:PSModulePath.Split([IO.Path]::PathSeparator)[0]
-    $MTMModulePath = Join-Path $ModulePath "MTM.PromptEvolution"
+    $MTMModulePath = Join-Path $ModulePath "MTM_Shared_Logic.PromptEvolution"
     
     if (-not (Test-Path $MTMModulePath)) {
         New-Item -ItemType Directory -Path $MTMModulePath -Force | Out-Null
     }
     
     # Copy module file
-    $SourceModule = "Documentation/Development/Scripts/MTM.PromptEvolution.psm1"
-    $TargetModule = Join-Path $MTMModulePath "MTM.PromptEvolution.psm1"
+    $SourceModule = "Documentation/Development/Scripts/MTM_Shared_Logic.PromptEvolution.psm1"
+    $TargetModule = Join-Path $MTMModulePath "MTM_Shared_Logic.PromptEvolution.psm1"
     
     if (Test-Path $SourceModule) {
         Copy-Item $SourceModule $TargetModule -Force
         Write-Success "PowerShell module installed to $MTMModulePath"
         
         # Create module manifest
-        $ManifestPath = Join-Path $MTMModulePath "MTM.PromptEvolution.psd1"
+        $ManifestPath = Join-Path $MTMModulePath "MTM_Shared_Logic.PromptEvolution.psd1"
         
         $ManifestContent = @"
 @{
-    RootModule = 'MTM.PromptEvolution.psm1'
+    RootModule = 'MTM_Shared_Logic.PromptEvolution.psm1'
     ModuleVersion = '1.0.0'
     GUID = '$(New-Guid)'
     Author = 'MTM Development Team'
@@ -360,7 +360,7 @@ $QuickStartContent = @'
 ### 1. Basic Usage
 ```powershell
 # Import the module (if not auto-loaded)
-Import-Module MTM.PromptEvolution
+Import-Module MTM_Shared_Logic.PromptEvolution
 
 # Track prompt usage
 track "CustomPrompt_Create_Service" "UserService.cs" -Success $true
@@ -436,7 +436,7 @@ Set-PromptEvolutionConfig -LogPath "custom_usage.log" -Enabled $true
 ### Module not loading
 ```powershell
 # Manually import module
-Import-Module ".\Documentation\Development\Scripts\MTM.PromptEvolution.psm1" -Force
+Import-Module ".\Documentation\Development\Scripts\MTM_Shared_Logic.PromptEvolution.psm1" -Force
 ```
 
 ### Tracking not working
@@ -487,7 +487,7 @@ Write-Host "  ✅ Quick start guide created" -ForegroundColor White
 Write-Host ""
 Write-Host "🚀 Next Steps:" -ForegroundColor Yellow
 Write-Host "  1. Review the quick start guide: Documentation/Development/QUICKSTART-PromptEvolution.md" -ForegroundColor White
-Write-Host "  2. Import the module: Import-Module MTM.PromptEvolution" -ForegroundColor White
+Write-Host "  2. Import the module: Import-Module MTM_Shared_Logic.PromptEvolution" -ForegroundColor White
 Write-Host "  3. Start tracking: track 'PromptName' 'Context.cs'" -ForegroundColor White
 Write-Host "  4. Get suggestions: suggest -FilePath 'YourFile.cs'" -ForegroundColor White
 Write-Host "  5. Run analysis: evolve -AutoGenerate" -ForegroundColor White

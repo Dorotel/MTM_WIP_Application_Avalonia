@@ -1,4 +1,4 @@
-﻿# MTM WIP Application Avalonia
+# MTM WIP Application Avalonia
 
 A modern, cross-platform WIP (Work In Progress) Inventory Management System built with Avalonia UI for Manitowoc Tool and Manufacturing (MTM).
 
@@ -321,8 +321,8 @@ The application has a complex dependency structure that MUST be properly configu
 #### ❌ **Fatal Error Pattern (Will Fail)**
 ```csharp
 // This WILL FAIL at runtime - missing dependencies!
-services.AddScoped<MTM.Services.IInventoryService, MTM.Services.InventoryService>();
-// Error: Unable to resolve service for type 'MTM.Core.Services.IValidationService'
+services.AddScoped<MTM_Shared_Logic.Services.IInventoryService, MTM_Shared_Logic.Services.InventoryService>();
+// Error: Unable to resolve service for type 'MTM_Shared_Logic.Core.Services.IValidationService'
 ```
 
 #### ✅ **Required Pattern**
@@ -335,7 +335,7 @@ services.AddMTMServices(configuration);
 See [`Documentation/Development/DependencyInjection/README_DependencyInjection.md`](Documentation/Development/DependencyInjection/README_DependencyInjection.md) and [`Documentation/Development/DependencyInjection/DI_Troubleshooting_Guide.md`](Documentation/Development/DependencyInjection/DI_Troubleshooting_Guide.md) for comprehensive setup instructions and error prevention.
 
 #### **Quick Reference - Required Setup:**
-1. **Using Statement**: `using MTM.Extensions;` in Program.cs
+1. **Using Statement**: `using MTM_Shared_Logic.Extensions;` in Program.cs
 2. **Service Registration**: `services.AddMTMServices(configuration);` first
 3. **ViewModel Registration**: ALL ViewModels must be registered individually
 4. **Avalonia Overrides**: Register AFTER AddMTMServices

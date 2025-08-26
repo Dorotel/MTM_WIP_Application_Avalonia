@@ -6,7 +6,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MTM.Models;
+using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using ReactiveUI;
@@ -21,7 +21,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// </summary>
 public class RemoveItemViewModel : BaseViewModel
 {
-    private readonly MTM.Services.IInventoryService _inventoryService;
+    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
     private readonly IApplicationStateService _applicationState;
 
     #region Observable Collections
@@ -199,7 +199,7 @@ public class RemoveItemViewModel : BaseViewModel
     #region Constructor
 
     public RemoveItemViewModel(
-        MTM.Services.IInventoryService inventoryService,
+        MTM_Shared_Logic.Services.IInventoryService inventoryService,
         IApplicationStateService applicationState,
         ILogger<RemoveItemViewModel> logger) : base(logger)
     {

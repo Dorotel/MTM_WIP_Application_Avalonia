@@ -7,7 +7,7 @@ Use this checklist when setting up DI or adding new services to prevent runtime 
 Before starting any development that involves DI:
 
 ### 1. Program.cs Validation
-- [ ] `using MTM.Extensions;` is present at the top
+- [ ] `using MTM_Shared_Logic.Extensions;` is present at the top
 - [ ] `services.AddMTMServices(configuration);` is called before other service registrations
 - [ ] All ViewModels that will be resolved are registered with `services.AddTransient<ViewModel>()`
 - [ ] Avalonia service overrides come AFTER `AddMTMServices`
@@ -24,7 +24,7 @@ using Microsoft.Extensions.Configuration;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels;
-using MTM.Extensions; // ? CRITICAL
+using MTM_Shared_Logic.Extensions; // ? CRITICAL
 ```
 
 ### 3. Service Registration Order
@@ -90,7 +90,7 @@ services.AddTransient<MainViewModel>();
 ### Must-Have Patterns
 ```csharp
 // ? Required in Program.cs
-using MTM.Extensions;
+using MTM_Shared_Logic.Extensions;
 
 // ? Required service registration
 services.AddMTMServices(configuration);
@@ -107,7 +107,7 @@ ValidateServiceRegistration();
 ### Never Do This
 ```csharp
 // ? NEVER register MTM services individually
-services.AddScoped<MTM.Services.IInventoryService, MTM.Services.InventoryService>();
+services.AddScoped<MTM_Shared_Logic.Services.IInventoryService, MTM_Shared_Logic.Services.InventoryService>();
 
 // ? NEVER forget to register ViewModels
 // Missing: services.AddTransient<MainWindowViewModel>();
@@ -121,7 +121,7 @@ services.AddMTMServices(configuration); // Too late!
 
 ### If You Get DI Errors
 1. **Check Program.cs** - Ensure AddMTMServices is called first
-2. **Check Using Statements** - Ensure `using MTM.Extensions;` is present
+2. **Check Using Statements** - Ensure `using MTM_Shared_Logic.Extensions;` is present
 3. **Check ViewModel Registration** - Ensure all used ViewModels are registered
 4. **Check Service Order** - MTM services must be registered first
 5. **Run Validation** - Use the validation method to identify missing services
@@ -131,7 +131,7 @@ services.AddMTMServices(configuration); // Too late!
 |-------|-----|
 | "Unable to resolve service for type 'IValidationService'" | Add `services.AddMTMServices(configuration);` |
 | "No service for type 'MainWindowViewModel'" | Add `services.AddTransient<MainWindowViewModel>();` |
-| "The name 'AddMTMServices' does not exist" | Add `using MTM.Extensions;` |
+| "The name 'AddMTMServices' does not exist" | Add `using MTM_Shared_Logic.Extensions;` |
 | "Multiple registrations exist" | Register Avalonia services AFTER AddMTMServices |
 
 ## ? Documentation Updates
@@ -148,7 +148,7 @@ When reviewing DI-related code:
 - [ ] AddMTMServices is used instead of individual registrations
 - [ ] All ViewModels are registered
 - [ ] Service registration order is correct
-- [ ] Using statements include MTM.Extensions
+- [ ] Using statements include MTM_Shared_Logic.Extensions
 - [ ] No circular dependencies introduced
 - [ ] Service lifetimes are appropriate
 - [ ] Error handling is present

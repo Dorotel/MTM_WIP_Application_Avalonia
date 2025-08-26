@@ -5,10 +5,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Styling;
 using Microsoft.Extensions.Logging;
-using MTM.Models;
-using MTM.Core.Services;
+using MTM_Shared_Logic.Models;
+using MTM_Shared_Logic.Core.Services;
 
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     /// <summary>
     /// MTM Theme management service for dynamic theme switching and customization.
@@ -291,7 +291,7 @@ namespace MTM.Services
                 // Apply primary color overrides
                 if (!string.IsNullOrEmpty(theme.PrimaryColor))
                 {
-                    // TODO: Parse color and apply to MTM.PrimaryBrush resource
+                    // TODO: Parse color and apply to MTM_Shared_Logic.PrimaryBrush resource
                     _logger.LogDebug("Applied primary color: {PrimaryColor}", theme.PrimaryColor);
                 }
             }

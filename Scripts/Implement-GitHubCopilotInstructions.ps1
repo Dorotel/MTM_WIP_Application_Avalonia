@@ -229,7 +229,7 @@ function Test-RepositorySpecificContext {
     $issues = @()
     
     # Check for repository-specific context
-    if ($content -notmatch "MTM.*WIP.*Application") {
+    if ($content -notmatch "MTM_Shared_Logic.*WIP.*Application") {
         $issues += "Missing repository-specific context (MTM WIP Application)"
     }
     
@@ -789,10 +789,10 @@ if ($ValidFiles -eq $TotalFiles) {
 }
 
 Write-Host "`n?? Complete Discovery Summary:" -ForegroundColor Cyan
-Write-Host "   • Total Files Analyzed: $TotalFiles" -ForegroundColor White
-Write-Host "   • File Types: $($FileTypeGroups.Count) ($(($FileTypeGroups.Name) -join ', '))" -ForegroundColor White
-Write-Host "   • Categories: $($CategoryGroups.Count) different categories" -ForegroundColor White
-Write-Host "   • Comprehensive GitHub Copilot ecosystem discovered" -ForegroundColor White
+Write-Host "   â€¢ Total Files Analyzed: $TotalFiles" -ForegroundColor White
+Write-Host "   â€¢ File Types: $($FileTypeGroups.Count) ($(($FileTypeGroups.Name) -join ', '))" -ForegroundColor White
+Write-Host "   â€¢ Categories: $($CategoryGroups.Count) different categories" -ForegroundColor White
+Write-Host "   â€¢ Comprehensive GitHub Copilot ecosystem discovered" -ForegroundColor White
 
 Write-Host "`n?? Recommended Actions:" -ForegroundColor Cyan
 Write-Host "   1. Test GitHub Copilot with the complete file ecosystem" -ForegroundColor White

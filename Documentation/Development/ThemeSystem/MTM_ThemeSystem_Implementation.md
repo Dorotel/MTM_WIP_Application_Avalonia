@@ -30,42 +30,42 @@ The MTM Theme System provides comprehensive visual branding and theming capabili
 ### **Primary Brand Colors**
 ```csharp
 // Core MTM Purple Palette
-MTM.PrimaryBrush:        #4B45ED  // Main brand purple
-MTM.SecondaryBrush:      #8345ED  // Secondary purple
-MTM.MagentaAccentBrush:  #BA45ED  // Magenta accent
-MTM.BlueAccentBrush:     #4574ED  // Blue accent
-MTM.PinkAccentBrush:     #ED45E7  // Pink accent
-MTM.LightPurpleBrush:    #B594ED  // Light purple
+MTM_Shared_Logic.PrimaryBrush:        #4B45ED  // Main brand purple
+MTM_Shared_Logic.SecondaryBrush:      #8345ED  // Secondary purple
+MTM_Shared_Logic.MagentaAccentBrush:  #BA45ED  // Magenta accent
+MTM_Shared_Logic.BlueAccentBrush:     #4574ED  // Blue accent
+MTM_Shared_Logic.PinkAccentBrush:     #ED45E7  // Pink accent
+MTM_Shared_Logic.LightPurpleBrush:    #B594ED  // Light purple
 ```
 
 ### **Extended Palette**
 ```csharp
 // Extended Brand Colors
-MTM.PrimaryDarkBrush:      #2D1B69  // Dark purple
-MTM.PrimaryLightBrush:     #E8E5FF  // Light purple background
-MTM.PrimaryExtraLightBrush: #F8F7FF  // Extra light background
+MTM_Shared_Logic.PrimaryDarkBrush:      #2D1B69  // Dark purple
+MTM_Shared_Logic.PrimaryLightBrush:     #E8E5FF  // Light purple background
+MTM_Shared_Logic.PrimaryExtraLightBrush: #F8F7FF  // Extra light background
 ```
 
 ### **Interactive States**
 ```csharp
 // Hover States
-MTM.PrimaryHoverBrush:     #5A51F0
-MTM.SecondaryHoverBrush:   #9354F0
-MTM.MagentaHoverBrush:     #C754F0
+MTM_Shared_Logic.PrimaryHoverBrush:     #5A51F0
+MTM_Shared_Logic.SecondaryHoverBrush:   #9354F0
+MTM_Shared_Logic.MagentaHoverBrush:     #C754F0
 
 // Pressed States
-MTM.PrimaryPressedBrush:   #3B35E0
-MTM.SecondaryPressedBrush: #7235E0
-MTM.MagentaPressedBrush:   #A935E0
+MTM_Shared_Logic.PrimaryPressedBrush:   #3B35E0
+MTM_Shared_Logic.SecondaryPressedBrush: #7235E0
+MTM_Shared_Logic.MagentaPressedBrush:   #A935E0
 ```
 
 ### **Semantic Colors**
 ```csharp
 // Status Colors
-MTM.SuccessBrush:  #28A745  // Success green
-MTM.WarningBrush:  #FFC107  // Warning amber
-MTM.ErrorBrush:    #DC3545  // Error red
-MTM.InfoBrush:     #17A2B8  // Info blue
+MTM_Shared_Logic.SuccessBrush:  #28A745  // Success green
+MTM_Shared_Logic.WarningBrush:  #FFC107  // Warning amber
+MTM_Shared_Logic.ErrorBrush:    #DC3545  // Error red
+MTM_Shared_Logic.InfoBrush:     #17A2B8  // Info blue
 ```
 
 ---
@@ -191,9 +191,9 @@ await _themeService.SaveUserPreferredThemeAsync("MTM_Dark");
 // Apply custom brand colors
 var customColors = new Dictionary<string, string>
 {
-    ["MTM.PrimaryBrush"] = "#FF6B5FFF",      // Custom primary
-    ["MTM.SecondaryBrush"] = "#FF9B5FFF",    // Custom secondary
-    ["MTM.AccentBrush"] = "#FFCB5FFF"        // Custom accent
+    ["MTM_Shared_Logic.PrimaryBrush"] = "#FF6B5FFF",      // Custom primary
+    ["MTM_Shared_Logic.SecondaryBrush"] = "#FF9B5FFF",    // Custom secondary
+    ["MTM_Shared_Logic.AccentBrush"] = "#FFCB5FFF"        // Custom accent
 };
 
 await _themeService.ApplyCustomColorsAsync(customColors);
@@ -209,7 +209,7 @@ await _themeService.ApplyCustomColorsAsync(customColors);
     <!-- Header -->
     <Border Grid.Row="0" Classes="mtm-header">
         <TextBlock Text="Page Title" 
-                   Foreground="{DynamicResource MTM.LightTextBrush}"
+                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                    FontSize="24" FontWeight="Bold"/>
     </Border>
     
@@ -228,7 +228,7 @@ await _themeService.ApplyCustomColorsAsync(customColors);
     <!-- Footer -->
     <Border Grid.Row="2" Classes="mtm-footer">
         <TextBlock Text="Status: Ready" 
-                   Foreground="{DynamicResource MTM.LightTextBrush}"/>
+                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
     </Border>
 </Grid>
 ```
@@ -258,15 +258,15 @@ await _themeService.ApplyCustomColorsAsync(customColors);
 
 ### **Hero Sections**
 ```xml
-<Border Background="{DynamicResource MTM.HeroGradientBrush}"
+<Border Background="{DynamicResource MTM_Shared_Logic.HeroGradientBrush}"
         CornerRadius="16" Padding="32">
     <StackPanel>
         <TextBlock Text="Welcome to MTM" 
                    FontSize="32" FontWeight="Bold"
-                   Foreground="{DynamicResource MTM.LightTextBrush}"/>
+                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
         <TextBlock Text="Inventory Management System"
                    FontSize="16" 
-                   Foreground="{DynamicResource MTM.LightTextBrush}"/>
+                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
     </StackPanel>
 </Border>
 ```
@@ -274,13 +274,13 @@ await _themeService.ApplyCustomColorsAsync(customColors);
 ### **Primary Gradients**
 ```xml
 <!-- Horizontal Gradient -->
-<Border Background="{DynamicResource MTM.PrimaryGradientBrush}"/>
+<Border Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"/>
 
 <!-- Sidebar Gradient -->
-<Border Background="{DynamicResource MTM.SidebarGradientBrush}"/>
+<Border Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"/>
 
 <!-- Card Hover Effect -->
-<Border Background="{DynamicResource MTM.CardHoverGradientBrush}"/>
+<Border Background="{DynamicResource MTM_Shared_Logic.CardHoverGradientBrush}"/>
 ```
 
 ---

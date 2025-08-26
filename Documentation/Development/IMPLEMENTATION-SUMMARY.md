@@ -22,7 +22,7 @@ The **Advanced Custom Prompt Evolution System** is now fully implemented in your
   - Configures automated reporting
 
 ### 3. PowerShell Module Integration
-- **`MTM.PromptEvolution.psm1`** - Comprehensive PowerShell module with:
+- **`MTM_Shared_Logic.PromptEvolution.psm1`** - Comprehensive PowerShell module with:
   - `Track-PromptUsage` (alias: `track`) - Record prompt usage
   - `Get-PromptSuggestion` (alias: `suggest`) - Get contextual suggestions
   - `Get-AvailablePrompts` (alias: `prompts`) - List all prompts
@@ -60,7 +60,7 @@ The **Advanced Custom Prompt Evolution System** is now fully implemented in your
 .\Documentation\Development\Scripts\Initialize-PromptEvolution.ps1
 
 # 2. Import the module
-Import-Module MTM.PromptEvolution
+Import-Module MTM_Shared_Logic.PromptEvolution
 
 # 3. Start tracking your prompt usage
 track "CustomPrompt_Create_Service" "UserService.cs" -Success $true
@@ -105,7 +105,7 @@ MTM Prompt Evolution System
 │   ├── GitHub Actions Workflow        # CI/CD integration
 │   └── Windows Task Scheduler         # Local automation
 ├── 📁 PowerShell Integration
-│   ├── MTM.PromptEvolution.psm1       # Module functions
+│   ├── MTM_Shared_Logic.PromptEvolution.psm1       # Module functions
 │   ├── Command aliases               # Quick commands
 │   └── Configuration management       # Settings & config
 ├── 📁 C# Integration
@@ -222,7 +222,7 @@ Track these KPIs to measure system effectiveness:
 #### PowerShell Module Not Loading
 ```powershell
 # Manual import
-Import-Module ".\Documentation\Development\Scripts\MTM.PromptEvolution.psm1" -Force
+Import-Module ".\Documentation\Development\Scripts\MTM_Shared_Logic.PromptEvolution.psm1" -Force
 
 # Check module path
 $env:PSModulePath -split ';'

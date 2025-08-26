@@ -14,22 +14,22 @@
   <UserControl.Styles>
     <!-- Compact Input Styles -->
     <Style Selector="TextBox.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="Padding" Value="6,3"/>
-      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="MinHeight" Value="24"/>
       <Setter Property="Margin" Value="2"/>
     </Style>
 
     <Style Selector="AutoCompleteBox.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="Padding" Value="6,3"/>
-      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="MinHeight" Value="24"/>
       <Setter Property="Margin" Value="2"/>
@@ -47,37 +47,37 @@
     </Style>
     
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.PrimaryBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.primary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
     </Style>
 
     <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.PrimaryTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
     </Style>
 
     <Style Selector="Button.danger">
-      <Setter Property="Background" Value="{DynamicResource MTM.ErrorBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.ErrorBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
     <!-- DataGrid styling -->
     <Style Selector="DataGrid">
-      <Setter Property="Background" Value="{DynamicResource MTM.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM.BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="GridLinesVisibility" Value="Horizontal"/>
@@ -95,12 +95,12 @@
         HorizontalAlignment="Stretch" 
         VerticalAlignment="Stretch"
         Margin="0"
-        Background="{DynamicResource MTM.AppBackgroundBrush}">
+        Background="{DynamicResource MTM_Shared_Logic.AppBackgroundBrush}">
 
     <!-- Main Panel -->
     <Border Grid.Row="0"
-            Background="{DynamicResource MTM.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM.BorderBrush}"
+            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
             BorderThickness="1"
             CornerRadius="4"
             Padding="4"
@@ -115,15 +115,15 @@
         
         <!-- Compact Left Panel: Search Criteria -->
         <Border Grid.Column="0"
-                Background="{DynamicResource MTM.CardBackgroundBrush}"
-                BorderBrush="{DynamicResource MTM.BorderBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="4">
           <Grid ColumnDefinitions="Auto,*">
             <!-- Compact Vertical Header Bar -->
             <Border Grid.Column="0"
-                    Background="{DynamicResource MTM.PrimaryGradientBrush}"
-                    BorderBrush="{DynamicResource MTM.BorderBrush}"
+                    Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                     BorderThickness="0,0,1,0"
                     Width="32"
                     CornerRadius="4,0,0,4">
@@ -133,7 +133,7 @@
                                             Kind="FilterVariant"
                                             Width="14"
                                             Height="14"
-                                            Foreground="{DynamicResource MTM.LightTextBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                                             HorizontalAlignment="Center"
                                             Margin="0,0,0,3"/>
                 
@@ -142,10 +142,10 @@
                         Command="{Binding ToggleFilterPanelCommand}"
                         Width="20"
                         Height="20"
-                        Background="{DynamicResource MTM.CardBackgroundBrush}"
-                        Foreground="{DynamicResource MTM.PrimaryBrush}"
+                        Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                        Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                         BorderThickness="1"
-                        BorderBrush="{DynamicResource MTM.BorderBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                         CornerRadius="10"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -172,13 +172,13 @@
                                                 Kind="Identifier"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                 VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" 
                                Text="Part ID:" 
                                FontSize="9" 
                                FontWeight="Medium" 
-                               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
                   </Grid>
                   <AutoCompleteBox ItemsSource="{Binding PartIDOptions}"
                                    Text="{Binding FilterPartIDText, Mode=TwoWay}"
@@ -193,13 +193,13 @@
                                                 Kind="MapMarker"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                 VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" 
                                Text="Location:" 
                                FontSize="9" 
                                FontWeight="Medium" 
-                               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
                   </Grid>
                   <AutoCompleteBox ItemsSource="{Binding LocationOptions}"
                                    Text="{Binding FilterLocationText, Mode=TwoWay}"
@@ -214,13 +214,13 @@
                                                 Kind="Cog"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                 VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" 
                                Text="Operation:" 
                                FontSize="9" 
                                FontWeight="Medium" 
-                               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
                   </Grid>
                   <AutoCompleteBox ItemsSource="{Binding OperationOptions}"
                                    Text="{Binding FilterOperation, Mode=TwoWay}"
@@ -235,13 +235,13 @@
                                                 Kind="Account"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                 VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" 
                                Text="User:" 
                                FontSize="9" 
                                FontWeight="Medium" 
-                               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
                   </Grid>
                   <AutoCompleteBox ItemsSource="{Binding UserOptions}"
                                    Text="{Binding FilterUserText, Mode=TwoWay}"
@@ -257,13 +257,13 @@
                                                 Kind="NoteText"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                 VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" 
                                Text="Notes:" 
                                FontSize="9" 
                                FontWeight="Medium" 
-                               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
                   </Grid>
                   <TextBox Text="{Binding FilterNotes, Mode=TwoWay}"
                            Classes="input-field"
@@ -277,13 +277,13 @@
                                                 Kind="Counter"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                 VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" 
                                Text="Quantity:" 
                                FontSize="9" 
                                FontWeight="Medium" 
-                               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
                   </Grid>
                   <Grid ColumnDefinitions="*,3,*" ColumnSpacing="3">
                     <TextBox Grid.Column="0" 
@@ -304,7 +304,7 @@
                   <CheckBox IsChecked="{Binding UseDateRange, Mode=TwoWay}"
                             FontSize="9"
                             FontWeight="Medium"
-                            Foreground="{DynamicResource MTM.PrimaryTextBrush}"
+                            Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
                             Margin="0,0,0,3">
                     <CheckBox.Content>
                       <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3">
@@ -312,7 +312,7 @@
                                                     Kind="CalendarRange"
                                                     Width="10"
                                                     Height="10"
-                                                    Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                    Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                     VerticalAlignment="Center"/>
                         <TextBlock Grid.Column="1" 
                                    Text="Date Range:" 
@@ -326,10 +326,10 @@
                         IsEnabled="{Binding UseDateRange}">
                     <!-- Start Date -->
                     <Border Grid.Column="0"
-                            BorderBrush="{DynamicResource MTM.BorderBrush}"
+                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                             BorderThickness="1"
                             CornerRadius="3"
-                            Background="{DynamicResource MTM.CardBackgroundBrush}"
+                            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                             Cursor="Hand">
                       <Grid>
                         <TextBox Text="{Binding RemovalDateRangeStart, StringFormat='{}{0:MM/dd/yyyy}', Mode=OneWay}"
@@ -343,7 +343,7 @@
                         <materialIcons:MaterialIcon Kind="Calendar"
                                                     Width="10"
                                                     Height="10"
-                                                    Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                    Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                     HorizontalAlignment="Right"
                                                     VerticalAlignment="Center"
                                                     Margin="0,0,4,0"
@@ -357,8 +357,8 @@
                                 Margin="0">
                           <Button.Flyout>
                             <Flyout Placement="BottomEdgeAlignedLeft">
-                              <Border Background="{DynamicResource MTM.CardBackgroundBrush}"
-                                      BorderBrush="{DynamicResource MTM.BorderBrush}"
+                              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                                       BorderThickness="1"
                                       CornerRadius="4"
                                       Padding="8">
@@ -368,13 +368,13 @@
                                                                 Kind="CalendarStart"
                                                                 Width="12"
                                                                 Height="12"
-                                                                Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                                 VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1"
                                                Text="Select Start Date"
                                                FontSize="10"
                                                FontWeight="Medium"
-                                               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+                                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
                                   </Grid>
                                   <DatePicker SelectedDate="{Binding RemovalDateRangeStart, Mode=TwoWay}"
                                               FontSize="9"
@@ -389,10 +389,10 @@
                     
                     <!-- End Date -->
                     <Border Grid.Column="2"
-                            BorderBrush="{DynamicResource MTM.BorderBrush}"
+                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                             BorderThickness="1"
                             CornerRadius="3"
-                            Background="{DynamicResource MTM.CardBackgroundBrush}"
+                            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                             Cursor="Hand">
                       <Grid>
                         <TextBox Text="{Binding RemovalDateRangeEnd, StringFormat='{}{0:MM/dd/yyyy}', Mode=OneWay}"
@@ -406,7 +406,7 @@
                         <materialIcons:MaterialIcon Kind="Calendar"
                                                     Width="10"
                                                     Height="10"
-                                                    Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                    Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                     HorizontalAlignment="Right"
                                                     VerticalAlignment="Center"
                                                     Margin="0,0,4,0"
@@ -420,8 +420,8 @@
                                 Margin="0">
                           <Button.Flyout>
                             <Flyout Placement="BottomEdgeAlignedLeft">
-                              <Border Background="{DynamicResource MTM.CardBackgroundBrush}"
-                                      BorderBrush="{DynamicResource MTM.BorderBrush}"
+                              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                                       BorderThickness="1"
                                       CornerRadius="4"
                                       Padding="8">
@@ -431,13 +431,13 @@
                                                                 Kind="CalendarEnd"
                                                                 Width="12"
                                                                 Height="12"
-                                                                Foreground="{DynamicResource MTM.PrimaryBrush}"
+                                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                                                                 VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1"
                                                Text="Select End Date"
                                                FontSize="10"
                                                FontWeight="Medium"
-                                               Foreground="{DynamicResource MTM.PrimaryTextBrush}"/>
+                                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
                                   </Grid>
                                   <DatePicker SelectedDate="{Binding RemovalDateRangeEnd, Mode=TwoWay}"
                                               FontSize="9"
@@ -459,15 +459,15 @@
 
         <!-- Right Panel: Removal History Grid -->
         <Border Grid.Column="1"
-                Background="{DynamicResource MTM.CardBackgroundBrush}"
-                BorderBrush="{DynamicResource MTM.BorderBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="4"
                 Padding="4">
           <Grid RowDefinitions="Auto,*">
             <!-- Compact Grid Header -->
             <Border Grid.Row="0" 
-                    Background="{DynamicResource MTM.PrimaryGradientBrush}"
+                    Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
                     CornerRadius="3"
                     Padding="6,4"
                     Margin="0,0,0,4">
@@ -476,14 +476,14 @@
                                             Kind="History"
                                             Width="14"
                                             Height="14"
-                                            Foreground="{DynamicResource MTM.LightTextBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                                             VerticalAlignment="Center"
                                             Margin="0,0,4,0"/>
                 <TextBlock Grid.Column="1"
                            Text="Removal History"
                            FontSize="11"
                            FontWeight="SemiBold"
-                           Foreground="{DynamicResource MTM.LightTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                            VerticalAlignment="Center"/>
                 <StackPanel Grid.Column="2" 
                             Orientation="Horizontal" 
@@ -491,11 +491,11 @@
                   <TextBlock Text="{Binding RemovalHistoryGrid.Count}"
                              FontSize="10"
                              FontWeight="Bold"
-                             Foreground="{DynamicResource MTM.LightTextBrush}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                              VerticalAlignment="Center"/>
                   <TextBlock Text="records"
                              FontSize="9"
-                             Foreground="{DynamicResource MTM.LightTextBrush}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                              VerticalAlignment="Center"/>
                 </StackPanel>
               </Grid>
@@ -526,8 +526,8 @@
 
     <!-- Compact Bottom Action Panel -->
     <Border Grid.Row="1"
-            Background="{DynamicResource MTM.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM.BorderBrush}"
+            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
             BorderThickness="1"
             CornerRadius="4"
             Padding="6"

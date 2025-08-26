@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MTM.Models;
-using MTM.Core.Services;
-using Result = MTM.Models.Result;
+using MTM_Shared_Logic.Models;
+using MTM_Shared_Logic.Core.Services;
+using Result = MTM_Shared_Logic.Models.Result;
 
-namespace MTM.Services
+namespace MTM_Shared_Logic.Services
 {
     /// <summary>
     /// Transaction service implementation for transaction management operations.

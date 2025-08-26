@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using MTM.Models;
+using MTM_Shared_Logic.Models;
 
-namespace MTM.Core.Services
+namespace MTM_Shared_Logic.Core.Services
 {
     /// <summary>
     /// Interface for configuration management service.

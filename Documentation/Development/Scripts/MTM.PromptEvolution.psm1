@@ -5,7 +5,7 @@
 
 # Module metadata
 $ModuleVersion = "1.0.0"
-$ModuleName = "MTM.PromptEvolution"
+$ModuleName = "MTM_Shared_Logic.PromptEvolution"
 
 Write-Host "Loading MTM Prompt Evolution Module v$ModuleVersion..." -ForegroundColor Cyan
 

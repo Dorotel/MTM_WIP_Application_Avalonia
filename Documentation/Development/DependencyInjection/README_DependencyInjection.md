@@ -7,8 +7,8 @@
 ### ? Common Fatal Error Pattern
 ```csharp
 // This WILL FAIL at runtime - missing dependencies!
-services.AddScoped<MTM.Services.IInventoryService, MTM.Services.InventoryService>();
-// Error: Unable to resolve service for type 'MTM.Core.Services.IValidationService'
+services.AddScoped<MTM_Shared_Logic.Services.IInventoryService, MTM_Shared_Logic.Services.InventoryService>();
+// Error: Unable to resolve service for type 'MTM_Shared_Logic.Core.Services.IValidationService'
 ```
 
 ### ? Required Pattern
@@ -24,11 +24,11 @@ The MTM WIP Application now uses Microsoft.Extensions.DependencyInjection for co
 ## **CRITICAL SETUP REQUIREMENTS**
 
 ### **1. Use AddMTMServices Extension Method**
-The `AddMTMServices` extension method in `MTM.Extensions.ServiceCollectionExtensions` is **MANDATORY** for registering MTM business services. It automatically handles complex dependency chains that would be impossible to register manually.
+The `AddMTMServices` extension method in `MTM_Shared_Logic.Extensions.ServiceCollectionExtensions` is **MANDATORY** for registering MTM business services. It automatically handles complex dependency chains that would be impossible to register manually.
 
 **Required Using Statement:**
 ```csharp
-using MTM.Extensions; // REQUIRED for AddMTMServices
+using MTM_Shared_Logic.Extensions; // REQUIRED for AddMTMServices
 ```
 
 **Services Automatically Registered by AddMTMServices:**
@@ -54,7 +54,7 @@ using Microsoft.Extensions.Configuration;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels;
-using MTM.Extensions; // CRITICAL: Required for AddMTMServices
+using MTM_Shared_Logic.Extensions; // CRITICAL: Required for AddMTMServices
 
 namespace MTM_WIP_Application_Avalonia;
 
@@ -149,15 +149,15 @@ public static class Program
 
 #### ? **Error: Missing IValidationService**
 ```
-System.InvalidOperationException: Unable to resolve service for type 'MTM.Core.Services.IValidationService' 
-while attempting to activate 'MTM.Services.InventoryService'.
+System.InvalidOperationException: Unable to resolve service for type 'MTM_Shared_Logic.Core.Services.IValidationService' 
+while attempting to activate 'MTM_Shared_Logic.Services.InventoryService'.
 ```
 **Solution:** Ensure `services.AddMTMServices(configuration);` is called.
 
 #### ? **Error: Missing ICacheService**
 ```
-System.InvalidOperationException: Unable to resolve service for type 'MTM.Core.Services.ICacheService'
-while attempting to activate 'MTM.Services.UserService'.
+System.InvalidOperationException: Unable to resolve service for type 'MTM_Shared_Logic.Core.Services.ICacheService'
+while attempting to activate 'MTM_Shared_Logic.Services.UserService'.
 ```
 **Solution:** Ensure `services.AddMTMServices(configuration);` is called.
 
@@ -171,7 +171,7 @@ System.InvalidOperationException: No service for type 'MainWindowViewModel' has 
 ```
 CS0103: The name 'AddMTMServices' does not exist in the current context
 ```
-**Solution:** Add `using MTM.Extensions;` at the top of Program.cs.
+**Solution:** Add `using MTM_Shared_Logic.Extensions;` at the top of Program.cs.
 
 ### **4. ViewModel Registration Checklist**
 Every ViewModel that will be resolved through DI must be registered:
@@ -199,14 +199,14 @@ private static void ValidateServiceRegistration()
     try
     {
         // Test MTM Core Services
-        var dbService = GetService<MTM.Core.Services.IDatabaseService>();
-        var validationService = GetService<MTM.Core.Services.IValidationService>();
-        var cacheService = GetService<MTM.Core.Services.ICacheService>();
+        var dbService = GetService<MTM_Shared_Logic.Core.Services.IDatabaseService>();
+        var validationService = GetService<MTM_Shared_Logic.Core.Services.IValidationService>();
+        var cacheService = GetService<MTM_Shared_Logic.Core.Services.ICacheService>();
         
         // Test MTM Business Services
-        var inventoryService = GetService<MTM.Services.IInventoryService>();
-        var userService = GetService<MTM.Services.IUserService>();
-        var transactionService = GetService<MTM.Services.ITransactionService>();
+        var inventoryService = GetService<MTM_Shared_Logic.Services.IInventoryService>();
+        var userService = GetService<MTM_Shared_Logic.Services.IUserService>();
+        var transactionService = GetService<MTM_Shared_Logic.Services.ITransactionService>();
         
         // Test Avalonia Services
         var navigationService = GetService<INavigationService>();

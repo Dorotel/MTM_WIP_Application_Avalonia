@@ -8,12 +8,12 @@ This guide covers the most common dependency injection errors in the MTM WIP App
 
 ### Error Message:
 ```
-System.InvalidOperationException: Unable to resolve service for type 'MTM.Core.Services.IValidationService' 
-while attempting to activate 'MTM.Services.InventoryService'.
+System.InvalidOperationException: Unable to resolve service for type 'MTM_Shared_Logic.Core.Services.IValidationService' 
+while attempting to activate 'MTM_Shared_Logic.Services.InventoryService'.
 ```
 
 ### Root Cause:
-`MTM.Services.InventoryService` requires `MTM.Core.Services.IValidationService` as a dependency, but it wasn't registered in the DI container.
+`MTM_Shared_Logic.Services.InventoryService` requires `MTM_Shared_Logic.Core.Services.IValidationService` as a dependency, but it wasn't registered in the DI container.
 
 ### Solution:
 **ALWAYS use `services.AddMTMServices(configuration);` instead of registering MTM services individually.**
@@ -21,7 +21,7 @@ while attempting to activate 'MTM.Services.InventoryService'.
 #### ? Wrong Way:
 ```csharp
 // This will fail - missing dependencies
-services.AddScoped<MTM.Services.IInventoryService, MTM.Services.InventoryService>();
+services.AddScoped<MTM_Shared_Logic.Services.IInventoryService, MTM_Shared_Logic.Services.InventoryService>();
 ```
 
 #### ? Correct Way:
@@ -32,7 +32,7 @@ services.AddMTMServices(configuration);
 
 ### Required Using Statement:
 ```csharp
-using MTM.Extensions; // Required for AddMTMServices
+using MTM_Shared_Logic.Extensions; // Required for AddMTMServices
 ```
 
 ---
@@ -41,8 +41,8 @@ using MTM.Extensions; // Required for AddMTMServices
 
 ### Error Message:
 ```
-System.InvalidOperationException: Unable to resolve service for type 'MTM.Core.Services.ICacheService'
-while attempting to activate 'MTM.Services.UserService'.
+System.InvalidOperationException: Unable to resolve service for type 'MTM_Shared_Logic.Core.Services.ICacheService'
+while attempting to activate 'MTM_Shared_Logic.Services.UserService'.
 ```
 
 ### Root Cause:
@@ -101,7 +101,7 @@ Missing the required using statement for the MTM extensions.
 ### Solution:
 Add this using statement to the top of `Program.cs`:
 ```csharp
-using MTM.Extensions; // Required for AddMTMServices extension method
+using MTM_Shared_Logic.Extensions; // Required for AddMTMServices extension method
 ```
 
 ---
@@ -170,7 +170,7 @@ using Microsoft.Extensions.Configuration;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels;
-using MTM.Extensions; // ? CRITICAL for AddMTMServices
+using MTM_Shared_Logic.Extensions; // ? CRITICAL for AddMTMServices
 ```
 
 ### 3. Service Validation Method
@@ -185,16 +185,16 @@ private static void ValidateServiceRegistration()
         Console.WriteLine("?? Validating service registration...");
         
         // Test critical MTM services
-        var dbService = GetService<MTM.Core.Services.IDatabaseService>();
+        var dbService = GetService<MTM_Shared_Logic.Core.Services.IDatabaseService>();
         Console.WriteLine("? IDatabaseService resolved");
         
-        var validationService = GetService<MTM.Core.Services.IValidationService>();
+        var validationService = GetService<MTM_Shared_Logic.Core.Services.IValidationService>();
         Console.WriteLine("? IValidationService resolved");
         
-        var cacheService = GetService<MTM.Core.Services.ICacheService>();
+        var cacheService = GetService<MTM_Shared_Logic.Core.Services.ICacheService>();
         Console.WriteLine("? ICacheService resolved");
         
-        var inventoryService = GetService<MTM.Services.IInventoryService>();
+        var inventoryService = GetService<MTM_Shared_Logic.Services.IInventoryService>();
         Console.WriteLine("? IInventoryService resolved");
         
         // Test Avalonia services
@@ -248,7 +248,7 @@ using Microsoft.Extensions.Configuration;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels;
-using MTM.Extensions; // CRITICAL for AddMTMServices
+using MTM_Shared_Logic.Extensions; // CRITICAL for AddMTMServices
 
 namespace MTM_WIP_Application_Avalonia;
 
@@ -346,10 +346,10 @@ public static class Program
             Console.WriteLine("?? Validating service registration...");
             
             // Test critical services
-            var dbService = GetService<MTM.Core.Services.IDatabaseService>();
-            var validationService = GetService<MTM.Core.Services.IValidationService>();
-            var cacheService = GetService<MTM.Core.Services.ICacheService>();
-            var inventoryService = GetService<MTM.Services.IInventoryService>();
+            var dbService = GetService<MTM_Shared_Logic.Core.Services.IDatabaseService>();
+            var validationService = GetService<MTM_Shared_Logic.Core.Services.IValidationService>();
+            var cacheService = GetService<MTM_Shared_Logic.Core.Services.ICacheService>();
+            var inventoryService = GetService<MTM_Shared_Logic.Services.IInventoryService>();
             var navigationService = GetService<INavigationService>();
             
             // Test ViewModels
@@ -373,7 +373,7 @@ public static class Program
 ## **Quick Reference**
 
 ### Must-Have Checklist:
-- [ ] `using MTM.Extensions;` at top of Program.cs
+- [ ] `using MTM_Shared_Logic.Extensions;` at top of Program.cs
 - [ ] `services.AddMTMServices(configuration);` called first
 - [ ] All ViewModels registered with `services.AddTransient<ViewModel>()`
 - [ ] Avalonia service overrides AFTER AddMTMServices
