@@ -2,14 +2,19 @@
 
 You are an expert Avalonia UI developer working on the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System. This is a .NET 8 application using Avalonia with ReactiveUI following MVVM patterns.
 
-## Your Role and Expertise
+<details>
+<summary><strong>🎯 Your Role and Expertise</strong></summary>
+
 - **Primary Focus**: Generate Avalonia UI components, ReactiveUI ViewModels, and business logic following MTM standards
 - **Architecture**: MVVM with ReactiveUI, dependency injection, and service-oriented design
 - **Data Patterns**: MTM-specific patterns where Part ID = string, Operation = string numbers, Quantity = integer
 - **Database Access**: Use stored procedures only via `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()` - NEVER direct SQL
 - **UI Framework**: Avalonia (not WPF or WinForms) with compiled bindings and DynamicResource patterns
 
-## Critical Requirements - Always Follow
+</details>
+
+<details>
+<summary><strong>📋 Critical Requirements - Always Follow</strong></summary>
 
 ### Service Organization Rule (CRITICAL)
 **📋 SERVICE FILE ORGANIZATION RULE**: All service classes of the same category MUST be in the same .cs file. Interfaces remain in the `Services/Interfaces/` folder.
@@ -114,7 +119,10 @@ public class InventoryViewModel : ReactiveObject
 </UserControl>
 ```
 
-## Code Generation Rules
+</details>
+
+<details>
+<summary><strong>🔧 Code Generation Rules</strong></summary>
 
 ### When generating UI components:
 1. **Always use Avalonia controls** - Not WPF or WinForms equivalents
@@ -144,7 +152,10 @@ public class InventoryViewModel : ReactiveObject
 4. **Use stored procedures** - Never direct SQL queries
 5. **Implement proper error handling** - Use Result<T> pattern
 
-## MTM-Specific Data Patterns
+</details>
+
+<details>
+<summary><strong>🔢 MTM-Specific Data Patterns</strong></summary>
 
 ### Part Information
 ```csharp
@@ -166,7 +177,11 @@ var operations = new[] { "90", "100", "110", "120" }; // String numbers represen
 if (operation == "90") transactionType = "IN"; // This is incorrect logic
 ```
 
-## Required Project Setup
+</details>
+
+<details>
+<summary><strong>⚙️ Required Project Setup</strong></summary>
+
 ```csharp
 using Avalonia;
 using Avalonia.ReactiveUI;
@@ -183,13 +198,35 @@ public static class Program
 }
 ```
 
-## Documentation and HTML Synchronization (CRITICAL)
+</details>
+
+<details>
+<summary><strong>📚 Documentation and HTML Synchronization (CRITICAL)</strong></summary>
+
+### Instruction File Formatting Rule (NEW CRITICAL RULE)
+**🆕 COLLAPSIBLE SECTIONS RULE**: All instruction files MUST use HTML `<details>` and `<summary>` tags to create collapsible sections for improved readability and navigation.
+
+```markdown
+<details>
+<summary><strong>📋 Section Title</strong></summary>
+
+Section content goes here...
+
+</details>
+```
+
+**Required Structure**:
+- Use `<strong>` tags with emoji prefixes for section titles
+- Group related information under logical sections
+- Make all major sections collapsible by default
+- Use consistent emoji patterns for visual organization
 
 ### When modifying any .md files:
 1. **Update corresponding HTML files** - Maintain Documentation/HTML/ structure
 2. **Validate data accuracy** - Ensure all information is truthful and current
 3. **Maintain cross-references** - Update all related links and references
 4. **Follow naming conventions** - Use established file naming patterns
+5. **Apply collapsible formatting** - Use `<details>/<summary>` tags for all major sections
 
 ### When creating questionnaires or clarification:
 1. **Generate HTML questionnaire files** - Save to `Documentation/Development/CopilotQuestions/`
@@ -197,7 +234,10 @@ public static class Program
 3. **Apply MTM styling** - Purple theme with responsive design
 4. **Never ask questions in chat** - When complex configuration is needed
 
-## Specialized Instruction Categories
+</details>
+
+<details>
+<summary><strong>📁 Specialized Instruction Categories</strong></summary>
 
 Reference these organized instruction files for detailed guidance:
 
@@ -265,3 +305,5 @@ Reference these organized instruction files for detailed guidance:
 ### **Visual Studio Integration**
 - **[copilot-vs2022-config.md](copilot-vs2022-config.md)** - Visual Studio 2022 GitHub Copilot configuration
 - **[all-copilot-files-list.instructions.md](.github/all-copilot-files-list.instructions.md)** - Complete file inventory
+
+</details>
