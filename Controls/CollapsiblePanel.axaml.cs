@@ -30,14 +30,8 @@ public partial class CollapsiblePanel : UserControl
     public static readonly StyledProperty<bool> IsExpandedProperty =
         AvaloniaProperty.Register<CollapsiblePanel, bool>(nameof(IsExpanded), true);
 
-    public static readonly StyledProperty<MaterialIconKind> IconProperty =
-        AvaloniaProperty.Register<CollapsiblePanel, MaterialIconKind>(nameof(Icon), MaterialIconKind.FilterVariant);
-
     public static readonly StyledProperty<HeaderPosition> HeaderPositionProperty =
         AvaloniaProperty.Register<CollapsiblePanel, HeaderPosition>(nameof(HeaderPosition), HeaderPosition.Left);
-
-    public static readonly StyledProperty<string> HeaderTextProperty =
-        AvaloniaProperty.Register<CollapsiblePanel, string>(nameof(HeaderText), "Panel");
 
     // Properties
     public bool IsExpanded
@@ -46,22 +40,10 @@ public partial class CollapsiblePanel : UserControl
         set => SetValue(IsExpandedProperty, value);
     }
 
-    public MaterialIconKind Icon
-    {
-        get => GetValue(IconProperty);
-        set => SetValue(IconProperty, value);
-    }
-
     public HeaderPosition HeaderPosition
     {
         get => GetValue(HeaderPositionProperty);
         set => SetValue(HeaderPositionProperty, value);
-    }
-
-    public string HeaderText
-    {
-        get => GetValue(HeaderTextProperty);
-        set => SetValue(HeaderTextProperty, value);
     }
 
     // Legacy property for backward compatibility
@@ -79,9 +61,8 @@ public partial class CollapsiblePanel : UserControl
     private Border? _contentArea;
     private Border? _headerArea;
     private Grid? _headerContentGrid;
-    private TextBlock? _headerText;
-    private Material.Icons.Avalonia.MaterialIcon? _panelIcon;
     private Material.Icons.Avalonia.MaterialIcon? _toggleIcon;
+    private Button? _toggleButton;
     private Grid? _rootGrid;
     private bool _isTemplateApplied = false;
 
@@ -99,16 +80,13 @@ public partial class CollapsiblePanel : UserControl
         _contentArea = e.NameScope.Find<Border>("ContentArea");
         _headerArea = e.NameScope.Find<Border>("HeaderArea");
         _headerContentGrid = e.NameScope.Find<Grid>("HeaderContentGrid");
-        _headerText = e.NameScope.Find<TextBlock>("HeaderText");
-        _panelIcon = e.NameScope.Find<Material.Icons.Avalonia.MaterialIcon>("PanelIcon");
         _toggleIcon = e.NameScope.Find<Material.Icons.Avalonia.MaterialIcon>("ToggleIcon");
+        _toggleButton = e.NameScope.Find<Button>("ToggleButton");
         _rootGrid = e.NameScope.Find<Grid>("RootGrid");
         
         _isTemplateApplied = true;
         
         // Set up initial layout and state
-        UpdateIcon();        // Set the initial icon
-        UpdateHeaderText();  // Set the initial header text
         UpdateLayout();      // Configure layout based on HeaderPosition
         UpdateDisplay();     // Set initial expanded/collapsed state
     }
@@ -124,8 +102,8 @@ public partial class CollapsiblePanel : UserControl
             _contentArea = this.FindControl<Border>("ContentArea");
             _headerArea = this.FindControl<Border>("HeaderArea");
             _headerContentGrid = this.FindControl<Grid>("HeaderContentGrid");
-            _panelIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("PanelIcon");
             _toggleIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("ToggleIcon");
+            _toggleButton = this.FindControl<Button>("ToggleButton");
             _rootGrid = this.FindControl<Grid>("RootGrid");
             
             UpdateLayout();
@@ -142,30 +120,20 @@ public partial class CollapsiblePanel : UserControl
             UpdateDisplay();
             ExpandedChanged?.Invoke(this, IsExpanded);
         }
-        else if (change.Property == IconProperty)
-        {
-            UpdateIcon();
-        }
         else if (change.Property == HeaderPositionProperty)
         {
             UpdateLayout();
-        }
-        else if (change.Property == HeaderTextProperty)
-        {
-            UpdateHeaderText();
         }
     }
 
     private void UpdateLayout()
     {
-        if (_rootGrid == null || _headerArea == null || _contentArea == null || _headerContentGrid == null)
+        if (_rootGrid == null || _headerArea == null || _contentArea == null)
             return;
 
         // Clear existing row/column definitions and reset grid assignments
         _rootGrid.RowDefinitions.Clear();
         _rootGrid.ColumnDefinitions.Clear();
-        _headerContentGrid.RowDefinitions.Clear();
-        _headerContentGrid.ColumnDefinitions.Clear();
         
         Grid.SetRow(_headerArea, 0);
         Grid.SetColumn(_headerArea, 0);
@@ -188,8 +156,8 @@ public partial class CollapsiblePanel : UserControl
                 break;
         }
 
-        // Update header element positioning
-        UpdateHeaderElementPositioning();
+        // Update button positioning
+        UpdateButtonPositioning();
     }
 
     private void SetupLeftHeader()
@@ -204,8 +172,6 @@ public partial class CollapsiblePanel : UserControl
         _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 1, 0);
         _headerArea.Width = 40;
         _headerArea.Height = double.NaN;
-
-        // Header content grid is now fixed in AXAML - no need to modify definitions
     }
 
     private void SetupRightHeader()
@@ -220,8 +186,6 @@ public partial class CollapsiblePanel : UserControl
         _headerArea.BorderThickness = new Avalonia.Thickness(1, 0, 0, 0);
         _headerArea.Width = 40;
         _headerArea.Height = double.NaN;
-
-        // Header content grid is now fixed in AXAML - no need to modify definitions
     }
 
     private void SetupTopHeader()
@@ -236,29 +200,6 @@ public partial class CollapsiblePanel : UserControl
         _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 0, 1);
         _headerArea.Width = double.NaN;
         _headerArea.Height = 40;
-
-        // For horizontal headers, update the header grid to horizontal layout
-        if (_headerContentGrid != null)
-        {
-            _headerContentGrid.RowDefinitions.Clear();
-            _headerContentGrid.ColumnDefinitions.Clear();
-            
-            _headerContentGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star))); // Text
-            _headerContentGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(24)));                   // Icon
-            _headerContentGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(24)));                   // Button
-            
-            // Update element positions for horizontal layout
-            if (_headerText != null) Grid.SetColumn(_headerText, 0);
-            if (_panelIcon != null) Grid.SetColumn(_panelIcon, 1);
-            
-            var button = _toggleIcon?.Parent as Button;
-            if (button != null) Grid.SetColumn(button, 2);
-            
-            // Reset row positions for horizontal layout
-            if (_headerText != null) Grid.SetRow(_headerText, 0);
-            if (_panelIcon != null) Grid.SetRow(_panelIcon, 0);
-            if (button != null) Grid.SetRow(button, 0);
-        }
     }
 
     private void SetupBottomHeader()
@@ -273,28 +214,30 @@ public partial class CollapsiblePanel : UserControl
         _headerArea.BorderThickness = new Avalonia.Thickness(0, 1, 0, 0);
         _headerArea.Width = double.NaN;
         _headerArea.Height = 40;
+    }
 
-        // For horizontal headers, update the header grid to horizontal layout
-        if (_headerContentGrid != null)
+    private void UpdateButtonPositioning()
+    {
+        if (_toggleButton == null)
+            return;
+
+        switch (HeaderPosition)
         {
-            _headerContentGrid.RowDefinitions.Clear();
-            _headerContentGrid.ColumnDefinitions.Clear();
-            
-            _headerContentGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star))); // Text
-            _headerContentGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(24)));                   // Icon
-            _headerContentGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(24)));                   // Button
-            
-            // Update element positions for horizontal layout
-            if (_headerText != null) Grid.SetColumn(_headerText, 0);
-            if (_panelIcon != null) Grid.SetColumn(_panelIcon, 1);
-            
-            var button = _toggleIcon?.Parent as Button;
-            if (button != null) Grid.SetColumn(button, 2);
-            
-            // Reset row positions for horizontal layout
-            if (_headerText != null) Grid.SetRow(_headerText, 0);
-            if (_panelIcon != null) Grid.SetRow(_panelIcon, 0);
-            if (button != null) Grid.SetRow(button, 0);
+            case HeaderPosition.Left:
+            case HeaderPosition.Right:
+                // Button at bottom for vertical headers
+                _toggleButton.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
+                _toggleButton.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Bottom;
+                _toggleButton.Margin = new Avalonia.Thickness(0, 0, 0, 8);
+                break;
+
+            case HeaderPosition.Top:
+            case HeaderPosition.Bottom:
+                // Button on left for horizontal headers
+                _toggleButton.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
+                _toggleButton.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
+                _toggleButton.Margin = new Avalonia.Thickness(8, 0, 0, 0);
+                break;
         }
     }
 
@@ -379,46 +322,6 @@ public partial class CollapsiblePanel : UserControl
             HeaderPosition.Bottom => MaterialIconKind.ChevronDown,
             _ => MaterialIconKind.ChevronLeft
         };
-    }
-
-    private void UpdateIcon()
-    {
-        if (_panelIcon != null)
-        {
-            _panelIcon.Kind = Icon;
-        }
-    }
-
-    private void UpdateHeaderText()
-    {
-        if (_headerText != null)
-        {
-            _headerText.Text = HeaderText;
-        }
-    }
-
-    private void UpdateHeaderElementPositioning()
-    {
-        if (_headerText == null || _panelIcon == null || _toggleIcon?.Parent is not Button toggleButton)
-            return;
-
-        // Header layout is now fixed in AXAML - just update text rotation based on header position
-        switch (HeaderPosition)
-        {
-            case HeaderPosition.Left:
-            case HeaderPosition.Right:
-                // Vertical headers: Rotate text -90 degrees (sideways, top to bottom reading)
-                _headerText.RenderTransform = new Avalonia.Media.RotateTransform(-90);
-                _headerText.Margin = new Avalonia.Thickness(0, 8, 0, 4);
-                break;
-
-            case HeaderPosition.Top:
-            case HeaderPosition.Bottom:
-                // Horizontal headers: No rotation, normal text
-                _headerText.RenderTransform = null;
-                _headerText.Margin = new Avalonia.Thickness(4, 0, 4, 0);
-                break;
-        }
     }
 
     private void OnToggleClick(object? sender, RoutedEventArgs e)

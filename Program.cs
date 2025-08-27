@@ -73,7 +73,6 @@ public static class Program
         services.AddTransient<TransferItemViewModel>();
         services.AddTransient<TransactionHistoryViewModel>();
         services.AddTransient<UserManagementViewModel>();
-        services.AddTransient<TestControlsViewModel>();
 
         // Build service provider
         _serviceProvider = services.BuildServiceProvider();

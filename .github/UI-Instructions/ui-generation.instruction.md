@@ -285,3 +285,62 @@ Generate clean, modern Avalonia UI that:
 - Supports responsive design principles
 
 </details>
+
+<details>
+<summary><strong>🆕 AutoCompleteBox Standard (CRITICAL UPDATE)</strong></summary>
+
+**MAJOR CHANGE**: All dropdown controls now use AutoCompleteBox instead of ComboBox for enhanced user experience with `%text%` pattern matching.
+
+### AutoCompleteBox Configuration
+
+```xml
+<!-- REQUIRED: AutoCompleteBox with Contains filtering -->
+<AutoCompleteBox ItemsSource="{Binding PartOptions}"
+                 SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
+                 Text="{Binding PartText, Mode=TwoWay}"
+                 Classes="input-field"
+                 FilterMode="Contains"
+                 MinimumPrefixLength="0"
+                 MaxDropDownHeight="200"
+                 IsTextCompletionEnabled="True"
+                 Watermark="Type to search..."
+                 ToolTip.Tip="Search with %text% pattern"/>
+```
+
+### Required FilterMode Options
+- **Contains** (STANDARD): `%text%` pattern matching - search anywhere in text
+- **StartsWith**: Search from beginning only
+- **ContainsCaseSensitive**: Case-sensitive `%text%` matching
+- **StartsWithCaseSensitive**: Case-sensitive prefix matching
+
+### Required ViewModel Pattern
+
+```csharp
+// Existing selected item property
+public string? SelectedPart { get; set; }
+
+// NEW REQUIRED: Text property for AutoCompleteBox
+private string _partText = string.Empty;
+public string PartText
+{
+    get => _partText;
+    set => this.RaiseAndSetIfChanged(ref _partText, value ?? string.Empty);
+}
+
+// NEW REQUIRED: Synchronization in constructor
+this.WhenAnyValue(x => x.SelectedPart)
+    .Subscribe(selected => PartText = selected ?? string.Empty);
+
+this.WhenAnyValue(x => x.PartText)
+    .Where(text => !string.IsNullOrEmpty(text) && PartOptions.Contains(text))
+    .Subscribe(text => SelectedPart = text);
+```
+
+### User Experience Benefits
+- **Instant Search**: Type anywhere in the text to filter
+- **Flexible Matching**: Find "Assembly" by typing "ssem"
+- **No Case Sensitivity**: "main" finds "Main Warehouse"
+- **Fast Navigation**: Immediate dropdown with 0 minimum characters
+- **Auto-completion**: Completes text as user types
+
+</details>

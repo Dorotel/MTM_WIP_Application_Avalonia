@@ -46,6 +46,10 @@
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="MinHeight" Value="24"/>
       <Setter Property="Margin" Value="2"/>
+      <Setter Property="FilterMode" Value="Contains"/>
+      <Setter Property="MinimumPrefixLength" Value="0"/>
+      <Setter Property="MaxDropDownHeight" Value="200"/>
+      <Setter Property="IsTextCompletionEnabled" Value="True"/>
     </Style>
 
     <!-- Compact Button Styles -->
@@ -201,6 +205,7 @@
                   </Grid>
                   <AutoCompleteBox ItemsSource="{Binding PartIDOptions}"
                                    SelectedItem="{Binding SelectedPartID, Mode=TwoWay}"
+                                   Text="{Binding PartIDText, Mode=TwoWay}"
                                    Classes="input-field"
                                    HorizontalAlignment="Stretch"
                                    Watermark="Enter part ID..."
@@ -220,6 +225,7 @@
                   </Grid>
                   <AutoCompleteBox ItemsSource="{Binding OperationOptions}"
                                    SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
+                                   Text="{Binding OperationText, Mode=TwoWay}"
                                    Classes="input-field"
                                    HorizontalAlignment="Stretch"
                                    Watermark="Enter operation..."
@@ -257,6 +263,7 @@
                   </Grid>
                   <AutoCompleteBox ItemsSource="{Binding LocationOptions}"
                                    SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"
+                                   Text="{Binding LocationText, Mode=TwoWay}"
                                    Classes="input-field"
                                    HorizontalAlignment="Stretch"
                                    Watermark="Enter location..."

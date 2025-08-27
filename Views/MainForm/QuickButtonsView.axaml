@@ -111,14 +111,14 @@
 
   <!-- Main container optimized for narrow width -->
   <Grid Margin="2">
-    <!-- Header Section (Optional - can be added for consistency) -->
+    <!-- Header Section and Quick Buttons Area -->
     <Grid RowDefinitions="Auto,*">
       <!-- Quick Actions Header (matching AdvancedRemoveView pattern) -->
       <Border Grid.Row="0"
               Background="{StaticResource PrimaryBrush}"
               CornerRadius="4,4,0,0"
               Padding="8,4"
-              Margin="0,0,0,2">
+              Margin="4">
         <Grid ColumnDefinitions="Auto,*,Auto">
           <!-- Blue Icon -->
           <TextBlock Grid.Column="0"

@@ -133,9 +133,7 @@
         <!-- HeaderPosition options: Left, Right, Top, Bottom -->
         <controls:CollapsiblePanel Grid.Column="0"
                                    IsExpanded="{Binding IsFilterPanelExpanded, Mode=TwoWay}"
-                                   Icon="FilterVariant"
-                                   HeaderPosition="Left"
-                                   HeaderText="Filters">
+                                   HeaderPosition="Left">
           <!-- Filter Content -->
           <StackPanel Spacing="6">
             
@@ -488,9 +486,7 @@
         <!-- Right Panel: Details/Actions Panel using CollapsiblePanel -->
         <controls:CollapsiblePanel Grid.Column="2"
                                    IsExpanded="True"
-                                   Icon="InformationOutline"
-                                   HeaderPosition="Right"
-                                   HeaderText="Details">
+                                   HeaderPosition="Right">
           <!-- Details Content -->
           <StackPanel Spacing="8">
             

@@ -58,6 +58,22 @@
       <Setter Property="Margin" Value="2"/>
     </Style>
 
+    <!-- AutoCompleteBox Input Styles -->
+    <Style Selector="AutoCompleteBox.input-field">
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="Padding" Value="6,3"/>
+      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="MinHeight" Value="24"/>
+      <Setter Property="Margin" Value="2"/>
+      <Setter Property="FilterMode" Value="Contains"/>
+      <Setter Property="MinimumPrefixLength" Value="0"/>
+      <Setter Property="MaxDropDownHeight" Value="200"/>
+      <Setter Property="IsTextCompletionEnabled" Value="True"/>
+    </Style>
+
     <!-- Compact Button Styles -->
     <Style Selector="Button.action-button">
       <Setter Property="Padding" Value="6,3"/>
@@ -179,13 +195,13 @@
                                                 VerticalAlignment="Center"
                                                 ToolTip.Tip="Part ID"/>
                   </Grid>
-                  <ComboBox ItemsSource="{Binding PartOptions}"
-                            SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
-                            Classes="input-field"
-                            HorizontalAlignment="Stretch"
-                            IsTextSearchEnabled="True"
-                            PlaceholderText="Select part ID..."
-                            ToolTip.Tip="Select part to transfer"/>
+                  <AutoCompleteBox ItemsSource="{Binding PartOptions}"
+                                   SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
+                                   Text="{Binding PartText, Mode=TwoWay}"
+                                   Classes="input-field"
+                                   HorizontalAlignment="Stretch"
+                                   Watermark="Select part ID..."
+                                   ToolTip.Tip="Select part to transfer"/>
                 </StackPanel>
 
                 <!-- Operation -->
@@ -199,12 +215,13 @@
                                                 VerticalAlignment="Center"
                                                 ToolTip.Tip="Operation"/>
                   </Grid>
-                  <ComboBox ItemsSource="{Binding OperationOptions}"
-                            SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
-                            Classes="input-field"
-                            HorizontalAlignment="Stretch"
-                            PlaceholderText="Select operation..."
-                            ToolTip.Tip="Select operation (optional)"/>
+                  <AutoCompleteBox ItemsSource="{Binding OperationOptions}"
+                                   SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
+                                   Text="{Binding OperationText, Mode=TwoWay}"
+                                   Classes="input-field"
+                                   HorizontalAlignment="Stretch"
+                                   Watermark="Select operation..."
+                                   ToolTip.Tip="Select operation (optional)"/>
                 </StackPanel>
 
                 <!-- To Location -->
@@ -218,12 +235,13 @@
                                                 VerticalAlignment="Center"
                                                 ToolTip.Tip="Destination Location"/>
                   </Grid>
-                  <ComboBox ItemsSource="{Binding LocationOptions}"
-                            SelectedItem="{Binding SelectedToLocation, Mode=TwoWay}"
-                            Classes="input-field"
-                            HorizontalAlignment="Stretch"
-                            PlaceholderText="Select destination..."
-                            ToolTip.Tip="Select destination location"/>
+                  <AutoCompleteBox ItemsSource="{Binding LocationOptions}"
+                                   SelectedItem="{Binding SelectedToLocation, Mode=TwoWay}"
+                                   Text="{Binding ToLocationText, Mode=TwoWay}"
+                                   Classes="input-field"
+                                   HorizontalAlignment="Stretch"
+                                   Watermark="Select destination..."
+                                   ToolTip.Tip="Select destination location"/>
                 </StackPanel>
 
                 <!-- Transfer Quantity -->

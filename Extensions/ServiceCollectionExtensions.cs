@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using MTM_Shared_Logic.Services;
 using MTM_Shared_Logic.Core.Services;
 using MTM_Shared_Logic.Models;
+using MTM_WIP_Application_Avalonia.ViewModels;
 using IDatabaseService = MTM_Shared_Logic.Core.Services.IDatabaseService;
 
 namespace MTM_Shared_Logic.Extensions
@@ -54,12 +55,31 @@ namespace MTM_Shared_Logic.Extensions
             // Add UI and theme services
             services.AddSingleton<IThemeService, ThemeService>();
 
-            // Add caching services
+            // Add caching services - use the specific MTM_Shared_Logic.Services version
             services.AddMemoryCache();
-            services.AddSingleton<ICacheService, SimpleCacheService>();
+            services.AddSingleton<MTM_Shared_Logic.Services.ICacheService, MTM_Shared_Logic.Services.CacheService>();
 
-            // Add validation services
-            services.AddScoped<IValidationService, SimpleValidationService>();
+            // Add validation services - use the specific MTM_Shared_Logic.Services version
+            services.AddScoped<MTM_Shared_Logic.Services.IValidationService, MTM_Shared_Logic.Services.ValidationService>();
+
+            // Add notification services
+            services.AddScoped<INotificationService, NotificationService>();
+
+            // Add ViewModels that exist
+            services.AddTransient<InventoryTabViewModel>();
+            services.AddTransient<InventoryViewModel>();
+            services.AddTransient<AddItemViewModel>();
+            services.AddTransient<MainViewViewModel>();
+            services.AddTransient<MainWindowViewModel>();
+            services.AddTransient<QuickButtonsViewModel>();
+            services.AddTransient<RemoveItemViewModel>();
+            services.AddTransient<TransferItemViewModel>();
+            services.AddTransient<TransactionHistoryViewModel>();
+            services.AddTransient<UserManagementViewModel>();
+
+            // TODO: Add these ViewModels when they are created
+            // services.AddTransient<AdvancedInventoryViewModel>();
+            // services.AddTransient<AdvancedRemoveViewModel>();
 
             return services;
         }
@@ -112,8 +132,9 @@ namespace MTM_Shared_Logic.Extensions
 
     /// <summary>
     /// Simple cache service implementation using IMemoryCache.
+    /// This is a fallback implementation for the core services interface.
     /// </summary>
-    internal class SimpleCacheService : ICacheService
+    internal class SimpleCacheService : MTM_Shared_Logic.Core.Services.ICacheService
     {
         private readonly IMemoryCache _memoryCache;
 
@@ -128,41 +149,42 @@ namespace MTM_Shared_Logic.Extensions
             return Task.FromResult((T?)value);
         }
 
-        public Task<Result> SetAsync<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default) 
+        public Task<MTM_Shared_Logic.Models.Result> SetAsync<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default) 
         {
             var options = new MemoryCacheEntryOptions();
             if (expiration.HasValue)
                 options.AbsoluteExpirationRelativeToNow = expiration.Value;
             
             _memoryCache.Set(key, value, options);
-            return Task.FromResult(Result.Success());
+            return Task.FromResult(MTM_Shared_Logic.Models.Result.Success());
         }
 
-        public Task<Result> RemoveAsync(string key, CancellationToken cancellationToken = default) 
+        public Task<MTM_Shared_Logic.Models.Result> RemoveAsync(string key, CancellationToken cancellationToken = default) 
         {
             _memoryCache.Remove(key);
-            return Task.FromResult(Result.Success());
+            return Task.FromResult(MTM_Shared_Logic.Models.Result.Success());
         }
 
-        public Task<Result> RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default) 
+        public Task<MTM_Shared_Logic.Models.Result> RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default) 
         {
             // TODO: Implement pattern-based removal
-            return Task.FromResult(Result.Success());
+            return Task.FromResult(MTM_Shared_Logic.Models.Result.Success());
         }
 
-        public Task<Result> ClearAllAsync(CancellationToken cancellationToken = default) 
+        public Task<MTM_Shared_Logic.Models.Result> ClearAllAsync(CancellationToken cancellationToken = default) 
         {
-            // TODO: Implement cache clearing
-            return Task.FromResult(Result.Success());
+            // TODO: Implement cache clearing for IMemoryCache
+            return Task.FromResult(MTM_Shared_Logic.Models.Result.Success());
         }
     }
 
     /// <summary>
     /// Simple validation service implementation.
+    /// This is a fallback implementation for the core services interface.
     /// </summary>
-    internal class SimpleValidationService : IValidationService
+    internal class SimpleValidationService : MTM_Shared_Logic.Core.Services.IValidationService
     {
-        public Task<Result<ValidationResult>> ValidateAsync<T>(T entity, CancellationToken cancellationToken = default) 
+        public Task<MTM_Shared_Logic.Models.Result<ValidationResult>> ValidateAsync<T>(T entity, CancellationToken cancellationToken = default) 
         {
             // TODO: Implement using FluentValidation or similar
             var validationResult = new ValidationResult
@@ -170,13 +192,13 @@ namespace MTM_Shared_Logic.Extensions
                 IsValid = true,
                 Errors = new List<string>()
             };
-            return Task.FromResult(Result<ValidationResult>.Success(validationResult));
+            return Task.FromResult(MTM_Shared_Logic.Models.Result<ValidationResult>.Success(validationResult));
         }
 
-        public Task<Result<bool>> ValidateRuleAsync(string ruleName, object context, CancellationToken cancellationToken = default) 
+        public Task<MTM_Shared_Logic.Models.Result<bool>> ValidateRuleAsync(string ruleName, object context, CancellationToken cancellationToken = default) 
         {
             // TODO: Implement rule validation
-            return Task.FromResult(Result<bool>.Success(true));
+            return Task.FromResult(MTM_Shared_Logic.Models.Result<bool>.Success(true));
         }
     }
 }

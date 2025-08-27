@@ -143,8 +143,8 @@ private async Task<bool> SaveInventoryItemAsync()
 5. **Notes**: Optional field, no validation required
 
 ### **Reset Operations**
-- **Soft Reset**: Clears form fields, maintains current ComboBox data
-- **Hard Reset**: Refreshes all ComboBox data from database, resets form fields
+- **Soft Reset**: Clears form fields, maintains current AutoCompleteBox data
+- **Hard Reset**: Refreshes all AutoCompleteBox data from database, resets form fields
 - **Progress Feedback**: Shows detailed progress during reset operations
 
 ### **User Privilege Enforcement**
@@ -162,7 +162,7 @@ private async Task<bool> SaveInventoryItemAsync()
 - `Data/Dao_Inventory.cs` - Core inventory database operations
 - `Data/Dao_QuickButtons.cs` - Quick button management
 - `Data/Dao_ErrorLog.cs` - Error logging and handling
-- `Helpers/Helper_UI_ComboBoxes.cs` - ComboBox data management
+- `Helpers/Helper_UI_AutoCompleteBoxes.cs` - AutoCompleteBox data management
 
 ### **Integration Points**
 - `Controls/MainForm/Control_AdvancedInventory.cs` - Advanced inventory features
@@ -179,7 +179,7 @@ private async Task<bool> SaveInventoryItemAsync()
 
 ### **Performance Optimizations**
 - **Async Database Operations**: All database calls use async patterns to prevent UI blocking
-- **Smart ComboBox Loading**: ComboBox data is cached and only refreshed when necessary
+- **Smart AutoCompleteBox Loading**: AutoCompleteBox data is cached and only refreshed when necessary
 - **Progressive Loading**: Shows progress feedback for all time-consuming operations
 
 ### **User Experience Features**

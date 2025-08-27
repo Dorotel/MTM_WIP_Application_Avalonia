@@ -70,6 +70,27 @@ public class TransferItemViewModel : BaseViewModel
         set => this.RaiseAndSetIfChanged(ref _selectedOperation, value);
     }
 
+    // Text properties for AutoCompleteBox two-way binding
+    private string _partText = string.Empty;
+    /// <summary>
+    /// Text content for Part AutoCompleteBox
+    /// </summary>
+    public string PartText
+    {
+        get => _partText;
+        set => this.RaiseAndSetIfChanged(ref _partText, value ?? string.Empty);
+    }
+
+    private string _operationText = string.Empty;
+    /// <summary>
+    /// Text content for Operation AutoCompleteBox
+    /// </summary>
+    public string OperationText
+    {
+        get => _operationText;
+        set => this.RaiseAndSetIfChanged(ref _operationText, value ?? string.Empty);
+    }
+
     #endregion
 
     #region Transfer Configuration Properties
@@ -82,6 +103,17 @@ public class TransferItemViewModel : BaseViewModel
     {
         get => _selectedToLocation;
         set => this.RaiseAndSetIfChanged(ref _selectedToLocation, value);
+    }
+
+    // Text property for destination location AutoCompleteBox
+    private string _toLocationText = string.Empty;
+    /// <summary>
+    /// Text content for To Location AutoCompleteBox
+    /// </summary>
+    public string ToLocationText
+    {
+        get => _toLocationText;
+        set => this.RaiseAndSetIfChanged(ref _toLocationText, value ?? string.Empty);
     }
 
     private int _transferQuantity = 1;
@@ -241,6 +273,29 @@ public class TransferItemViewModel : BaseViewModel
 
         InitializeCommands();
         LoadSampleData(); // Load sample data for demonstration
+
+        // Sync text properties with selected items
+        this.WhenAnyValue(x => x.SelectedPart)
+            .Subscribe(selected => PartText = selected ?? string.Empty);
+        
+        this.WhenAnyValue(x => x.SelectedOperation)
+            .Subscribe(selected => OperationText = selected ?? string.Empty);
+        
+        this.WhenAnyValue(x => x.SelectedToLocation)
+            .Subscribe(selected => ToLocationText = selected ?? string.Empty);
+
+        // Sync selected items when text matches exactly
+        this.WhenAnyValue(x => x.PartText)
+            .Where(text => !string.IsNullOrEmpty(text) && PartOptions.Contains(text))
+            .Subscribe(text => SelectedPart = text);
+        
+        this.WhenAnyValue(x => x.OperationText)
+            .Where(text => !string.IsNullOrEmpty(text) && OperationOptions.Contains(text))
+            .Subscribe(text => SelectedOperation = text);
+        
+        this.WhenAnyValue(x => x.ToLocationText)
+            .Where(text => !string.IsNullOrEmpty(text) && LocationOptions.Contains(text))
+            .Subscribe(text => SelectedToLocation = text);
     }
 
     #endregion
@@ -364,6 +419,9 @@ public class TransferItemViewModel : BaseViewModel
             SelectedPart = null;
             SelectedOperation = null;
             SelectedToLocation = null;
+            PartText = string.Empty;
+            OperationText = string.Empty;
+            ToLocationText = string.Empty;
             TransferQuantity = 1;
             InventoryItems.Clear();
             SelectedInventoryItem = null;

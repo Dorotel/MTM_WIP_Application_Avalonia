@@ -30,45 +30,15 @@
                 MinWidth="40"
                 MinHeight="40">
           
-          <!-- Fixed vertical layout for header content -->
-          <Grid x:Name="HeaderContentGrid" VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-              <RowDefinition Height="*"/>    <!-- Text area - takes most space -->
-              <RowDefinition Height="24"/>   <!-- Icon area - fixed size -->
-              <RowDefinition Height="24"/>   <!-- Button area - fixed size -->
-            </Grid.RowDefinitions>
+          <!-- Simple grid for toggle button only -->
+          <Grid x:Name="HeaderContentGrid">
             
-            <!-- Header Text - Always in row 0 (top area) -->
-            <TextBlock x:Name="HeaderText"
-                       Grid.Row="0"
-                       Text="Panel"
-                       FontSize="12"
-                       FontWeight="SemiBold"
-                       Foreground="{StaticResource HeaderTextBrush}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Top"
-                       TextAlignment="Center"
-                       Margin="0,8,0,0"/>
-            
-            <!-- Panel Icon - Always in row 1 (middle) -->
-            <material:MaterialIcon x:Name="PanelIcon"
-                                   Grid.Row="1"
-                                   Kind="FilterVariant"
-                                   Width="16"
-                                   Height="16"
-                                   Foreground="{StaticResource AccentBrush}"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-            
-            <!-- Toggle Button - Always in row 2 (bottom) -->
+            <!-- Toggle Button - positioned dynamically by code -->
             <Button x:Name="ToggleButton"
-                    Grid.Row="2"
                     Background="Transparent"
                     BorderThickness="0"
                     Width="20"
                     Height="20"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
                     Click="OnToggleClick"
                     Cursor="Hand">
               <material:MaterialIcon x:Name="ToggleIcon"

@@ -40,6 +40,28 @@ public class AdvancedInventoryViewModel : BaseViewModel
     public int Quantity { get => _quantity; set => this.RaiseAndSetIfChanged(ref _quantity, value); }
     public int RepeatTimes { get => _repeatTimes; set => this.RaiseAndSetIfChanged(ref _repeatTimes, value); }
 
+    // Text properties for AutoCompleteBox two-way binding
+    private string _partIDText = string.Empty;
+    public string PartIDText
+    {
+        get => _partIDText;
+        set => this.RaiseAndSetIfChanged(ref _partIDText, value ?? string.Empty);
+    }
+
+    private string _operationText = string.Empty;
+    public string OperationText
+    {
+        get => _operationText;
+        set => this.RaiseAndSetIfChanged(ref _operationText, value ?? string.Empty);
+    }
+
+    private string _locationText = string.Empty;
+    public string LocationText
+    {
+        get => _locationText;
+        set => this.RaiseAndSetIfChanged(ref _locationText, value ?? string.Empty);
+    }
+
     // String wrapper properties for TextBox binding
     public string QuantityText 
     { 
@@ -149,6 +171,30 @@ public class AdvancedInventoryViewModel : BaseViewModel
         this.WhenAnyValue(vm => vm.Quantity).Subscribe(_ => this.RaisePropertyChanged(nameof(QuantityText)));
         this.WhenAnyValue(vm => vm.RepeatTimes).Subscribe(_ => this.RaisePropertyChanged(nameof(RepeatTimesText)));
         this.WhenAnyValue(vm => vm.MultiLocationQuantity).Subscribe(_ => this.RaisePropertyChanged(nameof(MultiLocationQuantityText)));
+
+        // Sync text properties with selected items
+        this.WhenAnyValue(x => x.SelectedPartID)
+            .Subscribe(selected => PartIDText = selected ?? string.Empty);
+        
+        this.WhenAnyValue(x => x.SelectedOperation)
+            .Subscribe(selected => OperationText = selected ?? string.Empty);
+        
+        this.WhenAnyValue(x => x.SelectedLocation)
+            .Subscribe(selected => LocationText = selected ?? string.Empty);
+
+        // Sync selected items when text matches exactly
+        this.WhenAnyValue(x => x.PartIDText)
+            .Where(text => !string.IsNullOrEmpty(text) && PartIDOptions.Contains(text))
+            .Subscribe(text => SelectedPartID = text);
+        
+        this.WhenAnyValue(x => x.OperationText)
+            .Where(text => !string.IsNullOrEmpty(text) && OperationOptions.Contains(text))
+            .Subscribe(text => SelectedOperation = text);
+        
+        this.WhenAnyValue(x => x.LocationText)
+            .Where(text => !string.IsNullOrEmpty(text) && LocationOptions.Contains(text))
+            .Subscribe(text => SelectedLocation = text);
+   
 
         // Wire up filter panel property changes
         this.WhenAnyValue(vm => vm.IsFilterPanelExpanded).Subscribe(_ => 
@@ -328,6 +374,9 @@ public class AdvancedInventoryViewModel : BaseViewModel
         SelectedPartID = null;
         SelectedOperation = null;
         SelectedLocation = null;
+        PartIDText = string.Empty;
+        OperationText = string.Empty;
+        LocationText = string.Empty;
         Quantity = 1;
         RepeatTimes = 1;
     }

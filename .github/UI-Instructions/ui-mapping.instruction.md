@@ -333,3 +333,74 @@ QuickActionExecuted?.Invoke(this, new QuickActionExecutedEventArgs
 > For control and event naming conventions, see [naming-conventions.instruction.md](../Core-Instructions/naming-conventions.instruction.md)
 
 </details>
+
+## 🎯 Avalonia UI Control Conversions
+
+### AutoCompleteBox for All Dropdown Controls (Updated Standard)
+
+**🆕 CRITICAL UPDATE**: All ComboBox controls have been converted to AutoCompleteBox for enhanced user experience with `%text%` pattern matching.
+
+```xml
+<!-- ✅ CURRENT STANDARD: AutoCompleteBox with Contains filtering -->
+<AutoCompleteBox ItemsSource="{Binding PartOptions}"
+                 SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
+                 Text="{Binding PartText, Mode=TwoWay}"
+                 Classes="input-field"
+                 FilterMode="Contains"
+                 MinimumPrefixLength="0"
+                 MaxDropDownHeight="200"
+                 IsTextCompletionEnabled="True"
+                 Watermark="Select or enter part ID..."
+                 ToolTip.Tip="Type anywhere in part name to filter"/>
+
+<!-- ❌ OBSOLETE: ComboBox (no longer used) -->
+<ComboBox ItemsSource="{Binding PartOptions}"
+          SelectedItem="{Binding SelectedPart}"
+          IsTextSearchEnabled="True"/>
+```
+
+### Required AutoCompleteBox Styling
+
+```xml
+<Style Selector="AutoCompleteBox.input-field">
+  <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+  <Setter Property="BorderThickness" Value="1"/>
+  <Setter Property="CornerRadius" Value="3"/>
+  <Setter Property="Padding" Value="6,3"/>
+  <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+  <Setter Property="FontSize" Value="10"/>
+  <Setter Property="MinHeight" Value="24"/>
+  <Setter Property="Margin" Value="2"/>
+  <Setter Property="FilterMode" Value="Contains"/>
+  <Setter Property="MinimumPrefixLength" Value="0"/>
+  <Setter Property="MaxDropDownHeight" Value="200"/>
+  <Setter Property="IsTextCompletionEnabled" Value="True"/>
+</Style>
+```
+
+### Required ViewModel Properties for AutoCompleteBox
+
+```csharp
+// Selected item properties (existing)
+private string? _selectedPart;
+public string? SelectedPart
+{
+    get => _selectedPart;
+    set => this.RaiseAndSetIfChanged(ref _selectedPart, value);
+}
+
+// NEW REQUIRED: Text properties for AutoCompleteBox two-way binding
+private string _partText = string.Empty;
+public string PartText
+{
+    get => _partText;
+    set => this.RaiseAndSetIfChanged(ref _partText, value ?? string.Empty);
+}
+
+// NEW REQUIRED: Synchronization logic in constructor
+this.WhenAnyValue(x => x.SelectedPart)
+    .Subscribe(selected => PartText = selected ?? string.Empty);
+
+this.WhenAnyValue(x => x.PartText)
+    .Where(text => !string.IsNullOrEmpty(text) && PartOptions.Contains(text))
+    .Subscribe(text => SelectedPart = text);
