@@ -63,7 +63,7 @@
           <!-- Development builds only -->
           <MenuItem Header="_Help" 
                     Foreground="{StaticResource LightTextBrush}"
-                    IsVisible="{Binding ShowDevelopmentMenu}">
+                    IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
             <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
           </MenuItem>
         </Menu>
@@ -73,7 +73,7 @@
       <Grid Grid.Row="1">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="{Binding QuickActionsPanelWidth}"/>
+          <ColumnDefinition Width="{Binding QuickActionsPanelWidth, FallbackValue=300, TargetNullValue=300}"/>
         </Grid.ColumnDefinitions>
         
         <!-- Left Panel: Modern Tab Control with Gold Accents -->
@@ -85,7 +85,7 @@
                 Margin="16"
                 BoxShadow="0 2 8 0 #11000000">
           <TabControl x:Name="MainForm_TabControl"
-                      SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
+                      SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay, FallbackValue=0}"
                       Background="Transparent">
             <TabItem Header="📦 Inventory">
               <Border Padding="16">
@@ -122,11 +122,11 @@
                 CornerRadius="8"
                 Margin="0,16,16,16"
                 BoxShadow="0 2 8 0 #11000000"
-                IsVisible="{Binding IsAdvancedPanelVisible}">
+                IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}">
           <Grid ColumnDefinitions="*,Auto">
             <!-- Quick Actions Content -->
             <Border Grid.Column="0"
-                    IsVisible="{Binding IsQuickActionsPanelExpanded}"
+                    IsVisible="{Binding IsQuickActionsPanelExpanded, FallbackValue=True}"
                     Padding="4">
               <ScrollViewer>
                 <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"/>
@@ -166,7 +166,7 @@
                         Margin="6,0,6,6"
                         Cursor="Hand"
                         ToolTip.Tip="Toggle Quick Actions Panel">
-                  <TextBlock Text="{Binding QuickActionsCollapseButtonIcon}"
+                  <TextBlock Text="{Binding QuickActionsCollapseButtonIcon, FallbackValue='◄', TargetNullValue='◄'}"
                              FontSize="10"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"/>
@@ -193,7 +193,7 @@
                          Foreground="{StaticResource LightTextBrush}" 
                          Opacity="0.8"
                          FontSize="11"/>
-              <TextBlock Text="{Binding ConnectionStatus}"
+              <TextBlock Text="{Binding ConnectionStatus, FallbackValue='Connected', TargetNullValue='Unknown'}"
                          Foreground="{StaticResource PrimaryBrush}"
                          FontWeight="SemiBold"
                          FontSize="11"/>
@@ -214,7 +214,7 @@
                          FontSize="10"/>
               <ProgressBar Minimum="0" Maximum="100" 
                            Width="80" Height="6" 
-                           Value="{Binding ConnectionStrength}"
+                           Value="{Binding ConnectionStrength, FallbackValue=100}"
                            Foreground="{StaticResource PrimaryBrush}"
                            Background="{StaticResource PrimaryDarkBrush}"
                            CornerRadius="3"/>
@@ -228,7 +228,7 @@
                          FontSize="10"/>
               <ProgressBar Minimum="0" Maximum="100"
                            Width="100" Height="6"
-                           Value="{Binding ProgressValue}"
+                           Value="{Binding ProgressValue, FallbackValue=0}"
                            Foreground="{StaticResource AccentBrush}"
                            Background="{StaticResource PrimaryDarkBrush}"
                            CornerRadius="3"/>
@@ -242,7 +242,7 @@
                   BorderThickness="1"
                   Padding="8,4"
                   CornerRadius="4">
-            <TextBlock Text="{Binding StatusText}"
+            <TextBlock Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
                        Foreground="{StaticResource PrimaryTextBrush}"
                        FontSize="11"
                        VerticalAlignment="Center"/>

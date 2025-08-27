@@ -19,11 +19,11 @@
   <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="0">
     <!-- Label -->
     <TextBlock Grid.Row="0" 
-               Text="{Binding Label}"
+               Text="{Binding Label, FallbackValue='Rich Text Editor', TargetNullValue='Rich Text Editor'}"
                FontWeight="SemiBold"
                Foreground="#333"
                Margin="0,0,0,4"
-               IsVisible="{Binding ShowLabel}" />
+               IsVisible="{Binding ShowLabel, FallbackValue=True}" />
 
     <!-- Toolbar -->
     <Border Grid.Row="1"
@@ -32,7 +32,7 @@
             BorderThickness="2,2,2,0"
             CornerRadius="8,8,0,0"
             Padding="8,4"
-            IsVisible="{Binding ShowToolbar}">
+            IsVisible="{Binding ShowToolbar, FallbackValue=True}">
       
       <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
         <!-- Formatting Buttons -->
@@ -44,7 +44,7 @@
                         BorderThickness="1"
                         BorderBrush="{StaticResource BorderBrush}"
                         CornerRadius="4"
-                        IsChecked="{Binding IsBold, Mode=TwoWay}"
+                        IsChecked="{Binding IsBold, Mode=TwoWay, FallbackValue=False}"
                         Command="{Binding ToggleBoldCommand}"
                         ToolTip.Tip="Bold (Ctrl+B)">
             <material:MaterialIcon Kind="FormatBold" Width="16" Height="16" />
@@ -57,7 +57,7 @@
                         BorderThickness="1"
                         BorderBrush="{StaticResource BorderBrush}"
                         CornerRadius="4"
-                        IsChecked="{Binding IsItalic, Mode=TwoWay}"
+                        IsChecked="{Binding IsItalic, Mode=TwoWay, FallbackValue=False}"
                         Command="{Binding ToggleItalicCommand}"
                         ToolTip.Tip="Italic (Ctrl+I)">
             <material:MaterialIcon Kind="FormatItalic" Width="16" Height="16" />
@@ -70,7 +70,7 @@
                         BorderThickness="1"
                         BorderBrush="{StaticResource BorderBrush}"
                         CornerRadius="4"
-                        IsChecked="{Binding IsUnderline, Mode=TwoWay}"
+                        IsChecked="{Binding IsUnderline, Mode=TwoWay, FallbackValue=False}"
                         Command="{Binding ToggleUnderlineCommand}"
                         ToolTip.Tip="Underline (Ctrl+U)">
             <material:MaterialIcon Kind="FormatUnderline" Width="16" Height="16" />
@@ -113,12 +113,12 @@
 
         <!-- Word Count -->
         <TextBlock Grid.Column="3"
-                   Text="{Binding WordCountText}"
+                   Text="{Binding WordCountText, FallbackValue='Words: 0', TargetNullValue='Words: 0'}"
                    FontSize="11"
                    Foreground="#666"
                    VerticalAlignment="Center"
                    Margin="8,0"
-                   IsVisible="{Binding ShowWordCount}" />
+                   IsVisible="{Binding ShowWordCount, FallbackValue=True}" />
 
         <!-- Status/Actions -->
         <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="4">
@@ -130,7 +130,7 @@
                   BorderBrush="{StaticResource BorderBrush}"
                   CornerRadius="4"
                   Command="{Binding SaveCommand}"
-                  IsVisible="{Binding ShowSaveButton}"
+                  IsVisible="{Binding ShowSaveButton, FallbackValue=False}"
                   ToolTip.Tip="Save (Ctrl+S)">
             <material:MaterialIcon Kind="ContentSave" Width="16" Height="16" />
           </Button>
@@ -202,14 +202,14 @@
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="0,0,1,0"
                 Width="40"
-                IsVisible="{Binding ShowLineNumbers}">
+                IsVisible="{Binding ShowLineNumbers, FallbackValue=False}">
           <ScrollViewer x:Name="LineNumberScroller"
                         VerticalScrollBarVisibility="Hidden"
                         HorizontalScrollBarVisibility="Hidden">
             <ItemsControl ItemsSource="{Binding LineNumbers}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <TextBlock Text="{Binding}" 
+                  <TextBlock Text="{Binding, FallbackValue='1', TargetNullValue='1'}" 
                             FontFamily="Consolas, Monaco, monospace"
                             FontSize="12"
                             Foreground="#666"
@@ -229,18 +229,18 @@
                       HorizontalScrollBarVisibility="Auto">
           
           <TextBox x:Name="PART_TextBox"
-                   Text="{Binding Text, Mode=TwoWay}"
-                   Watermark="{Binding PlaceholderText}"
+                   Text="{Binding Text, Mode=TwoWay, FallbackValue='', TargetNullValue=''}"
+                   Watermark="{Binding PlaceholderText, FallbackValue='Enter text...', TargetNullValue='Enter text...'}"
                    Background="Transparent"
                    BorderThickness="0"
                    Padding="12"
                    AcceptsReturn="True"
                    AcceptsTab="True"
                    TextWrapping="Wrap"
-                   FontFamily="{Binding FontFamily}"
-                   FontSize="{Binding FontSize}"
-                   IsReadOnly="{Binding IsReadOnly}"
-                   IsEnabled="{Binding IsEnabled}"
+                   FontFamily="{Binding FontFamily, FallbackValue='Segoe UI'}"
+                   FontSize="{Binding FontSize, FallbackValue=14}"
+                   IsReadOnly="{Binding IsReadOnly, FallbackValue=False}"
+                   IsEnabled="{Binding IsEnabled, FallbackValue=True}"
                    ScrollViewer.VerticalScrollBarVisibility="Disabled"
                    ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
         </ScrollViewer>
@@ -254,30 +254,30 @@
             BorderThickness="2,0,2,2"
             CornerRadius="0,0,8,8"
             Padding="8,4"
-            IsVisible="{Binding ShowStatusBar}">
+            IsVisible="{Binding ShowStatusBar, FallbackValue=True}">
       
       <Grid ColumnDefinitions="Auto,*,Auto,Auto">
         <!-- Character/Word Count -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
-          <TextBlock Text="{Binding CharacterCountText}"
+          <TextBlock Text="{Binding CharacterCountText, FallbackValue='Characters: 0', TargetNullValue='Characters: 0'}"
                      FontSize="11"
                      Foreground="#666" />
-          <TextBlock Text="{Binding WordCountText}"
+          <TextBlock Text="{Binding WordCountText, FallbackValue='Words: 0', TargetNullValue='Words: 0'}"
                      FontSize="11"
                      Foreground="#666" />
         </StackPanel>
 
         <!-- Validation Message -->
         <TextBlock Grid.Column="1"
-                   Text="{Binding ValidationMessage}"
+                   Text="{Binding ValidationMessage, FallbackValue='', TargetNullValue=''}"
                    Foreground="{StaticResource ErrorBrush}"
                    FontSize="11"
                    Margin="12,0"
-                   IsVisible="{Binding HasValidationError}" />
+                   IsVisible="{Binding HasValidationError, FallbackValue=False}" />
 
         <!-- Cursor Position -->
         <TextBlock Grid.Column="2"
-                   Text="{Binding CursorPositionText}"
+                   Text="{Binding CursorPositionText, FallbackValue='Line: 1, Col: 1', TargetNullValue='Line: 1, Col: 1'}"
                    FontSize="11"
                    Foreground="#666"
                    Margin="0,0,12,0" />
@@ -286,9 +286,9 @@
         <Border Grid.Column="3"
                 Width="16"
                 Height="16"
-                IsVisible="{Binding ShowStatusIcon}">
-          <material:MaterialIcon Kind="{Binding StatusIconKind}"
-                                Foreground="{Binding StatusIconColor}"
+                IsVisible="{Binding ShowStatusIcon, FallbackValue=False}">
+          <material:MaterialIcon Kind="{Binding StatusIconKind, FallbackValue=CheckCircle}"
+                                Foreground="{Binding StatusIconColor, FallbackValue=Green}"
                                 Width="14"
                                 Height="14" />
         </Border>

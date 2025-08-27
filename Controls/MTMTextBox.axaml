@@ -19,7 +19,7 @@
   <Grid RowDefinitions="Auto,*,Auto" Margin="0">
     <!-- Static Label (when FloatingLabel is false) -->
     <TextBlock Grid.Row="0" 
-               Text="{Binding Label, FallbackValue='Test Label'}"
+               Text="{Binding Label, FallbackValue='Label', TargetNullValue='Label'}"
                FontWeight="SemiBold"
                Foreground="#333"
                Margin="0,0,0,4"
@@ -41,7 +41,7 @@
                 Background="{StaticResource PrimaryBrush}"
                 Width="36"
                 CornerRadius="6,0,0,6">
-          <material:MaterialIcon Kind="{Binding Icon}"
+          <material:MaterialIcon Kind="{Binding Icon, FallbackValue=FilterVariant}"
                                 Width="18"
                                 Height="18"
                                 Foreground="White"
@@ -53,7 +53,7 @@
         <Grid Grid.Column="1" Margin="12,8">
           <!-- Floating Label -->
           <TextBlock x:Name="FloatingLabel"
-                     Text="{Binding Label, FallbackValue='Floating Label'}"
+                     Text="{Binding Label, FallbackValue='Label', TargetNullValue='Label'}"
                      FontSize="14"
                      Foreground="#666"
                      VerticalAlignment="Center"
@@ -64,8 +64,8 @@
 
           <!-- Main TextBox -->
           <TextBox x:Name="PART_TextBox"
-                   Text="{Binding Text, Mode=TwoWay}"
-                   Watermark="{Binding PlaceholderText, FallbackValue='Enter text...'}"
+                   Text="{Binding Text, Mode=TwoWay, FallbackValue='', TargetNullValue=''}"
+                   Watermark="{Binding PlaceholderText, FallbackValue='Enter text...', TargetNullValue='Enter text...'}"
                    Background="Transparent"
                    BorderThickness="0"
                    VerticalAlignment="Center"
@@ -79,24 +79,24 @@
 
         <!-- Character Counter -->
         <TextBlock Grid.Column="2"
-                   Text="{Binding CharacterCountText}"
+                   Text="{Binding CharacterCountText, FallbackValue='', TargetNullValue=''}"
                    FontSize="10"
                    Foreground="#666"
                    VerticalAlignment="Bottom"
                    Margin="4,0,8,8"
-                   IsVisible="{Binding ShowCharacterCount}" />
+                   IsVisible="{Binding ShowCharacterCount, FallbackValue=False}" />
 
         <!-- Status Icon -->
         <Border Grid.Column="3"
                 Width="24"
                 Height="24"
                 Margin="4"
-                IsVisible="{Binding ShowStatusIcon}">
+                IsVisible="{Binding ShowStatusIcon, FallbackValue=False}">
           <material:MaterialIcon x:Name="StatusIcon"
                                 Width="16"
                                 Height="16"
-                                Kind="{Binding StatusIconKind}"
-                                Foreground="{Binding StatusIconColor}"
+                                Kind="{Binding StatusIconKind, FallbackValue=CheckCircle}"
+                                Foreground="{Binding StatusIconColor, FallbackValue=Green}"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center" />
         </Border>
@@ -113,7 +113,7 @@
                   Background="Transparent"
                   BorderThickness="0"
                   CornerRadius="14"
-                  IsVisible="{Binding ShowClearButton}"
+                  IsVisible="{Binding ShowClearButton, FallbackValue=True}"
                   Command="{Binding ClearCommand}"
                   ToolTip.Tip="Clear text">
             <material:MaterialIcon Kind="Close"
@@ -135,7 +135,7 @@
                   BorderThickness="0"
                   CornerRadius="14"
                   Margin="2,0,0,0"
-                  IsVisible="{Binding ShowCopyButton}"
+                  IsVisible="{Binding ShowCopyButton, FallbackValue=False}"
                   Command="{Binding CopyCommand}"
                   ToolTip.Tip="Copy to clipboard">
             <material:MaterialIcon Kind="ContentCopy"
@@ -157,7 +157,7 @@
                   BorderThickness="0"
                   CornerRadius="14"
                   Margin="2,0,0,0"
-                  IsVisible="{Binding ShowPasteButton}"
+                  IsVisible="{Binding ShowPasteButton, FallbackValue=False}"
                   Command="{Binding PasteCommand}"
                   ToolTip.Tip="Paste from clipboard">
             <material:MaterialIcon Kind="ContentPaste"
@@ -177,16 +177,16 @@
     <!-- Validation Message and Helper Text -->
     <StackPanel Grid.Row="2" Margin="12,4,0,0">
       <!-- Validation Message -->
-      <TextBlock Text="{Binding ValidationMessage}"
+      <TextBlock Text="{Binding ValidationMessage, FallbackValue='', TargetNullValue=''}"
                  Foreground="{StaticResource ErrorBrush}"
                  FontSize="12"
-                 IsVisible="{Binding HasValidationError}" />
+                 IsVisible="{Binding HasValidationError, FallbackValue=False}" />
       
       <!-- Helper Text -->
-      <TextBlock Text="{Binding HelperText}"
+      <TextBlock Text="{Binding HelperText, FallbackValue='', TargetNullValue=''}"
                  Foreground="#666"
                  FontSize="12"
-                 IsVisible="{Binding ShowHelperText}" />
+                 IsVisible="{Binding ShowHelperText, FallbackValue=False}" />
     </StackPanel>
   </Grid>
 

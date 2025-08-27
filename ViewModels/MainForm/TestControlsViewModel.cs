@@ -1,772 +1,206 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using ReactiveUI;
-using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using Material.Icons;
+using System.Windows.Input;
 using Avalonia.Media;
-using Avalonia;
-using System.Linq;
+using Material.Icons;
+using ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 /// <summary>
-/// ViewModel for testing and showcasing custom MTM controls
+/// ViewModel for testing MTM custom controls with comprehensive null safety
 /// </summary>
-public class TestControlsViewModel : BaseViewModel
+public sealed class TestControlsViewModel : ReactiveObject, INotifyPropertyChanged
 {
-    #region MTMComboBox Test Properties
-    private ObservableCollection<string> _testItems = new();
-    public ObservableCollection<string> TestItems
+    #region Private Fields with Null Safety
+
+    private string _label = "Test Label";
+    private string _placeholderText = "Enter test text...";
+    private string _text = string.Empty;
+    private string _helperText = "This is helper text";
+    private string _validationMessage = string.Empty;
+    private MaterialIconKind _icon = MaterialIconKind.FilterVariant;
+    private bool _isEnabled = true;
+    private bool _isReadOnly = false;
+    private bool _hasValidationError = false;
+    private bool _showClearButton = true;
+    private bool _showCopyButton = false;
+    private bool _showPasteButton = false;
+    private bool _showStatusIcon = false;
+    private bool _showCharacterCount = false;
+    private bool _useFloatingLabel = false;
+    private int _maxLength = 0;
+    private MaterialIconKind _statusIconKind = MaterialIconKind.CheckCircle;
+    private IBrush _statusIconColor = Brushes.Green;
+
+    #endregion
+
+    #region Properties with Null Safety and Fallbacks
+
+    /// <summary>
+    /// Label text for the control with null safety
+    /// </summary>
+    public string Label
     {
-        get => _testItems;
-        set => this.RaiseAndSetIfChanged(ref _testItems, value);
+        get => _label ?? "Test Label";
+        set => this.RaiseAndSetIfChanged(ref _label, value ?? "Test Label");
     }
 
-    private ObservableCollection<string> _operationCodes = new();
-    public ObservableCollection<string> OperationCodes
-    {
-        get => _operationCodes;
-        set => this.RaiseAndSetIfChanged(ref _operationCodes, value);
-    }
-
-    private ObservableCollection<string> _systemStatusOptions = new();
-    public ObservableCollection<string> SystemStatusOptions
-    {
-        get => _systemStatusOptions;
-        set => this.RaiseAndSetIfChanged(ref _systemStatusOptions, value);
-    }
-
-    private ObservableCollection<string> _qualityStatusOptions = new();
-    public ObservableCollection<string> QualityStatusOptions
-    {
-        get => _qualityStatusOptions;
-        set => this.RaiseAndSetIfChanged(ref _qualityStatusOptions, value);
-    }
-
-    // Generic Items property for MTMComboBox binding
-    private ObservableCollection<string> _items = new();
-    public ObservableCollection<string> Items
-    {
-        get => _items;
-        set => this.RaiseAndSetIfChanged(ref _items, value);
-    }
-
-    private object? _selectedItem;
-    public object? SelectedItem
-    {
-        get => _selectedItem;
-        set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
-    }
-
-    private string _placeholderText = "Select an option...";
+    /// <summary>
+    /// Placeholder text with null safety
+    /// </summary>
     public string PlaceholderText
     {
-        get => _placeholderText;
-        set => this.RaiseAndSetIfChanged(ref _placeholderText, value);
+        get => _placeholderText ?? "Enter test text...";
+        set => this.RaiseAndSetIfChanged(ref _placeholderText, value ?? "Enter test text...");
     }
 
-    private bool _isEnabled = true;
-    public bool IsEnabled
+    /// <summary>
+    /// Main text content with null safety
+    /// </summary>
+    public string Text
     {
-        get => _isEnabled;
-        set => this.RaiseAndSetIfChanged(ref _isEnabled, value);
+        get => _text ?? string.Empty;
+        set => this.RaiseAndSetIfChanged(ref _text, value ?? string.Empty);
     }
 
-    // Icon and Label properties
-    private MaterialIconKind _icon = MaterialIconKind.TestTube;
+    /// <summary>
+    /// Helper text with null safety
+    /// </summary>
+    public string HelperText
+    {
+        get => _helperText ?? "This is helper text";
+        set => this.RaiseAndSetIfChanged(ref _helperText, value ?? string.Empty);
+    }
+
+    /// <summary>
+    /// Validation message with null safety
+    /// </summary>
+    public string ValidationMessage
+    {
+        get => _validationMessage ?? string.Empty;
+        set => this.RaiseAndSetIfChanged(ref _validationMessage, value ?? string.Empty);
+    }
+
+    /// <summary>
+    /// Icon for the control
+    /// </summary>
     public MaterialIconKind Icon
     {
         get => _icon;
         set => this.RaiseAndSetIfChanged(ref _icon, value);
     }
 
-    private string _label = "Test Label";
-    public string Label
+    /// <summary>
+    /// Whether the control is enabled
+    /// </summary>
+    public bool IsEnabled
     {
-        get => _label;
-        set => this.RaiseAndSetIfChanged(ref _label, value);
+        get => _isEnabled;
+        set => this.RaiseAndSetIfChanged(ref _isEnabled, value);
     }
 
-    // Status properties
-    private bool _showStatusIcon = false;
-    public bool ShowStatusIcon
-    {
-        get => _showStatusIcon;
-        set => this.RaiseAndSetIfChanged(ref _showStatusIcon, value);
-    }
-
-    private MaterialIconKind _statusIconKind = MaterialIconKind.CheckCircle;
-    public MaterialIconKind StatusIconKind
-    {
-        get => _statusIconKind;
-        set => this.RaiseAndSetIfChanged(ref _statusIconKind, value);
-    }
-
-    private IBrush _statusIconColor = Brushes.Green;
-    public IBrush StatusIconColor
-    {
-        get => _statusIconColor;
-        set => this.RaiseAndSetIfChanged(ref _statusIconColor, value);
-    }
-
-    // Clear button properties
-    private bool _showClearButton = true;
-    public bool ShowClearButton
-    {
-        get => _showClearButton;
-        set => this.RaiseAndSetIfChanged(ref _showClearButton, value);
-    }
-
-    // Validation properties
-    private string? _validationMessage;
-    public string? ValidationMessage
-    {
-        get => _validationMessage;
-        set => this.RaiseAndSetIfChanged(ref _validationMessage, value);
-    }
-
-    private bool _hasValidationError = false;
-    public bool HasValidationError
-    {
-        get => _hasValidationError;
-        set => this.RaiseAndSetIfChanged(ref _hasValidationError, value);
-    }
-    #endregion
-
-    #region MTMTextBox Test Properties
-    private string _textBoxValue = string.Empty;
-    public string TextBoxValue
-    {
-        get => _textBoxValue;
-        set => this.RaiseAndSetIfChanged(ref _textBoxValue, value);
-    }
-
-    // Generic Text property for MTMTextBox binding
-    private string _text = string.Empty;
-    public string Text
-    {
-        get => _text;
-        set => this.RaiseAndSetIfChanged(ref _text, value);
-    }
-
-    private string _floatingLabelText = "Floating Label";
-    public string FloatingLabelText
-    {
-        get => _floatingLabelText;
-        set => this.RaiseAndSetIfChanged(ref _floatingLabelText, value);
-    }
-
-    private bool _useFloatingLabel = true;
-    public bool UseFloatingLabel
-    {
-        get => _useFloatingLabel;
-        set => this.RaiseAndSetIfChanged(ref _useFloatingLabel, value);
-    }
-
-    private int _maxLength = 100;
-    public int MaxLength
-    {
-        get => _maxLength;
-        set => this.RaiseAndSetIfChanged(ref _maxLength, value);
-    }
-
-    private bool _isReadOnly = false;
+    /// <summary>
+    /// Whether the control is read-only
+    /// </summary>
     public bool IsReadOnly
     {
         get => _isReadOnly;
         set => this.RaiseAndSetIfChanged(ref _isReadOnly, value);
     }
 
-    private bool _acceptsReturn = false;
-    public bool AcceptsReturn
+    /// <summary>
+    /// Whether the control has validation errors
+    /// </summary>
+    public bool HasValidationError
     {
-        get => _acceptsReturn;
-        set => this.RaiseAndSetIfChanged(ref _acceptsReturn, value);
+        get => _hasValidationError;
+        set => this.RaiseAndSetIfChanged(ref _hasValidationError, value);
     }
 
-    private Avalonia.Media.TextWrapping _textWrapping = Avalonia.Media.TextWrapping.NoWrap;
-    public Avalonia.Media.TextWrapping TextWrapping
+    /// <summary>
+    /// Whether to show the clear button
+    /// </summary>
+    public bool ShowClearButton
     {
-        get => _textWrapping;
-        set => this.RaiseAndSetIfChanged(ref _textWrapping, value);
+        get => _showClearButton;
+        set => this.RaiseAndSetIfChanged(ref _showClearButton, value);
     }
 
-    // Character count properties
-    private string _characterCountText = "0/100";
-    public string CharacterCountText
-    {
-        get => _characterCountText;
-        set => this.RaiseAndSetIfChanged(ref _characterCountText, value);
-    }
-
-    private bool _showCharacterCount = true;
-    public bool ShowCharacterCount
-    {
-        get => _showCharacterCount;
-        set => this.RaiseAndSetIfChanged(ref _showCharacterCount, value);
-    }
-
-    // Copy/Paste button properties
-    private bool _showCopyButton = true;
+    /// <summary>
+    /// Whether to show the copy button
+    /// </summary>
     public bool ShowCopyButton
     {
         get => _showCopyButton;
         set => this.RaiseAndSetIfChanged(ref _showCopyButton, value);
     }
 
-    private bool _showPasteButton = true;
+    /// <summary>
+    /// Whether to show the paste button
+    /// </summary>
     public bool ShowPasteButton
     {
         get => _showPasteButton;
         set => this.RaiseAndSetIfChanged(ref _showPasteButton, value);
     }
 
-    // Helper text
-    private string? _helperText = "This is helper text";
-    public string? HelperText
+    /// <summary>
+    /// Whether to show the status icon
+    /// </summary>
+    public bool ShowStatusIcon
     {
-        get => _helperText;
-        set => this.RaiseAndSetIfChanged(ref _helperText, value);
-    }
-    #endregion
-
-    #region MTMRichTextBox Test Properties
-    // Toolbar properties
-    private bool _showToolbar = true;
-    public bool ShowToolbar
-    {
-        get => _showToolbar;
-        set => this.RaiseAndSetIfChanged(ref _showToolbar, value);
-    }
-
-    // Formatting properties
-    private bool _isBold = false;
-    public bool IsBold
-    {
-        get => _isBold;
-        set => this.RaiseAndSetIfChanged(ref _isBold, value);
-    }
-
-    private bool _isItalic = false;
-    public bool IsItalic
-    {
-        get => _isItalic;
-        set => this.RaiseAndSetIfChanged(ref _isItalic, value);
-    }
-
-    private bool _isUnderline = false;
-    public bool IsUnderline
-    {
-        get => _isUnderline;
-        set => this.RaiseAndSetIfChanged(ref _isUnderline, value);
-    }
-
-    // Word count properties
-    private string _wordCountText = "0 words";
-    public string WordCountText
-    {
-        get => _wordCountText;
-        set => this.RaiseAndSetIfChanged(ref _wordCountText, value);
-    }
-
-    private bool _showWordCount = true;
-    public bool ShowWordCount
-    {
-        get => _showWordCount;
-        set => this.RaiseAndSetIfChanged(ref _showWordCount, value);
-    }
-
-    // Save button properties
-    private bool _showSaveButton = true;
-    public bool ShowSaveButton
-    {
-        get => _showSaveButton;
-        set => this.RaiseAndSetIfChanged(ref _showSaveButton, value);
-    }
-
-    // Line numbers properties
-    private bool _showLineNumbers = false;
-    public bool ShowLineNumbers
-    {
-        get => _showLineNumbers;
-        set => this.RaiseAndSetIfChanged(ref _showLineNumbers, value);
-    }
-
-    private ObservableCollection<int> _lineNumbers = new();
-    public ObservableCollection<int> LineNumbers
-    {
-        get => _lineNumbers;
-        set => this.RaiseAndSetIfChanged(ref _lineNumbers, value);
-    }
-
-    // Font properties
-    private FontFamily _fontFamily = FontFamily.Default;
-    public FontFamily FontFamily
-    {
-        get => _fontFamily;
-        set => this.RaiseAndSetIfChanged(ref _fontFamily, value);
-    }
-
-    private double _fontSize = 12;
-    public double FontSize
-    {
-        get => _fontSize;
-        set => this.RaiseAndSetIfChanged(ref _fontSize, value);
-    }
-
-    // Status bar properties
-    private bool _showStatusBar = true;
-    public bool ShowStatusBar
-    {
-        get => _showStatusBar;
-        set => this.RaiseAndSetIfChanged(ref _showStatusBar, value);
-    }
-
-    private string _cursorPositionText = "Line 1, Column 1";
-    public string CursorPositionText
-    {
-        get => _cursorPositionText;
-        set => this.RaiseAndSetIfChanged(ref _cursorPositionText, value);
-    }
-    #endregion
-
-    #region General Test Properties
-    private string _multilineText = string.Empty;
-    public string MultilineText
-    {
-        get => _multilineText;
-        set => this.RaiseAndSetIfChanged(ref _multilineText, value);
-    }
-
-    private bool _showValidationErrors = false;
-    public bool ShowValidationErrors
-    {
-        get => _showValidationErrors;
-        set => this.RaiseAndSetIfChanged(ref _showValidationErrors, value);
-    }
-
-    private string _statusMessage = "Ready - Test the controls below";
-    public string StatusMessage
-    {
-        get => _statusMessage;
-        set => this.RaiseAndSetIfChanged(ref _statusMessage, value);
-    }
-    #endregion
-
-    #region Additional Missing Properties for TestControlsView
-    // Control enabled state
-    private bool _controlsEnabled = true;
-    public bool ControlsEnabled
-    {
-        get => _controlsEnabled;
-        set => this.RaiseAndSetIfChanged(ref _controlsEnabled, value);
-    }
-
-    // Selected combo item
-    private object? _selectedComboItem;
-    public object? SelectedComboItem
-    {
-        get => _selectedComboItem;
-        set => this.RaiseAndSetIfChanged(ref _selectedComboItem, value);
-    }
-
-    // Rich text content
-    private string _richTextContent = "Rich text content for testing formatting features...";
-    public string RichTextContent
-    {
-        get => _richTextContent;
-        set => this.RaiseAndSetIfChanged(ref _richTextContent, value);
-    }
-
-    // Code editor content
-    private string _codeEditorContent = "// Code editor content\nusing System;\nusing Avalonia;\n\npublic class TestClass\n{\n    public void TestMethod()\n    {\n        Console.WriteLine(\"Hello MTM!\");\n    }\n}";
-    public string CodeEditorContent
-    {
-        get => _codeEditorContent;
-        set => this.RaiseAndSetIfChanged(ref _codeEditorContent, value);
-    }
-    #endregion
-
-    #region Commands
-    public ReactiveCommand<Unit, Unit> LoadSampleDataCommand { get; }
-    public ReactiveCommand<Unit, Unit> ClearAllFieldsCommand { get; }
-    public ReactiveCommand<Unit, Unit> ToggleControlsEnabledCommand { get; }
-    public ReactiveCommand<Unit, Unit> ToggleValidationCommand { get; }
-    public ReactiveCommand<Unit, Unit> SaveAllDataCommand { get; }
-    public ReactiveCommand<Unit, Unit> TestFormattingCommand { get; }
-    public ReactiveCommand<Unit, Unit> PopulateComboBoxCommand { get; }
-
-    // Additional commands required by TestControlsView
-    public ReactiveCommand<Unit, Unit> ToggleEnabledCommand { get; }
-    public ReactiveCommand<Unit, Unit> ClearAllCommand { get; }
-    public ReactiveCommand<Unit, Unit> SaveAllCommand { get; }
-    public ReactiveCommand<Unit, Unit> PopulateComboCommand { get; }
-
-    // Commands for MTM controls
-    public ReactiveCommand<Unit, Unit> ClearCommand { get; }
-    public ReactiveCommand<Unit, Unit> CopyCommand { get; }
-    public ReactiveCommand<Unit, Unit> PasteCommand { get; }
-    public ReactiveCommand<Unit, Unit> SaveCommand { get; }
-
-    // Formatting commands for RichTextBox
-    public ReactiveCommand<Unit, Unit> ToggleBoldCommand { get; }
-    public ReactiveCommand<Unit, Unit> ToggleItalicCommand { get; }
-    public ReactiveCommand<Unit, Unit> ToggleUnderlineCommand { get; }
-    public ReactiveCommand<Unit, Unit> ToggleBulletListCommand { get; }
-    public ReactiveCommand<Unit, Unit> ToggleNumberListCommand { get; }
-    #endregion
-
-    public TestControlsViewModel() : base()
-    {
-        Logger.LogDebug("TestControlsViewModel constructor started");
-
-        // Initialize commands
-        LoadSampleDataCommand = ReactiveCommand.Create(LoadSampleData);
-        ClearAllFieldsCommand = ReactiveCommand.Create(ClearAllFields);
-        ToggleControlsEnabledCommand = ReactiveCommand.Create(ToggleControlsEnabled);
-        ToggleValidationCommand = ReactiveCommand.Create(ToggleValidationErrors);
-        SaveAllDataCommand = ReactiveCommand.CreateFromTask(SaveAllData);
-        TestFormattingCommand = ReactiveCommand.Create(TestFormatting);
-        PopulateComboBoxCommand = ReactiveCommand.Create(PopulateComboBox);
-
-        // Additional commands for TestControlsView
-        ToggleEnabledCommand = ReactiveCommand.Create(() => {
-            ControlsEnabled = !ControlsEnabled;
-            StatusMessage = $"Controls {(ControlsEnabled ? "enabled" : "disabled")}";
-        });
-
-        ClearAllCommand = ReactiveCommand.Create(() => {
-            ClearAllFields();
-        });
-
-        SaveAllCommand = ReactiveCommand.CreateFromTask(async () => {
-            await SaveAllData();
-        });
-
-        PopulateComboCommand = ReactiveCommand.Create(() => {
-            PopulateComboBox();
-        });
-
-        // MTM Control commands
-        ClearCommand = ReactiveCommand.Create(() => {
-            Text = string.Empty;
-            TextBoxValue = string.Empty;
-            SelectedItem = null;
-            StatusMessage = "Fields cleared";
-        });
-
-        CopyCommand = ReactiveCommand.Create(() => {
-            // TODO: Implement clipboard copy
-            StatusMessage = "Text copied to clipboard";
-        });
-
-        PasteCommand = ReactiveCommand.Create(() => {
-            // TODO: Implement clipboard paste
-            StatusMessage = "Text pasted from clipboard";
-        });
-
-        SaveCommand = ReactiveCommand.Create(() => {
-            StatusMessage = "Content saved successfully";
-        });
-
-        // Formatting commands
-        ToggleBoldCommand = ReactiveCommand.Create(() => {
-            IsBold = !IsBold;
-            StatusMessage = $"Bold formatting {(IsBold ? "enabled" : "disabled")}";
-        });
-
-        ToggleItalicCommand = ReactiveCommand.Create(() => {
-            IsItalic = !IsItalic;
-            StatusMessage = $"Italic formatting {(IsItalic ? "enabled" : "disabled")}";
-        });
-
-        ToggleUnderlineCommand = ReactiveCommand.Create(() => {
-            IsUnderline = !IsUnderline;
-            StatusMessage = $"Underline formatting {(IsUnderline ? "enabled" : "disabled")}";
-        });
-
-        ToggleBulletListCommand = ReactiveCommand.Create(() => {
-            StatusMessage = "Bullet list toggled";
-        });
-
-        ToggleNumberListCommand = ReactiveCommand.Create(() => {
-            StatusMessage = "Numbered list toggled";
-        });
-
-        // Initialize data
-        InitializeData();
-
-        // Set up property change handlers for character count
-        this.WhenAnyValue(x => x.Text)
-            .Subscribe(text => {
-                var count = text?.Length ?? 0;
-                CharacterCountText = $"{count}/{MaxLength}";
-                
-                // Update word count for rich text
-                var words = string.IsNullOrWhiteSpace(text) ? 0 : text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
-                WordCountText = $"{words} word{(words != 1 ? "s" : "")}";
-            });
-
-        Logger.LogInformation("TestControlsViewModel initialized");
-        Logger.LogInformation($"TestItems count: {TestItems.Count}");
-        Logger.LogInformation($"OperationCodes count: {OperationCodes.Count}");
-    }
-
-    private void InitializeData()
-    {
-        try
-        {
-            Logger.LogDebug("Initializing test data");
-
-            // Initialize TestItems
-            TestItems.Clear();
-            TestItems.Add("Test Item 1");
-            TestItems.Add("Test Item 2");
-            TestItems.Add("Test Item 3");
-            TestItems.Add("Test Item 4");
-            TestItems.Add("Test Item 5");
-            TestItems.Add("Advanced Test Item A");
-            TestItems.Add("Advanced Test Item B");
-            TestItems.Add("Complex Test Scenario");
-
-            // Initialize OperationCodes  
-            OperationCodes.Clear();
-            OperationCodes.Add("90 - Raw Material");
-            OperationCodes.Add("100 - Work in Process");
-            OperationCodes.Add("110 - Quality Check");
-            OperationCodes.Add("120 - Final Assembly");
-            OperationCodes.Add("200 - Finished Goods");
-
-            // Initialize SystemStatusOptions
-            SystemStatusOptions.Clear();
-            SystemStatusOptions.Add("Active");
-            SystemStatusOptions.Add("Inactive");
-            SystemStatusOptions.Add("Pending");
-            SystemStatusOptions.Add("Maintenance");
-            SystemStatusOptions.Add("Error");
-
-            // Initialize QualityStatusOptions
-            QualityStatusOptions.Clear();
-            QualityStatusOptions.Add("Pass");
-            QualityStatusOptions.Add("Fail");
-            QualityStatusOptions.Add("Review Required");
-            QualityStatusOptions.Add("On Hold");
-            QualityStatusOptions.Add("Approved");
-
-            // Set Items to TestItems by default
-            Items.Clear();
-            foreach (var item in TestItems)
-            {
-                Items.Add(item);
-            }
-
-            // Initialize line numbers
-            LineNumbers.Clear();
-            for (int i = 1; i <= 10; i++)
-            {
-                LineNumbers.Add(i);
-            }
-
-            // Set default text content
-            Text = "Sample text for testing";
-            TextBoxValue = "Test value";
-            MultilineText = "Line 1\nLine 2\nLine 3\nThis is a multi-line text area for testing the MTM Rich Text Box control.";
-
-            Logger.LogDebug("Test data initialization completed");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error initializing test data");
-            StatusMessage = $"Error initializing data: {ex.Message}";
-        }
-    }
-
-    private void PopulateComboBox()
-    {
-        try
-        {
-            Logger.LogDebug("Populating ComboBox with operation codes");
-            
-            Items.Clear();
-            foreach (var code in OperationCodes)
-            {
-                Items.Add(code);
-            }
-            
-            StatusMessage = "ComboBox populated with operation codes";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error populating ComboBox");
-            StatusMessage = $"Error: {ex.Message}";
-        }
-    }
-
-    private void ClearAllFields()
-    {
-        try
-        {
-            Logger.LogDebug("Clearing all test fields");
-            
-            Text = string.Empty;
-            TextBoxValue = string.Empty;
-            MultilineText = string.Empty;
-            SelectedItem = null;
-            HasValidationError = false;
-            ValidationMessage = null;
-            
-            StatusMessage = "All fields cleared";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error clearing fields");
-            StatusMessage = $"Error: {ex.Message}";
-        }
-    }
-
-    private void ToggleControlsEnabled()
-    {
-        try
-        {
-            ControlsEnabled = !ControlsEnabled;
-            IsEnabled = ControlsEnabled; // Keep both properties in sync
-            StatusMessage = $"Controls {(ControlsEnabled ? "enabled" : "disabled")}";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error toggling controls");
-            StatusMessage = $"Error: {ex.Message}";
-        }
-    }
-
-    private void ToggleValidationErrors()
-    {
-        try
-        {
-            ShowValidationErrors = !ShowValidationErrors;
-            
-            if (ShowValidationErrors)
-            {
-                TriggerValidationErrors();
-            }
-            else
-            {
-                ClearValidationErrors();
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error toggling validation");
-            StatusMessage = $"Error: {ex.Message}";
-        }
-    }
-
-    private void LoadSampleData()
-    {
-        try
-        {
-            Logger.LogDebug("Loading sample data");
-            
-            Text = "MTM Test Application - Sample Data";
-            TextBoxValue = "Sample Value for Testing";
-            MultilineText = "This is sample data for testing the MTM custom controls.\n\nLine 1: Basic text input\nLine 2: Advanced formatting\nLine 3: Validation testing\n\nThe controls should handle this data properly.";
-            SelectedItem = Items.FirstOrDefault();
-            
-            StatusMessage = "Sample data loaded successfully";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error loading sample data");
-            StatusMessage = $"Error: {ex.Message}";
-        }
-    }
-
-    private void TestFormatting()
-    {
-        try
-        {
-            Logger.LogDebug("Testing formatting options");
-            
-            IsBold = !IsBold;
-            IsItalic = !IsItalic;
-            ShowToolbar = !ShowToolbar;
-            ShowLineNumbers = !ShowLineNumbers;
-            
-            StatusMessage = "Formatting options toggled";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error testing formatting");
-            StatusMessage = $"Error: {ex.Message}";
-        }
-    }
-
-    private async Task SaveAllData()
-    {
-        try
-        {
-            Logger.LogDebug("Saving all test data");
-            StatusMessage = "Saving data...";
-            
-            // Simulate async save operation
-            await Task.Delay(1000);
-            
-            StatusMessage = "All data saved successfully";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error saving data");
-            StatusMessage = $"Save error: {ex.Message}";
-        }
+        get => _showStatusIcon;
+        set => this.RaiseAndSetIfChanged(ref _showStatusIcon, value);
     }
 
     /// <summary>
-    /// Simulate validation errors for testing
+    /// Whether to show character count
     /// </summary>
-    public void TriggerValidationErrors()
+    public bool ShowCharacterCount
     {
-        try
-        {
-            HasValidationError = true;
-            ValidationMessage = "Sample validation error - This is a test error message";
-            ShowStatusIcon = true;
-            StatusIconKind = MaterialIconKind.AlertCircle;
-            StatusIconColor = Brushes.Red;
-            
-            StatusMessage = "Validation errors triggered for testing";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error triggering validation errors");
-        }
+        get => _showCharacterCount;
+        set => this.RaiseAndSetIfChanged(ref _showCharacterCount, value);
     }
 
     /// <summary>
-    /// Reset all validation states
+    /// Whether to use floating label
     /// </summary>
-    public void ClearValidationErrors()
+    public bool UseFloatingLabel
     {
-        try
-        {
-            HasValidationError = false;
-            ValidationMessage = null;
-            ShowStatusIcon = true;
-            StatusIconKind = MaterialIconKind.CheckCircle;
-            StatusIconColor = Brushes.Green;
-            
-            StatusMessage = "Validation errors cleared";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error clearing validation errors");
-        }
+        get => _useFloatingLabel;
+        set => this.RaiseAndSetIfChanged(ref _useFloatingLabel, value);
     }
 
-    #region Additional Missing Properties
+    /// <summary>
+    /// Maximum text length
+    /// </summary>
+    public int MaxLength
+    {
+        get => _maxLength;
+        set => this.RaiseAndSetIfChanged(ref _maxLength, Math.Max(0, value));
+    }
+
+    /// <summary>
+    /// Status icon kind
+    /// </summary>
+    public MaterialIconKind StatusIconKind
+    {
+        get => _statusIconKind;
+        set => this.RaiseAndSetIfChanged(ref _statusIconKind, value);
+    }
+
+    /// <summary>
+    /// Status icon color with null safety
+    /// </summary>
+    public IBrush StatusIconColor
+    {
+        get => _statusIconColor ?? Brushes.Green;
+        set => this.RaiseAndSetIfChanged(ref _statusIconColor, value ?? Brushes.Green);
+    }
+
     // Show/Hide properties for labels and helpers
     private bool _showLabel = true;
     public bool ShowLabel
@@ -787,6 +221,304 @@ public class TestControlsViewModel : BaseViewModel
     {
         get => _showHelperText;
         set => this.RaiseAndSetIfChanged(ref _showHelperText, value);
+    }
+
+    #endregion
+
+    #region ComboBox Properties with Null Safety
+
+    private ObservableCollection<string> _availableOptions = new(new[] { "Option 1", "Option 2", "Option 3" });
+    public ObservableCollection<string> AvailableOptions
+    {
+        get => _availableOptions ?? new ObservableCollection<string>();
+        set => this.RaiseAndSetIfChanged(ref _availableOptions, value ?? new ObservableCollection<string>());
+    }
+
+    private string? _selectedOption;
+    public string? SelectedOption
+    {
+        get => _selectedOption;
+        set => this.RaiseAndSetIfChanged(ref _selectedOption, value);
+    }
+
+    #endregion
+
+    #region Commands with Null Safety
+
+    public ReactiveCommand<Unit, Unit> ClearCommand { get; }
+    public ReactiveCommand<Unit, Unit> CopyCommand { get; }
+    public ReactiveCommand<Unit, Unit> PasteCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleValidationCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleEnabledCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleReadOnlyCommand { get; }
+    public ReactiveCommand<Unit, Unit> LoadSampleDataCommand { get; }
+    public ReactiveCommand<Unit, Unit> ClearAllCommand { get; }
+    public ReactiveCommand<Unit, Unit> SaveAllCommand { get; }
+    public ReactiveCommand<Unit, Unit> PopulateComboCommand { get; }
+    public ReactiveCommand<Unit, Unit> TestFormattingCommand { get; }
+
+    #endregion
+
+    #region Additional Properties for Integration
+
+    private string _textBoxValue = string.Empty;
+    public string TextBoxValue
+    {
+        get => _textBoxValue ?? string.Empty;
+        set => this.RaiseAndSetIfChanged(ref _textBoxValue, value ?? string.Empty);
+    }
+
+    private string _floatingLabelText = string.Empty;
+    public string FloatingLabelText
+    {
+        get => _floatingLabelText ?? string.Empty;
+        set => this.RaiseAndSetIfChanged(ref _floatingLabelText, value ?? string.Empty);
+    }
+
+    private string _multilineText = string.Empty;
+    public string MultilineText
+    {
+        get => _multilineText ?? string.Empty;
+        set => this.RaiseAndSetIfChanged(ref _multilineText, value ?? string.Empty);
+    }
+
+    private string _statusMessage = "Ready";
+    public string StatusMessage
+    {
+        get => _statusMessage ?? "Ready";
+        set => this.RaiseAndSetIfChanged(ref _statusMessage, value ?? "Ready");
+    }
+
+    private bool _controlsEnabled = true;
+    public bool ControlsEnabled
+    {
+        get => _controlsEnabled;
+        set => this.RaiseAndSetIfChanged(ref _controlsEnabled, value);
+    }
+
+    private bool _showValidationErrors = false;
+    public bool ShowValidationErrors
+    {
+        get => _showValidationErrors;
+        set => this.RaiseAndSetIfChanged(ref _showValidationErrors, value);
+    }
+
+    private string _richTextContent = "Sample rich text content";
+    public string RichTextContent
+    {
+        get => _richTextContent ?? string.Empty;
+        set => this.RaiseAndSetIfChanged(ref _richTextContent, value ?? string.Empty);
+    }
+
+    private string _codeEditorContent = "// Sample code content\nvar example = 'Hello World';";
+    public string CodeEditorContent
+    {
+        get => _codeEditorContent ?? string.Empty;
+        set => this.RaiseAndSetIfChanged(ref _codeEditorContent, value ?? string.Empty);
+    }
+
+    #endregion
+
+    #region Collections with Null Safety
+
+    private ObservableCollection<string> _testItems = new(new[] { "Test Item 1", "Test Item 2", "Test Item 3" });
+    public ObservableCollection<string> TestItems
+    {
+        get => _testItems ?? new ObservableCollection<string>();
+        set => this.RaiseAndSetIfChanged(ref _testItems, value ?? new ObservableCollection<string>());
+    }
+
+    private string? _selectedComboItem;
+    public string? SelectedComboItem
+    {
+        get => _selectedComboItem;
+        set => this.RaiseAndSetIfChanged(ref _selectedComboItem, value);
+    }
+
+    private ObservableCollection<string> _operationCodes = new(new[] { "90", "100", "110", "120" });
+    public ObservableCollection<string> OperationCodes
+    {
+        get => _operationCodes ?? new ObservableCollection<string>();
+        set => this.RaiseAndSetIfChanged(ref _operationCodes, value ?? new ObservableCollection<string>());
+    }
+
+    private ObservableCollection<string> _systemStatusOptions = new(new[] { "Active", "Inactive", "Pending", "Error" });
+    public ObservableCollection<string> SystemStatusOptions
+    {
+        get => _systemStatusOptions ?? new ObservableCollection<string>();
+        set => this.RaiseAndSetIfChanged(ref _systemStatusOptions, value ?? new ObservableCollection<string>());
+    }
+
+    private ObservableCollection<string> _qualityStatusOptions = new(new[] { "Pass", "Fail", "Review", "Hold" });
+    public ObservableCollection<string> QualityStatusOptions
+    {
+        get => _qualityStatusOptions ?? new ObservableCollection<string>();
+        set => this.RaiseAndSetIfChanged(ref _qualityStatusOptions, value ?? new ObservableCollection<string>());
+    }
+
+    #endregion
+
+    #region Constructor
+
+    public TestControlsViewModel()
+    {
+        // Initialize commands with null safety
+        ClearCommand = ReactiveCommand.Create(ExecuteClear);
+        CopyCommand = ReactiveCommand.Create(ExecuteCopy);
+        PasteCommand = ReactiveCommand.Create(ExecutePaste);
+        ToggleValidationCommand = ReactiveCommand.Create(ExecuteToggleValidation);
+        ToggleEnabledCommand = ReactiveCommand.Create(ExecuteToggleEnabled);
+        ToggleReadOnlyCommand = ReactiveCommand.Create(ExecuteToggleReadOnly);
+        LoadSampleDataCommand = ReactiveCommand.Create(ExecuteLoadSampleData);
+        ClearAllCommand = ReactiveCommand.Create(ExecuteClearAll);
+        SaveAllCommand = ReactiveCommand.Create(ExecuteSaveAll);
+        PopulateComboCommand = ReactiveCommand.Create(ExecutePopulateCombo);
+        TestFormattingCommand = ReactiveCommand.Create(ExecuteTestFormatting);
+
+        // Set up property change notifications with null safety
+        this.WhenAnyValue(x => x.Text)
+            .Subscribe(text => UpdateCharacterCount(text ?? string.Empty));
+
+        this.WhenAnyValue(x => x.HasValidationError)
+            .Subscribe(hasError => UpdateStatusIcon(hasError));
+    }
+
+    #endregion
+
+    #region Command Implementations
+
+    private void ExecuteClear()
+    {
+        Text = string.Empty;
+        HasValidationError = false;
+        ValidationMessage = string.Empty;
+    }
+
+    private void ExecuteCopy()
+    {
+        // Copy current text to clipboard (implementation would go here)
+        if (!string.IsNullOrEmpty(Text))
+        {
+            // Clipboard implementation
+        }
+    }
+
+    private void ExecutePaste()
+    {
+        // Paste from clipboard (implementation would go here)
+        Text = "Pasted content example";
+    }
+
+    private void ExecuteToggleValidation()
+    {
+        HasValidationError = !HasValidationError;
+        ValidationMessage = HasValidationError ? "This is a validation error message" : string.Empty;
+    }
+
+    private void ExecuteToggleEnabled()
+    {
+        IsEnabled = !IsEnabled;
+    }
+
+    private void ExecuteToggleReadOnly()
+    {
+        IsReadOnly = !IsReadOnly;
+    }
+
+    private void ExecuteLoadSampleData()
+    {
+        Text = "Sample data loaded";
+        TextBoxValue = "Sample TextBox Value";
+        FloatingLabelText = "Sample Floating Label";
+        MultilineText = "Sample multiline text\nLine 2\nLine 3";
+        Label = "Sample Label";
+        HelperText = "Sample helper text";
+        ShowStatusIcon = true;
+        StatusIconKind = MaterialIconKind.CheckCircle;
+        StatusIconColor = Brushes.Green;
+    }
+
+    private void ExecuteClearAll()
+    {
+        Text = string.Empty;
+        TextBoxValue = string.Empty;
+        FloatingLabelText = string.Empty;
+        MultilineText = string.Empty;
+        RichTextContent = string.Empty;
+        CodeEditorContent = string.Empty;
+        SelectedComboItem = null;
+        HasValidationError = false;
+        ValidationMessage = string.Empty;
+        StatusMessage = "All cleared";
+    }
+
+    private void ExecuteSaveAll()
+    {
+        StatusMessage = "All data saved successfully";
+        ShowStatusIcon = true;
+        StatusIconKind = MaterialIconKind.CheckCircle;
+        StatusIconColor = Brushes.Green;
+    }
+
+    private void ExecutePopulateCombo()
+    {
+        TestItems.Clear();
+        for (int i = 1; i <= 10; i++)
+        {
+            TestItems.Add($"Generated Item {i}");
+        }
+        StatusMessage = "ComboBox populated with sample data";
+    }
+
+    private void ExecuteTestFormatting()
+    {
+        RichTextContent = "This is **bold** text and *italic* text with formatting examples.";
+        StatusMessage = "Rich text formatting applied";
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    private void UpdateCharacterCount(string text)
+    {
+        if (ShowCharacterCount && MaxLength > 0)
+        {
+            var count = text?.Length ?? 0;
+            // Update character count display logic here
+        }
+    }
+
+    private void UpdateStatusIcon(bool hasError)
+    {
+        if (hasError)
+        {
+            ShowStatusIcon = true;
+            StatusIconKind = MaterialIconKind.AlertCircle;
+            StatusIconColor = Brushes.Red;
+        }
+        else if (!string.IsNullOrEmpty(Text))
+        {
+            ShowStatusIcon = true;
+            StatusIconKind = MaterialIconKind.CheckCircle;
+            StatusIconColor = Brushes.Green;
+        }
+        else
+        {
+            ShowStatusIcon = false;
+        }
+    }
+
+    #endregion
+
+    #region INotifyPropertyChanged Implementation
+
+    // ReactiveObject already implements INotifyPropertyChanged
+    // We just need to expose the PropertyChanged event if needed for compatibility
+    public new event PropertyChangedEventHandler? PropertyChanged
+    {
+        add => ((INotifyPropertyChanged)this).PropertyChanged += value;
+        remove => ((INotifyPropertyChanged)this).PropertyChanged -= value;
     }
 
     #endregion

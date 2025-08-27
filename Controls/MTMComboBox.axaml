@@ -18,7 +18,7 @@
   <Grid RowDefinitions="Auto,*,Auto" Margin="0">
     <!-- Label -->
     <TextBlock Grid.Row="0" 
-               Text="{Binding Label, FallbackValue='Test Label'}"
+               Text="{Binding Label, FallbackValue='Label', TargetNullValue='Label'}"
                FontWeight="SemiBold"
                Foreground="#333"
                Margin="0,0,0,4"
@@ -40,7 +40,7 @@
                 Background="{StaticResource PrimaryBrush}"
                 Width="36"
                 CornerRadius="6,0,0,6">
-          <material:MaterialIcon Kind="{Binding Icon}"
+          <material:MaterialIcon Kind="{Binding Icon, FallbackValue=FilterVariant}"
                                 Width="18"
                                 Height="18"
                                 Foreground="White"
@@ -53,7 +53,7 @@
                   x:Name="PART_ComboBox"
                   ItemsSource="{Binding Items}"
                   SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                  PlaceholderText="{Binding PlaceholderText, FallbackValue='Select an option...'}"
+                  PlaceholderText="{Binding PlaceholderText, FallbackValue='Select an option...', TargetNullValue='Select an option...'}"
                   Background="Transparent"
                   BorderThickness="0"
                   Padding="12,8"
@@ -70,7 +70,7 @@
                     <Setter Property="Background" Value="{StaticResource SecondaryBrush}"/>
                   </Style>
                 </Border.Styles>
-                <TextBlock Text="{Binding}" 
+                <TextBlock Text="{Binding, FallbackValue='Item', TargetNullValue='Item'}" 
                           FontSize="14"
                           VerticalAlignment="Center"/>
               </Border>
@@ -83,12 +83,12 @@
                 Width="24"
                 Height="24"
                 Margin="4"
-                IsVisible="{Binding ShowStatusIcon}">
+                IsVisible="{Binding ShowStatusIcon, FallbackValue=False}">
           <material:MaterialIcon x:Name="StatusIcon"
                                 Width="16"
                                 Height="16"
-                                Kind="{Binding StatusIconKind}"
-                                Foreground="{Binding StatusIconColor}"
+                                Kind="{Binding StatusIconKind, FallbackValue=CheckCircle}"
+                                Foreground="{Binding StatusIconColor, FallbackValue=Green}"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center" />
         </Border>
@@ -102,7 +102,7 @@
                 BorderThickness="0"
                 Margin="4"
                 CornerRadius="16"
-                IsVisible="{Binding ShowClearButton}"
+                IsVisible="{Binding ShowClearButton, FallbackValue=True}"
                 Command="{Binding ClearCommand}"
                 ToolTip.Tip="Clear selection">
           <material:MaterialIcon Kind="Close"
@@ -120,11 +120,11 @@
 
     <!-- Validation Message -->
     <TextBlock Grid.Row="2"
-               Text="{Binding ValidationMessage}"
+               Text="{Binding ValidationMessage, FallbackValue='', TargetNullValue=''}"
                Foreground="{StaticResource ErrorBrush}"
                FontSize="12"
                Margin="12,4,0,0"
-               IsVisible="{Binding HasValidationError}" />
+               IsVisible="{Binding HasValidationError, FallbackValue=False}" />
   </Grid>
 
   <!-- Styles for different states -->
