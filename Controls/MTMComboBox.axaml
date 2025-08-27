@@ -1,0 +1,156 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.MTMComboBox"
+             x:CompileBindings="False">
+
+  <UserControl.Resources>
+    <!-- MTM Color Scheme -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#FFD700"/>           <!-- Gold -->
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#DAA520"/>       <!-- Dark Gold -->
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#F5F5DC"/>         <!-- Beige -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#4169E1"/>            <!-- Royal Blue -->
+    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Light Gray -->
+    <SolidColorBrush x:Key="ErrorBrush" Color="#DC143C"/>             <!-- Crimson -->
+    <SolidColorBrush x:Key="SuccessBrush" Color="#228B22"/>           <!-- Forest Green -->
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,*,Auto" Margin="0">
+    <!-- Label -->
+    <TextBlock Grid.Row="0" 
+               Text="{Binding Label, FallbackValue='Test Label'}"
+               FontWeight="SemiBold"
+               Foreground="#333"
+               Margin="0,0,0,4"
+               IsVisible="{Binding !!Label, FallbackValue=True}" />
+
+    <!-- ComboBox Container -->
+    <Border Grid.Row="1"
+            x:Name="ComboContainer"
+            Background="White"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="2"
+            CornerRadius="8"
+            MinHeight="40"
+            BoxShadow="0 2 4 0 #0F000000">
+      
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+        <!-- Icon -->
+        <Border Grid.Column="0"
+                Background="{StaticResource PrimaryBrush}"
+                Width="36"
+                CornerRadius="6,0,0,6">
+          <material:MaterialIcon Kind="{Binding Icon}"
+                                Width="18"
+                                Height="18"
+                                Foreground="White"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+        </Border>
+
+        <!-- ComboBox -->
+        <ComboBox Grid.Column="1"
+                  x:Name="PART_ComboBox"
+                  ItemsSource="{Binding Items}"
+                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                  PlaceholderText="{Binding PlaceholderText, FallbackValue='Select an option...'}"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Padding="12,8"
+                  VerticalAlignment="Center"
+                  IsEnabled="{Binding IsEnabled, FallbackValue=True}"
+                  FontSize="14">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <Border Padding="8,6" 
+                      Background="Transparent"
+                      CornerRadius="4">
+                <Border.Styles>
+                  <Style Selector="Border:pointerover">
+                    <Setter Property="Background" Value="{StaticResource SecondaryBrush}"/>
+                  </Style>
+                </Border.Styles>
+                <TextBlock Text="{Binding}" 
+                          FontSize="14"
+                          VerticalAlignment="Center"/>
+              </Border>
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <!-- Status Icon -->
+        <Border Grid.Column="2"
+                Width="24"
+                Height="24"
+                Margin="4"
+                IsVisible="{Binding ShowStatusIcon}">
+          <material:MaterialIcon x:Name="StatusIcon"
+                                Width="16"
+                                Height="16"
+                                Kind="{Binding StatusIconKind}"
+                                Foreground="{Binding StatusIconColor}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+        </Border>
+
+        <!-- Clear Button -->
+        <Button Grid.Column="3"
+                x:Name="ClearButton"
+                Width="32"
+                Height="32"
+                Background="Transparent"
+                BorderThickness="0"
+                Margin="4"
+                CornerRadius="16"
+                IsVisible="{Binding ShowClearButton}"
+                Command="{Binding ClearCommand}"
+                ToolTip.Tip="Clear selection">
+          <material:MaterialIcon Kind="Close"
+                                Width="14"
+                                Height="14"
+                                Foreground="#666" />
+          <Button.Styles>
+            <Style Selector="Button:pointerover">
+              <Setter Property="Background" Value="#F0F0F0"/>
+            </Style>
+          </Button.Styles>
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- Validation Message -->
+    <TextBlock Grid.Row="2"
+               Text="{Binding ValidationMessage}"
+               Foreground="{StaticResource ErrorBrush}"
+               FontSize="12"
+               Margin="12,4,0,0"
+               IsVisible="{Binding HasValidationError}" />
+  </Grid>
+
+  <!-- Styles for different states -->
+  <UserControl.Styles>
+    <!-- Focus state -->
+    <Style Selector="Border#ComboContainer:focus-within">
+      <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="BoxShadow" Value="0 0 0 3 #33FFD700"/>
+    </Style>
+    
+    <!-- Error state -->
+    <Style Selector="Border#ComboContainer.error">
+      <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+      <Setter Property="BoxShadow" Value="0 0 0 3 #33DC143C"/>
+    </Style>
+    
+    <!-- Success state -->
+    <Style Selector="Border#ComboContainer.success">
+      <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+      <Setter Property="BoxShadow" Value="0 0 0 3 #33228B22"/>
+    </Style>
+    
+    <!-- Disabled state -->
+    <Style Selector="Border#ComboContainer:disabled">
+      <Setter Property="Opacity" Value="0.6"/>
+      <Setter Property="Background" Value="#F8F8F8"/>
+    </Style>
+  </UserControl.Styles>
+</UserControl>

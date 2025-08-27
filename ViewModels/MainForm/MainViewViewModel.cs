@@ -45,6 +45,13 @@ public class MainViewViewModel : BaseViewModel
         set => this.RaiseAndSetIfChanged(ref _transferContent, value);
     }
 
+    private object? _testControlsContent;
+    public object? TestControlsContent
+    {
+        get => _testControlsContent;
+        set => this.RaiseAndSetIfChanged(ref _testControlsContent, value);
+    }
+
     // Quick Actions panel (renamed from Advanced panel)
     private bool _isAdvancedPanelVisible = true;
     public bool IsAdvancedPanelVisible
@@ -92,6 +99,7 @@ public class MainViewViewModel : BaseViewModel
     public RemoveItemViewModel RemoveItemViewModel { get; }
     public AdvancedRemoveViewModel AdvancedRemoveViewModel { get; }
     public TransferItemViewModel TransferItemViewModel { get; }
+    public TestControlsViewModel TestControlsViewModel { get; }
 
     // Status strip
     private string _connectionStatus = "Disconnected";
@@ -159,7 +167,8 @@ public class MainViewViewModel : BaseViewModel
         // Initialize child ViewModels - TODO: These should also use DI
         QuickButtonsViewModel = new QuickButtonsViewModel();
         InventoryTabViewModel = new InventoryTabViewModel();
-        
+        TestControlsViewModel = Program.GetService<TestControlsViewModel>();
+
         // Create loggers for child ViewModels
         var loggerFactory = LoggerFactory.Create(builder =>
         {
@@ -188,6 +197,11 @@ public class MainViewViewModel : BaseViewModel
         TransferContent = new Views.TransferTabView
         {
             DataContext = TransferItemViewModel
+        };
+
+        TestControlsContent = new Views.MainForm.TestControlsView
+        {
+            DataContext = TestControlsViewModel
         };
 
         // Wire up events for inter-component communication
@@ -228,6 +242,10 @@ public class MainViewViewModel : BaseViewModel
                     break;
                 case 2: // Transfer Tab
                     _ = TransferItemViewModel.SearchCommand.Execute();
+                    break;
+                case 3: // Test Controls Tab
+                    TestControlsViewModel.LoadSampleDataCommand.Execute().Subscribe();
+                    StatusText = "Test controls refreshed";
                     break;
             }
         });
@@ -371,6 +389,12 @@ public class MainViewViewModel : BaseViewModel
                 TransferItemViewModel.SelectedOperation = e.Operation;
                 TransferItemViewModel.TransferQuantity = e.Quantity;
                 break;
+            case 3: // Test Controls Tab
+                // Populate test controls with quick action data
+                TestControlsViewModel.TextBoxValue = e.PartId;
+                TestControlsViewModel.FloatingLabelText = $"Operation: {e.Operation}";
+                TestControlsViewModel.MultilineText = $"Part ID: {e.PartId}\nOperation: {e.Operation}\nQuantity: {e.Quantity}";
+                break;
         }
         
         StatusText = $"Quick action: {e.Operation} - {e.PartId} ({e.Quantity} units)";
@@ -424,6 +448,9 @@ public class MainViewViewModel : BaseViewModel
                 StatusText = "Inventory Transfer";
                 // Load data when switching to Transfer tab
                 _ = TransferItemViewModel.LoadDataCommand.Execute();
+                break;
+            case 3: // Test Controls Tab
+                StatusText = "Testing Custom Controls - MTM Design System";
                 break;
             default:
                 StatusText = "Ready";

@@ -1,0 +1,231 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.MTMTextBox"
+             x:CompileBindings="False">
+
+  <UserControl.Resources>
+    <!-- MTM Color Scheme -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#FFD700"/>           <!-- Gold -->
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#DAA520"/>       <!-- Dark Gold -->
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#F5F5DC"/>         <!-- Beige -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#4169E1"/>            <!-- Royal Blue -->
+    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Light Gray -->
+    <SolidColorBrush x:Key="ErrorBrush" Color="#DC143C"/>             <!-- Crimson -->
+    <SolidColorBrush x:Key="SuccessBrush" Color="#228B22"/>           <!-- Forest Green -->
+    <SolidColorBrush x:Key="WarningBrush" Color="#FF8C00"/>           <!-- Dark Orange -->
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,*,Auto" Margin="0">
+    <!-- Static Label (when FloatingLabel is false) -->
+    <TextBlock Grid.Row="0" 
+               Text="{Binding Label, FallbackValue='Test Label'}"
+               FontWeight="SemiBold"
+               Foreground="#333"
+               Margin="0,0,0,4"
+               IsVisible="{Binding !UseFloatingLabel, FallbackValue=True}" />
+
+    <!-- TextBox Container -->
+    <Border Grid.Row="1"
+            x:Name="TextBoxContainer"
+            Background="White"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="2"
+            CornerRadius="8"
+            MinHeight="40"
+            BoxShadow="0 2 4 0 #0F000000">
+      
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+        <!-- Icon -->
+        <Border Grid.Column="0"
+                Background="{StaticResource PrimaryBrush}"
+                Width="36"
+                CornerRadius="6,0,0,6">
+          <material:MaterialIcon Kind="{Binding Icon}"
+                                Width="18"
+                                Height="18"
+                                Foreground="White"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+        </Border>
+
+        <!-- TextBox with Floating Label -->
+        <Grid Grid.Column="1" Margin="12,8">
+          <!-- Floating Label -->
+          <TextBlock x:Name="FloatingLabel"
+                     Text="{Binding Label, FallbackValue='Floating Label'}"
+                     FontSize="14"
+                     Foreground="#666"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Left"
+                     IsVisible="{Binding UseFloatingLabel, FallbackValue=False}"
+                     IsHitTestVisible="False"
+                     ZIndex="1" />
+
+          <!-- Main TextBox -->
+          <TextBox x:Name="PART_TextBox"
+                   Text="{Binding Text, Mode=TwoWay}"
+                   Watermark="{Binding PlaceholderText, FallbackValue='Enter text...'}"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   VerticalAlignment="Center"
+                   IsEnabled="{Binding IsEnabled, FallbackValue=True}"
+                   FontSize="14"
+                   MaxLength="{Binding MaxLength, FallbackValue=0}"
+                   IsReadOnly="{Binding IsReadOnly, FallbackValue=False}"
+                   AcceptsReturn="{Binding AcceptsReturn, FallbackValue=False}"
+                   TextWrapping="{Binding TextWrapping, FallbackValue=NoWrap}" />
+        </Grid>
+
+        <!-- Character Counter -->
+        <TextBlock Grid.Column="2"
+                   Text="{Binding CharacterCountText}"
+                   FontSize="10"
+                   Foreground="#666"
+                   VerticalAlignment="Bottom"
+                   Margin="4,0,8,8"
+                   IsVisible="{Binding ShowCharacterCount}" />
+
+        <!-- Status Icon -->
+        <Border Grid.Column="3"
+                Width="24"
+                Height="24"
+                Margin="4"
+                IsVisible="{Binding ShowStatusIcon}">
+          <material:MaterialIcon x:Name="StatusIcon"
+                                Width="16"
+                                Height="16"
+                                Kind="{Binding StatusIconKind}"
+                                Foreground="{Binding StatusIconColor}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+        </Border>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Column="4"
+                    Orientation="Horizontal"
+                    Margin="4">
+          
+          <!-- Clear Button -->
+          <Button x:Name="ClearButton"
+                  Width="28"
+                  Height="28"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  CornerRadius="14"
+                  IsVisible="{Binding ShowClearButton}"
+                  Command="{Binding ClearCommand}"
+                  ToolTip.Tip="Clear text">
+            <material:MaterialIcon Kind="Close"
+                                  Width="12"
+                                  Height="12"
+                                  Foreground="#666" />
+            <Button.Styles>
+              <Style Selector="Button:pointerover">
+                <Setter Property="Background" Value="#F0F0F0"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+
+          <!-- Copy Button -->
+          <Button x:Name="CopyButton"
+                  Width="28"
+                  Height="28"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  CornerRadius="14"
+                  Margin="2,0,0,0"
+                  IsVisible="{Binding ShowCopyButton}"
+                  Command="{Binding CopyCommand}"
+                  ToolTip.Tip="Copy to clipboard">
+            <material:MaterialIcon Kind="ContentCopy"
+                                  Width="12"
+                                  Height="12"
+                                  Foreground="#666" />
+            <Button.Styles>
+              <Style Selector="Button:pointerover">
+                <Setter Property="Background" Value="#F0F0F0"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+
+          <!-- Paste Button -->
+          <Button x:Name="PasteButton"
+                  Width="28"
+                  Height="28"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  CornerRadius="14"
+                  Margin="2,0,0,0"
+                  IsVisible="{Binding ShowPasteButton}"
+                  Command="{Binding PasteCommand}"
+                  ToolTip.Tip="Paste from clipboard">
+            <material:MaterialIcon Kind="ContentPaste"
+                                  Width="12"
+                                  Height="12"
+                                  Foreground="#666" />
+            <Button.Styles>
+              <Style Selector="Button:pointerover">
+                <Setter Property="Background" Value="#F0F0F0"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Validation Message and Helper Text -->
+    <StackPanel Grid.Row="2" Margin="12,4,0,0">
+      <!-- Validation Message -->
+      <TextBlock Text="{Binding ValidationMessage}"
+                 Foreground="{StaticResource ErrorBrush}"
+                 FontSize="12"
+                 IsVisible="{Binding HasValidationError}" />
+      
+      <!-- Helper Text -->
+      <TextBlock Text="{Binding HelperText}"
+                 Foreground="#666"
+                 FontSize="12"
+                 IsVisible="{Binding !!HelperText}" />
+    </StackPanel>
+  </Grid>
+
+  <!-- Styles for different states -->
+  <UserControl.Styles>
+    <!-- Focus state -->
+    <Style Selector="Border#TextBoxContainer:focus-within">
+      <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="BoxShadow" Value="0 0 0 3 #33FFD700"/>
+    </Style>
+    
+    <!-- Error state -->
+    <Style Selector="Border#TextBoxContainer.error">
+      <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+      <Setter Property="BoxShadow" Value="0 0 0 3 #33DC143C"/>
+    </Style>
+    
+    <!-- Success state -->
+    <Style Selector="Border#TextBoxContainer.success">
+      <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+      <Setter Property="BoxShadow" Value="0 0 0 3 #33228B22"/>
+    </Style>
+    
+    <!-- Warning state -->
+    <Style Selector="Border#TextBoxContainer.warning">
+      <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}"/>
+      <Setter Property="BoxShadow" Value="0 0 0 3 #33FF8C00"/>
+    </Style>
+    
+    <!-- Disabled state -->
+    <Style Selector="Border#TextBoxContainer:disabled">
+      <Setter Property="Opacity" Value="0.6"/>
+      <Setter Property="Background" Value="#F8F8F8"/>
+    </Style>
+
+    <!-- Floating label styles -->
+    <Style Selector="TextBlock#FloatingLabel.focused">
+      <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+  </UserControl.Styles>
+</UserControl>

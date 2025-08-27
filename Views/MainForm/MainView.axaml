@@ -105,6 +105,12 @@
                 <ContentControl Content="{Binding TransferContent}"/>
               </Border>
             </TabItem>
+            <TabItem Header="🧪 Test Controls">
+              <Border Padding="16">
+                <!-- Test Controls tab content -->
+                <ContentControl Content="{Binding TestControlsContent}"/>
+              </Border>
+            </TabItem>
           </TabControl>
         </Border>
 
