@@ -5,13 +5,15 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class QuickButtonsViewModel : ReactiveObject
+public class QuickButtonsViewModel : BaseViewModel
 {
-    // TODO: Inject services
+    // TODO: Inject services when they are available
     // private readonly IQuickButtonsService _quickButtonsService;
     // private readonly IProgressService _progressService;
 
@@ -42,8 +44,10 @@ public class QuickButtonsViewModel : ReactiveObject
     public ReactiveCommand<QuickButtonItemViewModel, Unit> MoveButtonUpCommand { get; }
     public ReactiveCommand<QuickButtonItemViewModel, Unit> MoveButtonDownCommand { get; }
 
-    public QuickButtonsViewModel()
+    public QuickButtonsViewModel(ILogger<QuickButtonsViewModel> logger) : base(logger)
     {
+        Logger.LogInformation("QuickButtonsViewModel initialized with dependency injection");
+
         // Initialize commands
         RefreshButtonsCommand = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -109,7 +113,8 @@ public class QuickButtonsViewModel : ReactiveObject
 
     private void HandleException(Exception ex)
     {
-        // TODO: Log and present user-friendly error
+        Logger.LogError(ex, "Error in QuickButtonsViewModel command execution");
+        // TODO: Show user-friendly error notification
     }
 
     private async Task LoadLast10TransactionsAsync()

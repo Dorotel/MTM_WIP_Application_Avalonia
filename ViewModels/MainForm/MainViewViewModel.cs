@@ -2,6 +2,7 @@ using System;
 using System.Reactive;
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
+using MTM_Shared_Logic.Services;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
@@ -155,6 +156,12 @@ public class MainViewViewModel : BaseViewModel
         INavigationService navigationService,
         IApplicationStateService applicationState,
         MTM_Shared_Logic.Services.IInventoryService inventoryService,
+        InventoryTabViewModel inventoryTabViewModel,
+        RemoveItemViewModel removeItemViewModel,
+        TransferItemViewModel transferItemViewModel,
+        AdvancedInventoryViewModel advancedInventoryViewModel,
+        AdvancedRemoveViewModel advancedRemoveViewModel,
+        QuickButtonsViewModel quickButtonsViewModel,
         ILogger<MainViewViewModel> logger) : base(logger)
     {
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
@@ -163,24 +170,13 @@ public class MainViewViewModel : BaseViewModel
 
         Logger.LogInformation("MainViewViewModel initialized with dependency injection");
 
-        // Initialize child ViewModels - TODO: These should also use DI
-        QuickButtonsViewModel = new QuickButtonsViewModel();
-        InventoryTabViewModel = new InventoryTabViewModel();
-
-        // Create loggers for child ViewModels
-        var loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole();
-        });
-        var removeItemLogger = loggerFactory.CreateLogger<RemoveItemViewModel>();
-        var transferItemLogger = loggerFactory.CreateLogger<TransferItemViewModel>();
-        var advancedInventoryLogger = loggerFactory.CreateLogger<AdvancedInventoryViewModel>();
-        var advancedRemoveLogger = loggerFactory.CreateLogger<AdvancedRemoveViewModel>();
-        
-        RemoveItemViewModel = new RemoveItemViewModel(inventoryService, applicationState, removeItemLogger);
-        TransferItemViewModel = new TransferItemViewModel(inventoryService, applicationState, transferItemLogger);
-        AdvancedInventoryViewModel = new AdvancedInventoryViewModel(advancedInventoryLogger);
-        AdvancedRemoveViewModel = new AdvancedRemoveViewModel(advancedRemoveLogger);
+        // Inject child ViewModels instead of creating them
+        QuickButtonsViewModel = quickButtonsViewModel ?? throw new ArgumentNullException(nameof(quickButtonsViewModel));
+        InventoryTabViewModel = inventoryTabViewModel ?? throw new ArgumentNullException(nameof(inventoryTabViewModel));
+        RemoveItemViewModel = removeItemViewModel ?? throw new ArgumentNullException(nameof(removeItemViewModel));
+        TransferItemViewModel = transferItemViewModel ?? throw new ArgumentNullException(nameof(transferItemViewModel));
+        AdvancedInventoryViewModel = advancedInventoryViewModel ?? throw new ArgumentNullException(nameof(advancedInventoryViewModel));
+        AdvancedRemoveViewModel = advancedRemoveViewModel ?? throw new ArgumentNullException(nameof(advancedRemoveViewModel));
 
         // Wire up Advanced Inventory events
         AdvancedInventoryViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalInventoryCommand.Execute().Subscribe();

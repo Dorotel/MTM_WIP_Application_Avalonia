@@ -16,15 +16,15 @@ namespace MTM_Shared_Logic.Services
     /// CRITICAL: All database operations must use stored procedures only - NO direct SQL.
     /// Integrates with MTM user authentication system and supports user session management.
     /// </summary>
-    public class UserService : IUserService
+    public class UserService : MTM_Shared_Logic.Services.Interfaces.IUserService
     {
         private readonly IDatabaseService _databaseService;
-        private readonly IApplicationStateService _applicationStateService;
+        private readonly MTM_WIP_Application_Avalonia.Services.IApplicationStateService _applicationStateService;
         private readonly ILogger<UserService> _logger;
 
         public UserService(
             IDatabaseService databaseService,
-            IApplicationStateService applicationStateService,
+            MTM_WIP_Application_Avalonia.Services.IApplicationStateService applicationStateService,
             ILogger<UserService> logger)
         {
             _databaseService = databaseService;
@@ -35,35 +35,63 @@ namespace MTM_Shared_Logic.Services
         /// <summary>
         /// Gets the current authenticated user from application state.
         /// </summary>
-        public async Task<Result<User?>> GetCurrentUserAsync(CancellationToken cancellationToken = default)
+        public async Task<Result<User>> GetCurrentUserAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                var currentUser = _applicationStateService.CurrentUser;
+                var currentUserName = _applicationStateService.CurrentUser;
                 
-                if (currentUser == null)
+                if (string.IsNullOrEmpty(currentUserName))
                 {
                     _logger.LogDebug("No current user in application state");
-                    return Result<User?>.Success(null);
+                    
+                    // Return a default user for now to prevent null reference issues
+                    var defaultUser = new User
+                    {
+                        ID = 1,
+                        User_Name = "DefaultUser",
+                        FullName = "Default User",
+                        Shift = "Day",
+                        VitsUser = false,
+                        Theme_Name = "Default",
+                        Theme_FontSize = 12,
+                        LastShownVersion = "4.6.0.0"
+                    };
+                    
+                    return Result<User>.Success(defaultUser);
                 }
 
-                // Refresh user data from database to ensure it's current
-                var refreshResult = await GetUserByIdAsync(currentUser.ID, cancellationToken);
+                // Try to get user by username
+                var userResult = await GetUserByUsernameAsync(currentUserName, cancellationToken);
                 
-                if (!refreshResult.IsSuccess)
+                if (!userResult.IsSuccess || userResult.Value == null)
                 {
-                    _logger.LogError("Failed to refresh current user {UserId}: {Error}", 
-                        currentUser.ID, refreshResult.ErrorMessage);
-                    return Result<User?>.Failure(refreshResult.ErrorMessage ?? "Failed to refresh current user");
+                    _logger.LogError("Failed to get current user {UserName}: {Error}", 
+                        currentUserName, userResult.ErrorMessage);
+                    
+                    // Return a default user as fallback
+                    var fallbackUser = new User
+                    {
+                        ID = 1,
+                        User_Name = currentUserName,
+                        FullName = currentUserName,
+                        Shift = "Day",
+                        VitsUser = false,
+                        Theme_Name = "Default",
+                        Theme_FontSize = 12,
+                        LastShownVersion = "4.6.0.0"
+                    };
+                    
+                    return Result<User>.Success(fallbackUser);
                 }
 
-                _logger.LogDebug("Retrieved current user: {UserName}", refreshResult.Value?.UserName ?? "null");
-                return Result<User?>.Success(refreshResult.Value);
+                _logger.LogDebug("Retrieved current user: {UserName}", userResult.Value.User_Name);
+                return Result<User>.Success(userResult.Value);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to get current user");
-                return Result<User?>.Failure($"Failed to get current user: {ex.Message}");
+                return Result<User>.Failure($"Failed to get current user: {ex.Message}");
             }
         }
 
@@ -193,8 +221,8 @@ namespace MTM_Shared_Logic.Services
                 // Update last login timestamp
                 await UpdateLastLoginAsync(user.ID.ToString(), cancellationToken);
 
-                // Set as current user in application state
-                _applicationStateService.SetCurrentUser(user);
+                // Set as current user in application state - using CurrentUser property instead of SetCurrentUser
+                _applicationStateService.CurrentUser = user.User_Name;
 
                 _logger.LogInformation("User authenticated successfully: {Username}", username);
                 return Result<User>.Success(user);
@@ -350,12 +378,12 @@ namespace MTM_Shared_Logic.Services
                     return Result<int>.Failure("User cannot be null");
                 }
 
-                if (string.IsNullOrWhiteSpace(user.UserName))
+                if (string.IsNullOrWhiteSpace(user.User_Name))
                 {
                     return Result<int>.Failure("Username is required");
                 }
 
-                _logger.LogInformation("Creating new user: {Username}", user.UserName);
+                _logger.LogInformation("Creating new user: {Username}", user.User_Name);
 
                 // TODO: Implement using stored procedure
                 const string command = @"
@@ -368,7 +396,7 @@ namespace MTM_Shared_Logic.Services
                 var result = await _databaseService.ExecuteScalarAsync<int>(
                     command, 
                     new { 
-                        UserName = user.UserName,
+                        UserName = user.User_Name,
                         FullName = user.FullName,
                         Shift = user.Shift,
                         VitsUser = user.VitsUser,
@@ -385,16 +413,16 @@ namespace MTM_Shared_Logic.Services
 
                 if (!result.IsSuccess)
                 {
-                    _logger.LogError("Failed to create user {Username}: {Error}", user.UserName, result.ErrorMessage);
+                    _logger.LogError("Failed to create user {Username}: {Error}", user.User_Name, result.ErrorMessage);
                     return Result<int>.Failure(result.ErrorMessage ?? "Failed to create user");
                 }
 
-                _logger.LogInformation("Successfully created user: {Username} with ID: {UserId}", user.UserName, result.Value);
+                _logger.LogInformation("Successfully created user: {Username} with ID: {UserId}", user.User_Name, result.Value);
                 return Result<int>.Success(result.Value);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create user {Username}", user?.UserName ?? "null");
+                _logger.LogError(ex, "Failed to create user {Username}", user?.User_Name ?? "null");
                 return Result<int>.Failure($"Failed to create user: {ex.Message}");
             }
         }

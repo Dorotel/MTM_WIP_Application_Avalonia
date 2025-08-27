@@ -2,11 +2,14 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
 using MTM_WIP_Application_Avalonia.ViewModels;
+using ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -136,9 +139,9 @@ public partial class InventoryTabView : UserControl
             // Define the logical tab order based on the form layout
             var tabOrder = new[]
             {
-                "PartComboBox",
-                "OperationComboBox", 
-                "LocationComboBox",
+                "PartAutoCompleteBox",
+                "OperationAutoCompleteBox", 
+                "LocationAutoCompleteBox",
                 "QuantityTextBox",
                 "NotesTextBox",
                 "SaveButton"
@@ -163,14 +166,14 @@ public partial class InventoryTabView : UserControl
     }
 
     /// <summary>
-    /// Moves focus to the first control in the form (Part ComboBox).
+    /// Moves focus to the first control in the form (Part AutoCompleteBox).
     /// </summary>
     private void MoveFocusToFirstControl()
     {
         try
         {
-            var partComboBox = this.FindControl<ComboBox>("PartComboBox");
-            partComboBox?.Focus();
+            var partAutoCompleteBox = this.FindControl<AutoCompleteBox>("PartAutoCompleteBox");
+            partAutoCompleteBox?.Focus();
         }
         catch (Exception ex)
         {
@@ -261,7 +264,7 @@ public partial class InventoryTabView : UserControl
     /// <summary>
     /// Cleans up event subscriptions when the view is being disposed.
     /// </summary>
-    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
     {
         try
         {

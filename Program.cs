@@ -68,11 +68,15 @@ public static class Program
         services.AddTransient<MainViewViewModel>();
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<InventoryViewModel>();
+        services.AddTransient<InventoryTabViewModel>();
         services.AddTransient<AddItemViewModel>();
         services.AddTransient<RemoveItemViewModel>();
         services.AddTransient<TransferItemViewModel>();
         services.AddTransient<TransactionHistoryViewModel>();
         services.AddTransient<UserManagementViewModel>();
+        services.AddTransient<QuickButtonsViewModel>();
+        services.AddTransient<AdvancedInventoryViewModel>();
+        services.AddTransient<AdvancedRemoveViewModel>();
 
         // Build service provider
         _serviceProvider = services.BuildServiceProvider();

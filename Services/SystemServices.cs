@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
+using MTM_Shared_Logic.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
 
@@ -76,8 +77,8 @@ namespace MTM_Shared_Logic.Services
 
                 _logger.LogDebug("Validating inventory item: {PartId}", item.PartID);
 
-                var validationResult = new ValidationResult 
-                { 
+                var validationResult = new ValidationResult
+                {
                     IsValid = true,
                     Errors = new List<string>()
                 };
@@ -328,8 +329,8 @@ namespace MTM_Shared_Logic.Services
             {
                 _logger.LogDebug("Validating quantity: {Quantity} for part: {PartId}", quantity, partId ?? "Any");
 
-                var validationResult = new ValidationResult 
-                { 
+                var validationResult = new ValidationResult
+                {
                     IsValid = true,
                     Errors = new List<string>()
                 };
@@ -364,8 +365,8 @@ namespace MTM_Shared_Logic.Services
         /// </summary>
         private async Task<MTM_Shared_Logic.Models.Result<ValidationResult>> ValidateTransactionAsync(InventoryTransaction transaction, CancellationToken cancellationToken = default)
         {
-            var validationResult = new ValidationResult 
-            { 
+            var validationResult = new ValidationResult
+            {
                 IsValid = true,
                 Errors = new List<string>()
             };
@@ -413,8 +414,8 @@ namespace MTM_Shared_Logic.Services
         /// </summary>
         private async Task<MTM_Shared_Logic.Models.Result<ValidationResult>> ValidateUserAsync(User user, CancellationToken cancellationToken = default)
         {
-            var validationResult = new ValidationResult 
-            { 
+            var validationResult = new ValidationResult
+            {
                 IsValid = true,
                 Errors = new List<string>()
             };
@@ -652,10 +653,10 @@ namespace MTM_Shared_Logic.Services
             try
             {
                 _logger.LogInformation("Information notification: {Title} - {Message}", title, message);
-                
+
                 // TODO: Implement UI notification display
                 // This would typically integrate with the UI framework to show notifications
-                
+
                 await Task.CompletedTask;
             }
             catch (Exception ex)
@@ -672,9 +673,9 @@ namespace MTM_Shared_Logic.Services
             try
             {
                 _logger.LogWarning("Warning notification: {Title} - {Message}", title, message);
-                
+
                 // TODO: Implement UI warning notification display
-                
+
                 await Task.CompletedTask;
             }
             catch (Exception ex)
@@ -691,9 +692,9 @@ namespace MTM_Shared_Logic.Services
             try
             {
                 _logger.LogError("Error notification: {Title} - {Message}", title, message);
-                
+
                 // TODO: Implement UI error notification display
-                
+
                 await Task.CompletedTask;
             }
             catch (Exception ex)
@@ -710,9 +711,9 @@ namespace MTM_Shared_Logic.Services
             try
             {
                 _logger.LogInformation("Success notification: {Title} - {Message}", title, message);
-                
+
                 // TODO: Implement UI success notification display
-                
+
                 await Task.CompletedTask;
             }
             catch (Exception ex)

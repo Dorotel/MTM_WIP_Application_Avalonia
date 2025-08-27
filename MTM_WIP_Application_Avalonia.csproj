@@ -12,21 +12,29 @@
     <AvaloniaXaml Remove=".github\UI-Instructions - Copy %282%29\**" />
     <AvaloniaXaml Remove=".github\UI-Instructions - Copy - Copy\**" />
     <AvaloniaXaml Remove="Config\**" />
+    <AvaloniaXaml Remove="Documentation\Development\Agent_Issues\**" />
+    <AvaloniaXaml Remove="Documentation\Development\CopilotQuestions\**" />
     <AvaloniaXaml Remove="Exportable\**" />
     <AvaloniaXaml Remove="Resources\**" />
     <Compile Remove=".github\UI-Instructions - Copy %282%29\**" />
     <Compile Remove=".github\UI-Instructions - Copy - Copy\**" />
     <Compile Remove="Config\**" />
+    <Compile Remove="Documentation\Development\Agent_Issues\**" />
+    <Compile Remove="Documentation\Development\CopilotQuestions\**" />
     <Compile Remove="Exportable\**" />
     <Compile Remove="Resources\**" />
     <EmbeddedResource Remove=".github\UI-Instructions - Copy %282%29\**" />
     <EmbeddedResource Remove=".github\UI-Instructions - Copy - Copy\**" />
     <EmbeddedResource Remove="Config\**" />
+    <EmbeddedResource Remove="Documentation\Development\Agent_Issues\**" />
+    <EmbeddedResource Remove="Documentation\Development\CopilotQuestions\**" />
     <EmbeddedResource Remove="Exportable\**" />
     <EmbeddedResource Remove="Resources\**" />
     <None Remove=".github\UI-Instructions - Copy %282%29\**" />
     <None Remove=".github\UI-Instructions - Copy - Copy\**" />
     <None Remove="Config\**" />
+    <None Remove="Documentation\Development\Agent_Issues\**" />
+    <None Remove="Documentation\Development\CopilotQuestions\**" />
     <None Remove="Exportable\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
@@ -119,8 +127,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Documentation\Development\Agent_Issues\" />
-    <Folder Include="Documentation\Development\CopilotQuestions\Answered\" />
     <Folder Include="Documentation\Development\Reports\" />
     <Folder Include="Documentation\Development\Updates\" />
   </ItemGroup>

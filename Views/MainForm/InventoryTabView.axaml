@@ -43,7 +43,8 @@
       <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
-    <Style Selector="ComboBox.input-field">
+    <!-- AutoCompleteBox Styling -->
+    <Style Selector="AutoCompleteBox.input-field">
       <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
@@ -52,12 +53,20 @@
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="MinHeight" Value="24"/>
       <Setter Property="Margin" Value="2"/>
+      <Setter Property="MinimumPrefixLength" Value="0"/>
+      <Setter Property="FilterMode" Value="Contains"/>
+      <Setter Property="MaxDropDownHeight" Value="200"/>
     </Style>
 
-    <!-- Error state styling for ComboBox -->
-    <Style Selector="ComboBox.input-field.error">
+    <!-- Error state styling for AutoCompleteBox -->
+    <Style Selector="AutoCompleteBox.input-field.error">
       <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
       <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- Loading indicator for AutoCompleteBox -->
+    <Style Selector="AutoCompleteBox.input-field.loading">
+      <Setter Property="Background" Value="#F0F0F0"/>
     </Style>
 
     <!-- Compact Button Styles -->
@@ -177,16 +186,19 @@
                        VerticalAlignment="Center"
                        Foreground="{StaticResource PrimaryTextBrush}"/>
           </Grid>
-          <ComboBox x:Name="PartComboBox"
-                    ItemsSource="{Binding PartOptions}"
-                    SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
-                    Classes="input-field"
-                    Classes.error="{Binding !IsPartValid}"
-                    HorizontalAlignment="Stretch"
-                    IsTextSearchEnabled="True"
-                    PlaceholderText="Select or enter part ID..."
-                    ToolTip.Tip="Select or enter a part number"
-                    TabIndex="1"/>
+          <AutoCompleteBox x:Name="PartAutoCompleteBox"
+                          ItemsSource="{Binding PartOptions}"
+                          Text="{Binding SelectedPart, Mode=TwoWay}"
+                          Classes="input-field"
+                          Classes.error="{Binding !IsPartValid}"
+                          Classes.loading="{Binding IsLoadingParts}"
+                          HorizontalAlignment="Stretch"
+                          Watermark="Select or enter part ID..."
+                          ToolTip.Tip="Select or enter a part number"
+                          TabIndex="1"
+                          MinimumPrefixLength="1"
+                          FilterMode="Contains"
+                          MaxDropDownHeight="200"/>
         </StackPanel>
 
         <!-- Operation -->
@@ -205,15 +217,19 @@
                        VerticalAlignment="Center"
                        Foreground="{StaticResource PrimaryTextBrush}"/>
           </Grid>
-          <ComboBox x:Name="OperationComboBox"
-                    ItemsSource="{Binding OperationOptions}"
-                    SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
-                    Classes="input-field"
-                    Classes.error="{Binding !IsOperationValid}"
-                    HorizontalAlignment="Stretch"
-                    PlaceholderText="Select operation..."
-                    ToolTip.Tip="Select an operation number"
-                    TabIndex="2"/>
+          <AutoCompleteBox x:Name="OperationAutoCompleteBox"
+                          ItemsSource="{Binding OperationOptions}"
+                          Text="{Binding SelectedOperation, Mode=TwoWay}"
+                          Classes="input-field"
+                          Classes.error="{Binding !IsOperationValid}"
+                          Classes.loading="{Binding IsLoadingOperations}"
+                          HorizontalAlignment="Stretch"
+                          Watermark="Select operation..."
+                          ToolTip.Tip="Select an operation number"
+                          TabIndex="2"
+                          MinimumPrefixLength="0"
+                          FilterMode="StartsWith"
+                          MaxDropDownHeight="200"/>
         </StackPanel>
 
         <!-- Location -->
@@ -232,15 +248,19 @@
                        VerticalAlignment="Center"
                        Foreground="{StaticResource PrimaryTextBrush}"/>
           </Grid>
-          <ComboBox x:Name="LocationComboBox"
-                    ItemsSource="{Binding LocationOptions}"
-                    SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"
-                    Classes="input-field"
-                    Classes.error="{Binding !IsLocationValid}"
-                    HorizontalAlignment="Stretch"
-                    PlaceholderText="Select location..."
-                    ToolTip.Tip="Select a location"
-                    TabIndex="3"/>
+          <AutoCompleteBox x:Name="LocationAutoCompleteBox"
+                          ItemsSource="{Binding LocationOptions}"
+                          Text="{Binding SelectedLocation, Mode=TwoWay}"
+                          Classes="input-field"
+                          Classes.error="{Binding !IsLocationValid}"
+                          Classes.loading="{Binding IsLoadingLocations}"
+                          HorizontalAlignment="Stretch"
+                          Watermark="Select location..."
+                          ToolTip.Tip="Select a location"
+                          TabIndex="3"
+                          MinimumPrefixLength="0"
+                          FilterMode="StartsWith"
+                          MaxDropDownHeight="200"/>
         </StackPanel>
 
         <!-- Quantity -->
@@ -363,7 +383,7 @@
                   ToolTip.Tip="Toggle quick actions panel">
             <StackPanel Orientation="Horizontal" Spacing="3"
                         HorizontalAlignment="Center" VerticalAlignment="Center">
-              <materialIcons:MaterialIcon Kind="PanelRight" Width="10" Height="10"/>
+              <materialIcons:MaterialIcon Kind="ViewDashboard" Width="10" Height="10"/>
               <TextBlock Text="Panel" FontSize="9"/>
             </StackPanel>
           </Button>

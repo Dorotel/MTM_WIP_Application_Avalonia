@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
 using MTM_Shared_Logic.Services;
+using MTM_Shared_Logic.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using ReactiveUI;
+using static MTM_Shared_Logic.Services.DataType;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -25,15 +27,21 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
 {
     #region Private Fields
 
-    private readonly IInventoryService _inventoryService;
-    private readonly IUserService _userService;
+    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
+    private readonly MTM_Shared_Logic.Services.Interfaces.IUserService _userService;
     private readonly IApplicationStateService _applicationStateService;
-    private readonly IValidationService _validationService;
+    private readonly MTM_Shared_Logic.Services.IValidationService _validationService;
+    private readonly MTM_Shared_Logic.Services.ILookupDataService _lookupDataService;
 
-    // Observable collections for ComboBoxes
+    // Observable collections for AutoCompleteBoxes
     public ObservableCollection<string> PartOptions { get; } = new();
     public ObservableCollection<string> OperationOptions { get; } = new();
     public ObservableCollection<string> LocationOptions { get; } = new();
+
+    // Loading state properties
+    private bool _isLoadingParts = false;
+    private bool _isLoadingOperations = false;
+    private bool _isLoadingLocations = false;
 
     // Form field backing properties
     private string? _selectedPart;
@@ -127,6 +135,33 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Indicates if parts data is currently loading.
+    /// </summary>
+    public bool IsLoadingParts
+    {
+        get => _isLoadingParts;
+        set => this.RaiseAndSetIfChanged(ref _isLoadingParts, value);
+    }
+
+    /// <summary>
+    /// Indicates if operations data is currently loading.
+    /// </summary>
+    public bool IsLoadingOperations
+    {
+        get => _isLoadingOperations;
+        set => this.RaiseAndSetIfChanged(ref _isLoadingOperations, value);
+    }
+
+    /// <summary>
+    /// Indicates if locations data is currently loading.
+    /// </summary>
+    public bool IsLoadingLocations
+    {
+        get => _isLoadingLocations;
+        set => this.RaiseAndSetIfChanged(ref _isLoadingLocations, value);
+    }
+
+    /// <summary>
     /// Current error message, if any.
     /// </summary>
     public string? ErrorMessage
@@ -179,9 +214,14 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     public ReactiveCommand<Unit, Unit> TogglePanelCommand { get; private set; }
 
     /// <summary>
-    /// Command to load ComboBox data from database.
+    /// Command to load AutoCompleteBox data from database.
     /// </summary>
     public ReactiveCommand<Unit, Unit> LoadDataCommand { get; private set; }
+
+    /// <summary>
+    /// Command to refresh all lookup data from database.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> RefreshDataCommand { get; private set; }
 
     #endregion
 
@@ -211,18 +251,23 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     /// Initializes a new instance of the InventoryTabViewModel with dependency injection.
     /// </summary>
     public InventoryTabViewModel(
-        IInventoryService inventoryService,
-        IUserService userService,
+        MTM_Shared_Logic.Services.IInventoryService inventoryService,
+        MTM_Shared_Logic.Services.Interfaces.IUserService userService,
         IApplicationStateService applicationStateService,
-        IValidationService validationService,
+        MTM_Shared_Logic.Services.IValidationService validationService,
+        MTM_Shared_Logic.Services.ILookupDataService lookupDataService,
         ILogger<InventoryTabViewModel> logger) : base(logger)
     {
         _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         _applicationStateService = applicationStateService ?? throw new ArgumentNullException(nameof(applicationStateService));
         _validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
+        _lookupDataService = lookupDataService ?? throw new ArgumentNullException(nameof(lookupDataService));
 
         Logger.LogInformation("Initializing InventoryTabViewModel with dependency injection");
+
+        // Subscribe to data refresh events
+        _lookupDataService.DataRefreshed += OnLookupDataRefreshed;
 
         // Initialize validation helpers
         _isPartValid = this.WhenAnyValue(vm => vm.SelectedPart)
@@ -293,16 +338,27 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
             PanelToggleRequested?.Invoke(this, EventArgs.Empty);
         });
 
-        // Load data command
+        // Load data command - now refreshes lookup data
         LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            await LoadComboBoxDataAsync();
+            await LoadAutoCompleteDataAsync();
+        });
+
+        // Refresh data command - forces refresh of all lookup data
+        RefreshDataCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var result = await _lookupDataService.RefreshAllAsync();
+            if (!result.IsSuccess)
+            {
+                SetError($"Failed to refresh data: {result.ErrorMessage}");
+            }
         });
 
         // Error handling for all commands
         SaveCommand.ThrownExceptions.Subscribe(HandleException);
         ResetCommand.ThrownExceptions.Subscribe(HandleException);
         LoadDataCommand.ThrownExceptions.Subscribe(HandleException);
+        RefreshDataCommand.ThrownExceptions.Subscribe(HandleException);
 
         Logger.LogDebug("Commands initialized successfully");
     }
@@ -331,7 +387,7 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
             }
 
             // Get current user
-            var currentUserResult = await _userService.GetCurrentUserAsync();
+            var currentUserResult = await _userService.GetUserByUsernameAsync(_applicationStateService.CurrentUser ?? "DefaultUser");
             if (!currentUserResult.IsSuccess || currentUserResult.Value == null)
             {
                 SetError("Unable to determine current user. Please login again.");
@@ -355,7 +411,7 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
                 Location = SelectedLocation!,
                 Quantity = quantity,
                 Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim(),
-                User = currentUser.UserName,
+                User = currentUser.User_Name,
                 ItemType = Model_AppVariables.MTM.DefaultItemType, // "WIP"
                 ReceiveDate = DateTime.UtcNow,
                 LastUpdated = DateTime.UtcNow
@@ -423,9 +479,16 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
 
             if (hardReset)
             {
-                // Hard reset - reload all ComboBox data from database
+                // Hard reset - reload all AutoCompleteBox data from database
                 Logger.LogInformation("Performing hard reset - reloading all data");
-                await LoadComboBoxDataAsync();
+                
+                // Clear cached data and reload
+                var refreshResult = await _lookupDataService.RefreshAllAsync();
+                if (!refreshResult.IsSuccess)
+                {
+                    Logger.LogWarning("Failed to refresh lookup data during hard reset: {Error}", refreshResult.ErrorMessage);
+                    // Continue with existing data rather than failing
+                }
             }
 
             Logger.LogInformation("Form reset completed");
@@ -442,17 +505,17 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Loads initial data for ComboBoxes.
+    /// Loads initial data for AutoCompleteBoxes.
     /// </summary>
     private async Task LoadInitialDataAsync()
     {
         try
         {
-            Logger.LogInformation("Loading initial data for ComboBoxes");
+            Logger.LogInformation("Loading initial data for AutoCompleteBoxes");
             
             IsLoading = true;
             
-            await LoadComboBoxDataAsync();
+            await LoadAutoCompleteDataAsync();
             
             Logger.LogInformation("Initial data loaded successfully");
         }
@@ -469,100 +532,174 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Loads ComboBox data from database using stored procedures.
+    /// Loads AutoCompleteBox data from the lookup data service efficiently.
+    /// Implements parallel loading with individual loading indicators.
     /// </summary>
-    private async Task LoadComboBoxDataAsync()
+    private async Task LoadAutoCompleteDataAsync()
     {
         try
         {
-            Logger.LogDebug("Loading ComboBox data from database");
+            Logger.LogDebug("Loading AutoCompleteBox data from lookup service");
 
-            // Clear existing data
-            PartOptions.Clear();
-            OperationOptions.Clear();
-            LocationOptions.Clear();
-
-            // Load parts using stored procedure
-            var partsResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                Model_AppVariables.ConnectionString,
-                "md_part_ids_Get_All",
-                null);
-
-            if (partsResult.IsSuccess && partsResult.Data.Rows.Count > 0)
+            // Load data in parallel for better performance
+            var loadTasks = new[]
             {
-                foreach (System.Data.DataRow row in partsResult.Data.Rows)
-                {
-                    var partId = row["PartID"]?.ToString();
-                    if (!string.IsNullOrWhiteSpace(partId))
-                    {
-                        PartOptions.Add(partId);
-                    }
-                }
-                Logger.LogDebug("Loaded {Count} parts from database", PartOptions.Count);
-            }
-            else
-            {
-                Logger.LogWarning("No parts loaded from database. Using sample data.");
-                LoadSampleParts();
-            }
+                LoadPartsDataAsync(),
+                LoadOperationsDataAsync(),
+                LoadLocationsDataAsync()
+            };
 
-            // Load operations using stored procedure
-            var operationsResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                Model_AppVariables.ConnectionString,
-                "md_operation_numbers_Get_All",
-                null);
+            await Task.WhenAll(loadTasks);
 
-            if (operationsResult.IsSuccess && operationsResult.Data.Rows.Count > 0)
-            {
-                foreach (System.Data.DataRow row in operationsResult.Data.Rows)
-                {
-                    var operation = row["Operation"]?.ToString();
-                    if (!string.IsNullOrWhiteSpace(operation))
-                    {
-                        OperationOptions.Add(operation);
-                    }
-                }
-                Logger.LogDebug("Loaded {Count} operations from database", OperationOptions.Count);
-            }
-            else
-            {
-                Logger.LogWarning("No operations loaded from database. Using sample data.");
-                LoadSampleOperations();
-            }
-
-            // Load locations using stored procedure
-            var locationsResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                Model_AppVariables.ConnectionString,
-                "md_locations_Get_All",
-                null);
-
-            if (locationsResult.IsSuccess && locationsResult.Data.Rows.Count > 0)
-            {
-                foreach (System.Data.DataRow row in locationsResult.Data.Rows)
-                {
-                    var location = row["Location"]?.ToString();
-                    if (!string.IsNullOrWhiteSpace(location))
-                    {
-                        LocationOptions.Add(location);
-                    }
-                }
-                Logger.LogDebug("Loaded {Count} locations from database", LocationOptions.Count);
-            }
-            else
-            {
-                Logger.LogWarning("No locations loaded from database. Using sample data.");
-                LoadSampleLocations();
-            }
-
-            Logger.LogInformation("ComboBox data loaded successfully. Parts: {PartCount}, Operations: {OpCount}, Locations: {LocCount}",
+            Logger.LogInformation("AutoCompleteBox data loaded successfully. Parts: {PartCount}, Operations: {OpCount}, Locations: {LocCount}",
                 PartOptions.Count, OperationOptions.Count, LocationOptions.Count);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading ComboBox data from database");
+            Logger.LogError(ex, "Error loading AutoCompleteBox data from lookup service");
             
             // Fallback to sample data
             LoadSampleData();
+        }
+    }
+
+    /// <summary>
+    /// Loads parts data with individual loading indicator.
+    /// </summary>
+    private async Task LoadPartsDataAsync()
+    {
+        try
+        {
+            IsLoadingParts = true;
+            var result = await _lookupDataService.GetPartIdsAsync();
+            
+            if (result.IsSuccess && result.Value != null)
+            {
+                PartOptions.Clear();
+                foreach (var part in result.Value)
+                {
+                    PartOptions.Add(part);
+                }
+                Logger.LogDebug("Loaded {Count} parts", PartOptions.Count);
+            }
+            else
+            {
+                Logger.LogWarning("Failed to load parts: {Error}", result.ErrorMessage);
+                LoadSampleParts();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading parts data");
+            LoadSampleParts();
+        }
+        finally
+        {
+            IsLoadingParts = false;
+        }
+    }
+
+    /// <summary>
+    /// Loads operations data with individual loading indicator.
+    /// </summary>
+    private async Task LoadOperationsDataAsync()
+    {
+        try
+        {
+            IsLoadingOperations = true;
+            var result = await _lookupDataService.GetOperationsAsync();
+            
+            if (result.IsSuccess && result.Value != null)
+            {
+                OperationOptions.Clear();
+                foreach (var operation in result.Value)
+                {
+                    OperationOptions.Add(operation);
+                }
+                Logger.LogDebug("Loaded {Count} operations", OperationOptions.Count);
+            }
+            else
+            {
+                Logger.LogWarning("Failed to load operations: {Error}", result.ErrorMessage);
+                LoadSampleOperations();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading operations data");
+            LoadSampleOperations();
+        }
+        finally
+        {
+            IsLoadingOperations = false;
+        }
+    }
+
+    /// <summary>
+    /// Loads locations data with individual loading indicator.
+    /// </summary>
+    private async Task LoadLocationsDataAsync()
+    {
+        try
+        {
+            IsLoadingLocations = true;
+            var result = await _lookupDataService.GetLocationsAsync();
+            
+            if (result.IsSuccess && result.Value != null)
+            {
+                LocationOptions.Clear();
+                foreach (var location in result.Value)
+                {
+                    LocationOptions.Add(location);
+                }
+                Logger.LogDebug("Loaded {Count} locations", LocationOptions.Count);
+            }
+            else
+            {
+                Logger.LogWarning("Failed to load locations: {Error}", result.ErrorMessage);
+                LoadSampleLocations();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading locations data");
+            LoadSampleLocations();
+        }
+        finally
+        {
+            IsLoadingLocations = false;
+        }
+    }
+
+    /// <summary>
+    /// Handles lookup data refresh events.
+    /// </summary>
+    private async void OnLookupDataRefreshed(object? sender, DataRefreshedEventArgs e)
+    {
+        try
+        {
+            Logger.LogInformation("Lookup data refreshed for type: {DataType}", e.DataType);
+
+            // Reload specific data based on refresh type
+            switch (e.DataType)
+            {
+                case DataType.Parts:
+                    await LoadPartsDataAsync();
+                    break;
+                case DataType.Operations:
+                    await LoadOperationsDataAsync();
+                    break;
+                case DataType.Locations:
+                    await LoadLocationsDataAsync();
+                    break;
+                case DataType.All:
+                    await LoadAutoCompleteDataAsync();
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling lookup data refresh for type: {DataType}", e.DataType);
         }
     }
 
@@ -706,6 +843,12 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     {
         if (disposing)
         {
+            // Unsubscribe from lookup data service events
+            if (_lookupDataService != null)
+            {
+                _lookupDataService.DataRefreshed -= OnLookupDataRefreshed;
+            }
+
             _canSave?.Dispose();
             _isPartValid?.Dispose();
             _isOperationValid?.Dispose();
