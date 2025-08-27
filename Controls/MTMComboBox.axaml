@@ -22,7 +22,7 @@
                FontWeight="SemiBold"
                Foreground="#333"
                Margin="0,0,0,4"
-               IsVisible="{Binding !!Label, FallbackValue=True}" />
+               IsVisible="{Binding ShowLabel, FallbackValue=True}" />
 
     <!-- ComboBox Container -->
     <Border Grid.Row="1"

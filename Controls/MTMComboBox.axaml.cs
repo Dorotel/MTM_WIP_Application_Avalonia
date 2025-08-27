@@ -53,6 +53,9 @@ public partial class MTMComboBox : UserControl
     public static readonly StyledProperty<bool> IsRequiredProperty =
         AvaloniaProperty.Register<MTMComboBox, bool>(nameof(IsRequired), false);
 
+    public static readonly StyledProperty<bool> ShowLabelProperty =
+        AvaloniaProperty.Register<MTMComboBox, bool>(nameof(ShowLabel), true);
+
     // Properties
     public string Label
     {
@@ -124,6 +127,12 @@ public partial class MTMComboBox : UserControl
     {
         get => GetValue(IsRequiredProperty);
         set => SetValue(IsRequiredProperty, value);
+    }
+
+    public bool ShowLabel
+    {
+        get => GetValue(ShowLabelProperty);
+        set => SetValue(ShowLabelProperty, value);
     }
 
     // Commands

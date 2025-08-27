@@ -23,7 +23,7 @@
                FontWeight="SemiBold"
                Foreground="#333"
                Margin="0,0,0,4"
-               IsVisible="{Binding !!Label}" />
+               IsVisible="{Binding ShowLabel}" />
 
     <!-- Toolbar -->
     <Border Grid.Row="1"

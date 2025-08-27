@@ -78,6 +78,12 @@ public partial class MTMTextBox : UserControl, INotifyPropertyChanged
     public static readonly StyledProperty<bool> IsReadOnlyProperty =
         AvaloniaProperty.Register<MTMTextBox, bool>(nameof(IsReadOnly), false);
 
+    public static readonly StyledProperty<bool> ShowStaticLabelProperty =
+        AvaloniaProperty.Register<MTMTextBox, bool>(nameof(ShowStaticLabel), true);
+
+    public static readonly StyledProperty<bool> ShowHelperTextProperty =
+        AvaloniaProperty.Register<MTMTextBox, bool>(nameof(ShowHelperText), true);
+
     // Properties
     public string Label
     {
@@ -197,6 +203,18 @@ public partial class MTMTextBox : UserControl, INotifyPropertyChanged
     {
         get => GetValue(IsReadOnlyProperty);
         set => SetValue(IsReadOnlyProperty, value);
+    }
+
+    public bool ShowStaticLabel
+    {
+        get => GetValue(ShowStaticLabelProperty);
+        set => SetValue(ShowStaticLabelProperty, value);
+    }
+
+    public bool ShowHelperText
+    {
+        get => GetValue(ShowHelperTextProperty);
+        set => SetValue(ShowHelperTextProperty, value);
     }
 
     // Computed properties

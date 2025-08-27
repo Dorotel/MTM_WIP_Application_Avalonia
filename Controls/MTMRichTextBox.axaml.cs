@@ -81,6 +81,9 @@ public partial class MTMRichTextBox : UserControl, INotifyPropertyChanged
     public static readonly StyledProperty<bool> IsUnderlineProperty =
         AvaloniaProperty.Register<MTMRichTextBox, bool>(nameof(IsUnderline), false);
 
+    public static readonly StyledProperty<bool> ShowLabelProperty =
+        AvaloniaProperty.Register<MTMRichTextBox, bool>(nameof(ShowLabel), true);
+
     // Properties
     public string Label
     {
@@ -194,6 +197,12 @@ public partial class MTMRichTextBox : UserControl, INotifyPropertyChanged
     {
         get => GetValue(IsUnderlineProperty);
         set => SetValue(IsUnderlineProperty, value);
+    }
+
+    public bool ShowLabel
+    {
+        get => GetValue(ShowLabelProperty);
+        set => SetValue(ShowLabelProperty, value);
     }
 
     // Computed Properties

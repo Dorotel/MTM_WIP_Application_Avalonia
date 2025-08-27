@@ -23,7 +23,7 @@
                FontWeight="SemiBold"
                Foreground="#333"
                Margin="0,0,0,4"
-               IsVisible="{Binding !UseFloatingLabel, FallbackValue=True}" />
+               IsVisible="{Binding ShowStaticLabel, FallbackValue=True}" />
 
     <!-- TextBox Container -->
     <Border Grid.Row="1"
@@ -186,7 +186,7 @@
       <TextBlock Text="{Binding HelperText}"
                  Foreground="#666"
                  FontSize="12"
-                 IsVisible="{Binding !!HelperText}" />
+                 IsVisible="{Binding ShowHelperText}" />
     </StackPanel>
   </Grid>
 

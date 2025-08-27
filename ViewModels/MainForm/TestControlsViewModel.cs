@@ -765,4 +765,29 @@ public class TestControlsViewModel : BaseViewModel
             Logger.LogError(ex, "Error clearing validation errors");
         }
     }
+
+    #region Additional Missing Properties
+    // Show/Hide properties for labels and helpers
+    private bool _showLabel = true;
+    public bool ShowLabel
+    {
+        get => _showLabel;
+        set => this.RaiseAndSetIfChanged(ref _showLabel, value);
+    }
+
+    private bool _showStaticLabel = true;
+    public bool ShowStaticLabel
+    {
+        get => _showStaticLabel;
+        set => this.RaiseAndSetIfChanged(ref _showStaticLabel, value);
+    }
+
+    private bool _showHelperText = true;
+    public bool ShowHelperText
+    {
+        get => _showHelperText;
+        set => this.RaiseAndSetIfChanged(ref _showHelperText, value);
+    }
+
+    #endregion
 }
