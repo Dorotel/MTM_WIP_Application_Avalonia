@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using Avalonia.ReactiveUI;
+using MTM_WIP_Application_Avalonia.Commands;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -21,7 +21,6 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// </summary>
 public class TransferItemViewModel : BaseViewModel
 {
-    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
     private readonly IApplicationStateService _applicationState;
 
     #region Observable Collections
@@ -57,7 +56,7 @@ public class TransferItemViewModel : BaseViewModel
     public string? SelectedPart
     {
         get => _selectedPart;
-        set => this.RaiseAndSetIfChanged(ref _selectedPart, value);
+        set => SetProperty(ref _selectedPart, value);
     }
 
     private string? _selectedOperation;
@@ -67,7 +66,7 @@ public class TransferItemViewModel : BaseViewModel
     public string? SelectedOperation
     {
         get => _selectedOperation;
-        set => this.RaiseAndSetIfChanged(ref _selectedOperation, value);
+        set => SetProperty(ref _selectedOperation, value);
     }
 
     // Text properties for AutoCompleteBox two-way binding
@@ -78,7 +77,7 @@ public class TransferItemViewModel : BaseViewModel
     public string PartText
     {
         get => _partText;
-        set => this.RaiseAndSetIfChanged(ref _partText, value ?? string.Empty);
+        set => SetProperty(ref _partText, value ?? string.Empty);
     }
 
     private string _operationText = string.Empty;
@@ -88,7 +87,7 @@ public class TransferItemViewModel : BaseViewModel
     public string OperationText
     {
         get => _operationText;
-        set => this.RaiseAndSetIfChanged(ref _operationText, value ?? string.Empty);
+        set => SetProperty(ref _operationText, value ?? string.Empty);
     }
 
     #endregion
@@ -102,7 +101,7 @@ public class TransferItemViewModel : BaseViewModel
     public string? SelectedToLocation
     {
         get => _selectedToLocation;
-        set => this.RaiseAndSetIfChanged(ref _selectedToLocation, value);
+        set => SetProperty(ref _selectedToLocation, value);
     }
 
     // Text property for destination location AutoCompleteBox
@@ -113,7 +112,7 @@ public class TransferItemViewModel : BaseViewModel
     public string ToLocationText
     {
         get => _toLocationText;
-        set => this.RaiseAndSetIfChanged(ref _toLocationText, value ?? string.Empty);
+        set => SetProperty(ref _toLocationText, value ?? string.Empty);
     }
 
     private int _transferQuantity = 1;
@@ -123,7 +122,7 @@ public class TransferItemViewModel : BaseViewModel
     public int TransferQuantity
     {
         get => _transferQuantity;
-        set => this.RaiseAndSetIfChanged(ref _transferQuantity, value);
+        set => SetProperty(ref _transferQuantity, value);
     }
 
     private int _maxTransferQuantity = 0;
@@ -133,7 +132,7 @@ public class TransferItemViewModel : BaseViewModel
     public int MaxTransferQuantity
     {
         get => _maxTransferQuantity;
-        set => this.RaiseAndSetIfChanged(ref _maxTransferQuantity, value);
+        set => SetProperty(ref _maxTransferQuantity, value);
     }
 
     #endregion
@@ -149,7 +148,7 @@ public class TransferItemViewModel : BaseViewModel
         get => _selectedInventoryItem;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedInventoryItem, value);
+            SetProperty(ref _selectedInventoryItem, value);
             UpdateMaxTransferQuantity();
         }
     }
@@ -161,26 +160,27 @@ public class TransferItemViewModel : BaseViewModel
     public bool IsLoading
     {
         get => _isLoading;
-        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+        set => SetProperty(ref _isLoading, value);
     }
 
     /// <summary>
     /// Indicates if there are inventory items to display
     /// </summary>
-    private readonly ObservableAsPropertyHelper<bool> _hasInventoryItems;
-    public bool HasInventoryItems => _hasInventoryItems.Value;
+    public bool HasInventoryItems => InventoryItems.Count > 0;
 
     /// <summary>
     /// Indicates if transfer operation can be performed
     /// </summary>
-    private readonly ObservableAsPropertyHelper<bool> _canTransfer;
-    public bool CanTransfer => _canTransfer.Value;
+    public bool CanTransfer => SelectedInventoryItem != null && 
+                              !string.IsNullOrWhiteSpace(SelectedToLocation) && 
+                              TransferQuantity > 0 && 
+                              TransferQuantity <= MaxTransferQuantity &&
+                              !IsLoading;
 
     /// <summary>
     /// Indicates if search operations can be performed
     /// </summary>
-    private readonly ObservableAsPropertyHelper<bool> _canSearch;
-    public bool CanSearch => _canSearch.Value;
+    public bool CanSearch => !IsLoading;
 
     #endregion
 
@@ -189,32 +189,32 @@ public class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Executes inventory search based on selected criteria with progress tracking
     /// </summary>
-    public ReactiveCommand<Unit, Unit> SearchCommand { get; private set; } = null!;
+    public ICommand SearchCommand { get; private set; } = null!;
 
     /// <summary>
     /// Resets search criteria and refreshes all data
     /// </summary>
-    public ReactiveCommand<Unit, Unit> ResetCommand { get; private set; } = null!;
+    public ICommand ResetCommand { get; private set; } = null!;
 
     /// <summary>
     /// Executes transfer operations for selected inventory items
     /// </summary>
-    public ReactiveCommand<Unit, Unit> TransferCommand { get; private set; } = null!;
+    public ICommand TransferCommand { get; private set; } = null!;
 
     /// <summary>
     /// Prints current inventory view with transfer details
     /// </summary>
-    public ReactiveCommand<Unit, Unit> PrintCommand { get; private set; } = null!;
+    public ICommand PrintCommand { get; private set; } = null!;
 
     /// <summary>
     /// Toggles quick actions panel
     /// </summary>
-    public ReactiveCommand<Unit, Unit> TogglePanelCommand { get; private set; } = null!;
+    public ICommand TogglePanelCommand { get; private set; } = null!;
 
     /// <summary>
     /// Loads initial data including parts, operations, and locations
     /// </summary>
-    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; private set; } = null!;
+    public ICommand LoadDataCommand { get; private set; } = null!;
 
     #endregion
 
@@ -235,67 +235,70 @@ public class TransferItemViewModel : BaseViewModel
     #region Constructor
 
     public TransferItemViewModel(
-        MTM_Shared_Logic.Services.IInventoryService inventoryService,
         IApplicationStateService applicationState,
         ILogger<TransferItemViewModel> logger) : base(logger)
     {
-        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
 
         Logger.LogInformation("TransferItemViewModel initialized with dependency injection");
 
-        // Initialize computed properties
-        _hasInventoryItems = this.WhenAnyValue(vm => vm.InventoryItems.Count)
-            .Select(count => count > 0)
-            .ToProperty(this, vm => vm.HasInventoryItems);
-
-        _canSearch = this.WhenAnyValue(vm => vm.IsLoading)
-            .Select(loading => !loading)
-            .ToProperty(this, vm => vm.CanSearch);
-
-        _canTransfer = this.WhenAnyValue(
-                vm => vm.SelectedToLocation,
-                vm => vm.TransferQuantity,
-                vm => vm.MaxTransferQuantity,
-                vm => vm.SelectedInventoryItem,
-                vm => vm.IsLoading)
-            .Select((tuple) =>
-            {
-                var (toLocation, quantity, maxQuantity, selectedItem, loading) = tuple;
-                return !string.IsNullOrWhiteSpace(toLocation) &&
-                       selectedItem != null &&
-                       quantity > 0 &&
-                       quantity <= maxQuantity &&
-                       maxQuantity > 0 &&
-                       !loading;
-            })
-            .ToProperty(this, vm => vm.CanTransfer);
-
         InitializeCommands();
         LoadSampleData(); // Load sample data for demonstration
-
-        // Sync text properties with selected items
-        this.WhenAnyValue(x => x.SelectedPart)
-            .Subscribe(selected => PartText = selected ?? string.Empty);
         
-        this.WhenAnyValue(x => x.SelectedOperation)
-            .Subscribe(selected => OperationText = selected ?? string.Empty);
-        
-        this.WhenAnyValue(x => x.SelectedToLocation)
-            .Subscribe(selected => ToLocationText = selected ?? string.Empty);
-
-        // Sync selected items when text matches exactly
-        this.WhenAnyValue(x => x.PartText)
-            .Where(text => !string.IsNullOrEmpty(text) && PartOptions.Contains(text))
-            .Subscribe(text => SelectedPart = text);
-        
-        this.WhenAnyValue(x => x.OperationText)
-            .Where(text => !string.IsNullOrEmpty(text) && OperationOptions.Contains(text))
-            .Subscribe(text => SelectedOperation = text);
-        
-        this.WhenAnyValue(x => x.ToLocationText)
-            .Where(text => !string.IsNullOrEmpty(text) && LocationOptions.Contains(text))
-            .Subscribe(text => SelectedToLocation = text);
+        // Setup property change notifications for computed properties
+        PropertyChanged += OnPropertyChanged;
+    }
+    
+    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Update computed properties when dependencies change
+        switch (e.PropertyName)
+        {
+            case nameof(InventoryItems):
+                OnPropertyChanged(nameof(HasInventoryItems));
+                break;
+            case nameof(IsLoading):
+                OnPropertyChanged(nameof(CanSearch));
+                OnPropertyChanged(nameof(CanTransfer));
+                break;
+            case nameof(TransferQuantity):
+            case nameof(SelectedInventoryItem):
+                OnPropertyChanged(nameof(CanTransfer));
+                UpdateMaxTransferQuantity();
+                break;
+            case nameof(SelectedToLocation):
+                OnPropertyChanged(nameof(CanTransfer));
+                UpdateMaxTransferQuantity();
+                ToLocationText = SelectedToLocation ?? string.Empty;
+                break;
+            case nameof(MaxTransferQuantity):
+                OnPropertyChanged(nameof(CanTransfer));
+                UpdateMaxTransferQuantity();
+                // Ensure transfer quantity doesn't exceed maximum
+                if (TransferQuantity > MaxTransferQuantity)
+                {
+                    TransferQuantity = Math.Max(1, MaxTransferQuantity);
+                }
+                break;
+            case nameof(SelectedPart):
+                PartText = SelectedPart ?? string.Empty;
+                break;
+            case nameof(SelectedOperation):
+                OperationText = SelectedOperation ?? string.Empty;
+                break;
+            case nameof(PartText):
+                if (!string.IsNullOrEmpty(PartText) && PartOptions.Contains(PartText))
+                    SelectedPart = PartText;
+                break;
+            case nameof(OperationText):
+                if (!string.IsNullOrEmpty(OperationText) && OperationOptions.Contains(OperationText))
+                    SelectedOperation = OperationText;
+                break;
+            case nameof(ToLocationText):
+                if (!string.IsNullOrEmpty(ToLocationText) && LocationOptions.Contains(ToLocationText))
+                    SelectedToLocation = ToLocationText;
+                break;
+        }
     }
 
     #endregion
@@ -305,63 +308,25 @@ public class TransferItemViewModel : BaseViewModel
     private void InitializeCommands()
     {
         // Search command with progress tracking
-        SearchCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ExecuteSearchAsync();
-        }, this.WhenAnyValue(vm => vm.CanSearch));
+        SearchCommand = new AsyncCommand(ExecuteSearchAsync, () => CanSearch);
 
         // Reset command
-        ResetCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ResetSearchAsync();
-        });
+        ResetCommand = new AsyncCommand(ResetSearchAsync);
 
         // Transfer command with validation
-        TransferCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ExecuteTransferAsync();
-        }, this.WhenAnyValue(vm => vm.CanTransfer));
+        TransferCommand = new AsyncCommand(ExecuteTransferAsync, () => CanTransfer);
 
         // Print command
-        PrintCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ExecutePrintAsync();
-        }, this.WhenAnyValue(vm => vm.HasInventoryItems));
+        PrintCommand = new AsyncCommand(ExecutePrintAsync, () => HasInventoryItems);
 
         // Toggle panel command
-        TogglePanelCommand = ReactiveCommand.Create(() =>
+        TogglePanelCommand = new RelayCommand(() =>
         {
             PanelToggleRequested?.Invoke(this, EventArgs.Empty);
         });
 
         // Load data command
-        LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await LoadComboBoxDataAsync();
-        });
-
-        // Reactive property updates for transfer quantity management
-        this.WhenAnyValue(vm => vm.SelectedInventoryItem)
-            .Subscribe(_ => UpdateMaxTransferQuantity());
-
-        this.WhenAnyValue(vm => vm.MaxTransferQuantity)
-            .Subscribe(maxQuantity =>
-            {
-                // Ensure transfer quantity doesn't exceed maximum
-                if (TransferQuantity > maxQuantity)
-                {
-                    TransferQuantity = Math.Max(1, maxQuantity);
-                }
-            });
-
-        // Centralized error handling
-        Observable.Merge(
-                SearchCommand.ThrownExceptions,
-                ResetCommand.ThrownExceptions,
-                TransferCommand.ThrownExceptions,
-                PrintCommand.ThrownExceptions,
-                LoadDataCommand.ThrownExceptions)
-            .Subscribe(HandleException);
+        LoadDataCommand = new AsyncCommand(LoadComboBoxDataAsync);
     }
 
     #endregion
@@ -788,11 +753,11 @@ public class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Programmatically triggers a search operation
     /// </summary>
-    public async Task TriggerSearchAsync()
+    public void TriggerSearch()
     {
         if (SearchCommand != null)
         {
-            await SearchCommand.Execute();
+            SearchCommand.Execute(null);
         }
     }
 
@@ -807,7 +772,7 @@ public class TransferItemViewModel : BaseViewModel
         TransferQuantity = quantity;
         
         // Trigger search to populate inventory grid
-        _ = TriggerSearchAsync();
+        TriggerSearch();
     }
 
     /// <summary>

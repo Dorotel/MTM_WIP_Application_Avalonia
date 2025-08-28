@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Models;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -52,7 +54,8 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     public ICommand LoadDataCommand { get; private set; }
     public ICommand RefreshDataCommand { get; private set; }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    // Events for integration with other components
+    public event EventHandler<InventorySavedEventArgs>? SaveCompleted;
 
     public InventoryTabViewModel() : this(null!, null!, null!, null!)
     {
@@ -71,7 +74,9 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         _configurationService = configurationService;
 
         InitializeCommands();
-        InitializeLookupData();
+        
+        // Load lookup data asynchronously
+        _ = Task.Run(async () => await InitializeLookupDataAsync());
         
         Logger.LogInformation("InventoryTabViewModel initialized");
     }
@@ -172,8 +177,8 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         ResetCommand = new AsyncCommand(ExecuteResetAsync);
         AdvancedEntryCommand = new RelayCommand(ExecuteAdvancedEntry);
         TogglePanelCommand = new RelayCommand(ExecuteTogglePanel);
-        LoadDataCommand = new AsyncCommand(ExecuteLoadDataAsync);
-        RefreshDataCommand = new AsyncCommand(ExecuteRefreshDataAsync);
+        LoadDataCommand = new AsyncCommand(LoadLookupDataAsync);
+        RefreshDataCommand = new AsyncCommand(RefreshLookupDataAsync);
     }
 
     #endregion
@@ -197,22 +202,21 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
                 return;
             }
 
-            // Prepare parameters for stored procedure
+            // Prepare parameters for inv_inventory_Add_Item stored procedure
             var parameters = new Dictionary<string, object>
             {
                 ["p_PartID"] = SelectedPart,
-                ["p_OperationID"] = SelectedOperation,
-                ["p_LocationID"] = SelectedLocation,
+                ["p_Location"] = SelectedLocation,
+                ["p_Operation"] = SelectedOperation,
                 ["p_Quantity"] = Quantity,
-                ["p_Notes"] = Notes,
-                ["p_UserID"] = _applicationStateService.CurrentUser,
-                ["p_TransactionType"] = "IN" // Always IN when adding inventory
+                ["p_ItemType"] = "WIP", // Default item type
+                ["p_User"] = _applicationStateService.CurrentUser,
+                ["p_Notes"] = !string.IsNullOrWhiteSpace(Notes) ? Notes : DBNull.Value
             };
 
-            // Execute stored procedure using connection string from configuration
-            var connectionString = _configurationService.GetConnectionString();
+            // Execute stored procedure for adding inventory
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                connectionString,
+                _configurationService.GetConnectionString(),
                 "inv_inventory_Add_Item",
                 parameters
             );
@@ -220,9 +224,21 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
             if (result.IsSuccess)
             {
                 Logger.LogInformation("Inventory item saved successfully");
+                
+                // Fire event to notify parent that save was successful
+                SaveCompleted?.Invoke(this, new InventorySavedEventArgs
+                {
+                    PartId = SelectedPart,
+                    Operation = SelectedOperation,
+                    Quantity = Quantity,
+                    Location = SelectedLocation,
+                    Notes = Notes
+                });
+                
+                // Reset form after successful save
                 await ExecuteResetAsync();
                 
-                // Update application state
+                // Update application state with last used values
                 _applicationStateService.CurrentOperation = SelectedOperation;
                 _applicationStateService.CurrentLocation = SelectedLocation;
             }
@@ -242,7 +258,8 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
                 {
                     ["PartId"] = SelectedPart,
                     ["Operation"] = SelectedOperation,
-                    ["Quantity"] = Quantity
+                    ["Quantity"] = Quantity,
+                    ["Location"] = SelectedLocation
                 });
         }
         finally
@@ -299,41 +316,16 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-    private async Task ExecuteLoadDataAsync()
+    private async Task RefreshLookupDataAsync()
     {
         try
         {
-            IsLoading = true;
-            HasError = false;
-
-            await LoadPartIdsAsync();
-            await LoadOperationsAsync();
-            await LoadLocationsAsync();
-
-            Logger.LogInformation("Data loading completed successfully");
+            await LoadLookupDataAsync();
+            Logger.LogInformation("Lookup data refreshed successfully");
         }
         catch (Exception ex)
         {
-            HasError = true;
-            ErrorMessage = ErrorHandling.GetUserFriendlyMessage(ex);
-            await ErrorHandling.HandleErrorAsync(ex, "LoadData", _applicationStateService.CurrentUser);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    private async Task ExecuteRefreshDataAsync()
-    {
-        try
-        {
-            await ExecuteLoadDataAsync();
-            Logger.LogInformation("Data refresh completed");
-        }
-        catch (Exception ex)
-        {
-            await ErrorHandling.HandleErrorAsync(ex, "RefreshData", _applicationStateService.CurrentUser);
+            await ErrorHandling.HandleErrorAsync(ex, "RefreshLookupData", _applicationStateService.CurrentUser);
         }
     }
 
@@ -341,56 +333,93 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
 
     #region Data Loading
 
-    private void InitializeLookupData()
+    /// <summary>
+    /// Initialize lookup data on startup
+    /// </summary>
+    private async Task InitializeLookupDataAsync()
     {
-        // Initialize with sample data until database integration is available
-        LoadSampleData();
-    }
-
-    private void LoadSampleData()
-    {
-        // Sample Part IDs
-        PartIds.Clear();
-        var sampleParts = new[] { "PART001", "PART002", "PART003", "ABC-123", "XYZ-789" };
-        foreach (var part in sampleParts)
+        try
         {
-            PartIds.Add(part);
+            await LoadLookupDataAsync();
         }
-
-        // Sample Operations
-        Operations.Clear();
-        var sampleOperations = new[] { "90", "100", "110", "120", "130" };
-        foreach (var operation in sampleOperations)
+        catch (Exception ex)
         {
-            Operations.Add(operation);
-        }
-
-        // Sample Locations
-        Locations.Clear();
-        var sampleLocations = new[] { "WC01", "WC02", "FLOOR", "QC", "SHIPPING" };
-        foreach (var location in sampleLocations)
-        {
-            Locations.Add(location);
+            Logger.LogError(ex, "Failed to initialize lookup data, using fallback data");
+            LoadFallbackData();
         }
     }
 
+    /// <summary>
+    /// Load all lookup data from database
+    /// </summary>
+    public async Task LoadLookupDataAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            HasError = false;
+
+            // Load all lookup data in parallel
+            var partTask = LoadPartIdsAsync();
+            var operationTask = LoadOperationsAsync();
+            var locationTask = LoadLocationsAsync();
+
+            await Task.WhenAll(partTask, operationTask, locationTask);
+
+            Logger.LogInformation("All lookup data loaded successfully");
+        }
+        catch (Exception ex)
+        {
+            HasError = true;
+            ErrorMessage = ErrorHandling.GetUserFriendlyMessage(ex);
+            await ErrorHandling.HandleErrorAsync(ex, "LoadLookupData", _applicationStateService.CurrentUser);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Load Part IDs from md_part_ids table
+    /// </summary>
     private async Task LoadPartIdsAsync()
     {
         try
         {
             IsLoadingParts = true;
             
-            // TODO: Load from database using stored procedure
-            // For now, use sample data
-            await Task.Delay(100);
-            LoadSampleData();
-            
-            Logger.LogDebug("Part IDs loaded: {Count} items", PartIds.Count);
+            // Load Part IDs using md_part_ids_Get_All stored procedure
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _configurationService.GetConnectionString(),
+                "md_part_ids_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (result.IsSuccess)
+            {
+                PartIds.Clear();
+                foreach (DataRow row in result.Data.Rows)
+                {
+                    var partId = row["PartID"]?.ToString();
+                    if (!string.IsNullOrEmpty(partId))
+                    {
+                        PartIds.Add(partId);
+                    }
+                }
+                
+                Logger.LogInformation("Loaded {Count} Part IDs from md_part_ids table", PartIds.Count);
+            }
+            else
+            {
+                Logger.LogWarning("Failed to load Part IDs: {Error}", result.Message);
+                LoadFallbackPartIds();
+            }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to load Part IDs");
-            throw;
+            Logger.LogError(ex, "Failed to load Part IDs from database");
+            LoadFallbackPartIds();
         }
         finally
         {
@@ -398,21 +427,46 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Load Operations from md_operation_numbers table
+    /// </summary>
     private async Task LoadOperationsAsync()
     {
         try
         {
             IsLoadingOperations = true;
             
-            // TODO: Load from database using stored procedure
-            await Task.Delay(50);
-            
-            Logger.LogDebug("Operations loaded: {Count} items", Operations.Count);
+            // Load Operations using md_operation_numbers_Get_All stored procedure
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _configurationService.GetConnectionString(),
+                "md_operation_numbers_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (result.IsSuccess)
+            {
+                Operations.Clear();
+                foreach (DataRow row in result.Data.Rows)
+                {
+                    var operation = row["Operation"]?.ToString();
+                    if (!string.IsNullOrEmpty(operation))
+                    {
+                        Operations.Add(operation);
+                    }
+                }
+                
+                Logger.LogInformation("Loaded {Count} Operations from md_operation_numbers table", Operations.Count);
+            }
+            else
+            {
+                Logger.LogWarning("Failed to load Operations: {Error}", result.Message);
+                LoadFallbackOperations();
+            }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to load Operations");
-            throw;
+            Logger.LogError(ex, "Failed to load Operations from database");
+            LoadFallbackOperations();
         }
         finally
         {
@@ -420,26 +474,99 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Load Locations from md_locations table
+    /// </summary>
     private async Task LoadLocationsAsync()
     {
         try
         {
             IsLoadingLocations = true;
             
-            // TODO: Load from database using stored procedure
-            await Task.Delay(75);
-            
-            Logger.LogDebug("Locations loaded: {Count} items", Locations.Count);
+            // Load Locations using md_locations_Get_All stored procedure
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _configurationService.GetConnectionString(),
+                "md_locations_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (result.IsSuccess)
+            {
+                Locations.Clear();
+                foreach (DataRow row in result.Data.Rows)
+                {
+                    var location = row["Location"]?.ToString();
+                    if (!string.IsNullOrEmpty(location))
+                    {
+                        Locations.Add(location);
+                    }
+                }
+                
+                Logger.LogInformation("Loaded {Count} Locations from md_locations table", Locations.Count);
+            }
+            else
+            {
+                Logger.LogWarning("Failed to load Locations: {Error}", result.Message);
+                LoadFallbackLocations();
+            }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to load Locations");
-            throw;
+            Logger.LogError(ex, "Failed to load Locations from database");
+            LoadFallbackLocations();
         }
         finally
         {
             IsLoadingLocations = false;
         }
+    }
+
+    #endregion
+
+    #region Fallback Data Methods
+
+    /// <summary>
+    /// Load all fallback data when database is unavailable
+    /// </summary>
+    private void LoadFallbackData()
+    {
+        LoadFallbackPartIds();
+        LoadFallbackOperations();
+        LoadFallbackLocations();
+        Logger.LogInformation("Fallback data loaded for all AutoComplete boxes");
+    }
+
+    private void LoadFallbackPartIds()
+    {
+        PartIds.Clear();
+        var fallbackParts = new[] { "PART001", "PART002", "PART003", "ABC-123", "XYZ-789" };
+        foreach (var part in fallbackParts)
+        {
+            PartIds.Add(part);
+        }
+        Logger.LogDebug("Loaded {Count} fallback Part IDs", PartIds.Count);
+    }
+
+    private void LoadFallbackOperations()
+    {
+        Operations.Clear();
+        var fallbackOperations = new[] { "90", "100", "110", "120", "130" };
+        foreach (var operation in fallbackOperations)
+        {
+            Operations.Add(operation);
+        }
+        Logger.LogDebug("Loaded {Count} fallback Operations", Operations.Count);
+    }
+
+    private void LoadFallbackLocations()
+    {
+        Locations.Clear();
+        var fallbackLocations = new[] { "WC01", "WC02", "FLOOR", "QC", "SHIPPING" };
+        foreach (var location in fallbackLocations)
+        {
+            Locations.Add(location);
+        }
+        Logger.LogDebug("Loaded {Count} fallback Locations", Locations.Count);
     }
 
     #endregion
@@ -485,7 +612,7 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
 
     protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        base.OnPropertyChanged(propertyName);
         
         // Update computed properties
         if (propertyName is nameof(SelectedPart) or nameof(SelectedOperation) or 

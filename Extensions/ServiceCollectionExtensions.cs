@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
+using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Services;
 
 namespace MTM_Shared_Logic.Extensions;
@@ -28,9 +29,20 @@ public static class ServiceCollectionExtensions
         // Database services
         services.TryAddScoped<IDatabaseService, DatabaseService>();
         
+        // UI and Application services
+        services.TryAddScoped<IQuickButtonsService, QuickButtonsService>();
+        services.TryAddSingleton<IProgressService, ProgressService>();
+        
         // ViewModels - register only those that exist and compile
+        services.TryAddTransient<MainWindowViewModel>();
+        services.TryAddTransient<MainViewViewModel>();
         services.TryAddTransient<InventoryTabViewModel>();
         services.TryAddTransient<AdvancedRemoveViewModel>();
+        services.TryAddTransient<AddItemViewModel>();
+        services.TryAddTransient<RemoveItemViewModel>();
+        services.TryAddTransient<TransferItemViewModel>();
+        services.TryAddTransient<AdvancedInventoryViewModel>();
+        services.TryAddTransient<QuickButtonsViewModel>();
 
         return services;
     }
@@ -83,7 +95,9 @@ public static class ServiceCollectionExtensions
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
             typeof(INavigationService),
-            typeof(IDatabaseService)
+            typeof(IDatabaseService),
+            typeof(IQuickButtonsService),
+            typeof(IProgressService)
         };
 
         var missingServices = requiredServices
@@ -111,7 +125,9 @@ public static class ServiceCollectionExtensions
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
             typeof(INavigationService),
-            typeof(IDatabaseService)
+            typeof(IDatabaseService),
+            typeof(IQuickButtonsService),
+            typeof(IProgressService)
         };
 
         var failedServices = criticalServices

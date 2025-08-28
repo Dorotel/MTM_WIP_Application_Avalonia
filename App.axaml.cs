@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -45,9 +46,7 @@ namespace MTM_WIP_Application_Avalonia
                 _logger?.LogInformation("MTM WIP Application starting...");
                 _logger?.LogInformation("Model_AppVariables and database helper initialized");
 
-                // Initialize ReactiveUI error handling FIRST to prevent pipeline breaks
-                ReactiveUIInitializer.EnsureInitialized(_logger);
-                _logger?.LogInformation("ReactiveUI error handling initialized");
+                // Application initialization - error handling configured via services
 
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
@@ -59,6 +58,19 @@ namespace MTM_WIP_Application_Avalonia
                     };
 
                     _logger?.LogInformation("Main window created with dependency injection");
+
+                    // Show startup information dialog after main window is created
+                    Task.Run(async () =>
+                    {
+                        // Wait a moment for the main window to fully initialize
+                        await Task.Delay(1000);
+                        
+                        // Show startup dialog on UI thread
+                        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                        {
+                            await StartupDialog.ShowStartupInfoAsync(configuration);
+                        });
+                    });
                 }
 
                 base.OnFrameworkInitializationCompleted();

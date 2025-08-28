@@ -12,21 +12,29 @@
     <AvaloniaXaml Remove="Config\**" />
     <AvaloniaXaml Remove="Documentation\Development\Agent_Issues\**" />
     <AvaloniaXaml Remove="Documentation\Development\CopilotQuestions\**" />
+    <AvaloniaXaml Remove="Documentation\Development\Reports\**" />
+    <AvaloniaXaml Remove="Documentation\Development\Updates\**" />
     <AvaloniaXaml Remove="Exportable\**" />
     <AvaloniaXaml Remove="Resources\**" />
     <Compile Remove="Config\**" />
     <Compile Remove="Documentation\Development\Agent_Issues\**" />
     <Compile Remove="Documentation\Development\CopilotQuestions\**" />
+    <Compile Remove="Documentation\Development\Reports\**" />
+    <Compile Remove="Documentation\Development\Updates\**" />
     <Compile Remove="Exportable\**" />
     <Compile Remove="Resources\**" />
     <EmbeddedResource Remove="Config\**" />
     <EmbeddedResource Remove="Documentation\Development\Agent_Issues\**" />
     <EmbeddedResource Remove="Documentation\Development\CopilotQuestions\**" />
+    <EmbeddedResource Remove="Documentation\Development\Reports\**" />
+    <EmbeddedResource Remove="Documentation\Development\Updates\**" />
     <EmbeddedResource Remove="Exportable\**" />
     <EmbeddedResource Remove="Resources\**" />
     <None Remove="Config\**" />
     <None Remove="Documentation\Development\Agent_Issues\**" />
     <None Remove="Documentation\Development\CopilotQuestions\**" />
+    <None Remove="Documentation\Development\Reports\**" />
+    <None Remove="Documentation\Development\Updates\**" />
     <None Remove="Exportable\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
@@ -48,6 +56,7 @@
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
     
     <!-- System.Reactive for reactive extensions -->
     <PackageReference Include="System.Reactive" Version="6.0.1" />
@@ -81,17 +90,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".github\all-copilot-files-list.instructions.md" />
     <None Include=".github\Automation-Instructions\customprompts.instruction.md" />
     <None Include=".github\Automation-Instructions\issue-pr-creation.instruction.md" />
     <None Include=".github\Automation-Instructions\personas.instruction.md" />
-    <None Include=".github\Automation-Instructions\README.md" />
     <None Include=".github\copilot-instructions.md" />
     <None Include=".github\Core-Instructions\codingconventions.instruction.md" />
     <None Include=".github\Core-Instructions\dependency-injection.instruction.md" />
     <None Include=".github\Core-Instructions\naming.conventions.instruction.md" />
     <None Include=".github\Core-Instructions\project-structure.instruction.md" />
-    <None Include=".github\Core-Instructions\README.md" />
     <None Include=".github\Custom-Prompts\custom-prompts-examples.md" />
     <None Include=".github\Custom-Prompts\CustomPrompt_Create_CRUDOperations.md" />
     <None Include=".github\Custom-Prompts\CustomPrompt_Create_ErrorSystemPlaceholder.md" />
@@ -109,23 +115,21 @@
     <None Include=".github\Development-Instructions\database-patterns.instruction.md" />
     <None Include=".github\Development-Instructions\errorhandler.instruction.md" />
     <None Include=".github\Development-Instructions\githubworkflow.instruction.md" />
-    <None Include=".github\Development-Instructions\README.md" />
     <None Include=".github\Development-Instructions\templates-documentation.instruction.md" />
     <None Include=".github\Custom-Prompts\MTM_Hotkey_Reference.md" />
-    <None Include=".github\document-reorganization.instructions.md" />
-    <None Include=".github\missing-components.instruction.md" />
+    <None Include=".github\issues\complete-inventory-database-implementation.md" />
+    <None Include=".github\issues\update-all-instruction-files-remove-reactiveui.md" />
     <None Include=".github\Quality-Instructions\needsrepair.instruction.md" />
-    <None Include=".github\Quality-Instructions\README.md" />
-    <None Include=".github\Custom-Prompts\README.md" />
     <None Include=".github\UI-Instructions\avalonia-xaml-syntax.instruction.md" />
-    <None Include=".github\UI-Instructions\README.md" />
     <None Include=".github\UI-Instructions\ui-generation.instruction.md" />
     <None Include=".github\UI-Instructions\ui-mapping.instruction.md" />
     <None Include=".github\UI-Instructions\ui-styling.instruction.md" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Documentation\Development\Reports\" />
-    <Folder Include="Documentation\Development\Updates\" />
+    <Folder Include="Documentation\Development\Compliance Reports\Services\" />
+    <Folder Include="Documentation\Development\Compliance Reports\Summary\" />
+    <Folder Include="Documentation\Development\Compliance Reports\ViewModels\" />
+    <Folder Include="Documentation\Development\Compliance Reports\Views\" />
   </ItemGroup>
 </Project>

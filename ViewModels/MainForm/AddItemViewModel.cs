@@ -1,22 +1,19 @@
 using System;
 using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using Avalonia.ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
 public class AddItemViewModel : BaseViewModel
 {
-    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
     private readonly IApplicationStateService _applicationState;
 
     public AddItemViewModel(
-        MTM_Shared_Logic.Services.IInventoryService inventoryService,
         IApplicationStateService applicationState,
         ILogger<AddItemViewModel> logger) : base(logger)
     {
-        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
 
         Logger.LogInformation("AddItemViewModel initialized with dependency injection");
@@ -27,6 +24,6 @@ public class AddItemViewModel : BaseViewModel
 
     private void InitializeCommands()
     {
-        // TODO: Initialize ReactiveCommands with injected services
+        // TODO: Initialize commands with injected services
     }
 }

@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d"
              d:DesignWidth="800"
@@ -187,7 +187,7 @@
                        Foreground="{StaticResource PrimaryTextBrush}"/>
           </Grid>
           <AutoCompleteBox x:Name="PartAutoCompleteBox"
-                          ItemsSource="{Binding PartOptions}"
+                          ItemsSource="{Binding PartIds}"
                           Text="{Binding SelectedPart, Mode=TwoWay}"
                           Classes="input-field"
                           Classes.error="{Binding !IsPartValid}"
@@ -218,7 +218,7 @@
                        Foreground="{StaticResource PrimaryTextBrush}"/>
           </Grid>
           <AutoCompleteBox x:Name="OperationAutoCompleteBox"
-                          ItemsSource="{Binding OperationOptions}"
+                          ItemsSource="{Binding Operations}"
                           Text="{Binding SelectedOperation, Mode=TwoWay}"
                           Classes="input-field"
                           Classes.error="{Binding !IsOperationValid}"
@@ -249,7 +249,7 @@
                        Foreground="{StaticResource PrimaryTextBrush}"/>
           </Grid>
           <AutoCompleteBox x:Name="LocationAutoCompleteBox"
-                          ItemsSource="{Binding LocationOptions}"
+                          ItemsSource="{Binding Locations}"
                           Text="{Binding SelectedLocation, Mode=TwoWay}"
                           Classes="input-field"
                           Classes.error="{Binding !IsLocationValid}"

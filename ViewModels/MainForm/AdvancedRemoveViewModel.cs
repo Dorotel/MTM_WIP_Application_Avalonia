@@ -1,20 +1,17 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Reactive.Linq;
+using System.ComponentModel;
 using System.Threading.Tasks;
-using Avalonia.ReactiveUI;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_Shared_Logic.Models;
 using System.Linq;
 using Avalonia.Controls;
 using Material.Icons;
-using System.Reactive.Disposables;
-using MTM_WIP_Application_Avalonia.Extensions;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Commands;
 using System.Collections.Generic;
-using System.Reactive.Subjects;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -24,7 +21,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 /// Features include bulk removal operations, removal history tracking, undo capabilities, 
 /// and specialized reporting for removal analytics.
 /// </summary>
-public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
+public class AdvancedRemoveViewModel : BaseViewModel
 {
     #region Filter Fields and Options
     public ObservableCollection<string> LocationOptions { get; } = new();
@@ -32,17 +29,17 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
     public ObservableCollection<string> UserOptions { get; } = new();
     public ObservableCollection<string> OperationOptions { get; } = new();
 
-    public string? FilterLocationText { get => _filterLocationText; set => this.RaiseAndSetIfChanged(ref _filterLocationText, value); }
-    public string? FilterPartIDText { get => _filterPartIDText; set => this.RaiseAndSetIfChanged(ref _filterPartIDText, value); }
-    public string? FilterUserText { get => _filterUserText; set => this.RaiseAndSetIfChanged(ref _filterUserText, value); }
-    public string? FilterOperation { get => _filterOperation; set => this.RaiseAndSetIfChanged(ref _filterOperation, value); }
-    public string? FilterNotes { get => _filterNotes; set => this.RaiseAndSetIfChanged(ref _filterNotes, value); }
-    public string? QuantityMin { get => _quantityMin; set => this.RaiseAndSetIfChanged(ref _quantityMin, value); }
-    public string? QuantityMax { get => _quantityMax; set => this.RaiseAndSetIfChanged(ref _quantityMax, value); }
+    public string? FilterLocationText { get => _filterLocationText; set => SetProperty(ref _filterLocationText, value); }
+    public string? FilterPartIDText { get => _filterPartIDText; set => SetProperty(ref _filterPartIDText, value); }
+    public string? FilterUserText { get => _filterUserText; set => SetProperty(ref _filterUserText, value); }
+    public string? FilterOperation { get => _filterOperation; set => SetProperty(ref _filterOperation, value); }
+    public string? FilterNotes { get => _filterNotes; set => SetProperty(ref _filterNotes, value); }
+    public string? QuantityMin { get => _quantityMin; set => SetProperty(ref _quantityMin, value); }
+    public string? QuantityMax { get => _quantityMax; set => SetProperty(ref _quantityMax, value); }
     
-    public bool UseDateRange { get => _useDateRange; set => this.RaiseAndSetIfChanged(ref _useDateRange, value); }
-    public DateTimeOffset? RemovalDateRangeStart { get => _removalDateRangeStart; set => this.RaiseAndSetIfChanged(ref _removalDateRangeStart, value); }
-    public DateTimeOffset? RemovalDateRangeEnd { get => _removalDateRangeEnd; set => this.RaiseAndSetIfChanged(ref _removalDateRangeEnd, value); }
+    public bool UseDateRange { get => _useDateRange; set => SetProperty(ref _useDateRange, value); }
+    public DateTimeOffset? RemovalDateRangeStart { get => _removalDateRangeStart; set => SetProperty(ref _removalDateRangeStart, value); }
+    public DateTimeOffset? RemovalDateRangeEnd { get => _removalDateRangeEnd; set => SetProperty(ref _removalDateRangeEnd, value); }
 
     private string? _filterLocationText;
     private string? _filterPartIDText;
@@ -71,20 +68,20 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
     public RemovalHistoryItem? SelectedHistoryItem
     {
         get => _selectedHistoryItem;
-        set => this.RaiseAndSetIfChanged(ref _selectedHistoryItem, value);
+        set => SetProperty(ref _selectedHistoryItem, value);
     }
     #endregion
 
     #region State Properties
-    public bool IsBusy { get => _isBusy; set => this.RaiseAndSetIfChanged(ref _isBusy, value); }
-    public string StatusMessage { get => _statusMessage; set => this.RaiseAndSetIfChanged(ref _statusMessage, value); }
+    public bool IsBusy { get => _isBusy; set => SetProperty(ref _isBusy, value); }
+    public string StatusMessage { get => _statusMessage; set => SetProperty(ref _statusMessage, value); }
 
     // Collapsible Panel Properties
-    public bool IsFilterPanelExpanded { get => _isFilterPanelExpanded; set => this.RaiseAndSetIfChanged(ref _isFilterPanelExpanded, value); }
-    public string CollapseButtonText { get => _collapseButtonText; set => this.RaiseAndSetIfChanged(ref _collapseButtonText, value); }
-    public MaterialIconKind CollapseButtonIcon { get => _collapseButtonIcon; set => this.RaiseAndSetIfChanged(ref _collapseButtonIcon, value); }
-    public string FilterToggleText { get => _filterToggleText; set => this.RaiseAndSetIfChanged(ref _filterToggleText, value); }
-    public GridLength FilterPanelWidth { get => _filterPanelWidth; set => this.RaiseAndSetIfChanged(ref _filterPanelWidth, value); }
+    public bool IsFilterPanelExpanded { get => _isFilterPanelExpanded; set => SetProperty(ref _isFilterPanelExpanded, value); }
+    public string CollapseButtonText { get => _collapseButtonText; set => SetProperty(ref _collapseButtonText, value); }
+    public MaterialIconKind CollapseButtonIcon { get => _collapseButtonIcon; set => SetProperty(ref _collapseButtonIcon, value); }
+    public string FilterToggleText { get => _filterToggleText; set => SetProperty(ref _filterToggleText, value); }
+    public GridLength FilterPanelWidth { get => _filterPanelWidth; set => SetProperty(ref _filterPanelWidth, value); }
 
     private bool _isBusy;
     private string _statusMessage = "Ready";
@@ -94,35 +91,30 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
     private string _filterToggleText = "Hide Filters";
     private GridLength _filterPanelWidth = new GridLength(300);
 
-    private readonly ObservableAsPropertyHelper<bool> _canUndo;
-    public bool CanUndo => _canUndo.Value;
-    #endregion
-
-    #region IHandleObservableErrors Implementation
-    public IObservable<Exception> ThrownExceptions { get; }
+    public bool CanUndo => LastRemovedItems.Count > 0;
     #endregion
 
     #region Commands - Advanced Removal Operations
-    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> SearchCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ClearCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> BackToNormalCommand { get; private set; } = null!;
+    public ICommand LoadDataCommand { get; private set; } = null!;
+    public ICommand SearchCommand { get; private set; } = null!;
+    public ICommand ClearCommand { get; private set; } = null!;
+    public ICommand BackToNormalCommand { get; private set; } = null!;
     
     // Advanced removal operations as per instruction file
-    public ReactiveCommand<Unit, Unit> BulkRemoveCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ConditionalRemoveCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ScheduledRemoveCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> UndoRemovalCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ViewHistoryCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> GenerateRemovalReportCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ExportRemovalDataCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> PrintRemovalSummaryCommand { get; private set; } = null!;
+    public ICommand BulkRemoveCommand { get; private set; } = null!;
+    public ICommand ConditionalRemoveCommand { get; private set; } = null!;
+    public ICommand ScheduledRemoveCommand { get; private set; } = null!;
+    public ICommand UndoRemovalCommand { get; private set; } = null!;
+    public ICommand ViewHistoryCommand { get; private set; } = null!;
+    public ICommand GenerateRemovalReportCommand { get; private set; } = null!;
+    public ICommand ExportRemovalDataCommand { get; private set; } = null!;
+    public ICommand PrintRemovalSummaryCommand { get; private set; } = null!;
     
     // Panel Control Commands
-    public ReactiveCommand<Unit, Unit> ToggleFilterPanelCommand { get; private set; } = null!;
+    public ICommand ToggleFilterPanelCommand { get; private set; } = null!;
     
     // Remove functionality now handled by QuickButtonsViewModel integration
-    public ReactiveCommand<Unit, Unit> RemoveSelectedCommand { get; private set; } = null!;
+    public ICommand RemoveSelectedCommand { get; private set; } = null!;
     #endregion
 
     #region Events
@@ -130,7 +122,7 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
     #endregion
 
     #region Disposables for proper cleanup
-    private readonly CompositeDisposable _compositeDisposable = new();
+    // Disposable resources cleanup handled by BaseViewModel
     #endregion
 
     public AdvancedRemoveViewModel(ILogger<AdvancedRemoveViewModel> logger) : base(logger)
@@ -139,54 +131,8 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
         {
             Logger.LogInformation("Initializing AdvancedRemoveViewModel");
 
-            // Setup ThrownExceptions for IHandleObservableErrors
-            var thrownExceptionsSubject = new Subject<Exception>();
-            ThrownExceptions = thrownExceptionsSubject.AsObservable();
-            
-            // Subscribe to handle exceptions properly with enhanced error handling
-            ThrownExceptions
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(async ex =>
-                {
-                    try
-                    {
-                        Logger.LogError(ex, "AdvancedRemoveViewModel observable error: {Message}", ex.Message);
-                        await Service_ErrorHandler.HandleErrorAsync(ex, "AdvancedRemoveViewModel", Environment.UserName);
-                        
-                        // Safely update status
-                        try
-                        {
-                            StatusMessage = "An error occurred. Please try again.";
-                            IsBusy = false;
-                        }
-                        catch (Exception statusEx)
-                        {
-                            Logger.LogError(statusEx, "Error updating status message");
-                        }
-                    }
-                    catch (Exception errorHandlerEx)
-                    {
-                        Logger.LogCritical(errorHandlerEx, "Critical error in exception handler");
-                    }
-                })
-                .DisposeWith(_compositeDisposable);
-
-            // Initialize computed properties safely using the extension method
-            _canUndo = LastRemovedItems
-                .ObserveCollectionCount()
-                .Select(count => count > 0)
-                .Catch<bool, Exception>(ex =>
-                {
-                    Logger.LogError(ex, "Error in CanUndo observable");
-                    thrownExceptionsSubject.OnNext(ex);
-                    return Observable.Return(false);
-                })
-                .ToProperty(this, vm => vm.CanUndo, scheduler: RxApp.MainThreadScheduler)
-                .DisposeWith(_compositeDisposable);
-
-            // Initialize commands with error handling
-            InitializeCommands(thrownExceptionsSubject);
-            SetupErrorHandling();
+            // Initialize commands
+            InitializeCommands();
             
             // Initialize with safe default date range
             try
@@ -203,20 +149,22 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
 
             StatusMessage = "Advanced removal system initialized";
             
-            // Setup auto-search after commands are initialized
-            SetupAutoSearch(thrownExceptionsSubject);
+            // Setup collection change notifications for CanUndo
+            LastRemovedItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CanUndo));
 
-            // Load initial data using error-safe approach
-            Observable.Return(Unit.Default)
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .SelectMany(_ => LoadDataCommand.Execute().Catch<Unit, Exception>(ex =>
+            // Load initial data
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await LoadDataAsync();
+                }
+                catch (Exception ex)
                 {
                     Logger.LogError(ex, "Error during initial data load");
-                    thrownExceptionsSubject.OnNext(ex);
-                    return Observable.Return(Unit.Default);
-                }))
-                .Subscribe(_ => Logger.LogDebug("Initial data load completed"))
-                .DisposeWith(_compositeDisposable);
+                    StatusMessage = "Error loading initial data";
+                }
+            });
 
             Logger.LogInformation("AdvancedRemoveViewModel initialization completed successfully");
         }
@@ -224,18 +172,17 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
         {
             Logger.LogError(ex, "Failed to initialize AdvancedRemoveViewModel");
             StatusMessage = "Initialization failed";
-            throw; // Re-throw to prevent further issues
         }
     }
 
-    private void InitializeCommands(Subject<Exception> thrownExceptionsSubject)
+    private void InitializeCommands()
     {
         try
         {
             Logger.LogDebug("Initializing commands for AdvancedRemoveViewModel");
 
             // Create commands with proper error handling
-            LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+            LoadDataCommand = new AsyncCommand(async () =>
             {
                 try
                 {
@@ -251,7 +198,6 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 {
                     Logger.LogError(ex, "Error loading data");
                     StatusMessage = $"Error loading data: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
                 finally
                 {
@@ -259,7 +205,7 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 }
             });
 
-            SearchCommand = ReactiveCommand.CreateFromTask(async () =>
+            SearchCommand = new AsyncCommand(async () =>
             {
                 try
                 {
@@ -269,11 +215,10 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 {
                     Logger.LogError(ex, "Error executing search");
                     StatusMessage = $"Search error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
-            ClearCommand = ReactiveCommand.Create(() =>
+            ClearCommand = new RelayCommand(() =>
             {
                 try
                 {
@@ -293,12 +238,11 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 {
                     Logger.LogError(ex, "Error clearing filters");
                     StatusMessage = $"Clear error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
             // Simplified remove command for integration with QuickButtonsViewModel
-            RemoveSelectedCommand = ReactiveCommand.CreateFromTask(async () =>
+            RemoveSelectedCommand = new AsyncCommand(async () =>
             {
                 try
                 {
@@ -315,7 +259,6 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 {
                     Logger.LogError(ex, "Error removing selected item");
                     StatusMessage = $"Removal error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
                 finally
                 {
@@ -323,7 +266,7 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 }
             });
 
-            UndoRemovalCommand = ReactiveCommand.CreateFromTask(async () =>
+            UndoRemovalCommand = new AsyncCommand(async () =>
             {
                 try
                 {
@@ -350,20 +293,14 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 {
                     Logger.LogError(ex, "Error undoing removal");
                     StatusMessage = $"Undo error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
                 finally
                 {
                     IsBusy = false;
                 }
-            }, this.WhenAnyValue(vm => vm.CanUndo).Catch<bool, Exception>(ex =>
-            {
-                Logger.LogError(ex, "Error in CanUndo observable for UndoRemovalCommand");
-                thrownExceptionsSubject.OnNext(ex);
-                return Observable.Return(false);
-            }));
+            });
 
-            PrintRemovalSummaryCommand = ReactiveCommand.CreateFromTask(async () =>
+            PrintRemovalSummaryCommand = new AsyncCommand(async () =>
             {
                 try
                 {
@@ -379,7 +316,6 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 {
                     Logger.LogError(ex, "Error printing summary");
                     StatusMessage = $"Print error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
                 finally
                 {
@@ -387,7 +323,7 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 }
             });
 
-            ToggleFilterPanelCommand = ReactiveCommand.Create(() =>
+            ToggleFilterPanelCommand = new RelayCommand(() =>
             {
                 try
                 {
@@ -402,11 +338,10 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 {
                     Logger.LogError(ex, "Error toggling filter panel");
                     StatusMessage = $"Toggle error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
-            BackToNormalCommand = ReactiveCommand.Create(() =>
+            BackToNormalCommand = new RelayCommand(() =>
             {
                 try
                 {
@@ -416,12 +351,11 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 {
                     Logger.LogError(ex, "Error navigating back to normal");
                     StatusMessage = $"Navigation error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
             // Additional advanced commands (for future implementation)
-            BulkRemoveCommand = ReactiveCommand.CreateFromTask(async () =>
+            BulkRemoveCommand = new AsyncCommand(async () =>
             {
                 try
                 {
@@ -430,11 +364,10 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Error in bulk remove");
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
-            ViewHistoryCommand = ReactiveCommand.CreateFromTask(async () =>
+            ViewHistoryCommand = new AsyncCommand(async () =>
             {
                 try
                 {
@@ -443,11 +376,10 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Error loading history");
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
-            GenerateRemovalReportCommand = ReactiveCommand.CreateFromTask(async () =>
+            GenerateRemovalReportCommand = new AsyncCommand(async () =>
             {
                 try
                 {
@@ -456,7 +388,42 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Error generating report");
-                    thrownExceptionsSubject.OnNext(ex);
+                }
+            });
+
+            ExportRemovalDataCommand = new AsyncCommand(async () =>
+            {
+                try
+                {
+                    await Task.Delay(500); // TODO: Export removal data
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error exporting data");
+                }
+            });
+
+            ConditionalRemoveCommand = new AsyncCommand(async () =>
+            {
+                try
+                {
+                    await Task.Delay(700); // TODO: Conditional removal
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error in conditional remove");
+                }
+            });
+
+            ScheduledRemoveCommand = new AsyncCommand(async () =>
+            {
+                try
+                {
+                    await Task.Delay(600); // TODO: Scheduled removal
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error in scheduled remove");
                 }
             });
 
@@ -465,73 +432,13 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error initializing commands");
-            throw;
         }
     }
 
-    private void SetupErrorHandling()
+    private async Task LoadDataAsync()
     {
-        // All error handling is now done through the ThrownExceptions observable
-        // which is properly implemented via IHandleObservableErrors
-    }
-
-    private void SetupAutoSearch(Subject<Exception> thrownExceptionsSubject)
-    {
-        try
-        {
-            Logger.LogDebug("Setting up auto-search for AdvancedRemoveViewModel");
-
-            // Auto-search when filter text changes (with debounce)
-            var filterChanges = Observable.Merge(
-                this.WhenAnyValue(x => x.FilterPartIDText).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.FilterLocationText).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.FilterOperation).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.FilterUserText).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.FilterNotes).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.QuantityMin).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.QuantityMax).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.UseDateRange).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.RemovalDateRangeStart).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.RemovalDateRangeEnd).Select(_ => Unit.Default)
-            );
-
-            filterChanges
-                .Throttle(TimeSpan.FromMilliseconds(500)) // Wait 500ms after user stops typing
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Where(_ => !IsBusy) // Don't auto-search if busy
-                .Subscribe(async _ =>
-                {
-                    try
-                    {
-                        // Only auto-search if we have some filter criteria
-                        if (!string.IsNullOrWhiteSpace(FilterPartIDText) ||
-                            !string.IsNullOrWhiteSpace(FilterLocationText) ||
-                            !string.IsNullOrWhiteSpace(FilterOperation) ||
-                            !string.IsNullOrWhiteSpace(FilterUserText) ||
-                            !string.IsNullOrWhiteSpace(FilterNotes) ||
-                            !string.IsNullOrWhiteSpace(QuantityMin) ||
-                            !string.IsNullOrWhiteSpace(QuantityMax) ||
-                            UseDateRange)
-                        {
-                            await ExecuteSearchAsync();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, "Auto-search error: {Message}", ex.Message);
-                        StatusMessage = $"Auto-search error: {ex.Message}";
-                        thrownExceptionsSubject.OnNext(ex);
-                    }
-                })
-                .DisposeWith(_compositeDisposable);
-
-            Logger.LogDebug("Auto-search setup completed");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error setting up auto-search");
-            thrownExceptionsSubject.OnNext(ex);
-        }
+        await LoadOptionsAsync();
+        await LoadRemovalHistoryAsync();
     }
 
     private async Task LoadOptionsAsync()
@@ -671,7 +578,6 @@ public class AdvancedRemoveViewModel : BaseViewModel, IHandleObservableErrors
         {
             try
             {
-                _compositeDisposable?.Dispose();
                 Logger.LogDebug("AdvancedRemoveViewModel disposed successfully");
             }
             catch (Exception ex)

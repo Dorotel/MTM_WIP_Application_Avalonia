@@ -78,63 +78,8 @@ public partial class RemoveTabView : UserControl
     {
         try
         {
-            // Subscribe to command exceptions to prevent pipeline breaks
-            if (viewModel.SearchCommand != null)
-            {
-                viewModel.SearchCommand.ThrownExceptions
-                    .Subscribe(ex => HandleCommandException("Search", ex))
-                    .DisposeWith(_compositeDisposable);
-            }
-
-            if (viewModel.DeleteCommand != null)
-            {
-                viewModel.DeleteCommand.ThrownExceptions
-                    .Subscribe(ex => HandleCommandException("Delete", ex))
-                    .DisposeWith(_compositeDisposable);
-            }
-
-            if (viewModel.UndoCommand != null)
-            {
-                viewModel.UndoCommand.ThrownExceptions
-                    .Subscribe(ex => HandleCommandException("Undo", ex))
-                    .DisposeWith(_compositeDisposable);
-            }
-
-            if (viewModel.AdvancedRemovalCommand != null)
-            {
-                viewModel.AdvancedRemovalCommand.ThrownExceptions
-                    .Subscribe(ex => HandleCommandException("AdvancedRemoval", ex))
-                    .DisposeWith(_compositeDisposable);
-            }
-
-            if (viewModel.ResetCommand != null)
-            {
-                viewModel.ResetCommand.ThrownExceptions
-                    .Subscribe(ex => HandleCommandException("Reset", ex))
-                    .DisposeWith(_compositeDisposable);
-            }
-
-            if (viewModel.PrintCommand != null)
-            {
-                viewModel.PrintCommand.ThrownExceptions
-                    .Subscribe(ex => HandleCommandException("Print", ex))
-                    .DisposeWith(_compositeDisposable);
-            }
-
-            if (viewModel.TogglePanelCommand != null)
-            {
-                viewModel.TogglePanelCommand.ThrownExceptions
-                    .Subscribe(ex => HandleCommandException("TogglePanel", ex))
-                    .DisposeWith(_compositeDisposable);
-            }
-
-            if (viewModel.LoadDataCommand != null)
-            {
-                viewModel.LoadDataCommand.ThrownExceptions
-                    .Subscribe(ex => HandleCommandException("LoadData", ex))
-                    .DisposeWith(_compositeDisposable);
-            }
-
+            // Command error handling is now managed within the ViewModels themselves
+            // using standard .NET error handling patterns
             _logger?.LogDebug("RemoveTabView ViewModel events wired successfully");
         }
         catch (Exception ex)

@@ -401,7 +401,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         {
             if (result.IsFailure && result.Exception != null)
             {
-                await Services.Service_ErrorHandler.HandleErrorAsync(
+                await Services.ErrorHandling.HandleErrorAsync(
                     result.Exception, 
                     operation, 
                     userId, 
@@ -427,22 +427,23 @@ namespace MTM_WIP_Application_Avalonia.Models
                 var result = await resultTask;
                 var duration = DateTime.UtcNow - startTime;
                 
-                await Services.LoggingUtility.LogBusinessOperationAsync(
-                    operation,
-                    userId,
-                    parameters ?? new Dictionary<string, object>(),
-                    result.Exception,
-                    result.IsSuccess ? "Success" : "Failure");
+                // TODO: Implement proper logging utility service
+                // await Services.LoggingUtility.LogBusinessOperationAsync(
+                //     operation,
+                //     userId,
+                //     parameters ?? new Dictionary<string, object>(),
+                //     result.Exception,
+                //     result.IsSuccess ? "Success" : "Failure");
 
-                await Services.LoggingUtility.LogPerformanceMetricsAsync(
-                    operation,
-                    duration,
-                    userId,
-                    new Dictionary<string, object>
-                    {
-                        ["Success"] = result.IsSuccess,
-                        ["HasWarnings"] = !string.IsNullOrEmpty(result.ErrorMessage) && result.IsSuccess
-                    });
+                // await Services.LoggingUtility.LogPerformanceMetricsAsync(
+                //     operation,
+                //     duration,
+                //     userId,
+                //     new Dictionary<string, object>
+                //     {
+                //         ["Success"] = result.IsSuccess,
+                //         ["HasWarnings"] = !string.IsNullOrEmpty(result.ErrorMessage) && result.IsSuccess
+                //     });
 
                 return result;
             }
@@ -450,12 +451,13 @@ namespace MTM_WIP_Application_Avalonia.Models
             {
                 var duration = DateTime.UtcNow - startTime;
                 
-                await Services.LoggingUtility.LogBusinessOperationAsync(
-                    operation,
-                    userId,
-                    parameters ?? new Dictionary<string, object>(),
-                    ex,
-                    "Exception");
+                // TODO: Implement proper logging utility service
+                // await Services.LoggingUtility.LogBusinessOperationAsync(
+                //     operation,
+                //     userId,
+                //     parameters ?? new Dictionary<string, object>(),
+                //     ex,
+                //     "Exception");
 
                 return Result<T>.Failure("Operation failed due to unexpected error", "EXCEPTION", ex);
             }
