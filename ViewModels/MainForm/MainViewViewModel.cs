@@ -1,13 +1,11 @@
 using System;
-using System.Reactive;
+using System.Windows.Input;
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
-using MTM_Shared_Logic.Services;
+using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
-using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using Avalonia.ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -15,42 +13,41 @@ public class MainViewViewModel : BaseViewModel
 {
     private readonly INavigationService _navigationService;
     private readonly IApplicationStateService _applicationState;
-    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
 
     // Tabs
     private int _selectedTabIndex;
     public int SelectedTabIndex
     {
         get => _selectedTabIndex;
-        set => this.RaiseAndSetIfChanged(ref _selectedTabIndex, value);
+        set => SetProperty(ref _selectedTabIndex, value);
     }
 
     private object? _inventoryContent;
     public object? InventoryContent
     {
         get => _inventoryContent;
-        set => this.RaiseAndSetIfChanged(ref _inventoryContent, value);
+        set => SetProperty(ref _inventoryContent, value);
     }
 
     private object? _removeContent;
     public object? RemoveContent
     {
         get => _removeContent;
-        set => this.RaiseAndSetIfChanged(ref _removeContent, value);
+        set => SetProperty(ref _removeContent, value);
     }
 
     private object? _transferContent;
     public object? TransferContent
     {
         get => _transferContent;
-        set => this.RaiseAndSetIfChanged(ref _transferContent, value);
+        set => SetProperty(ref _transferContent, value);
     }
 
     private object? _testControlsContent;
     public object? TestControlsContent
     {
         get => _testControlsContent;
-        set => this.RaiseAndSetIfChanged(ref _testControlsContent, value);
+        set => SetProperty(ref _testControlsContent, value);
     }
 
     // Quick Actions panel (renamed from Advanced panel)
@@ -58,7 +55,7 @@ public class MainViewViewModel : BaseViewModel
     public bool IsAdvancedPanelVisible
     {
         get => _isAdvancedPanelVisible;
-        set => this.RaiseAndSetIfChanged(ref _isAdvancedPanelVisible, value);
+        set => SetProperty(ref _isAdvancedPanelVisible, value);
     }
 
     public string AdvancedPanelToggleText => IsAdvancedPanelVisible ? "Hide" : "Show";
@@ -68,7 +65,7 @@ public class MainViewViewModel : BaseViewModel
     public bool IsQuickActionsPanelExpanded
     {
         get => _isQuickActionsPanelExpanded;
-        set => this.RaiseAndSetIfChanged(ref _isQuickActionsPanelExpanded, value);
+        set => SetProperty(ref _isQuickActionsPanelExpanded, value);
     }
 
     // QuickActions Panel Width - expands/collapses based on state (returns GridLength compatible values)
@@ -82,7 +79,7 @@ public class MainViewViewModel : BaseViewModel
     public bool IsAdvancedInventoryMode
     {
         get => _isAdvancedInventoryMode;
-        set => this.RaiseAndSetIfChanged(ref _isAdvancedInventoryMode, value);
+        set => SetProperty(ref _isAdvancedInventoryMode, value);
     }
 
     // Remove Mode Management
@@ -90,7 +87,7 @@ public class MainViewViewModel : BaseViewModel
     public bool IsAdvancedRemoveMode
     {
         get => _isAdvancedRemoveMode;
-        set => this.RaiseAndSetIfChanged(ref _isAdvancedRemoveMode, value);
+        set => SetProperty(ref _isAdvancedRemoveMode, value);
     }
 
     // Child ViewModels
@@ -106,28 +103,28 @@ public class MainViewViewModel : BaseViewModel
     public string ConnectionStatus
     {
         get => _connectionStatus;
-        set => this.RaiseAndSetIfChanged(ref _connectionStatus, value);
+        set => SetProperty(ref _connectionStatus, value);
     }
 
     private int _connectionStrength = 0; // 0..100
     public int ConnectionStrength
     {
         get => _connectionStrength;
-        set => this.RaiseAndSetIfChanged(ref _connectionStrength, value);
+        set => SetProperty(ref _connectionStrength, value);
     }
 
     private int _progressValue = 0; // 0..100
     public int ProgressValue
     {
         get => _progressValue;
-        set => this.RaiseAndSetIfChanged(ref _progressValue, value);
+        set => SetProperty(ref _progressValue, value);
     }
 
     private string _statusText = "Ready";
     public string StatusText
     {
         get => _statusText;
-        set => this.RaiseAndSetIfChanged(ref _statusText, value);
+        set => SetProperty(ref _statusText, value);
     }
 
     // Dev menu visibility
@@ -135,27 +132,26 @@ public class MainViewViewModel : BaseViewModel
     public bool ShowDevelopmentMenu
     {
         get => _showDevelopmentMenu;
-        set => this.RaiseAndSetIfChanged(ref _showDevelopmentMenu, value);
+        set => SetProperty(ref _showDevelopmentMenu, value);
     }
 
     // Commands
-    public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
-    public ReactiveCommand<Unit, Unit> ExitCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenPersonalHistoryCommand { get; }
-    public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
-    public ReactiveCommand<Unit, Unit> CancelCommand { get; }
-    public ReactiveCommand<Unit, Unit> ToggleAdvancedPanelCommand { get; }
-    public ReactiveCommand<Unit, Unit> ToggleQuickActionsPanelCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenAboutCommand { get; }
-    public ReactiveCommand<Unit, Unit> SwitchToAdvancedInventoryCommand { get; }
-    public ReactiveCommand<Unit, Unit> SwitchToNormalInventoryCommand { get; }
-    public ReactiveCommand<Unit, Unit> SwitchToAdvancedRemoveCommand { get; }
-    public ReactiveCommand<Unit, Unit> SwitchToNormalRemoveCommand { get; }
+    public ICommand OpenSettingsCommand { get; private set; }
+    public ICommand ExitCommand { get; private set; }
+    public ICommand OpenPersonalHistoryCommand { get; private set; }
+    public ICommand RefreshCommand { get; private set; }
+    public ICommand CancelCommand { get; private set; }
+    public ICommand ToggleAdvancedPanelCommand { get; private set; }
+    public ICommand ToggleQuickActionsPanelCommand { get; private set; }
+    public ICommand OpenAboutCommand { get; private set; }
+    public ICommand SwitchToAdvancedInventoryCommand { get; private set; }
+    public ICommand SwitchToNormalInventoryCommand { get; private set; }
+    public ICommand SwitchToAdvancedRemoveCommand { get; private set; }
+    public ICommand SwitchToNormalRemoveCommand { get; private set; }
 
     public MainViewViewModel(
         INavigationService navigationService,
         IApplicationStateService applicationState,
-        MTM_Shared_Logic.Services.IInventoryService inventoryService,
         InventoryTabViewModel inventoryTabViewModel,
         RemoveItemViewModel removeItemViewModel,
         TransferItemViewModel transferItemViewModel,
@@ -166,7 +162,6 @@ public class MainViewViewModel : BaseViewModel
     {
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
-        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
 
         Logger.LogInformation("MainViewViewModel initialized with dependency injection");
 
@@ -214,10 +209,10 @@ public class MainViewViewModel : BaseViewModel
         SelectedTabIndex = 0;
 
         // Initialize commands (stubs; no business logic)
-        OpenSettingsCommand = ReactiveCommand.Create(() => { /* TODO: Show settings */ });
-        ExitCommand = ReactiveCommand.Create(() => { /* TODO: Exit app */ });
-        OpenPersonalHistoryCommand = ReactiveCommand.Create(() => { /* TODO: Open history */ });
-        RefreshCommand = ReactiveCommand.Create(() => 
+        OpenSettingsCommand = new RelayCommand(() => { /* TODO: Show settings */ });
+        ExitCommand = new RelayCommand(() => { /* TODO: Exit app */ });
+        OpenPersonalHistoryCommand = new RelayCommand(() => { /* TODO: Open history */ });
+        RefreshCommand = new RelayCommand(() => 
         {
             switch (SelectedTabIndex)
             {
@@ -236,21 +231,21 @@ public class MainViewViewModel : BaseViewModel
                     break;
             }
         });
-        CancelCommand = ReactiveCommand.Create(() => { /* TODO: Cancel current operation */ });
-        OpenAboutCommand = ReactiveCommand.Create(() => { /* TODO: Show about dialog */ });
+        CancelCommand = new RelayCommand(() => { /* TODO: Cancel current operation */ });
+        OpenAboutCommand = new RelayCommand(() => { /* TODO: Show about dialog */ });
         
-        ToggleAdvancedPanelCommand = ReactiveCommand.Create(() =>
+        ToggleAdvancedPanelCommand = new RelayCommand(() =>
         {
             IsAdvancedPanelVisible = !IsAdvancedPanelVisible;
         });
 
-        ToggleQuickActionsPanelCommand = ReactiveCommand.Create(() =>
+        ToggleQuickActionsPanelCommand = new RelayCommand(() =>
         {
             IsQuickActionsPanelExpanded = !IsQuickActionsPanelExpanded;
             Logger.LogInformation("QuickActions panel toggled: {IsExpanded}", IsQuickActionsPanelExpanded);
         });
 
-        SwitchToAdvancedInventoryCommand = ReactiveCommand.Create(() =>
+        SwitchToAdvancedInventoryCommand = new RelayCommand(() =>
         {
             IsAdvancedInventoryMode = true;
             UpdateInventoryContent();
@@ -258,7 +253,7 @@ public class MainViewViewModel : BaseViewModel
             Logger.LogInformation("Switched to Advanced Inventory Mode");
         });
 
-        SwitchToNormalInventoryCommand = ReactiveCommand.Create(() =>
+        SwitchToNormalInventoryCommand = new RelayCommand(() =>
         {
             IsAdvancedInventoryMode = false;
             UpdateInventoryContent();
@@ -266,7 +261,7 @@ public class MainViewViewModel : BaseViewModel
             Logger.LogInformation("Switched to Normal Inventory Mode");
         });
 
-        SwitchToAdvancedRemoveCommand = ReactiveCommand.Create(() =>
+        SwitchToAdvancedRemoveCommand = new RelayCommand(() =>
         {
             IsAdvancedRemoveMode = true;
             UpdateRemoveContent();
@@ -274,7 +269,7 @@ public class MainViewViewModel : BaseViewModel
             Logger.LogInformation("Switched to Advanced Remove Mode");
         });
 
-        SwitchToNormalRemoveCommand = ReactiveCommand.Create(() =>
+        SwitchToNormalRemoveCommand = new RelayCommand(() =>
         {
             IsAdvancedRemoveMode = false;
             UpdateRemoveContent();
@@ -335,11 +330,11 @@ public class MainViewViewModel : BaseViewModel
         }
     }
 
-    private void OnInventoryItemSaved(object? sender, InventoryItemSavedEventArgs e)
+    private void OnInventoryItemSaved(object? sender, EventArgs e)
     {
         // TODO: Update QuickButtons with new inventory item
         // This could automatically add/update the most recent action in QuickButtons
-        StatusText = $"Saved: {e.PartId} - {e.Operation} ({e.Quantity} units)";
+        StatusText = "Item saved successfully";
     }
 
     private void OnPanelToggleRequested(object? sender, EventArgs e)
