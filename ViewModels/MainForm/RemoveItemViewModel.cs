@@ -22,6 +22,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 public class RemoveItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
+    private readonly IDatabaseService _databaseService;
 
     #region Observable Collections
     
@@ -217,14 +218,16 @@ public class RemoveItemViewModel : BaseViewModel
 
     public RemoveItemViewModel(
         IApplicationStateService applicationState,
+        IDatabaseService databaseService,
         ILogger<RemoveItemViewModel> logger) : base(logger)
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
 
         Logger.LogInformation("RemoveItemViewModel initialized with dependency injection");
 
         InitializeCommands();
-        LoadSampleData(); // Load sample data for demonstration
+        _ = LoadComboBoxDataAsync(); // Load real data from database
         
         // Setup property change notifications for computed properties
         PropertyChanged += OnPropertyChanged;
@@ -313,26 +316,51 @@ public class RemoveItemViewModel : BaseViewModel
             IsLoading = true;
             InventoryItems.Clear();
 
-            // TODO: Implement database search operations
-            // Dynamic search based on selection criteria
-            // if (!string.IsNullOrWhiteSpace(_selectedOperation))
-            // {
-            //     // Search by both part and operation
-            //     var result = await Dao_Inventory.GetInventoryByPartIdAndOperationAsync(
-            //         _selectedPart, _selectedOperation, true);
-            // }
-            // else
-            // {
-            //     // Search by part only
-            //     var result = await Dao_Inventory.GetInventoryByPartIdAsync(_selectedPart, true);
-            // }
-
-            // For demonstration, load sample filtered data
-            await Task.Delay(500); // Simulate database operation
-            LoadSampleInventoryData();
-
-            Logger.LogInformation("Search executed for Part: {PartId}, Operation: {Operation}", 
+            Logger.LogInformation("Executing search for Part: {PartId}, Operation: {Operation}", 
                 _selectedPart, _selectedOperation);
+
+            // Dynamic search based on selection criteria
+            System.Data.DataTable result;
+            
+            if (!string.IsNullOrWhiteSpace(_selectedPart) && !string.IsNullOrWhiteSpace(_selectedOperation))
+            {
+                // Search by both part and operation
+                result = await _databaseService.GetInventoryByPartAndOperationAsync(_selectedPart, _selectedOperation);
+            }
+            else if (!string.IsNullOrWhiteSpace(_selectedPart))
+            {
+                // Search by part only
+                result = await _databaseService.GetInventoryByPartIdAsync(_selectedPart);
+            }
+            else
+            {
+                // No search criteria specified, don't load anything
+                Logger.LogWarning("No search criteria specified");
+                return;
+            }
+
+            // Convert DataTable to InventoryItem objects
+            foreach (System.Data.DataRow row in result.Rows)
+            {
+                var inventoryItem = new InventoryItem
+                {
+                    ID = Convert.ToInt32(row["ID"]),
+                    PartID = row["PartID"]?.ToString() ?? string.Empty,
+                    Location = row["Location"]?.ToString() ?? string.Empty,
+                    Operation = row["Operation"]?.ToString(),
+                    Quantity = Convert.ToInt32(row["Quantity"]),
+                    ItemType = row["ItemType"]?.ToString() ?? "WIP",
+                    ReceiveDate = Convert.ToDateTime(row["ReceiveDate"]),
+                    LastUpdated = Convert.ToDateTime(row["LastUpdated"]),
+                    User = row["User"]?.ToString() ?? string.Empty,
+                    BatchNumber = row["BatchNumber"]?.ToString() ?? string.Empty,
+                    Notes = row["Notes"]?.ToString() ?? string.Empty
+                };
+                
+                InventoryItems.Add(inventoryItem);
+            }
+
+            Logger.LogInformation("Search completed. Found {Count} inventory items", InventoryItems.Count);
         }
         finally
         {
@@ -382,44 +410,48 @@ public class RemoveItemViewModel : BaseViewModel
         try
         {
             IsLoading = true;
-            var itemsToRemove = new List<InventoryItem> { SelectedItem };
+            var itemToRemove = SelectedItem;
 
-            // TODO: Implement database removal operations
-            // var removeResult = await Dao_Inventory.RemoveInventoryItemsFromDataGridViewAsync(dgv, true);
+            Logger.LogInformation("Removing inventory item: {PartId}, Operation: {Operation}, Quantity: {Quantity}", 
+                itemToRemove.PartID, itemToRemove.Operation, itemToRemove.Quantity);
 
-            // TODO: Log transaction history for audit trail
-            // foreach (var item in itemsToRemove)
-            // {
-            //     var transaction = new InventoryTransaction
-            //     {
-            //         TransactionType = TransactionType.OUT,
-            //         PartId = item.PartId,
-            //         Operation = item.Operation,
-            //         Location = item.Location,
-            //         Quantity = item.Quantity,
-            //         User = Model_AppVariables.User,
-            //         TransactionDateTime = DateTime.Now
-            //     };
-            //     await Dao_History.AddTransactionHistoryAsync(transaction);
-            // }
+            // Remove item using database service
+            var removeResult = await _databaseService.RemoveInventoryItemAsync(
+                itemToRemove.PartID,
+                itemToRemove.Location,
+                itemToRemove.Operation ?? string.Empty,
+                itemToRemove.Quantity,
+                itemToRemove.ItemType,
+                _applicationState.CurrentUser,
+                itemToRemove.BatchNumber ?? string.Empty,
+                "Removed via Remove Item interface"
+            );
 
-            // Store for undo capability
-            _lastRemovedItems.Clear();
-            _lastRemovedItems.AddRange(itemsToRemove);
-            HasUndoItems = _lastRemovedItems.Count > 0;
-
-            // Remove from UI collections
-            InventoryItems.Remove(SelectedItem);
-            SelectedItem = null;
-
-            // Fire event for integration
-            ItemsRemoved?.Invoke(this, new ItemsRemovedEventArgs
+            if (removeResult.IsSuccess)
             {
-                RemovedItems = itemsToRemove,
-                RemovalTime = DateTime.Now
-            });
+                // Store for undo capability
+                _lastRemovedItems.Clear();
+                _lastRemovedItems.Add(itemToRemove);
+                HasUndoItems = _lastRemovedItems.Count > 0;
 
-            Logger.LogInformation("Successfully removed {Count} inventory item", itemsToRemove.Count);
+                // Remove from UI collections
+                InventoryItems.Remove(itemToRemove);
+                SelectedItem = null;
+
+                // Fire event for integration
+                ItemsRemoved?.Invoke(this, new ItemsRemovedEventArgs
+                {
+                    RemovedItems = new List<InventoryItem> { itemToRemove },
+                    RemovalTime = DateTime.Now
+                });
+
+                Logger.LogInformation("Successfully removed inventory item");
+            }
+            else
+            {
+                Logger.LogError("Failed to remove inventory item: {ErrorMessage}", removeResult.Message);
+                // TODO: Show user-friendly error message
+            }
         }
         finally
         {
@@ -510,21 +542,49 @@ public class RemoveItemViewModel : BaseViewModel
     {
         try
         {
-            // TODO: Implement database loading
-            // var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            //     Model_AppVariables.ConnectionString,
-            //     "sys_parts_Get_All",
-            //     new Dictionary<string, object>()
-            // );
-            
-            // var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            //     Model_AppVariables.ConnectionString,
-            //     "sys_operations_Get_All", 
-            //     new Dictionary<string, object>()
-            // );
+            Logger.LogInformation("Loading ComboBox data from database");
 
-            await Task.Delay(200); // Simulate database operation
-            LoadSampleData();
+            // Load Parts using md_part_ids_Get_All stored procedure
+            var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _databaseService.GetConnectionString(),
+                "md_part_ids_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (partResult.IsSuccess)
+            {
+                PartOptions.Clear();
+                foreach (System.Data.DataRow row in partResult.Data.Rows)
+                {
+                    var partId = row["PartID"]?.ToString();
+                    if (!string.IsNullOrEmpty(partId))
+                    {
+                        PartOptions.Add(partId);
+                    }
+                }
+                Logger.LogInformation("Loaded {Count} parts", PartOptions.Count);
+            }
+            
+            // Load Operations using md_operation_numbers_Get_All stored procedure
+            var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _databaseService.GetConnectionString(),
+                "md_operation_numbers_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (operationResult.IsSuccess)
+            {
+                OperationOptions.Clear();
+                foreach (System.Data.DataRow row in operationResult.Data.Rows)
+                {
+                    var operation = row["Operation"]?.ToString();
+                    if (!string.IsNullOrEmpty(operation))
+                    {
+                        OperationOptions.Add(operation);
+                    }
+                }
+                Logger.LogInformation("Loaded {Count} operations", OperationOptions.Count);
+            }
 
             Logger.LogInformation("ComboBox data loaded successfully");
         }
