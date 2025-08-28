@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Reactive;
 using System.Reactive.Linq;
-using ReactiveUI;
+using Avalonia.ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.Extensions;
 

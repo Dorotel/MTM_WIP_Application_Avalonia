@@ -1,15 +1,11 @@
 using System;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
-using MTM_WIP_Application_Avalonia.ViewModels;
-using ReactiveUI;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -17,6 +13,7 @@ namespace MTM_WIP_Application_Avalonia.Views;
 /// Code-behind for InventoryTabView.
 /// Implements the primary inventory management interface within the MTM WIP Application.
 /// Provides keyboard shortcuts, focus management, and event handling.
+/// Uses standard .NET patterns without ReactiveUI dependencies.
 /// </summary>
 public partial class InventoryTabView : UserControl
 {
@@ -48,10 +45,8 @@ public partial class InventoryTabView : UserControl
             {
                 _viewModel = vm;
                 
-                // Subscribe to ViewModel events
-                _viewModel.InventoryItemSaved += OnInventoryItemSaved;
-                _viewModel.PanelToggleRequested += OnPanelToggleRequested;
-                _viewModel.AdvancedEntryRequested += OnAdvancedEntryRequested;
+                // No event subscriptions needed since we're not using custom events
+                System.Diagnostics.Debug.WriteLine("InventoryTabView ViewModel connected successfully");
             }
         }
         catch (Exception ex)
@@ -78,11 +73,11 @@ public partial class InventoryTabView : UserControl
             {
                 case Key.F5:
                     e.Handled = true;
-                    // Check if Shift is pressed for hard reset
-                    bool hardReset = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
-                    
-                    // Use ReactiveCommand.Execute with parameter
-                    _viewModel.ResetCommand.Execute(hardReset).Subscribe();
+                    // Execute reset command
+                    if (_viewModel.ResetCommand.CanExecute(null))
+                    {
+                        _viewModel.ResetCommand.Execute(null);
+                    }
                     break;
 
                 case Key.Enter:
@@ -113,11 +108,9 @@ public partial class InventoryTabView : UserControl
         // If focused on Save button and can save, execute save command
         if (source is Button button && button.Name?.Contains("Save") == true)
         {
-            // Check if save command can execute using CanExecute observable
-            var canExecute = await _viewModel.SaveCommand.CanExecute.Take(1);
-            if (canExecute)
+            if (_viewModel.SaveCommand.CanExecute(null))
             {
-                _viewModel.SaveCommand.Execute().Subscribe();
+                _viewModel.SaveCommand.Execute(null);
                 return;
             }
         }
@@ -181,84 +174,6 @@ public partial class InventoryTabView : UserControl
         }
     }
 
-    #region ViewModel Event Handlers
-
-    /// <summary>
-    /// Handles the InventoryItemSaved event from the ViewModel.
-    /// Forwards to parent components for quick buttons integration.
-    /// </summary>
-    private void OnInventoryItemSaved(object? sender, InventoryItemSavedEventArgs e)
-    {
-        try
-        {
-            // This event is typically handled by the parent MainForm or MainView
-            // which will update quick buttons and other related components
-            
-            // For now, just log the successful save
-            System.Diagnostics.Debug.WriteLine(
-                $"Inventory item saved: {e.PartId} - Operation {e.Operation} - Quantity {e.Quantity}");
-            
-            // In a full implementation, this would trigger:
-            // 1. Quick button updates via MainForm
-            // 2. Inventory grid refresh in other tabs
-            // 3. Recent transactions update
-            // 4. Progress notifications
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling inventory item saved event: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles the PanelToggleRequested event from the ViewModel.
-    /// Forwards to parent form to toggle quick actions panel visibility.
-    /// </summary>
-    private void OnPanelToggleRequested(object? sender, EventArgs e)
-    {
-        try
-        {
-            // This would typically be handled by MainForm to show/hide the quick buttons panel
-            System.Diagnostics.Debug.WriteLine("Panel toggle requested");
-            
-            // In a full implementation, this would:
-            // 1. Toggle the visibility of the right panel (quick buttons)
-            // 2. Adjust the main content area layout
-            // 3. Save user preference for panel state
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling panel toggle request: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles the AdvancedEntryRequested event from the ViewModel.
-    /// Opens the Control_AdvancedInventory interface.
-    /// </summary>
-    private void OnAdvancedEntryRequested(object? sender, EventArgs e)
-    {
-        try
-        {
-            // This would typically open the AdvancedInventoryView
-            System.Diagnostics.Debug.WriteLine("Advanced entry requested");
-            
-            // In a full implementation, this would:
-            // 1. Open AdvancedInventoryView as modal dialog or navigate to it
-            // 2. Pass current form data as initial values
-            // 3. Handle return data from advanced entry
-            
-            // For now, just indicate that advanced entry would be opened
-            // This integration would be handled by the navigation service
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling advanced entry request: {ex.Message}");
-        }
-    }
-
-    #endregion
-
     #region Cleanup
 
     /// <summary>
@@ -268,17 +183,11 @@ public partial class InventoryTabView : UserControl
     {
         try
         {
-            // Unsubscribe from ViewModel events to prevent memory leaks
-            if (_viewModel != null)
-            {
-                _viewModel.InventoryItemSaved -= OnInventoryItemSaved;
-                _viewModel.PanelToggleRequested -= OnPanelToggleRequested;
-                _viewModel.AdvancedEntryRequested -= OnAdvancedEntryRequested;
-            }
-
-            // Unsubscribe from control events
+            // Clean up event subscriptions
             KeyDown -= OnKeyDown;
             Loaded -= OnLoaded;
+            
+            System.Diagnostics.Debug.WriteLine("InventoryTabView cleanup completed");
         }
         catch (Exception ex)
         {

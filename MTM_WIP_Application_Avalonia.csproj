@@ -9,29 +9,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AvaloniaXaml Remove=".github\UI-Instructions - Copy %282%29\**" />
-    <AvaloniaXaml Remove=".github\UI-Instructions - Copy - Copy\**" />
     <AvaloniaXaml Remove="Config\**" />
     <AvaloniaXaml Remove="Documentation\Development\Agent_Issues\**" />
     <AvaloniaXaml Remove="Documentation\Development\CopilotQuestions\**" />
     <AvaloniaXaml Remove="Exportable\**" />
     <AvaloniaXaml Remove="Resources\**" />
-    <Compile Remove=".github\UI-Instructions - Copy %282%29\**" />
-    <Compile Remove=".github\UI-Instructions - Copy - Copy\**" />
     <Compile Remove="Config\**" />
     <Compile Remove="Documentation\Development\Agent_Issues\**" />
     <Compile Remove="Documentation\Development\CopilotQuestions\**" />
     <Compile Remove="Exportable\**" />
     <Compile Remove="Resources\**" />
-    <EmbeddedResource Remove=".github\UI-Instructions - Copy %282%29\**" />
-    <EmbeddedResource Remove=".github\UI-Instructions - Copy - Copy\**" />
     <EmbeddedResource Remove="Config\**" />
     <EmbeddedResource Remove="Documentation\Development\Agent_Issues\**" />
     <EmbeddedResource Remove="Documentation\Development\CopilotQuestions\**" />
     <EmbeddedResource Remove="Exportable\**" />
     <EmbeddedResource Remove="Resources\**" />
-    <None Remove=".github\UI-Instructions - Copy %282%29\**" />
-    <None Remove=".github\UI-Instructions - Copy - Copy\**" />
     <None Remove="Config\**" />
     <None Remove="Documentation\Development\Agent_Issues\**" />
     <None Remove="Documentation\Development\CopilotQuestions\**" />
@@ -45,27 +37,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Force correct ReactiveUI versions first -->
-    
-    <!-- Avalonia packages -->
+    <!-- Avalonia packages (includes ReactiveUI integration) -->
     <PackageReference Include="Avalonia" Version="11.3.4" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.4" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.4">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+    
+    <!-- System.Reactive for reactive extensions -->
+    <PackageReference Include="System.Reactive" Version="6.0.1" />
     
     <!-- Database and utility packages -->
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
     <PackageReference Include="MySql.Data" Version="9.4.0" />
     
-    <!-- Microsoft Extensions packages -->
+    <!-- Microsoft Extensions packages (standardized to 8.0.0) -->
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.8" />
@@ -129,8 +121,7 @@
     <None Include=".github\UI-Instructions\README.md" />
     <None Include=".github\UI-Instructions\ui-generation.instruction.md" />
     <None Include=".github\UI-Instructions\ui-mapping.instruction.md" />
-	    <None Include=".github\UI-Instructions\ui-styling.instruction.md" />	  
-	  
+    <None Include=".github\UI-Instructions\ui-styling.instruction.md" />
   </ItemGroup>
 
   <ItemGroup>

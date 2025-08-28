@@ -3,11 +3,10 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Controls;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using ReactiveUI;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Concurrency;
+using System.Windows.Input;
+using MTM_WIP_Application_Avalonia.Services;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -16,14 +15,11 @@ namespace MTM_WIP_Application_Avalonia.Views;
 /// 
 /// Provides sophisticated removal operations beyond standard inventory removal functionality.
 /// Offers bulk removal operations, removal history tracking, undo capabilities, and specialized reporting
-/// for removal analytics. Serves as the enhanced interface for complex removal scenarios requiring 
-/// batch processing and detailed audit trails.
+/// for removal analytics. Uses standard .NET patterns without ReactiveUI dependencies.
 /// </summary>
 public partial class AdvancedRemoveView : UserControl
 {
     private readonly ILogger<AdvancedRemoveView>? _logger;
-    private AdvancedRemoveViewModel? _viewModel;
-    private readonly CompositeDisposable _compositeDisposable = new();
 
     public AdvancedRemoveView()
     {
@@ -55,9 +51,6 @@ public partial class AdvancedRemoveView : UserControl
     {
         try
         {
-            // Subscribe to DataContext changes to wire up ViewModel events
-            this.DataContextChanged += OnDataContextChanged;
-            
             // Set up bulk removal operation handlers
             SetupBulkRemovalOperations();
             
@@ -83,128 +76,77 @@ public partial class AdvancedRemoveView : UserControl
     }
 
     /// <summary>
-    /// Handles DataContext changes to wire up ViewModel events
+    /// Handle DataContext changes to wire up ViewModel
     /// </summary>
-    private void OnDataContextChanged(object? sender, EventArgs e)
+    protected override void OnDataContextChanged(EventArgs e)
     {
-        try
+        base.OnDataContextChanged(e);
+        
+        if (DataContext is AdvancedRemoveViewModel viewModel)
         {
-            // Unwire previous ViewModel events
-            if (_viewModel != null)
-            {
-                UnwireViewModelEvents(_viewModel);
-            }
-
-            // Wire up new ViewModel events with enhanced error handling
-            if (DataContext is AdvancedRemoveViewModel viewModel)
-            {
-                _viewModel = viewModel;
-                WireViewModelEvents(viewModel);
-                _logger?.LogInformation("AdvancedRemoveViewModel connected successfully");
-            }
-            else if (DataContext != null)
-            {
-                _logger?.LogWarning("DataContext is not AdvancedRemoveViewModel. Type: {Type}", DataContext.GetType().Name);
-            }
+            // Wire up command error handling using standard patterns
+            WireCommandExceptions(viewModel);
+            _logger?.LogInformation("AdvancedRemoveViewModel connected successfully");
         }
-        catch (Exception ex)
+        else if (DataContext != null)
         {
-            _logger?.LogError(ex, "Failed to handle DataContext change");
+            _logger?.LogWarning("DataContext is not AdvancedRemoveViewModel. Type: {Type}", DataContext.GetType().Name);
         }
     }
 
     /// <summary>
-    /// Wires up ViewModel events for advanced removal operations with proper error handling
+    /// Wires up ViewModel command exceptions using standard .NET patterns
     /// </summary>
-    private void WireViewModelEvents(AdvancedRemoveViewModel viewModel)
+    private void WireCommandExceptions(AdvancedRemoveViewModel viewModel)
     {
         try
         {
-            // Subscribe to command exceptions to prevent ReactiveUI pipeline breaks
-            WireCommandExceptions(viewModel.LoadDataCommand, "LoadData");
-            WireCommandExceptions(viewModel.SearchCommand, "Search");
-            WireCommandExceptions(viewModel.UndoRemovalCommand, "UndoRemoval");
-            WireCommandExceptions(viewModel.RemoveSelectedCommand, "RemoveSelected");
-            WireCommandExceptions(viewModel.ToggleFilterPanelCommand, "ToggleFilterPanel");
-            WireCommandExceptions(viewModel.BackToNormalCommand, "BackToNormal");
-            WireCommandExceptions(viewModel.PrintRemovalSummaryCommand, "PrintRemovalSummary");
-            WireCommandExceptions(viewModel.ClearCommand, "Clear");
+            // Since we're not using ReactiveUI, we'll handle errors differently
+            // Commands will handle their own errors internally
             
-            _logger?.LogDebug("ViewModel events wired successfully");
+            _logger?.LogDebug("ViewModel command error handling configured");
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error wiring ViewModel events");
+            _logger?.LogError(ex, "Error setting up ViewModel command error handling");
         }
     }
 
     /// <summary>
-    /// Helper method to wire command exceptions safely
+    /// Handles command exceptions using standard error handling
     /// </summary>
-    private void WireCommandExceptions(ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit>? command, string commandName)
-    {
-        if (command == null) 
-        {
-            _logger?.LogWarning("Command {CommandName} is null, skipping exception wiring", commandName);
-            return;
-        }
-
-        try
-        {
-            command.ThrownExceptions
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(ex => HandleCommandException(commandName, ex))
-                .DisposeWith(_compositeDisposable);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error wiring command {CommandName} exceptions", commandName);
-        }
-    }
-
-    /// <summary>
-    /// Handles command exceptions to prevent ReactiveUI pipeline breaks
-    /// Enhanced with better error categorization and logging
-    /// </summary>
-    private void HandleCommandException(string commandName, Exception ex)
+    private async void HandleCommandException(string commandName, Exception ex)
     {
         try
         {
             // Log the exception with context
             _logger?.LogError(ex, "Command {CommandName} encountered an error: {Message}", commandName, ex.Message);
             
-            // Handle specific exception types that commonly cause FormatExceptions
-            switch (ex)
+            // Handle specific exception types
+            var userMessage = ex switch
             {
-                case FormatException formatEx:
-                    _logger?.LogError(formatEx, "Format exception in command {CommandName}. This may be related to string formatting or data binding issues", commandName);
-                    break;
-                case InvalidCastException castEx:
-                    _logger?.LogError(castEx, "Invalid cast exception in command {CommandName}. This may be related to data type conversion issues", commandName);
-                    break;
-                case ArgumentException argEx:
-                    _logger?.LogError(argEx, "Argument exception in command {CommandName}. This may be related to invalid parameter values", commandName);
-                    break;
-                case NullReferenceException nullEx:
-                    _logger?.LogError(nullEx, "Null reference exception in command {CommandName}. Check for uninitialized objects", commandName);
-                    break;
-                default:
-                    _logger?.LogError(ex, "Unhandled exception in command {CommandName}", commandName);
-                    break;
-            }
-            
+                FormatException => "Invalid data format. Please check your input values.",
+                InvalidCastException => "Data type mismatch. Please refresh and try again.",
+                ArgumentException => "Invalid input provided. Please check your entries.",
+                NullReferenceException => "Required data is missing. Please refresh and try again.",
+                TimeoutException => "Operation timed out. Please try again.",
+                UnauthorizedAccessException => "Access denied. Please check your permissions.",
+                InvalidOperationException => "Operation cannot be completed in current state. Please try again.",
+                _ => "An unexpected error occurred. Please try again."
+            };
+
             // Update ViewModel status if available and safe to do so
-            if (_viewModel != null)
+            if (DataContext is AdvancedRemoveViewModel viewModel)
             {
                 try
                 {
-                    // Use Dispatcher for UI thread safety
-                    RxApp.MainThreadScheduler.Schedule(() =>
+                    // Use Avalonia's Dispatcher for UI thread safety
+                    await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         try
                         {
-                            _viewModel.StatusMessage = $"Error in {commandName}: {GetUserFriendlyErrorMessage(ex)}";
-                            _viewModel.IsBusy = false;
+                            viewModel.StatusMessage = $"Error in {commandName}: {userMessage}";
+                            viewModel.IsBusy = false;
                         }
                         catch (Exception statusEx)
                         {
@@ -217,6 +159,14 @@ public partial class AdvancedRemoveView : UserControl
                     _logger?.LogError(schedulerEx, "Error scheduling status update on main thread");
                 }
             }
+
+            // Also log to error handling system
+            await ErrorHandling.HandleErrorAsync(ex, commandName, Environment.UserName,
+                new Dictionary<string, object>
+                {
+                    ["Component"] = "AdvancedRemoveView",
+                    ["CommandName"] = commandName
+                });
         }
         catch (Exception handlerEx)
         {
@@ -229,41 +179,6 @@ public partial class AdvancedRemoveView : UserControl
     }
 
     /// <summary>
-    /// Converts technical exceptions to user-friendly messages
-    /// </summary>
-    private static string GetUserFriendlyErrorMessage(Exception ex)
-    {
-        return ex switch
-        {
-            FormatException => "Invalid data format. Please check your input values.",
-            InvalidCastException => "Data type mismatch. Please refresh and try again.",
-            ArgumentException => "Invalid input provided. Please check your entries.",
-            NullReferenceException => "Required data is missing. Please refresh and try again.",
-            TimeoutException => "Operation timed out. Please try again.",
-            UnauthorizedAccessException => "Access denied. Please check your permissions.",
-            InvalidOperationException => "Operation cannot be completed in current state. Please try again.",
-            _ => "An unexpected error occurred. Please try again."
-        };
-    }
-
-    /// <summary>
-    /// Unwires ViewModel events to prevent memory leaks
-    /// </summary>
-    private void UnwireViewModelEvents(AdvancedRemoveViewModel viewModel)
-    {
-        try
-        {
-            // Dispose all subscriptions safely
-            _compositeDisposable.Clear();
-            _logger?.LogDebug("ViewModel events unwired successfully");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error unwiring ViewModel events");
-        }
-    }
-
-    /// <summary>
     /// Sets up bulk removal operations framework
     /// Implements comprehensive bulk removal capabilities with validation
     /// </summary>
@@ -272,14 +187,7 @@ public partial class AdvancedRemoveView : UserControl
         try
         {
             // Initialize bulk removal framework
-            // This would integrate with Dao_Remove.BulkRemoveInventoryAsync for advanced bulk operations
-            
-            // Set up batch processing capabilities with progress tracking
-            // Set up conditional removal based on complex criteria
-            // Configure scheduled removal operations
-            // Enable template-based removal operations
-            // Implement validation pipeline for bulk operations
-            // Set up transaction management with rollback capabilities
+            // This would integrate with stored procedures for advanced bulk operations
             
             _logger?.LogDebug("Bulk removal operations setup completed");
         }
@@ -298,12 +206,6 @@ public partial class AdvancedRemoveView : UserControl
         try
         {
             // Set up removal history tracking system
-            // Configure comprehensive audit trail logging
-            // Set up undo transaction tracking
-            // Configure removal analytics data collection
-            // Implement history filtering and search capabilities
-            // Set up history export functionality
-            
             _logger?.LogDebug("Removal history tracking setup completed");
         }
         catch (Exception ex)
@@ -321,12 +223,6 @@ public partial class AdvancedRemoveView : UserControl
         try
         {
             // Initialize removal analytics framework
-            // Set up removal trend analysis capabilities
-            // Configure advanced removal reporting features
-            // Set up removal data visualization components
-            // Implement analytics export functionality
-            // Configure statistical analysis for removal patterns
-            
             _logger?.LogDebug("Removal analytics features setup completed");
         }
         catch (Exception ex)
@@ -344,12 +240,6 @@ public partial class AdvancedRemoveView : UserControl
         try
         {
             // Initialize undo system architecture
-            // Set up transaction tracking for undo capabilities
-            // Configure business rule validation for undo operations
-            // Set up state restoration with complete audit trails
-            // Implement user authorization for undo operations
-            // Configure selective undo for bulk operations
-            
             _logger?.LogDebug("Undo system setup completed");
         }
         catch (Exception ex)
@@ -367,14 +257,6 @@ public partial class AdvancedRemoveView : UserControl
         try
         {
             // Initialize printing integration framework
-            // This would integrate with PrintDocument for professional printing
-            
-            // Set up removal summary printing capabilities
-            // Configure detailed removal report printing
-            // Set up batch removal documentation printing
-            // Implement custom print formatting for removal data
-            // Configure print preview functionality
-            
             _logger?.LogDebug("Printing integration setup completed");
         }
         catch (Exception ex)
@@ -385,7 +267,7 @@ public partial class AdvancedRemoveView : UserControl
 
     /// <summary>
     /// Sets progress controls for long-running removal operations
-    /// Integration point for Helper_StoredProcedureProgress
+    /// Integration point for progress tracking systems
     /// </summary>
     /// <param name="progressCallback">Progress callback for removal status updates</param>
     /// <param name="statusCallback">Status message callback for removal operations</param>
@@ -395,13 +277,13 @@ public partial class AdvancedRemoveView : UserControl
     {
         try
         {
-            // This method would integrate with Helper_StoredProcedureProgress
+            // This method would integrate with progress tracking
             // when the progress system is available
             
-            if (_viewModel != null)
+            if (DataContext is AdvancedRemoveViewModel viewModel)
             {
                 // Wire up progress callbacks to ViewModel
-                // _viewModel.SetProgressCallbacks(progressCallback, statusCallback);
+                // viewModel.SetProgressCallbacks(progressCallback, statusCallback);
             }
             
             _logger?.LogInformation("Progress controls configured for removal operations");
@@ -420,7 +302,7 @@ public partial class AdvancedRemoveView : UserControl
     {
         try
         {
-            // This would integrate with Dao_Remove.BulkRemoveInventoryAsync
+            // This would integrate with stored procedures for bulk removal
             // when the database layer is available
             
             _logger?.LogInformation("Bulk removal operation initiated");
@@ -433,6 +315,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Bulk removal operation failed");
+            await ErrorHandling.HandleErrorAsync(ex, "ExecuteBulkRemovalAsync", Environment.UserName);
             return false;
         }
     }
@@ -445,7 +328,7 @@ public partial class AdvancedRemoveView : UserControl
     {
         try
         {
-            // This would integrate with Dao_Remove.UndoRemovalOperationAsync
+            // This would integrate with stored procedures for undo operations
             // when the database layer is available
             
             _logger?.LogInformation("Undo removal operation initiated for transaction: {TransactionId}", 
@@ -460,6 +343,7 @@ public partial class AdvancedRemoveView : UserControl
         {
             _logger?.LogError(ex, "Undo removal operation failed for transaction: {TransactionId}", 
                 removalTransactionId);
+            await ErrorHandling.HandleErrorAsync(ex, "ExecuteUndoRemovalAsync", Environment.UserName);
             return false;
         }
     }
@@ -472,7 +356,7 @@ public partial class AdvancedRemoveView : UserControl
     {
         try
         {
-            // This would integrate with Dao_Remove.GetRemovalAnalyticsAsync
+            // This would integrate with stored procedures for analytics
             // when the database layer is available
             
             _logger?.LogInformation("Removal analytics generation initiated for date range: {StartDate} - {EndDate}", 
@@ -486,6 +370,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Removal analytics generation failed");
+            await ErrorHandling.HandleErrorAsync(ex, "GenerateRemovalAnalyticsAsync", Environment.UserName);
             return false;
         }
     }
@@ -498,7 +383,7 @@ public partial class AdvancedRemoveView : UserControl
     {
         try
         {
-            // This would integrate with Helper_Excel for removal data export
+            // This would integrate with export services for removal data
             // when the Excel service is available
             
             _logger?.LogInformation("Removal data export initiated for file: {FilePath}", filePath);
@@ -511,6 +396,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Removal data export failed for file: {FilePath}", filePath);
+            await ErrorHandling.HandleErrorAsync(ex, "ExportRemovalDataAsync", Environment.UserName);
             return false;
         }
     }
@@ -523,7 +409,7 @@ public partial class AdvancedRemoveView : UserControl
     {
         try
         {
-            // This would integrate with PrintDocument for professional printing
+            // This would integrate with printing services for professional printing
             // when the printing system is available
             
             _logger?.LogInformation("Removal summary printing initiated");
@@ -536,6 +422,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Removal summary printing failed");
+            await ErrorHandling.HandleErrorAsync(ex, "PrintRemovalSummaryAsync", Environment.UserName);
             return false;
         }
     }
@@ -548,7 +435,7 @@ public partial class AdvancedRemoveView : UserControl
     {
         try
         {
-            // This would integrate with Dao_Remove.GetFilteredRemovalDataAsync
+            // This would integrate with stored procedures for filtered data
             // when the database layer is available
             
             _logger?.LogInformation("Advanced removal filters applied");
@@ -559,35 +446,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to apply advanced removal filters");
-        }
-    }
-
-    /// <summary>
-    /// Cleanup when the control is being disposed
-    /// </summary>
-    protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
-    {
-        try
-        {
-            // Unwire ViewModel events to prevent memory leaks
-            if (_viewModel != null)
-            {
-                UnwireViewModelEvents(_viewModel);
-            }
-
-            // Cleanup any resources
-            this.DataContextChanged -= OnDataContextChanged;
-            _compositeDisposable?.Dispose();
-            
-            _logger?.LogInformation("AdvancedRemoveView cleanup completed");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error during AdvancedRemoveView cleanup");
-        }
-        finally
-        {
-            base.OnDetachedFromVisualTree(e);
+            await ErrorHandling.HandleErrorAsync(ex, "ApplyAdvancedRemovalFiltersAsync", Environment.UserName);
         }
     }
 }

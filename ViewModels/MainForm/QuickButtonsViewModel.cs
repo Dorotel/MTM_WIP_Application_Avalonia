@@ -7,7 +7,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using ReactiveUI;
+using Avalonia.ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 

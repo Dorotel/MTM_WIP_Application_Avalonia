@@ -7,7 +7,7 @@ using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using ReactiveUI;
+using Avalonia.ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 

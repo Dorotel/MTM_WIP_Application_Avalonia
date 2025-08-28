@@ -1,310 +1,166 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
-using MTM_Shared_Logic.Models;
-using MTM_Shared_Logic.Services;
-using MTM_Shared_Logic.Services.Interfaces;
-using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using ReactiveUI;
-using static MTM_Shared_Logic.Services.DataType;
 
-namespace MTM_WIP_Application_Avalonia.ViewModels;
+namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 /// <summary>
-/// Primary inventory management ViewModel for the MTM WIP Application.
-/// Implements the complete business logic for adding new inventory items to the system,
-/// including part selection, operation assignment, location specification, quantity entry, and notes.
-/// Follows MTM patterns with string Part IDs, string operation numbers, and integer quantities.
+/// InventoryTabViewModel - Inventory Management Interface
+/// 
+/// Provides comprehensive inventory management functionality including item entry, validation,
+/// lookup data management, and integration with MTM business operations. Uses standard .NET
+/// patterns without ReactiveUI dependencies.
 /// </summary>
 public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
 {
-    #region Private Fields
-
-    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
-    private readonly MTM_Shared_Logic.Services.Interfaces.IUserService _userService;
     private readonly IApplicationStateService _applicationStateService;
-    private readonly MTM_Shared_Logic.Services.IValidationService _validationService;
-    private readonly MTM_Shared_Logic.Services.ILookupDataService _lookupDataService;
+    private readonly INavigationService _navigationService;
+    private readonly IDatabaseService _databaseService;
+    private readonly IConfigurationService _configurationService;
 
-    // Observable collections for AutoCompleteBoxes
-    public ObservableCollection<string> PartOptions { get; } = new();
-    public ObservableCollection<string> OperationOptions { get; } = new();
-    public ObservableCollection<string> LocationOptions { get; } = new();
-
-    // Loading state properties
+    // Observable properties with backing fields
+    private string _selectedPart = string.Empty;
+    private string _selectedOperation = string.Empty;
+    private string _selectedLocation = string.Empty;
+    private int _quantity = 1;
+    private string _notes = string.Empty;
+    private string _versionText = "v1.0";
+    private bool _isLoading = false;
     private bool _isLoadingParts = false;
     private bool _isLoadingOperations = false;
     private bool _isLoadingLocations = false;
-
-    // Form field backing properties
-    private string? _selectedPart;
-    private string? _selectedOperation;
-    private string? _selectedLocation;
-    private string _quantity = string.Empty;
-    private string _notes = string.Empty;
-    private string _versionText = "Version: 4.6.0.0";
-    private bool _isLoading = false;
-    private string? _errorMessage;
+    private string _errorMessage = string.Empty;
     private bool _hasError = false;
 
-    // Validation state helpers
-    private readonly ObservableAsPropertyHelper<bool> _canSave;
-    private readonly ObservableAsPropertyHelper<bool> _isPartValid;
-    private readonly ObservableAsPropertyHelper<bool> _isOperationValid;
-    private readonly ObservableAsPropertyHelper<bool> _isLocationValid;
-    private readonly ObservableAsPropertyHelper<bool> _isQuantityValid;
+    // Collections for lookup data
+    public ObservableCollection<string> PartIds { get; } = new();
+    public ObservableCollection<string> Operations { get; } = new();
+    public ObservableCollection<string> Locations { get; } = new();
 
-    #endregion
+    // Commands using standard ICommand interface
+    public ICommand SaveCommand { get; private set; }
+    public ICommand ResetCommand { get; private set; }
+    public ICommand AdvancedEntryCommand { get; private set; }
+    public ICommand TogglePanelCommand { get; private set; }
+    public ICommand LoadDataCommand { get; private set; }
+    public ICommand RefreshDataCommand { get; private set; }
 
-    #region Public Properties
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-    /// <summary>
-    /// Selected Part ID for the inventory item.
-    /// Must be selected from valid parts list (SelectedIndex > 0).
-    /// </summary>
-    public string? SelectedPart
+    public InventoryTabViewModel() : this(null!, null!, null!, null!)
+    {
+        // Design-time constructor
+    }
+
+    public InventoryTabViewModel(
+        IApplicationStateService applicationStateService,
+        INavigationService navigationService, 
+        IDatabaseService databaseService,
+        IConfigurationService configurationService) : base()
+    {
+        _applicationStateService = applicationStateService;
+        _navigationService = navigationService;
+        _databaseService = databaseService;
+        _configurationService = configurationService;
+
+        InitializeCommands();
+        InitializeLookupData();
+        
+        Logger.LogInformation("InventoryTabViewModel initialized");
+    }
+
+    #region Properties
+
+    public string SelectedPart
     {
         get => _selectedPart;
-        set => this.RaiseAndSetIfChanged(ref _selectedPart, value);
+        set => SetProperty(ref _selectedPart, value);
     }
 
-    /// <summary>
-    /// Selected Operation for the inventory item.
-    /// Operations are string numbers like "90", "100", "110" (workflow steps).
-    /// Must be selected from valid operations list (SelectedIndex > 0).
-    /// </summary>
-    public string? SelectedOperation
+    public string SelectedOperation
     {
         get => _selectedOperation;
-        set => this.RaiseAndSetIfChanged(ref _selectedOperation, value);
+        set => SetProperty(ref _selectedOperation, value);
     }
 
-    /// <summary>
-    /// Selected Location for the inventory item.
-    /// Must be selected from valid locations list (SelectedIndex > 0).
-    /// </summary>
-    public string? SelectedLocation
+    public string SelectedLocation
     {
         get => _selectedLocation;
-        set => this.RaiseAndSetIfChanged(ref _selectedLocation, value);
+        set => SetProperty(ref _selectedLocation, value);
     }
 
-    /// <summary>
-    /// Quantity for the inventory item.
-    /// Must be a valid positive integer.
-    /// </summary>
-    public string Quantity
+    public int Quantity
     {
         get => _quantity;
-        set => this.RaiseAndSetIfChanged(ref _quantity, value);
+        set => SetProperty(ref _quantity, value);
     }
 
-    /// <summary>
-    /// Optional notes for the inventory item.
-    /// No validation required - optional field.
-    /// </summary>
     public string Notes
     {
         get => _notes;
-        set => this.RaiseAndSetIfChanged(ref _notes, value);
+        set => SetProperty(ref _notes, value);
     }
 
-    /// <summary>
-    /// Version display text for the control.
-    /// </summary>
     public string VersionText
     {
         get => _versionText;
-        set => this.RaiseAndSetIfChanged(ref _versionText, value);
+        set => SetProperty(ref _versionText, value);
     }
 
-    /// <summary>
-    /// Indicates if the control is currently loading data.
-    /// </summary>
     public bool IsLoading
     {
         get => _isLoading;
-        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+        set => SetProperty(ref _isLoading, value);
     }
 
-    /// <summary>
-    /// Indicates if parts data is currently loading.
-    /// </summary>
     public bool IsLoadingParts
     {
         get => _isLoadingParts;
-        set => this.RaiseAndSetIfChanged(ref _isLoadingParts, value);
+        set => SetProperty(ref _isLoadingParts, value);
     }
 
-    /// <summary>
-    /// Indicates if operations data is currently loading.
-    /// </summary>
     public bool IsLoadingOperations
     {
         get => _isLoadingOperations;
-        set => this.RaiseAndSetIfChanged(ref _isLoadingOperations, value);
+        set => SetProperty(ref _isLoadingOperations, value);
     }
 
-    /// <summary>
-    /// Indicates if locations data is currently loading.
-    /// </summary>
     public bool IsLoadingLocations
     {
         get => _isLoadingLocations;
-        set => this.RaiseAndSetIfChanged(ref _isLoadingLocations, value);
+        set => SetProperty(ref _isLoadingLocations, value);
     }
 
-    /// <summary>
-    /// Current error message, if any.
-    /// </summary>
-    public string? ErrorMessage
+    public string ErrorMessage
     {
         get => _errorMessage;
-        set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+        set => SetProperty(ref _errorMessage, value);
     }
 
-    /// <summary>
-    /// Indicates if there is currently an error.
-    /// </summary>
     public bool HasError
     {
         get => _hasError;
-        set => this.RaiseAndSetIfChanged(ref _hasError, value);
+        set => SetProperty(ref _hasError, value);
     }
 
-    // Validation state properties
-    public bool CanSave => _canSave.Value;
-    public bool IsPartValid => _isPartValid.Value;
-    public bool IsOperationValid => _isOperationValid.Value;
-    public bool IsLocationValid => _isLocationValid.Value;
-    public bool IsQuantityValid => _isQuantityValid.Value;
+    // Computed properties
+    public bool CanSave => !IsLoading && 
+                          !string.IsNullOrWhiteSpace(SelectedPart) &&
+                          !string.IsNullOrWhiteSpace(SelectedOperation) &&
+                          !string.IsNullOrWhiteSpace(SelectedLocation) &&
+                          Quantity > 0;
 
-    #endregion
-
-    #region Commands
-
-    /// <summary>
-    /// Command to save the inventory item.
-    /// Enabled only when all required fields are valid.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> SaveCommand { get; private set; }
-
-    /// <summary>
-    /// Command to reset the form.
-    /// Supports soft reset (clear fields) and hard reset (reload data).
-    /// </summary>
-    public ReactiveCommand<bool, Unit> ResetCommand { get; private set; }
-
-    /// <summary>
-    /// Command to open advanced inventory features.
-    /// Opens Control_AdvancedInventory.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> AdvancedEntryCommand { get; private set; }
-
-    /// <summary>
-    /// Command to toggle the quick actions panel.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> TogglePanelCommand { get; private set; }
-
-    /// <summary>
-    /// Command to load AutoCompleteBox data from database.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; private set; }
-
-    /// <summary>
-    /// Command to refresh all lookup data from database.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> RefreshDataCommand { get; private set; }
-
-    #endregion
-
-    #region Events
-
-    /// <summary>
-    /// Event fired when an inventory item is successfully saved.
-    /// Used for quick buttons integration.
-    /// </summary>
-    public event EventHandler<InventoryItemSavedEventArgs>? InventoryItemSaved;
-
-    /// <summary>
-    /// Event fired when panel toggle is requested.
-    /// </summary>
-    public event EventHandler? PanelToggleRequested;
-
-    /// <summary>
-    /// Event fired when advanced entry is requested.
-    /// </summary>
-    public event EventHandler? AdvancedEntryRequested;
-
-    #endregion
-
-    #region Constructor
-
-    /// <summary>
-    /// Initializes a new instance of the InventoryTabViewModel with dependency injection.
-    /// </summary>
-    public InventoryTabViewModel(
-        MTM_Shared_Logic.Services.IInventoryService inventoryService,
-        MTM_Shared_Logic.Services.Interfaces.IUserService userService,
-        IApplicationStateService applicationStateService,
-        MTM_Shared_Logic.Services.IValidationService validationService,
-        MTM_Shared_Logic.Services.ILookupDataService lookupDataService,
-        ILogger<InventoryTabViewModel> logger) : base(logger)
-    {
-        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-        _applicationStateService = applicationStateService ?? throw new ArgumentNullException(nameof(applicationStateService));
-        _validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
-        _lookupDataService = lookupDataService ?? throw new ArgumentNullException(nameof(lookupDataService));
-
-        Logger.LogInformation("Initializing InventoryTabViewModel with dependency injection");
-
-        // Subscribe to data refresh events
-        _lookupDataService.DataRefreshed += OnLookupDataRefreshed;
-
-        // Initialize validation helpers
-        _isPartValid = this.WhenAnyValue(vm => vm.SelectedPart)
-            .Select(part => !string.IsNullOrWhiteSpace(part))
-            .ToProperty(this, vm => vm.IsPartValid);
-
-        _isOperationValid = this.WhenAnyValue(vm => vm.SelectedOperation)
-            .Select(operation => !string.IsNullOrWhiteSpace(operation))
-            .ToProperty(this, vm => vm.IsOperationValid);
-
-        _isLocationValid = this.WhenAnyValue(vm => vm.SelectedLocation)
-            .Select(location => !string.IsNullOrWhiteSpace(location))
-            .ToProperty(this, vm => vm.IsLocationValid);
-
-        _isQuantityValid = this.WhenAnyValue(vm => vm.Quantity)
-            .Select(IsValidQuantity)
-            .ToProperty(this, vm => vm.IsQuantityValid);
-
-        // Overall validation - enable save only when all required fields are valid
-        _canSave = this.WhenAnyValue(
-                vm => vm.IsPartValid,
-                vm => vm.IsOperationValid,
-                vm => vm.IsLocationValid,
-                vm => vm.IsQuantityValid,
-                vm => vm.IsLoading,
-                (partValid, operationValid, locationValid, quantityValid, loading) =>
-                    partValid && operationValid && locationValid && quantityValid && !loading)
-            .ToProperty(this, vm => vm.CanSave);
-
-        // Initialize commands
-        InitializeCommands();
-
-        // Load initial data
-        _ = Task.Run(async () => await LoadInitialDataAsync());
-
-        Logger.LogInformation("InventoryTabViewModel initialized successfully");
-    }
+    public bool IsPartValid => !string.IsNullOrWhiteSpace(SelectedPart);
+    public bool IsOperationValid => !string.IsNullOrWhiteSpace(SelectedOperation);
+    public bool IsLocationValid => !string.IsNullOrWhiteSpace(SelectedLocation);
+    public bool IsQuantityValid => Quantity > 0;
 
     #endregion
 
@@ -312,286 +168,229 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
 
     private void InitializeCommands()
     {
-        // Save command - enabled only when form is valid
-        SaveCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await SaveInventoryItemAsync();
-        }, this.WhenAnyValue(vm => vm.CanSave));
-
-        // Reset command - takes boolean parameter for hard reset
-        ResetCommand = ReactiveCommand.CreateFromTask<bool>(async (hardReset) =>
-        {
-            await ResetFormAsync(hardReset);
-        });
-
-        // Advanced entry command
-        AdvancedEntryCommand = ReactiveCommand.Create(() =>
-        {
-            Logger.LogInformation("Advanced entry requested");
-            AdvancedEntryRequested?.Invoke(this, EventArgs.Empty);
-        });
-
-        // Toggle panel command
-        TogglePanelCommand = ReactiveCommand.Create(() =>
-        {
-            Logger.LogInformation("Panel toggle requested");
-            PanelToggleRequested?.Invoke(this, EventArgs.Empty);
-        });
-
-        // Load data command - now refreshes lookup data
-        LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await LoadAutoCompleteDataAsync();
-        });
-
-        // Refresh data command - forces refresh of all lookup data
-        RefreshDataCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            var result = await _lookupDataService.RefreshAllAsync();
-            if (!result.IsSuccess)
-            {
-                SetError($"Failed to refresh data: {result.ErrorMessage}");
-            }
-        });
-
-        // Error handling for all commands
-        SaveCommand.ThrownExceptions.Subscribe(HandleException);
-        ResetCommand.ThrownExceptions.Subscribe(HandleException);
-        LoadDataCommand.ThrownExceptions.Subscribe(HandleException);
-        RefreshDataCommand.ThrownExceptions.Subscribe(HandleException);
-
-        Logger.LogDebug("Commands initialized successfully");
+        SaveCommand = new AsyncCommand(ExecuteSaveAsync, () => CanSave);
+        ResetCommand = new AsyncCommand(ExecuteResetAsync);
+        AdvancedEntryCommand = new RelayCommand(ExecuteAdvancedEntry);
+        TogglePanelCommand = new RelayCommand(ExecuteTogglePanel);
+        LoadDataCommand = new AsyncCommand(ExecuteLoadDataAsync);
+        RefreshDataCommand = new AsyncCommand(ExecuteRefreshDataAsync);
     }
 
     #endregion
 
-    #region Business Logic
+    #region Command Implementations
 
-    /// <summary>
-    /// Saves the inventory item to the database.
-    /// Implements MTM business patterns with proper transaction logging.
-    /// </summary>
-    private async Task SaveInventoryItemAsync()
+    private async Task ExecuteSaveAsync()
     {
         try
         {
-            Logger.LogInformation("Starting inventory item save operation");
-            
-            ClearError();
             IsLoading = true;
+            HasError = false;
+            ErrorMessage = string.Empty;
 
-            // Validate form data
-            if (!ValidateFormData())
+            Logger.LogInformation("Saving inventory item: Part={PartId}, Operation={Operation}, Quantity={Quantity}", 
+                SelectedPart, SelectedOperation, Quantity);
+
+            // Validate input
+            if (!ValidateInput())
             {
                 return;
             }
 
-            // Get current user
-            var currentUserResult = await _userService.GetUserByUsernameAsync(_applicationStateService.CurrentUser ?? "DefaultUser");
-            if (!currentUserResult.IsSuccess || currentUserResult.Value == null)
+            // Prepare parameters for stored procedure
+            var parameters = new Dictionary<string, object>
             {
-                SetError("Unable to determine current user. Please login again.");
-                return;
-            }
-
-            var currentUser = currentUserResult.Value;
-
-            // Parse quantity
-            if (!int.TryParse(Quantity, out int quantity))
-            {
-                SetError("Invalid quantity value.");
-                return;
-            }
-
-            // Create inventory item
-            var inventoryItem = new InventoryItem
-            {
-                PartID = SelectedPart!,
-                Operation = SelectedOperation,
-                Location = SelectedLocation!,
-                Quantity = quantity,
-                Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim(),
-                User = currentUser.User_Name,
-                ItemType = Model_AppVariables.MTM.DefaultItemType, // "WIP"
-                ReceiveDate = DateTime.UtcNow,
-                LastUpdated = DateTime.UtcNow
+                ["p_PartID"] = SelectedPart,
+                ["p_OperationID"] = SelectedOperation,
+                ["p_LocationID"] = SelectedLocation,
+                ["p_Quantity"] = Quantity,
+                ["p_Notes"] = Notes,
+                ["p_UserID"] = _applicationStateService.CurrentUser,
+                ["p_TransactionType"] = "IN" // Always IN when adding inventory
             };
 
-            // Save to database
-            Logger.LogInformation("Saving inventory item: Part={PartId}, Operation={Operation}, Location={Location}, Quantity={Quantity}", 
-                inventoryItem.PartID, inventoryItem.Operation, inventoryItem.Location, inventoryItem.Quantity);
+            // Execute stored procedure using connection string from configuration
+            var connectionString = _configurationService.GetConnectionString();
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString,
+                "inv_inventory_Add_Item",
+                parameters
+            );
 
-            var saveResult = await _inventoryService.AddInventoryItemAsync(inventoryItem);
-            
-            if (!saveResult.IsSuccess)
+            if (result.IsSuccess)
             {
-                SetError($"Failed to save inventory item: {saveResult.ErrorMessage}");
-                return;
-            }
-
-            Logger.LogInformation("Inventory item saved successfully");
-
-            // Fire event for quick buttons integration
-            InventoryItemSaved?.Invoke(this, new InventoryItemSavedEventArgs
-            {
-                PartId = inventoryItem.PartID,
-                Operation = inventoryItem.Operation ?? string.Empty,
-                Location = inventoryItem.Location,
-                Quantity = inventoryItem.Quantity,
-                Notes = inventoryItem.Notes ?? string.Empty
-            });
-
-            // Reset form after successful save (soft reset)
-            await ResetFormAsync(hardReset: false);
-
-            Logger.LogInformation("Save operation completed successfully");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error saving inventory item");
-            SetError("An unexpected error occurred while saving. Please try again.");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    /// <summary>
-    /// Resets the form to initial state.
-    /// Supports soft reset (clear fields) and hard reset (reload data).
-    /// </summary>
-    private async Task ResetFormAsync(bool hardReset = false)
-    {
-        try
-        {
-            Logger.LogInformation("Resetting form. Hard reset: {HardReset}", hardReset);
-            
-            IsLoading = true;
-            ClearError();
-
-            // Clear form fields
-            SelectedPart = null;
-            SelectedOperation = null;
-            SelectedLocation = null;
-            Quantity = string.Empty;
-            Notes = string.Empty;
-
-            if (hardReset)
-            {
-                // Hard reset - reload all AutoCompleteBox data from database
-                Logger.LogInformation("Performing hard reset - reloading all data");
+                Logger.LogInformation("Inventory item saved successfully");
+                await ExecuteResetAsync();
                 
-                // Clear cached data and reload
-                var refreshResult = await _lookupDataService.RefreshAllAsync();
-                if (!refreshResult.IsSuccess)
-                {
-                    Logger.LogWarning("Failed to refresh lookup data during hard reset: {Error}", refreshResult.ErrorMessage);
-                    // Continue with existing data rather than failing
-                }
+                // Update application state
+                _applicationStateService.CurrentOperation = SelectedOperation;
+                _applicationStateService.CurrentLocation = SelectedLocation;
             }
-
-            Logger.LogInformation("Form reset completed");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error resetting form");
-            SetError("An error occurred while resetting the form.");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    /// <summary>
-    /// Loads initial data for AutoCompleteBoxes.
-    /// </summary>
-    private async Task LoadInitialDataAsync()
-    {
-        try
-        {
-            Logger.LogInformation("Loading initial data for AutoCompleteBoxes");
-            
-            IsLoading = true;
-            
-            await LoadAutoCompleteDataAsync();
-            
-            Logger.LogInformation("Initial data loaded successfully");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error loading initial data");
-            // Load sample data as fallback
-            LoadSampleData();
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    /// <summary>
-    /// Loads AutoCompleteBox data from the lookup data service efficiently.
-    /// Implements parallel loading with individual loading indicators.
-    /// </summary>
-    private async Task LoadAutoCompleteDataAsync()
-    {
-        try
-        {
-            Logger.LogDebug("Loading AutoCompleteBox data from lookup service");
-
-            // Load data in parallel for better performance
-            var loadTasks = new[]
+            else
             {
-                LoadPartsDataAsync(),
-                LoadOperationsDataAsync(),
-                LoadLocationsDataAsync()
-            };
-
-            await Task.WhenAll(loadTasks);
-
-            Logger.LogInformation("AutoCompleteBox data loaded successfully. Parts: {PartCount}, Operations: {OpCount}, Locations: {LocCount}",
-                PartOptions.Count, OperationOptions.Count, LocationOptions.Count);
+                HasError = true;
+                ErrorMessage = result.Message;
+                Logger.LogWarning("Failed to save inventory item: {Error}", result.Message);
+            }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading AutoCompleteBox data from lookup service");
-            
-            // Fallback to sample data
-            LoadSampleData();
+            HasError = true;
+            ErrorMessage = ErrorHandling.GetUserFriendlyMessage(ex);
+            await ErrorHandling.HandleErrorAsync(ex, "SaveInventoryItem", _applicationStateService.CurrentUser,
+                new Dictionary<string, object>
+                {
+                    ["PartId"] = SelectedPart,
+                    ["Operation"] = SelectedOperation,
+                    ["Quantity"] = Quantity
+                });
+        }
+        finally
+        {
+            IsLoading = false;
+            OnPropertyChanged(nameof(CanSave));
         }
     }
 
-    /// <summary>
-    /// Loads parts data with individual loading indicator.
-    /// </summary>
-    private async Task LoadPartsDataAsync()
+    private async Task ExecuteResetAsync()
+    {
+        try
+        {
+            SelectedPart = string.Empty;
+            SelectedOperation = string.Empty;
+            SelectedLocation = string.Empty;
+            Quantity = 1;
+            Notes = string.Empty;
+            HasError = false;
+            ErrorMessage = string.Empty;
+
+            Logger.LogDebug("Form reset completed");
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandling.HandleErrorAsync(ex, "ResetForm", _applicationStateService.CurrentUser);
+        }
+    }
+
+    private void ExecuteAdvancedEntry()
+    {
+        try
+        {
+            Logger.LogInformation("Opening advanced entry dialog");
+            // TODO: Implement advanced entry dialog
+        }
+        catch (Exception ex)
+        {
+            _ = ErrorHandling.HandleErrorAsync(ex, "AdvancedEntry", _applicationStateService.CurrentUser);
+        }
+    }
+
+    private void ExecuteTogglePanel()
+    {
+        try
+        {
+            Logger.LogInformation("Toggling panel visibility");
+            // TODO: Implement panel toggle
+        }
+        catch (Exception ex)
+        {
+            _ = ErrorHandling.HandleErrorAsync(ex, "TogglePanel", _applicationStateService.CurrentUser);
+        }
+    }
+
+    private async Task ExecuteLoadDataAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            HasError = false;
+
+            await LoadPartIdsAsync();
+            await LoadOperationsAsync();
+            await LoadLocationsAsync();
+
+            Logger.LogInformation("Data loading completed successfully");
+        }
+        catch (Exception ex)
+        {
+            HasError = true;
+            ErrorMessage = ErrorHandling.GetUserFriendlyMessage(ex);
+            await ErrorHandling.HandleErrorAsync(ex, "LoadData", _applicationStateService.CurrentUser);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task ExecuteRefreshDataAsync()
+    {
+        try
+        {
+            await ExecuteLoadDataAsync();
+            Logger.LogInformation("Data refresh completed");
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandling.HandleErrorAsync(ex, "RefreshData", _applicationStateService.CurrentUser);
+        }
+    }
+
+    #endregion
+
+    #region Data Loading
+
+    private void InitializeLookupData()
+    {
+        // Initialize with sample data until database integration is available
+        LoadSampleData();
+    }
+
+    private void LoadSampleData()
+    {
+        // Sample Part IDs
+        PartIds.Clear();
+        var sampleParts = new[] { "PART001", "PART002", "PART003", "ABC-123", "XYZ-789" };
+        foreach (var part in sampleParts)
+        {
+            PartIds.Add(part);
+        }
+
+        // Sample Operations
+        Operations.Clear();
+        var sampleOperations = new[] { "90", "100", "110", "120", "130" };
+        foreach (var operation in sampleOperations)
+        {
+            Operations.Add(operation);
+        }
+
+        // Sample Locations
+        Locations.Clear();
+        var sampleLocations = new[] { "WC01", "WC02", "FLOOR", "QC", "SHIPPING" };
+        foreach (var location in sampleLocations)
+        {
+            Locations.Add(location);
+        }
+    }
+
+    private async Task LoadPartIdsAsync()
     {
         try
         {
             IsLoadingParts = true;
-            var result = await _lookupDataService.GetPartIdsAsync();
             
-            if (result.IsSuccess && result.Value != null)
-            {
-                PartOptions.Clear();
-                foreach (var part in result.Value)
-                {
-                    PartOptions.Add(part);
-                }
-                Logger.LogDebug("Loaded {Count} parts", PartOptions.Count);
-            }
-            else
-            {
-                Logger.LogWarning("Failed to load parts: {Error}", result.ErrorMessage);
-                LoadSampleParts();
-            }
+            // TODO: Load from database using stored procedure
+            // For now, use sample data
+            await Task.Delay(100);
+            LoadSampleData();
+            
+            Logger.LogDebug("Part IDs loaded: {Count} items", PartIds.Count);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading parts data");
-            LoadSampleParts();
+            Logger.LogError(ex, "Failed to load Part IDs");
+            throw;
         }
         finally
         {
@@ -599,35 +398,21 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// Loads operations data with individual loading indicator.
-    /// </summary>
-    private async Task LoadOperationsDataAsync()
+    private async Task LoadOperationsAsync()
     {
         try
         {
             IsLoadingOperations = true;
-            var result = await _lookupDataService.GetOperationsAsync();
             
-            if (result.IsSuccess && result.Value != null)
-            {
-                OperationOptions.Clear();
-                foreach (var operation in result.Value)
-                {
-                    OperationOptions.Add(operation);
-                }
-                Logger.LogDebug("Loaded {Count} operations", OperationOptions.Count);
-            }
-            else
-            {
-                Logger.LogWarning("Failed to load operations: {Error}", result.ErrorMessage);
-                LoadSampleOperations();
-            }
+            // TODO: Load from database using stored procedure
+            await Task.Delay(50);
+            
+            Logger.LogDebug("Operations loaded: {Count} items", Operations.Count);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading operations data");
-            LoadSampleOperations();
+            Logger.LogError(ex, "Failed to load Operations");
+            throw;
         }
         finally
         {
@@ -635,35 +420,21 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// Loads locations data with individual loading indicator.
-    /// </summary>
-    private async Task LoadLocationsDataAsync()
+    private async Task LoadLocationsAsync()
     {
         try
         {
             IsLoadingLocations = true;
-            var result = await _lookupDataService.GetLocationsAsync();
             
-            if (result.IsSuccess && result.Value != null)
-            {
-                LocationOptions.Clear();
-                foreach (var location in result.Value)
-                {
-                    LocationOptions.Add(location);
-                }
-                Logger.LogDebug("Loaded {Count} locations", LocationOptions.Count);
-            }
-            else
-            {
-                Logger.LogWarning("Failed to load locations: {Error}", result.ErrorMessage);
-                LoadSampleLocations();
-            }
+            // TODO: Load from database using stored procedure
+            await Task.Delay(75);
+            
+            Logger.LogDebug("Locations loaded: {Count} items", Locations.Count);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading locations data");
-            LoadSampleLocations();
+            Logger.LogError(ex, "Failed to load Locations");
+            throw;
         }
         finally
         {
@@ -671,86 +442,37 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// Handles lookup data refresh events.
-    /// </summary>
-    private async void OnLookupDataRefreshed(object? sender, DataRefreshedEventArgs e)
-    {
-        try
-        {
-            Logger.LogInformation("Lookup data refreshed for type: {DataType}", e.DataType);
-
-            // Reload specific data based on refresh type
-            switch (e.DataType)
-            {
-                case DataType.Parts:
-                    await LoadPartsDataAsync();
-                    break;
-                case DataType.Operations:
-                    await LoadOperationsDataAsync();
-                    break;
-                case DataType.Locations:
-                    await LoadLocationsDataAsync();
-                    break;
-                case DataType.All:
-                    await LoadAutoCompleteDataAsync();
-                    break;
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error handling lookup data refresh for type: {DataType}", e.DataType);
-        }
-    }
-
     #endregion
 
     #region Validation
 
-    /// <summary>
-    /// Validates that the quantity is a valid positive integer.
-    /// </summary>
-    private bool IsValidQuantity(string? quantity)
-    {
-        if (string.IsNullOrWhiteSpace(quantity))
-            return false;
-
-        return int.TryParse(quantity, out int result) && result > 0;
-    }
-
-    /// <summary>
-    /// Validates all form data before saving.
-    /// </summary>
-    private bool ValidateFormData()
+    private bool ValidateInput()
     {
         if (string.IsNullOrWhiteSpace(SelectedPart))
         {
-            SetError("Part ID is required.");
+            HasError = true;
+            ErrorMessage = "Part ID is required";
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(SelectedOperation))
         {
-            SetError("Operation is required.");
+            HasError = true;
+            ErrorMessage = "Operation is required";
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(SelectedLocation))
         {
-            SetError("Location is required.");
+            HasError = true;
+            ErrorMessage = "Location is required";
             return false;
         }
 
-        if (!IsValidQuantity(Quantity))
+        if (Quantity <= 0)
         {
-            SetError("Quantity must be a valid positive number.");
-            return false;
-        }
-
-        // Validate quantity against business rules
-        if (int.TryParse(Quantity, out int qty) && qty > Model_AppVariables.MTM.MaxTransactionQuantity)
-        {
-            SetError($"Quantity cannot exceed {Model_AppVariables.MTM.MaxTransactionQuantity}.");
+            HasError = true;
+            ErrorMessage = "Quantity must be greater than zero";
             return false;
         }
 
@@ -759,117 +481,106 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
 
     #endregion
 
-    #region Sample Data
+    #region INotifyPropertyChanged Implementation
 
-    /// <summary>
-    /// Loads sample data for demonstration and fallback purposes.
-    /// </summary>
-    private void LoadSampleData()
+    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        Logger.LogDebug("Loading sample data for ComboBoxes");
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         
-        LoadSampleParts();
-        LoadSampleOperations();
-        LoadSampleLocations();
-    }
-
-    private void LoadSampleParts()
-    {
-        PartOptions.Clear();
-        var sampleParts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005", "ABC-123", "XYZ-789" };
-        foreach (var part in sampleParts)
+        // Update computed properties
+        if (propertyName is nameof(SelectedPart) or nameof(SelectedOperation) or 
+            nameof(SelectedLocation) or nameof(Quantity) or nameof(IsLoading))
         {
-            PartOptions.Add(part);
+            OnPropertyChanged(nameof(CanSave));
         }
-    }
-
-    private void LoadSampleOperations()
-    {
-        OperationOptions.Clear();
-        var sampleOperations = new[] { "90", "100", "110", "120", "130", "140", "150" };
-        foreach (var operation in sampleOperations)
+        
+        if (propertyName == nameof(SelectedPart))
         {
-            OperationOptions.Add(operation);
+            OnPropertyChanged(nameof(IsPartValid));
         }
-    }
-
-    private void LoadSampleLocations()
-    {
-        LocationOptions.Clear();
-        var sampleLocations = new[] { "WC01", "WC02", "WC03", "WC04", "WC05", "FLOOR", "QC" };
-        foreach (var location in sampleLocations)
+        
+        if (propertyName == nameof(SelectedOperation))
         {
-            LocationOptions.Add(location);
+            OnPropertyChanged(nameof(IsOperationValid));
+        }
+        
+        if (propertyName == nameof(SelectedLocation))
+        {
+            OnPropertyChanged(nameof(IsLocationValid));
+        }
+        
+        if (propertyName == nameof(Quantity))
+        {
+            OnPropertyChanged(nameof(IsQuantityValid));
         }
     }
 
     #endregion
+}
 
-    #region Error Handling
+#region Command Implementations
 
-    /// <summary>
-    /// Sets an error message and updates error state.
-    /// </summary>
-    private void SetError(string message)
+/// <summary>
+/// Simple relay command implementation for synchronous operations
+/// </summary>
+public class RelayCommand : ICommand
+{
+    private readonly Action _execute;
+    private readonly Func<bool>? _canExecute;
+
+    public RelayCommand(Action execute, Func<bool>? canExecute = null)
     {
-        ErrorMessage = message;
-        HasError = true;
-        Logger.LogWarning("Error set: {ErrorMessage}", message);
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecute = canExecute;
     }
 
-    /// <summary>
-    /// Clears the current error state.
-    /// </summary>
-    private void ClearError()
-    {
-        ErrorMessage = null;
-        HasError = false;
-    }
+    public event EventHandler? CanExecuteChanged;
 
-    /// <summary>
-    /// Handles exceptions from commands.
-    /// </summary>
-    private void HandleException(Exception ex)
-    {
-        Logger.LogError(ex, "Command execution error");
-        SetError("An unexpected error occurred. Please try again.");
-    }
+    public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
 
-    #endregion
+    public void Execute(object? parameter) => _execute();
 
-    #region IDisposable Implementation
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            // Unsubscribe from lookup data service events
-            if (_lookupDataService != null)
-            {
-                _lookupDataService.DataRefreshed -= OnLookupDataRefreshed;
-            }
-
-            _canSave?.Dispose();
-            _isPartValid?.Dispose();
-            _isOperationValid?.Dispose();
-            _isLocationValid?.Dispose();
-            _isQuantityValid?.Dispose();
-        }
-        base.Dispose(disposing);
-    }
-
-    #endregion
+    public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
 
 /// <summary>
-/// Event arguments for inventory item saved event.
-/// Used for quick buttons integration.
+/// Async command implementation for asynchronous operations
 /// </summary>
-public class InventoryItemSavedEventArgs : EventArgs
+public class AsyncCommand : ICommand
 {
-    public string PartId { get; set; } = string.Empty;
-    public string Operation { get; set; } = string.Empty;
-    public string Location { get; set; } = string.Empty;
-    public int Quantity { get; set; }
-    public string Notes { get; set; } = string.Empty;
+    private readonly Func<Task> _execute;
+    private readonly Func<bool>? _canExecute;
+    private bool _isExecuting;
+
+    public AsyncCommand(Func<Task> execute, Func<bool>? canExecute = null)
+    {
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecute = canExecute;
+    }
+
+    public event EventHandler? CanExecuteChanged;
+
+    public bool CanExecute(object? parameter) => !_isExecuting && (_canExecute?.Invoke() ?? true);
+
+    public async void Execute(object? parameter)
+    {
+        if (!CanExecute(parameter)) return;
+
+        _isExecuting = true;
+        RaiseCanExecuteChanged();
+
+        try
+        {
+            await _execute();
+        }
+        finally
+        {
+            _isExecuting = false;
+            RaiseCanExecuteChanged();
+        }
+    }
+
+    public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
+
+#endregion

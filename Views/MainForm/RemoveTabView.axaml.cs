@@ -2,9 +2,9 @@ using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using System;
-using ReactiveUI;
+using Avalonia.ReactiveUI;
 using System.Reactive.Disposables;
-using System.Reactive.Concurrency;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -171,7 +171,8 @@ public partial class RemoveTabView : UserControl
             {
                 try
                 {
-                    RxApp.MainThreadScheduler.Schedule(() =>
+                    // Use Avalonia's Dispatcher instead of RxApp.MainThreadScheduler
+                    Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         try
                         {

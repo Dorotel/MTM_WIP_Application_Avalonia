@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Reactive;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
-using ReactiveUI;
+using Avalonia.ReactiveUI;
 
 namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
 {
