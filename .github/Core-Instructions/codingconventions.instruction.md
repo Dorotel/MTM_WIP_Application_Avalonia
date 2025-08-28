@@ -1,25 +1,24 @@
 <!-- Copilot: Reading coding-conventions.instruction.md — Coding Conventions -->
 # GitHub Copilot Instructions: Coding Conventions for MTM Avalonia Application
 
-You are developing an Avalonia UI application for MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using .NET 8, MVVM pattern with ReactiveUI, and dependency injection.
+You are developing an Avalonia UI application for MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using .NET 8, MVVM pattern with standard .NET patterns, and dependency injection.
 
 ## Your Development Rules
 
 ### Generate Avalonia-specific code using these patterns:
-- Use ReactiveObject for ViewModels with RaiseAndSetIfChanged
+- Use BaseViewModel with INotifyPropertyChanged and SetProperty method
 - Apply compiled bindings with x:CompileBindings="True" and x:DataType
 - Follow MVVM strictly - no business logic in Views
-- Use ReactiveCommand for all user actions
+- Use ICommand implementations (AsyncCommand/RelayCommand) for all user actions
 - Apply MTM purple theme (#6a0dad) and modern card layouts
 
 ### Required Project Setup:
 ```csharp
-// Program.cs - ALWAYS include ReactiveUI
+// Program.cs - Standard Avalonia setup
 public static AppBuilder BuildAvaloniaApp()
     => AppBuilder.Configure<App>()
         .UsePlatformDetect()
-        .LogToTrace()
-        .UseReactiveUI(); // REQUIRED for ReactiveUI integration
+        .LogToTrace();
 ```
 
 ### Use these .NET 8 patterns:
@@ -90,35 +89,59 @@ namespace MTM_Shared_Logic.Services.Interfaces
 ## ViewModel Template - Always Use This Pattern
 
 ```csharp
+using System.ComponentModel;
+using System.Windows.Input;
+using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Commands;
+
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
-public class SampleViewModel : ReactiveObject
+public class SampleViewModel : BaseViewModel, INotifyPropertyChanged
 {
-    // Observable property pattern
+    // Property with INotifyPropertyChanged pattern
     private string _title = string.Empty;
     public string Title
     {
         get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
+        set => SetProperty(ref _title, value);
+    }
+
+    private bool _isLoading;
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set => SetProperty(ref _isLoading, value);
     }
 
     // Command pattern
-    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
+    public ICommand LoadDataCommand { get; private set; }
     
     public SampleViewModel()
     {
-        // Async command with error handling
-        LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await Task.CompletedTask; // TODO: Implement
-        });
+        InitializeCommands();
+    }
 
-        // Error handling for all commands
-        LoadDataCommand.ThrownExceptions
-            .Subscribe(ex =>
-            {
-                // TODO: Log error and show user message
-            });
+    private void InitializeCommands()
+    {
+        // Async command with error handling
+        LoadDataCommand = new AsyncCommand(ExecuteLoadDataAsync);
+    }
+
+    private async Task ExecuteLoadDataAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            await Task.CompletedTask; // TODO: Implement
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandling.HandleErrorAsync(ex, "LoadData", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }
 ```
@@ -201,14 +224,26 @@ Apply these spacing and layout rules:
 ## Error Handling Pattern
 
 ```csharp
-// In ViewModel constructor
-LoadDataCommand.ThrownExceptions
-    .Merge(SaveCommand.ThrownExceptions)
-    .Subscribe(ex =>
+// In command implementation methods
+private async Task ExecuteLoadDataAsync()
+{
+    try
     {
-        // TODO: Log to MySQL and file via Helper_Database_StoredProcedure
+        IsLoading = true;
+        // TODO: Implement business logic
+        await Task.CompletedTask;
+    }
+    catch (Exception ex)
+    {
+        // TODO: Log to database and file via ErrorHandling service
+        await ErrorHandling.HandleErrorAsync(ex, "LoadData", Environment.UserName);
         // TODO: Show user-friendly error message
-    });
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+}
 ```
 
 ## Dependency Injection Preparation
@@ -238,8 +273,8 @@ Create modern interfaces with:
 3. **Use compiled bindings** - Include x:CompileBindings="True"
 4. **Prepare for DI** - Include TODO comments for service injection
 5. **Apply MTM styling** - Purple theme and card layouts
-6. **Include error handling** - Subscribe to ThrownExceptions
-7. **Use async patterns** - ReactiveCommand.CreateFromTask for async operations
+6. **Include error handling** - Use try/catch in command implementations
+7. **Use async patterns** - AsyncCommand for async operations
 8. **📋 Group services by category** - Multiple related services in one file
 
 ## Never Do
@@ -253,7 +288,7 @@ Create modern interfaces with:
 
 ## Always Do
 
-- Use ReactiveUI patterns for ViewModels
+- Use standard .NET MVVM patterns for ViewModels
 - Apply MTM data patterns (PartId as string, Operation as string numbers)
 - Include proper error handling and logging preparation
 - Use modern card-based layouts with proper spacing
