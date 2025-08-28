@@ -9,11 +9,9 @@ using MTM_Shared_Logic.Models;
 using System.Linq;
 using Avalonia.Controls;
 using Material.Icons;
-using MTM_WIP_Application_Avalonia.Extensions;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Commands;
 using System.Collections.Generic;
-using System.Reactive.Subjects;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -93,7 +91,7 @@ public class AdvancedRemoveViewModel : BaseViewModel
     private string _filterToggleText = "Hide Filters";
     private GridLength _filterPanelWidth = new GridLength(300);
 
-    public bool CanUndo => false; // TODO: Implement undo logic
+    public bool CanUndo => LastRemovedItems.Count > 0;
     #endregion
 
     #region Commands - Advanced Removal Operations
@@ -133,54 +131,8 @@ public class AdvancedRemoveViewModel : BaseViewModel
         {
             Logger.LogInformation("Initializing AdvancedRemoveViewModel");
 
-            // Setup ThrownExceptions for IHandleObservableErrors
-            var thrownExceptionsSubject = new Subject<Exception>();
-            ThrownExceptions = thrownExceptionsSubject.AsObservable();
-            
-            // Subscribe to handle exceptions properly with enhanced error handling
-            ThrownExceptions
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(async ex =>
-                {
-                    try
-                    {
-                        Logger.LogError(ex, "AdvancedRemoveViewModel observable error: {Message}", ex.Message);
-                        await Service_ErrorHandler.HandleErrorAsync(ex, "AdvancedRemoveViewModel", Environment.UserName);
-                        
-                        // Safely update status
-                        try
-                        {
-                            StatusMessage = "An error occurred. Please try again.";
-                            IsBusy = false;
-                        }
-                        catch (Exception statusEx)
-                        {
-                            Logger.LogError(statusEx, "Error updating status message");
-                        }
-                    }
-                    catch (Exception errorHandlerEx)
-                    {
-                        Logger.LogCritical(errorHandlerEx, "Critical error in exception handler");
-                    }
-                })
-                .DisposeWith(_compositeDisposable);
-
-            // Initialize computed properties safely using the extension method
-            _canUndo = LastRemovedItems
-                .ObserveCollectionCount()
-                .Select(count => count > 0)
-                .Catch<bool, Exception>(ex =>
-                {
-                    Logger.LogError(ex, "Error in CanUndo observable");
-                    thrownExceptionsSubject.OnNext(ex);
-                    return Observable.Return(false);
-                })
-                .ToProperty(this, vm => vm.CanUndo, scheduler: RxApp.MainThreadScheduler)
-                .DisposeWith(_compositeDisposable);
-
-            // Initialize commands with error handling
-            InitializeCommands(thrownExceptionsSubject);
-            SetupErrorHandling();
+            // Initialize commands
+            InitializeCommands();
             
             // Initialize with safe default date range
             try
@@ -197,20 +149,22 @@ public class AdvancedRemoveViewModel : BaseViewModel
 
             StatusMessage = "Advanced removal system initialized";
             
-            // Setup auto-search after commands are initialized
-            SetupAutoSearch(thrownExceptionsSubject);
+            // Setup collection change notifications for CanUndo
+            LastRemovedItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CanUndo));
 
-            // Load initial data using error-safe approach
-            Observable.Return(Unit.Default)
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .SelectMany(_ => LoadDataCommand.Execute().Catch<Unit, Exception>(ex =>
+            // Load initial data
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await LoadDataAsync();
+                }
+                catch (Exception ex)
                 {
                     Logger.LogError(ex, "Error during initial data load");
-                    thrownExceptionsSubject.OnNext(ex);
-                    return Observable.Return(Unit.Default);
-                }))
-                .Subscribe(_ => Logger.LogDebug("Initial data load completed"))
-                .DisposeWith(_compositeDisposable);
+                    StatusMessage = "Error loading initial data";
+                }
+            });
 
             Logger.LogInformation("AdvancedRemoveViewModel initialization completed successfully");
         }
@@ -218,11 +172,10 @@ public class AdvancedRemoveViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Failed to initialize AdvancedRemoveViewModel");
             StatusMessage = "Initialization failed";
-            throw; // Re-throw to prevent further issues
         }
     }
 
-    private void InitializeCommands(Subject<Exception> thrownExceptionsSubject)
+    private void InitializeCommands()
     {
         try
         {
@@ -245,7 +198,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 {
                     Logger.LogError(ex, "Error loading data");
                     StatusMessage = $"Error loading data: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
                 finally
                 {
@@ -263,7 +215,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 {
                     Logger.LogError(ex, "Error executing search");
                     StatusMessage = $"Search error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
@@ -287,7 +238,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 {
                     Logger.LogError(ex, "Error clearing filters");
                     StatusMessage = $"Clear error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
@@ -309,7 +259,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 {
                     Logger.LogError(ex, "Error removing selected item");
                     StatusMessage = $"Removal error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
                 finally
                 {
@@ -344,18 +293,12 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 {
                     Logger.LogError(ex, "Error undoing removal");
                     StatusMessage = $"Undo error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
                 finally
                 {
                     IsBusy = false;
                 }
-            }, this.WhenAnyValue(vm => vm.CanUndo).Catch<bool, Exception>(ex =>
-            {
-                Logger.LogError(ex, "Error in CanUndo observable for UndoRemovalCommand");
-                thrownExceptionsSubject.OnNext(ex);
-                return Observable.Return(false);
-            }));
+            });
 
             PrintRemovalSummaryCommand = new AsyncCommand(async () =>
             {
@@ -373,7 +316,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 {
                     Logger.LogError(ex, "Error printing summary");
                     StatusMessage = $"Print error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
                 finally
                 {
@@ -396,7 +338,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 {
                     Logger.LogError(ex, "Error toggling filter panel");
                     StatusMessage = $"Toggle error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
@@ -410,7 +351,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 {
                     Logger.LogError(ex, "Error navigating back to normal");
                     StatusMessage = $"Navigation error: {ex.Message}";
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
@@ -424,7 +364,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Error in bulk remove");
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
@@ -437,7 +376,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Error loading history");
-                    thrownExceptionsSubject.OnNext(ex);
                 }
             });
 
@@ -450,7 +388,42 @@ public class AdvancedRemoveViewModel : BaseViewModel
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Error generating report");
-                    thrownExceptionsSubject.OnNext(ex);
+                }
+            });
+
+            ExportRemovalDataCommand = new AsyncCommand(async () =>
+            {
+                try
+                {
+                    await Task.Delay(500); // TODO: Export removal data
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error exporting data");
+                }
+            });
+
+            ConditionalRemoveCommand = new AsyncCommand(async () =>
+            {
+                try
+                {
+                    await Task.Delay(700); // TODO: Conditional removal
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error in conditional remove");
+                }
+            });
+
+            ScheduledRemoveCommand = new AsyncCommand(async () =>
+            {
+                try
+                {
+                    await Task.Delay(600); // TODO: Scheduled removal
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error in scheduled remove");
                 }
             });
 
@@ -459,73 +432,13 @@ public class AdvancedRemoveViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error initializing commands");
-            throw;
         }
     }
 
-    private void SetupErrorHandling()
+    private async Task LoadDataAsync()
     {
-        // All error handling is now done through the ThrownExceptions observable
-        // which is properly implemented via IHandleObservableErrors
-    }
-
-    private void SetupAutoSearch(Subject<Exception> thrownExceptionsSubject)
-    {
-        try
-        {
-            Logger.LogDebug("Setting up auto-search for AdvancedRemoveViewModel");
-
-            // Auto-search when filter text changes (with debounce)
-            var filterChanges = Observable.Merge(
-                this.WhenAnyValue(x => x.FilterPartIDText).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.FilterLocationText).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.FilterOperation).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.FilterUserText).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.FilterNotes).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.QuantityMin).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.QuantityMax).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.UseDateRange).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.RemovalDateRangeStart).Select(_ => Unit.Default),
-                this.WhenAnyValue(x => x.RemovalDateRangeEnd).Select(_ => Unit.Default)
-            );
-
-            filterChanges
-                .Throttle(TimeSpan.FromMilliseconds(500)) // Wait 500ms after user stops typing
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Where(_ => !IsBusy) // Don't auto-search if busy
-                .Subscribe(async _ =>
-                {
-                    try
-                    {
-                        // Only auto-search if we have some filter criteria
-                        if (!string.IsNullOrWhiteSpace(FilterPartIDText) ||
-                            !string.IsNullOrWhiteSpace(FilterLocationText) ||
-                            !string.IsNullOrWhiteSpace(FilterOperation) ||
-                            !string.IsNullOrWhiteSpace(FilterUserText) ||
-                            !string.IsNullOrWhiteSpace(FilterNotes) ||
-                            !string.IsNullOrWhiteSpace(QuantityMin) ||
-                            !string.IsNullOrWhiteSpace(QuantityMax) ||
-                            UseDateRange)
-                        {
-                            await ExecuteSearchAsync();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, "Auto-search error: {Message}", ex.Message);
-                        StatusMessage = $"Auto-search error: {ex.Message}";
-                        thrownExceptionsSubject.OnNext(ex);
-                    }
-                })
-                .DisposeWith(_compositeDisposable);
-
-            Logger.LogDebug("Auto-search setup completed");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error setting up auto-search");
-            thrownExceptionsSubject.OnNext(ex);
-        }
+        await LoadOptionsAsync();
+        await LoadRemovalHistoryAsync();
     }
 
     private async Task LoadOptionsAsync()
@@ -665,7 +578,6 @@ public class AdvancedRemoveViewModel : BaseViewModel
         {
             try
             {
-                _compositeDisposable?.Dispose();
                 Logger.LogDebug("AdvancedRemoveViewModel disposed successfully");
             }
             catch (Exception ex)

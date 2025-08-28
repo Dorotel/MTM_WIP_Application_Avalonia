@@ -647,9 +647,9 @@ public class RemoveItemViewModel : BaseViewModel
     /// </summary>
     public async Task TriggerSearchAsync()
     {
-        if (SearchCommand != null)
+        if (SearchCommand != null && SearchCommand.CanExecute(null))
         {
-            await SearchCommand.Execute();
+            SearchCommand.Execute(null);
         }
     }
 

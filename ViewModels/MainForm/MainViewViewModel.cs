@@ -242,12 +242,19 @@ public class MainViewViewModel : BaseViewModel
                     break;
                 case 1: // Remove Tab
                     if (IsAdvancedRemoveMode)
-                        _ = AdvancedRemoveViewModel.LoadDataCommand.Execute();
+                    {
+                        if (AdvancedRemoveViewModel.LoadDataCommand.CanExecute(null))
+                            AdvancedRemoveViewModel.LoadDataCommand.Execute(null);
+                    }
                     else
-                        _ = RemoveItemViewModel.SearchCommand.Execute();
+                    {
+                        if (RemoveItemViewModel.SearchCommand.CanExecute(null))
+                            RemoveItemViewModel.SearchCommand.Execute(null);
+                    }
                     break;
                 case 2: // Transfer Tab
-                    _ = TransferItemViewModel.SearchCommand.Execute();
+                    if (TransferItemViewModel.SearchCommand.CanExecute(null))
+                        TransferItemViewModel.SearchCommand.Execute(null);
                     break;
             }
         });
@@ -338,7 +345,7 @@ public class MainViewViewModel : BaseViewModel
             case 0: // Inventory Tab
                 InventoryTabViewModel.SelectedPart = e.PartId;
                 InventoryTabViewModel.SelectedOperation = e.Operation;
-                InventoryTabViewModel.Quantity = e.Quantity.ToString();
+                InventoryTabViewModel.Quantity = e.Quantity;
                 break;
             case 1: // Remove Tab
                 if (IsAdvancedRemoveMode)
@@ -389,7 +396,8 @@ public class MainViewViewModel : BaseViewModel
     private void OnAdvancedRemovalRequested(object? sender, EventArgs e)
     {
         // Switch to Advanced Remove Mode
-        SwitchToAdvancedRemoveCommand.Execute().Subscribe();
+        if (SwitchToAdvancedRemoveCommand.CanExecute(null))
+            SwitchToAdvancedRemoveCommand.Execute(null);
         Logger.LogInformation("Advanced removal features requested - switching to Advanced Remove Mode");
     }
 
@@ -404,14 +412,21 @@ public class MainViewViewModel : BaseViewModel
                 StatusText = IsAdvancedRemoveMode ? "Advanced Inventory Removal" : "Inventory Removal";
                 // Load data when switching to Remove tab
                 if (IsAdvancedRemoveMode)
-                    _ = AdvancedRemoveViewModel.LoadDataCommand.Execute();
+                {
+                    if (AdvancedRemoveViewModel.LoadDataCommand.CanExecute(null))
+                        AdvancedRemoveViewModel.LoadDataCommand.Execute(null);
+                }
                 else
-                    _ = RemoveItemViewModel.LoadDataCommand.Execute();
+                {
+                    if (RemoveItemViewModel.LoadDataCommand.CanExecute(null))
+                        RemoveItemViewModel.LoadDataCommand.Execute(null);
+                }
                 break;
             case 2: // Transfer Tab
                 StatusText = "Inventory Transfer";
                 // Load data when switching to Transfer tab
-                _ = TransferItemViewModel.LoadDataCommand.Execute();
+                if (TransferItemViewModel.LoadDataCommand.CanExecute(null))
+                    TransferItemViewModel.LoadDataCommand.Execute(null);
                 break;
             default:
                 StatusText = "Ready";
@@ -472,6 +487,7 @@ public class MainViewViewModel : BaseViewModel
     /// </summary>
     public void OnAdvancedEntryRequested()
     {
-        SwitchToAdvancedInventoryCommand.Execute().Subscribe();
+        if (SwitchToAdvancedInventoryCommand.CanExecute(null))
+            SwitchToAdvancedInventoryCommand.Execute(null);
     }
 }
