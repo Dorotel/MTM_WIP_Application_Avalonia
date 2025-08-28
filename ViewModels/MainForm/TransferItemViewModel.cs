@@ -261,15 +261,19 @@ public class TransferItemViewModel : BaseViewModel
                 OnPropertyChanged(nameof(CanSearch));
                 OnPropertyChanged(nameof(CanTransfer));
                 break;
-            case nameof(SelectedToLocation):
             case nameof(TransferQuantity):
-            case nameof(MaxTransferQuantity):
             case nameof(SelectedInventoryItem):
                 OnPropertyChanged(nameof(CanTransfer));
                 UpdateMaxTransferQuantity();
                 break;
+            case nameof(SelectedToLocation):
+                OnPropertyChanged(nameof(CanTransfer));
+                UpdateMaxTransferQuantity();
+                ToLocationText = SelectedToLocation ?? string.Empty;
+                break;
             case nameof(MaxTransferQuantity):
                 OnPropertyChanged(nameof(CanTransfer));
+                UpdateMaxTransferQuantity();
                 // Ensure transfer quantity doesn't exceed maximum
                 if (TransferQuantity > MaxTransferQuantity)
                 {
@@ -281,9 +285,6 @@ public class TransferItemViewModel : BaseViewModel
                 break;
             case nameof(SelectedOperation):
                 OperationText = SelectedOperation ?? string.Empty;
-                break;
-            case nameof(SelectedToLocation):
-                ToLocationText = SelectedToLocation ?? string.Empty;
                 break;
             case nameof(PartText):
                 if (!string.IsNullOrEmpty(PartText) && PartOptions.Contains(PartText))
@@ -752,11 +753,11 @@ public class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Programmatically triggers a search operation
     /// </summary>
-    public async Task TriggerSearchAsync()
+    public void TriggerSearch()
     {
         if (SearchCommand != null)
         {
-            await SearchCommand.Execute();
+            SearchCommand.Execute(null);
         }
     }
 
@@ -771,7 +772,7 @@ public class TransferItemViewModel : BaseViewModel
         TransferQuantity = quantity;
         
         // Trigger search to populate inventory grid
-        _ = TriggerSearchAsync();
+        TriggerSearch();
     }
 
     /// <summary>

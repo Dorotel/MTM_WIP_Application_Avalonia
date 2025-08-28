@@ -70,8 +70,8 @@ public class AdvancedInventoryViewModel : BaseViewModel
         { 
             if (int.TryParse(value, out var result) && result > 0) 
                 Quantity = result; 
-            this.RaisePropertyChanged(); 
-        } 
+            this.OnPropertyChanged(nameof(QuantityText)); 
+        }
     }
     
     public string RepeatTimesText 
@@ -81,8 +81,8 @@ public class AdvancedInventoryViewModel : BaseViewModel
         { 
             if (int.TryParse(value, out var result) && result > 0) 
                 RepeatTimes = result; 
-            this.RaisePropertyChanged(); 
-        } 
+            this.OnPropertyChanged(nameof(RepeatTimesText)); 
+        }
     }
 
     private string? _selectedPartID;
@@ -107,8 +107,8 @@ public class AdvancedInventoryViewModel : BaseViewModel
         { 
             if (int.TryParse(value, out var result) && result > 0) 
                 MultiLocationQuantity = result; 
-            this.RaisePropertyChanged(); 
-        } 
+            this.OnPropertyChanged(nameof(MultiLocationQuantityText)); 
+        }
     }
 
     private string? _multiLocationPartID;
@@ -172,34 +172,32 @@ public class AdvancedInventoryViewModel : BaseViewModel
         switch (e.PropertyName)
         {
             case nameof(SelectedPartID):
-            case nameof(SelectedOperation):
-            case nameof(SelectedLocation):
-            case nameof(Quantity):
-            case nameof(RepeatTimes):
                 OnPropertyChanged(nameof(CanAddMultipleTimes));
-                break;
-            case nameof(MultiLocationPartID):
-            case nameof(MultiLocationOperation):
-            case nameof(MultiLocationQuantity):
-                OnPropertyChanged(nameof(CanAddToMultipleLocations));
-                break;
-            case nameof(Quantity):
-                OnPropertyChanged(nameof(QuantityText));
-                break;
-            case nameof(RepeatTimes):
-                OnPropertyChanged(nameof(RepeatTimesText));
-                break;
-            case nameof(MultiLocationQuantity):
-                OnPropertyChanged(nameof(MultiLocationQuantityText));
-                break;
-            case nameof(SelectedPartID):
                 PartIDText = SelectedPartID ?? string.Empty;
                 break;
             case nameof(SelectedOperation):
+                OnPropertyChanged(nameof(CanAddMultipleTimes));
                 OperationText = SelectedOperation ?? string.Empty;
                 break;
             case nameof(SelectedLocation):
+                OnPropertyChanged(nameof(CanAddMultipleTimes));
                 LocationText = SelectedLocation ?? string.Empty;
+                break;
+            case nameof(Quantity):
+                OnPropertyChanged(nameof(CanAddMultipleTimes));
+                OnPropertyChanged(nameof(QuantityText));
+                break;
+            case nameof(RepeatTimes):
+                OnPropertyChanged(nameof(CanAddMultipleTimes));
+                OnPropertyChanged(nameof(RepeatTimesText));
+                break;
+            case nameof(MultiLocationPartID):
+            case nameof(MultiLocationOperation):
+                OnPropertyChanged(nameof(CanAddToMultipleLocations));
+                break;
+            case nameof(MultiLocationQuantity):
+                OnPropertyChanged(nameof(CanAddToMultipleLocations));
+                OnPropertyChanged(nameof(MultiLocationQuantityText));
                 break;
             case nameof(IsFilterPanelExpanded):
                 OnPropertyChanged(nameof(FilterPanelWidth));
