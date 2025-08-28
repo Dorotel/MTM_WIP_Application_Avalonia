@@ -120,7 +120,7 @@ Documentation/
 ?   ?       ??? Standards_Adherence_Report.md
 ?   ??? Custom_Prompts/   # ?? CUSTOM DEVELOPMENT PROMPTS AND AUTOMATION
 ?   ?   ??? CustomPrompt_Create_UIElement.md
-?   ?   ??? CustomPrompt_Create_ReactiveUIViewModel.md
+│   │   ├── CustomPrompt_Create_StandardViewModel.md
 ?   ?   ??? CustomPrompt_Verify_CodeCompliance.md
 ?   ?   ??? Compliance_Fix01_EmptyDevelopmentStoredProcedures.md
 ?   ?   ??? [Additional CustomPrompt files...]
@@ -218,7 +218,7 @@ Development/
 - `Error-Handling-Upgrade-Summary.md`
 - `Service-Layer-Enhancement-Summary.md`
 - `Database-Foundation-Integration-Summary.md`
-- `ReactiveUI-Implementation-Summary.md`
+- `Standard-NET-Implementation-Summary.md`
 - `Custom-Prompts-Currency-Summary.md`
 
 ### **Compliance Report Files (MANDATORY PLACEMENT)**

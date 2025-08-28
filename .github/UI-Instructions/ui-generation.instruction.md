@@ -216,23 +216,23 @@ var operations = new[] { "90", "100", "110", "120" };
 </details>
 
 <details>
-<summary><strong>⚡ ReactiveUI Integration</strong></summary>
+<summary><strong>⚡ Standard .NET MVVM Integration</strong></summary>
 
 ### Use these command patterns:
 ```csharp
 // Async command
-LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+LoadDataCommand = new AsyncCommand(async () =>
 {
     // TODO: Implement database operation
     await Task.CompletedTask;
 });
 
 // Command with CanExecute
-var canSave = this.WhenAnyValue(vm => vm.Title, t => !string.IsNullOrWhiteSpace(t));
-SaveCommand = ReactiveCommand.Create(() =>
+private bool CanSave => !string.IsNullOrWhiteSpace(Title);
+SaveCommand = new RelayCommand(() =>
 {
     // TODO: Implement save logic
-}, canSave);
+}, () => CanSave);
 ```
 
 ### Use event-driven communication:
