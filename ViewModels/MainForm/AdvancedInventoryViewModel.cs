@@ -1,13 +1,13 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Reactive.Linq;
+using System.ComponentModel;
 using System.Threading.Tasks;
-using Avalonia.ReactiveUI;
-using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Commands;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -26,7 +26,7 @@ public class AdvancedInventoryViewModel : BaseViewModel
     public ObservableCollection<string> LocationOptions { get; } = new();
 
     #region Filter Panel Properties
-    public bool IsFilterPanelExpanded { get => _isFilterPanelExpanded; set => this.RaiseAndSetIfChanged(ref _isFilterPanelExpanded, value); }
+    public bool IsFilterPanelExpanded { get => _isFilterPanelExpanded; set => SetProperty(ref _isFilterPanelExpanded, value); }
     public string FilterPanelWidth => IsFilterPanelExpanded ? "200" : "32";
     public string CollapseButtonIcon => IsFilterPanelExpanded ? "ChevronLeft" : "ChevronRight";
     
@@ -34,32 +34,32 @@ public class AdvancedInventoryViewModel : BaseViewModel
     #endregion
 
     #region Multiple Times
-    public string? SelectedPartID { get => _selectedPartID; set => this.RaiseAndSetIfChanged(ref _selectedPartID, value); }
-    public string? SelectedOperation { get => _selectedOperation; set => this.RaiseAndSetIfChanged(ref _selectedOperation, value); }
-    public string? SelectedLocation { get => _selectedLocation; set => this.RaiseAndSetIfChanged(ref _selectedLocation, value); }
-    public int Quantity { get => _quantity; set => this.RaiseAndSetIfChanged(ref _quantity, value); }
-    public int RepeatTimes { get => _repeatTimes; set => this.RaiseAndSetIfChanged(ref _repeatTimes, value); }
+    public string? SelectedPartID { get => _selectedPartID; set => SetProperty(ref _selectedPartID, value); }
+    public string? SelectedOperation { get => _selectedOperation; set => SetProperty(ref _selectedOperation, value); }
+    public string? SelectedLocation { get => _selectedLocation; set => SetProperty(ref _selectedLocation, value); }
+    public int Quantity { get => _quantity; set => SetProperty(ref _quantity, value); }
+    public int RepeatTimes { get => _repeatTimes; set => SetProperty(ref _repeatTimes, value); }
 
     // Text properties for AutoCompleteBox two-way binding
     private string _partIDText = string.Empty;
     public string PartIDText
     {
         get => _partIDText;
-        set => this.RaiseAndSetIfChanged(ref _partIDText, value ?? string.Empty);
+        set => SetProperty(ref _partIDText, value ?? string.Empty);
     }
 
     private string _operationText = string.Empty;
     public string OperationText
     {
         get => _operationText;
-        set => this.RaiseAndSetIfChanged(ref _operationText, value ?? string.Empty);
+        set => SetProperty(ref _operationText, value ?? string.Empty);
     }
 
     private string _locationText = string.Empty;
     public string LocationText
     {
         get => _locationText;
-        set => this.RaiseAndSetIfChanged(ref _locationText, value ?? string.Empty);
+        set => SetProperty(ref _locationText, value ?? string.Empty);
     }
 
     // String wrapper properties for TextBox binding
@@ -93,9 +93,9 @@ public class AdvancedInventoryViewModel : BaseViewModel
     #endregion
 
     #region Multiple Locations
-    public string? MultiLocationPartID { get => _multiLocationPartID; set => this.RaiseAndSetIfChanged(ref _multiLocationPartID, value); }
-    public string? MultiLocationOperation { get => _multiLocationOperation; set => this.RaiseAndSetIfChanged(ref _multiLocationOperation, value); }
-    public int MultiLocationQuantity { get => _multiLocationQuantity; set => this.RaiseAndSetIfChanged(ref _multiLocationQuantity, value); }
+    public string? MultiLocationPartID { get => _multiLocationPartID; set => SetProperty(ref _multiLocationPartID, value); }
+    public string? MultiLocationOperation { get => _multiLocationOperation; set => SetProperty(ref _multiLocationOperation, value); }
+    public int MultiLocationQuantity { get => _multiLocationQuantity; set => SetProperty(ref _multiLocationQuantity, value); }
     public ObservableCollection<string> AvailableLocations { get; } = new();
     public ObservableCollection<string> SelectedLocations { get; } = new();
 
@@ -117,32 +117,35 @@ public class AdvancedInventoryViewModel : BaseViewModel
     #endregion
 
     #region Status
-    public bool IsBusy { get => _isBusy; set => this.RaiseAndSetIfChanged(ref _isBusy, value); }
-    public string StatusMessage { get => _statusMessage; set => this.RaiseAndSetIfChanged(ref _statusMessage, value); }
+    public bool IsBusy { get => _isBusy; set => SetProperty(ref _isBusy, value); }
+    public string StatusMessage { get => _statusMessage; set => SetProperty(ref _statusMessage, value); }
     private bool _isBusy;
     private string _statusMessage = "Ready";
     #endregion
 
     #region Commands
-    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> AddMultipleTimesCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ResetMultipleTimesCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> AddToMultipleLocationsCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ResetMultipleLocationsCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> SelectAllLocationsCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ClearAllLocationsCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ImportFromExcelCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> BackToNormalCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> ToggleFilterPanelCommand { get; private set; } = null!;
+    public ICommand LoadDataCommand { get; private set; } = null!;
+    public ICommand AddMultipleTimesCommand { get; private set; } = null!;
+    public ICommand ResetMultipleTimesCommand { get; private set; } = null!;
+    public ICommand AddToMultipleLocationsCommand { get; private set; } = null!;
+    public ICommand ResetMultipleLocationsCommand { get; private set; } = null!;
+    public ICommand SelectAllLocationsCommand { get; private set; } = null!;
+    public ICommand ClearAllLocationsCommand { get; private set; } = null!;
+    public ICommand ImportFromExcelCommand { get; private set; } = null!;
+    public ICommand BackToNormalCommand { get; private set; } = null!;
+    public ICommand ToggleFilterPanelCommand { get; private set; } = null!;
     #endregion
 
     public event EventHandler? BackToNormalRequested;
 
-    private readonly ObservableAsPropertyHelper<bool> _canAddMultipleTimes;
-    public bool CanAddMultipleTimes => _canAddMultipleTimes.Value;
+    public bool CanAddMultipleTimes => !string.IsNullOrWhiteSpace(SelectedPartID) && 
+                                      !string.IsNullOrWhiteSpace(SelectedOperation) && 
+                                      !string.IsNullOrWhiteSpace(SelectedLocation) && 
+                                      Quantity > 0 && RepeatTimes > 0;
 
-    private readonly ObservableAsPropertyHelper<bool> _canAddToMultipleLocations;
-    public bool CanAddToMultipleLocations => _canAddToMultipleLocations.Value;
+    public bool CanAddToMultipleLocations => !string.IsNullOrWhiteSpace(MultiLocationPartID) && 
+                                            !string.IsNullOrWhiteSpace(MultiLocationOperation) && 
+                                            MultiLocationQuantity > 0;
 
     // Design-time constructor
     public AdvancedInventoryViewModel() : this(CreateDesignTimeLogger<AdvancedInventoryViewModel>())
@@ -156,80 +159,65 @@ public class AdvancedInventoryViewModel : BaseViewModel
 
     public AdvancedInventoryViewModel(ILogger<AdvancedInventoryViewModel> logger) : base(logger)
     {
-        _canAddMultipleTimes = this.WhenAnyValue(
-            vm => vm.SelectedPartID, vm => vm.SelectedOperation, vm => vm.SelectedLocation,
-            vm => vm.Quantity, vm => vm.RepeatTimes,
-            (p, o, l, q, r) => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrWhiteSpace(o) && !string.IsNullOrWhiteSpace(l) && q > 0 && r > 0)
-            .ToProperty(this, vm => vm.CanAddMultipleTimes, initialValue: false);
-
-        _canAddToMultipleLocations = this.WhenAnyValue(
-            vm => vm.MultiLocationPartID, vm => vm.MultiLocationOperation, vm => vm.MultiLocationQuantity,
-            (p, o, q) => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrWhiteSpace(o) && q > 0)
-            .ToProperty(this, vm => vm.CanAddToMultipleLocations, initialValue: false);
-
-        // Wire up property change notifications for wrapper properties
-        this.WhenAnyValue(vm => vm.Quantity).Subscribe(_ => this.RaisePropertyChanged(nameof(QuantityText)));
-        this.WhenAnyValue(vm => vm.RepeatTimes).Subscribe(_ => this.RaisePropertyChanged(nameof(RepeatTimesText)));
-        this.WhenAnyValue(vm => vm.MultiLocationQuantity).Subscribe(_ => this.RaisePropertyChanged(nameof(MultiLocationQuantityText)));
-
-        // Sync text properties with selected items
-        this.WhenAnyValue(x => x.SelectedPartID)
-            .Subscribe(selected => PartIDText = selected ?? string.Empty);
-        
-        this.WhenAnyValue(x => x.SelectedOperation)
-            .Subscribe(selected => OperationText = selected ?? string.Empty);
-        
-        this.WhenAnyValue(x => x.SelectedLocation)
-            .Subscribe(selected => LocationText = selected ?? string.Empty);
-
-        // Sync selected items when text matches exactly
-        this.WhenAnyValue(x => x.PartIDText)
-            .Where(text => !string.IsNullOrEmpty(text) && PartIDOptions.Contains(text))
-            .Subscribe(text => SelectedPartID = text);
-        
-        this.WhenAnyValue(x => x.OperationText)
-            .Where(text => !string.IsNullOrEmpty(text) && OperationOptions.Contains(text))
-            .Subscribe(text => SelectedOperation = text);
-        
-        this.WhenAnyValue(x => x.LocationText)
-            .Where(text => !string.IsNullOrEmpty(text) && LocationOptions.Contains(text))
-            .Subscribe(text => SelectedLocation = text);
-   
-
-        // Wire up filter panel property changes
-        this.WhenAnyValue(vm => vm.IsFilterPanelExpanded).Subscribe(_ => 
-        {
-            this.RaisePropertyChanged(nameof(FilterPanelWidth));
-            this.RaisePropertyChanged(nameof(CollapseButtonIcon));
-        });
-
         InitializeCommands();
+        InitializeDesignTimeData();
+        
+        // Setup property change notifications for computed properties
+        PropertyChanged += OnPropertyChanged;
+    }
+    
+    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Update computed properties when dependencies change
+        switch (e.PropertyName)
+        {
+            case nameof(SelectedPartID):
+            case nameof(SelectedOperation):
+            case nameof(SelectedLocation):
+            case nameof(Quantity):
+            case nameof(RepeatTimes):
+                OnPropertyChanged(nameof(CanAddMultipleTimes));
+                break;
+            case nameof(MultiLocationPartID):
+            case nameof(MultiLocationOperation):
+            case nameof(MultiLocationQuantity):
+                OnPropertyChanged(nameof(CanAddToMultipleLocations));
+                break;
+            case nameof(Quantity):
+                OnPropertyChanged(nameof(QuantityText));
+                break;
+            case nameof(RepeatTimes):
+                OnPropertyChanged(nameof(RepeatTimesText));
+                break;
+            case nameof(MultiLocationQuantity):
+                OnPropertyChanged(nameof(MultiLocationQuantityText));
+                break;
+            case nameof(SelectedPartID):
+                PartIDText = SelectedPartID ?? string.Empty;
+                break;
+            case nameof(SelectedOperation):
+                OperationText = SelectedOperation ?? string.Empty;
+                break;
+            case nameof(SelectedLocation):
+                LocationText = SelectedLocation ?? string.Empty;
+                break;
+            case nameof(IsFilterPanelExpanded):
+                OnPropertyChanged(nameof(FilterPanelWidth));
+                OnPropertyChanged(nameof(CollapseButtonIcon));
+                break;
+        }
+    }
 
-        // Handle error subscription safely
+    private static ILogger<T> CreateDesignTimeLogger<T>()
+    {
         try
         {
-            Observable.Merge(
-                LoadDataCommand.ThrownExceptions,
-                AddMultipleTimesCommand.ThrownExceptions,
-                AddToMultipleLocationsCommand.ThrownExceptions,
-                ImportFromExcelCommand.ThrownExceptions,
-                ToggleFilterPanelCommand.ThrownExceptions
-            ).Subscribe(ex =>
-            {
-                Logger.LogError(ex, "AdvancedInventoryViewModel error");
-                IsBusy = false;
-                StatusMessage = $"Error: {ex.Message}";
-            });
-
-            // Only execute LoadDataCommand if not in design mode
-            if (!IsDesignMode())
-            {
-                _ = LoadDataCommand.Execute();
-            }
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            return loggerFactory.CreateLogger<T>();
         }
-        catch (Exception ex)
+        catch
         {
-            Logger.LogError(ex, "Error during AdvancedInventoryViewModel initialization");
+            return Microsoft.Extensions.Logging.Abstractions.NullLogger<T>.Instance;
         }
     }
 
@@ -261,22 +249,9 @@ public class AdvancedInventoryViewModel : BaseViewModel
         StatusMessage = "Design Mode - Ready";
     }
 
-    private static ILogger<T> CreateDesignTimeLogger<T>()
-    {
-        try
-        {
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            return loggerFactory.CreateLogger<T>();
-        }
-        catch
-        {
-            return Microsoft.Extensions.Logging.Abstractions.NullLogger<T>.Instance;
-        }
-    }
-
     private void InitializeCommands()
     {
-        LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+        LoadDataCommand = new AsyncCommand(async () =>
         {
             try
             {
@@ -298,7 +273,7 @@ public class AdvancedInventoryViewModel : BaseViewModel
             finally { IsBusy = false; }
         });
 
-        AddMultipleTimesCommand = ReactiveCommand.CreateFromTask(async () =>
+        AddMultipleTimesCommand = new AsyncCommand(async () =>
         {
             try
             {
@@ -309,14 +284,14 @@ public class AdvancedInventoryViewModel : BaseViewModel
                 ResetMultipleTimes();
             }
             finally { IsBusy = false; }
-        }, this.WhenAnyValue(vm => vm.CanAddMultipleTimes));
+        }, () => CanAddMultipleTimes);
 
-        ResetMultipleTimesCommand = ReactiveCommand.Create(() =>
+        ResetMultipleTimesCommand = new RelayCommand(() =>
         {
             ResetMultipleTimes();
         });
 
-        AddToMultipleLocationsCommand = ReactiveCommand.CreateFromTask(async () =>
+        AddToMultipleLocationsCommand = new AsyncCommand(async () =>
         {
             try
             {
@@ -328,25 +303,25 @@ public class AdvancedInventoryViewModel : BaseViewModel
                 ResetMultipleLocations();
             }
             finally { IsBusy = false; }
-        }, this.WhenAnyValue(vm => vm.CanAddToMultipleLocations));
+        }, () => CanAddToMultipleLocations);
 
-        ResetMultipleLocationsCommand = ReactiveCommand.Create(() =>
+        ResetMultipleLocationsCommand = new RelayCommand(() =>
         {
             ResetMultipleLocations();
         });
 
-        SelectAllLocationsCommand = ReactiveCommand.Create(() =>
+        SelectAllLocationsCommand = new RelayCommand(() =>
         {
             SelectedLocations.Clear();
             foreach (var loc in AvailableLocations) SelectedLocations.Add(loc);
         });
 
-        ClearAllLocationsCommand = ReactiveCommand.Create(() =>
+        ClearAllLocationsCommand = new RelayCommand(() =>
         {
             SelectedLocations.Clear();
         });
 
-        ImportFromExcelCommand = ReactiveCommand.CreateFromTask(async () =>
+        ImportFromExcelCommand = new AsyncCommand(async () =>
         {
             try
             {
@@ -358,12 +333,12 @@ public class AdvancedInventoryViewModel : BaseViewModel
             finally { IsBusy = false; }
         });
 
-        BackToNormalCommand = ReactiveCommand.Create(() =>
+        BackToNormalCommand = new RelayCommand(() =>
         {
             BackToNormalRequested?.Invoke(this, EventArgs.Empty);
         });
 
-        ToggleFilterPanelCommand = ReactiveCommand.Create(() =>
+        ToggleFilterPanelCommand = new RelayCommand(() =>
         {
             IsFilterPanelExpanded = !IsFilterPanelExpanded;
         });
