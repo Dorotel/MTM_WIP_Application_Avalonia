@@ -48,13 +48,35 @@ public class ConfigurationService : IConfigurationService
 
     public string GetConnectionString(string name = "DefaultConnection")
     {
-        var connectionString = _configuration.GetConnectionString(name);
-        if (string.IsNullOrEmpty(connectionString))
-        {
-            _logger.LogWarning("Connection string '{Name}' not found", name);
-            return "";
-        }
+        // Use Model_AppVariables connection string logic which handles
+        // server, database naming, and uppercase username
+        var connectionString = Models.Model_AppVariables.ConnectionString;
+        
+        // Log the connection string for debugging (without sensitive info)
+        _logger.LogInformation("Using connection string: Server={Server}, Database={Database}, Uid={User}", 
+            GetServerFromConnectionString(connectionString),
+            GetDatabaseFromConnectionString(connectionString),
+            GetUserFromConnectionString(connectionString));
+            
         return connectionString;
+    }
+    
+    private static string GetServerFromConnectionString(string connectionString)
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(connectionString, @"Server=([^;]+)");
+        return match.Success ? match.Groups[1].Value : "Unknown";
+    }
+    
+    private static string GetDatabaseFromConnectionString(string connectionString)
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(connectionString, @"Database=([^;]+)");
+        return match.Success ? match.Groups[1].Value : "Unknown";
+    }
+    
+    private static string GetUserFromConnectionString(string connectionString)
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(connectionString, @"Uid=([^;]+)");
+        return match.Success ? match.Groups[1].Value : "Unknown";
     }
 
     public T GetValue<T>(string key, T defaultValue = default!)
@@ -113,6 +135,10 @@ public class ApplicationStateService : IApplicationStateService
     public ApplicationStateService(ILogger<ApplicationStateService> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        
+        // Set default user for development/testing
+        _currentUser = Environment.UserName.ToUpper();
+        _logger.LogInformation("ApplicationStateService initialized with default user: {CurrentUser}", _currentUser);
     }
 
     public string CurrentUser

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 
@@ -17,7 +18,7 @@ public static class ErrorHandling
 {
     private static readonly Dictionary<string, HashSet<string>> _sessionErrorCache = new();
     private static readonly object _lockObject = new();
-    private static string _fileServerBasePath = @"\\FileServer\Logs";
+    private static string _fileServerBasePath = @"\\mtmanu-fs01\Expo Drive\MH_RESOURCE\Material_Handler\MTM WIP App\Logs";
 
     /// <summary>
     /// Handles an exception with specified operation context and user information.
@@ -118,7 +119,9 @@ public static class ErrorHandling
         {
             if (!ErrorConfiguration.EnableFileServerLogging) return;
 
-            var userLogFolder = Path.Combine(_fileServerBasePath, errorEntry.UserId);
+            // Ensure UserId is uppercase for consistent folder structure
+            var normalizedUserId = errorEntry.UserId.ToUpper();
+            var userLogFolder = Path.Combine(_fileServerBasePath, normalizedUserId);
             var csvFileName = GetCsvFileName(errorEntry.Category);
             var csvFilePath = Path.Combine(userLogFolder, csvFileName);
             
@@ -156,7 +159,20 @@ public static class ErrorHandling
 
             var tableName = GetMySqlTableName(errorEntry.Category);
             
-            using var connection = new MySqlConnection(ErrorConfiguration.MySqlConnectionString);
+            // Use uppercase username for MySQL connection - MTM standard
+            var connectionString = ErrorConfiguration.MySqlConnectionString;
+            if (connectionString.Contains("Uid=") || connectionString.Contains("User="))
+            {
+                // Replace any username in connection string with uppercase version
+                var upperUsername = Environment.UserName.ToUpper();
+                connectionString = System.Text.RegularExpressions.Regex.Replace(
+                    connectionString, 
+                    @"(Uid|User|UserId)=([^;]+)", 
+                    $"Uid={upperUsername}",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            }
+            
+            using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
             
             await EnsureTableExists(connection, tableName);
@@ -215,7 +231,7 @@ public static class ErrorHandling
         return new ErrorEntry
         {
             Timestamp = DateTime.UtcNow,
-            UserId = userId,
+            UserId = userId.ToUpper(), // Normalize to uppercase
             MachineName = Environment.MachineName,
             Category = DetermineErrorCategory(exception),
             Severity = DetermineSeverity(exception, DetermineErrorCategory(exception)),
@@ -382,8 +398,10 @@ public static class ErrorHandling
     {
         try
         {
+            // Ensure UserId is uppercase for consistent folder structure
+            var normalizedUserId = errorEntry.UserId.ToUpper();
             var fallbackPath = Path.Combine(ErrorConfiguration.FallbackLocalPath, 
-                errorEntry.UserId, GetCsvFileName(errorEntry.Category));
+                normalizedUserId, GetCsvFileName(errorEntry.Category));
             
             Directory.CreateDirectory(Path.GetDirectoryName(fallbackPath)!);
             
@@ -437,7 +455,7 @@ public class ErrorEntry
 /// </summary>
 public static class ErrorConfiguration
 {
-    public static string FileServerBasePath { get; set; } = @"\\FileServer\Logs";
+    public static string FileServerBasePath { get; set; } = @"\\mtmanu-fs01\Expo Drive\MH_RESOURCE\Material_Handler\MTM WIP App\Logs";
     public static string MySqlConnectionString { get; set; } = "";
     public static bool EnableFileServerLogging { get; set; } = true;
     public static bool EnableMySqlLogging { get; set; } = true;

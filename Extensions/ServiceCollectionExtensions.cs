@@ -29,10 +29,20 @@ public static class ServiceCollectionExtensions
         // Database services
         services.TryAddScoped<IDatabaseService, DatabaseService>();
         
+        // UI and Application services
+        services.TryAddScoped<IQuickButtonsService, QuickButtonsService>();
+        services.TryAddSingleton<IProgressService, ProgressService>();
+        
         // ViewModels - register only those that exist and compile
+        services.TryAddTransient<MainWindowViewModel>();
+        services.TryAddTransient<MainViewViewModel>();
         services.TryAddTransient<InventoryTabViewModel>();
         services.TryAddTransient<AdvancedRemoveViewModel>();
         services.TryAddTransient<AddItemViewModel>();
+        services.TryAddTransient<RemoveItemViewModel>();
+        services.TryAddTransient<TransferItemViewModel>();
+        services.TryAddTransient<AdvancedInventoryViewModel>();
+        services.TryAddTransient<QuickButtonsViewModel>();
 
         return services;
     }
@@ -85,7 +95,9 @@ public static class ServiceCollectionExtensions
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
             typeof(INavigationService),
-            typeof(IDatabaseService)
+            typeof(IDatabaseService),
+            typeof(IQuickButtonsService),
+            typeof(IProgressService)
         };
 
         var missingServices = requiredServices
@@ -113,7 +125,9 @@ public static class ServiceCollectionExtensions
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
             typeof(INavigationService),
-            typeof(IDatabaseService)
+            typeof(IDatabaseService),
+            typeof(IQuickButtonsService),
+            typeof(IProgressService)
         };
 
         var failedServices = criticalServices

@@ -23,7 +23,13 @@ namespace MTM_WIP_Application_Avalonia.Models
         public static void Initialize(IConfiguration configuration)
         {
             _configuration = configuration;
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            // Don't set _connectionString here - let the ConnectionString getter handle it
+            // This ensures our custom logic for server, database naming, and uppercase username is used
+            _connectionString = null;
+            
+            // Force immediate initialization of CurrentUser with uppercase Windows username
+            // Note: CurrentUserFullName is set server-side by user management views, not here
+            CurrentUser = Environment.UserName.ToUpper();
         }
 
         /// <summary>
@@ -36,9 +42,65 @@ namespace MTM_WIP_Application_Avalonia.Models
             {
                 if (string.IsNullOrEmpty(_connectionString))
                 {
-                    // Fallback to environment variable or default
-                    _connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") 
-                        ?? "Server=localhost;Database=mtm_wip_application;Uid=root;Pwd=;SslMode=Required;";
+                    // Try to get connection string from configuration first
+                    var configConnectionString = _configuration?.GetConnectionString("DefaultConnection");
+                    
+                    if (!string.IsNullOrWhiteSpace(configConnectionString))
+                    {
+                        // Use configuration connection string and enhance it with user info
+                        var username = Environment.UserName.ToUpper();
+                        
+                        // Check if Uid is already present
+                        if (!configConnectionString.Contains("Uid=", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Add Uid if not present
+                            configConnectionString += $";Uid={username}";
+                        }
+                        else
+                        {
+                            // Replace existing Uid with current user
+                            configConnectionString = System.Text.RegularExpressions.Regex.Replace(
+                                configConnectionString,
+                                @"(Uid|User|UserId)=([^;]+)",
+                                $"Uid={username}",
+                                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                        }
+                        
+                        // Check if Pwd is present and empty, try to get from environment
+                        if (configConnectionString.Contains("Pwd=;") || !configConnectionString.Contains("Pwd="))
+                        {
+                            var envPassword = Environment.GetEnvironmentVariable("MTM_DB_PASSWORD");
+                            if (!string.IsNullOrEmpty(envPassword))
+                            {
+                                if (configConnectionString.Contains("Pwd=;"))
+                                {
+                                    configConnectionString = configConnectionString.Replace("Pwd=;", $"Pwd={envPassword};");
+                                }
+                                else
+                                {
+                                    configConnectionString += $";Pwd={envPassword}";
+                                }
+                            }
+                            else if (!configConnectionString.Contains("Pwd="))
+                            {
+                                // Add empty password if none specified
+                                configConnectionString += ";Pwd=";
+                            }
+                        }
+                        
+                        _connectionString = configConnectionString;
+                    }
+                    else
+                    {
+                        // Fallback to legacy logic
+                        var databaseName = IsDebugMode ? "mtm_wip_application_test" : "mtm_wip_application";
+                        var username = Environment.UserName.ToUpper();
+                        var password = Environment.GetEnvironmentVariable("MTM_DB_PASSWORD") ?? "";
+                        
+                        // Try environment variable first, then fallback to default
+                        _connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") 
+                            ?? $"Server=172.16.1.104;Database={databaseName};Uid={username};Pwd={password};";
+                    }
                 }
                 return _connectionString;
             }
@@ -64,12 +126,13 @@ namespace MTM_WIP_Application_Avalonia.Models
         /// Gets the current user name.
         /// TODO: Replace with proper user service when authentication is implemented.
         /// </summary>
-        public static string CurrentUser { get; set; } = Environment.UserName;
+        public static string CurrentUser { get; set; } = Environment.UserName.ToUpper();
 
         /// <summary>
         /// Gets or sets the current user's full name.
+        /// This is set server-side by user management views, not from Environment.UserName.
         /// </summary>
-        public static string CurrentUserFullName { get; set; } = Environment.UserName;
+        public static string CurrentUserFullName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets whether the application is in debug mode.
@@ -292,6 +355,15 @@ namespace MTM_WIP_Application_Avalonia.Models
                 throw new ArgumentException("Connection string cannot be empty", nameof(newConnectionString));
 
             _connectionString = newConnectionString;
+        }
+        
+        /// <summary>
+        /// Clears the cached connection string to force regeneration with current logic.
+        /// Useful for ensuring latest configuration is used.
+        /// </summary>
+        public static void RefreshConnectionString()
+        {
+            _connectionString = null;
         }
     }
 }

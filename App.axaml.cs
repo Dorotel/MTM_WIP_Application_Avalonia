@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -57,6 +58,19 @@ namespace MTM_WIP_Application_Avalonia
                     };
 
                     _logger?.LogInformation("Main window created with dependency injection");
+
+                    // Show startup information dialog after main window is created
+                    Task.Run(async () =>
+                    {
+                        // Wait a moment for the main window to fully initialize
+                        await Task.Delay(1000);
+                        
+                        // Show startup dialog on UI thread
+                        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                        {
+                            await StartupDialog.ShowStartupInfoAsync(configuration);
+                        });
+                    });
                 }
 
                 base.OnFrameworkInitializationCompleted();

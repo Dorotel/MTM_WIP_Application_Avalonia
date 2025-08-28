@@ -28,8 +28,8 @@ Control_QuickButtons
 ├── ToolTip System
 │   └── Control_QuickButtons_Tooltip (ToolTip)
 └── Context Menu (Right-click)
-    ├── Edit Button
     ├── Remove Button
+    ├── Move Up/Down
     └── Clear All Buttons
 ```
 
@@ -56,8 +56,9 @@ public async Task LoadLast10Transactions(string currentUser)
    - Automatic inventory entry using stored Part ID, Operation, and Quantity
 
 2. **Button Management**
-   - Right-click context menu for editing/removing buttons
+   - Right-click context menu for removing buttons and reordering
    - "Clear All" functionality for resetting user's quick buttons
+   - Move up/down functionality for reordering buttons
 
 3. **Dynamic Updates**
    - Automatic button updates when new inventory items are saved
@@ -75,9 +76,9 @@ var dataResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatu
 ```
 
 ### **Button Management Operations**
-- **Update**: `Dao_QuickButtons.UpdateQuickButtonAsync()` - Modify existing button
 - **Remove**: `Dao_QuickButtons.RemoveQuickButtonAndShiftAsync()` - Remove with position shifting
 - **Clear All**: `Dao_QuickButtons.DeleteAllQuickButtonsForUserAsync()` - Reset all user buttons
+- **Reorder**: Move buttons up/down in position with server persistence
 
 ### **Integration with Inventory**
 - Automatic button creation when inventory items are saved
@@ -99,7 +100,7 @@ var dataResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatu
 ### **User Experience Features**
 - **Rapid Access**: One-click inventory entry for frequent operations
 - **Visual Feedback**: Clear button text with detailed tooltips
-- **Customization**: Right-click editing and management
+- **Management**: Right-click removal and reordering capabilities
 - **Auto-Update**: Dynamic updates based on user activity
 
 ### **Performance Optimizations**

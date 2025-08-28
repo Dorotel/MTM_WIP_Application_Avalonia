@@ -49,11 +49,26 @@ public static class Program
 
         services.AddSingleton<IConfiguration>(configuration);
 
-        // Logging
+        // Logging with console output optimized for Avalonia
         services.AddLogging(builder =>
         {
             builder.AddConsole();
+            
+            // Configure console logging for better debugging
+            builder.AddSimpleConsole(options =>
+            {
+                options.IncludeScopes = true;
+                options.SingleLine = true;
+                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
+                options.ColorBehavior = Microsoft.Extensions.Logging.Console.LoggerColorBehavior.Enabled;
+            });
+            
             builder.SetMinimumLevel(LogLevel.Information);
+            
+            // Enable debug level for QuickButtons specifically
+            builder.AddFilter("MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel", LogLevel.Debug);
+            builder.AddFilter("MTM_WIP_Application_Avalonia.Services.QuickButtonsService", LogLevel.Debug);
+            builder.AddFilter("MTM_WIP_Application_Avalonia.Services.Helper_Database_StoredProcedure", LogLevel.Debug);
         });
 
         // ✅ CRITICAL: Use comprehensive MTM service registration

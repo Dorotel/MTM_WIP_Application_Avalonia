@@ -174,13 +174,8 @@
                     PointerReleased="OnButtonPointerReleased">
               <Button.ContextMenu>
                 <ContextMenu>
-                  <MenuItem Header="📝 Edit Button"
-                            Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).EditButtonCommand}"
-                            CommandParameter="{Binding}"
-                            ToolTip.Tip="Modify this quick action"/>
                   <MenuItem Header="🗑️ Remove Button"
-                            Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RemoveButtonCommand}"
-                            CommandParameter="{Binding}"
+                            Click="OnRemoveButtonClick"
                             ToolTip.Tip="Delete this quick action"/>
                   <Separator/>
                   <MenuItem Header="↑ Move Up"

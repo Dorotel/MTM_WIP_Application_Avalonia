@@ -6,6 +6,7 @@ using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Models;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
