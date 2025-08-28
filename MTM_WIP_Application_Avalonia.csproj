@@ -46,8 +46,6 @@
 
   <ItemGroup>
     <!-- Force correct ReactiveUI versions first -->
-    <PackageReference Include="ReactiveUI" Version="20.1.63" />
-    <PackageReference Include="System.Reactive" Version="6.0.1" />
     
     <!-- Avalonia packages -->
     <PackageReference Include="Avalonia" Version="11.3.4" />
