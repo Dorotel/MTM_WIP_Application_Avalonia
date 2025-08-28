@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using Avalonia.ReactiveUI;
+using MTM_WIP_Application_Avalonia.Commands;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -31,90 +31,74 @@ public class QuickButtonsViewModel : BaseViewModel
     public event EventHandler<QuickActionExecutedEventArgs>? QuickActionExecuted;
 
     // Commands - Now all accessible via context menu only
-    public ReactiveCommand<Unit, Unit> RefreshButtonsCommand { get; }
-    public ReactiveCommand<QuickButtonItemViewModel, Unit> ExecuteQuickActionCommand { get; }
-    public ReactiveCommand<QuickButtonItemViewModel, Unit> EditButtonCommand { get; }
-    public ReactiveCommand<QuickButtonItemViewModel, Unit> RemoveButtonCommand { get; }
-    public ReactiveCommand<Unit, Unit> ClearAllButtonsCommand { get; }
-    public ReactiveCommand<Unit, Unit> ManageButtonsCommand { get; }
-    public ReactiveCommand<Unit, Unit> ResetOrderCommand { get; }
-    public ReactiveCommand<Unit, Unit> ModifyModeCommand { get; }
+    public ICommand RefreshButtonsCommand { get; }
+    public ICommand ExecuteQuickActionCommand { get; }
+    public ICommand EditButtonCommand { get; }
+    public ICommand RemoveButtonCommand { get; }
+    public ICommand ClearAllButtonsCommand { get; }
+    public ICommand ManageButtonsCommand { get; }
+    public ICommand ResetOrderCommand { get; }
+    public ICommand ModifyModeCommand { get; }
     
     // Manual reordering commands
-    public ReactiveCommand<QuickButtonItemViewModel, Unit> MoveButtonUpCommand { get; }
-    public ReactiveCommand<QuickButtonItemViewModel, Unit> MoveButtonDownCommand { get; }
+    public ICommand MoveButtonUpCommand { get; }
+    public ICommand MoveButtonDownCommand { get; }
 
     public QuickButtonsViewModel(ILogger<QuickButtonsViewModel> logger) : base(logger)
     {
         Logger.LogInformation("QuickButtonsViewModel initialized with dependency injection");
 
         // Initialize commands
-        RefreshButtonsCommand = ReactiveCommand.CreateFromTask(async () =>
+        RefreshButtonsCommand = new AsyncCommand(async () =>
         {
             await LoadLast10TransactionsAsync();
         });
 
-        ExecuteQuickActionCommand = ReactiveCommand.CreateFromTask<QuickButtonItemViewModel>(async (button) =>
+        ExecuteQuickActionCommand = new RelayCommand(async () =>
         {
-            await ExecuteQuickActionAsync(button);
+            // Parameter will be passed through a property or event args
+            // await ExecuteQuickActionAsync(selectedButton);
         });
 
-        EditButtonCommand = ReactiveCommand.Create<QuickButtonItemViewModel>((button) =>
+        EditButtonCommand = new RelayCommand(() =>
         {
             // TODO: Open edit dialog for button
         });
 
-        RemoveButtonCommand = ReactiveCommand.CreateFromTask<QuickButtonItemViewModel>(async (button) =>
+        RemoveButtonCommand = new RelayCommand(async () =>
         {
-            await RemoveButtonAsync(button);
+            // await RemoveButtonAsync(selectedButton);
         });
 
-        ClearAllButtonsCommand = ReactiveCommand.CreateFromTask(async () =>
+        ClearAllButtonsCommand = new AsyncCommand(async () =>
         {
             await ClearAllButtonsAsync();
         });
 
-        ResetOrderCommand = ReactiveCommand.CreateFromTask(async () =>
+        ResetOrderCommand = new AsyncCommand(async () =>
         {
             await ResetButtonOrderAsync();
         });
 
         // Manual reordering commands
-        MoveButtonUpCommand = ReactiveCommand.Create<QuickButtonItemViewModel>((button) =>
+        MoveButtonUpCommand = new RelayCommand(() =>
         {
-            MoveButtonUp(button);
+            // MoveButtonUp(selectedButton);
         });
 
-        MoveButtonDownCommand = ReactiveCommand.Create<QuickButtonItemViewModel>((button) =>
+        MoveButtonDownCommand = new RelayCommand(() =>
         {
-            MoveButtonDown(button);
+            // MoveButtonDown(selectedButton);
         });
 
         // Handle collection changes to update count
         QuickButtons.CollectionChanged += (sender, e) =>
         {
-            this.RaisePropertyChanged(nameof(NonEmptyQuickButtonsCount));
-            this.RaisePropertyChanged(nameof(NonEmptyQuickButtons));
+            OnPropertyChanged(nameof(NonEmptyQuickButtonsCount));
+            OnPropertyChanged(nameof(NonEmptyQuickButtons));
         };
 
-        // Error handling for all commands
-        RefreshButtonsCommand.ThrownExceptions.Subscribe(HandleException);
-        ExecuteQuickActionCommand.ThrownExceptions.Subscribe(HandleException);
-        EditButtonCommand.ThrownExceptions.Subscribe(HandleException);
-        RemoveButtonCommand.ThrownExceptions.Subscribe(HandleException);
-        ClearAllButtonsCommand.ThrownExceptions.Subscribe(HandleException);
-        ResetOrderCommand.ThrownExceptions.Subscribe(HandleException);
-        MoveButtonUpCommand.ThrownExceptions.Subscribe(HandleException);
-        MoveButtonDownCommand.ThrownExceptions.Subscribe(HandleException);
-
-        // Load initial data
-        LoadSampleData();
-    }
-
-    private void HandleException(Exception ex)
-    {
-        Logger.LogError(ex, "Error in QuickButtonsViewModel command execution");
-        // TODO: Show user-friendly error notification
+        LoadSampleData(); // Load sample data for demonstration
     }
 
     private async Task LoadLast10TransactionsAsync()
@@ -350,55 +334,55 @@ public class QuickButtonsViewModel : BaseViewModel
     }
 }
 
-public class QuickButtonItemViewModel : ReactiveObject
+public class QuickButtonItemViewModel : BaseViewModel
 {
     private int _position;
     public int Position
     {
         get => _position;
-        set => this.RaiseAndSetIfChanged(ref _position, value);
+        set => SetProperty(ref _position, value);
     }
 
     private string _partId = string.Empty;
     public string PartId
     {
         get => _partId;
-        set => this.RaiseAndSetIfChanged(ref _partId, value);
+        set => SetProperty(ref _partId, value);
     }
 
     private string _operation = string.Empty;
     public string Operation
     {
         get => _operation;
-        set => this.RaiseAndSetIfChanged(ref _operation, value);
+        set => SetProperty(ref _operation, value);
     }
 
     private int _quantity;
     public int Quantity
     {
         get => _quantity;
-        set => this.RaiseAndSetIfChanged(ref _quantity, value);
+        set => SetProperty(ref _quantity, value);
     }
 
     private string _displayText = string.Empty;
     public string DisplayText
     {
         get => _displayText;
-        set => this.RaiseAndSetIfChanged(ref _displayText, value);
+        set => SetProperty(ref _displayText, value);
     }
 
     private string _subText = string.Empty;
     public string SubText
     {
         get => _subText;
-        set => this.RaiseAndSetIfChanged(ref _subText, value);
+        set => SetProperty(ref _subText, value);
     }
 
     private string _toolTipText = string.Empty;
     public string ToolTipText
     {
         get => _toolTipText;
-        set => this.RaiseAndSetIfChanged(ref _toolTipText, value);
+        set => SetProperty(ref _toolTipText, value);
     }
 
     public bool IsEmpty => string.IsNullOrEmpty(PartId) || Operation == "EMPTY";
