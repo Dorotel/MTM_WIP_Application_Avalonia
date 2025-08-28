@@ -22,6 +22,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 public class TransferItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
+    private readonly IDatabaseService _databaseService;
 
     #region Observable Collections
     
@@ -236,14 +237,16 @@ public class TransferItemViewModel : BaseViewModel
 
     public TransferItemViewModel(
         IApplicationStateService applicationState,
+        IDatabaseService databaseService,
         ILogger<TransferItemViewModel> logger) : base(logger)
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
 
         Logger.LogInformation("TransferItemViewModel initialized with dependency injection");
 
         InitializeCommands();
-        LoadSampleData(); // Load sample data for demonstration
+        _ = LoadComboBoxDataAsync(); // Load real data from database
         
         // Setup property change notifications for computed properties
         PropertyChanged += OnPropertyChanged;
@@ -344,26 +347,51 @@ public class TransferItemViewModel : BaseViewModel
             InventoryItems.Clear();
             SelectedInventoryItem = null;
 
-            // TODO: Implement database search operations
-            // Dynamic search logic: Searches by part only or part+operation based on criteria
-            // if (!string.IsNullOrWhiteSpace(_selectedOperation))
-            // {
-            //     // Search by both part and operation
-            //     var result = await Dao_Inventory.GetInventoryByPartIdAndOperationAsync(
-            //         _selectedPart, _selectedOperation, true);
-            // }
-            // else
-            // {
-            //     // Search by part only
-            //     var result = await Dao_Inventory.GetInventoryByPartIdAsync(_selectedPart, true);
-            // }
-
-            // For demonstration, load sample filtered data
-            await Task.Delay(500); // Simulate database operation
-            LoadSampleInventoryData();
-
-            Logger.LogInformation("Transfer search executed for Part: {PartId}, Operation: {Operation}", 
+            Logger.LogInformation("Executing transfer search for Part: {PartId}, Operation: {Operation}", 
                 _selectedPart, _selectedOperation);
+
+            // Dynamic search based on selection criteria
+            System.Data.DataTable result;
+            
+            if (!string.IsNullOrWhiteSpace(_selectedPart) && !string.IsNullOrWhiteSpace(_selectedOperation))
+            {
+                // Search by both part and operation
+                result = await _databaseService.GetInventoryByPartAndOperationAsync(_selectedPart, _selectedOperation);
+            }
+            else if (!string.IsNullOrWhiteSpace(_selectedPart))
+            {
+                // Search by part only
+                result = await _databaseService.GetInventoryByPartIdAsync(_selectedPart);
+            }
+            else
+            {
+                // No search criteria specified, don't load anything
+                Logger.LogWarning("No search criteria specified for transfer search");
+                return;
+            }
+
+            // Convert DataTable to InventoryItem objects
+            foreach (System.Data.DataRow row in result.Rows)
+            {
+                var inventoryItem = new InventoryItem
+                {
+                    ID = Convert.ToInt32(row["ID"]),
+                    PartID = row["PartID"]?.ToString() ?? string.Empty,
+                    Location = row["Location"]?.ToString() ?? string.Empty,
+                    Operation = row["Operation"]?.ToString(),
+                    Quantity = Convert.ToInt32(row["Quantity"]),
+                    ItemType = row["ItemType"]?.ToString() ?? "WIP",
+                    ReceiveDate = Convert.ToDateTime(row["ReceiveDate"]),
+                    LastUpdated = Convert.ToDateTime(row["LastUpdated"]),
+                    User = row["User"]?.ToString() ?? string.Empty,
+                    BatchNumber = row["BatchNumber"]?.ToString() ?? string.Empty,
+                    Notes = row["Notes"]?.ToString() ?? string.Empty
+                };
+                
+                InventoryItems.Add(inventoryItem);
+            }
+
+            Logger.LogInformation("Transfer search completed. Found {Count} inventory items", InventoryItems.Count);
         }
         finally
         {
@@ -439,50 +467,44 @@ public class TransferItemViewModel : BaseViewModel
                 return;
             }
 
-            // TODO: Implement actual database transfer operations
-            // Determine transfer type based on quantity
-            // if (TransferQuantity < SelectedInventoryItem.Quantity)
-            // {
-            //     // Partial quantity transfer
-            //     await Dao_Inventory.TransferInventoryQuantityAsync(
-            //         SelectedInventoryItem.BatchNumber,
-            //         partId,
-            //         operation,
-            //         TransferQuantity,
-            //         SelectedInventoryItem.Quantity,
-            //         SelectedToLocation,
-            //         _applicationState.CurrentUser.UserName
-            //     );
-            // }
-            // else
-            // {
-            //     // Complete item transfer
-            //     await Dao_Inventory.TransferPartSimpleAsync(
-            //         SelectedInventoryItem.BatchNumber,
-            //         partId,
-            //         operation,
-            //         TransferQuantity.ToString(),
-            //         SelectedToLocation
-            //     );
-            // }
+            // Implement actual database transfer operations
+            bool transferResult;
+            
+            if (TransferQuantity < SelectedInventoryItem.Quantity)
+            {
+                // Partial quantity transfer
+                Logger.LogInformation("Executing partial transfer: {TransferQuantity} of {TotalQuantity} units", 
+                    TransferQuantity, SelectedInventoryItem.Quantity);
+                
+                transferResult = await _databaseService.TransferQuantityAsync(
+                    SelectedInventoryItem.BatchNumber ?? string.Empty,
+                    partId,
+                    operation,
+                    TransferQuantity,
+                    SelectedInventoryItem.Quantity,
+                    SelectedToLocation,
+                    _applicationState.CurrentUser
+                );
+            }
+            else
+            {
+                // Complete item transfer
+                Logger.LogInformation("Executing complete transfer: {TransferQuantity} units", TransferQuantity);
+                
+                transferResult = await _databaseService.TransferPartAsync(
+                    SelectedInventoryItem.BatchNumber ?? string.Empty,
+                    partId,
+                    operation,
+                    SelectedToLocation
+                );
+            }
 
-            // TODO: Log transaction history for audit trail
-            // Critical: ALL transfer operations create TRANSFER transactions regardless of operation number
-            // var transaction = new InventoryTransaction
-            // {
-            //     TransactionType = TransactionType.TRANSFER, // Always TRANSFER when moving between locations
-            //     PartId = partId,
-            //     FromLocation = fromLocation,
-            //     ToLocation = SelectedToLocation,
-            //     Operation = operation, // Just a workflow step number
-            //     Quantity = TransferQuantity,
-            //     Notes = $"Transferred via Transfer Tab",
-            //     User = _applicationState.CurrentUser.UserName,
-            //     ItemType = SelectedInventoryItem.ItemType,
-            //     BatchNumber = SelectedInventoryItem.BatchNumber,
-            //     DateTime = DateTime.Now
-            // };
-            // await Dao_History.AddTransactionHistoryAsync(transaction);
+            if (!transferResult)
+            {
+                Logger.LogError("Transfer operation failed");
+                // TODO: Show user-friendly error message
+                return;
+            }
 
             // Update UI - simulate successful transfer
             if (TransferQuantity >= SelectedInventoryItem.Quantity)
@@ -560,30 +582,70 @@ public class TransferItemViewModel : BaseViewModel
     {
         try
         {
-            // TODO: Implement database loading
-            // Load parts data
-            // var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            //     Model_AppVariables.ConnectionString,
-            //     "sys_parts_Get_All",
-            //     new Dictionary<string, object>()
-            // );
+            Logger.LogInformation("Loading transfer ComboBox data from database");
+
+            // Load Parts using md_part_ids_Get_All stored procedure
+            var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _databaseService.GetConnectionString(),
+                "md_part_ids_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (partResult.IsSuccess)
+            {
+                PartOptions.Clear();
+                foreach (System.Data.DataRow row in partResult.Data.Rows)
+                {
+                    var partId = row["PartID"]?.ToString();
+                    if (!string.IsNullOrEmpty(partId))
+                    {
+                        PartOptions.Add(partId);
+                    }
+                }
+                Logger.LogInformation("Loaded {Count} parts for transfer", PartOptions.Count);
+            }
             
-            // Load operations data
-            // var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            //     Model_AppVariables.ConnectionString,
-            //     "sys_operations_Get_All",
-            //     new Dictionary<string, object>()
-            // );
+            // Load Operations using md_operation_numbers_Get_All stored procedure
+            var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _databaseService.GetConnectionString(),
+                "md_operation_numbers_Get_All",
+                new Dictionary<string, object>()
+            );
 
-            // Load locations data
-            // var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            //     Model_AppVariables.ConnectionString,
-            //     "sys_locations_Get_All",
-            //     new Dictionary<string, object>()
-            // );
+            if (operationResult.IsSuccess)
+            {
+                OperationOptions.Clear();
+                foreach (System.Data.DataRow row in operationResult.Data.Rows)
+                {
+                    var operation = row["Operation"]?.ToString();
+                    if (!string.IsNullOrEmpty(operation))
+                    {
+                        OperationOptions.Add(operation);
+                    }
+                }
+                Logger.LogInformation("Loaded {Count} operations for transfer", OperationOptions.Count);
+            }
 
-            await Task.Delay(200); // Simulate database operation
-            LoadSampleData();
+            // Load Locations using md_locations_Get_All stored procedure
+            var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _databaseService.GetConnectionString(),
+                "md_locations_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (locationResult.IsSuccess)
+            {
+                LocationOptions.Clear();
+                foreach (System.Data.DataRow row in locationResult.Data.Rows)
+                {
+                    var location = row["Location"]?.ToString();
+                    if (!string.IsNullOrEmpty(location))
+                    {
+                        LocationOptions.Add(location);
+                    }
+                }
+                Logger.LogInformation("Loaded {Count} locations for transfer", LocationOptions.Count);
+            }
 
             Logger.LogInformation("Transfer ComboBox data loaded successfully");
         }
