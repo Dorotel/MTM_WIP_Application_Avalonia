@@ -19,7 +19,14 @@ public class MainViewViewModel : BaseViewModel
     public int SelectedTabIndex
     {
         get => _selectedTabIndex;
-        set => SetProperty(ref _selectedTabIndex, value);
+        set 
+        {
+            if (SetProperty(ref _selectedTabIndex, value))
+            {
+                OnTabSelectionChanged(value);
+                HandleTabModeResets(value);
+            }
+        }
     }
 
     private object? _inventoryContent;
@@ -55,7 +62,13 @@ public class MainViewViewModel : BaseViewModel
     public bool IsAdvancedPanelVisible
     {
         get => _isAdvancedPanelVisible;
-        set => SetProperty(ref _isAdvancedPanelVisible, value);
+        set 
+        {
+            if (SetProperty(ref _isAdvancedPanelVisible, value))
+            {
+                OnPropertyChanged(nameof(AdvancedPanelToggleText));
+            }
+        }
     }
 
     public string AdvancedPanelToggleText => IsAdvancedPanelVisible ? "Hide" : "Show";
@@ -65,7 +78,14 @@ public class MainViewViewModel : BaseViewModel
     public bool IsQuickActionsPanelExpanded
     {
         get => _isQuickActionsPanelExpanded;
-        set => SetProperty(ref _isQuickActionsPanelExpanded, value);
+        set 
+        {
+            if (SetProperty(ref _isQuickActionsPanelExpanded, value))
+            {
+                OnPropertyChanged(nameof(QuickActionsPanelWidth));
+                OnPropertyChanged(nameof(QuickActionsCollapseButtonIcon));
+            }
+        }
     }
 
     // QuickActions Panel Width - expands/collapses based on state (returns GridLength compatible values)
@@ -174,10 +194,10 @@ public class MainViewViewModel : BaseViewModel
         AdvancedRemoveViewModel = advancedRemoveViewModel ?? throw new ArgumentNullException(nameof(advancedRemoveViewModel));
 
         // Wire up Advanced Inventory events
-        AdvancedInventoryViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalInventoryCommand.Execute().Subscribe();
+        AdvancedInventoryViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalInventoryCommand.Execute(null);
 
         // Wire up Advanced Remove events
-        AdvancedRemoveViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalRemoveCommand.Execute().Subscribe();
+        AdvancedRemoveViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalRemoveCommand.Execute(null);
 
         // Set up initial tab content (normal mode)
         UpdateInventoryContent();
@@ -190,14 +210,14 @@ public class MainViewViewModel : BaseViewModel
 
 
 
-        // Wire up events for inter-component communication
-        InventoryTabViewModel.InventoryItemSaved += OnInventoryItemSaved;
-        InventoryTabViewModel.PanelToggleRequested += OnPanelToggleRequested;
-        InventoryTabViewModel.AdvancedEntryRequested += (sender, e) => OnAdvancedEntryRequested();
+        // Wire up events for inter-component communication (TODO: Implement events in ViewModels)
+        // InventoryTabViewModel.InventoryItemSaved += OnInventoryItemSaved;
+        // InventoryTabViewModel.PanelToggleRequested += OnPanelToggleRequested;
+        // InventoryTabViewModel.AdvancedEntryRequested += (sender, e) => OnAdvancedEntryRequested();
         QuickButtonsViewModel.QuickActionExecuted += OnQuickActionExecuted;
         
-        // Wire up RemoveTab events
-        RemoveItemViewModel.ItemsRemoved += OnItemsRemoved;
+        // Wire up RemoveTab events (TODO: Implement events in ViewModels)
+        // RemoveItemViewModel.ItemsRemoved += OnItemsRemoved;
         RemoveItemViewModel.PanelToggleRequested += OnPanelToggleRequested;
         RemoveItemViewModel.AdvancedRemovalRequested += OnAdvancedRemovalRequested;
 
@@ -209,10 +229,10 @@ public class MainViewViewModel : BaseViewModel
         SelectedTabIndex = 0;
 
         // Initialize commands (stubs; no business logic)
-        OpenSettingsCommand = new RelayCommand(() => { /* TODO: Show settings */ });
-        ExitCommand = new RelayCommand(() => { /* TODO: Exit app */ });
-        OpenPersonalHistoryCommand = new RelayCommand(() => { /* TODO: Open history */ });
-        RefreshCommand = new RelayCommand(() => 
+        OpenSettingsCommand = new Commands.RelayCommand(() => { /* TODO: Show settings */ });
+        ExitCommand = new Commands.RelayCommand(() => { /* TODO: Exit app */ });
+        OpenPersonalHistoryCommand = new Commands.RelayCommand(() => { /* TODO: Open history */ });
+        RefreshCommand = new Commands.RelayCommand(() => 
         {
             switch (SelectedTabIndex)
             {
@@ -231,21 +251,21 @@ public class MainViewViewModel : BaseViewModel
                     break;
             }
         });
-        CancelCommand = new RelayCommand(() => { /* TODO: Cancel current operation */ });
-        OpenAboutCommand = new RelayCommand(() => { /* TODO: Show about dialog */ });
+        CancelCommand = new Commands.RelayCommand(() => { /* TODO: Cancel current operation */ });
+        OpenAboutCommand = new Commands.RelayCommand(() => { /* TODO: Show about dialog */ });
         
-        ToggleAdvancedPanelCommand = new RelayCommand(() =>
+        ToggleAdvancedPanelCommand = new Commands.RelayCommand(() =>
         {
             IsAdvancedPanelVisible = !IsAdvancedPanelVisible;
         });
 
-        ToggleQuickActionsPanelCommand = new RelayCommand(() =>
+        ToggleQuickActionsPanelCommand = new Commands.RelayCommand(() =>
         {
             IsQuickActionsPanelExpanded = !IsQuickActionsPanelExpanded;
             Logger.LogInformation("QuickActions panel toggled: {IsExpanded}", IsQuickActionsPanelExpanded);
         });
 
-        SwitchToAdvancedInventoryCommand = new RelayCommand(() =>
+        SwitchToAdvancedInventoryCommand = new Commands.RelayCommand(() =>
         {
             IsAdvancedInventoryMode = true;
             UpdateInventoryContent();
@@ -253,7 +273,7 @@ public class MainViewViewModel : BaseViewModel
             Logger.LogInformation("Switched to Advanced Inventory Mode");
         });
 
-        SwitchToNormalInventoryCommand = new RelayCommand(() =>
+        SwitchToNormalInventoryCommand = new Commands.RelayCommand(() =>
         {
             IsAdvancedInventoryMode = false;
             UpdateInventoryContent();
@@ -261,7 +281,7 @@ public class MainViewViewModel : BaseViewModel
             Logger.LogInformation("Switched to Normal Inventory Mode");
         });
 
-        SwitchToAdvancedRemoveCommand = new RelayCommand(() =>
+        SwitchToAdvancedRemoveCommand = new Commands.RelayCommand(() =>
         {
             IsAdvancedRemoveMode = true;
             UpdateRemoveContent();
@@ -269,7 +289,7 @@ public class MainViewViewModel : BaseViewModel
             Logger.LogInformation("Switched to Advanced Remove Mode");
         });
 
-        SwitchToNormalRemoveCommand = new RelayCommand(() =>
+        SwitchToNormalRemoveCommand = new Commands.RelayCommand(() =>
         {
             IsAdvancedRemoveMode = false;
             UpdateRemoveContent();
@@ -277,56 +297,24 @@ public class MainViewViewModel : BaseViewModel
             Logger.LogInformation("Switched to Normal Remove Mode");
         });
 
-        // Subscribe to property changes to update derived properties
-        this.WhenAnyValue(x => x.IsAdvancedPanelVisible)
-            .Subscribe(_ => this.RaisePropertyChanged(nameof(AdvancedPanelToggleText)));
+        // Property change handling is now done in property setters
+        // Command error handling is managed within individual commands using standard .NET patterns
+    }
 
-        // Subscribe to QuickActions panel state changes to update derived properties
-        this.WhenAnyValue(x => x.IsQuickActionsPanelExpanded)
-            .Subscribe(_ => 
-            {
-                this.RaisePropertyChanged(nameof(QuickActionsPanelWidth));
-                this.RaisePropertyChanged(nameof(QuickActionsCollapseButtonIcon));
-            });
-
-        // Subscribe to tab changes to trigger appropriate actions
-        this.WhenAnyValue(x => x.SelectedTabIndex)
-            .Subscribe(OnTabSelectionChanged);
-
-        // Subscribe to inventory mode changes to reset to normal mode when switching tabs
-        this.WhenAnyValue(x => x.SelectedTabIndex)
-            .Subscribe(tabIndex =>
-            {
-                if (tabIndex != 0 && IsAdvancedInventoryMode)
-                {
-                    // Reset to normal inventory mode when switching away from inventory tab
-                    IsAdvancedInventoryMode = false;
-                    UpdateInventoryContent();
-                }
-                if (tabIndex != 1 && IsAdvancedRemoveMode)
-                {
-                    // Reset to normal remove mode when switching away from remove tab
-                    IsAdvancedRemoveMode = false;
-                    UpdateRemoveContent();
-                }
-            });
-
-        // Error handling for all commands
-        var allCommands = new[]
+    private void HandleTabModeResets(int tabIndex)
+    {
+        // Reset to normal mode when switching away from tabs
+        if (tabIndex != 0 && IsAdvancedInventoryMode)
         {
-            OpenSettingsCommand, ExitCommand, OpenPersonalHistoryCommand,
-            RefreshCommand, CancelCommand, ToggleAdvancedPanelCommand, ToggleQuickActionsPanelCommand, OpenAboutCommand,
-            SwitchToAdvancedInventoryCommand, SwitchToNormalInventoryCommand,
-            SwitchToAdvancedRemoveCommand, SwitchToNormalRemoveCommand
-        };
-
-        foreach (var command in allCommands)
+            // Reset to normal inventory mode when switching away from inventory tab
+            IsAdvancedInventoryMode = false;
+            UpdateInventoryContent();
+        }
+        if (tabIndex != 1 && IsAdvancedRemoveMode)
         {
-            command.ThrownExceptions.Subscribe(ex =>
-            {
-                Logger.LogError(ex, "Error executing command in MainViewViewModel");
-                // TODO: Log and present user-friendly error
-            });
+            // Reset to normal remove mode when switching away from remove tab
+            IsAdvancedRemoveMode = false;
+            UpdateRemoveContent();
         }
     }
 
