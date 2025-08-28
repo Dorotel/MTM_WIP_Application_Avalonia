@@ -20,15 +20,15 @@ public static class Program
 
     static Program()
     {
-        // Assembly resolver to prevent ReactiveUI.XamForms loading issues
+        // Enhanced assembly resolver to prevent ReactiveUI platform-specific loading issues
         AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
         {
             var assemblyName = new AssemblyName(args.Name);
             
-            // Redirect ReactiveUI.XamForms to ReactiveUI
-            if (assemblyName.Name == "ReactiveUI.XamForms")
+            // Redirect all platform-specific ReactiveUI assemblies to the main ReactiveUI assembly
+            if (assemblyName.Name is "ReactiveUI.XamForms" or "ReactiveUI.Winforms" or "ReactiveUI.WinForms" or "ReactiveUI.WinUI" or "ReactiveUI.Maui")
             {
-                Console.WriteLine($"Redirecting ReactiveUI.XamForms to ReactiveUI assembly");
+                Console.WriteLine($"Redirecting {assemblyName.Name} to ReactiveUI assembly");
                 return typeof(ReactiveUI.ReactiveObject).Assembly;
             }
             
@@ -38,6 +38,14 @@ public static class Program
                 var reactiveUIAssembly = typeof(ReactiveUI.ReactiveObject).Assembly;
                 Console.WriteLine($"Resolving ReactiveUI version {assemblyName.Version} to {reactiveUIAssembly.GetName().Version}");
                 return reactiveUIAssembly;
+            }
+            
+            // Handle System.Reactive version conflicts
+            if (assemblyName.Name == "System.Reactive" && assemblyName.Version != null)
+            {
+                var systemReactiveAssembly = typeof(System.Reactive.Linq.Observable).Assembly;
+                Console.WriteLine($"Resolving System.Reactive version {assemblyName.Version} to {systemReactiveAssembly.GetName().Version}");
+                return systemReactiveAssembly;
             }
             
             return null;
@@ -63,6 +71,17 @@ public static class Program
             {
                 Console.WriteLine("This appears to be an assembly loading issue.");
                 Console.WriteLine("Check the ReactiveUI package versions and assembly bindings.");
+                
+                // Log loaded assemblies for debugging
+                Console.WriteLine("\nCurrently loaded assemblies:");
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (assembly.FullName?.Contains("ReactiveUI") == true || 
+                        assembly.FullName?.Contains("System.Reactive") == true)
+                    {
+                        Console.WriteLine($"  - {assembly.FullName}");
+                    }
+                }
             }
             
             throw;
@@ -120,10 +139,14 @@ public static class Program
             logger?.LogInformation("Service provider configured and validated successfully");
             logger?.LogInformation($"Total services registered: {services.Count}");
             
-            // Log ReactiveUI assembly information
+            // Log ReactiveUI assembly information for debugging
             var reactiveUIAssembly = typeof(ReactiveUI.ReactiveObject).Assembly;
             logger?.LogInformation($"ReactiveUI Assembly: {reactiveUIAssembly.GetName().FullName}");
             logger?.LogInformation($"ReactiveUI Location: {reactiveUIAssembly.Location}");
+            
+            var systemReactiveAssembly = typeof(System.Reactive.Linq.Observable).Assembly;
+            logger?.LogInformation($"System.Reactive Assembly: {systemReactiveAssembly.GetName().FullName}");
+            logger?.LogInformation($"System.Reactive Location: {systemReactiveAssembly.Location}");
         }
         catch (Exception ex)
         {
@@ -136,6 +159,13 @@ public static class Program
             {
                 Console.WriteLine($"Missing file: {fileNotFound.FileName}");
                 Console.WriteLine("This is likely a package reference or assembly binding issue.");
+                
+                // Check if it's a ReactiveUI platform-specific assembly
+                if (fileNotFound.FileName?.Contains("ReactiveUI.") == true)
+                {
+                    Console.WriteLine("This appears to be a ReactiveUI platform-specific assembly conflict.");
+                    Console.WriteLine("The assembly resolver should handle this, but there may be a deeper dependency issue.");
+                }
             }
             
             throw;
