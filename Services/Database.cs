@@ -52,6 +52,12 @@ public interface IDatabaseService
     Task<StoredProcedureResult> UpdateItemTypeAsync(int id, string itemType, string issuedBy);
     Task<bool> DeleteItemTypeAsync(string itemType);
     
+    // Additional Master Data Operations
+    Task<DataTable> GetAllLocationsAsync();
+    Task<DataTable> GetAllOperationsAsync();
+    Task<DataTable> GetAllInventoryAsync();
+    Task<DataTable> GetAllRolesAsync();
+    
     // User Management
     Task<DataTable> GetAllUsersAsync();
     Task<DataTable> GetUserAsync(string username);
@@ -59,6 +65,11 @@ public interface IDatabaseService
     Task<StoredProcedureResult> AddUserAsync(MTM_Shared_Logic.Models.User userInfo);
     Task<StoredProcedureResult> UpdateUserAsync(MTM_Shared_Logic.Models.User userInfo);
     Task<bool> DeleteUserAsync(string username);
+    
+    // Additional User Management overloads for ViewModels
+    Task<StoredProcedureResult> AddUserAsync(string username, string firstName, string lastName, string email, string role, string issuedBy);
+    Task<StoredProcedureResult> UpdateUserAsync(int id, string username, string firstName, string lastName, string email, string role, bool isActive, string issuedBy);
+    Task<bool> DeleteUserAsync(int id);
     
     // System Configuration
     Task<string> GetUserSettingsAsync(string userId);
@@ -787,6 +798,62 @@ public class DatabaseService : IDatabaseService
         return result.IsSuccess;
     }
 
+    /// <summary>
+    /// Gets all locations using md_locations_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllLocationsAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_locations_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Gets all operations using md_operation_numbers_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllOperationsAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_operation_numbers_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Gets all inventory using inv_inventory_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllInventoryAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Gets all roles using sys_roles_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllRolesAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "sys_roles_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
     #endregion
 
     #region User Management
@@ -916,6 +983,74 @@ public class DatabaseService : IDatabaseService
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
             _connectionString,
             "usr_users_Delete_User",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    /// <summary>
+    /// Adds a new user using usr_users_Add stored procedure.
+    /// Simplified overload for ViewModels.
+    /// </summary>
+    public async Task<StoredProcedureResult> AddUserAsync(string username, string firstName, string lastName, string email, string role, string issuedBy)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_Username"] = username,
+            ["p_FirstName"] = firstName,
+            ["p_LastName"] = lastName,
+            ["p_Email"] = email,
+            ["p_Role"] = role,
+            ["p_IssuedBy"] = issuedBy
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Add",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Updates an existing user using usr_users_Update stored procedure.
+    /// Simplified overload for ViewModels.
+    /// </summary>
+    public async Task<StoredProcedureResult> UpdateUserAsync(int id, string username, string firstName, string lastName, string email, string role, bool isActive, string issuedBy)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ID"] = id,
+            ["p_Username"] = username,
+            ["p_FirstName"] = firstName,
+            ["p_LastName"] = lastName,
+            ["p_Email"] = email,
+            ["p_Role"] = role,
+            ["p_IsActive"] = isActive,
+            ["p_IssuedBy"] = issuedBy
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Update",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Deletes a user by ID using usr_users_Delete_ByID stored procedure.
+    /// Simplified overload for ViewModels.
+    /// </summary>
+    public async Task<bool> DeleteUserAsync(int id)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ID"] = id
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Delete_ByID",
             parameters
         );
 
