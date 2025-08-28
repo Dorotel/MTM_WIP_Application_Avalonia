@@ -48,7 +48,7 @@ Services/
 ### Directory Structure
 ```
 /Views/           # Avalonia AXAML views
-/ViewModels/      # ViewModels using ReactiveUI
+/ViewModels/      # ViewModels using standard .NET patterns
 /Models/          # Data models and business entities
 /Services/        # Business logic and data access services
   /Interfaces/    # Service interfaces (separate files)
@@ -65,7 +65,7 @@ Services/
 - **Consistent Prefix:** Always prefix with the parent view or control (e.g., `mainview_`, `settingsview_`, etc.)
 - **Component Containers:** Name as `components` if using dependency containers or service locators.
 
-## ReactiveUI Property Naming
+## Standard .NET Property Naming
 
 ### Observable Properties
 ```csharp
@@ -89,9 +89,9 @@ public ObservableCollection<ItemViewModel> Items { get; } = new();
 ### Commands
 ```csharp
 // Commands should end with "Command" suffix
-public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
-public ReactiveCommand<Unit, Unit> SaveCommand { get; }
-public ReactiveCommand<string, Unit> NavigateCommand { get; }
+public ICommand<Unit, Unit> LoadDataCommand { get; }
+public ICommand<Unit, Unit> SaveCommand { get; }
+public ICommand<string, Unit> NavigateCommand { get; }
 ```
 
 ### ObservableAsPropertyHelper (OAPH)
@@ -201,7 +201,7 @@ PrimaryGradientBrush, HeroGradientBrush
 
 ## Event and Handler Naming
 
-### ReactiveUI Event Patterns
+### Standard .NET Event Patterns
 ```csharp
 // Event with descriptive name and EventArgs suffix
 public event EventHandler<QuickActionExecutedEventArgs>? QuickActionExecuted;
@@ -227,10 +227,10 @@ private async Task ExecuteQuickActionAsync(QuickButtonItemViewModel button)
 
 ### ViewModel Naming
 ```csharp
-// ViewModels inherit from ReactiveObject
-public class MainViewModel : ReactiveObject
-public class InventoryTabViewModel : ReactiveObject
-public class QuickButtonItemViewModel : ReactiveObject
+// ViewModels inherit from BaseViewModel
+public class MainViewModel : BaseViewModel
+public class InventoryTabViewModel : BaseViewModel
+public class QuickButtonItemViewModel : BaseViewModel
 ```
 
 ### View Naming
