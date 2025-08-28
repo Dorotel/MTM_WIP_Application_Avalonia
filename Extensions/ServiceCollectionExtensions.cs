@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
+using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Services;
 
 namespace MTM_Shared_Logic.Extensions;
@@ -31,6 +32,7 @@ public static class ServiceCollectionExtensions
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<InventoryTabViewModel>();
         services.TryAddTransient<AdvancedRemoveViewModel>();
+        services.TryAddTransient<AddItemViewModel>();
 
         return services;
     }
