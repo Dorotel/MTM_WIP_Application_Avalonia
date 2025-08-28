@@ -1,436 +1,529 @@
-# GitHub Copilot Instructions: Database Patterns for MTM WIP Application
+# Database Patterns and Architecture
 
-You are implementing database access patterns for the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using .NET 8 with strict stored procedure requirements and MTM business rules.
+<details>
+<summary><strong>🎯 MTM Database Architecture</strong></summary>
 
-## Critical Database Rules - Always Follow
+The MTM WIP Application uses a **stored procedure only** approach with comprehensive error handling and logging.
 
-### ? IMPLEMENTED - Use ONLY stored procedures via Helper_Database_StoredProcedure:
+### **Core Principles**
+- **Stored Procedures Only**: No direct SQL queries allowed
+- **Standardized Result Pattern**: All procedures return status and message
+- **Comprehensive Logging**: All database operations logged
+- **Error Handling**: Integrated with ErrorHandling service
+- **Connection Management**: Centralized through Database service
+
+</details>
+
+<details>
+<summary><strong>📋 Database Service Architecture</strong></summary>
+
+### **Consolidated Database Service**
+**File: `Services/Database.cs`**
+
 ```csharp
-// ? CORRECT: Use Helper_Database_StoredProcedure implementation
+namespace MTM_WIP_Application_Avalonia.Services;
+
+/// <summary>
+/// Database service interface for MTM operations.
+/// </summary>
+public interface IDatabaseService
+{
+    Task<DataTable> ExecuteQueryAsync(string query, Dictionary<string, object>? parameters = null);
+    Task<object?> ExecuteScalarAsync(string query, Dictionary<string, object>? parameters = null);
+    Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object>? parameters = null);
+    Task<bool> TestConnectionAsync();
+}
+
+/// <summary>
+/// Comprehensive database service for MTM WIP Application.
+/// Provides centralized database access with error handling and logging.
+/// </summary>
+public class DatabaseService : IDatabaseService
+{
+    private readonly ILogger<DatabaseService> _logger;
+    private readonly string _connectionString;
+
+    public DatabaseService(ILogger<DatabaseService> logger, IConfigurationService configurationService)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _connectionString = configurationService?.GetConnectionString() ?? throw new ArgumentNullException(nameof(configurationService));
+        
+        if (string.IsNullOrWhiteSpace(_connectionString))
+        {
+            throw new InvalidOperationException("Database connection string is not configured");
+        }
+
+        _logger.LogInformation("DatabaseService initialized with connection string");
+    }
+    
+    // Implementation includes comprehensive error handling and logging
+}
+
+/// <summary>
+/// Helper class for stored procedure execution with status return.
+/// Maintains compatibility with existing Helper_Database_StoredProcedure usage.
+/// </summary>
+public static class Helper_Database_StoredProcedure
+{
+    private static ILogger? _logger;
+
+    public static void SetLogger(ILogger logger)
+    {
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Executes a stored procedure with status return - MTM standard pattern.
+    /// </summary>
+    public static async Task<StoredProcedureResult> ExecuteDataTableWithStatus(
+        string connectionString, 
+        string procedureName, 
+        Dictionary<string, object> parameters)
+    {
+        // Implementation with comprehensive error handling
+    }
+}
+
+/// <summary>
+/// Standard result structure for stored procedure execution.
+/// </summary>
+public class StoredProcedureResult
+{
+    public int Status { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public DataTable Data { get; set; } = new DataTable();
+
+    public bool IsSuccess => Status == 0;
+}
+```
+
+</details>
+
+<details>
+<summary><strong>🚨 CRITICAL: Stored Procedure Only Pattern</strong></summary>
+
+### **ALWAYS Use Stored Procedures**
+```csharp
+// ✅ CORRECT: Use stored procedures via Helper_Database_StoredProcedure
+var parameters = new Dictionary<string, object>
+{
+    ["p_PartID"] = partId,
+    ["p_OperationID"] = operation,
+    ["p_LocationID"] = location,
+    ["p_Quantity"] = quantity,
+    ["p_UserID"] = userId,
+    ["p_TransactionType"] = "IN"
+};
+
 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-    Model_AppVariables.ConnectionString,
-    "inv_inventory_Get_ByPartID",
+    connectionString,
+    "inv_inventory_Add_Item",
+    parameters
+);
+
+if (result.IsSuccess)
+{
+    // Process result.Data
+}
+else
+{
+    // Handle error using result.Message
+}
+```
+
+### **NEVER Use Direct SQL**
+```csharp
+// ❌ WRONG: Direct SQL queries are not allowed
+var query = "SELECT * FROM inventory WHERE part_id = @partId";
+var command = new MySqlCommand(query, connection);
+```
+
+</details>
+
+<details>
+<summary><strong>📊 Standard MTM Stored Procedures</strong></summary>
+
+### **Inventory Management Procedures**
+```sql
+-- Add inventory item
+CALL inv_inventory_Add_Item(p_PartID, p_OperationID, p_LocationID, p_Quantity, p_UserID, p_TransactionType, @status, @message)
+
+-- Remove inventory item  
+CALL inv_inventory_Remove_Item(p_PartID, p_OperationID, p_LocationID, p_Quantity, p_UserID, @status, @message)
+
+-- Transfer inventory between locations
+CALL inv_inventory_Transfer_Item(p_PartID, p_OperationID, p_FromLocation, p_ToLocation, p_Quantity, p_UserID, @status, @message)
+
+-- Search inventory
+CALL inv_inventory_Search(p_PartID, p_OperationID, p_LocationID, @status, @message)
+```
+
+### **Master Data Procedures**
+```sql
+-- Get part IDs for autocomplete
+CALL md_part_ids_Get_Active(@status, @message)
+
+-- Get operations for autocomplete
+CALL md_operation_numbers_Get_Active(@status, @message)
+
+-- Get locations for autocomplete  
+CALL md_locations_Get_Active(@status, @message)
+
+-- Validate part ID
+CALL md_part_ids_Validate(p_PartID, @status, @message)
+```
+
+### **Transaction History Procedures**
+```sql
+-- Get transaction history
+CALL inv_transactions_Get_History(p_PartID, p_StartDate, p_EndDate, p_Limit, @status, @message)
+
+-- Get user transactions
+CALL inv_transactions_Get_By_User(p_UserID, p_StartDate, p_EndDate, @status, @message)
+```
+
+</details>
+
+<details>
+<summary><strong>🔧 Implementation Patterns</strong></summary>
+
+### **ViewModel Database Access Pattern**
+```csharp
+public class InventoryTabViewModel : BaseViewModel
+{
+    private readonly IDatabaseService _databaseService;
+    private readonly IConfigurationService _configurationService;
+
+    public async Task ExecuteSaveAsync()
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_PartID"] = SelectedPart,
+                ["p_OperationID"] = SelectedOperation,
+                ["p_LocationID"] = SelectedLocation,
+                ["p_Quantity"] = Quantity,
+                ["p_Notes"] = Notes,
+                ["p_UserID"] = _applicationStateService.CurrentUser,
+                ["p_TransactionType"] = "IN"
+            };
+
+            var connectionString = _configurationService.GetConnectionString();
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString,
+                "inv_inventory_Add_Item",
+                parameters
+            );
+
+            if (result.IsSuccess)
+            {
+                Logger.LogInformation("Inventory item saved successfully");
+                // Handle success
+            }
+            else
+            {
+                HasError = true;
+                ErrorMessage = result.Message;
+                Logger.LogWarning("Failed to save inventory item: {Error}", result.Message);
+            }
+        }
+        catch (Exception ex)
+        {
+            HasError = true;
+            ErrorMessage = ErrorHandling.GetUserFriendlyMessage(ex);
+            await ErrorHandling.HandleErrorAsync(ex, "SaveInventoryItem", userId, context);
+        }
+    }
+}
+```
+
+### **Service Layer Database Access Pattern**
+```csharp
+public class InventoryService : IInventoryService
+{
+    private readonly IDatabaseService _databaseService;
+    private readonly ILogger<InventoryService> _logger;
+
+    public async Task<Result<List<InventoryItem>>> SearchInventoryAsync(string partId, string operation, string location)
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_PartID"] = partId ?? "",
+                ["p_OperationID"] = operation ?? "",
+                ["p_LocationID"] = location ?? ""
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Search",
+                parameters
+            );
+
+            if (result.IsSuccess)
+            {
+                var items = ConvertDataTableToInventoryItems(result.Data);
+                return Result<List<InventoryItem>>.Success(items);
+            }
+            else
+            {
+                return Result<List<InventoryItem>>.Failure(result.Message);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to search inventory");
+            return Result<List<InventoryItem>>.Failure($"Search failed: {ex.Message}");
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>🎯 Transaction Type Logic (CRITICAL)</strong></summary>
+
+### **User Intent-Based Transaction Types**
+```csharp
+// ✅ CORRECT: Base transaction type on user intent, not operation numbers
+public enum UserIntent
+{
+    AddingStock,    // User is adding inventory (TransactionType = "IN")
+    RemovingStock,  // User is removing inventory (TransactionType = "OUT")
+    MovingStock     // User is transferring between locations (TransactionType = "TRANSFER")
+}
+
+public string DetermineTransactionType(UserIntent userIntent)
+{
+    return userIntent switch
+    {
+        UserIntent.AddingStock => "IN",       
+        UserIntent.RemovingStock => "OUT",    
+        UserIntent.MovingStock => "TRANSFER",
+        _ => "IN" // Default to IN for unknown intent
+    };
+}
+```
+
+### **Operation Numbers Are Workflow Steps**
+```csharp
+// ✅ CORRECT: Operations are workflow identifiers, not transaction indicators
+var operations = new[] { "90", "100", "110", "120", "130" }; // Workflow steps
+
+// ❌ WRONG: Don't use operations to determine transaction type
+if (operation == "90") transactionType = "IN"; // This is incorrect logic
+```
+
+</details>
+
+<details>
+<summary><strong>📊 Data Validation Patterns</strong></summary>
+
+### **Input Validation Before Database Call**
+```csharp
+private bool ValidateInput()
+{
+    if (string.IsNullOrWhiteSpace(SelectedPart))
+    {
+        HasError = true;
+        ErrorMessage = "Part ID is required";
+        return false;
+    }
+
+    if (string.IsNullOrWhiteSpace(SelectedOperation))
+    {
+        HasError = true;
+        ErrorMessage = "Operation is required";
+        return false;
+    }
+
+    if (string.IsNullOrWhiteSpace(SelectedLocation))
+    {
+        HasError = true;
+        ErrorMessage = "Location is required";
+        return false;
+    }
+
+    if (Quantity <= 0)
+    {
+        HasError = true;
+        ErrorMessage = "Quantity must be greater than zero";
+        return false;
+    }
+
+    return true;
+}
+```
+
+### **Database-Level Validation**
+```csharp
+// Database procedures handle business rule validation
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    connectionString,
+    "md_part_ids_Validate",
     new Dictionary<string, object> { ["p_PartID"] = partId }
 );
 
-// ? PROHIBITED: Never write direct SQL queries
-// var sql = "SELECT * FROM inventory WHERE part_id = @partId"; // NEVER DO THIS
+bool isValid = result.IsSuccess && result.Data.Rows.Count > 0;
 ```
 
-### ? IMPLEMENTED - Helper_Database_StoredProcedure Class
-Located in `Services/Helper_Database_StoredProcedure.cs`, provides:
+</details>
 
-**Security Features**:
-- ? SQL injection prevention with `IsSqlQuery()` validation
-- ? Stored procedure name validation
-- ? Parameter sanitization
-- ? Security violation logging
+<details>
+<summary><strong>🔄 Connection Management</strong></summary>
 
-**Core Methods**:
-- ? `ExecuteDataTableWithStatus()` - Primary method for data retrieval with status
-- ? `ExecuteNonQuery()` - For INSERT/UPDATE/DELETE operations
-- ? `ExecuteScalar<T>()` - For single value returns
-- ? Comprehensive error handling with logging
-- ? MySQL connection management with retry logic
-
-**Usage Pattern**:
+### **Centralized Connection String Management**
 ```csharp
-// ? Initialize logger during app startup (in App.axaml.cs)
-var loggerFactory = Program.GetService<ILoggerFactory>();
-var generalLogger = loggerFactory.CreateLogger("Helper_Database_StoredProcedure");
-Helper_Database_StoredProcedure.SetLogger(generalLogger);
+// ✅ Connection strings managed through Configuration service
+public class DatabaseService : IDatabaseService
+{
+    private readonly string _connectionString;
 
-// ? Use throughout application
+    public DatabaseService(ILogger<DatabaseService> logger, IConfigurationService configurationService)
+    {
+        _connectionString = configurationService.GetConnectionString();
+    }
+}
+```
+
+### **Connection String Access Pattern**
+```csharp
+// ✅ Get connection string when needed
+var connectionString = _configurationService.GetConnectionString();
 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-    Model_AppVariables.ConnectionString,
-    "inv_inventory_Add_Item",
-    parameters);
+    connectionString,
+    procedureName,
+    parameters
+);
 ```
 
-### TransactionType Business Logic (CRITICAL):
-Determine TransactionType by USER INTENT, not operation numbers:
+</details>
+
+<details>
+<summary><strong>🛡️ Error Handling Integration</strong></summary>
+
+### **Comprehensive Error Handling**
 ```csharp
-// ? CORRECT: Based on what user is doing
-public TransactionType DetermineTransactionType(UserAction action)
-{
-    return action.Intent switch
-    {
-        UserIntent.AddingStock => TransactionType.IN,      // User adding inventory
-        UserIntent.RemovingStock => TransactionType.OUT,   // User removing inventory
-        UserIntent.MovingStock => TransactionType.TRANSFER // User moving between locations
-    };
-}
-
-// ? WRONG: Never determine from operation numbers
-// if (operation == "90") return TransactionType.IN; // Operations are workflow steps!
-```
-
-### ? IMPLEMENTED - MTM Data Patterns:
-```csharp
-// ? MTM business object structure (in CoreModels.cs)
-public class InventoryItem
-{
-    public string PartID { get; set; } = string.Empty;    // "PART001", "ABC-123"
-    public string? Operation { get; set; }                // "90", "100", "110" (workflow steps)
-    public int Quantity { get; set; }                     // Integer count only
-    public string Location { get; set; } = string.Empty; // Location identifier
-    public string ItemType { get; set; } = "WIP";        // Default item type
-    public string User { get; set; } = string.Empty;     // User performing operation
-    // ... other properties
-}
-
-public class InventoryTransaction
-{
-    public TransactionType TransactionType { get; set; }  // IN, OUT, TRANSFER (based on user intent)
-    public string PartID { get; set; } = string.Empty;    // Part identifier
-    public string? Operation { get; set; }                // Workflow step number
-    // ... other properties
-}
-
-// ? Operation numbers are workflow steps, NOT transaction indicators
-var workflowSteps = new[] { "90", "100", "110", "120" }; // String numbers for manufacturing steps
-```
-
-## ? IMPLEMENTED - Service Implementation Patterns
-
-### Complete InventoryService Implementation:
-```csharp
-// ? IMPLEMENTED in Services/InventoryService.cs
-namespace MTM_Shared_Logic.Services
-{
-    public class InventoryService : IInventoryService
-    {
-        private readonly IDatabaseService _databaseService;
-        private readonly IValidationService _validationService;
-        private readonly ILogger<InventoryService> _logger;
-
-        public InventoryService(
-            IDatabaseService databaseService,
-            IValidationService validationService,
-            ILogger<InventoryService> logger)
-        {
-            _databaseService = databaseService;
-            _validationService = validationService;
-            _logger = logger;
-        }
-
-        public async Task<MTM_Shared_Logic.Models.Result<List<InventoryItem>>> GetInventoryAsync(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                _logger.LogInformation("Retrieving all inventory items via stored procedure");
-
-                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                    Model_AppVariables.ConnectionString,
-                    "inv_inventory_Get_All",
-                    null);
-
-                if (!result.IsSuccess)
-                {
-                    _logger.LogError("Failed to retrieve inventory items: {Error}", result.ErrorMessage);
-                    return MTM_Shared_Logic.Models.Result<List<InventoryItem>>.Failure(result.ErrorMessage ?? "Failed to retrieve inventory");
-                }
-
-                // Convert DataTable to List<InventoryItem>
-                var inventoryItems = ConvertDataTableToInventoryItems(result.Data);
-                return MTM_Shared_Logic.Models.Result<List<InventoryItem>>.Success(inventoryItems);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to retrieve inventory items");
-                return MTM_Shared_Logic.Models.Result<List<InventoryItem>>.Failure($"Failed to retrieve inventory: {ex.Message}");
-            }
-        }
-
-        // ? Additional methods: AddInventoryItemAsync, RemoveInventoryItemAsync, etc.
-    }
-}
-```
-
-## ? IMPLEMENTED - Transaction Type Implementation
-
-### Always implement based on user intent:
-```csharp
-// ? Add inventory operation - always IN (user intent: adding stock)
-public async Task<MTM_Shared_Logic.Models.Result> AddInventoryItemAsync(InventoryItem item, CancellationToken cancellationToken = default)
-{
-    var parameters = new Dictionary<string, object>
-    {
-        ["p_PartID"] = item.PartID,
-        ["p_Location"] = item.Location,
-        ["p_Operation"] = item.Operation ?? string.Empty, // Workflow step (just a number)
-        ["p_Quantity"] = item.Quantity,
-        ["p_ItemType"] = item.ItemType,
-        ["p_User"] = item.User,
-        ["p_Notes"] = item.Notes ?? string.Empty
-        // TransactionType is determined by the stored procedure based on operation context
-    };
-
-    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-        Model_AppVariables.ConnectionString,
-        "inv_inventory_Add_Item", // This procedure handles IN transaction logic
-        parameters);
-
-    return result.IsSuccess 
-        ? MTM_Shared_Logic.Models.Result.Success() 
-        : MTM_Shared_Logic.Models.Result.Failure(result.ErrorMessage ?? "Failed to add inventory item");
-}
-
-// ? Remove inventory operation - always OUT (user intent: removing stock)
-public async Task<MTM_Shared_Logic.Models.Result> RemoveInventoryItemAsync(string partId, string location, string operation, int quantity, string userId, string? notes = null, CancellationToken cancellationToken = default)
-{
-    var parameters = new Dictionary<string, object>
-    {
-        ["p_PartID"] = partId,
-        ["p_Location"] = location,
-        ["p_Operation"] = operation,      // Workflow step (just a number)
-        ["p_Quantity"] = quantity,
-        ["p_ItemType"] = "WIP",
-        ["p_User"] = userId,
-        ["p_BatchNumber"] = string.Empty,
-        ["p_Notes"] = notes ?? string.Empty
-        // Stored procedure determines this is OUT transaction
-    };
-
-    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-        Model_AppVariables.ConnectionString,
-        "inv_inventory_Remove_Item", // This procedure handles OUT transaction logic
-        parameters);
-
-    // Check status from stored procedure
-    var status = result.GetOutputParameter<int>("p_Status");
-    if (status != 0)
-    {
-        var errorMsg = result.GetOutputParameter<string>("p_ErrorMsg") ?? "Unknown error occurred";
-        return MTM_Shared_Logic.Models.Result.Failure(errorMsg);
-    }
-
-    return MTM_Shared_Logic.Models.Result.Success();
-}
-
-// ? Transfer inventory operation - always TRANSFER (user intent: moving stock)
-public async Task<MTM_Shared_Logic.Models.Result> TransferInventoryAsync(string partId, string operation, int quantity, string fromLocation, string toLocation, string userId, CancellationToken cancellationToken = default)
-{
-    // Get current item batch number for transfer
-    var currentItemResult = await GetInventoryItemAsync(partId, cancellationToken);
-    if (!currentItemResult.IsSuccess || currentItemResult.Value == null)
-    {
-        return MTM_Shared_Logic.Models.Result.Failure("Part not found in inventory");
-    }
-
-    var parameters = new Dictionary<string, object>
-    {
-        ["in_BatchNumber"] = currentItemResult.Value.BatchNumber ?? string.Empty,
-        ["in_PartID"] = partId,
-        ["in_Operation"] = operation, // Workflow step (just a number)
-        ["in_NewLocation"] = toLocation
-        // Stored procedure determines this is TRANSFER transaction
-    };
-
-    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-        Model_AppVariables.ConnectionString,
-        "inv_inventory_Transfer_Part", // This procedure handles TRANSFER transaction logic
-        parameters);
-
-    return result.IsSuccess 
-        ? MTM_Shared_Logic.Models.Result.Success() 
-        : MTM_Shared_Logic.Models.Result.Failure(result.ErrorMessage ?? "Failed to transfer inventory");
-}
-```
-
-## ? IMPLEMENTED - Error Handling Standards
-
-### Comprehensive error handling with DataTableWithStatus:
-```csharp
-public class DataTableWithStatus
-{
-    public DataTable Data { get; set; } = new DataTable();
-    public int Status { get; set; }                    // 0 = success, non-zero = error
-    public string? ErrorMessage { get; set; }
-    public bool IsSuccess { get; set; }
-    public int RowsAffected { get; set; }
-    public Dictionary<string, object> OutputParameters { get; set; } = new Dictionary<string, object>();
-    public Exception? Exception { get; set; }
-
-    // ? Helper methods
-    public static DataTableWithStatus Success(DataTable data, int rowsAffected = 0);
-    public static DataTableWithStatus Failure(string errorMessage, Exception? exception = null);
-    public T? GetOutputParameter<T>(string parameterName);
-}
-```
-
-### ? Service-level error handling pattern:
-```csharp
-public async Task<MTM_Shared_Logic.Models.Result<T>> ExecuteDatabaseOperation<T>(string procedureName, Dictionary<string, object> parameters)
+public async Task<StoredProcedureResult> ExecuteDataTableWithStatus(
+    string connectionString, 
+    string procedureName, 
+    Dictionary<string, object> parameters)
 {
     try
     {
-        _logger.LogDebug("Executing stored procedure: {ProcedureName}", procedureName);
-
-        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            Model_AppVariables.ConnectionString,
-            procedureName,
-            parameters
-        );
-
-        if (result.IsSuccess && result.Data != null)
-        {
-            var data = ConvertToType<T>(result.Data);
-            _logger.LogDebug("Stored procedure executed successfully: {ProcedureName}, Rows: {RowCount}", 
-                procedureName, result.RowsAffected);
-            return MTM_Shared_Logic.Models.Result<T>.Success(data);
-        }
-
-        _logger.LogError("Stored procedure failed: {ProcedureName}, Error: {Error}", 
-            procedureName, result.ErrorMessage);
-        
-        return MTM_Shared_Logic.Models.Result<T>.Failure(result.ErrorMessage ?? "Database operation failed");
+        // Database execution logic
+        return result;
     }
     catch (Exception ex)
     {
-        _logger.LogError(ex, "Exception in stored procedure: {ProcedureName}", procedureName);
-        return MTM_Shared_Logic.Models.Result<T>.Failure($"Database error: {ex.Message}");
-    }
-}
-```
-
-## ? AVAILABLE - 12 Comprehensive Stored Procedures
-
-The following stored procedures are available for use via Helper_Database_StoredProcedure:
-
-**Inventory Operations**:
-- ? `inv_inventory_Add_Item` - Add new inventory item
-- ? `inv_inventory_Remove_Item` - Remove inventory item with validation
-- ? `inv_inventory_Get_ByPartID` - Get inventory by part ID
-- ? `inv_inventory_Get_ByPartIDandOperation` - Get by part ID and operation
-- ? `inv_inventory_Transfer_Part` - Transfer between locations
-- ? `inv_inventory_Transfer_Quantity` - Transfer specific quantities
-
-**Transaction Management**:
-- ? `inv_transaction_Add` - Log inventory transactions
-- ? `sys_last_10_transactions_Get_ByUser` - Get user's recent transactions
-
-**Master Data**:
-- ? `md_part_ids_Get_All` - Get all part definitions
-- ? `md_locations_Get_All` - Get all locations
-- ? `md_operation_numbers_Get_All` - Get all operation numbers
-
-**System Operations**:
-- ? `log_error_Add_Error` - Log application errors to database
-
-## Development Workflow
-
-### ? Configuration Management:
-```csharp
-// ? Connection string managed via Model_AppVariables
-Model_AppVariables.ConnectionString // Automatically configured from appsettings.json
-
-// ? Database settings available
-Model_AppVariables.Database.CommandTimeout // 30 seconds default
-Model_AppVariables.Database.MaxRetryAttempts // 3 attempts default
-```
-
-### When creating new stored procedures:
-1. **Add to development file**: `Documentation/Development/Database_Files/New_Stored_Procedures.sql`
-2. **Follow naming convention**: `{module}_{table}_{action}_By{Criteria}` 
-   - Example: `inv_inventory_Get_ByPartId`
-   - Example: `inv_transaction_Insert_WithValidation`
-3. **Include standard parameters**:
-   - Input validation with `p_` prefix
-   - Output status: `p_Status INT` (0 = success)
-   - Error message: `p_ErrorMsg VARCHAR(255)`
-   - Row count: Use ROW_COUNT() where applicable
-
-### ? Example stored procedure pattern (following existing conventions):
-```sql
--- Add to Documentation/Development/Database_Files/New_Stored_Procedures.sql
-DELIMITER $$
-
-CREATE PROCEDURE `inv_inventory_Get_ByLocation`(
-    IN p_Location VARCHAR(100),
-    OUT p_Status INT,
-    OUT p_ErrorMsg VARCHAR(255)
-)
-BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        GET DIAGNOSTICS CONDITION 1 p_ErrorMsg = MESSAGE_TEXT;
-        SET p_Status = -1;
-        ROLLBACK;
-    END;
-
-    START TRANSACTION;
-
-    -- Validate inputs
-    IF p_Location IS NULL OR p_Location = '' THEN
-        SET p_Status = 1;
-        SET p_ErrorMsg = 'Location cannot be null or empty';
-    ELSE
-        -- Execute operation
-        SELECT ID, PartID, Location, Operation, Quantity, ItemType, 
-               ReceiveDate, LastUpdated, User, BatchNumber, Notes
-        FROM inv_inventory 
-        WHERE Location = p_Location
-        ORDER BY PartID, Operation;
+        _logger?.LogError(ex, "Failed to execute stored procedure: {ProcedureName}", procedureName);
         
-        SET p_Status = 0;
-        SET p_ErrorMsg = 'Success';
-    END IF;
+        await ErrorHandling.HandleErrorAsync(ex, "ExecuteDataTableWithStatus", Environment.UserName, 
+            new Dictionary<string, object> 
+            { 
+                ["ProcedureName"] = procedureName, 
+                ["Parameters"] = parameters 
+            });
 
-    COMMIT;
-END$$
-
-DELIMITER ;
-```
-
-## ? IMPLEMENTED - Validation Patterns
-
-### Using IValidationService integration:
-```csharp
-// ? Validation integrated into services
-public async Task<MTM_Shared_Logic.Models.Result> AddInventoryItemAsync(InventoryItem item, CancellationToken cancellationToken = default)
-{
-    // Validate the inventory item
-    var validationResult = await _validationService.ValidateAsync(item, cancellationToken);
-    if (!validationResult.IsSuccess || !validationResult.Value!.IsValid)
-    {
-        var errors = string.Join(", ", validationResult.Value?.ErrorMessages ?? new List<string> { "Validation failed" });
-        return MTM_Shared_Logic.Models.Result.Failure($"Validation failed: {errors}");
+        return new StoredProcedureResult
+        {
+            Status = -1,
+            Message = $"Error executing stored procedure: {ex.Message}",
+            Data = new DataTable()
+        };
     }
-
-    // Proceed with database operation...
 }
 ```
 
-## ? Ready for Phase 2
+</details>
 
-The database access layer is now complete and operational:
+<details>
+<summary><strong>📈 Performance Considerations</strong></summary>
 
-**? Phase 1 Complete**:
-- Helper_Database_StoredProcedure implemented and tested
-- All 12 stored procedures accessible
-- Comprehensive error handling and logging
-- Security enforcement (stored procedures only)
-- Integration with Model_AppVariables and configuration
+### **Connection Pooling**
+- MySQL connection pooling handled automatically
+- Proper using statements ensure connection disposal
+- No persistent connections maintained
 
-**? Phase 2 Ready**:
-- UserService implementation using established patterns
-- TransactionService implementation using Helper_Database_StoredProcedure
-- Master Data Services using available stored procedures
-- Enhanced business services with validation
+### **Parameter Binding**
+```csharp
+// ✅ Always use parameterized queries
+command.Parameters.AddWithValue($"@{param.Key}", param.Value ?? DBNull.Value);
 
-## Never Do
-- Write direct SQL queries in C# code
-- Determine TransactionType from operation numbers
-- Skip error handling in database operations
-- Use hard-coded connection strings
-- Implement business logic in stored procedures
+// ❌ Never use string concatenation
+var query = $"SELECT * FROM table WHERE id = {id}"; // SQL injection risk
+```
 
-## Always Do
-- ? Use Helper_Database_StoredProcedure for all database access
-- ? Base TransactionType on user intent (what the user is doing)
-- ? Include comprehensive error handling and logging via ILogger<T>
-- ? Validate inputs before database operations using IValidationService
-- ? Follow MTM data patterns for Part IDs (strings) and Operations (string numbers)
-- ? Use MTM_Shared_Logic.Models.Result<T> pattern for operation responses
-- ? Initialize Helper_Database_StoredProcedure logger during app startup
+### **Data Table Usage**
+```csharp
+// ✅ Use DataTable for result sets
+using var adapter = new MySqlDataAdapter(command);
+var dataTable = new DataTable();
+adapter.Fill(dataTable);
+```
+
+</details>
+
+<details>
+<summary><strong>🧪 Testing Database Operations</strong></summary>
+
+### **Unit Test Pattern**
+```csharp
+[Test]
+public async Task ExecuteDataTableWithStatus_ValidProcedure_ReturnsSuccess()
+{
+    // Arrange
+    var parameters = new Dictionary<string, object>
+    {
+        ["p_PartID"] = "TEST001"
+    };
+
+    // Act
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        connectionString,
+        "md_part_ids_Validate",
+        parameters
+    );
+
+    // Assert
+    Assert.IsTrue(result.IsSuccess);
+    Assert.IsNotNull(result.Data);
+}
+```
+
+### **Integration Test Pattern**
+```csharp
+[Test]
+public async Task DatabaseService_TestConnection_ReturnsTrue()
+{
+    // Arrange
+    var databaseService = serviceProvider.GetRequiredService<IDatabaseService>();
+
+    // Act
+    var result = await databaseService.TestConnectionAsync();
+
+    // Assert
+    Assert.IsTrue(result);
+}
+```
+
+</details>
+
+<details>
+<summary><strong>📋 Best Practices Summary</strong></summary>
+
+1. **✅ Always use stored procedures** - Never direct SQL
+2. **✅ Use Helper_Database_StoredProcedure** - Consistent execution pattern
+3. **✅ Check StoredProcedureResult.IsSuccess** - Handle errors properly
+4. **✅ Log all database operations** - Use ILogger for comprehensive logging
+5. **✅ Validate inputs before database calls** - Reduce unnecessary calls
+6. **✅ Use parameterized queries** - Prevent SQL injection
+7. **✅ Handle exceptions comprehensively** - Use ErrorHandling service
+8. **✅ Manage connections properly** - Use using statements
+9. **✅ Base transaction types on user intent** - Not operation numbers
+10. **✅ Use centralized connection management** - Through Configuration service
+
+</details>
