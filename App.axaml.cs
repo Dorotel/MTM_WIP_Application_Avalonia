@@ -45,9 +45,7 @@ namespace MTM_WIP_Application_Avalonia
                 _logger?.LogInformation("MTM WIP Application starting...");
                 _logger?.LogInformation("Model_AppVariables and database helper initialized");
 
-                // Initialize ReactiveUI error handling FIRST to prevent pipeline breaks
-                ReactiveUIInitializer.EnsureInitialized(_logger);
-                _logger?.LogInformation("ReactiveUI error handling initialized");
+                // Application initialization - error handling configured via services
 
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {

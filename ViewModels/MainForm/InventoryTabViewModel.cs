@@ -52,7 +52,7 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     public ICommand LoadDataCommand { get; private set; }
     public ICommand RefreshDataCommand { get; private set; }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+
 
     public InventoryTabViewModel() : this(null!, null!, null!, null!)
     {

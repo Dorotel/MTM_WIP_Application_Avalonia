@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Reactive;
+using System.Windows.Input;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
-using Avalonia.ReactiveUI;
+using MTM_WIP_Application_Avalonia.Commands;
+using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
 {
@@ -43,8 +44,8 @@ namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
             }
             catch (Exception ex)
             {
-                // Use new enhanced error handling
-                await Service_ErrorHandler.HandleErrorAsync(
+                // Use correct error handling service
+                await ErrorHandling.HandleErrorAsync(
                     ex, 
                     "InventoryAddOperation", 
                     _currentUserId,
@@ -57,60 +58,38 @@ namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
                     });
 
                 // Return user-friendly error message
-                var userMessage = Service_ErrorHandler.GetUserFriendlyMessage(ex);
+                var userMessage = ErrorHandling.GetUserFriendlyMessage(ex);
                 return Result<string>.Failure(userMessage, "BUSINESS_ERROR", ex);
             }
         }
 
         /// <summary>
-        /// Example of ReactiveUI command with enhanced error handling.
+        /// Example of standard .NET ViewModel with enhanced error handling.
         /// </summary>
-        public class EnhancedViewModel : ReactiveObject
+        public class EnhancedViewModel : BaseViewModel
         {
-            public ReactiveCommand<Unit, Unit> SaveInventoryCommand { get; }
-            public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
+            public ICommand SaveInventoryCommand { get; private set; }
+            public ICommand LoadDataCommand { get; private set; }
 
             private string _errorMessage = string.Empty;
             public string ErrorMessage
             {
                 get => _errorMessage;
-                set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+                set => SetProperty(ref _errorMessage, value);
             }
 
             private bool _isLoading;
             public bool IsLoading
             {
                 get => _isLoading;
-                set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+                set => SetProperty(ref _isLoading, value);
             }
 
             public EnhancedViewModel()
             {
-                // Command with enhanced error handling
-                SaveInventoryCommand = ReactiveCommand.CreateFromTask(SaveInventoryAsync);
-                
-                // Use new ReactiveUI extension for centralized error handling
-                SaveInventoryCommand.SubscribeToErrorsWithNotification(
-                    "SaveInventoryOperation",
-                    Environment.UserName,
-                    error => ErrorMessage = error,
-                    new Dictionary<string, object>
-                    {
-                        ["Component"] = "InventoryViewModel",
-                        ["Action"] = "Save"
-                    });
-
-                LoadDataCommand = ReactiveCommand.CreateFromTask(LoadDataAsync);
-                
-                // Simple error subscription for background operations
-                LoadDataCommand.SubscribeToErrors(
-                    "LoadDataOperation",
-                    Environment.UserName,
-                    new Dictionary<string, object>
-                    {
-                        ["Component"] = "InventoryViewModel",
-                        ["Action"] = "Load"
-                    });
+                // Commands with enhanced error handling
+                SaveInventoryCommand = new AsyncCommand(SaveInventoryAsync);
+                LoadDataCommand = new AsyncCommand(LoadDataAsync);
             }
 
             private async Task SaveInventoryAsync()
@@ -147,12 +126,8 @@ namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
                 
                 if (result.IsFailure)
                 {
-                    // Log audit trail for failed data load
-                    await LoggingUtility.LogAuditTrailAsync(
-                        "LoadInventoryData",
-                        Environment.UserName,
-                        "InventoryData",
-                        "ALL_ITEMS");
+                    // TODO: Implement audit trail logging as needed
+                    // await LogAuditTrailAsync("LoadInventoryData", Environment.UserName, "InventoryData", "ALL_ITEMS");
                 }
             }
 
@@ -273,7 +248,7 @@ namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
                 }
                 catch (Exception ex)
                 {
-                    await Service_ErrorHandler.HandleErrorAsync(
+                    await ErrorHandling.HandleErrorAsync(
                         ex,
                         "GetInventoryItem",
                         Environment.UserName,
@@ -299,18 +274,8 @@ namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
                         ["StoredProcedure"] = "inv_inventory_Update_Quantity"
                     };
 
-                    // Log audit trail for inventory changes
-                    await LoggingUtility.LogAuditTrailAsync(
-                        "UpdateInventory",
-                        Environment.UserName,
-                        "InventoryItem",
-                        partId,
-                        new Dictionary<string, object> { ["Action"] = "BeforeUpdate" },
-                        new Dictionary<string, object> 
-                        { 
-                            ["NewQuantity"] = quantity,
-                            ["TransactionType"] = transactionType
-                        });
+                    // TODO: Implement audit trail logging as needed
+                    // await LogAuditTrailAsync("UpdateInventory", Environment.UserName, "InventoryItem", partId);
 
                     // Simulate database operation
                     await Task.Delay(300);
@@ -322,7 +287,7 @@ namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
                 }
                 catch (Exception ex)
                 {
-                    await Service_ErrorHandler.HandleErrorAsync(
+                    await ErrorHandling.HandleErrorAsync(
                         ex,
                         "UpdateInventory",
                         Environment.UserName,
@@ -371,22 +336,14 @@ namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
                 if (updateResult.IsFailure)
                     return updateResult;
 
-                // Log performance metrics
-                await LoggingUtility.LogPerformanceMetricsAsync(
-                    "CombinedInventoryOperation",
-                    TimeSpan.FromMilliseconds(800),
-                    Environment.UserName,
-                    new Dictionary<string, object>
-                    {
-                        ["OperationsCompleted"] = 2,
-                        ["Success"] = true
-                    });
+                // TODO: Implement performance metrics logging as needed
+                // await LogPerformanceMetricsAsync("CombinedInventoryOperation", TimeSpan.FromMilliseconds(800));
 
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                await Service_ErrorHandler.HandleErrorAsync(
+                await ErrorHandling.HandleErrorAsync(
                     ex,
                     "CombinedInventoryOperation",
                     Environment.UserName);
@@ -412,11 +369,8 @@ namespace MTM_WIP_Application_Avalonia.Documentation.Development.Examples
                 })
                 .OnSuccessAsync(async message => 
                 {
-                    await LoggingUtility.LogAuditTrailAsync(
-                        "InventoryCheck",
-                        Environment.UserName,
-                        "InventoryItem",
-                        "PART001");
+                    // TODO: Implement audit trail logging as needed
+                    // await LogAuditTrailAsync("InventoryCheck", Environment.UserName, "InventoryItem", "PART001");
                 })
                 .OnFailureAsync(async error =>
                 {
