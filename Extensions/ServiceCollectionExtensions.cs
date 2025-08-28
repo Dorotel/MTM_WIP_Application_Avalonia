@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Memory;
-using System.ComponentModel.DataAnnotations;
 using MTM_Shared_Logic.Services;
 using MTM_Shared_Logic.Core.Services;
 using MTM_Shared_Logic.Models;
@@ -22,6 +21,10 @@ using IApplicationStateService = MTM_WIP_Application_Avalonia.Services.IApplicat
 using IConfigurationService = MTM_WIP_Application_Avalonia.Services.IConfigurationService;
 using ConfigurationService = MTM_WIP_Application_Avalonia.Services.ConfigurationService;
 using IDatabaseService = MTM_Shared_Logic.Core.Services.IDatabaseService;
+using MTMSettings = MTM_Shared_Logic.Services.MTMSettings;
+using DatabaseSettings = MTM_Shared_Logic.Services.DatabaseSettings;
+using ErrorHandlingSettings = MTM_Shared_Logic.Services.ErrorHandlingSettings;
+using LoggingSettings = MTM_Shared_Logic.Services.LoggingSettings;
 
 namespace MTM_Shared_Logic.Extensions
 {
@@ -45,38 +48,38 @@ namespace MTM_Shared_Logic.Extensions
             services.Configure<ErrorHandlingSettings>(configuration.GetSection("ErrorHandling"));
             services.Configure<LoggingSettings>(configuration.GetSection("Logging"));
 
-            // Add settings validation
-            services.AddSingleton<IValidateOptions<MTMSettings>, ConfigurationValidationService>();
+            // Add settings validation (note: MTM_Shared_Logic.Services already has ConfigurationValidationService)
+            // services.AddSingleton<IValidateOptions<MTMSettings>, ConfigurationValidationService>();
 
             // Add core infrastructure services - use explicit types to avoid ambiguity
-            services.AddSingleton<MTM_Shared_Logic.Core.Services.IConfigurationService, MTM_Shared_Logic.Services.ConfigurationService>();
-            services.AddSingleton<MTM_Shared_Logic.Core.Services.IApplicationStateService, MTM_Shared_Logic.Services.MTMApplicationStateService>();
+            services.TryAddSingleton<MTM_Shared_Logic.Core.Services.IConfigurationService, MTM_Shared_Logic.Services.ConfigurationService>();
+            services.TryAddSingleton<MTM_Shared_Logic.Core.Services.IApplicationStateService, MTM_Shared_Logic.Services.MTMApplicationStateService>();
 
             // Add database services
-            services.AddScoped<IDatabaseService, DatabaseService>();
-            services.AddSingleton<IDbConnectionFactory, MySqlConnectionFactory>();
-            services.AddTransient<DatabaseTransactionService>();
+            services.TryAddScoped<IDatabaseService, DatabaseService>();
+            services.TryAddSingleton<IDbConnectionFactory, MySqlConnectionFactory>();
+            services.TryAddTransient<DatabaseTransactionService>();
 
-            // Add business services
-            services.AddScoped<IInventoryService, InventoryService>();
-            services.AddScoped<MTM_Shared_Logic.Services.Interfaces.IUserService, UserService>();
-            services.AddScoped<ITransactionService, TransactionService>();
+            // Add business services - ensure all are registered
+            services.TryAddScoped<IInventoryService, InventoryService>();
+            services.TryAddScoped<MTM_Shared_Logic.Services.Interfaces.IUserService, UserService>();
+            services.TryAddScoped<ITransactionService, TransactionService>();
 
             // Add data services for AutoCompleteBox support
-            services.AddScoped<ILookupDataService, LookupDataService>();
+            services.TryAddScoped<ILookupDataService, LookupDataService>();
 
             // Add UI and theme services
-            services.AddSingleton<IThemeService, ThemeService>();
+            services.TryAddSingleton<IThemeService, ThemeService>();
 
             // Add caching services - use the specific MTM_Shared_Logic.Services version
             services.AddMemoryCache();
-            services.AddSingleton<MTM_Shared_Logic.Services.ICacheService, MTM_Shared_Logic.Services.CacheService>();
+            services.TryAddSingleton<MTM_Shared_Logic.Services.ICacheService, MTM_Shared_Logic.Services.CacheService>();
 
             // Add validation services - use the specific MTM_Shared_Logic.Services version
-            services.AddScoped<MTM_Shared_Logic.Services.IValidationService, MTM_Shared_Logic.Services.ValidationService>();
+            services.TryAddScoped<MTM_Shared_Logic.Services.IValidationService, MTM_Shared_Logic.Services.ValidationService>();
 
             // Add notification services
-            services.AddScoped<INotificationService, NotificationService>();
+            services.TryAddScoped<INotificationService, NotificationService>();
 
             // Add Avalonia-specific application services if not already registered
             services.TryAddSingleton<IApplicationStateService, ApplicationStateService>();
@@ -101,7 +104,7 @@ namespace MTM_Shared_Logic.Extensions
         }
 
         /// <summary>
-        /// Adds MTM services for development environment.
+        /// Adds MTM services for development environment with enhanced validation.
         /// </summary>
         /// <param name="services">The service collection</param>
         /// <param name="configuration">The configuration instance</param>
@@ -110,6 +113,15 @@ namespace MTM_Shared_Logic.Extensions
         {
             // Add core services
             services.AddMTMServices(configuration);
+
+            // Add development-specific logging configuration
+            services.Configure<LoggerFilterOptions>(options =>
+            {
+                options.MinLevel = LogLevel.Debug;
+            });
+
+            // Validate services in development mode
+            services.ValidateMTMServices();
 
             // TODO: Configure for development environment
             // ErrorHandlingConfiguration.ConfigureForDevelopment();
@@ -131,6 +143,12 @@ namespace MTM_Shared_Logic.Extensions
             // Add core services
             services.AddMTMServices(configuration);
 
+            // Production-specific logging configuration
+            services.Configure<LoggerFilterOptions>(options =>
+            {
+                options.MinLevel = LogLevel.Warning;
+            });
+
             // Override connection factory if provided
             if (connectionFactory != null)
             {
@@ -143,6 +161,106 @@ namespace MTM_Shared_Logic.Extensions
             // ErrorHandlingConfiguration.ConfigureForProduction();
 
             return services;
+        }
+
+        /// <summary>
+        /// Validates that all critical MTM services are properly registered.
+        /// </summary>
+        /// <param name="services">The service collection</param>
+        /// <returns>The service collection for chaining</returns>
+        public static IServiceCollection ValidateMTMServices(this IServiceCollection services)
+        {
+            var requiredServices = new[]
+            {
+                // Core infrastructure
+                typeof(IConfiguration),
+                typeof(ILoggerFactory),
+                
+                // MTM Core Services
+                typeof(MTM_Shared_Logic.Core.Services.IConfigurationService),
+                typeof(MTM_Shared_Logic.Core.Services.IApplicationStateService),
+                
+                // Database Services
+                typeof(IDatabaseService),
+                typeof(IDbConnectionFactory),
+                
+                // Business Services
+                typeof(IInventoryService),
+                typeof(MTM_Shared_Logic.Services.Interfaces.IUserService),
+                typeof(ITransactionService),
+                
+                // UI Services
+                typeof(IThemeService),
+                typeof(MTM_Shared_Logic.Services.ICacheService),
+                typeof(MTM_Shared_Logic.Services.IValidationService),
+                
+                // Avalonia Services
+                typeof(IApplicationStateService),
+                typeof(INavigationService),
+                typeof(IConfigurationService),
+                
+                // Critical ViewModels
+                typeof(MainViewViewModel),
+                typeof(MainWindowViewModel),
+                typeof(QuickButtonsViewModel)
+            };
+
+            var missingServices = new List<string>();
+
+            foreach (var serviceType in requiredServices)
+            {
+                if (!services.Any(x => x.ServiceType == serviceType))
+                {
+                    missingServices.Add(serviceType.Name);
+                }
+            }
+
+            if (missingServices.Count > 0)
+            {
+                var errorMessage = $"Missing required services: {string.Join(", ", missingServices)}";
+                throw new InvalidOperationException(errorMessage);
+            }
+
+            return services;
+        }
+
+        /// <summary>
+        /// Tests service resolution at runtime to identify dependency issues.
+        /// </summary>
+        /// <param name="serviceProvider">The built service provider</param>
+        public static void ValidateRuntimeServices(this IServiceProvider serviceProvider)
+        {
+            var criticalServices = new[]
+            {
+                typeof(ILogger<MainViewViewModel>),
+                typeof(INavigationService),
+                typeof(IApplicationStateService),
+                typeof(IInventoryService),
+                typeof(MainViewViewModel),
+                typeof(MainWindowViewModel),
+                typeof(QuickButtonsViewModel)
+            };
+
+            var failedServices = new List<string>();
+
+            foreach (var serviceType in criticalServices)
+            {
+                try
+                {
+                    var service = serviceProvider.GetRequiredService(serviceType);
+                    // Service resolved successfully
+                }
+                catch (Exception ex)
+                {
+                    failedServices.Add($"{serviceType.Name}: {ex.Message}");
+                }
+            }
+
+            if (failedServices.Count > 0)
+            {
+                var errorMessage = $"Failed to resolve critical services:\n{string.Join("\n", failedServices)}";
+                throw new InvalidOperationException(errorMessage);
+            }
         }
 
         /// <summary>
@@ -197,64 +315,6 @@ namespace MTM_Shared_Logic.Extensions
                 services.AddScoped<TService, TImplementation>();
             }
             return services;
-        }
-    }
-
-    /// <summary>
-    /// Configuration validation service for MTM settings.
-    /// Validates configuration options at startup to ensure proper application setup.
-    /// </summary>
-    public class ConfigurationValidationService : IValidateOptions<MTMSettings>
-    {
-        public ValidateOptionsResult Validate(string? name, MTMSettings options)
-        {
-            if (options == null)
-            {
-                return ValidateOptionsResult.Fail("MTMSettings cannot be null");
-            }
-
-            var errors = new List<string>();
-
-            // Validate required settings
-            if (options.MaxTransactionQuantity <= 0)
-            {
-                errors.Add("MaxTransactionQuantity must be greater than 0");
-            }
-
-            if (options.MaxTransactionQuantity > 999999)
-            {
-                errors.Add("MaxTransactionQuantity cannot exceed 999999");
-            }
-
-            if (string.IsNullOrWhiteSpace(options.ApplicationName))
-            {
-                errors.Add("ApplicationName is required");
-            }
-
-            if (string.IsNullOrWhiteSpace(options.Version))
-            {
-                errors.Add("Version is required");
-            }
-
-            // Validate theme settings if present
-            if (!string.IsNullOrWhiteSpace(options.DefaultTheme))
-            {
-                var validThemes = new[] { "Light", "Dark", "Auto" };
-                if (!validThemes.Contains(options.DefaultTheme))
-                {
-                    errors.Add($"DefaultTheme must be one of: {string.Join(", ", validThemes)}");
-                }
-            }
-
-            // Validate database timeout settings
-            if (options.DatabaseTimeoutSeconds < 5 || options.DatabaseTimeoutSeconds > 300)
-            {
-                errors.Add("DatabaseTimeoutSeconds must be between 5 and 300 seconds");
-            }
-
-            return errors.Count > 0 
-                ? ValidateOptionsResult.Fail(errors) 
-                : ValidateOptionsResult.Success;
         }
     }
 
@@ -328,110 +388,5 @@ namespace MTM_Shared_Logic.Extensions
             // TODO: Implement rule validation
             return Task.FromResult(MTM_Shared_Logic.Models.Result<bool>.Success(true));
         }
-    }
-}
-
-namespace MTM_Shared_Logic.Models
-{
-    /// <summary>
-    /// MTM-specific configuration settings.
-    /// </summary>
-    public class MTMSettings
-    {
-        [Required]
-        [StringLength(100, MinimumLength = 1)]
-        public string ApplicationName { get; set; } = "MTM WIP Application Avalonia";
-
-        [Required]
-        [StringLength(10, MinimumLength = 1)]
-        public string Version { get; set; } = "1.0.0";
-
-        [Range(1, 999999)]
-        public int MaxTransactionQuantity { get; set; } = 1000;
-
-        [Range(1, 3600)]
-        public int SessionTimeoutMinutes { get; set; } = 30;
-
-        [Range(5, 100)]
-        public int MaxQuickButtons { get; set; } = 10;
-
-        public bool EnableDebugMode { get; set; } = false;
-
-        public bool AutoSaveUserPreferences { get; set; } = true;
-
-        [Range(1, 60)]
-        public int AutoSaveIntervalMinutes { get; set; } = 5;
-
-        [Range(5, 300)]
-        public int DatabaseTimeoutSeconds { get; set; } = 30;
-
-        public string DefaultTheme { get; set; } = "Light";
-
-        public List<string> ValidOperations { get; set; } = new() { "90", "100", "110", "120" };
-
-        public List<string> DefaultLocations { get; set; } = new() { "EXPO", "WAREHOUSE", "SHIPPING" };
-    }
-
-    /// <summary>
-    /// Database configuration settings.
-    /// </summary>
-    public class DatabaseSettings
-    {
-        [Required]
-        public string ConnectionString { get; set; } = string.Empty;
-
-        [Range(5, 300)]
-        public int CommandTimeout { get; set; } = 30;
-
-        [Range(1, 10)]
-        public int MaxRetryAttempts { get; set; } = 3;
-
-        public bool EnableConnectionPooling { get; set; } = true;
-
-        [Range(1, 100)]
-        public int MaxPoolSize { get; set; } = 10;
-
-        public bool EnableDetailedErrors { get; set; } = false;
-    }
-
-    /// <summary>
-    /// Error handling configuration settings.
-    /// </summary>
-    public class ErrorHandlingSettings
-    {
-        public bool ShowDetailedErrors { get; set; } = false;
-
-        public bool LogToDatabase { get; set; } = true;
-
-        public bool LogToFile { get; set; } = true;
-
-        public string LogFilePath { get; set; } = "logs/";
-
-        [Range(1, 30)]
-        public int LogRetentionDays { get; set; } = 7;
-
-        public bool NotifyOnCriticalErrors { get; set; } = true;
-    }
-
-    /// <summary>
-    /// Logging configuration settings.
-    /// </summary>
-    public class LoggingSettings
-    {
-        public string MinimumLevel { get; set; } = "Information";
-
-        public bool EnableConsoleLogging { get; set; } = true;
-
-        public bool EnableFileLogging { get; set; } = true;
-
-        public bool EnableDatabaseLogging { get; set; } = false;
-
-        public string LogFilePath { get; set; } = "logs/";
-
-        [Range(1, 100)]
-        public int MaxLogFileSizeMB { get; set; } = 10;
-
-        [Range(1, 30)]
-        public int LogRetentionDays { get; set; } = 7;
     }
 }
