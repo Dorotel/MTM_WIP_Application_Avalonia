@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using Avalonia.ReactiveUI;
+using MTM_WIP_Application_Avalonia.Commands;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -21,7 +21,6 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// </summary>
 public class RemoveItemViewModel : BaseViewModel
 {
-    private readonly MTM_Shared_Logic.Services.IInventoryService _inventoryService;
     private readonly IApplicationStateService _applicationState;
 
     #region Observable Collections
@@ -53,7 +52,7 @@ public class RemoveItemViewModel : BaseViewModel
     public InventoryItem? SelectedItem
     {
         get => _selectedItem;
-        set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
+        set => SetProperty(ref _selectedItem, value);
     }
 
     #endregion
@@ -67,7 +66,7 @@ public class RemoveItemViewModel : BaseViewModel
     public string? SelectedPart
     {
         get => _selectedPart;
-        set => this.RaiseAndSetIfChanged(ref _selectedPart, value);
+        set => SetProperty(ref _selectedPart, value);
     }
 
     private string? _selectedOperation;
@@ -77,7 +76,7 @@ public class RemoveItemViewModel : BaseViewModel
     public string? SelectedOperation
     {
         get => _selectedOperation;
-        set => this.RaiseAndSetIfChanged(ref _selectedOperation, value);
+        set => SetProperty(ref _selectedOperation, value);
     }
 
     // Text properties for AutoCompleteBox two-way binding
@@ -88,7 +87,7 @@ public class RemoveItemViewModel : BaseViewModel
     public string PartText
     {
         get => _partText;
-        set => this.RaiseAndSetIfChanged(ref _partText, value ?? string.Empty);
+        set => SetProperty(ref _partText, value ?? string.Empty);
     }
 
     private string _operationText = string.Empty;
@@ -98,7 +97,7 @@ public class RemoveItemViewModel : BaseViewModel
     public string OperationText
     {
         get => _operationText;
-        set => this.RaiseAndSetIfChanged(ref _operationText, value ?? string.Empty);
+        set => SetProperty(ref _operationText, value ?? string.Empty);
     }
 
     #endregion
@@ -112,7 +111,7 @@ public class RemoveItemViewModel : BaseViewModel
     public bool IsLoading
     {
         get => _isLoading;
-        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+        set => SetProperty(ref _isLoading, value);
     }
 
     private bool _hasUndoItems;
@@ -122,26 +121,23 @@ public class RemoveItemViewModel : BaseViewModel
     public bool HasUndoItems
     {
         get => _hasUndoItems;
-        set => this.RaiseAndSetIfChanged(ref _hasUndoItems, value);
+        set => SetProperty(ref _hasUndoItems, value);
     }
 
     /// <summary>
     /// Indicates if there are inventory items to display
     /// </summary>
-    private readonly ObservableAsPropertyHelper<bool> _hasInventoryItems;
-    public bool HasInventoryItems => _hasInventoryItems.Value;
+    public bool HasInventoryItems => InventoryItems.Count > 0;
 
     /// <summary>
     /// Indicates if delete operation can be performed (items selected)
     /// </summary>
-    private readonly ObservableAsPropertyHelper<bool> _canDelete;
-    public bool CanDelete => _canDelete.Value;
+    public bool CanDelete => SelectedItems.Count > 0 && !IsLoading;
 
     /// <summary>
     /// Indicates if undo operation is available
     /// </summary>
-    private readonly ObservableAsPropertyHelper<bool> _canUndo;
-    public bool CanUndo => _canUndo.Value;
+    public bool CanUndo => HasUndoItems && !IsLoading;
 
     #endregion
 
@@ -159,42 +155,42 @@ public class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Executes inventory search based on selected criteria
     /// </summary>
-    public ReactiveCommand<Unit, Unit> SearchCommand { get; private set; } = null!;
+    public ICommand SearchCommand { get; private set; } = null!;
 
     /// <summary>
     /// Resets search criteria and refreshes all data
     /// </summary>
-    public ReactiveCommand<Unit, Unit> ResetCommand { get; private set; } = null!;
+    public ICommand ResetCommand { get; private set; } = null!;
 
     /// <summary>
     /// Removes selected inventory items with transaction logging
     /// </summary>
-    public ReactiveCommand<Unit, Unit> DeleteCommand { get; private set; } = null!;
+    public ICommand DeleteCommand { get; private set; } = null!;
 
     /// <summary>
     /// Restores last removed items
     /// </summary>
-    public ReactiveCommand<Unit, Unit> UndoCommand { get; private set; } = null!;
+    public ICommand UndoCommand { get; private set; } = null!;
 
     /// <summary>
     /// Opens advanced removal features
     /// </summary>
-    public ReactiveCommand<Unit, Unit> AdvancedRemovalCommand { get; private set; } = null!;
+    public ICommand AdvancedRemovalCommand { get; private set; } = null!;
 
     /// <summary>
     /// Prints current inventory view
     /// </summary>
-    public ReactiveCommand<Unit, Unit> PrintCommand { get; private set; } = null!;
+    public ICommand PrintCommand { get; private set; } = null!;
 
     /// <summary>
     /// Toggles quick actions panel
     /// </summary>
-    public ReactiveCommand<Unit, Unit> TogglePanelCommand { get; private set; } = null!;
+    public ICommand TogglePanelCommand { get; private set; } = null!;
 
     /// <summary>
     /// Loads initial data including part and operation options
     /// </summary>
-    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; private set; } = null!;
+    public ICommand LoadDataCommand { get; private set; } = null!;
 
     #endregion
 
@@ -220,45 +216,50 @@ public class RemoveItemViewModel : BaseViewModel
     #region Constructor
 
     public RemoveItemViewModel(
-        MTM_Shared_Logic.Services.IInventoryService inventoryService,
         IApplicationStateService applicationState,
         ILogger<RemoveItemViewModel> logger) : base(logger)
     {
-        _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
 
         Logger.LogInformation("RemoveItemViewModel initialized with dependency injection");
 
-        // Initialize computed properties
-        _hasInventoryItems = this.WhenAnyValue(vm => vm.InventoryItems.Count)
-            .Select(count => count > 0)
-            .ToProperty(this, vm => vm.HasInventoryItems);
-
-        _canDelete = this.WhenAnyValue(vm => vm.SelectedItem)
-            .Select(item => item != null)
-            .ToProperty(this, vm => vm.CanDelete);
-
-        _canUndo = this.WhenAnyValue(vm => vm.HasUndoItems)
-            .ToProperty(this, vm => vm.CanUndo);
-
         InitializeCommands();
         LoadSampleData(); // Load sample data for demonstration
-
-        // Sync text properties with selected items
-        this.WhenAnyValue(x => x.SelectedPart)
-            .Subscribe(selected => PartText = selected ?? string.Empty);
         
-        this.WhenAnyValue(x => x.SelectedOperation)
-            .Subscribe(selected => OperationText = selected ?? string.Empty);
-
-        // Sync selected items when text matches exactly
-        this.WhenAnyValue(x => x.PartText)
-            .Where(text => !string.IsNullOrEmpty(text) && PartOptions.Contains(text))
-            .Subscribe(text => SelectedPart = text);
-        
-        this.WhenAnyValue(x => x.OperationText)
-            .Where(text => !string.IsNullOrEmpty(text) && OperationOptions.Contains(text))
-            .Subscribe(text => SelectedOperation = text);
+        // Setup property change notifications for computed properties
+        PropertyChanged += OnPropertyChanged;
+    }
+    
+    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Update computed properties when dependencies change
+        switch (e.PropertyName)
+        {
+            case nameof(SelectedItems):
+            case nameof(IsLoading):
+                OnPropertyChanged(nameof(CanDelete));
+                break;
+            case nameof(HasUndoItems):
+                OnPropertyChanged(nameof(CanUndo));
+                break;
+            case nameof(InventoryItems):
+                OnPropertyChanged(nameof(HasInventoryItems));
+                break;
+            case nameof(SelectedPart):
+                PartText = SelectedPart ?? string.Empty;
+                break;
+            case nameof(SelectedOperation):
+                OperationText = SelectedOperation ?? string.Empty;
+                break;
+            case nameof(PartText):
+                if (!string.IsNullOrEmpty(PartText) && PartOptions.Contains(PartText))
+                    SelectedPart = PartText;
+                break;
+            case nameof(OperationText):
+                if (!string.IsNullOrEmpty(OperationText) && OperationOptions.Contains(OperationText))
+                    SelectedOperation = OperationText;
+                break;
+        }
     }
 
     #endregion
@@ -268,62 +269,34 @@ public class RemoveItemViewModel : BaseViewModel
     private void InitializeCommands()
     {
         // Search command with progress tracking
-        SearchCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ExecuteSearchAsync();
-        });
+        SearchCommand = new AsyncCommand(ExecuteSearchAsync);
 
         // Reset command
-        ResetCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ResetSearchAsync();
-        });
+        ResetCommand = new AsyncCommand(ResetSearchAsync);
 
         // Delete command with validation
-        DeleteCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ExecuteDeleteAsync();
-        }, this.WhenAnyValue(vm => vm.CanDelete));
+        DeleteCommand = new AsyncCommand(ExecuteDeleteAsync, () => CanDelete);
 
         // Undo command
-        UndoCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ExecuteUndoAsync();
-        }, this.WhenAnyValue(vm => vm.CanUndo));
+        UndoCommand = new AsyncCommand(ExecuteUndoAsync, () => CanUndo);
 
         // Advanced removal command
-        AdvancedRemovalCommand = ReactiveCommand.Create(() =>
+        AdvancedRemovalCommand = new RelayCommand(() =>
         {
             AdvancedRemovalRequested?.Invoke(this, EventArgs.Empty);
         });
 
         // Print command
-        PrintCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ExecutePrintAsync();
-        }, this.WhenAnyValue(vm => vm.HasInventoryItems));
+        PrintCommand = new AsyncCommand(ExecutePrintAsync, () => HasInventoryItems);
 
         // Toggle panel command
-        TogglePanelCommand = ReactiveCommand.Create(() =>
+        TogglePanelCommand = new RelayCommand(() =>
         {
             PanelToggleRequested?.Invoke(this, EventArgs.Empty);
         });
 
         // Load data command
-        LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await LoadComboBoxDataAsync();
-        });
-
-        // Centralized error handling
-        Observable.Merge(
-                SearchCommand.ThrownExceptions,
-                ResetCommand.ThrownExceptions,
-                DeleteCommand.ThrownExceptions,
-                UndoCommand.ThrownExceptions,
-                PrintCommand.ThrownExceptions,
-                LoadDataCommand.ThrownExceptions)
-            .Subscribe(HandleException);
+        LoadDataCommand = new AsyncCommand(LoadComboBoxDataAsync);
     }
 
     #endregion
