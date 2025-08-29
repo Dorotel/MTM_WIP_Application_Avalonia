@@ -31,11 +31,20 @@ public class MainWindowViewModel : BaseViewModel
 
         Logger.LogInformation("MainWindowViewModel initialized with dependency injection");
 
+        // Wire up navigation service to update CurrentView when navigation occurs
+        _navigationService.Navigated += OnNavigated;
+
         // Set MainView as the current content - TODO: Get this from DI container
         CurrentView = new MainView
         {
             // TODO: DataContext should be injected MainViewViewModel
             DataContext = Program.GetService<MainViewViewModel>()
         };
+    }
+
+    private void OnNavigated(object? sender, Services.NavigationEventArgs e)
+    {
+        CurrentView = e.Target;
+        Logger.LogInformation("MainWindow navigated to: {ViewType}", e.Target?.GetType().Name ?? "null");
     }
 }

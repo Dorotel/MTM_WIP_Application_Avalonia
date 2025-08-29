@@ -175,7 +175,16 @@
                                 Classes="mtm-secondary"
                                 Command="{Binding ResetSettingsCommand}"
                                 IsEnabled="{Binding !IsLoading}"
+                                Margin="0,0,12,0"
                                 MinWidth="140"/>
+                        
+                        <!-- Advanced Settings -->
+                        <Button Content="⚙️ Advanced Settings"
+                                Classes="mtm-accent"
+                                Command="{Binding OpenAdvancedSettingsCommand}"
+                                IsEnabled="{Binding !IsLoading}"
+                                MinWidth="140"
+                                ToolTip.Tip="Open comprehensive administrative settings (Ctrl+Shift+S)"/>
                     </WrapPanel>
                 </Border>
 

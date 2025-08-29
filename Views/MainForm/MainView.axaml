@@ -12,28 +12,14 @@
              x:DataType="vm:MainViewViewModel">
 
   <UserControl.Resources>
-    <!-- Black, White, Gold Color Scheme -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="#FFD700"/>           <!-- Gold -->
-    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#DAA520"/>       <!-- Dark Gold -->
-    <SolidColorBrush x:Key="PrimaryGradientBrush" Color="#FFD700"/>   <!-- Gold Gradient -->
-    <SolidColorBrush x:Key="SecondaryBrush" Color="#F5F5DC"/>         <!-- Beige -->
-    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#FFFFFF"/>     <!-- White -->
-    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>    <!-- White -->
-    <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="#000000"/>  <!-- Black -->
-    <SolidColorBrush x:Key="StatusBarBackgroundBrush" Color="#000000"/><!-- Black -->
-    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Light Gray -->
-    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#000000"/>       <!-- Black Text -->
-    <SolidColorBrush x:Key="LightTextBrush" Color="#FFFFFF"/>         <!-- White Text -->
-    <SolidColorBrush x:Key="AccentBrush" Color="#4169E1"/>            <!-- Royal Blue for icons -->
-    <SolidColorBrush x:Key="ErrorBrush" Color="#DC143C"/>             <!-- Crimson -->
-    <SolidColorBrush x:Key="SuccessBrush" Color="#228B22"/>           <!-- Forest Green -->
+    <!-- Theme resources will be provided by DynamicResource bindings -->
+    <!-- Remove hardcoded colors and use theme resources from App.axaml -->
   </UserControl.Resources>
 
   <!-- Keyboard shortcuts -->
   <UserControl.KeyBindings>
     <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}"/>
     <KeyBinding Gesture="Ctrl+S" Command="{Binding OpenSettingsCommand}"/>
-    <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding OpenAdvancedSettingsCommand}"/>
     <KeyBinding Gesture="Ctrl+H" Command="{Binding OpenPersonalHistoryCommand}"/>
     <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
     <!-- Remove tab specific shortcuts -->
@@ -52,13 +38,13 @@
           MaxWidth="1600" MaxHeight="1200"
           Width="1200" Height="700"
           RowDefinitions="Auto,*,Auto" 
-          Background="{StaticResource AppBackgroundBrush}"
+          Background="{DynamicResource MTM_Shared_Logic.AppBackgroundBrush}"
           HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
       
       <!-- Header Menu with Black/Gold Branding - Auto-sizing -->
       <Border Grid.Row="0" 
-              Background="{StaticResource HeaderBackgroundBrush}"
+              Background="{DynamicResource MTM_Shared_Logic.HeaderBackgroundBrush}"
               Padding="24,8"
               BoxShadow="0 2 8 0 #1A000000"
               HorizontalAlignment="Stretch">
@@ -66,20 +52,19 @@
           <!-- Left side: Menu -->
           <Menu Grid.Column="0"
                 Background="Transparent" 
-                Foreground="{StaticResource LightTextBrush}"
+                Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                 HorizontalAlignment="Left">
-            <MenuItem Header="_File" Foreground="{StaticResource LightTextBrush}">
+            <MenuItem Header="_File" Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}">
               <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
-              <MenuItem Header="_Advanced Settings" Command="{Binding OpenAdvancedSettingsCommand}"/>
               <Separator/>
               <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
             </MenuItem>
-            <MenuItem Header="_View" Foreground="{StaticResource LightTextBrush}">
+            <MenuItem Header="_View" Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}">
               <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
             </MenuItem>
             <!-- Development builds only -->
             <MenuItem Header="_Help" 
-                      Foreground="{StaticResource LightTextBrush}"
+                      Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                       IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
               <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
             </MenuItem>
@@ -105,8 +90,8 @@
         
         <!-- Left Panel: Modern Tab Control with Gold Accents - Responsive with constraints -->
         <Border Grid.Column="0" 
-                Background="{StaticResource CardBackgroundBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
                 Margin="16"
@@ -166,8 +151,8 @@
 
         <!-- Right Panel: Quick Actions with Gold Theme - Responsive with constraints -->
         <Border Grid.Column="1"
-                Background="{StaticResource CardBackgroundBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
                 Margin="0,16,16,16"
@@ -199,8 +184,8 @@
 
             <!-- Collapsible Vertical Header Bar with Gold Theme -->
             <Border Grid.Column="1"
-                    Background="{StaticResource PrimaryBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
+                    Background="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                     BorderThickness="1,0,0,0"
                     Width="32"
                     CornerRadius="0,8,8,0"
@@ -211,7 +196,7 @@
                 <TextBlock Grid.Row="1"
                            Text=" "
                            FontSize="16"
-                           Foreground="{StaticResource AccentBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Margin="0,0,0,6"
@@ -222,10 +207,10 @@
                         Command="{Binding ToggleQuickActionsPanelCommand}"
                         Width="20"
                         Height="20"
-                        Background="{StaticResource CardBackgroundBrush}"
-                        Foreground="{StaticResource AccentBrush}"
+                        Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                        Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
                         BorderThickness="1"
-                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                         CornerRadius="5"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
@@ -245,7 +230,7 @@
 
       <!-- Modern Status Bar with Black/Gold Theme - Auto-sizing with constraints -->
       <Border Grid.Row="2"
-              Background="{StaticResource StatusBarBackgroundBrush}"
+              Background="{DynamicResource MTM_Shared_Logic.StatusBarBackgroundBrush}"
               Padding="24,6"
               HorizontalAlignment="Stretch"
               MinHeight="32">
@@ -254,18 +239,18 @@
               HorizontalAlignment="Stretch">
           <!-- Connection Status with Gold Accent -->
           <Border Grid.Column="0" 
-                  Background="{StaticResource PrimaryDarkBrush}"
+                  Background="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"
                   Padding="8,4"
                   CornerRadius="20"
                   HorizontalAlignment="Left">
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="🔗" FontSize="12"/>
               <TextBlock Text="Connection:" 
-                         Foreground="{StaticResource LightTextBrush}" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" 
                          Opacity="0.8"
                          FontSize="11"/>
               <TextBlock Text="{Binding ConnectionStatus, FallbackValue='Connected', TargetNullValue='Unknown'}"
-                         Foreground="{StaticResource PrimaryBrush}"
+                         Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
                          FontWeight="SemiBold"
                          FontSize="11"/>
             </StackPanel>
@@ -281,42 +266,42 @@
             <!-- Connection Strength -->
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="Signal" 
-                         Foreground="{StaticResource LightTextBrush}" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" 
                          Opacity="0.8"
                          FontSize="10"/>
               <ProgressBar Minimum="0" Maximum="100" 
                            Width="80" Height="6" 
                            Value="{Binding ConnectionStrength, FallbackValue=100}"
-                           Foreground="{StaticResource PrimaryBrush}"
-                           Background="{StaticResource PrimaryDarkBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
+                           Background="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"
                            CornerRadius="3"/>
             </StackPanel>
 
             <!-- Main Progress -->
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="Progress" 
-                         Foreground="{StaticResource LightTextBrush}" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" 
                          Opacity="0.8"
                          FontSize="10"/>
               <ProgressBar Minimum="0" Maximum="100"
                            Width="100" Height="6"
                            Value="{Binding ProgressValue, FallbackValue=0}"
-                           Foreground="{StaticResource AccentBrush}"
-                           Background="{StaticResource PrimaryDarkBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                           Background="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"
                            CornerRadius="3"/>
             </StackPanel>
           </StackPanel>
 
           <!-- Status Text with Modern Styling -->
           <Border Grid.Column="2" 
-                  Background="{StaticResource CardBackgroundBrush}"
-                  BorderBrush="{StaticResource BorderBrush}"
+                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                   BorderThickness="1"
                   Padding="8,4"
                   CornerRadius="4"
                   HorizontalAlignment="Right">
             <TextBlock Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
-                       Foreground="{StaticResource PrimaryTextBrush}"
+                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
                        FontSize="11"
                        VerticalAlignment="Center"/>
           </Border>
@@ -324,7 +309,7 @@
           <!-- Version Info -->
           <TextBlock Grid.Column="3"
                      Text="MTM WIP v1.0"
-                     Foreground="{StaticResource LightTextBrush}"
+                     Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
                      Opacity="0.6"
                      FontSize="9"
                      VerticalAlignment="Center"

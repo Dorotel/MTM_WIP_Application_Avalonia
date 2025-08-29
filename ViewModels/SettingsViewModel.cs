@@ -19,6 +19,7 @@ public class SettingsViewModel : BaseViewModel
 {
     private readonly IThemeService _themeService;
     private readonly ISettingsService _settingsService;
+    private readonly INavigationService _navigationService;
     private bool _isLoading;
     private string _statusMessage = string.Empty;
     private ThemeInfo? _selectedTheme;
@@ -26,16 +27,19 @@ public class SettingsViewModel : BaseViewModel
     public SettingsViewModel(
         IThemeService themeService,
         ISettingsService settingsService,
+        INavigationService navigationService,
         ILogger<SettingsViewModel> logger) : base(logger)
     {
         _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+        _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         
         // Initialize commands
         ApplyThemeCommand = new AsyncCommand(ExecuteApplyThemeAsync, CanExecuteApplyTheme);
         ResetSettingsCommand = new AsyncCommand(ExecuteResetSettingsAsync);
         SaveSettingsCommand = new AsyncCommand(ExecuteSaveSettingsAsync);
         LoadSettingsCommand = new AsyncCommand(ExecuteLoadSettingsAsync);
+        OpenAdvancedSettingsCommand = new RelayCommand(ExecuteOpenAdvancedSettings);
         
         // Initialize collections
         AvailableThemes = new ObservableCollection<ThemeInfo>(_themeService.AvailableThemes);
@@ -176,6 +180,11 @@ public class SettingsViewModel : BaseViewModel
     /// Command to load settings from configuration.
     /// </summary>
     public ICommand LoadSettingsCommand { get; }
+
+    /// <summary>
+    /// Command to open advanced settings form.
+    /// </summary>
+    public ICommand OpenAdvancedSettingsCommand { get; }
 
     #endregion
 
@@ -347,6 +356,37 @@ public class SettingsViewModel : BaseViewModel
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Opens the advanced settings form.
+    /// </summary>
+    private void ExecuteOpenAdvancedSettings()
+    {
+        try
+        {
+            StatusMessage = "Opening Advanced Settings...";
+            
+            // Get SettingsFormViewModel from DI container
+            var settingsFormViewModel = Program.GetService<SettingsFormViewModel>();
+            
+            // Create SettingsFormView with the ViewModel
+            var settingsFormView = new Views.SettingsFormView
+            {
+                DataContext = settingsFormViewModel
+            };
+            
+            // Navigate to the advanced settings view
+            _navigationService.NavigateTo(settingsFormView);
+            
+            Logger.LogInformation("Navigated to Advanced Settings form from Settings view");
+            StatusMessage = "Advanced Settings opened";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Failed to open Advanced Settings: {ex.Message}";
+            Logger.LogError(ex, "Failed to open Advanced Settings form from Settings view");
         }
     }
 
