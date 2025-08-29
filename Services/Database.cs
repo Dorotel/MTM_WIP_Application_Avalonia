@@ -13,12 +13,70 @@ namespace MTM_WIP_Application_Avalonia.Services;
 /// </summary>
 public interface IDatabaseService
 {
+    // Basic database operations
     Task<DataTable> ExecuteQueryAsync(string query, Dictionary<string, object>? parameters = null);
     Task<object?> ExecuteScalarAsync(string query, Dictionary<string, object>? parameters = null);
     Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object>? parameters = null);
     Task<bool> TestConnectionAsync();
     Task<DataTable> GetLastTransactionsForUserAsync(string? userId = null, int limit = 10);
     string GetConnectionString();
+    
+    // Inventory Operations - using Helper_Database_StoredProcedure pattern
+    Task<StoredProcedureResult> AddInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string notes);
+    Task<DataTable> GetInventoryByPartIdAsync(string partId);
+    Task<DataTable> GetInventoryByPartAndOperationAsync(string partId, string operation);
+    Task<DataTable> GetInventoryByUserAsync(string user);
+    Task<StoredProcedureResult> RemoveInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string batchNumber, string notes);
+    Task<bool> TransferPartAsync(string batchNumber, string partId, string operation, string newLocation);
+    Task<bool> TransferQuantityAsync(string batchNumber, string partId, string operation, int transferQuantity, int originalQuantity, string newLocation, string user);
+    
+    // Master Data Operations - Parts
+    Task<StoredProcedureResult> AddPartAsync(string partId, string customer, string description, string issuedBy, string itemType);
+    Task<StoredProcedureResult> UpdatePartAsync(int id, string partId, string customer, string description, string issuedBy, string itemType);
+    Task<bool> DeletePartAsync(string partId);
+    Task<DataTable> GetPartByIdAsync(string partId);
+    
+    // Master Data Operations - Operations
+    Task<StoredProcedureResult> AddOperationAsync(string operation, string issuedBy);
+    Task<StoredProcedureResult> UpdateOperationAsync(string operation, string newOperation, string issuedBy);
+    Task<bool> DeleteOperationAsync(string operation);
+    
+    // Master Data Operations - Locations
+    Task<StoredProcedureResult> AddLocationAsync(string location, string issuedBy, string building);
+    Task<StoredProcedureResult> UpdateLocationAsync(string oldLocation, string location, string issuedBy, string building);
+    Task<bool> DeleteLocationAsync(string location);
+    
+    // Master Data Operations - Item Types
+    Task<DataTable> GetAllItemTypesAsync();
+    Task<StoredProcedureResult> AddItemTypeAsync(string itemType, string issuedBy);
+    Task<StoredProcedureResult> UpdateItemTypeAsync(int id, string itemType, string issuedBy);
+    Task<bool> DeleteItemTypeAsync(string itemType);
+    
+    // Additional Master Data Operations
+    Task<DataTable> GetAllLocationsAsync();
+    Task<DataTable> GetAllOperationsAsync();
+    Task<DataTable> GetAllPartIDsAsync();
+    Task<DataTable> GetAllRolesAsync();
+    
+    // User Management
+    Task<DataTable> GetAllUsersAsync();
+    Task<DataTable> GetUserAsync(string username);
+    Task<bool> UserExistsAsync(string username);
+    Task<StoredProcedureResult> AddUserAsync(MTM_Shared_Logic.Models.User userInfo);
+    Task<StoredProcedureResult> UpdateUserAsync(MTM_Shared_Logic.Models.User userInfo);
+    Task<bool> DeleteUserAsync(string username);
+    
+    // Additional User Management overloads for ViewModels
+    Task<StoredProcedureResult> AddUserAsync(string username, string firstName, string lastName, string email, string role, string issuedBy);
+    Task<StoredProcedureResult> UpdateUserAsync(int id, string username, string firstName, string lastName, string email, string role, bool isActive, string issuedBy);
+    Task<bool> DeleteUserAsync(int id);
+    
+    // System Configuration
+    Task<string> GetUserSettingsAsync(string userId);
+    Task<bool> SaveUserSettingsAsync(string userId, string settingsJson);
+    Task<bool> SaveThemeSettingsAsync(string userId, string themeJson);
+    Task<string> GetUserShortcutsAsync(string userId);
+    Task<bool> SaveUserShortcutsAsync(string userId, string shortcutsJson);
 }
 
 /// <summary>
@@ -304,6 +362,814 @@ public class DatabaseService : IDatabaseService
             }
         }
     }
+
+    #region Inventory Operations
+
+    /// <summary>
+    /// Adds inventory item using inv_inventory_Add_Item stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> AddInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string notes)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_PartID"] = partId,
+            ["p_Location"] = location,
+            ["p_Operation"] = operation,
+            ["p_Quantity"] = quantity,
+            ["p_ItemType"] = itemType,
+            ["p_User"] = user,
+            ["p_Notes"] = !string.IsNullOrWhiteSpace(notes) ? notes : DBNull.Value
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Add_Item",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Gets inventory by part ID using inv_inventory_Get_ByPartID stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetInventoryByPartIdAsync(string partId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_PartID"] = partId
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Get_ByPartID",
+            parameters
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Gets inventory by part ID and operation using inv_inventory_Get_ByPartIDandOperation stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetInventoryByPartAndOperationAsync(string partId, string operation)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_PartID"] = partId,
+            ["p_Operation"] = operation
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Get_ByPartIDandOperation",
+            parameters
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Gets inventory by user using inv_inventory_Get_ByUser stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetInventoryByUserAsync(string user)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_User"] = user
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Get_ByUser",
+            parameters
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Removes inventory item using inv_inventory_Remove_Item stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> RemoveInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string batchNumber, string notes)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_PartID"] = partId,
+            ["p_Location"] = location,
+            ["p_Operation"] = operation,
+            ["p_Quantity"] = quantity,
+            ["p_ItemType"] = itemType,
+            ["p_User"] = user,
+            ["p_BatchNumber"] = !string.IsNullOrWhiteSpace(batchNumber) ? batchNumber : DBNull.Value,
+            ["p_Notes"] = !string.IsNullOrWhiteSpace(notes) ? notes : DBNull.Value
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Remove_Item",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Transfers entire part to new location using inv_inventory_Transfer_Part stored procedure.
+    /// </summary>
+    public async Task<bool> TransferPartAsync(string batchNumber, string partId, string operation, string newLocation)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_BatchNumber"] = batchNumber,
+            ["p_PartID"] = partId,
+            ["p_Operation"] = operation,
+            ["p_NewLocation"] = newLocation
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Transfer_Part",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    /// <summary>
+    /// Transfers partial quantity to new location using inv_inventory_Transfer_Quantity stored procedure.
+    /// </summary>
+    public async Task<bool> TransferQuantityAsync(string batchNumber, string partId, string operation, int transferQuantity, int originalQuantity, string newLocation, string user)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_BatchNumber"] = batchNumber,
+            ["p_PartID"] = partId,
+            ["p_Operation"] = operation,
+            ["p_TransferQuantity"] = transferQuantity,
+            ["p_OriginalQuantity"] = originalQuantity,
+            ["p_NewLocation"] = newLocation,
+            ["p_User"] = user
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Transfer_Quantity",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    #endregion
+
+    #region Master Data Operations - Parts
+
+    /// <summary>
+    /// Adds a new part using md_part_ids_Add_Part stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> AddPartAsync(string partId, string customer, string description, string issuedBy, string itemType)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_PartID"] = partId,
+            ["p_Customer"] = customer,
+            ["p_Description"] = description,
+            ["p_IssuedBy"] = issuedBy,
+            ["p_ItemType"] = itemType
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_part_ids_Add_Part",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Updates a part using md_part_ids_Update_Part stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> UpdatePartAsync(int id, string partId, string customer, string description, string issuedBy, string itemType)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ID"] = id,
+            ["p_PartID"] = partId,
+            ["p_Customer"] = customer,
+            ["p_Description"] = description,
+            ["p_IssuedBy"] = issuedBy,
+            ["p_ItemType"] = itemType
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_part_ids_Update_Part",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Deletes a part using md_part_ids_Delete_ByItemNumber stored procedure.
+    /// </summary>
+    public async Task<bool> DeletePartAsync(string partId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ItemNumber"] = partId
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_part_ids_Delete_ByItemNumber",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    /// <summary>
+    /// Gets a specific part using md_part_ids_Get_ByItemNumber stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetPartByIdAsync(string partId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ItemNumber"] = partId
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_part_ids_Get_ByItemNumber",
+            parameters
+        );
+
+        return result.Data;
+    }
+
+    #endregion
+
+    #region Master Data Operations - Operations
+
+    /// <summary>
+    /// Adds a new operation using md_operation_numbers_Add_Operation stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> AddOperationAsync(string operation, string issuedBy)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_Operation"] = operation,
+            ["p_IssuedBy"] = issuedBy
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_operation_numbers_Add_Operation",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Updates an operation using md_operation_numbers_Update_Operation stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> UpdateOperationAsync(string operation, string newOperation, string issuedBy)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_Operation"] = operation,
+            ["p_NewOperation"] = newOperation,
+            ["p_IssuedBy"] = issuedBy
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_operation_numbers_Update_Operation",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Deletes an operation using md_operation_numbers_Delete_ByOperation stored procedure.
+    /// </summary>
+    public async Task<bool> DeleteOperationAsync(string operation)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_Operation"] = operation
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_operation_numbers_Delete_ByOperation",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    #endregion
+
+    #region Master Data Operations - Locations
+
+    /// <summary>
+    /// Adds a new location using md_locations_Add_Location stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> AddLocationAsync(string location, string issuedBy, string building)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_Location"] = location,
+            ["p_IssuedBy"] = issuedBy,
+            ["p_Building"] = building
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_locations_Add_Location",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Updates a location using md_locations_Update_Location stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> UpdateLocationAsync(string oldLocation, string location, string issuedBy, string building)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_OldLocation"] = oldLocation,
+            ["p_Location"] = location,
+            ["p_IssuedBy"] = issuedBy,
+            ["p_Building"] = building
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_locations_Update_Location",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Deletes a location using md_locations_Delete_ByLocation stored procedure.
+    /// </summary>
+    public async Task<bool> DeleteLocationAsync(string location)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_Location"] = location
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_locations_Delete_ByLocation",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    #endregion
+
+    #region Master Data Operations - Item Types
+
+    /// <summary>
+    /// Gets all item types using md_item_types_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllItemTypesAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_item_types_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Adds a new item type using md_item_types_Add_ItemType stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> AddItemTypeAsync(string itemType, string issuedBy)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ItemType"] = itemType,
+            ["p_IssuedBy"] = issuedBy
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_item_types_Add_ItemType",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Updates an item type using md_item_types_Update_ItemType stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> UpdateItemTypeAsync(int id, string itemType, string issuedBy)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ID"] = id,
+            ["p_ItemType"] = itemType,
+            ["p_IssuedBy"] = issuedBy
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_item_types_Update_ItemType",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Deletes an item type using md_item_types_Delete_ByType stored procedure.
+    /// </summary>
+    public async Task<bool> DeleteItemTypeAsync(string itemType)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_Type"] = itemType
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_item_types_Delete_ByType",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    /// <summary>
+    /// Gets all locations using md_locations_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllLocationsAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_locations_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Gets all operations using md_operation_numbers_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllOperationsAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_operation_numbers_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Gets all Part IDs using md_part_ids_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllPartIDsAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "md_part_ids_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Gets all roles using sys_roles_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllRolesAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "sys_roles_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
+    #endregion
+
+    #region User Management
+
+    /// <summary>
+    /// Gets all users using usr_users_Get_All stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetAllUsersAsync()
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Get_All",
+            new Dictionary<string, object>()
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Gets a specific user using usr_users_Get_ByUser stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetUserAsync(string username)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_User"] = username
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Get_ByUser",
+            parameters
+        );
+
+        return result.Data;
+    }
+
+    /// <summary>
+    /// Checks if user exists using usr_users_Exists stored procedure.
+    /// </summary>
+    public async Task<bool> UserExistsAsync(string username)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_User"] = username
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Exists",
+            parameters
+        );
+
+        return result.IsSuccess && result.Data.Rows.Count > 0;
+    }
+
+    /// <summary>
+    /// Adds a new user using usr_users_Add_User stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> AddUserAsync(MTM_Shared_Logic.Models.User userInfo)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_User"] = userInfo.User_Name,
+            ["p_FullName"] = (object?)userInfo.FullName ?? DBNull.Value,
+            ["p_Shift"] = userInfo.Shift,
+            ["p_VitsUser"] = userInfo.VitsUser,
+            ["p_Pin"] = (object?)userInfo.Pin ?? DBNull.Value,
+            ["p_LastShownVersion"] = userInfo.LastShownVersion,
+            ["p_HideChangeLog"] = userInfo.HideChangeLog,
+            ["p_ThemeName"] = userInfo.Theme_Name,
+            ["p_ThemeFontSize"] = userInfo.Theme_FontSize,
+            ["p_VisualUserName"] = userInfo.VisualUserName,
+            ["p_VisualPassword"] = userInfo.VisualPassword,
+            ["p_WipServerAddress"] = userInfo.WipServerAddress,
+            ["p_WipServerPort"] = userInfo.WipServerPort,
+            ["p_WipDatabase"] = userInfo.WIPDatabase
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Add_User",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Updates a user using usr_users_Update_User stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> UpdateUserAsync(MTM_Shared_Logic.Models.User userInfo)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_User"] = userInfo.User_Name,
+            ["p_FullName"] = (object?)userInfo.FullName ?? DBNull.Value,
+            ["p_Shift"] = userInfo.Shift,
+            ["p_VitsUser"] = userInfo.VitsUser,
+            ["p_Pin"] = (object?)userInfo.Pin ?? DBNull.Value,
+            ["p_LastShownVersion"] = userInfo.LastShownVersion,
+            ["p_HideChangeLog"] = userInfo.HideChangeLog,
+            ["p_ThemeName"] = userInfo.Theme_Name,
+            ["p_ThemeFontSize"] = userInfo.Theme_FontSize,
+            ["p_VisualUserName"] = userInfo.VisualUserName,
+            ["p_VisualPassword"] = userInfo.VisualPassword,
+            ["p_WipServerAddress"] = userInfo.WipServerAddress,
+            ["p_WipServerPort"] = userInfo.WipServerPort,
+            ["p_WipDatabase"] = userInfo.WIPDatabase
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Update_User",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Deletes a user using usr_users_Delete_User stored procedure.
+    /// </summary>
+    public async Task<bool> DeleteUserAsync(string username)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_User"] = username
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Delete_User",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    /// <summary>
+    /// Adds a new user using usr_users_Add stored procedure.
+    /// Simplified overload for ViewModels.
+    /// </summary>
+    public async Task<StoredProcedureResult> AddUserAsync(string username, string firstName, string lastName, string email, string role, string issuedBy)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_Username"] = username,
+            ["p_FirstName"] = firstName,
+            ["p_LastName"] = lastName,
+            ["p_Email"] = email,
+            ["p_Role"] = role,
+            ["p_IssuedBy"] = issuedBy
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Add",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Updates an existing user using usr_users_Update stored procedure.
+    /// Simplified overload for ViewModels.
+    /// </summary>
+    public async Task<StoredProcedureResult> UpdateUserAsync(int id, string username, string firstName, string lastName, string email, string role, bool isActive, string issuedBy)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ID"] = id,
+            ["p_Username"] = username,
+            ["p_FirstName"] = firstName,
+            ["p_LastName"] = lastName,
+            ["p_Email"] = email,
+            ["p_Role"] = role,
+            ["p_IsActive"] = isActive,
+            ["p_IssuedBy"] = issuedBy
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Update",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Deletes a user by ID using usr_users_Delete_ByID stored procedure.
+    /// Simplified overload for ViewModels.
+    /// </summary>
+    public async Task<bool> DeleteUserAsync(int id)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ID"] = id
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_users_Delete_ByID",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    #endregion
+
+    #region System Configuration
+
+    /// <summary>
+    /// Gets user UI settings using usr_ui_settings_Get stored procedure.
+    /// </summary>
+    public async Task<string> GetUserSettingsAsync(string userId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_UserId"] = userId
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_ui_settings_Get",
+            parameters
+        );
+
+        if (result.IsSuccess && result.Data.Rows.Count > 0)
+        {
+            return result.Data.Rows[0]["Settings"]?.ToString() ?? string.Empty;
+        }
+
+        return string.Empty;
+    }
+
+    /// <summary>
+    /// Saves user UI settings using usr_ui_settings_SetJsonSetting stored procedure.
+    /// </summary>
+    public async Task<bool> SaveUserSettingsAsync(string userId, string settingsJson)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_UserId"] = userId,
+            ["p_SettingsJson"] = settingsJson
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_ui_settings_SetJsonSetting",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    /// <summary>
+    /// Saves user theme settings using usr_ui_settings_SetThemeJson stored procedure.
+    /// </summary>
+    public async Task<bool> SaveThemeSettingsAsync(string userId, string themeJson)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_UserId"] = userId,
+            ["p_ThemeJson"] = themeJson
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_ui_settings_SetThemeJson",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    /// <summary>
+    /// Gets user keyboard shortcuts using usr_ui_settings_GetShortcutsJson stored procedure.
+    /// </summary>
+    public async Task<string> GetUserShortcutsAsync(string userId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_UserId"] = userId
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_ui_settings_GetShortcutsJson",
+            parameters
+        );
+
+        if (result.IsSuccess && result.Data.Rows.Count > 0)
+        {
+            return result.Data.Rows[0]["ShortcutsJson"]?.ToString() ?? string.Empty;
+        }
+
+        return string.Empty;
+    }
+
+    /// <summary>
+    /// Saves user keyboard shortcuts using usr_ui_settings_SetShortcutsJson stored procedure.
+    /// </summary>
+    public async Task<bool> SaveUserShortcutsAsync(string userId, string shortcutsJson)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_UserId"] = userId,
+            ["p_ShortcutsJson"] = shortcutsJson
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "usr_ui_settings_SetShortcutsJson",
+            parameters
+        );
+
+        return result.IsSuccess;
+    }
+
+    #endregion
 }
 
 /// <summary>

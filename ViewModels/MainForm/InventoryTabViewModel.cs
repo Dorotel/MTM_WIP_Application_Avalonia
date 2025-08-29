@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -75,10 +77,17 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
 
         InitializeCommands();
         
-        // Load lookup data asynchronously
-        _ = Task.Run(async () => await InitializeLookupDataAsync());
-        
         Logger.LogInformation("InventoryTabViewModel initialized");
+        Logger.LogInformation("Connection string configured: {HasConnectionString}", 
+            !string.IsNullOrEmpty(_configurationService?.GetConnectionString()));
+        
+        // Load lookup data asynchronously on UI thread to avoid threading issues
+        _ = Dispatcher.UIThread.InvokeAsync(async () => 
+        {
+            Logger.LogInformation("Starting lookup data initialization...");
+            await InitializeLookupDataAsync();
+            Logger.LogInformation("Lookup data initialization completed");
+        });
     }
 
     #region Properties
@@ -340,12 +349,24 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     {
         try
         {
+            // Test database connection first
+            Logger.LogInformation("Testing database connection...");
+            var isConnected = await _databaseService.TestConnectionAsync();
+            
+            if (!isConnected)
+            {
+                Logger.LogWarning("Database connection test failed, using fallback data");
+                await LoadFallbackDataAsync();
+                return;
+            }
+            
+            Logger.LogInformation("Database connection successful, loading real data");
             await LoadLookupDataAsync();
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to initialize lookup data, using fallback data");
-            LoadFallbackData();
+            await LoadFallbackDataAsync();
         }
     }
 
@@ -389,37 +410,140 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         {
             IsLoadingParts = true;
             
-            // Load Part IDs using md_part_ids_Get_All stored procedure
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            Logger.LogInformation("Loading Part IDs from database...");
+            
+            // First try to get parts directly from master data table using the correct stored procedure
+            var masterResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _configurationService.GetConnectionString(),
                 "md_part_ids_Get_All",
                 new Dictionary<string, object>()
             );
 
-            if (result.IsSuccess)
+            if (masterResult.IsSuccess && masterResult.Data.Rows.Count > 0)
             {
-                PartIds.Clear();
-                foreach (DataRow row in result.Data.Rows)
-                {
-                    var partId = row["PartID"]?.ToString();
-                    if (!string.IsNullOrEmpty(partId))
-                    {
-                        PartIds.Add(partId);
-                    }
-                }
+                Logger.LogInformation("Successfully retrieved {Count} rows from md_part_ids_Get_All", masterResult.Data.Rows.Count);
                 
-                Logger.LogInformation("Loaded {Count} Part IDs from md_part_ids table", PartIds.Count);
+                // Log column names for debugging
+                var columnNames = string.Join(", ", masterResult.Data.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
+                Logger.LogInformation("Available columns: {Columns}", columnNames);
+                
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    PartIds.Clear();
+                    foreach (DataRow row in masterResult.Data.Rows)
+                    {
+                        // Try different possible column names based on the table structure
+                        string? partId = null;
+                        
+                        if (masterResult.Data.Columns.Contains("PartID"))
+                        {
+                            partId = row["PartID"]?.ToString();
+                        }
+                        else if (masterResult.Data.Columns.Contains("partid"))
+                        {
+                            partId = row["partid"]?.ToString();
+                        }
+                        else if (masterResult.Data.Columns.Contains("part_id"))
+                        {
+                            partId = row["part_id"]?.ToString();
+                        }
+                        else if (masterResult.Data.Columns.Contains("ItemNumber"))
+                        {
+                            partId = row["ItemNumber"]?.ToString();
+                        }
+                        else if (masterResult.Data.Columns.Contains("item_number"))
+                        {
+                            partId = row["item_number"]?.ToString();
+                        }
+                        else
+                        {
+                            // If we can't find expected columns, use the first non-ID column
+                            var firstDataColumn = masterResult.Data.Columns.Cast<DataColumn>()
+                                .FirstOrDefault(c => !c.ColumnName.Equals("ID", StringComparison.OrdinalIgnoreCase));
+                            if (firstDataColumn != null)
+                            {
+                                partId = row[firstDataColumn.ColumnName]?.ToString();
+                            }
+                        }
+                        
+                        if (!string.IsNullOrEmpty(partId))
+                        {
+                            PartIds.Add(partId);
+                            Logger.LogDebug("Added Part ID: {PartId}", partId);
+                        }
+                    }
+                });
+                
+                Logger.LogInformation("Loaded {Count} Part IDs from master data table", PartIds.Count);
+                
+                // Log first few part IDs for verification
+                if (PartIds.Count > 0)
+                {
+                    var firstFew = string.Join(", ", PartIds.Take(5));
+                    Logger.LogInformation("First few Part IDs: {PartIds}", firstFew);
+                }
             }
             else
             {
-                Logger.LogWarning("Failed to load Part IDs: {Error}", result.Message);
-                LoadFallbackPartIds();
+                Logger.LogWarning("md_part_ids_Get_All returned no data. Status: {Status}, Message: {Message}", 
+                    masterResult.Status, masterResult.Message);
+                
+                // Try getting parts from inventory table as fallback
+                Logger.LogInformation("Trying to get unique parts from inventory table...");
+                
+                var inventoryResult = await _databaseService.GetAllPartIDsAsync();
+                
+                if (inventoryResult != null && inventoryResult.Rows.Count > 0)
+                {
+                    Logger.LogInformation("Retrieved {Count} rows from inventory", inventoryResult.Rows.Count);
+                    
+                    // Log inventory column names for debugging
+                    var invColumnNames = string.Join(", ", inventoryResult.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
+                    Logger.LogInformation("Inventory columns: {Columns}", invColumnNames);
+                    
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        PartIds.Clear();
+                        var uniqueParts = new HashSet<string>();
+                        
+                        foreach (DataRow row in inventoryResult.Rows)
+                        {
+                            // Try different possible column names for part ID in inventory
+                            string? partId = null;
+                            
+                            if (inventoryResult.Columns.Contains("PartID"))
+                            {
+                                partId = row["PartID"]?.ToString();
+                            }
+                            else if (inventoryResult.Columns.Contains("partid"))
+                            {
+                                partId = row["partid"]?.ToString();
+                            }
+                            else if (inventoryResult.Columns.Contains("part_id"))
+                            {
+                                partId = row["part_id"]?.ToString();
+                            }
+                            
+                            if (!string.IsNullOrEmpty(partId) && uniqueParts.Add(partId))
+                            {
+                                PartIds.Add(partId);
+                            }
+                        }
+                    });
+                    
+                    Logger.LogInformation("Loaded {Count} unique Part IDs from inventory table", PartIds.Count);
+                }
+                else
+                {
+                    Logger.LogWarning("No data found in inventory table either, loading fallback data");
+                    await LoadFallbackPartIdsAsync();
+                }
             }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to load Part IDs from database");
-            LoadFallbackPartIds();
+            await LoadFallbackPartIdsAsync();
         }
         finally
         {
@@ -436,37 +560,39 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         {
             IsLoadingOperations = true;
             
-            // Load Operations using md_operation_numbers_Get_All stored procedure
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                _configurationService.GetConnectionString(),
-                "md_operation_numbers_Get_All",
-                new Dictionary<string, object>()
-            );
+            Logger.LogInformation("Loading Operations from database...");
+            
+            // Load Operations using DatabaseService
+            var result = await _databaseService.GetAllOperationsAsync();
 
-            if (result.IsSuccess)
+            if (result != null && result.Rows.Count > 0)
             {
-                Operations.Clear();
-                foreach (DataRow row in result.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var operation = row["Operation"]?.ToString();
-                    if (!string.IsNullOrEmpty(operation))
+                    Operations.Clear();
+                    foreach (DataRow row in result.Rows)
                     {
-                        Operations.Add(operation);
+                        var operation = row["Operation"]?.ToString();
+                        if (!string.IsNullOrEmpty(operation))
+                        {
+                            Operations.Add(operation);
+                        }
                     }
-                }
+                });
                 
-                Logger.LogInformation("Loaded {Count} Operations from md_operation_numbers table", Operations.Count);
+                Logger.LogInformation("Loaded {Count} Operations from database", Operations.Count);
             }
             else
             {
-                Logger.LogWarning("Failed to load Operations: {Error}", result.Message);
-                LoadFallbackOperations();
+                Logger.LogWarning("No operations found in database, loading fallback data");
+                await LoadFallbackOperationsAsync();
             }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to load Operations from database");
-            LoadFallbackOperations();
+            await LoadFallbackOperationsAsync();
         }
         finally
         {
@@ -483,37 +609,39 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         {
             IsLoadingLocations = true;
             
-            // Load Locations using md_locations_Get_All stored procedure
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                _configurationService.GetConnectionString(),
-                "md_locations_Get_All",
-                new Dictionary<string, object>()
-            );
+            Logger.LogInformation("Loading Locations from database...");
+            
+            // Load Locations using DatabaseService
+            var result = await _databaseService.GetAllLocationsAsync();
 
-            if (result.IsSuccess)
+            if (result != null && result.Rows.Count > 0)
             {
-                Locations.Clear();
-                foreach (DataRow row in result.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var location = row["Location"]?.ToString();
-                    if (!string.IsNullOrEmpty(location))
+                    Locations.Clear();
+                    foreach (DataRow row in result.Rows)
                     {
-                        Locations.Add(location);
+                        var location = row["Location"]?.ToString();
+                        if (!string.IsNullOrEmpty(location))
+                        {
+                            Locations.Add(location);
+                        }
                     }
-                }
+                });
                 
-                Logger.LogInformation("Loaded {Count} Locations from md_locations table", Locations.Count);
+                Logger.LogInformation("Loaded {Count} Locations from database", Locations.Count);
             }
             else
             {
-                Logger.LogWarning("Failed to load Locations: {Error}", result.Message);
-                LoadFallbackLocations();
+                Logger.LogWarning("No locations found in database, loading fallback data");
+                await LoadFallbackLocationsAsync();
             }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to load Locations from database");
-            LoadFallbackLocations();
+            await LoadFallbackLocationsAsync();
         }
         finally
         {
@@ -528,44 +656,55 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     /// <summary>
     /// Load all fallback data when database is unavailable
     /// </summary>
-    private void LoadFallbackData()
+    private async Task LoadFallbackDataAsync()
     {
-        LoadFallbackPartIds();
-        LoadFallbackOperations();
-        LoadFallbackLocations();
+        await Task.WhenAll(
+            LoadFallbackPartIdsAsync(),
+            LoadFallbackOperationsAsync(),
+            LoadFallbackLocationsAsync()
+        );
         Logger.LogInformation("Fallback data loaded for all AutoComplete boxes");
     }
 
-    private void LoadFallbackPartIds()
+    private async Task LoadFallbackPartIdsAsync()
     {
-        PartIds.Clear();
-        var fallbackParts = new[] { "PART001", "PART002", "PART003", "ABC-123", "XYZ-789" };
-        foreach (var part in fallbackParts)
+        await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            PartIds.Add(part);
-        }
+            PartIds.Clear();
+            var fallbackParts = new[] { "PART001", "PART002", "PART003", "ABC-123", "XYZ-789" };
+            foreach (var part in fallbackParts)
+            {
+                PartIds.Add(part);
+            }
+        });
         Logger.LogDebug("Loaded {Count} fallback Part IDs", PartIds.Count);
     }
 
-    private void LoadFallbackOperations()
+    private async Task LoadFallbackOperationsAsync()
     {
-        Operations.Clear();
-        var fallbackOperations = new[] { "90", "100", "110", "120", "130" };
-        foreach (var operation in fallbackOperations)
+        await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            Operations.Add(operation);
-        }
+            Operations.Clear();
+            var fallbackOperations = new[] { "90", "100", "110", "120", "130" };
+            foreach (var operation in fallbackOperations)
+            {
+                Operations.Add(operation);
+            }
+        });
         Logger.LogDebug("Loaded {Count} fallback Operations", Operations.Count);
     }
 
-    private void LoadFallbackLocations()
+    private async Task LoadFallbackLocationsAsync()
     {
-        Locations.Clear();
-        var fallbackLocations = new[] { "WC01", "WC02", "FLOOR", "QC", "SHIPPING" };
-        foreach (var location in fallbackLocations)
+        await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            Locations.Add(location);
-        }
+            Locations.Clear();
+            var fallbackLocations = new[] { "WC01", "WC02", "FLOOR", "QC", "SHIPPING" };
+            foreach (var location in fallbackLocations)
+            {
+                Locations.Add(location);
+            }
+        });
         Logger.LogDebug("Loaded {Count} fallback Locations", Locations.Count);
     }
 
@@ -639,6 +778,129 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         if (propertyName == nameof(Quantity))
         {
             OnPropertyChanged(nameof(IsQuantityValid));
+        }
+    }
+
+    #endregion
+
+    #region Debug Methods
+
+    /// <summary>
+    /// Debug method to test Part ID loading directly
+    /// Call this method to diagnose Part ID loading issues
+    /// </summary>
+    public async Task DebugPartIdLoadingAsync()
+    {
+        try
+        {
+            Logger.LogInformation("=== DEBUG: Testing Part ID Loading ===");
+            
+            // Test 1: Direct database connection
+            Logger.LogInformation("Test 1: Testing database connection...");
+            var isConnected = await _databaseService.TestConnectionAsync();
+            Logger.LogInformation("Database connection test result: {IsConnected}", isConnected);
+            
+            if (!isConnected)
+            {
+                Logger.LogError("Database connection failed - this is why Part IDs are not loading!");
+                return;
+            }
+
+            // Test 2: Direct stored procedure call
+            Logger.LogInformation("Test 2: Testing md_part_ids_Get_All stored procedure...");
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _configurationService.GetConnectionString(),
+                "md_part_ids_Get_All",
+                new Dictionary<string, object>
+                {
+                }
+            );
+
+            Logger.LogInformation("Stored procedure result - Status: {Status}, Message: {Message}, Rows: {RowCount}", 
+                result.Status, result.Message, result.Data?.Rows.Count ?? 0);
+
+            if (!result.IsSuccess)
+            {
+                Logger.LogError("Stored procedure failed: {Message}", result.Message);
+                return;
+            }
+
+            if (result.Data == null || result.Data.Rows.Count == 0)
+            {
+                Logger.LogWarning("Stored procedure returned no data - the md_part_ids table might be empty!");
+                return;
+            }
+
+            // Test 3: Examine the data structure
+            Logger.LogInformation("Test 3: Examining returned data structure...");
+            var columnNames = string.Join(", ", result.Data.Columns.Cast<DataColumn>().Select(c => $"{c.ColumnName}({c.DataType.Name})"));
+            Logger.LogInformation("Columns: {Columns}", columnNames);
+
+            // Log first few rows
+            Logger.LogInformation("First few rows of data:");
+            for (int i = 0; i < Math.Min(5, result.Data.Rows.Count); i++)
+            {
+                var row = result.Data.Rows[i];
+                var rowData = string.Join(", ", result.Data.Columns.Cast<DataColumn>()
+                    .Select(c => $"{c.ColumnName}={row[c.ColumnName] ?? "NULL"}"));
+                Logger.LogInformation("Row {Index}: {RowData}", i + 1, rowData);
+            }
+
+            // Test 4: Try to extract Part IDs using our logic
+            Logger.LogInformation("Test 4: Testing Part ID extraction logic...");
+            var extractedParts = new List<string>();
+            
+            foreach (DataRow row in result.Data.Rows)
+            {
+                string? partId = null;
+                
+                if (result.Data.Columns.Contains("PartID"))
+                {
+                    partId = row["PartID"]?.ToString();
+                    Logger.LogDebug("Found PartID column, value: {Value}", partId ?? "NULL");
+                }
+                else if (result.Data.Columns.Contains("partid"))
+                {
+                    partId = row["partid"]?.ToString();
+                    Logger.LogDebug("Found partid column, value: {Value}", partId ?? "NULL");
+                }
+                else
+                {
+                    // Try first non-ID column
+                    var firstDataColumn = result.Data.Columns.Cast<DataColumn>()
+                        .FirstOrDefault(c => !c.ColumnName.Equals("ID", StringComparison.OrdinalIgnoreCase));
+                    if (firstDataColumn != null)
+                    {
+                        partId = row[firstDataColumn.ColumnName]?.ToString();
+                        Logger.LogDebug("Using first non-ID column {Column}, value: {Value}", firstDataColumn.ColumnName, partId ?? "NULL");
+                    }
+                }
+                
+                if (!string.IsNullOrEmpty(partId))
+                {
+                    extractedParts.Add(partId);
+                }
+            }
+
+            Logger.LogInformation("Successfully extracted {Count} Part IDs: {PartIds}", 
+                extractedParts.Count, string.Join(", ", extractedParts.Take(10)));
+
+            // Test 5: Update the actual collection
+            Logger.LogInformation("Test 5: Updating PartIds collection...");
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                PartIds.Clear();
+                foreach (var part in extractedParts)
+                {
+                    PartIds.Add(part);
+                }
+            });
+
+            Logger.LogInformation("=== DEBUG COMPLETE: Part IDs collection now has {Count} items ===", PartIds.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "DEBUG: Exception during Part ID loading test");
         }
     }
 

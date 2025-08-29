@@ -12,6 +12,7 @@ using Material.Icons;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Commands;
 using System.Collections.Generic;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -152,8 +153,8 @@ public class AdvancedRemoveViewModel : BaseViewModel
             // Setup collection change notifications for CanUndo
             LastRemovedItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CanUndo));
 
-            // Load initial data
-            _ = Task.Run(async () =>
+            // Load initial data on UI thread to avoid threading issues
+            _ = Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 try
                 {
@@ -450,21 +451,25 @@ public class AdvancedRemoveViewModel : BaseViewModel
             // TODO: Load from database via stored procedures
             await Task.Delay(200);
 
-            LocationOptions.Clear();
-            foreach (var loc in new[] { "WC01", "WC02", "WC03", "WC04", "WC05", "STOCK", "SHIP", "RECV" })
-                LocationOptions.Add(loc);
+            // Update collections on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                LocationOptions.Clear();
+                foreach (var loc in new[] { "WC01", "WC02", "WC03", "WC04", "WC05", "STOCK", "SHIP", "RECV" })
+                    LocationOptions.Add(loc);
 
-            PartIDOptions.Clear();
-            foreach (var part in new[] { "24733444-PKG", "24677611", "24733405-PKG", "24733403-PKG", "24733491-PKG" })
-                PartIDOptions.Add(part);
+                PartIDOptions.Clear();
+                foreach (var part in new[] { "24733444-PKG", "24677611", "24733405-PKG", "24733403-PKG", "24733491-PKG" })
+                    PartIDOptions.Add(part);
 
-            UserOptions.Clear();
-            foreach (var user in new[] { "admin", "operator1", "user1", "jkoll" })
-                UserOptions.Add(user);
+                UserOptions.Clear();
+                foreach (var user in new[] { "admin", "operator1", "user1", "jkoll" })
+                    UserOptions.Add(user);
 
-            OperationOptions.Clear();
-            foreach (var op in new[] { "100", "110", "120", "200", "300", "400" })
-                OperationOptions.Add(op);
+                OperationOptions.Clear();
+                foreach (var op in new[] { "100", "110", "120", "200", "300", "400" })
+                    OperationOptions.Add(op);
+            });
 
             Logger.LogDebug("Options loaded successfully");
         }
@@ -484,13 +489,17 @@ public class AdvancedRemoveViewModel : BaseViewModel
             // TODO: Load removal history from database
             await Task.Delay(150);
 
-            RemovalHistoryGrid.Clear();
-            // Sample removal history data
-            RemovalHistoryGrid.Add(new RemovalHistoryItem 
-            { 
-                ID = 1, PartID = "24733444-PKG", Operation = "90", Location = "WC01", 
-                Quantity = 5, User = "admin", DateRemoved = DateTime.Now.AddDays(-1),
-                Notes = "Removed for quality check"
+            // Update collection on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                RemovalHistoryGrid.Clear();
+                // Sample removal history data
+                RemovalHistoryGrid.Add(new RemovalHistoryItem 
+                { 
+                    ID = 1, PartID = "24733444-PKG", Operation = "90", Location = "WC01", 
+                    Quantity = 5, User = "admin", DateRemoved = DateTime.Now.AddDays(-1),
+                    Notes = "Removed for quality check"
+                });
             });
 
             Logger.LogDebug("Removal history loaded successfully");
@@ -554,9 +563,12 @@ public class AdvancedRemoveViewModel : BaseViewModel
             // DaoResult<Model_HistoryRemove> result = await Dao_Remove.RemoveInventoryAsync(...)
             await Task.Delay(500); // Simulate database operation
             
-            // Add to history for undo capability
-            LastRemovedItems.Add(removalRecord);
-            RemovalHistoryGrid.Insert(0, removalRecord); // Add to top for most recent
+            // Add to history for undo capability on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                LastRemovedItems.Add(removalRecord);
+                RemovalHistoryGrid.Insert(0, removalRecord); // Add to top for most recent
+            });
 
             StatusMessage = $"Item removed successfully. Undo available.";
         }

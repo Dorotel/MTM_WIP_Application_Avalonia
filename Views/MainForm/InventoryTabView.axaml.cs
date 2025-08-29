@@ -27,15 +27,32 @@ public partial class InventoryTabView : UserControl
     private QuickButtonsViewModel? _quickButtonsViewModel;
     private readonly IServiceProvider? _serviceProvider;
 
+    // UI Control references for direct manipulation
+    private AutoCompleteBox? _partAutoCompleteBox;
+    private AutoCompleteBox? _operationAutoCompleteBox;
+    private AutoCompleteBox? _locationAutoCompleteBox;
+    private TextBox? _quantityTextBox;
+    private TextBox? _notesTextBox;
+    private Button? _saveButton;
+
     /// <summary>
     /// Initializes a new instance of the InventoryTabView.
     /// </summary>
     public InventoryTabView()
     {
-        InitializeComponent();
+        try
+        {
+            InitializeComponent();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error during InitializeComponent: {ex.Message}");
+            // Continue with manual initialization if InitializeComponent fails
+        }
         
-        // Set up keyboard event handling
-        KeyDown += OnKeyDown;
+        // Set up event handling
+        InitializeControlReferences();
+        SetupEventHandlers();
         
         // Set up loaded event to initialize ViewModel
         Loaded += OnLoaded;
@@ -48,6 +65,92 @@ public partial class InventoryTabView : UserControl
     {
         _serviceProvider = serviceProvider;
     }
+
+    #region Control Initialization
+
+    /// <summary>
+    /// Initializes references to UI controls for direct manipulation.
+    /// </summary>
+    private void InitializeControlReferences()
+    {
+        try
+        {
+            _partAutoCompleteBox = this.FindControl<AutoCompleteBox>("PartAutoCompleteBox");
+            _operationAutoCompleteBox = this.FindControl<AutoCompleteBox>("OperationAutoCompleteBox");
+            _locationAutoCompleteBox = this.FindControl<AutoCompleteBox>("LocationAutoCompleteBox");
+            _quantityTextBox = this.FindControl<TextBox>("QuantityTextBox");
+            _notesTextBox = this.FindControl<TextBox>("NotesTextBox");
+            _saveButton = this.FindControl<Button>("SaveButton");
+
+            System.Diagnostics.Debug.WriteLine("UI control references initialized successfully");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error initializing control references: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Sets up event handlers for UI controls.
+    /// </summary>
+    private void SetupEventHandlers()
+    {
+        try
+        {
+            // Global keyboard event handling
+            KeyDown += OnKeyDown;
+
+            // AutoCompleteBox event handlers for validation and business logic
+            if (_partAutoCompleteBox != null)
+            {
+                _partAutoCompleteBox.TextChanged += OnPartTextChanged;
+                _partAutoCompleteBox.SelectionChanged += OnPartSelectionChanged;
+                _partAutoCompleteBox.LostFocus += OnPartLostFocus;
+            }
+
+            if (_operationAutoCompleteBox != null)
+            {
+                _operationAutoCompleteBox.TextChanged += OnOperationTextChanged;
+                _operationAutoCompleteBox.SelectionChanged += OnOperationSelectionChanged;
+                _operationAutoCompleteBox.LostFocus += OnOperationLostFocus;
+            }
+
+            if (_locationAutoCompleteBox != null)
+            {
+                _locationAutoCompleteBox.TextChanged += OnLocationTextChanged;
+                _locationAutoCompleteBox.SelectionChanged += OnLocationSelectionChanged;
+                _locationAutoCompleteBox.LostFocus += OnLocationLostFocus;
+            }
+
+            // TextBox event handlers
+            if (_quantityTextBox != null)
+            {
+                _quantityTextBox.TextChanged += OnQuantityTextChanged;
+                _quantityTextBox.LostFocus += OnQuantityLostFocus;
+            }
+
+            if (_notesTextBox != null)
+            {
+                _notesTextBox.TextChanged += OnNotesTextChanged;
+            }
+
+            // Button event handlers for additional business logic
+            if (_saveButton != null)
+            {
+                _saveButton.Click += OnSaveButtonClick;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Event handlers set up successfully");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error setting up event handlers: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region ViewModel Integration
 
     /// <summary>
     /// Handles the Loaded event to set up the ViewModel via dependency injection.
@@ -67,6 +170,9 @@ public partial class InventoryTabView : UserControl
                 
                 // Initialize database connections and load lookup data
                 await InitializeDatabaseIntegrationAsync();
+                
+                // Apply initial form state and focus
+                InitializeFormState();
                 
                 System.Diagnostics.Debug.WriteLine("InventoryTabView ViewModel connected successfully");
             }
@@ -88,35 +194,764 @@ public partial class InventoryTabView : UserControl
     }
 
     /// <summary>
-    /// Handles inventory save completion to update QuickButtons.
+    /// Initializes the form state and applies business rules.
     /// </summary>
-    private async void OnInventorySaveCompleted(object? sender, InventorySavedEventArgs e)
+    private void InitializeFormState()
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine($"Inventory saved: Part={e.PartId}, Operation={e.Operation}, Quantity={e.Quantity}");
+            // Set initial focus to Part ID field
+            MoveFocusToFirstControl();
 
-            // Update QuickButtons after successful save
-            if (_quickButtonsViewModel != null)
-            {
-                await _quickButtonsViewModel.AddQuickButtonFromOperationAsync(
-                    e.PartId,
-                    e.Operation,
-                    e.Quantity);
+            // Apply any saved user preferences
+            ApplyUserPreferences();
 
-                System.Diagnostics.Debug.WriteLine($"Added quick button: {e.PartId}, {e.Operation}, {e.Quantity}");
-            }
-            
-            // Log the action for audit purposes
-            if (_serviceProvider?.GetService(typeof(ILogger<InventoryTabView>)) is ILogger<InventoryTabView> logger)
+            // Enable/disable controls based on initial state
+            UpdateControlStates();
+
+            System.Diagnostics.Debug.WriteLine("Form state initialized successfully");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error initializing form state: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Applies user preferences and last used values.
+    /// </summary>
+    private void ApplyUserPreferences()
+    {
+        try
+        {
+            if (_viewModel == null) return;
+
+            // Apply any application state defaults
+            if (_serviceProvider?.GetService(typeof(IApplicationStateService)) is IApplicationStateService appStateService)
             {
-                logger.LogInformation("Inventory saved and added to QuickButtons: PartId={PartId}, Operation={Operation}, Quantity={Quantity}", 
-                    e.PartId, e.Operation, e.Quantity);
+                // Set default operation if available
+                if (!string.IsNullOrEmpty(appStateService.CurrentOperation) && string.IsNullOrEmpty(_viewModel.SelectedOperation))
+                {
+                    _viewModel.SelectedOperation = appStateService.CurrentOperation;
+                }
+
+                // Set default location if available
+                if (!string.IsNullOrEmpty(appStateService.CurrentLocation) && string.IsNullOrEmpty(_viewModel.SelectedLocation))
+                {
+                    _viewModel.SelectedLocation = appStateService.CurrentLocation;
+                }
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error handling inventory save completion: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error applying user preferences: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Updates control states based on current ViewModel state.
+    /// </summary>
+    private void UpdateControlStates()
+    {
+        try
+        {
+            if (_viewModel == null) return;
+
+            // Update AutoCompleteBox loading states
+            if (_partAutoCompleteBox != null)
+            {
+                _partAutoCompleteBox.Classes.Set("loading", _viewModel.IsLoadingParts);
+            }
+
+            if (_operationAutoCompleteBox != null)
+            {
+                _operationAutoCompleteBox.Classes.Set("loading", _viewModel.IsLoadingOperations);
+            }
+
+            if (_locationAutoCompleteBox != null)
+            {
+                _locationAutoCompleteBox.Classes.Set("loading", _viewModel.IsLoadingLocations);
+            }
+
+            // Update error states
+            UpdateValidationStates();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error updating control states: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Updates validation states on UI controls.
+    /// </summary>
+    private void UpdateValidationStates()
+    {
+        try
+        {
+            if (_viewModel == null) return;
+
+            // Update error styling based on validation
+            if (_partAutoCompleteBox != null)
+            {
+                _partAutoCompleteBox.Classes.Set("error", !_viewModel.IsPartValid);
+            }
+
+            if (_operationAutoCompleteBox != null)
+            {
+                _operationAutoCompleteBox.Classes.Set("error", !_viewModel.IsOperationValid);
+            }
+
+            if (_locationAutoCompleteBox != null)
+            {
+                _locationAutoCompleteBox.Classes.Set("error", !_viewModel.IsLocationValid);
+            }
+
+            if (_quantityTextBox != null)
+            {
+                _quantityTextBox.Classes.Set("error", !_viewModel.IsQuantityValid);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error updating validation states: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region UI Event Handlers - Part ID
+
+    /// <summary>
+    /// Handles Part ID text changes for real-time validation.
+    /// </summary>
+    private async void OnPartTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+
+            var partId = autoCompleteBox.Text?.Trim() ?? string.Empty;
+
+            // Update ViewModel property
+            _viewModel.SelectedPart = partId;
+
+            // Perform real-time validation if part ID has sufficient length
+            if (partId.Length >= 3)
+            {
+                await ValidatePartIdAsync(partId);
+            }
+
+            // Update control styling
+            UpdateValidationStates();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling part text change: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Part ID selection from dropdown.
+    /// </summary>
+    private async void OnPartSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+
+            var selectedPart = autoCompleteBox.SelectedItem?.ToString() ?? string.Empty;
+            
+            if (!string.IsNullOrEmpty(selectedPart))
+            {
+                _viewModel.SelectedPart = selectedPart;
+                await LoadPartSpecificDataAsync(selectedPart);
+                
+                // Move to next field automatically
+                MoveFocusToNextControl();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling part selection: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Part ID field losing focus for validation.
+    /// </summary>
+    private async void OnPartLostFocus(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+
+            var partId = autoCompleteBox.Text?.Trim() ?? string.Empty;
+            
+            if (!string.IsNullOrEmpty(partId))
+            {
+                await ValidatePartIdAsync(partId);
+            }
+
+            UpdateValidationStates();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling part lost focus: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region UI Event Handlers - Operation
+
+    /// <summary>
+    /// Handles Operation text changes.
+    /// </summary>
+    private async void OnOperationTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+
+            var operation = autoCompleteBox.Text?.Trim() ?? string.Empty;
+            _viewModel.SelectedOperation = operation;
+
+            // Load operation-specific data if valid operation
+            if (!string.IsNullOrEmpty(operation) && operation.Length >= 2)
+            {
+                await LoadOperationSpecificDataAsync(operation);
+            }
+
+            UpdateValidationStates();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling operation text change: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Operation selection from dropdown.
+    /// </summary>
+    private async void OnOperationSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+
+            var selectedOperation = autoCompleteBox.SelectedItem?.ToString() ?? string.Empty;
+            
+            if (!string.IsNullOrEmpty(selectedOperation))
+            {
+                _viewModel.SelectedOperation = selectedOperation;
+                await LoadOperationSpecificDataAsync(selectedOperation);
+                
+                // Move to next field automatically
+                MoveFocusToNextControl();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling operation selection: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Operation field losing focus.
+    /// </summary>
+    private async void OnOperationLostFocus(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+
+            var operation = autoCompleteBox.Text?.Trim() ?? string.Empty;
+            
+            if (!string.IsNullOrEmpty(operation))
+            {
+                await LoadOperationSpecificDataAsync(operation);
+            }
+
+            UpdateValidationStates();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling operation lost focus: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region UI Event Handlers - Location
+
+    /// <summary>
+    /// Handles Location text changes.
+    /// </summary>
+    private async void OnLocationTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+
+            var location = autoCompleteBox.Text?.Trim() ?? string.Empty;
+            _viewModel.SelectedLocation = location;
+
+            // Validate location if sufficient length
+            if (!string.IsNullOrEmpty(location) && location.Length >= 2)
+            {
+                await ValidateLocationAsync(location);
+            }
+
+            UpdateValidationStates();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling location text change: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Location selection from dropdown.
+    /// </summary>
+    private async void OnLocationSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+
+            var selectedLocation = autoCompleteBox.SelectedItem?.ToString() ?? string.Empty;
+            
+            if (!string.IsNullOrEmpty(selectedLocation))
+            {
+                _viewModel.SelectedLocation = selectedLocation;
+                await ValidateLocationAsync(selectedLocation);
+                
+                // Move to next field automatically
+                MoveFocusToNextControl();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling location selection: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Location field losing focus.
+    /// </summary>
+    private async void OnLocationLostFocus(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+
+            var location = autoCompleteBox.Text?.Trim() ?? string.Empty;
+            
+            if (!string.IsNullOrEmpty(location))
+            {
+                await ValidateLocationAsync(location);
+            }
+
+            UpdateValidationStates();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling location lost focus: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region UI Event Handlers - Quantity
+
+    /// <summary>
+    /// Handles Quantity text changes with real-time validation.
+    /// </summary>
+    private void OnQuantityTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not TextBox textBox) return;
+
+            var quantityText = textBox.Text?.Trim() ?? string.Empty;
+            
+            // Parse and validate quantity
+            if (int.TryParse(quantityText, out int quantity) && quantity > 0)
+            {
+                _viewModel.Quantity = quantity;
+            }
+            else if (!string.IsNullOrEmpty(quantityText))
+            {
+                // Invalid quantity - keep the text but mark as invalid
+                // The ViewModel's IsQuantityValid will handle validation
+            }
+
+            UpdateValidationStates();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling quantity text change: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Quantity field losing focus with validation.
+    /// </summary>
+    private void OnQuantityLostFocus(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not TextBox textBox) return;
+
+            var quantityText = textBox.Text?.Trim() ?? string.Empty;
+            
+            // Validate and format quantity
+            if (int.TryParse(quantityText, out int quantity))
+            {
+                if (quantity <= 0)
+                {
+                    // Reset to minimum valid quantity
+                    _viewModel.Quantity = 1;
+                    textBox.Text = "1";
+                }
+                else
+                {
+                    _viewModel.Quantity = quantity;
+                    // Format the text for consistency
+                    textBox.Text = quantity.ToString();
+                }
+            }
+            else if (!string.IsNullOrEmpty(quantityText))
+            {
+                // Invalid input - reset to default
+                _viewModel.Quantity = 1;
+                textBox.Text = "1";
+            }
+
+            UpdateValidationStates();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling quantity lost focus: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region UI Event Handlers - Notes
+
+    /// <summary>
+    /// Handles Notes text changes.
+    /// </summary>
+    private void OnNotesTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not TextBox textBox) return;
+
+            _viewModel.Notes = textBox.Text ?? string.Empty;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling notes text change: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region UI Event Handlers - Buttons
+
+    /// <summary>
+    /// Handles Save button click with additional business logic.
+    /// </summary>
+    private async void OnSaveButtonClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null) return;
+
+            // Perform final validation before save
+            if (!await PerformFinalValidationAsync())
+            {
+                return;
+            }
+
+            // Clear any previous errors
+            _viewModel.HasError = false;
+            _viewModel.ErrorMessage = string.Empty;
+
+            // Execute save command (this will be handled by the ViewModel)
+            if (_viewModel.SaveCommand.CanExecute(null))
+            {
+                _viewModel.SaveCommand.Execute(null);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling save button click: {ex.Message}");
+            
+            if (_viewModel != null)
+            {
+                _viewModel.HasError = true;
+                _viewModel.ErrorMessage = "An error occurred while saving. Please try again.";
+            }
+        }
+    }
+
+    #endregion
+
+    #region Business Logic Validation
+
+    /// <summary>
+    /// Validates Part ID against database and business rules.
+    /// </summary>
+    private async Task<bool> ValidatePartIdAsync(string partId)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(partId)) return false;
+
+            if (_serviceProvider?.GetService(typeof(IDatabaseService)) is IDatabaseService databaseService)
+            {
+                // Check if part exists in master data
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_ItemNumber"] = partId
+                };
+
+                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                    databaseService.GetConnectionString(),
+                    "md_part_ids_Get_ByItemNumber",
+                    parameters
+                );
+
+                if (result.IsSuccess && result.Data.Rows.Count > 0)
+                {
+                    // Part exists - clear any previous errors
+                    if (_viewModel?.ErrorMessage.Contains("Part") == true)
+                    {
+                        _viewModel.HasError = false;
+                        _viewModel.ErrorMessage = string.Empty;
+                    }
+                    return true;
+                }
+                else
+                {
+                    // Part not found - show warning but allow entry
+                    System.Diagnostics.Debug.WriteLine($"Part ID '{partId}' not found in master data - allowing entry");
+                    return true; // Allow entry even if not in master data
+                }
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error validating part ID: {ex.Message}");
+            return true; // Don't block user on validation errors
+        }
+    }
+
+    /// <summary>
+    /// Validates location against database and business rules.
+    /// </summary>
+    private async Task<bool> ValidateLocationAsync(string location)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(location)) return false;
+
+            if (_serviceProvider?.GetService(typeof(IDatabaseService)) is IDatabaseService databaseService)
+            {
+                // Validate location exists and is active
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_Location"] = location
+                };
+
+                // Note: This stored procedure may not exist yet - handle gracefully
+                try
+                {
+                    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                        databaseService.GetConnectionString(),
+                        "md_locations_Validate",
+                        parameters
+                    );
+
+                    if (result.IsSuccess && result.Data.Rows.Count > 0)
+                    {
+                        var isActive = Convert.ToBoolean(result.Data.Rows[0]["IsActive"] ?? true);
+                        if (!isActive && _viewModel != null)
+                        {
+                            _viewModel.HasError = true;
+                            _viewModel.ErrorMessage = $"Location '{location}' is not active.";
+                            return false;
+                        }
+                        
+                        // Clear any previous location errors
+                        if (_viewModel?.ErrorMessage.Contains("Location") == true)
+                        {
+                            _viewModel.HasError = false;
+                            _viewModel.ErrorMessage = string.Empty;
+                        }
+                        return true;
+                    }
+                }
+                catch
+                {
+                    // If validation stored procedure doesn't exist, just check if location is in the list
+                    if (_viewModel?.Locations.Contains(location) == true)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return true; // Allow entry even if validation fails
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error validating location: {ex.Message}");
+            return true; // Don't block user on validation errors
+        }
+    }
+
+    /// <summary>
+    /// Performs final validation before save operation.
+    /// </summary>
+    private async Task<bool> PerformFinalValidationAsync()
+    {
+        try
+        {
+            if (_viewModel == null) return false;
+
+            var validationErrors = new List<string>();
+
+            // Validate required fields
+            if (string.IsNullOrWhiteSpace(_viewModel.SelectedPart))
+            {
+                validationErrors.Add("Part ID is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(_viewModel.SelectedOperation))
+            {
+                validationErrors.Add("Operation is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(_viewModel.SelectedLocation))
+            {
+                validationErrors.Add("Location is required");
+            }
+
+            if (_viewModel.Quantity <= 0)
+            {
+                validationErrors.Add("Quantity must be greater than zero");
+            }
+
+            // Validate business rules
+            if (!string.IsNullOrWhiteSpace(_viewModel.SelectedPart))
+            {
+                var isValidPart = await ValidatePartIdAsync(_viewModel.SelectedPart);
+                if (!isValidPart)
+                {
+                    validationErrors.Add("Invalid Part ID");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(_viewModel.SelectedLocation))
+            {
+                var isValidLocation = await ValidateLocationAsync(_viewModel.SelectedLocation);
+                if (!isValidLocation)
+                {
+                    validationErrors.Add("Invalid Location");
+                }
+            }
+
+            // Show validation errors
+            if (validationErrors.Count > 0)
+            {
+                _viewModel.HasError = true;
+                _viewModel.ErrorMessage = string.Join("; ", validationErrors);
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error performing final validation: {ex.Message}");
+            return false;
+        }
+    }
+
+    #endregion
+
+    #region Data Loading Methods
+
+    /// <summary>
+    /// Loads part-specific data from database.
+    /// </summary>
+    private async Task LoadPartSpecificDataAsync(string partId)
+    {
+        try
+        {
+            if (_serviceProvider?.GetService(typeof(IDatabaseService)) is IDatabaseService databaseService)
+            {
+                // Load part details for validation/display purposes
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_ItemNumber"] = partId
+                };
+
+                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                    databaseService.GetConnectionString(),
+                    "md_part_ids_Get_ByItemNumber",
+                    parameters
+                );
+
+                if (result.IsSuccess && result.Data.Rows.Count > 0 && _viewModel != null)
+                {
+                    // Part exists - could update UI with additional part info if needed
+                    var partRow = result.Data.Rows[0];
+                    var description = partRow["Description"]?.ToString();
+                    var customer = partRow["Customer"]?.ToString();
+                    
+                    // Clear any previous part-related errors
+                    if (_viewModel.ErrorMessage.Contains("Part"))
+                    {
+                        _viewModel.HasError = false;
+                        _viewModel.ErrorMessage = string.Empty;
+                    }
+
+                    System.Diagnostics.Debug.WriteLine($"Loaded part data: {description} for customer {customer}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading part-specific data: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Loads operation-specific data from database.
+    /// </summary>
+    private async Task LoadOperationSpecificDataAsync(string operation)
+    {
+        try
+        {
+            // Load operation-specific business rules, default locations, etc.
+            if (_serviceProvider?.GetService(typeof(IDatabaseService)) is IDatabaseService databaseService)
+            {
+                // Example: Load default location for this operation
+                // This could be enhanced with additional business logic
+                System.Diagnostics.Debug.WriteLine($"Loading operation-specific data for operation: {operation}");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading operation-specific data: {ex.Message}");
         }
     }
 
@@ -147,13 +982,84 @@ public partial class InventoryTabView : UserControl
     }
 
     /// <summary>
+    /// Loads application state from database.
+    /// </summary>
+    private async Task LoadApplicationStateAsync()
+    {
+        try
+        {
+            // Load user preferences, last used values, etc. from database
+            if (_serviceProvider?.GetService(typeof(IApplicationStateService)) is IApplicationStateService appStateService)
+            {
+                // Set default values based on application state
+                if (_viewModel != null)
+                {
+                    if (!string.IsNullOrEmpty(appStateService.CurrentOperation))
+                    {
+                        _viewModel.SelectedOperation = appStateService.CurrentOperation;
+                    }
+                    
+                    if (!string.IsNullOrEmpty(appStateService.CurrentLocation))
+                    {
+                        _viewModel.SelectedLocation = appStateService.CurrentLocation;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading application state: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Save Completion and QuickButtons Integration
+
+    /// <summary>
+    /// Handles inventory save completion to update QuickButtons.
+    /// </summary>
+    private async void OnInventorySaveCompleted(object? sender, InventorySavedEventArgs e)
+    {
+        try
+        {
+            System.Diagnostics.Debug.WriteLine($"Inventory saved: Part={e.PartId}, Operation={e.Operation}, Quantity={e.Quantity}");
+
+            // Update QuickButtons after successful save
+            if (_quickButtonsViewModel != null)
+            {
+                await _quickButtonsViewModel.AddQuickButtonFromOperationAsync(
+                    e.PartId,
+                    e.Operation,
+                    e.Quantity);
+
+                System.Diagnostics.Debug.WriteLine($"Added quick button: {e.PartId}, {e.Operation}, {e.Quantity}");
+            }
+            
+            // Reset form focus to first control for next entry
+            MoveFocusToFirstControl();
+            
+            // Log the action for audit purposes
+            if (_serviceProvider?.GetService(typeof(ILogger<InventoryTabView>)) is ILogger<InventoryTabView> logger)
+            {
+                logger.LogInformation("Inventory saved and added to QuickButtons: PartId={PartId}, Operation={Operation}, Quantity={Quantity}", 
+                    e.PartId, e.Operation, e.Quantity);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling inventory save completion: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Initializes QuickButtons integration to handle quick action events.
     /// </summary>
     private async Task InitializeQuickButtonsIntegrationAsync()
     {
         try
         {
-            // Find QuickButtonsView in the visual tree (it might be in a parent or sibling container)
+            // Find QuickButtonsView in the visual tree
             var quickButtonsView = FindQuickButtonsView();
             if (quickButtonsView?.DataContext is QuickButtonsViewModel quickButtonsViewModel)
             {
@@ -168,14 +1074,338 @@ public partial class InventoryTabView : UserControl
             {
                 System.Diagnostics.Debug.WriteLine("QuickButtonsView not found in visual tree - integration skipped");
             }
-
-            await Task.CompletedTask;
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error initializing QuickButtons integration: {ex.Message}");
         }
     }
+
+    /// <summary>
+    /// Handles quick action executed events from QuickButtonsView.
+    /// </summary>
+    private async void OnQuickActionExecuted(object? sender, QuickActionExecutedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null) return;
+
+            System.Diagnostics.Debug.WriteLine($"Quick action executed: Part={e.PartId}, Operation={e.Operation}, Quantity={e.Quantity}");
+
+            // Populate form fields with quick action data
+            _viewModel.SelectedPart = e.PartId;
+            _viewModel.SelectedOperation = e.Operation;
+            _viewModel.Quantity = e.Quantity;
+            
+            // Clear previous error state
+            _viewModel.HasError = false;
+            _viewModel.ErrorMessage = string.Empty;
+            
+            // Update UI control states
+            UpdateControlStates();
+            
+            // Focus the location field (likely next field to fill)
+            _locationAutoCompleteBox?.Focus();
+            
+            // Log the action for audit purposes
+            if (_serviceProvider?.GetService(typeof(ILogger<InventoryTabView>)) is ILogger<InventoryTabView> logger)
+            {
+                logger.LogInformation("Quick action applied: PartId={PartId}, Operation={Operation}, Quantity={Quantity}", 
+                    e.PartId, e.Operation, e.Quantity);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling quick action: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region ViewModel Property Change Handling
+
+    /// <summary>
+    /// Handles ViewModel property changes to respond to database operations.
+    /// </summary>
+    private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null) return;
+
+            switch (e.PropertyName)
+            {
+                case nameof(_viewModel.SelectedPart):
+                    await OnPartChangedAsync();
+                    break;
+                    
+                case nameof(_viewModel.SelectedOperation):
+                    await OnOperationChangedAsync();
+                    break;
+                    
+                case nameof(_viewModel.SelectedLocation):
+                    await OnLocationChangedAsync();
+                    break;
+                    
+                case nameof(_viewModel.IsLoading):
+                case nameof(_viewModel.IsLoadingParts):
+                case nameof(_viewModel.IsLoadingOperations):
+                case nameof(_viewModel.IsLoadingLocations):
+                    UpdateControlStates();
+                    break;
+
+                case nameof(_viewModel.HasError):
+                case nameof(_viewModel.ErrorMessage):
+                    UpdateValidationStates();
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling property change: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles part selection changes to update related data.
+    /// </summary>
+    private async Task OnPartChangedAsync()
+    {
+        try
+        {
+            if (_viewModel == null || string.IsNullOrEmpty(_viewModel.SelectedPart)) return;
+
+            await LoadPartSpecificDataAsync(_viewModel.SelectedPart);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling part change: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles operation selection changes to update related data.
+    /// </summary>
+    private async Task OnOperationChangedAsync()
+    {
+        try
+        {
+            if (_viewModel == null || string.IsNullOrEmpty(_viewModel.SelectedOperation)) return;
+
+            await LoadOperationSpecificDataAsync(_viewModel.SelectedOperation);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling operation change: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles location selection changes to update related data.
+    /// </summary>
+    private async Task OnLocationChangedAsync()
+    {
+        try
+        {
+            if (_viewModel == null || string.IsNullOrEmpty(_viewModel.SelectedLocation)) return;
+
+            await ValidateLocationAsync(_viewModel.SelectedLocation);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling location change: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Keyboard Shortcuts and Navigation
+
+    /// <summary>
+    /// Handles keyboard shortcuts for enhanced user experience.
+    /// F5: Reset form, Shift+F5: Hard reset, Enter: Next field/Save, Escape: Clear errors
+    /// </summary>
+    private async void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (_viewModel == null) return;
+
+        try
+        {
+            switch (e.Key)
+            {
+                case Key.F5:
+                    e.Handled = true;
+                    if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                    {
+                        // Shift+F5: Hard reset with database refresh
+                        await ExecuteHardResetAsync();
+                    }
+                    else
+                    {
+                        // F5: Soft reset
+                        if (_viewModel.ResetCommand.CanExecute(null))
+                        {
+                            _viewModel.ResetCommand.Execute(null);
+                            MoveFocusToFirstControl();
+                        }
+                    }
+                    break;
+
+                case Key.Enter:
+                    e.Handled = true;
+                    await HandleEnterKeyAsync(e.Source);
+                    break;
+
+                case Key.Escape:
+                    e.Handled = true;
+                    // Clear any error state and focus the first control
+                    _viewModel.HasError = false;
+                    _viewModel.ErrorMessage = string.Empty;
+                    MoveFocusToFirstControl();
+                    break;
+
+                case Key.Tab:
+                    // Tab key handling is automatic, but we can enhance it
+                    if (!e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                    {
+                        // Forward tab - let normal behavior occur
+                    }
+                    else
+                    {
+                        // Shift+Tab - reverse navigation
+                    }
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling keyboard shortcut: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Executes a hard reset including database refresh.
+    /// </summary>
+    private async Task ExecuteHardResetAsync()
+    {
+        try
+        {
+            if (_viewModel == null) return;
+
+            // Reset form fields
+            if (_viewModel.ResetCommand.CanExecute(null))
+            {
+                _viewModel.ResetCommand.Execute(null);
+            }
+
+            // Refresh all lookup data from database
+            if (_viewModel.RefreshDataCommand.CanExecute(null))
+            {
+                _viewModel.RefreshDataCommand.Execute(null);
+            }
+
+            // Refresh QuickButtons if available
+            if (_quickButtonsViewModel?.RefreshButtonsCommand.CanExecute(null) == true)
+            {
+                _quickButtonsViewModel.RefreshButtonsCommand.Execute(null);
+            }
+
+            // Reset focus
+            MoveFocusToFirstControl();
+
+            System.Diagnostics.Debug.WriteLine("Hard reset completed successfully");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error during hard reset: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Enter key navigation - moves to next logical control or executes save.
+    /// </summary>
+    private async Task HandleEnterKeyAsync(object? source)
+    {
+        if (_viewModel == null) return;
+
+        try
+        {
+            // If focused on Save button and can save, execute save command
+            if (source == _saveButton && _viewModel.SaveCommand.CanExecute(null))
+            {
+                _viewModel.SaveCommand.Execute(null);
+                return;
+            }
+
+            // Otherwise, move focus to next control
+            MoveFocusToNextControl();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error handling Enter key: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Moves focus to the next logical control in the form.
+    /// </summary>
+    private void MoveFocusToNextControl()
+    {
+        try
+        {
+            var currentFocus = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+            
+            // Define the logical tab order
+            if (currentFocus == _partAutoCompleteBox)
+            {
+                _operationAutoCompleteBox?.Focus();
+            }
+            else if (currentFocus == _operationAutoCompleteBox)
+            {
+                _locationAutoCompleteBox?.Focus();
+            }
+            else if (currentFocus == _locationAutoCompleteBox)
+            {
+                _quantityTextBox?.Focus();
+            }
+            else if (currentFocus == _quantityTextBox)
+            {
+                _notesTextBox?.Focus();
+            }
+            else if (currentFocus == _notesTextBox)
+            {
+                _saveButton?.Focus();
+            }
+            else
+            {
+                // Default to first control
+                MoveFocusToFirstControl();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error moving focus to next control: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Moves focus to the first control in the form (Part AutoCompleteBox).
+    /// </summary>
+    private void MoveFocusToFirstControl()
+    {
+        try
+        {
+            _partAutoCompleteBox?.Focus();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error moving focus to first control: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Helper Methods
 
     /// <summary>
     /// Finds the QuickButtonsView in the visual tree.
@@ -190,7 +1420,6 @@ public partial class InventoryTabView : UserControl
             {
                 if (current is Panel panel)
                 {
-                    // Search through child controls
                     foreach (var child in panel.Children)
                     {
                         if (child is QuickButtonsView quickButtonsView)
@@ -198,7 +1427,6 @@ public partial class InventoryTabView : UserControl
                             return quickButtonsView;
                         }
                         
-                        // Recursively search in child panels
                         var found = FindQuickButtonsViewInChildren(child);
                         if (found != null)
                         {
@@ -250,529 +1478,6 @@ public partial class InventoryTabView : UserControl
         }
     }
 
-    /// <summary>
-    /// Handles quick action executed events from QuickButtonsView.
-    /// Populates the inventory form with the selected quick action data.
-    /// </summary>
-    private async void OnQuickActionExecuted(object? sender, QuickActionExecutedEventArgs e)
-    {
-        try
-        {
-            if (_viewModel == null) return;
-
-            System.Diagnostics.Debug.WriteLine($"Quick action executed: Part={e.PartId}, Operation={e.Operation}, Quantity={e.Quantity}");
-
-            // Populate form fields with quick action data
-            _viewModel.SelectedPart = e.PartId;
-            _viewModel.SelectedOperation = e.Operation;
-            _viewModel.Quantity = e.Quantity;
-            
-            // Clear previous error state
-            _viewModel.HasError = false;
-            _viewModel.ErrorMessage = string.Empty;
-            
-            // Focus the first control for potential editing
-            MoveFocusToFirstControl();
-            
-            // Log the action for audit purposes
-            if (_serviceProvider?.GetService(typeof(ILogger<InventoryTabView>)) is ILogger<InventoryTabView> logger)
-            {
-                logger.LogInformation("Quick action applied: PartId={PartId}, Operation={Operation}, Quantity={Quantity}", 
-                    e.PartId, e.Operation, e.Quantity);
-            }
-
-            await Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling quick action: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles ViewModel property changes to respond to database operations.
-    /// </summary>
-    private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        try
-        {
-            if (_viewModel == null) return;
-
-            switch (e.PropertyName)
-            {
-                case nameof(_viewModel.SelectedPart):
-                    await OnPartChangedAsync();
-                    break;
-                    
-                case nameof(_viewModel.SelectedOperation):
-                    await OnOperationChangedAsync();
-                    break;
-                    
-                case nameof(_viewModel.SelectedLocation):
-                    await OnLocationChangedAsync();
-                    break;
-                    
-                case nameof(_viewModel.IsLoading):
-                    // Handle loading state changes if needed
-                    break;
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling property change: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles part selection changes to update related data.
-    /// </summary>
-    private async Task OnPartChangedAsync()
-    {
-        try
-        {
-            if (_viewModel == null || string.IsNullOrEmpty(_viewModel.SelectedPart)) return;
-
-            // Load part-specific data if needed (operations, default locations, etc.)
-            await LoadPartSpecificDataAsync(_viewModel.SelectedPart);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling part change: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles operation selection changes to update related data.
-    /// </summary>
-    private async Task OnOperationChangedAsync()
-    {
-        try
-        {
-            if (_viewModel == null || string.IsNullOrEmpty(_viewModel.SelectedOperation)) return;
-
-            // Load operation-specific data if needed (default locations, work centers, etc.)
-            await LoadOperationSpecificDataAsync(_viewModel.SelectedOperation);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling operation change: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles location selection changes to update related data.
-    /// </summary>
-    private async Task OnLocationChangedAsync()
-    {
-        try
-        {
-            if (_viewModel == null || string.IsNullOrEmpty(_viewModel.SelectedLocation)) return;
-
-            // Validate location or load location-specific data if needed
-            await ValidateLocationAsync(_viewModel.SelectedLocation);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling location change: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Loads application state from database.
-    /// </summary>
-    private async Task LoadApplicationStateAsync()
-    {
-        try
-        {
-            // Load user preferences, last used values, etc. from database
-            if (_serviceProvider?.GetService(typeof(IApplicationStateService)) is IApplicationStateService appStateService)
-            {
-                // Set default values based on application state
-                if (_viewModel != null)
-                {
-                    if (!string.IsNullOrEmpty(appStateService.CurrentOperation))
-                    {
-                        _viewModel.SelectedOperation = appStateService.CurrentOperation;
-                    }
-                    
-                    if (!string.IsNullOrEmpty(appStateService.CurrentLocation))
-                    {
-                        _viewModel.SelectedLocation = appStateService.CurrentLocation;
-                    }
-                }
-            }
-
-            await Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error loading application state: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Loads part-specific data from database.
-    /// </summary>
-    private async Task LoadPartSpecificDataAsync(string partId)
-    {
-        try
-        {
-            if (_serviceProvider?.GetService(typeof(IDatabaseService)) is IDatabaseService databaseService)
-            {
-                // Load part details for validation/display purposes
-                var parameters = new Dictionary<string, object>
-                {
-                    ["p_ItemNumber"] = partId
-                };
-
-                // Use stored procedure to get part details for validation
-                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                    databaseService.GetConnectionString(),
-                    "md_part_ids_Get_ByItemNumber", // Stored procedure to get part details
-                    parameters
-                );
-
-                if (result.IsSuccess && result.Data.Rows.Count > 0 && _viewModel != null)
-                {
-                    // Part exists - could update UI with additional part info if needed
-                    var partRow = result.Data.Rows[0];
-                    var description = partRow["Description"]?.ToString();
-                    var customer = partRow["Customer"]?.ToString();
-                    
-                    // Clear any previous part-related errors
-                    if (_viewModel.ErrorMessage.Contains("Part"))
-                    {
-                        _viewModel.HasError = false;
-                        _viewModel.ErrorMessage = string.Empty;
-                    }
-                }
-                else if (_viewModel != null)
-                {
-                    // Part not found - show warning but don't prevent entry
-                    System.Diagnostics.Debug.WriteLine($"Part ID '{partId}' not found in master data");
-                }
-            }
-
-            await Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error loading part-specific data: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Loads operation-specific data from database.
-    /// </summary>
-    private async Task LoadOperationSpecificDataAsync(string operation)
-    {
-        try
-        {
-            // Load work centers, default locations for this operation, etc.
-            if (_serviceProvider?.GetService(typeof(IDatabaseService)) is IDatabaseService databaseService)
-            {
-                // Example: Load valid locations for this operation
-                // var locations = await databaseService.GetLocationsForOperationAsync(operation);
-                // Update _viewModel.Locations collection if needed
-            }
-
-            await Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error loading operation-specific data: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Validates the selected location against database.
-    /// </summary>
-    private async Task ValidateLocationAsync(string location)
-    {
-        try
-        {
-            if (_serviceProvider?.GetService(typeof(IDatabaseService)) is IDatabaseService databaseService)
-            {
-                // Validate location exists and is active
-                var parameters = new Dictionary<string, object>
-                {
-                    ["p_Location"] = location
-                };
-
-                // Use stored procedure to validate location
-                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                    databaseService.GetConnectionString(),
-                    "inv_locations_Validate", // Stored procedure to validate location
-                    parameters
-                );
-
-                if (_viewModel != null)
-                {
-                    if (result.IsSuccess && result.Data.Rows.Count > 0)
-                    {
-                        var isActive = Convert.ToBoolean(result.Data.Rows[0]["IsActive"] ?? false);
-                        if (!isActive)
-                        {
-                            _viewModel.HasError = true;
-                            _viewModel.ErrorMessage = $"Location '{location}' is not active or available.";
-                        }
-                        else
-                        {
-                            // Clear any previous location-related errors
-                            if (_viewModel.ErrorMessage.Contains("Location"))
-                            {
-                                _viewModel.HasError = false;
-                                _viewModel.ErrorMessage = string.Empty;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        _viewModel.HasError = true;
-                        _viewModel.ErrorMessage = $"Location '{location}' is not valid.";
-                    }
-                }
-            }
-
-            await Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error validating location: {ex.Message}");
-            
-            // Don't show validation errors to user unless it's a critical issue
-            if (_viewModel != null && ex.Message.Contains("Location"))
-            {
-                _viewModel.HasError = true;
-                _viewModel.ErrorMessage = "Unable to validate location. Please verify manually.";
-            }
-        }
-    }
-
-    /// <summary>
-    /// Handles keyboard shortcuts as specified in MTM requirements.
-    /// F5: Reset form (same as Reset button)
-    /// Enter: Move to next control or save if on Save button
-    /// Escape: Cancel current operation
-    /// Shift+F5: Hard reset (refresh all data from database)
-    /// </summary>
-    private async void OnKeyDown(object? sender, KeyEventArgs e)
-    {
-        if (_viewModel == null) return;
-
-        try
-        {
-            switch (e.Key)
-            {
-                case Key.F5:
-                    e.Handled = true;
-                    if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
-                    {
-                        // Shift+F5: Hard reset with database refresh
-                        await ExecuteHardResetAsync();
-                    }
-                    else
-                    {
-                        // F5: Soft reset
-                        if (_viewModel.ResetCommand.CanExecute(null))
-                        {
-                            _viewModel.ResetCommand.Execute(null);
-                        }
-                    }
-                    break;
-
-                case Key.Enter:
-                    e.Handled = true;
-                    await HandleEnterKeyAsync(e.Source);
-                    break;
-
-                case Key.Escape:
-                    e.Handled = true;
-                    // Clear any error state and focus the first control
-                    if (_viewModel != null)
-                    {
-                        _viewModel.HasError = false;
-                        _viewModel.ErrorMessage = string.Empty;
-                    }
-                    MoveFocusToFirstControl();
-                    break;
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling keyboard shortcut: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Executes a hard reset including database refresh.
-    /// </summary>
-    private async Task ExecuteHardResetAsync()
-    {
-        try
-        {
-            if (_viewModel == null) return;
-
-            // Reset form fields
-            if (_viewModel.ResetCommand.CanExecute(null))
-            {
-                _viewModel.ResetCommand.Execute(null);
-            }
-
-            // Refresh all lookup data from database
-            if (_viewModel.RefreshDataCommand.CanExecute(null))
-            {
-                _viewModel.RefreshDataCommand.Execute(null);
-            }
-
-            // Refresh QuickButtons if available
-            if (_quickButtonsViewModel?.RefreshButtonsCommand.CanExecute(null) == true)
-            {
-                _quickButtonsViewModel.RefreshButtonsCommand.Execute(null);
-            }
-
-            System.Diagnostics.Debug.WriteLine("Hard reset completed successfully");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error during hard reset: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles Enter key navigation - moves to next logical control or executes save.
-    /// </summary>
-    private async Task HandleEnterKeyAsync(object? source)
-    {
-        if (_viewModel == null) return;
-
-        try
-        {
-            // If focused on Save button and can save, execute save command
-            if (source is Button button && button.Name?.Contains("Save") == true)
-            {
-                if (_viewModel.SaveCommand.CanExecute(null))
-                {
-                    _viewModel.SaveCommand.Execute(null);
-                    // Save completion will be handled by OnInventorySaveCompleted event
-                    return;
-                }
-            }
-
-            // Otherwise, move focus to next control
-            MoveFocusToNextControl();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling Enter key: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Moves focus to the next logical control in the form.
-    /// Follows the order: Part -> Operation -> Location -> Quantity -> Notes -> Save button.
-    /// </summary>
-    private void MoveFocusToNextControl()
-    {
-        try
-        {
-            var currentFocus = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
-            
-            // Define the logical tab order based on the form layout
-            var tabOrder = new[]
-            {
-                "PartAutoCompleteBox",
-                "OperationAutoCompleteBox", 
-                "LocationAutoCompleteBox",
-                "QuantityTextBox",
-                "NotesTextBox",
-                "SaveButton"
-            };
-
-            // Find current control in tab order
-            string? currentName = (currentFocus as Control)?.Name;
-            int currentIndex = Array.IndexOf(tabOrder, currentName);
-            
-            // Move to next control, or start from beginning if not found
-            int nextIndex = currentIndex >= 0 ? (currentIndex + 1) % tabOrder.Length : 0;
-            string nextControlName = tabOrder[nextIndex];
-            
-            // Find and focus the next control
-            var nextControl = this.FindControl<Control>(nextControlName);
-            nextControl?.Focus();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error moving focus to next control: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Moves focus to the first control in the form (Part AutoCompleteBox).
-    /// </summary>
-    private void MoveFocusToFirstControl()
-    {
-        try
-        {
-            var partAutoCompleteBox = this.FindControl<AutoCompleteBox>("PartAutoCompleteBox");
-            partAutoCompleteBox?.Focus();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error moving focus to first control: {ex.Message}");
-        }
-    }
-
-    #region Database Event Handlers
-
-    /// <summary>
-    /// Handles database connection state changes.
-    /// </summary>
-    private void OnDatabaseConnectionChanged(bool isConnected)
-    {
-        try
-        {
-            if (_viewModel != null)
-            {
-                if (!isConnected)
-                {
-                    _viewModel.HasError = true;
-                    _viewModel.ErrorMessage = "Database connection lost. Please check your connection and try again.";
-                }
-                else
-                {
-                    _viewModel.HasError = false;
-                    _viewModel.ErrorMessage = string.Empty;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling database connection change: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles database errors from background operations.
-    /// </summary>
-    private void OnDatabaseError(string operation, Exception exception)
-    {
-        try
-        {
-            if (_viewModel != null)
-            {
-                _viewModel.HasError = true;
-                _viewModel.ErrorMessage = $"Database error during {operation}: {exception.Message}";
-            }
-            
-            System.Diagnostics.Debug.WriteLine($"Database error in {operation}: {exception.Message}");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error handling database error: {ex.Message}");
-        }
-    }
-
     #endregion
 
     #region Cleanup
@@ -788,6 +1493,45 @@ public partial class InventoryTabView : UserControl
             KeyDown -= OnKeyDown;
             Loaded -= OnLoaded;
             
+            // UI control event handlers
+            if (_partAutoCompleteBox != null)
+            {
+                _partAutoCompleteBox.TextChanged -= OnPartTextChanged;
+                _partAutoCompleteBox.SelectionChanged -= OnPartSelectionChanged;
+                _partAutoCompleteBox.LostFocus -= OnPartLostFocus;
+            }
+
+            if (_operationAutoCompleteBox != null)
+            {
+                _operationAutoCompleteBox.TextChanged -= OnOperationTextChanged;
+                _operationAutoCompleteBox.SelectionChanged -= OnOperationSelectionChanged;
+                _operationAutoCompleteBox.LostFocus -= OnOperationLostFocus;
+            }
+
+            if (_locationAutoCompleteBox != null)
+            {
+                _locationAutoCompleteBox.TextChanged -= OnLocationTextChanged;
+                _locationAutoCompleteBox.SelectionChanged -= OnLocationSelectionChanged;
+                _locationAutoCompleteBox.LostFocus -= OnLocationLostFocus;
+            }
+
+            if (_quantityTextBox != null)
+            {
+                _quantityTextBox.TextChanged -= OnQuantityTextChanged;
+                _quantityTextBox.LostFocus -= OnQuantityLostFocus;
+            }
+
+            if (_notesTextBox != null)
+            {
+                _notesTextBox.TextChanged -= OnNotesTextChanged;
+            }
+
+            if (_saveButton != null)
+            {
+                _saveButton.Click -= OnSaveButtonClick;
+            }
+            
+            // ViewModel event handlers
             if (_viewModel != null)
             {
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;

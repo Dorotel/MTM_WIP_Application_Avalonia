@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM WIP Application - SettingsForm Implementation Assessment</title>
+    <link rel="stylesheet" href="../styles/assessment-styles.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #6a0dad;
+            text-align: center;
+            border-bottom: 3px solid #6a0dad;
+            padding-bottom: 15px;
+        }
+        .question-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background: #fafbfc;
+        }
+        .question-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .question-description {
+            font-style: italic;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .option {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            border-color: #6a0dad;
+            background: #f8f7ff;
+        }
+        .option.selected {
+            border-color: #6a0dad;
+            background: #f8f7ff;
+            box-shadow: 0 2px 8px rgba(106, 13, 173, 0.2);
+        }
+        .option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        .option-letter {
+            font-weight: bold;
+            color: #6a0dad;
+            display: inline-block;
+            width: 30px;
+        }
+        .option-title {
+            font-weight: bold;
+            color: #212529;
+        }
+        .option-description {
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .code-example {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .mtm-highlight {
+            background: #f3e5f5;
+            padding: 10px;
+            border-left: 4px solid #6a0dad;
+            margin-top: 10px;
+        }
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .critical {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .avalonia-note {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .action-buttons {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .btn {
+            padding: 12px 24px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #6a0dad;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #4a0880;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .progress-indicator {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6a0dad, #4a0880);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .summary-section {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 8px;
+            border: 2px solid #28a745;
+        }
+        .csv-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+        .question-counter {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .question-section {
+                padding: 15px;
+            }
+            .btn {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎛️ MTM WIP Application - SettingsForm Implementation Assessment</h1>
+        
+        <div class="instructions">
+            <strong>📋 Instructions:</strong> This comprehensive assessment will help design the SettingsForm implementation following MTM's established patterns, Avalonia UI principles, and service architecture. Your responses will guide the creation of a production-ready administrative interface that integrates seamlessly with existing MTM systems.
+        </div>
+
+        <div class="critical">
+            <strong>🚨 Critical Context:</strong> The SettingsForm must convert from WinForms patterns to Avalonia MVVM while maintaining all 19 dynamic panels, TreeView navigation, and comprehensive user/data management capabilities. This assessment covers architecture, navigation, state management, theming integration, and MTM service patterns.
+        </div>
+
+        <div class="question-counter">
+            <strong>Progress: <span id="progressText">0 of 6</span> questions completed</strong>
+        </div>
+
+        <div class="progress-indicator">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <form id="settingsFormQuestionnaire">
+
+        <!-- Question 1: Architecture & Service Integration -->
+        <div class="question-section" data-question="1">
+            <div class="question-title">1. 🏗️ Architecture Integration & Service Layer Approach</div>
+            <div class="question-description">
+                How should the SettingsForm integrate with MTM's existing service architecture while maintaining the established service organization patterns?
+            </div>
+            
+            <div class="option" onclick="selectOption(1, 'A')">
+                <input type="radio" name="q1" value="A" id="q1a">
+                <label for="q1a">
+                    <span class="option-letter">A)</span>
+                    <span class="option-title">Direct WinForms to Avalonia Conversion</span>
+                    <div class="option-description">
+                        Convert existing WinForms SettingsForm directly to Avalonia Window, keep panel management dictionary, use TreeView with identical event handling patterns
+                    </div>
+                    <div class="code-example">
+// Convert existing pattern:
+Dictionary&lt;string, Panel&gt; _settingsPanels;
+private void CategoryTreeView_AfterSelect(object sender, TreeViewEventArgs e)</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Minimal architecture changes, faster conversion, but doesn't leverage MVVM patterns
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(1, 'B')">
+                <input type="radio" name="q1" value="B" id="q1b">
+                <label for="q1b">
+                    <span class="option-letter">B)</span>
+                    <span class="option-title">MVVM with Separate ViewModels per Panel</span>
+                    <div class="option-description">
+                        Create SettingsFormViewModel with 19 separate child ViewModels (DatabaseSettingsViewModel, UserManagementViewModel, etc.), use Avalonia's ContentControl with DataTemplates
+                    </div>
+                    <div class="code-example">
+// New MVVM approach:
+public class SettingsFormViewModel : BaseViewModel
+{
+    public DatabaseSettingsViewModel DatabaseSettings { get; }
+    public UserManagementViewModel UserManagement { get; }
+    // 17 more panel ViewModels...
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Full MVVM compliance, proper separation of concerns, integrates with existing services via DI
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(1, 'C')">
+                <input type="radio" name="q1" value="C" id="q1c">
+                <label for="q1c">
+                    <span class="option-letter">C)</span>
+                    <span class="option-title">Hybrid Service-Integrated Architecture</span>
+                    <div class="option-description">
+                        Single SettingsFormViewModel with nested settings models, integrate directly with Configuration.cs, ErrorHandling.cs, and Database.cs services following MTM organization rules
+                    </div>
+                    <div class="code-example">
+// Integrate with existing services:
+public SettingsFormViewModel(
+    IConfigurationService config,
+    IDatabaseService database,
+    IErrorHandlingService errorHandling)</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Leverages existing service infrastructure, maintains MTM patterns, simpler state management
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(1, 'D')">
+                <input type="radio" name="q1" value="D" id="q1d">
+                <label for="q1d">
+                    <span class="option-letter">D)</span>
+                    <span class="option-title">Modular Settings System with Dynamic Loading</span>
+                    <div class="option-description">
+                        Create ISettingsModule interface, implement 19 separate modules (DatabaseModule, UserModule, ThemeModule), use dynamic loading and plugin-style architecture
+                    </div>
+                    <div class="code-example">
+// Modular approach:
+public interface ISettingsModule
+{
+    string CategoryName { get; }
+    UserControl CreateView();
+    void Initialize(IServiceProvider services);
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Highly extensible, supports future modules, complex but very maintainable
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 2: Dynamic Panel Management & Navigation -->
+        <div class="question-section" data-question="2">
+            <div class="question-title">2. 🔄 Dynamic Panel Management & Navigation Strategy</div>
+            <div class="question-description">
+                How should the 19 dynamic content panels be managed in Avalonia while preserving the TreeView navigation experience?
+            </div>
+            
+            <div class="option" onclick="selectOption(2, 'A')">
+                <input type="radio" name="q2" value="A" id="q2a">
+                <label for="q2a">
+                    <span class="option-letter">A)</span>
+                    <span class="option-title">Avalonia TreeView with ContentControl Switching</span>
+                    <div class="option-description">
+                        Use Avalonia TreeView bound to hierarchical ViewModel, ContentControl bound to SelectedContent property, create UserControls for each of the 19 panels
+                    </div>
+                    <div class="code-example">
+&lt;TreeView ItemsSource="{Binding Categories}" 
+          SelectedItem="{Binding SelectedCategory}"/&gt;
+&lt;ContentControl Content="{Binding SelectedContent}"/&gt;</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Native Avalonia patterns, maintains familiar navigation, supports data binding
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(2, 'B')">
+                <input type="radio" name="q2" value="B" id="q2b">
+                <label for="q2b">
+                    <span class="option-letter">B)</span>
+                    <span class="option-title">TabView with Hidden Tabs + TreeView Navigator</span>
+                    <div class="option-description">
+                        Use Avalonia TabView with 19 hidden tabs, TreeView acts as external navigator, programmatically switch TabView.SelectedIndex based on TreeView selection
+                    </div>
+                    <div class="code-example">
+&lt;TabView TabStripPlacement="Hidden" 
+         SelectedIndex="{Binding SelectedPanelIndex}"&gt;
+    &lt;TabViewItem Header="Database"&gt;...&lt;/TabViewItem&gt;
+    &lt;!-- 18 more tabs --&gt;
+&lt;/TabView&gt;</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> All panels loaded in memory, instant switching, maintains state across navigation
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(2, 'C')">
+                <input type="radio" name="q2" value="C" id="q2c">
+                <label for="q2c">
+                    <span class="option-letter">C)</span>
+                    <span class="option-title">Dynamic UserControl Loading with Caching</span>
+                    <div class="option-description">
+                        Lazy-load UserControls on first access, cache instances, use ViewLocator pattern to map ViewModels to Views, dispose unused panels for memory efficiency
+                    </div>
+                    <div class="code-example">
+public UserControl GetPanelView(string category)
+{
+    if (!_panelCache.ContainsKey(category))
+        _panelCache[category] = ViewLocator.Build(GetViewModel(category));
+    return _panelCache[category];
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Memory efficient, supports complex panels, maintains state, integrates with DI
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(2, 'D')">
+                <input type="radio" name="q2" value="D" id="q2d">
+                <label for="q2d">
+                    <span class="option-letter">D)</span>
+                    <span class="option-title">Navigation Service Integration with State Management</span>
+                    <div class="option-description">
+                        Extend existing Navigation.cs service to support settings navigation, implement INavigationState for panel state preservation, use NavigationService.NavigateToSettings(category)
+                    </div>
+                    <div class="code-example">
+// Extend existing Navigation service:
+public interface INavigationService 
+{
+    Task NavigateToSettingsAsync(string category);
+    void PreserveSettingsState(string category, object state);
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Integrates with existing navigation, supports back/forward, maintains MTM patterns
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 3: User Management Integration -->
+        <div class="question-section" data-question="3">
+            <div class="question-title">3. 👥 User Management & Database Integration</div>
+            <div class="question-description">
+                How should the User Management panels (Add/Edit/Delete User) integrate with existing database patterns and services?
+            </div>
+            
+            <div class="option" onclick="selectOption(3, 'A')">
+                <input type="radio" name="q3" value="A" id="q3a">
+                <label for="q3a">
+                    <span class="option-letter">A)</span>
+                    <span class="option-title">Direct DAO Integration in ViewModels</span>
+                    <div class="option-description">
+                        ViewModels directly call Dao_Users.AddUserAsync(), Dao_Users.UpdateUserAsync(), Dao_Users.DeleteUserAsync(), handle errors locally with try-catch blocks
+                    </div>
+                    <div class="code-example">
+// Direct DAO calls:
+public async Task SaveUserAsync()
+{
+    try { 
+        await Dao_Users.AddUserAsync(user);
+    } catch(Exception ex) { 
+        ShowError(ex.Message); 
+    }
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Direct, simple approach, but bypasses centralized error handling
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(3, 'B')">
+                <input type="radio" name="q3" value="B" id="q3b">
+                <label for="q3b">
+                    <span class="option-letter">B)</span>
+                    <span class="option-title">Service Layer with Error Handling Integration</span>
+                    <div class="option-description">
+                        Create UserManagementService following MTM organization rules, integrate with ErrorHandling.HandleErrorAsync(), use Database.cs service for stored procedure calls
+                    </div>
+                    <div class="code-example">
+// MTM service pattern:
+public class UserManagementService 
+{
+    public async Task&lt;Result&lt;User&gt;&gt; AddUserAsync(User user)
+    {
+        var result = await Database.ExecuteStoredProcedureAsync("sys_users_Add", parameters);
+        return await ErrorHandling.HandleResultAsync(result);
+    }
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Follows established patterns, integrates with existing services, comprehensive error handling
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(3, 'C')">
+                <input type="radio" name="q3" value="C" id="q3c">
+                <label for="q3c">
+                    <span class="option-letter">C)</span>
+                    <span class="option-title">Unified Settings Service Architecture</span>
+                    <div class="option-description">
+                        Extend Configuration.cs to include user management, create ISettingsService interface, handle all settings operations through unified service with proper audit logging
+                    </div>
+                    <div class="code-example">
+// Unified approach:
+public interface ISettingsService
+{
+    Task&lt;Result&gt; SaveUserSettingsAsync(UserSettings settings);
+    Task&lt;Result&gt; SaveDatabaseSettingsAsync(DbSettings settings);
+    Task&lt;Result&gt; SaveThemeSettingsAsync(ThemeSettings settings);
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Centralized settings management, consistent patterns, easier maintenance
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(3, 'D')">
+                <input type="radio" name="q3" value="D" id="q3d">
+                <label for="q3d">
+                    <span class="option-letter">D)</span>
+                    <span class="option-title">CRUD Command Pattern with Validation</span>
+                    <div class="option-description">
+                        Implement Command pattern for user operations, create UserCommand base class, use FluentValidation for input validation, integrate with existing Helper_Database_StoredProcedure patterns
+                    </div>
+                    <div class="code-example">
+// Command pattern:
+public class AddUserCommand : ICommand&lt;User, Result&gt;
+{
+    public async Task&lt;Result&gt; ExecuteAsync(User user)
+    {
+        var validation = await ValidateAsync(user);
+        if (!validation.IsValid) return Result.Failure(validation.Errors);
+        return await Database.ExecuteStoredProcedureAsync("sys_users_Add");
+    }
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Highly structured, supports complex validation, enterprise patterns
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 4: Theme Integration & Advanced Features -->
+        <div class="question-section" data-question="4">
+            <div class="question-title">4. 🎨 Theme Panel Integration & Advanced Theming</div>
+            <div class="question-description">
+                How should the Theme panel integrate with your advanced theming system from the theming questionnaire results?
+            </div>
+            
+            <div class="avalonia-note">
+                <strong>📋 Context:</strong> Based on your theming questionnaire, you selected: User-Selectable Theme Library, Smart Adaptive Theming, Hybrid Config + User Override, Instant Live Switching, Custom Accessibility Builder, Adaptive Performance, Contextual Smart Coloring, and Full Ecosystem Integration.
+            </div>
+            
+            <div class="option" onclick="selectOption(4, 'A')">
+                <input type="radio" name="q4" value="A" id="q4a">
+                <label for="q4a">
+                    <span class="option-letter">A)</span>
+                    <span class="option-title">Basic Theme Selection Interface</span>
+                    <div class="option-description">
+                        Simple ComboBox with predefined themes, save selection to Configuration service, apply theme via existing Core_Themes patterns
+                    </div>
+                    <div class="code-example">
+&lt;ComboBox ItemsSource="{Binding AvailableThemes}"
+          SelectedItem="{Binding SelectedTheme}"/&gt;
+&lt;Button Content="Apply Theme" Command="{Binding ApplyThemeCommand}"/&gt;</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Simple implementation, limited features, doesn't leverage advanced theming capabilities
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(4, 'B')">
+                <input type="radio" name="q4" value="B" id="q4b">
+                <label for="q4b">
+                    <span class="option-letter">B)</span>
+                    <span class="option-title">Advanced Theme Builder with Live Preview</span>
+                    <div class="option-description">
+                        Full theme customization interface with color pickers, accessibility options, performance settings, live preview panel, custom accessibility theme builder
+                    </div>
+                    <div class="code-example">
+&lt;Grid ColumnDefinitions="*,*"&gt;
+    &lt;StackPanel Grid.Column="0"&gt;
+        &lt;ColorPicker Value="{Binding PrimaryColor}"/&gt;
+        &lt;Slider Value="{Binding PerformanceLevel}"/&gt;
+        &lt;CheckBox IsChecked="{Binding AccessibilityMode}"/&gt;
+    &lt;/StackPanel&gt;
+    &lt;Border Grid.Column="1" Background="{Binding PreviewTheme}"&gt;
+        &lt;!-- Live preview content --&gt;
+    &lt;/Border&gt;
+&lt;/Grid&gt;</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Full implementation of advanced theming, matches questionnaire results, complex but feature-rich
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(4, 'C')">
+                <input type="radio" name="q4" value="C" id="q4c">
+                <label for="q4c">
+                    <span class="option-letter">C)</span>
+                    <span class="option-title">ThemeService Integration with Settings</span>
+                    <div class="option-description">
+                        Bind directly to ThemeService from your theming system, expose all advanced features through settings interface, integrate with user preferences and configuration management
+                    </div>
+                    <div class="code-example">
+// Direct service binding:
+public ThemeSettingsViewModel(IThemeService themeService)
+{
+    _themeService = themeService;
+    AvailableThemes = themeService.AvailableThemes;
+    CurrentTheme = themeService.CurrentTheme;
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Perfect integration with advanced theming, leverages existing service, maintains consistency
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(4, 'D')">
+                <input type="radio" name="q4" value="D" id="q4d">
+                <label for="q4d">
+                    <span class="option-letter">D)</span>
+                    <span class="option-title">Multi-Panel Theme Management</span>
+                    <div class="option-description">
+                        Split theme management across multiple panels: Basic Themes, Advanced Customization, Accessibility Builder, Performance Settings, each with specialized interfaces
+                    </div>
+                    <div class="code-example">
+// Multi-panel approach:
+Tree Structure:
+Theme
+├── Basic Themes
+├── Advanced Customization  
+├── Accessibility Builder
+├── Performance Settings
+└── Import/Export</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Comprehensive theme management, matches advanced features, organized interface
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 5: State Management & Change Tracking -->
+        <div class="question-section" data-question="5">
+            <div class="question-title">5. 💾 State Management & Change Tracking</div>
+            <div class="question-description">
+                How should the SettingsForm handle state management, change tracking, and unsaved changes across the 19 panels?
+            </div>
+            
+            <div class="option" onclick="selectOption(5, 'A')">
+                <input type="radio" name="q5" value="A" id="q5a">
+                <label for="q5a">
+                    <span class="option-letter">A)</span>
+                    <span class="option-title">Simple HasChanges Boolean Tracking</span>
+                    <div class="option-description">
+                        Maintain single HasChanges property in main ViewModel, set to true on any property change, show warning dialog on navigation with unsaved changes
+                    </div>
+                    <div class="code-example">
+public bool HasChanges { get; set; }
+
+private void OnAnyPropertyChanged()
+{
+    HasChanges = true;
+    UpdateStatus("Settings modified. Don't forget to save changes.");
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Simple implementation, matches existing WinForms pattern, limited granularity
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(5, 'B')">
+                <input type="radio" name="q5" value="B" id="q5b">
+                <label for="q5b">
+                    <span class="option-letter">B)</span>
+                    <span class="option-title">Per-Panel Change Tracking with State Snapshots</span>
+                    <div class="option-description">
+                        Track changes per panel, create state snapshots on navigation, support undo/redo operations, batch save operations with rollback capability
+                    </div>
+                    <div class="code-example">
+public class PanelState
+{
+    public string PanelId { get; set; }
+    public Dictionary&lt;string, object&gt; OriginalValues { get; set; }
+    public Dictionary&lt;string, object&gt; CurrentValues { get; set; }
+    public bool HasChanges =&gt; !OriginalValues.SequenceEqual(CurrentValues);
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Comprehensive change tracking, supports complex scenarios, enterprise-grade features
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(5, 'C')">
+                <input type="radio" name="q5" value="C" id="q5c">
+                <label for="q5c">
+                    <span class="option-letter">C)</span>
+                    <span class="option-title">Configuration Service State Management</span>
+                    <div class="option-description">
+                        Integrate with existing Configuration.cs service, use IApplicationStateService for cross-session persistence, automatic save on valid changes
+                    </div>
+                    <div class="code-example">
+// Use existing services:
+public SettingsFormViewModel(
+    IConfigurationService config,
+    IApplicationStateService appState)
+{
+    // Auto-save on valid changes
+    // Restore state on initialization
+    // Integrate with existing patterns
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Leverages existing infrastructure, maintains MTM patterns, consistent with other parts
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(5, 'D')">
+                <input type="radio" name="q5" value="D" id="q5d">
+                <label for="q5d">
+                    <span class="option-letter">D)</span>
+                    <span class="option-title">Reactive State Management with Validation</span>
+                    <div class="option-description">
+                        Use reactive state management, implement INotifyDataErrorInfo for validation, real-time validation feedback, prevent navigation on validation errors
+                    </div>
+                    <div class="code-example">
+public class SettingsState : INotifyPropertyChanged, INotifyDataErrorInfo
+{
+    private readonly Dictionary&lt;string, List&lt;string&gt;&gt; _errors = new();
+    
+    public bool HasErrors =&gt; _errors.Any(x =&gt; x.Value.Count &gt; 0);
+    public event EventHandler&lt;DataErrorsChangedEventArgs&gt; ErrorsChanged;
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Advanced validation, real-time feedback, prevents invalid states, very robust
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 6: Performance & Scalability -->
+        <div class="question-section" data-question="6">
+            <div class="question-title">6. ⚡ Performance Optimization & Scalability</div>
+            <div class="question-description">
+                How should the SettingsForm be optimized for performance while maintaining the 19-panel architecture and complex functionality?
+            </div>
+            
+            <div class="option" onclick="selectOption(6, 'A')">
+                <input type="radio" name="q6" value="A" id="q6a">
+                <label for="q6a">
+                    <span class="option-letter">A)</span>
+                    <span class="option-title">Load All Panels at Startup</span>
+                    <div class="option-description">
+                        Initialize all 19 panels and ViewModels at startup, keep everything in memory, instant navigation between panels, simple but memory-intensive
+                    </div>
+                    <div class="code-example">
+public SettingsFormViewModel()
+{
+    // Load all panels immediately
+    DatabasePanel = new DatabaseSettingsViewModel();
+    UserManagementPanel = new UserManagementViewModel();
+    // ... initialize all 19 panels
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Fast navigation, simple implementation, high memory usage, slower startup
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(6, 'B')">
+                <input type="radio" name="q6" value="B" id="q6b">
+                <label for="q6b">
+                    <span class="option-letter">B)</span>
+                    <span class="option-title">Lazy Loading with Smart Caching</span>
+                    <div class="option-description">
+                        Load panels on first access, cache frequently used panels, dispose inactive panels after timeout, use weak references for memory management
+                    </div>
+                    <div class="code-example">
+private readonly Dictionary&lt;string, WeakReference&gt; _panelCache = new();
+
+public IViewModel GetPanel(string category)
+{
+    if (_panelCache.TryGetValue(category, out var weakRef) && 
+        weakRef.Target is IViewModel cached)
+        return cached;
+    
+    var panel = CreatePanel(category);
+    _panelCache[category] = new WeakReference(panel);
+    return panel;
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Memory efficient, fast after first load, complex memory management, optimal performance
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(6, 'C')">
+                <input type="radio" name="q6" value="C" id="q6c">
+                <label for="q6c">
+                    <span class="option-letter">C)</span>
+                    <span class="option-title">Progressive Loading with Background Initialization</span>
+                    <div class="option-description">
+                        Load essential panels first (Database, Theme), initialize others in background, show loading indicators, prioritize based on user access patterns
+                    </div>
+                    <div class="code-example">
+public async Task InitializeAsync()
+{
+    // Load critical panels first
+    await LoadEssentialPanelsAsync();
+    
+    // Background loading
+    _ = Task.Run(async () =&gt; {
+        await LoadSecondaryPanelsAsync();
+        await LoadTertiaryPanelsAsync();
+    });
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Fast startup, smart loading strategy, good user experience, balanced performance
+                    </div>
+                </label>
+            </div>
+
+            <div class="option" onclick="selectOption(6, 'D')">
+                <input type="radio" name="q6" value="D" id="q6d">
+                <label for="q6d">
+                    <span class="option-letter">D)</span>
+                    <span class="option-title">Virtual Panel System with Adaptive Performance</span>
+                    <div class="option-description">
+                        Implement virtual panels that create/destroy ViewModels dynamically, adapt to system performance, use memory pressure monitoring, integrate with your adaptive performance theming
+                    </div>
+                    <div class="code-example">
+public class VirtualPanelManager
+{
+    public IViewModel GetVirtualPanel(string category)
+    {
+        var performanceLevel = _themeService.CurrentPerformanceLevel;
+        return performanceLevel switch
+        {
+            PerformanceLevel.High =&gt; CreateFullFeaturedPanel(category),
+            PerformanceLevel.Medium =&gt; CreateStandardPanel(category),
+            PerformanceLevel.Low =&gt; CreateLightweightPanel(category)
+        };
+    }
+}</div>
+                    <div class="mtm-highlight">
+                        <strong>MTM Impact:</strong> Integrates with theming system, adapts to hardware, complex but very sophisticated
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        </form>
+
+        <div class="action-buttons">
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">🔄 Reset All Answers</button>
+            <button type="button" class="btn btn-primary" onclick="validateAnswers()" id="validateBtn">✅ Validate Answers</button>
+            <button type="button" class="btn btn-success" onclick="generateResults()" id="resultsBtn" style="display: none;">📊 Generate Implementation Guide</button>
+        </div>
+
+        <div class="summary-section" id="summarySection">
+            <h3>📋 Your SettingsForm Implementation Strategy</h3>
+            <div id="summaryContent"></div>
+            
+            <h4>📄 Implementation Roadmap:</h4>
+            <div class="csv-output" id="roadmapOutput"></div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-primary" onclick="copyResults()">📋 Copy Results to Clipboard</button>
+                <button type="button" class="btn btn-secondary" onclick="downloadResults()">💾 Download Implementation Guide</button>
+            </div>
+        </div>
+
+        <div class="critical">
+            <strong>🚨 Next Steps:</strong> Use your implementation guide to create the SettingsForm following MTM patterns with proper Avalonia MVVM architecture, service integration, and advanced theming capabilities.
+        </div>
+
+        <div class="instructions">
+            <strong>💡 Implementation Hotkeys:</strong> 
+            <code>@ui:create</code> → <code>@ui:viewmodel</code> → <code>@sys:config</code> → <code>@sys:theme</code> → <code>@qa:verify</code>
+        </div>
+    </div>
+
+    <script>
+        let answers = {};
+        let questionTitles = {
+            1: "Architecture Integration & Service Layer",
+            2: "Dynamic Panel Management & Navigation", 
+            3: "User Management & Database Integration",
+            4: "Theme Integration & Advanced Features",
+            5: "State Management & Change Tracking",
+            6: "Performance Optimization & Scalability"
+        };
+
+        let optionTitles = {
+            1: {A: "Direct WinForms to Avalonia Conversion", B: "MVVM with Separate ViewModels per Panel", C: "Hybrid Service-Integrated Architecture", D: "Modular Settings System with Dynamic Loading"},
+            2: {A: "Avalonia TreeView with ContentControl Switching", B: "TabView with Hidden Tabs + TreeView Navigator", C: "Dynamic UserControl Loading with Caching", D: "Navigation Service Integration with State Management"},
+            3: {A: "Direct DAO Integration in ViewModels", B: "Service Layer with Error Handling Integration", C: "Unified Settings Service Architecture", D: "CRUD Command Pattern with Validation"},
+            4: {A: "Basic Theme Selection Interface", B: "Advanced Theme Builder with Live Preview", C: "ThemeService Integration with Settings", D: "Multi-Panel Theme Management"},
+            5: {A: "Simple HasChanges Boolean Tracking", B: "Per-Panel Change Tracking with State Snapshots", C: "Configuration Service State Management", D: "Reactive State Management with Validation"},
+            6: {A: "Load All Panels at Startup", B: "Lazy Loading with Smart Caching", C: "Progressive Loading with Background Initialization", D: "Virtual Panel System with Adaptive Performance"}
+        };
+
+        function selectOption(questionNum, optionLetter) {
+            answers[questionNum] = optionLetter;
+            
+            const radio = document.getElementById(`q${questionNum}${optionLetter.toLowerCase()}`);
+            if (radio) {
+                radio.checked = true;
+            }
+            
+            const questionSection = document.querySelector(`[data-question="${questionNum}"]`);
+            const options = questionSection.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            event.currentTarget.classList.add('selected');
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const totalQuestions = 6;
+            const completedQuestions = Object.keys(answers).length;
+            const progressPercent = (completedQuestions / totalQuestions) * 100;
+            
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('progressText').textContent = `${completedQuestions} of ${totalQuestions}`;
+            
+            if (completedQuestions === totalQuestions) {
+                document.getElementById('validateBtn').style.display = 'inline-block';
+            }
+        }
+
+        function validateAnswers() {
+            const totalQuestions = 6;
+            const completedQuestions = Object.keys(answers).length;
+            
+            if (completedQuestions !== totalQuestions) {
+                alert(`Please answer all ${totalQuestions} questions. You have answered ${completedQuestions}.`);
+                return;
+            }
+            
+            document.getElementById('resultsBtn').style.display = 'inline-block';
+            document.getElementById('validateBtn').innerHTML = '✅ All Questions Completed!';
+            document.getElementById('validateBtn').classList.remove('btn-primary');
+            document.getElementById('validateBtn').classList.add('btn-success');
+            
+            generateSummary();
+        }
+
+        function generateSummary() {
+            let summaryHTML = '<div style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); display: grid; gap: 15px;">';
+            
+            for (let q = 1; q <= 6; q++) {
+                const answer = answers[q];
+                if (answer) {
+                    summaryHTML += `
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #6a0dad;">
+                            <strong>Q${q}: ${questionTitles[q]}</strong><br>
+                            <span style="color: #6a0dad; font-weight: bold;">Answer ${answer}:</span> ${optionTitles[q][answer]}
+                        </div>
+                    `;
+                }
+            }
+            summaryHTML += '</div>';
+            
+            document.getElementById('summaryContent').innerHTML = summaryHTML;
+            document.getElementById('summarySection').style.display = 'block';
+        }
+
+        function generateResults() {
+            const timestamp = new Date().toISOString();
+            let resultsContent = 'MTM WIP Application - SettingsForm Implementation Guide\n';
+            resultsContent += `Generated: ${timestamp}\n\n`;
+            resultsContent += 'IMPLEMENTATION ROADMAP:\n\n';
+            
+            for (let q = 1; q <= 6; q++) {
+                const answer = answers[q];
+                if (answer) {
+                    resultsContent += `${q}. ${questionTitles[q]}\n`;
+                    resultsContent += `   Selected: ${optionTitles[q][answer]}\n`;
+                    resultsContent += `   Implementation: Use @ui:create → @ui:viewmodel patterns\n\n`;
+                }
+            }
+            
+            resultsContent += '\nRECOMMENDED HOTKEY SEQUENCE:\n';
+            resultsContent += '@ui:create SettingsFormView → @ui:viewmodel SettingsFormViewModel → @sys:config integration → @sys:theme integration → @qa:verify\n\n';
+            resultsContent += 'INTEGRATION POINTS:\n';
+            resultsContent += '- Integrate with existing Configuration.cs service\n';
+            resultsContent += '- Use ErrorHandling.cs for comprehensive error management\n';
+            resultsContent += '- Connect with advanced ThemeService from questionnaire\n';
+            resultsContent += '- Follow MTM service organization patterns\n';
+            resultsContent += '- Implement proper Avalonia MVVM architecture\n';
+            
+            document.getElementById('roadmapOutput').textContent = resultsContent;
+        }
+
+        function copyResults() {
+            const resultsText = document.getElementById('roadmapOutput').textContent;
+            navigator.clipboard.writeText(resultsText).then(function() {
+                alert('✅ Implementation guide copied to clipboard!');
+            }, function(err) {
+                alert('❌ Failed to copy to clipboard. Please manually select and copy the guide.');
+            });
+        }
+
+        function downloadResults() {
+            const resultsText = document.getElementById('roadmapOutput').textContent;
+            const blob = new Blob([resultsText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `MTM_SettingsForm_Implementation_Guide_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            alert('📁 Implementation guide downloaded!');
+        }
+
+        function resetForm() {
+            if (confirm('Are you sure you want to reset all answers?')) {
+                answers = {};
+                document.getElementById('settingsFormQuestionnaire').reset();
+                document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                document.getElementById('summarySection').style.display = 'none';
+                document.getElementById('resultsBtn').style.display = 'none';
+                document.getElementById('validateBtn').style.display = 'none';
+                document.getElementById('validateBtn').innerHTML = '✅ Validate Answers';
+                document.getElementById('validateBtn').classList.remove('btn-success');
+                document.getElementById('validateBtn').classList.add('btn-primary');
+                updateProgress();
+            }
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>
