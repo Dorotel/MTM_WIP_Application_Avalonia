@@ -1,0 +1,23 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- MTM Soft Rose Theme -->
+    <SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryBrush" Color="#E91E63"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryBrush" Color="#EC407A"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.MagentaAccentBrush" Color="#F06292"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.BlueAccentBrush" Color="#C2185B"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.PinkAccentBrush" Color="#AD1457"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.LightPurpleBrush" Color="#F48FB1"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryDarkBrush" Color="#880E4F"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryLightBrush" Color="#FCE4EC"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryExtraLightBrush" Color="#FEF7F9"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.AppBackgroundBrush" Color="#FEF7F9"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.ContentBackgroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.SidebarBackgroundBrush" Color="#880E4F"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.HeaderBackgroundBrush" Color="#E91E63"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryTextBrush" Color="#880E4F"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryTextBrush" Color="#666666"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.LightTextBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MTM_Shared_Logic.AccentTextBrush" Color="#E91E63"/>
+
+</ResourceDictionary>

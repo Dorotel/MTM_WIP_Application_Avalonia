@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using Microsoft.Extensions.Logging;
 
@@ -242,6 +244,7 @@ public class ThemeService : IThemeService
     {
         return new List<ThemeInfo>
         {
+            // Original MTM Themes
             new ThemeInfo
             {
                 Id = "MTM_Light",
@@ -265,6 +268,104 @@ public class ThemeService : IThemeService
                 Description = "High contrast theme for accessibility",
                 IsDark = false,
                 PreviewColor = "#2D1B69"
+            },
+            
+            // Professional Color Themes
+            new ThemeInfo
+            {
+                Id = "MTM_Blue",
+                DisplayName = "MTM Professional Blue",
+                Description = "Professional blue theme for corporate environments",
+                IsDark = false,
+                PreviewColor = "#1E88E5"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Blue_Dark",
+                DisplayName = "MTM Professional Blue Dark",
+                Description = "Dark variant of professional blue theme",
+                IsDark = true,
+                PreviewColor = "#1565C0"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Green",
+                DisplayName = "MTM Success Green",
+                Description = "Growth and success oriented green theme",
+                IsDark = false,
+                PreviewColor = "#43A047"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Green_Dark",
+                DisplayName = "MTM Success Green Dark",
+                Description = "Dark variant of success green theme",
+                IsDark = true,
+                PreviewColor = "#2E7D32"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Red",
+                DisplayName = "MTM Alert Red",
+                Description = "Critical systems and alert red theme",
+                IsDark = false,
+                PreviewColor = "#E53935"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Teal",
+                DisplayName = "MTM Focus Teal",
+                Description = "Calming and focus-oriented teal theme",
+                IsDark = false,
+                PreviewColor = "#00ACC1"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Teal_Dark",
+                DisplayName = "MTM Focus Teal Dark",
+                Description = "Dark variant of focus teal theme",
+                IsDark = true,
+                PreviewColor = "#00838F"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Amber",
+                DisplayName = "MTM Industrial Amber",
+                Description = "Warm industrial amber theme for manufacturing",
+                IsDark = false,
+                PreviewColor = "#FF8F00"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Indigo",
+                DisplayName = "MTM Deep Indigo",
+                Description = "Deep professional indigo theme",
+                IsDark = false,
+                PreviewColor = "#3F51B5"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Indigo_Dark",
+                DisplayName = "MTM Deep Indigo Dark",
+                Description = "Dark variant of deep indigo theme",
+                IsDark = true,
+                PreviewColor = "#283593"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Rose",
+                DisplayName = "MTM Soft Rose",
+                Description = "Soft and approachable rose theme",
+                IsDark = false,
+                PreviewColor = "#E91E63"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Emerald",
+                DisplayName = "MTM Modern Emerald",
+                Description = "Fresh and modern emerald theme",
+                IsDark = false,
+                PreviewColor = "#00C853"
             }
         };
     }
@@ -284,6 +385,10 @@ public class ThemeService : IThemeService
             var themeVariant = theme.IsDark ? ThemeVariant.Dark : ThemeVariant.Light;
             Application.Current.RequestedThemeVariant = themeVariant;
 
+            // For now, we'll use a simple approach where all themes are loaded
+            // and we switch between them by setting theme-specific properties
+            // This can be enhanced later to dynamically load theme resources
+            
             _logger.LogDebug("Applied theme variant: {Variant} for theme: {Theme}", themeVariant, theme.DisplayName);
         }
         catch (Exception ex)
