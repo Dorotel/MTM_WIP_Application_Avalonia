@@ -158,6 +158,7 @@ public class MainViewViewModel : BaseViewModel
 
     // Commands
     public ICommand OpenSettingsCommand { get; private set; }
+    public ICommand OpenAdvancedSettingsCommand { get; private set; }
     public ICommand ExitCommand { get; private set; }
     public ICommand OpenPersonalHistoryCommand { get; private set; }
     public ICommand RefreshCommand { get; private set; }
@@ -231,6 +232,7 @@ public class MainViewViewModel : BaseViewModel
 
         // Initialize commands (stubs; no business logic)
         OpenSettingsCommand = new Commands.RelayCommand(OpenSettings);
+        OpenAdvancedSettingsCommand = new Commands.RelayCommand(OpenAdvancedSettings);
         ExitCommand = new Commands.RelayCommand(() => { /* TODO: Exit app */ });
         OpenPersonalHistoryCommand = new Commands.RelayCommand(() => { /* TODO: Open history */ });
         RefreshCommand = new Commands.RelayCommand(() => 
@@ -518,6 +520,32 @@ public class MainViewViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Failed to open Settings view");
             StatusText = "Failed to open settings";
+        }
+    }
+
+    private void OpenAdvancedSettings()
+    {
+        try
+        {
+            // Get SettingsFormViewModel from DI container
+            var settingsFormViewModel = Program.GetService<SettingsFormViewModel>();
+            
+            // Create SettingsFormView with the ViewModel
+            var settingsFormView = new Views.SettingsFormView
+            {
+                DataContext = settingsFormViewModel
+            };
+            
+            // Navigate to the advanced settings view
+            _navigationService.NavigateTo(settingsFormView);
+            
+            Logger.LogInformation("Navigated to Advanced Settings form");
+            StatusText = "Advanced Settings opened";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to open Advanced Settings form");
+            StatusText = "Failed to open advanced settings";
         }
     }
 }

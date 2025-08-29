@@ -33,6 +33,7 @@
   <UserControl.KeyBindings>
     <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}"/>
     <KeyBinding Gesture="Ctrl+S" Command="{Binding OpenSettingsCommand}"/>
+    <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding OpenAdvancedSettingsCommand}"/>
     <KeyBinding Gesture="Ctrl+H" Command="{Binding OpenPersonalHistoryCommand}"/>
     <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
     <!-- Remove tab specific shortcuts -->
@@ -69,6 +70,7 @@
                 HorizontalAlignment="Left">
             <MenuItem Header="_File" Foreground="{StaticResource LightTextBrush}">
               <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
+              <MenuItem Header="_Advanced Settings" Command="{Binding OpenAdvancedSettingsCommand}"/>
               <Separator/>
               <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
             </MenuItem>
