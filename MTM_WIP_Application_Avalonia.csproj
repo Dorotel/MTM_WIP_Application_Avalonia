@@ -117,10 +117,11 @@
     <None Include=".github\Development-Instructions\githubworkflow.instruction.md" />
     <None Include=".github\Development-Instructions\templates-documentation.instruction.md" />
     <None Include=".github\Custom-Prompts\MTM_Hotkey_Reference.md" />
+    <None Include=".github\issues\implement-integrated-theming-settings-system.md" />
     <None Include=".github\issues\implement-settings-form.md" />
-    <None Include=".github\ISSUE_TEMPLATE\implement-settings-form-mvvm-architecture.md" />
     <None Include=".github\issues\implement-advanced-theming.md" />
     <None Include=".github\Quality-Instructions\needsrepair.instruction.md" />
+    <None Include=".github\questionnaires\integrated-theming-settings-questionnaire.md" />
     <None Include=".github\UI-Instructions\avalonia-xaml-syntax.instruction.md" />
     <None Include=".github\UI-Instructions\ui-generation.instruction.md" />
     <None Include=".github\UI-Instructions\ui-mapping.instruction.md" />

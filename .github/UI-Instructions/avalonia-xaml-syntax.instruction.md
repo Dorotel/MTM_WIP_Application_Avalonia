@@ -1,118 +1,212 @@
 # GitHub Copilot Instructions: Avalonia AXAML Syntax (Preventing AVLN2000 Errors)
 
+This document is a practical, copy-paste friendly guide for writing correct Avalonia AXAML and avoiding AVLN2000 errors that commonly happen when WPF XAML is used by mistake.
+
 <details>
 <summary><strong>🚨 Critical AVLN2000 Error Prevention Rules</strong></summary>
 
-**AVLN2000 errors occur when using WPF XAML syntax instead of Avalonia AXAML syntax. This instruction file provides the definitive guide to prevent these errors.**
+AVLN2000 errors often occur when WPF XAML syntax is used in Avalonia AXAML.
 
-### Primary Causes of AVLN2000 Errors:
-1. **Using WPF property names instead of Avalonia property names**
-2. **Incorrect Grid column/row definition syntax**
-3. **Wrong namespace declarations**
-4. **Using WPF-specific markup extensions that don't exist in Avalonia**
-5. **Incorrect control property bindings**
+Top causes:
+1) Using WPF property/control names or enums that don’t exist in Avalonia
+2) Using WPF-only element structures (e.g., Grid.ColumnDefinitions with Name attributes)
+3) Wrong namespaces and resource include URIs
+4) Using unsupported WPF markup extensions, triggers, or behaviors
+5) Incorrect bindings (missing x:DataType for compiled bindings, wrong ElementName syntax)
 
 </details>
 
 <details>
-<summary><strong>📋 WPF vs Avalonia AXAML Syntax Differences</strong></summary>
+<summary><strong>📋 WPF vs Avalonia AXAML: What’s Different</strong></summary>
 
-## Grid Definition Syntax (CRITICAL)
+## Namespaces (Root Element)
 
-### ❌ WPF XAML (CAUSES AVLN2000)
+- WPF (WRONG in Avalonia)
 ```xml
-<!-- WRONG: WPF syntax that causes AVLN2000 errors -->
-<Grid.ColumnDefinitions>
-    <ColumnDefinition Name="Column1" Width="Auto"/>
-    <ColumnDefinition Name="Column2" Width="*"/>
-</Grid.ColumnDefinitions>
-
-<Grid.RowDefinitions>
-    <RowDefinition Name="Row1" Height="Auto"/>
-    <RowDefinition Name="Row2" Height="*"/>
-</Grid.RowDefinitions>
-```
-
-### ✅ Avalonia AXAML (CORRECT)
-```xml
-<!-- CORRECT: Avalonia syntax using ColumnDefinitions/RowDefinitions attributes -->
-<Grid ColumnDefinitions="Auto,*"
-      RowDefinitions="Auto,*">
-    <!-- Content -->
-</Grid>
-
-<!-- OR: Explicit definitions WITHOUT Name property -->
-<Grid>
-    <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-    <!-- Content -->
-</Grid>
-```
-
-## Namespace Declarations
-
-### ❌ WPF XAML
-```xml
-<!-- WRONG: WPF namespaces -->
 <UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 ```
 
-### ✅ Avalonia AXAML
+- Avalonia (CORRECT)
 ```xml
-<!-- CORRECT: Avalonia namespaces -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 ```
 
-## Property Syntax Differences
-
-### ❌ WPF Properties (CAUSES AVLN2000)
+- Add CLR namespaces with using:
 ```xml
-<!-- WRONG: WPF-specific properties -->
-<Border Name="MyBorder"/>                    <!-- Use x:Name instead -->
-<TextBlock FontFamily="Segoe UI"/>           <!-- Different font handling -->
-<Button IsCancel="True"/>                    <!-- No IsCancel in Avalonia -->
-<TextBox AcceptsTab="True"/>                 <!-- Different property name -->
+xmlns:vm="using:YourApp.ViewModels"
+xmlns:views="using:YourApp.Views"
 ```
 
-### ✅ Avalonia Properties
+- Design-time (optional)
 ```xml
-<!-- CORRECT: Avalonia properties -->
-<Border x:Name="MyBorder"/>
-<TextBlock FontFamily="Segoe UI,Arial"/>     <!-- Font fallbacks -->
-<Button HotKey="Escape"/>                    <!-- Use HotKey instead -->
-<TextBox AcceptsTab="True"/>                 <!-- Same name, but verify support -->
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+mc:Ignorable="d"
 ```
 
-## Control Differences
+## Grid Definitions (CRITICAL)
 
-### ❌ WPF Controls Not Available in Avalonia
+- WPF (WRONG in Avalonia if you use Name on definitions)
 ```xml
-<!-- WRONG: These controls don't exist in Avalonia -->
-<Label Target="{Binding ElementName=textBox}"/>
-<Popup/>
-<ToolTip/>
-<StatusBar/>
-<Ribbon/>
-<DocumentViewer/>
+<Grid>
+  <Grid.ColumnDefinitions>
+    <ColumnDefinition Name="Left" Width="Auto"/>
+    <ColumnDefinition Width="*"/>
+  </Grid.ColumnDefinitions>
+</Grid>
 ```
 
-### ✅ Avalonia Alternatives
+- Avalonia (Preferred attribute syntax)
 ```xml
-<!-- CORRECT: Avalonia alternatives -->
-<TextBlock/>                                 <!-- Instead of Label -->
-<Flyout/>                                   <!-- Instead of Popup -->
-<ToolTip.Tip="Text"/>                       <!-- Attached property for tooltips -->
-<DockPanel LastChildFill="True"/>           <!-- For status bar layout -->
-<!-- No direct Ribbon equivalent - use custom UI -->
-<ScrollViewer/>                             <!-- For document viewing -->
+<Grid ColumnDefinitions="Auto,*"
+      RowDefinitions="Auto,*"/>
+```
+
+- Avalonia (Explicit, but DO NOT use Name on Row/ColumnDefinition)
+```xml
+<Grid>
+  <Grid.ColumnDefinitions>
+    <ColumnDefinition Width="Auto"/>
+    <ColumnDefinition Width="*"/>
+  </Grid.ColumnDefinitions>
+  <Grid.RowDefinitions>
+    <RowDefinition Height="Auto"/>
+    <RowDefinition Height="*"/>
+  </Grid.RowDefinitions>
+</Grid>
+```
+
+- Extra Avalonia features:
+  - Grid.RowSpacing / Grid.ColumnSpacing are available in Avalonia (not in WPF pre-.NET 8)
+  - No SharedSizeGroup (WPF feature) in core Avalonia
+
+## Element Naming
+
+- WPF (WRONG): Name on elements
+```xml
+<Button Name="MyButton"/>
+```
+
+- Avalonia (CORRECT)
+```xml
+<Button x:Name="MyButton"/>
+```
+
+## Show/Hide Elements
+
+- WPF (WRONG in Avalonia): Visibility enum (Visible/Collapsed/Hidden)
+```xml
+<TextBlock Visibility="Collapsed"/>
+```
+
+- Avalonia (CORRECT): IsVisible boolean
+```xml
+<TextBlock IsVisible="False"/>
+```
+
+If you’re porting WPF bindings, replace BooleanToVisibilityConverter with a bool binding (or a custom converter if needed).
+
+## Controls: Availability and Differences
+
+- Exists in Avalonia (core): Button, TextBlock, TextBox, CheckBox, RadioButton, ToggleSwitch, ComboBox, ListBox, TreeView, TabControl, Expander, Slider, ProgressBar, Menu, MenuItem, ContextMenu (legacy), Flyout, ContextFlyout, DataGrid, GridSplitter, UniformGrid, WrapPanel, DockPanel, Canvas, ScrollViewer, Label
+- Not in core Avalonia: Ribbon, DocumentViewer, FlowDocument controls, WebBrowser
+  - Web content: use Avalonia.WebView (WebView2) package
+- Label exists in Avalonia. However, WPF’s Label.Target isn’t available; use access keys (_) and focus management instead.
+
+## Popup / Flyout / ToolTip
+
+- WPF “Popup” exists in Avalonia as Avalonia.Controls.Primitives.Popup, but common scenarios should prefer:
+  - Flyout / MenuFlyout / ContextFlyout
+  - ToolTip via attached property
+
+Examples:
+```xml
+<!-- ToolTip -->
+<Button ToolTip.Tip="Save"/>
+
+<!-- Flyout -->
+<Button Content="More">
+  <FlyoutBase.AttachedFlyout>
+    <Flyout Placement="Bottom">
+      <StackPanel>
+        <Button Content="Action 1"/>
+        <Button Content="Action 2"/>
+      </StackPanel>
+    </Flyout>
+  </FlyoutBase.AttachedFlyout>
+</Button>
+
+<!-- ContextFlyout -->
+<Button Content="Open">
+  <Button.ContextFlyout>
+    <MenuFlyout>
+      <MenuItem Header="Open Recent"/>
+      <MenuItem Header="Open Folder"/>
+    </MenuFlyout>
+  </Button.ContextFlyout>
+</Button>
+```
+
+## Button Defaults (IsDefault / IsCancel)
+
+- WPF: IsDefault / IsCancel
+- Avalonia: IsDefault / IsCancel are supported (use these, not a HotKey property)
+```xml
+<Button Content="OK" IsDefault="True" Command="{Binding OkCommand}"/>
+<Button Content="Cancel" IsCancel="True" Command="{Binding CancelCommand}"/>
+```
+
+For keyboard shortcuts, use KeyBindings or add accelerators in MenuItem.HotKey.
+
+## Keyboard Shortcuts (KeyBindings)
+
+- WPF InputBindings vs Avalonia KeyBindings
+```xml
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}"/>
+    <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
+  </Window.KeyBindings>
+</Window>
+```
+
+## Access Keys (Accelerators in Text)
+
+- WPF and Avalonia both use underscore (_) for access keys in headers/Content
+```xml
+<Button Content="_Save"/>
+<MenuItem Header="_File"/>
+```
+
+## StackPanel/Items Spacing
+
+- WPF traditionally uses Margin on children
+- Avalonia also supports spacing:
+```xml
+<StackPanel Orientation="Horizontal" Spacing="8">
+  <Button Content="A"/>
+  <Button Content="B"/>
+</StackPanel>
+```
+
+## ScrollViewer ScrollBar Visibility
+
+- WPF: ScrollViewer.HorizontalScrollBarVisibility
+- Avalonia: Same attached properties exist, same enum values (Disabled, Auto, Hidden, Visible)
+```xml
+<TextBox ScrollViewer.HorizontalScrollBarVisibility="Auto"
+         ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+```
+
+## Image Source URIs
+
+- WPF pack:// URIs (WRONG in Avalonia)
+- Avalonia uses avares:// for resources embedded in assemblies
+```xml
+<Image Source="avares://YourAssembly/Assets/logo.png"/>
 ```
 
 </details>
@@ -120,258 +214,373 @@
 <details>
 <summary><strong>🎯 Avalonia-Specific AXAML Patterns</strong></summary>
 
-## Compiled Bindings (CRITICAL FOR AVALONIA)
+## Compiled Bindings (RECOMMENDED)
 
-### ✅ Always Use Compiled Bindings
 ```xml
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
-             x:Class="MTM_WIP_Application_Avalonia.Views.MainView"
+             xmlns:vm="using:YourApp.ViewModels"
+             x:Class="YourApp.Views.MainView"
              x:CompileBindings="True"
              x:DataType="vm:MainViewModel">
-    
-    <!-- Strongly-typed bindings -->
-    <TextBox Text="{Binding PartId}"/>
-    <Button Command="{Binding SearchCommand}"/>
+  <TextBox Text="{Binding PartId}"/>
+  <Button Command="{Binding SearchCommand}"/>
 </UserControl>
 ```
 
-## Avalonia Grid Syntax Patterns
+- Always set both x:CompileBindings and x:DataType to enable typed, compiled bindings.
 
-### ✅ Short Grid Definition Syntax (Preferred)
+## ElementName and Ancestor Bindings
+
+- Standard ElementName works:
 ```xml
-<!-- CORRECT: Concise grid definition -->
+<TextBox x:Name="Input"/>
+<TextBlock Text="{Binding ElementName=Input, Path=Text}"/>
+```
+
+- Avalonia also supports shorthand for ElementName with #:
+```xml
+<TextBlock Text="{Binding #Input.Text}"/>
+```
+
+- Relative/Ancestor bindings are supported; prefer compiled bindings where possible.
+
+## Short Grid
+
+```xml
 <Grid ColumnDefinitions="Auto,*,Auto"
-      RowDefinitions="Auto,*,Auto"
+      RowDefinitions="Auto,*"
       ColumnSpacing="12"
       RowSpacing="8">
-    
-    <TextBlock Grid.Column="0" Grid.Row="0" Text="Label:"/>
-    <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Value}"/>
-    <Button Grid.Column="2" Grid.Row="0" Content="Search"/>
+  <TextBlock Grid.Column="0" Grid.Row="0" Text="Label:"/>
+  <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Value}"/>
+  <Button Grid.Column="2" Grid.Row="0" Content="Search"/>
 </Grid>
 ```
 
-### ✅ Explicit Grid Definition (When Complex)
+## Styles and Selectors (Not WPF Triggers)
+
+- Avalonia styles use CSS-like selectors, not WPF’s Trigger syntax.
+- Implicit style example:
 ```xml
-<!-- CORRECT: Explicit when you need complex definitions -->
-<Grid>
-    <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="200" MinWidth="150" MaxWidth="300"/>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="Auto"/>
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="*" MinHeight="200"/>
-    </Grid.RowDefinitions>
-    
-    <!-- Content -->
-</Grid>
+<UserControl.Styles>
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+  <Style Selector="TextBlock.caption">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Opacity" Value="0.8"/>
+  </Style>
+</UserControl.Styles>
 ```
 
-## Avalonia Layout Controls
-
-### ✅ Use Avalonia-Specific Layout Features
+- Pseudoclasses like :pointerover, :pressed, :checked, :disabled can be used in Selector
 ```xml
-<!-- Avalonia's enhanced Grid features -->
-<Grid ColumnDefinitions="*,Auto,*"
-      RowDefinitions="Auto,*"
-      ShowGridLines="False">
-    
-    <!-- Grid.ColumnSpan and Grid.RowSpan work the same -->
-    <TextBlock Grid.ColumnSpan="3" 
-               Text="Header" 
-               HorizontalAlignment="Center"/>
-</Grid>
-
-<!-- UniformGrid for equal spacing -->
-<UniformGrid Rows="2" Columns="3" 
-             HorizontalAlignment="Stretch"
-             VerticalAlignment="Stretch">
-    <Button Content="1"/>
-    <Button Content="2"/>
-    <Button Content="3"/>
-    <Button Content="4"/>
-    <Button Content="5"/>
-    <Button Content="6"/>
-</UniformGrid>
+<Style Selector="Button:pointerover">
+  <Setter Property="Opacity" Value="0.9"/>
+</Style>
 ```
 
-## Avalonia Resource Syntax
+- DataTrigger is available in Avalonia 11+, but the syntax differs from WPF. Prefer selectors/pseudoclasses or use DataTriggers where needed.
 
-### ✅ Avalonia Resource Patterns
+## Resource Include vs Style Include
+
+- Styles go under a Styles element and are included via StyleInclude
+- Non-style resources (brushes, thicknesses, etc.) use ResourceInclude
+
+App.axaml example:
+```xml
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Application.Styles>
+    <FluentTheme Mode="Light"/>
+    <StyleInclude Source="avares://YourAssembly/Styles/Controls.axaml"/>
+  </Application.Styles>
+
+  <Application.Resources>
+    <ResourceInclude Source="avares://YourAssembly/Styles/Colors.axaml"/>
+  </Application.Resources>
+</Application>
+```
+
+## Templates
+
+- ControlTemplate and TemplateBinding exist in Avalonia:
+```xml
+<Style Selector="Button.custom">
+  <Setter Property="Template">
+    <ControlTemplate>
+      <Border CornerRadius="4" Background="{TemplateBinding Background}">
+        <ContentPresenter HorizontalAlignment="Center"
+                          VerticalAlignment="Center"/>
+      </Border>
+    </ControlTemplate>
+  </Setter>
+</Style>
+```
+
+## DataTemplates
+
+- DataTemplate selection by DataType works similarly:
 ```xml
 <UserControl.Resources>
-    <!-- Static Resources -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="#6a0dad"/>
-    
-    <!-- Styles -->
-    <Style Selector="Button.primary">
-        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-        <Setter Property="Foreground" Value="White"/>
-    </Style>
-    
-    <!-- Data Templates -->
-    <DataTemplate x:Key="ItemTemplate" DataType="vm:ItemViewModel">
-        <Border Padding="8">
-            <TextBlock Text="{Binding Name}"/>
-        </Border>
-    </DataTemplate>
+  <DataTemplate DataType="vm:ItemViewModel">
+    <TextBlock Text="{Binding Name}"/>
+  </DataTemplate>
 </UserControl.Resources>
 ```
 
 </details>
 
 <details>
-<summary><strong>⚠️ Common AVLN2000 Error Scenarios</strong></summary>
+<summary><strong>🔧 Properties and Markup: What to Use vs Avoid</strong></summary>
 
-## Scenario 1: Grid Column/Row Names
-### ❌ Error-Causing Code
+## Name vs x:Name
+- Always use x:Name, not Name.
+
+## Visibility vs IsVisible
+- Use IsVisible (bool) in Avalonia, not Visibility (enum).
+
+## Fonts
+- FontFamily exists in Avalonia; supports fallbacks:
+```xml
+<TextBlock FontFamily="Segoe UI, Arial, Helvetica"/>
+```
+
+## TextBox
+- Commonly supported: Text, AcceptsReturn, AcceptsTab, Watermark, TextWrapping, PlaceholderText (theme specific)
+- If you used CharacterCasing in WPF, verify availability in your Avalonia version; prefer explicit logic/converters if needed.
+
+## ToolTip
+- Use ToolTip.Tip attached property or nested property:
+```xml
+<Button>
+  <ToolTip.Tip>
+    <StackPanel>
+      <TextBlock Text="Line 1"/>
+      <TextBlock Text="Line 2"/>
+    </StackPanel>
+  </ToolTip.Tip>
+</Button>
+```
+
+## MenuItem shortcuts
+- Use HotKey on MenuItem (not InputGestureText):
+```xml
+<MenuItem Header="_Save" HotKey="Ctrl+S" Command="{Binding SaveCommand}"/>
+```
+
+## Markup extensions you can use
+- StaticResource, DynamicResource, Binding, TemplateBinding, x:Null
+- x:Static is supported in Avalonia XAML; x:Type is generally not used the same way as WPF
+
+## MultiBinding
+- Avalonia supports MultiBinding with IMultiValueConverter (verify your Avalonia version and package references):
+```xml
+<TextBlock>
+  <TextBlock.Text>
+    <MultiBinding Converter="{StaticResource FullNameConverter}">
+      <Binding Path="FirstName"/>
+      <Binding Path="LastName"/>
+    </MultiBinding>
+  </TextBlock.Text>
+</TextBlock>
+```
+
+## Event setters in styles
+- WPF’s EventSetter is not supported. Use behaviors, attached properties, or commands/KeyBindings instead.
+
+</details>
+
+<details>
+<summary><strong>⚠️ Common AVLN2000 Error Scenarios (and Fixes)</strong></summary>
+
+## 1) Grid Column/Row Names
+- WRONG
 ```xml
 <Grid>
-    <Grid.ColumnDefinitions>
-        <ColumnDefinition Name="LeftColumn" Width="Auto"/>
-        <ColumnDefinition Name="RightColumn" Width="*"/>
-    </Grid.ColumnDefinitions>
+  <Grid.ColumnDefinitions>
+    <ColumnDefinition Name="Left" Width="Auto"/>
+    <ColumnDefinition Width="*"/>
+  </Grid.ColumnDefinitions>
 </Grid>
 ```
-**Error**: `AVLN2000: Unable to resolve suitable regular or attached property Name on type ColumnDefinition`
-
-### ✅ Correct Code
+- FIX:
 ```xml
-<Grid ColumnDefinitions="Auto,*">
-    <!-- OR -->
-</Grid>
-
+<Grid ColumnDefinitions="Auto,*"/>
+<!-- OR -->
 <Grid>
-    <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
+  <Grid.ColumnDefinitions>
+    <ColumnDefinition Width="Auto"/>
+    <ColumnDefinition Width="*"/>
+  </Grid.ColumnDefinitions>
 </Grid>
 ```
 
-## Scenario 2: WPF-Style Element Names
-### ❌ Error-Causing Code
+## 2) WPF Name Instead of x:Name
+- WRONG
 ```xml
-<Button Name="MyButton" Content="Click Me"/>
+<TextBox Name="SearchBox"/>
 ```
-**Error**: Property `Name` doesn't exist on Button
-
-### ✅ Correct Code
+- FIX
 ```xml
-<Button x:Name="MyButton" Content="Click Me"/>
+<TextBox x:Name="SearchBox"/>
 ```
 
-## Scenario 3: WPF Control Properties
-### ❌ Error-Causing Code
+## 3) Using Visibility
+- WRONG
 ```xml
-<TextBox CharacterCasing="Upper"/>
-<Button IsCancel="True"/>
-<Label Target="{Binding ElementName=textBox}"/>
+<Border Visibility="Collapsed"/>
+```
+- FIX
+```xml
+<Border IsVisible="False"/>
 ```
 
-### ✅ Correct Code
+## 4) WPF-only namespaces
+- WRONG
 ```xml
-<TextBox Classes="uppercase"/>  <!-- Use CSS classes for formatting -->
-<Button HotKey="Escape"/>       <!-- Use HotKey instead of IsCancel -->
-<TextBlock/>                    <!-- Use TextBlock instead of Label -->
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"/>
+```
+- FIX
+```xml
+<UserControl xmlns="https://github.com/avaloniaui"/>
 ```
 
-## Scenario 4: Incorrect Binding Syntax
-### ❌ Error-Causing Code
+## 5) Missing DataType for compiled bindings
+- WRONG
 ```xml
-<!-- Missing DataType for compiled bindings -->
 <UserControl x:CompileBindings="True">
-    <TextBox Text="{Binding PropertyName}"/>
+  <TextBox Text="{Binding Name}"/>
 </UserControl>
 ```
-
-### ✅ Correct Code
+- FIX
 ```xml
 <UserControl x:CompileBindings="True"
-             x:DataType="vm:MyViewModel">
-    <TextBox Text="{Binding PropertyName}"/>
+             xmlns:vm="using:YourApp.ViewModels"
+             x:DataType="vm:CustomerViewModel">
+  <TextBox Text="{Binding Name}"/>
 </UserControl>
+```
+
+## 6) WPF triggers in styles
+- WRONG (WPF-style Trigger)
+```xml
+<Style TargetType="Button">
+  <Style.Triggers>
+    <Trigger Property="IsMouseOver" Value="True">
+      <Setter Property="Background" Value="Red"/>
+    </Trigger>
+  </Style.Triggers>
+</Style>
+```
+- FIX (Avalonia selector)
+```xml
+<Style Selector="Button:pointerover">
+  <Setter Property="Background" Value="Red"/>
+</Style>
 ```
 
 </details>
 
 <details>
-<summary><strong>🔧 Avalonia Control Equivalents</strong></summary>
+<summary><strong>🔁 Control and Property Mapping Reference</strong></summary>
 
-## Control Mapping Reference
+## Controls
+- WPF: Label → Avalonia: Label or TextBlock (Label exists; Target is not available. Use access keys and focus logic.)
+- WPF: Popup → Avalonia: Popup exists, but prefer Flyout/ContextFlyout for menus and transient UI
+- WPF: ToolTip → Avalonia: ToolTip.Tip attached property
+- WPF: StatusBar → Avalonia: build with DockPanel/Grid
+- WPF: Ribbon → Avalonia: no core equivalent
+- WPF: DocumentViewer / FlowDocument → Avalonia: no core equivalent
+- WPF: WebBrowser → Avalonia: use Avalonia.WebView
+- WPF: ListView → Avalonia: ListBox or DataGrid for tabular, or ItemsControl with templates
 
-| WPF Control | Avalonia Control | Notes |
-|-------------|------------------|-------|
-| `Label` | `TextBlock` or `Label` | TextBlock for display, Label for form labels |
-| `Popup` | `Flyout` | Different API and usage |
-| `ToolTip` | `ToolTip.Tip` | Attached property syntax |
-| `StatusBar` | `DockPanel` | Custom implementation required |
-| `GroupBox` | `HeaderedContentControl` | Or use Border with custom styling |
-| `Expander` | `Expander` | Same name, different properties |
-| `TabControl` | `TabControl` | Similar but check property names |
-| `ListView` | `ListBox` | Or use ItemsControl with custom template |
-| `TreeView` | `TreeView` | Similar API |
-| `DataGrid` | `DataGrid` | Same name, different column syntax |
-| `RichTextBox` | `TextBox` | Limited rich text support |
-| `WebBrowser` | No direct equivalent | Use third-party controls |
+## Properties
+- Name → x:Name
+- Visibility → IsVisible (bool)
+- IsDefault → IsDefault (exists)
+- IsCancel → IsCancel (exists)
+- FontFamily → FontFamily (supports fallbacks)
+- Margin / Padding → same names/syntax
+- HorizontalContentAlignment / VerticalContentAlignment → supported on content controls
+- ScrollViewer.*ScrollBarVisibility → exists with same enum names
+- Grid.Row / Grid.Column / Grid.RowSpan / Grid.ColumnSpan → same
+- Grid.RowSpacing / Grid.ColumnSpacing → Avalonia-only convenience
+- DockPanel.Dock → same
+- Canvas.Left/Top → same
 
-## Property Mapping
+</details>
 
-| WPF Property | Avalonia Property | Notes |
-|--------------|-------------------|-------|
-| `Name` | `x:Name` | Always use x:Name |
-| `IsCancel` | `HotKey="Escape"` | Different approach |
-| `IsDefault` | `IsDefault` | Same property |
-| `FontFamily` | `FontFamily` | Same but with fallbacks |
-| `Visibility` | `IsVisible` | Boolean instead of enum |
-| `Margin` | `Margin` | Same syntax |
-| `Padding` | `Padding` | Same syntax |
+<details>
+<summary><strong>📦 Resources, URIs, and Assets</strong></summary>
+
+## Static vs Dynamic Resources
+```xml
+<Border Background="{StaticResource PrimaryBrush}"/>
+<Border Background="{DynamicResource PrimaryBrush}"/>
+```
+
+## Resource Includes
+- Styles:
+```xml
+<StyleInclude Source="avares://YourAssembly/Styles/Buttons.axaml"/>
+```
+- Resources:
+```xml
+<ResourceInclude Source="avares://YourAssembly/Styles/Colors.axaml"/>
+```
+
+## Images and Fonts
+- Use avares://
+```xml
+<Image Source="avares://YourAssembly/Assets/logo.png"/>
+```
+- Embed fonts and reference with FontFamily
+```xml
+<TextBlock FontFamily="avares://YourAssembly/Assets/Fonts#YourFontName"/>
+```
 
 </details>
 
 <details>
 <summary><strong>✅ AVLN2000 Prevention Checklist</strong></summary>
 
-Before committing any AXAML file, verify:
+Grid
+- [ ] No Name on RowDefinition/ColumnDefinition
+- [ ] Prefer ColumnDefinitions/RowDefinitions attribute syntax when simple
+- [ ] If explicit, only Width/Height and size constraints are used (no WPF-only props)
 
-### Grid Definitions
-- [ ] ✅ No `Name` properties on `ColumnDefinition` or `RowDefinition`
-- [ ] ✅ Use `ColumnDefinitions="Auto,*"` attribute syntax when possible
-- [ ] ✅ Only use explicit `<Grid.ColumnDefinitions>` for complex scenarios
+Naming and Visibility
+- [ ] x:Name used, never Name
+- [ ] IsVisible used, never Visibility
 
-### Control Properties
-- [ ] ✅ Use `x:Name` instead of `Name`
-- [ ] ✅ No WPF-specific properties like `IsCancel`, `CharacterCasing`
-- [ ] ✅ Use Avalonia equivalents for controls (TextBlock instead of Label)
+Namespaces and Includes
+- [ ] Root xmlns is https://github.com/avaloniaui
+- [ ] No WPF presentation namespace
+- [ ] Resource/Style includes use avares://
 
-### Namespace Declarations
-- [ ] ✅ `xmlns="https://github.com/avaloniaui"` (not WPF namespace)
-- [ ] ✅ Proper ViewModel namespace: `xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"`
+Bindings
+- [ ] x:CompileBindings and x:DataType set on views using compiled bindings
+- [ ] ElementName or #element syntax correct
+- [ ] No WPF-only binding features without Avalonia equivalents
 
-### Compiled Bindings
-- [ ] ✅ Include `x:CompileBindings="True"`
-- [ ] ✅ Include `x:DataType="vm:ViewModelName"`
-- [ ] ✅ All bindings target properties that exist on the ViewModel
+Controls/Properties
+- [ ] Only Avalonia-supported controls used (Popup/Flyout/ToolTip as per Avalonia)
+- [ ] No WPF-only features like SharedSizeGroup, FlowDocument, Ribbon
+- [ ] KeyBindings for shortcuts; MenuItem.HotKey for menu accelerators
+- [ ] Triggers done via selectors or Avalonia DataTriggers (not WPF Trigger syntax)
 
-### Resource Syntax
-- [ ] ✅ Use `StaticResource` and `DynamicResource` correctly
-- [ ] ✅ Proper Style Selector syntax: `Selector="Button.primary"`
-
-### Layout Properties
-- [ ] ✅ Use `IsVisible` instead of `Visibility`
-- [ ] ✅ Check that all attached properties exist on target controls
-- [ ] ✅ Verify Grid.Column and Grid.Row values are valid
+Resources/URIs
+- [ ] avares:// used for assets and includes
+- [ ] StaticResource/DynamicResource used appropriately
 
 </details>
 
 <details>
-<summary><strong>🎯 MTM-Specific Avalonia Patterns</strong></summary>
+<summary><strong>🎯 MTM-Specific Avalonia Template (Sample)</strong></summary>
 
-## MTM Standard AXAML Template
 ```xml
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -387,7 +596,6 @@ Before committing any AXAML file, verify:
              x:DataType="vm:YourViewModel">
 
   <UserControl.Resources>
-    <!-- MTM Color Scheme -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="#6a0dad"/>
     <SolidColorBrush x:Key="AccentBrush" Color="#ba45ed"/>
     <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
@@ -395,33 +603,20 @@ Before committing any AXAML file, verify:
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- MTM Styles -->
     <Style Selector="Button.primary">
       <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
       <Setter Property="Foreground" Value="White"/>
     </Style>
   </UserControl.Styles>
 
-  <!-- Content using correct Avalonia syntax -->
   <Grid RowDefinitions="*,Auto">
-    <!-- Main content -->
-    <Border Grid.Row="0" 
-            Classes="card"
-            Background="{StaticResource CardBackgroundBrush}">
-      <!-- Your content here -->
+    <Border Grid.Row="0" Classes="card" Background="{StaticResource CardBackgroundBrush}">
+      <!-- Content -->
     </Border>
-    
-    <!-- Action bar -->
-    <StackPanel Grid.Row="1" 
-                Orientation="Horizontal" 
-                HorizontalAlignment="Right"
-                Spacing="8"
-                Margin="16">
-      <Button Classes="primary" 
-              Content="Save" 
-              Command="{Binding SaveCommand}"/>
-      <Button Content="Cancel" 
-              Command="{Binding CancelCommand}"/>
+
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="16">
+      <Button Classes="primary" Content="Save" Command="{Binding SaveCommand}"/>
+      <Button Content="Cancel" Command="{Binding CancelCommand}"/>
     </StackPanel>
   </Grid>
 </UserControl>
@@ -430,34 +625,36 @@ Before committing any AXAML file, verify:
 </details>
 
 <details>
-<summary><strong>🚀 Quick Reference Commands</strong></summary>
+<summary><strong>🚀 Quick Reference: Build and Search</strong></summary>
 
-## Validation Commands
+Validation
 ```bash
-# Check for AVLN2000 errors before commit
 dotnet build
-
-# Validate AXAML syntax
-# (Use Visual Studio IntelliSense or Avalonia VS extension)
 ```
 
-## Common Find/Replace Patterns
+Find/Replace (Porting from WPF)
 ```
-# Fix Grid Names (Find & Replace in VS)
-Find:    Name="[^"]*"
-Replace: (empty)
-
-# Fix WPF Namespaces
+# Fix WPF root namespace
 Find:    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 Replace: xmlns="https://github.com/avaloniaui"
 
-# Fix Name to x:Name
+# Name -> x:Name
 Find:    Name="
 Replace: x:Name="
+
+# Remove Name on Grid definitions
+Find:    <ColumnDefinition Name="[^"]*"
+Replace: <ColumnDefinition
+Find:    <RowDefinition Name="[^"]*"
+Replace: <RowDefinition
+
+# Visibility -> IsVisible (manual review still recommended)
+Find:    Visibility="
+Replace: IsVisible="
 ```
 
 </details>
 
 ---
 
-**🎯 Remember**: When in doubt, prefer the simple Avalonia attribute syntax over complex element syntax. Always test your AXAML in the Avalonia designer to catch AVLN2000 errors early.
+Remember: Prefer Avalonia’s concise attribute syntax, selectors-based styling, avares:// URIs, and compiled bindings with x:DataType. When unsure, check if a property/control exists in Avalonia before using WPF habits.
