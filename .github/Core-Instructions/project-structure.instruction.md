@@ -6,27 +6,27 @@
 ```
 /
 ??? Views/                  # Avalonia AXAML views
-??? ViewModels/            # ViewModels using ReactiveUI
+??? ViewModels/            # ViewModels using standard .NET patterns
 ??? Models/                # Data models and business entities
 ??? Services/              # Business logic and data access services
 ??? Resources/             # Styles, themes, and assets
-??? Database_Files/        # ?? PRODUCTION database schema and stored procedures (READ-ONLY)
+??? Documentation/Documentation/Development/Database_Files/        # ?? PRODUCTION database schema and stored procedures (READ-ONLY)
 ??? Development/           # Development-specific files and documentation
 ??? Documentation/         # Project documentation and updates
 ??? .github/              # GitHub workflows and instruction files
 ```
 
-### **Production Database Files (READ-ONLY)**
+### **Database Files Structure**
 ```
-Database_Files/
+Documentation/Documentation/Development/Database_Files/
 ??? Production_Database_Schema.sql       # Current production schema
 ??? Existing_Stored_Procedures.sql      # READ-ONLY production procedures
 ??? README_*.md                          # Production documentation
 ```
 
 **?? CRITICAL: These files are READ-ONLY**
-- Never modify files in `Database_Files/` directly
-- Use `Development/Database_Files/` for new development work
+- Never modify files in `Documentation/Documentation/Development/Database_Files/` directly
+- Use `Development/Documentation/Documentation/Development/Database_Files/` for new development work
 
 ### **Services Directory Organization (CRITICAL)**
 
@@ -120,7 +120,7 @@ Documentation/
 ?   ?       ??? Standards_Adherence_Report.md
 ?   ??? Custom_Prompts/   # ?? CUSTOM DEVELOPMENT PROMPTS AND AUTOMATION
 ?   ?   ??? CustomPrompt_Create_UIElement.md
-?   ?   ??? CustomPrompt_Create_ReactiveUIViewModel.md
+│   │   ├── CustomPrompt_Create_StandardViewModel.md
 ?   ?   ??? CustomPrompt_Verify_CodeCompliance.md
 ?   ?   ??? Compliance_Fix01_EmptyDevelopmentStoredProcedures.md
 ?   ?   ??? [Additional CustomPrompt files...]
@@ -158,7 +158,7 @@ Documentation/
 ### **Development Directory Structure**
 ```
 Development/
-??? Database_Files/          # ??? Development database files (EDITABLE)
+??? Documentation/Documentation/Development/Database_Files/          # ??? Development database files (EDITABLE)
 ?   ??? Development_Database_Schema.sql   # Development schema changes
 ?   ??? New_Stored_Procedures.sql        # New procedures for development
 ?   ??? Updated_Stored_Procedures.sql    # Modified existing procedures
@@ -218,7 +218,7 @@ Development/
 - `Error-Handling-Upgrade-Summary.md`
 - `Service-Layer-Enhancement-Summary.md`
 - `Database-Foundation-Integration-Summary.md`
-- `ReactiveUI-Implementation-Summary.md`
+- `Standard-NET-Implementation-Summary.md`
 - `Custom-Prompts-Currency-Summary.md`
 
 ### **Compliance Report Files (MANDATORY PLACEMENT)**
@@ -269,9 +269,9 @@ Development/
 - `Compliance_Fix01_EmptyDevelopmentStoredProcedures.md` ? `Documentation/Development/Custom_Prompts/`
 
 ### **Database Changes**
-- **New stored procedures**: `Development/Database_Files/New_Stored_Procedures.sql`
-- **Modified procedures**: `Development/Database_Files/Updated_Stored_Procedures.sql`
-- **Schema changes**: `Development/Database_Files/Development_Database_Schema.sql`
+- **New stored procedures**: `Development/Documentation/Documentation/Development/Database_Files/New_Stored_Procedures.sql`
+- **Modified procedures**: `Development/Documentation/Documentation/Development/Database_Files/Updated_Stored_Procedures.sql`
+- **Schema changes**: `Development/Documentation/Documentation/Development/Database_Files/Development_Database_Schema.sql`
 
 ## **Naming and Organization Principles**
 

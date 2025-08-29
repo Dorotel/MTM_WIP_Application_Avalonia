@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Documentation - Database Files</title>
+    <meta name="description" content="MTM WIP Application Database Files - Comprehensive database schema, stored procedures, and documentation">
+    <meta name="keywords" content="MTM, Database, SQL Server, Stored Procedures, Schema, Documentation">
+    <meta name="author" content="MTM Development Team">
+    
+    <link rel="stylesheet" href="../../HTML_Data/css/mtm-documentation.css">
+    <link rel="stylesheet" href="../../HTML_Data/css/readme-styles.css">
+    
+    <!-- Favicon placeholder -->
+    <!-- <link rel="icon" type="image/svg+xml" href="../../HTML_Data/assets/mtm-favicon.svg"> -->
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../../HTML_Data/js/documentation-nav.js" as="script">
+    <link rel="preload" href="../../HTML_Data/js/collapsible-sections.js" as="script">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">Skip to main content</a>
+    
+    <header class="mtm-header">
+        <!-- <img src="../../HTML_Data/assets/mtm-logo.png" alt="MTM Logo"> -->
+        <div>
+            <h1>MTM WIP Application - Database Files</h1>
+            <p class="readme-subtitle">Comprehensive database schema, stored procedures, and documentation</p>
+        </div>
+    </header>
+    
+    <nav class="documentation-nav" role="navigation" aria-label="Main navigation">
+        <!-- Navigation will be populated by JavaScript -->
+    </nav>
+    
+    <main class="content" id="main-content">
+        <section class="overview-section">
+            <h2>📁 Database Files Overview</h2>
+            <p>This directory contains all database-related files for the MTM WIP Application, including stored procedures, table scripts, database schema definitions, and sample data. All database files are organized by functional category to provide clear separation of concerns and easy navigation.</p>
+            
+            <p>The MTM WIP Application uses a SQL Server database with a comprehensive set of stored procedures for inventory management, master data management, user management, and system configuration. All database access in the application is performed through these stored procedures using the <code>Helper_Database_StoredProcedure</code> pattern.</p>
+            
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <span class="stat-number">5</span>
+                    <span class="stat-label">SQL Files</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Stored Procedures</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">4</span>
+                    <span class="stat-label">Functional Areas</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Stored Proc Coverage</span>
+                </div>
+            </div>
+        </section>
+        
+        <section class="file-browser">
+            <div class="file-browser-header">
+                📁 Current Database Files
+            </div>
+            <div class="file-browser-content">
+                <div class="breadcrumb">
+                    <a href="../../../README.md">MTM WIP Application</a>
+                    <span class="breadcrumb-separator">></span>
+                    <a href="../../">Documentation</a>
+                    <span class="breadcrumb-separator">></span>
+                    <a href="../">Development</a>
+                    <span class="breadcrumb-separator">></span>
+                    <span class="current-page">Database Files</span>
+                </div>
+                
+                <ul class="file-tree">
+                    <li class="sql-file">
+                        <strong>Development_Database_Schema.sql</strong>
+                        <span class="status-indicator status-development">Development</span>
+                        <div class="file-description">Development schema changes and new table definitions</div>
+                    </li>
+                    <li class="sql-file">
+                        <strong>Development_Stored_Procedures.sql</strong>
+                        <span class="status-indicator status-development">Development</span>
+                        <div class="file-description">New stored procedures for development features</div>
+                    </li>
+                    <li class="sql-file">
+                        <strong>Production_Database_Schema.sql</strong>
+                        <span class="status-indicator status-current">Current</span>
+                        <div class="file-description">Current production database schema</div>
+                    </li>
+                    <li class="sql-file">
+                        <strong>Production_Stored_Procedures.sql</strong>
+                        <span class="status-indicator status-current">Current</span>
+                        <div class="file-description">Production stored procedures</div>
+                    </li>
+                    <li class="sql-file">
+                        <strong>Updated_Stored_Procedures.sql</strong>
+                        <span class="status-indicator status-development">Development</span>
+                        <div class="file-description">Modified existing procedures</div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="usage-guidelines">
+            <h2>🚀 Usage Guidelines</h2>
+            
+            <div class="collapsible active" id="developer-guidelines">
+                <div class="collapsible-header">
+                    <h3>For Developers</h3>
+                    <span class="collapsible-toggle"></span>
+                </div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><strong>Stored Procedures:</strong> All database operations must use the provided stored procedures via <code>Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</code></li>
+                        <li><strong>Schema Changes:</strong> Use the table scripts and schema files as reference for database structure</li>
+                        <li><strong>Testing:</strong> Use sample data files for development and testing scenarios</li>
+                        <li><strong>Organization:</strong> Follow the established category-based folder structure when adding new database files</li>
+                        <li><strong>Error Handling:</strong> All procedures return standardized status and message values</li>
+                        <li><strong>Logging:</strong> Database operations are logged through the centralized error handling system</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible" id="dba-guidelines">
+                <div class="collapsible-header">
+                    <h3>For Database Administrators</h3>
+                    <span class="collapsible-toggle"></span>
+                </div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><strong>Deployment:</strong> Execute schema files first, then stored procedures in order</li>
+                        <li><strong>Maintenance:</strong> Use the schema documentation to understand table relationships and constraints</li>
+                        <li><strong>Backup:</strong> Ensure all custom stored procedures are included in database backups</li>
+                        <li><strong>Performance:</strong> Monitor stored procedure execution plans and optimize as needed</li>
+                        <li><strong>Security:</strong> All database access is controlled through stored procedures with parameter validation</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="categories">
+            <h2>📂 Functional Categories</h2>
+            <div class="category-grid">
+                <div class="category-item">
+                    <h3>🔧 Inventory Management</h3>
+                    <p>Complete collection of stored procedures for inventory operations including add, remove, transfer, and query operations. Includes transaction history and audit trails.</p>
+                    <strong>Key Procedures:</strong> inv_inventory_Add_Item, inv_inventory_Remove_Item, inv_inventory_Transfer_Item
+                </div>
+                <div class="category-item">
+                    <h3>📊 Master Data Management</h3>
+                    <p>Procedures for managing reference data including part IDs, operations, locations, and system configuration settings.</p>
+                    <strong>Key Procedures:</strong> md_part_ids_Get_All, md_operations_Get_Active, md_locations_Get_All
+                </div>
+                <div class="category-item">
+                    <h3>👥 User Management</h3>
+                    <p>User authentication, authorization, and profile management procedures with role-based access control.</p>
+                    <strong>Key Procedures:</strong> usr_users_Authenticate, usr_users_Get_Permissions, usr_users_Get_All
+                </div>
+                <div class="category-item">
+                    <h3>⚙️ System Configuration</h3>
+                    <p>Application configuration, logging, error handling, and system maintenance procedures.</p>
+                    <strong>Key Procedures:</strong> sys_config_Get_Settings, sys_log_Insert_Entry, sys_error_Log_Exception
+                </div>
+            </div>
+        </section>
+        
+        <section class="technical-details">
+            <h2>🔧 Technical Architecture</h2>
+            
+            <div class="collapsible" id="database-patterns">
+                <div class="collapsible-header">
+                    <h3>Database Access Patterns</h3>
+                    <span class="collapsible-toggle"></span>
+                </div>
+                <div class="collapsible-content">
+                    <h4>Stored Procedure Only Pattern</h4>
+                    <pre><code>// ✅ CORRECT: Use stored procedures via Helper_Database_StoredProcedure
+var parameters = new Dictionary&lt;string, object&gt;
+{
+    ["p_PartId"] = partId,
+    ["p_Quantity"] = quantity,
+    ["p_UserId"] = userId
+};
+
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    connectionString,
+    "inv_inventory_Add_Item",
+    parameters
+);
+
+if (result.Status == "SUCCESS")
+{
+    // Process successful result
+    var data = result.DataTable;
+}
+else
+{
+    // Handle error with message
+    throw new InvalidOperationException(result.Message);
+}</code></pre>
+                    
+                    <h4>Error Handling Pattern</h4>
+                    <p>All stored procedures follow a standardized return pattern with status and message values for consistent error handling throughout the application.</p>
+                </div>
+            </div>
+            
+            <div class="collapsible" id="naming-conventions">
+                <div class="collapsible-header">
+                    <h3>Naming Conventions</h3>
+                    <span class="collapsible-toggle"></span>
+                </div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><strong>Inventory:</strong> <code>inv_</code> prefix (e.g., inv_inventory_Add_Item)</li>
+                        <li><strong>Master Data:</strong> <code>md_</code> prefix (e.g., md_part_ids_Get_All)</li>
+                        <li><strong>User Management:</strong> <code>usr_</code> prefix (e.g., usr_users_Authenticate)</li>
+                        <li><strong>System:</strong> <code>sys_</code> prefix (e.g., sys_config_Get_Settings)</li>
+                        <li><strong>Parameters:</strong> <code>p_</code> prefix for input parameters</li>
+                        <li><strong>Output:</strong> Standardized <code>@status</code> and <code>@message</code> output parameters</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="last-updated">
+        <p><em>Last Updated: December 19, 2024 - MTM Database Documentation v1.0</em></p>
+    </footer>
+    
+    <!-- Modern JavaScript -->
+    <script src="../../HTML_Data/js/documentation-nav.js"></script>
+    <script src="../../HTML_Data/js/collapsible-sections.js"></script>
+    
+    <!-- Schema.org structured data for better SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "MTM WIP Application - Database Files",
+        "description": "Comprehensive database schema, stored procedures, and documentation for the MTM WIP Application",
+        "author": {
+            "@type": "Organization",
+            "name": "MTM Development Team"
+        },
+        "dateModified": "2024-12-19",
+        "about": {
+            "@type": "SoftwareApplication",
+            "name": "MTM WIP Application",
+            "applicationCategory": "Business Application"
+        }
+    }
+    </script>
+</body>
+</html>

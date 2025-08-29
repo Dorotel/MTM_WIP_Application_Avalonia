@@ -1,33 +1,33 @@
 # Create UI Element from Markdown Instructions - Custom Prompt
 
 ## Instructions
-Use this prompt when you need to generate Avalonia AXAML and ReactiveUI ViewModels from parsed markdown instruction files with component hierarchies.
+Use this prompt when you need to generate Avalonia AXAML and standard .NET ViewModels from parsed markdown instruction files with component hierarchies.
 
 ## ⚠️ CRITICAL: AVLN2000 Error Prevention
 **BEFORE using this prompt, ALWAYS consult [../UI-Instructions/avalonia-xaml-syntax.instruction.md](../UI-Instructions/avalonia-xaml-syntax.instruction.md) to prevent AVLN2000 compilation errors.**
 
 ## Persona
-**UI Architect Copilot + ReactiveUI Specialist**  
+**UI Architect Copilot + Standard .NET MVVM Specialist**  
 *(See [personas-instruction.md](../../.github/personas.instruction.md) for role details)*
 
 ## Prompt Template
 
 ```
 Create UI Element from [filename].md following MTM-specific UI generation guidelines and AVLN2000 prevention rules.  
-Parse the markdown component structure and generate both AXAML view and ReactiveUI ViewModel.  
+Parse the markdown component structure and generate both AXAML view and standard .NET ViewModel.  
 Include MTM data patterns (Part ID, Operation numbers), context menu integration, and space optimization.  
 Follow the MTM purple color scheme and modern layout patterns. Leave business logic as TODO comments.
 ```
 
 ## Purpose
-For generating Avalonia AXAML and ReactiveUI ViewModels from parsed markdown files with component hierarchies while preventing AVLN2000 errors.
+For generating Avalonia AXAML and standard .NET ViewModels from parsed markdown files with component hierarchies while preventing AVLN2000 errors.
 
 ## Usage Examples
 
 ### Example 1: Quick Buttons Component
 ```
 Create UI Element from Control_QuickButtons.instructions.md following MTM-specific UI generation guidelines and AVLN2000 prevention rules.  
-Parse the markdown component structure and generate both AXAML view and ReactiveUI ViewModel.  
+Parse the markdown component structure and generate both AXAML view and standard .NET ViewModel.  
 Include MTM data patterns (Part ID, Operation numbers), context menu integration, and space optimization.  
 Follow the MTM purple color scheme and modern layout patterns. Leave business logic as TODO comments.
 ```
@@ -35,7 +35,7 @@ Follow the MTM purple color scheme and modern layout patterns. Leave business lo
 ### Example 2: Inventory Tab Component
 ```
 Create UI Element from Control_InventoryTab.instructions.md following MTM-specific UI generation guidelines and AVLN2000 prevention rules.  
-Parse the markdown component structure and generate both AXAML view and ReactiveUI ViewModel.  
+Parse the markdown component structure and generate both AXAML view and standard .NET ViewModel.  
 Include MTM data patterns (Part ID, Operation numbers), context menu integration, and space optimization.  
 Follow the MTM purple color scheme and modern layout patterns. Leave business logic as TODO comments.
 ```
@@ -59,7 +59,7 @@ Follow the MTM purple color scheme and modern layout patterns. Leave business lo
 ### Generated File Structure
 ```
 Views/{Name}View.axaml - Avalonia UI markup (AVLN2000-safe)
-ViewModels/{Name}ViewModel.cs - ReactiveUI ViewModel
+ViewModels/{Name}ViewModel.cs - Standard .NET ViewModel with INotifyPropertyChanged
 ```
 
 ### Component Hierarchy Mapping Example
@@ -155,11 +155,25 @@ QuickActionExecuted?.Invoke(this, new QuickActionExecutedEventArgs
 // private readonly IProgressService _progressService;
 
 // Commands with progress support
-LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+LoadDataCommand = new AsyncCommand(ExecuteLoadDataAsync);
+
+private async Task ExecuteLoadDataAsync()
 {
-    // TODO: Show progress during operation
-    await LoadLast10TransactionsAsync();
-});
+    try
+    {
+        IsLoading = true;
+        // TODO: Show progress during operation
+        await LoadLast10TransactionsAsync();
+    }
+    catch (Exception ex)
+    {
+        await ErrorHandling.HandleErrorAsync(ex, "LoadData", Environment.UserName);
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+}
 ```
 
 ## Technical Requirements
@@ -184,40 +198,60 @@ LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
 ### ViewModel Template
 ```csharp
 using System;
-using System.Reactive;
-using System.Reactive.Linq;
+using System.ComponentModel;
 using System.Threading.Tasks;
-using Avalonia.ReactiveUI;
+using System.Windows.Input;
+using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Commands;
 
 namespace YourApp.ViewModels;
 
-public class {Name}ViewModel : ReactiveObject
+public class {Name}ViewModel : BaseViewModel, INotifyPropertyChanged
 {
-    // Observable properties with RaiseAndSetIfChanged
+    // Properties with INotifyPropertyChanged
     private string _title = string.Empty;
     public string Title
     {
         get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
+        set => SetProperty(ref _title, value);
+    }
+
+    private bool _isLoading;
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set => SetProperty(ref _isLoading, value);
     }
 
     // Commands with error handling
-    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
+    public ICommand LoadDataCommand { get; private set; }
     
     public {Name}ViewModel()
     {
-        LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+        InitializeCommands();
+    }
+
+    private void InitializeCommands()
+    {
+        LoadDataCommand = new AsyncCommand(ExecuteLoadDataAsync);
+    }
+
+    private async Task ExecuteLoadDataAsync()
+    {
+        try
         {
+            IsLoading = true;
             // TODO: Implement via stored procedure
             await Task.CompletedTask;
-        });
-
-        // Centralized error handling
-        LoadDataCommand.ThrownExceptions
-            .Subscribe(ex =>
-            {
-                // TODO: Log and present user-friendly error
-            });
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandling.HandleErrorAsync(ex, "LoadData", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }
 ```
@@ -240,6 +274,6 @@ public class {Name}ViewModel : ReactiveObject
 - [ ] Space optimization applied
 - [ ] MTM color scheme used
 - [ ] Business logic left as TODO comments
-- [ ] ReactiveUI patterns implemented
+- [ ] Standard .NET MVVM patterns implemented
 - [ ] Compiled bindings enabled
 - [ ] Event-driven communication patterns included

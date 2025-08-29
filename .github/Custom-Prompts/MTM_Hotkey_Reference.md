@@ -12,7 +12,7 @@ This reference provides memorizable shortcuts for accessing **ALL** MTM custom p
 ```sh
 @ui:create          # Create UI Element - Generate Avalonia controls/views
 @ui:markdown        # Create UI Element from Markdown - Parse .md to AXAML
-@ui:viewmodel       # Create ReactiveUI ViewModel - Generate ViewModels
+@ui:viewmodel       # Create Standard ViewModel - Generate ViewModels with INotifyPropertyChanged
 @ui:layout          # Create Modern Layout Pattern - Sidebars, cards, hero sections
 @ui:context         # Create Context Menu Integration - Right-click menus
 @ui:theme           # Create Avalonia Theme Resources - MTM purple palette
@@ -174,7 +174,7 @@ This reference provides memorizable shortcuts for accessing **ALL** MTM custom p
 
 ### **Creating New Components (Complete Flow)**
 1. `@ui:create` → Generate AXAML structure
-2. `@ui:viewmodel` → Create ReactiveUI ViewModel  
+2. `@ui:viewmodel` → Create Standard ViewModel with INotifyPropertyChanged  
 3. `@biz:handler` → Add business logic
 4. `@db:procedure` → Create database operations
 5. `@ui:theme` → Apply MTM styling

@@ -2,13 +2,13 @@
 
 # GitHub Copilot Instructions: Quality Assurance for MTM WIP Application
 
-You are performing quality assurance audits for the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System built with .NET 8, Avalonia UI, and ReactiveUI patterns.
+You are performing quality assurance audits for the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System built with .NET 8, Avalonia UI, and standard .NET MVVM patterns.
 
 ## Your Quality Assurance Role
 
 ### Conduct comprehensive code compliance audits against MTM standards:
 - Verify adherence to MTM business rules and data patterns
-- Check ReactiveUI and MVVM implementation patterns
+- Check standard .NET MVVM implementation patterns with INotifyPropertyChanged
 - Validate Avalonia UI generation standards
 - Ensure proper error handling and logging integration
 - Verify database access follows stored procedure requirements
@@ -53,23 +53,23 @@ var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
 // var sql = "SELECT * FROM inventory WHERE part_id = @partId"; // Never allowed
 ```
 
-#### ReactiveUI ViewModel Standards:
+#### Standard .NET ViewModel Standards:
 ```csharp
-// COMPLIANT: Proper ReactiveUI implementation
-public class SampleViewModel : ReactiveObject
+// COMPLIANT: Proper standard .NET MVVM implementation
+public class SampleViewModel : BaseViewModel, INotifyPropertyChanged
 {
     private string _title = string.Empty;
     public string Title
     {
         get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
+        set => SetProperty(ref _title, value);
     }
 
-    public ReactiveCommand<Unit, Unit> LoadCommand { get; }
+    public ICommand LoadCommand { get; private set; }
 }
 
-// VIOLATION: Missing RaiseAndSetIfChanged
-// public string Title { get; set; } = string.Empty; // Not reactive
+// VIOLATION: Missing INotifyPropertyChanged implementation
+// public string Title { get; set; } = string.Empty; // Not observable
 ```
 
 #### Service Registration Patterns:
@@ -95,7 +95,7 @@ services.AddMTMServices(configuration);
 
 #### Code Structure Violations:
 - Missing MVVM separation (business logic in Views)
-- Incorrect ReactiveUI patterns (missing RaiseAndSetIfChanged)
+- Incorrect standard .NET MVVM patterns (missing SetProperty)
 - Wrong service registration (individual vs AddMTMServices)
 - Missing error handling in commands
 
@@ -144,10 +144,10 @@ services.AddMTMServices(configuration);
 - **Required Fix**: Implement user intent-based logic
 - **Reference**: database-patterns.instruction.md
 
-### 2. **High**: Missing ReactiveUI Patterns
+### 2. **High**: Missing Standard .NET MVVM Patterns
 - **Violation**: Properties not using RaiseAndSetIfChanged
 - **Location**: Line 15-20
-- **Required Fix**: Implement proper ReactiveUI observable properties
+- **Required Fix**: Implement proper standard .NET observable properties
 
 ## Custom Fix Prompt
 
@@ -157,7 +157,7 @@ Fix compliance violations in {FileName} based on findings in Development/Complia
 
 Priority fixes:
 1. Implement MTM TransactionType logic based on user intent
-2. Add ReactiveUI patterns with RaiseAndSetIfChanged
+2. Add standard .NET MVVM patterns with SetProperty
 3. Replace direct SQL with stored procedure calls
 
 Follow MTM patterns from database-patterns.instruction.md and codingconventions.instruction.md.

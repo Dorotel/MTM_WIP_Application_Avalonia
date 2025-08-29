@@ -38,7 +38,7 @@ Follow AVLN2000 prevention guidelines and all naming and UI layout conventions. 
 
 ### What This Prompt Creates
 - Avalonia AXAML view files (AVLN2000-safe)
-- ReactiveUI ViewModel classes
+- Standard .NET ViewModel classes with INotifyPropertyChanged
 - Proper MVVM binding structure
 - Navigation event handlers only
 - Empty stubs for business logic
@@ -55,7 +55,7 @@ Follow AVLN2000 prevention guidelines and all naming and UI layout conventions. 
 - Must use screenshot for layout and styling guidance
 - Must follow [naming conventions](../UI_Documentation/README.md)
 - Must implement compiled bindings with `x:CompileBindings="True"`
-- Must use ReactiveUI patterns (RaiseAndSetIfChanged, ReactiveCommand)
+- Must use standard .NET MVVM patterns (INotifyPropertyChanged, ICommand)
 - **Grid Syntax**: Use `ColumnDefinitions="Auto,*"` attribute form when possible
 - **No Grid Names**: Never use `Name` property on ColumnDefinition/RowDefinition
 
@@ -77,7 +77,7 @@ This prompt integrates with:
 - Screenshot mapping from `UI_Winform_Screenshots`
 - Component hierarchies from `.instructions.md` files
 - MTM design system and color schemes
-- ReactiveUI and Avalonia UI frameworks
+- Standard .NET MVVM and Avalonia UI frameworks
 - AVLN2000 error prevention guidelines
 
 ## Quality Checklist
@@ -91,4 +91,4 @@ This prompt integrates with:
 - [ ] Naming conventions followed consistently
 - [ ] MTM design patterns applied
 - [ ] Compiled bindings implemented
-- [ ] ReactiveUI patterns used correctly
+- [ ] Standard .NET MVVM patterns used correctly
