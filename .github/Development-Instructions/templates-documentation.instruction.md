@@ -74,7 +74,7 @@ Both templates are designed for the comprehensive FileDefinitions migration with
 
 2. **Generate the following files**:
    - `Views/{Name}View.axaml` - The Avalonia UI markup
-   - `ViewModels/{Name}ViewModel.cs` - The ViewModel using ReactiveUI
+   - `ViewModels/{Name}ViewModel.cs` - The ViewModel using standard .NET MVVM
    - Only UI structure and bindings, NO business logic implementation
 
 3. **Follow established patterns** from UI Instructions

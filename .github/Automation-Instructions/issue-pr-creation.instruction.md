@@ -99,7 +99,7 @@ Path/To/File3.md - [Purpose]
 ### Code Patterns Required
 ```csharp
 // MTM-specific patterns to follow
-// Example: ReactiveUI property pattern
+// Example: Standard .NET MVVM property pattern
 private string _property = string.Empty;
 public string Property
 {
@@ -137,7 +137,7 @@ CALL sp_ProcedureName(parameter1, parameter2);
 ### MTM-Specific Requirements
 - **Transaction Type Logic:** [If applicable - user intent not operation number]
 - **Database Pattern:** [Stored procedures only]
-- **UI Pattern:** [Avalonia + ReactiveUI requirements]
+- **UI Pattern:** [Avalonia + Standard .NET MVVM requirements]
 
 ## 🚨 **ERROR HANDLING**
 ### Expected Issues
@@ -238,7 +238,7 @@ When issues are complex, automatically generate a questions HTML file:
 
 2. **Content Population:**
    - Use MTM-specific patterns and requirements
-   - Include proper Avalonia + ReactiveUI templates
+   - Include proper Avalonia + Standard .NET MVVM templates
    - Reference stored procedure patterns
    - Apply TransactionType logic rules
 

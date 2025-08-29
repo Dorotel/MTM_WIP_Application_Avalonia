@@ -1000,8 +1000,8 @@ Configuration and training questionnaires should be organized in:
 
 ### **🎨 UI Generation and Development**
 - **[Create UI Element](../../Documentation/Development/Custom_Prompts/CustomPrompt_Create_UIElement.md)** - For generating Avalonia controls or views based on mapping and instructions [`@ui:create`]
-- **[Create UI Element from Markdown Instructions](../../Documentation/Development/Custom_Prompts/CustomPrompt_Create_UIElementFromMarkdown.md)** - For generating Avalonia AXAML and ReactiveUI ViewModels from parsed markdown files [`@ui:markdown`]
-- **[Create ReactiveUI ViewModel](../../Documentation/Development/Custom_Prompts/CustomPrompt_Create_ReactiveUIViewModel.md)** - For generating ViewModels with ReactiveUI patterns, commands, and observable properties [`@ui:viewmodel`]
+- **[Create UI Element from Markdown Instructions](../../Documentation/Development/Custom_Prompts/CustomPrompt_Create_UIElementFromMarkdown.md)** - For generating Avalonia AXAML and Standard .NET ViewModels from parsed markdown files [`@ui:markdown`]
+- **[Create Standard ViewModel](../../Documentation/Development/Custom_Prompts/CustomPrompt_Create_StandardViewModel.md)** - For generating ViewModels with standard .NET MVVM patterns, commands, and INotifyPropertyChanged [`@ui:viewmodel`]
 - **[Create Modern Layout Pattern](../../Documentation/Development/Custom_Prompts/CustomPrompt_Create_ModernLayoutPattern.md)** - For generating modern Avalonia layouts with sidebars, cards, and hero sections using MTM design patterns [`@ui:layout`]
 - **[Create Context Menu Integration](../../Documentation/Development/Custom_Prompts/CustomPrompt_Create_ContextMenuIntegration.md)** - For adding context menus to components with management features following MTM patterns [`@ui:context`]
 - **[Create Avalonia Theme Resources](../../Documentation/Development/Custom_Prompts/CustomPrompt_Create_AvaloniaThemeResources.md)** - For generating MTM-specific color schemes and theme resources using the purple brand palette [`@ui:theme`]

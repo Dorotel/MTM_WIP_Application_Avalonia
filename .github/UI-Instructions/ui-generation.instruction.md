@@ -18,11 +18,11 @@
 <details>
 <summary><strong>🎯 Your UI Generation Rules</strong></summary>
 
-You are generating Avalonia UI components for the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using .NET 8, MVVM with ReactiveUI, and MTM purple theme.
+You are generating Avalonia UI components for the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using .NET 8, MVVM with standard .NET patterns, and MTM purple theme.
 
 ### Always generate these file pairs:
 - `Views/{Name}View.axaml` - Avalonia UI markup with compiled bindings
-- `ViewModels/{Name}ViewModel.cs` - ReactiveUI ViewModel with observable properties
+- `ViewModels/{Name}ViewModel.cs` - Standard .NET ViewModel with INotifyPropertyChanged and ICommand
 - Follow strict MVVM - no business logic in Views
 
 ### Use this AXAML template structure:
@@ -40,34 +40,58 @@ You are generating Avalonia UI components for the MTM (Manitowoc Tool and Manufa
 
 ### Use this ViewModel template structure:
 ```csharp
+using System.ComponentModel;
+using System.Windows.Input;
+using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Commands;
+
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
-public class {Name}ViewModel : ReactiveObject
+public class {Name}ViewModel : BaseViewModel, INotifyPropertyChanged
 {
-    // Observable properties
+    // Properties with INotifyPropertyChanged
     private string _title = string.Empty;
     public string Title
     {
         get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
+        set => SetProperty(ref _title, value);
+    }
+
+    private bool _isLoading;
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set => SetProperty(ref _isLoading, value);
     }
 
     // Commands
-    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
+    public ICommand LoadDataCommand { get; private set; }
 
     public {Name}ViewModel()
     {
-        LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await Task.CompletedTask; // TODO: Implement
-        });
+        InitializeCommands();
+    }
 
-        // Error handling
-        LoadDataCommand.ThrownExceptions
-            .Subscribe(ex =>
-            {
-                // TODO: Log error and show user message
-            });
+    private void InitializeCommands()
+    {
+        LoadDataCommand = new AsyncCommand(ExecuteLoadDataAsync);
+    }
+
+    private async Task ExecuteLoadDataAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            await Task.CompletedTask; // TODO: Implement
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandling.HandleErrorAsync(ex, "LoadData", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }
 ```
@@ -192,23 +216,23 @@ var operations = new[] { "90", "100", "110", "120" };
 </details>
 
 <details>
-<summary><strong>⚡ ReactiveUI Integration</strong></summary>
+<summary><strong>⚡ Standard .NET MVVM Integration</strong></summary>
 
 ### Use these command patterns:
 ```csharp
 // Async command
-LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+LoadDataCommand = new AsyncCommand(async () =>
 {
     // TODO: Implement database operation
     await Task.CompletedTask;
 });
 
 // Command with CanExecute
-var canSave = this.WhenAnyValue(vm => vm.Title, t => !string.IsNullOrWhiteSpace(t));
-SaveCommand = ReactiveCommand.Create(() =>
+private bool CanSave => !string.IsNullOrWhiteSpace(Title);
+SaveCommand = new RelayCommand(() =>
 {
     // TODO: Implement save logic
-}, canSave);
+}, () => CanSave);
 ```
 
 ### Use event-driven communication:

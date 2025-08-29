@@ -119,12 +119,12 @@ Do not add business logic; only wire event stubs.
 
 ---
 
-### 13. Create ReactiveUI ViewModel
+### 13. Create Standard ViewModel
 
 **Prompt:**  
-Generate a ReactiveUI ViewModel for user profile management following MTM patterns.  
-Include observable properties with RaiseAndSetIfChanged, ReactiveCommands with proper error handling,  
-WhenAnyValue patterns for derived properties, and centralized exception handling.  
+Generate a Standard .NET ViewModel for user profile management following MTM patterns.  
+Include INotifyPropertyChanged properties with SetProperty, ICommand implementations with proper error handling,  
+validation patterns for user input, and centralized exception handling using try-catch blocks.  
 Use ObservableCollection for data collections and prepare for dependency injection.
 
 ---
@@ -145,7 +145,7 @@ Add gradient brushes for hero sections and hover states following the MTM design
 Generate a data model for InventoryTransaction following MTM-specific patterns.  
 Include Part ID (string), Operation (string numbers like '90', '100'), Quantity (integer),  
 Position (1-based indexing), and other relevant MTM inventory properties.  
-Ensure compatibility with ReactiveUI observable patterns.
+Ensure compatibility with standard .NET observable patterns.
 
 ---
 
@@ -164,7 +164,7 @@ Apply the MTM color scheme and ensure responsive design principles.
 **Prompt:**  
 Add context menu functionality to QuickButtonsPanel following MTM patterns.  
 Include Edit, Remove, Clear All, and Refresh options with proper command bindings.  
-Use separators for grouping and ensure commands are bound to ReactiveCommand properties.  
+Use separators for grouping and ensure commands are bound to ICommand properties.  
 Follow MTM component management conventions.
 
 ---

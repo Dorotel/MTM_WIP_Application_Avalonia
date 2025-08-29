@@ -1,39 +1,39 @@
-# Create ReactiveUI ViewModel - Custom Prompt
+# Create Standard .NET ViewModel - Custom Prompt
 
 ## Instructions
-Use this prompt when you need to generate ViewModels with ReactiveUI patterns, commands, and observable properties.
+Use this prompt when you need to generate ViewModels with standard .NET patterns, ICommand implementations, and INotifyPropertyChanged.
 
 ## Persona
-**ReactiveUI Specialist Copilot**  
+**Standard .NET MVVM Specialist Copilot**  
 *(See [personas-instruction.md](../../.github/personas.instruction.md) for role details)*
 
 ## Prompt Template
 
 ```
-Generate a ReactiveUI ViewModel for [Purpose] following MTM patterns.  
-Include observable properties with RaiseAndSetIfChanged, ReactiveCommands with proper error handling,  
-WhenAnyValue patterns for derived properties, and centralized exception handling.  
+Generate a standard .NET ViewModel for [Purpose] following MTM patterns.  
+Include properties with INotifyPropertyChanged, ICommand implementations with proper error handling,  
+standard property validation, and centralized exception handling.  
 Use ObservableCollection for data collections and prepare for dependency injection.
 ```
 
 ## Purpose
-For generating ViewModels with ReactiveUI patterns, commands, and observable properties.
+For generating ViewModels with standard .NET patterns, commands, and observable properties.
 
 ## Usage Examples
 
 ### Example 1: Inventory Management ViewModel
 ```
-Generate a ReactiveUI ViewModel for inventory management following MTM patterns.  
-Include observable properties with RaiseAndSetIfChanged, ReactiveCommands with proper error handling,  
-WhenAnyValue patterns for derived properties, and centralized exception handling.  
+Generate a standard .NET ViewModel for inventory management following MTM patterns.  
+Include properties with INotifyPropertyChanged, ICommand implementations with proper error handling,  
+standard property validation, and centralized exception handling.  
 Use ObservableCollection for data collections and prepare for dependency injection.
 ```
 
 ### Example 2: Settings Configuration ViewModel
 ```
-Generate a ReactiveUI ViewModel for application settings configuration following MTM patterns.  
-Include observable properties with RaiseAndSetIfChanged, ReactiveCommands with proper error handling,  
-WhenAnyValue patterns for derived properties, and centralized exception handling.  
+Generate a standard .NET ViewModel for application settings configuration following MTM patterns.  
+Include properties with INotifyPropertyChanged, ICommand implementations with proper error handling,  
+standard property validation, and centralized exception handling.  
 Use ObservableCollection for data collections and prepare for dependency injection.
 ```
 
@@ -43,76 +43,78 @@ Use ObservableCollection for data collections and prepare for dependency injecti
 ```csharp
 using System;
 using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Reactive.Linq;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Avalonia.ReactiveUI;
+using System.Windows.Input;
+using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Commands;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class [Name]ViewModel : ReactiveObject
+public class [Name]ViewModel : BaseViewModel, INotifyPropertyChanged
 {
     // TODO: Inject services via constructor
     // private readonly IInventoryService _inventoryService;
-    // private readonly IUserAndTransactionServices _userService;
+    // private readonly IUserService _userService;
     // private readonly IApplicationStateService _applicationState;
 
-    #region Observable Properties
+    #region Properties
 
     private string _title = string.Empty;
     public string Title
     {
         get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
+        set => SetProperty(ref _title, value);
     }
 
     private string _selectedPartId = string.Empty;
     public string SelectedPartId
     {
         get => _selectedPartId;
-        set => this.RaiseAndSetIfChanged(ref _selectedPartId, value);
+        set => SetProperty(ref _selectedPartId, value);
     }
 
     private string _selectedOperation = string.Empty;
     public string SelectedOperation
     {
         get => _selectedOperation;
-        set => this.RaiseAndSetIfChanged(ref _selectedOperation, value);
+        set => SetProperty(ref _selectedOperation, value);
     }
 
     private int _quantity;
     public int Quantity
     {
         get => _quantity;
-        set => this.RaiseAndSetIfChanged(ref _quantity, value);
+        set => SetProperty(ref _quantity, value);
     }
 
     private string _statusMessage = string.Empty;
     public string StatusMessage
     {
         get => _statusMessage;
-        set => this.RaiseAndSetIfChanged(ref _statusMessage, value);
+        set => SetProperty(ref _statusMessage, value);
     }
 
     private bool _isLoading;
     public bool IsLoading
     {
         get => _isLoading;
-        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+        set => SetProperty(ref _isLoading, value);
     }
 
     private bool _hasError;
     public bool HasError
     {
         get => _hasError;
-        set => this.RaiseAndSetIfChanged(ref _hasError, value);
+        set => SetProperty(ref _hasError, value);
     }
 
     private string _errorMessage = string.Empty;
     public string ErrorMessage
     {
         get => _errorMessage;
-        set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+        set => SetProperty(ref _errorMessage, value);
     }
 
     #endregion
@@ -126,23 +128,23 @@ public class [Name]ViewModel : ReactiveObject
 
     #endregion
 
-    #region Derived Properties (OAPH)
+    #region Computed Properties
 
-    private readonly ObservableAsPropertyHelper<bool> _isFormValid;
-    public bool IsFormValid => _isFormValid.Value;
+    public bool IsFormValid => !string.IsNullOrWhiteSpace(SelectedPartId) &&
+                               !string.IsNullOrWhiteSpace(SelectedOperation) &&
+                               Quantity > 0;
 
-    private readonly ObservableAsPropertyHelper<string> _displayText;
-    public string DisplayText => _displayText.Value;
+    public string DisplayText => $"{SelectedPartId} - Operation: {SelectedOperation} - Qty: {Quantity}";
 
     #endregion
 
     #region Commands
 
-    public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
-    public ReactiveCommand<Unit, Unit> SaveCommand { get; }
-    public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
-    public ReactiveCommand<Unit, Unit> ClearCommand { get; }
-    public ReactiveCommand<InventoryItemViewModel, Unit> RemoveItemCommand { get; }
+    public ICommand LoadDataCommand { get; private set; }
+    public ICommand SaveCommand { get; private set; }
+    public ICommand RefreshCommand { get; private set; }
+    public ICommand ClearCommand { get; private set; }
+    public ICommand RemoveItemCommand { get; private set; }
 
     #endregion
 
@@ -153,7 +155,7 @@ public class [Name]ViewModel : ReactiveObject
         // TODO: Replace with actual DI constructor
         // public [Name]ViewModel(
         //     IInventoryService inventoryService,
-        //     IUserAndTransactionServices userService,
+        //     IUserService userService,
         //     IApplicationStateService applicationState)
         // {
         //     _inventoryService = inventoryService;
@@ -161,111 +163,96 @@ public class [Name]ViewModel : ReactiveObject
         //     _applicationState = applicationState;
 
         InitializeCommands();
-        InitializeDerivedProperties();
     }
 
     #endregion
 
-    #region Initialization
+    #region Command Initialization
 
     private void InitializeCommands()
     {
-        // Async command with loading state
-        LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            IsLoading = true;
-            HasError = false;
-            
-            try
-            {
-                await LoadInventoryDataAsync();
-                StatusMessage = "Data loaded successfully";
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        });
-
-        // Command with CanExecute validation
-        var canSave = this.WhenAnyValue(
-            vm => vm.SelectedPartId,
-            vm => vm.SelectedOperation,
-            vm => vm.Quantity,
-            (partId, operation, qty) =>
-                !string.IsNullOrWhiteSpace(partId) &&
-                !string.IsNullOrWhiteSpace(operation) &&
-                qty > 0);
-
-        SaveCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            IsLoading = true;
-            HasError = false;
-            
-            try
-            {
-                await SaveInventoryItemAsync();
-                StatusMessage = "Saved successfully";
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }, canSave);
-
-        // Simple sync command
-        RefreshCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await LoadDataCommand.Execute();
-        });
-
-        ClearCommand = ReactiveCommand.Create(() =>
-        {
-            SelectedPartId = string.Empty;
-            SelectedOperation = string.Empty;
-            Quantity = 0;
-            StatusMessage = "Form cleared";
-        });
-
-        // Parameterized command
-        RemoveItemCommand = ReactiveCommand.Create<InventoryItemViewModel>(item =>
-        {
-            InventoryItems.Remove(item);
-            StatusMessage = $"Removed {item.PartId}";
-        });
-
-        // Centralized error handling
-        LoadDataCommand.ThrownExceptions
-            .Merge(SaveCommand.ThrownExceptions)
-            .Subscribe(HandleCommandException);
-    }
-
-    private void InitializeDerivedProperties()
-    {
-        // Form validation combining multiple properties
-        _isFormValid = this.WhenAnyValue(
-                vm => vm.SelectedPartId,
-                vm => vm.SelectedOperation,
-                vm => vm.Quantity,
-                (partId, operation, qty) =>
-                    !string.IsNullOrWhiteSpace(partId) &&
-                    !string.IsNullOrWhiteSpace(operation) &&
-                    qty > 0)
-            .ToProperty(this, vm => vm.IsFormValid, initialValue: false);
-
-        // Computed display text
-        _displayText = this.WhenAnyValue(
-                vm => vm.SelectedPartId,
-                vm => vm.SelectedOperation,
-                vm => vm.Quantity,
-                (partId, operation, qty) =>
-                    $"{partId} - Operation: {operation} - Qty: {qty}")
-            .ToProperty(this, vm => vm.DisplayText, initialValue: string.Empty);
+        LoadDataCommand = new AsyncCommand(ExecuteLoadDataAsync);
+        SaveCommand = new AsyncCommand(ExecuteSaveAsync, CanExecuteSave);
+        RefreshCommand = new AsyncCommand(ExecuteRefreshAsync);
+        ClearCommand = new RelayCommand(ExecuteClear);
+        RemoveItemCommand = new RelayCommand<InventoryItemViewModel>(ExecuteRemoveItem);
     }
 
     #endregion
 
     #region Command Implementations
+
+    private async Task ExecuteLoadDataAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            HasError = false;
+            
+            await LoadInventoryDataAsync();
+            StatusMessage = "Data loaded successfully";
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex, "LoadData");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task ExecuteSaveAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            HasError = false;
+            
+            await SaveInventoryItemAsync();
+            StatusMessage = "Saved successfully";
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex, "Save");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private bool CanExecuteSave()
+    {
+        return !string.IsNullOrWhiteSpace(SelectedPartId) && 
+               !string.IsNullOrWhiteSpace(SelectedOperation) && 
+               Quantity > 0 && 
+               !IsLoading;
+    }
+
+    private async Task ExecuteRefreshAsync()
+    {
+        await ExecuteLoadDataAsync();
+    }
+
+    private void ExecuteClear()
+    {
+        SelectedPartId = string.Empty;
+        SelectedOperation = string.Empty;
+        Quantity = 0;
+        StatusMessage = "Form cleared";
+        HasError = false;
+        ErrorMessage = string.Empty;
+    }
+
+    private void ExecuteRemoveItem(InventoryItemViewModel? item)
+    {
+        if (item != null)
+        {
+            InventoryItems.Remove(item);
+            StatusMessage = $"Removed {item.PartId}";
+        }
+    }
 
     private async Task LoadInventoryDataAsync()
     {
@@ -313,23 +300,20 @@ public class [Name]ViewModel : ReactiveObject
 
     #region Error Handling
 
-    private void HandleCommandException(Exception ex)
+    private async Task HandleErrorAsync(Exception ex, string operation)
     {
         HasError = true;
         ErrorMessage = GetUserFriendlyErrorMessage(ex);
         StatusMessage = "An error occurred";
 
-        // TODO: Log error via Service_ErrorHandler
-        // Service_ErrorHandler.HandleException(
-        //     ex,
-        //     ErrorSeverity.Medium,
-        //     source: $"{GetType().Name}_CommandError",
-        //     additionalData: new Dictionary<string, object>
-        //     {
-        //         ["PartId"] = SelectedPartId,
-        //         ["Operation"] = SelectedOperation,
-        //         ["Quantity"] = Quantity
-        //     });
+        // TODO: Log error via ErrorHandling service
+        await ErrorHandling.HandleErrorAsync(ex, operation, Environment.UserName, 
+            new Dictionary<string, object>
+            {
+                ["PartId"] = SelectedPartId,
+                ["Operation"] = SelectedOperation,
+                ["Quantity"] = Quantity
+            });
     }
 
     private static string GetUserFriendlyErrorMessage(Exception ex)
@@ -375,6 +359,23 @@ public class [Name]ViewModel : ReactiveObject
 
     #region Validation
 
+    private bool ValidateInput()
+    {
+        if (string.IsNullOrWhiteSpace(SelectedPartId))
+        {
+            ErrorMessage = "Part ID is required";
+            return false;
+        }
+
+        if (Quantity <= 0)
+        {
+            ErrorMessage = "Quantity must be greater than zero";
+            return false;
+        }
+
+        return true;
+    }
+
     private bool ValidatePartId(string partId)
     {
         if (string.IsNullOrWhiteSpace(partId))
@@ -412,20 +413,6 @@ public class [Name]ViewModel : ReactiveObject
     }
 
     #endregion
-
-    #region Cleanup
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _isFormValid?.Dispose();
-            _displayText?.Dispose();
-        }
-        base.Dispose(disposing);
-    }
-
-    #endregion
 }
 ```
 
@@ -451,7 +438,7 @@ public class QuickActionExecutedEventArgs : EventArgs
 // Constructor for DI container
 public [Name]ViewModel(
     IInventoryService inventoryService,
-    IUserAndTransactionServices userService,
+    IUserService userService,
     IApplicationStateService applicationState)
 {
     _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
@@ -459,46 +446,47 @@ public [Name]ViewModel(
     _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
 
     InitializeCommands();
-    InitializeDerivedProperties();
 }
 ```
 
 ## Technical Requirements
 
-### ReactiveUI Patterns
-- **Observable Properties**: Use `RaiseAndSetIfChanged` for all settable properties
-- **Commands**: Use `ReactiveCommand` for all user interactions
-- **Derived Properties**: Use `ObservableAsPropertyHelper` (OAPH) for computed values
-- **Validation**: Use `WhenAnyValue` for real-time validation
-- **Error Handling**: Centralized exception handling via `ThrownExceptions`
+### Standard .NET Patterns
+- **Properties**: Use `SetProperty(ref _field, value)` from BaseViewModel for all settable properties
+- **Commands**: Use `ICommand` implementations (AsyncCommand for async, RelayCommand for sync)
+- **Computed Properties**: Use simple property getters that access other properties
+- **Validation**: Use standard validation methods called from command implementations
+- **Error Handling**: Centralized exception handling via ErrorHandling service
 
 ### MTM-Specific Requirements
 - **Data Types**: Part ID (string), Operation (string numbers), Quantity (integer)
 - **Events**: Use MTM event argument classes for inter-component communication
 - **Validation**: Include MTM business rule validation
-- **Error Handling**: Integration with `Service_ErrorHandler`
+- **Error Handling**: Integration with `ErrorHandling` service
 
 ### Performance Considerations
-- Use `ObservableAsPropertyHelper` for expensive computations
-- Implement proper disposal for reactive subscriptions
-- Use `CanExecute` observables to prevent unnecessary command execution
-- Implement loading states for async operations
+- Use computed properties for expensive calculations
+- Implement proper command CanExecute methods
+- Use loading states for async operations
+- Follow standard .NET disposal patterns
 
 ## Related Files
-- `.github/codingconventions.instruction.md` - ReactiveUI patterns
+- `.github/Core-Instructions/codingconventions.instruction.md` - Standard .NET patterns
+- `ViewModels/Shared/BaseViewModel.cs` - Base class with SetProperty implementation
+- `Commands/` - ICommand implementations (AsyncCommand, RelayCommand)
 - `Models/` - Data models for ViewModel properties
 - `Services/` - Service interfaces for dependency injection
 - `Views/` - Corresponding AXAML views
 
 ## Quality Checklist
-- [ ] All properties use `RaiseAndSetIfChanged`
-- [ ] Commands use `ReactiveCommand` patterns
-- [ ] Derived properties use `ObservableAsPropertyHelper`
-- [ ] Validation uses `WhenAnyValue` patterns
-- [ ] Error handling is centralized
+- [ ] All properties use `SetProperty(ref _field, value)` from BaseViewModel
+- [ ] Commands use `ICommand` implementations (AsyncCommand/RelayCommand)
+- [ ] Computed properties use simple getters accessing other properties
+- [ ] Validation uses standard validation methods
+- [ ] Error handling uses ErrorHandling service
 - [ ] MTM data patterns implemented
 - [ ] Events use MTM event args classes
 - [ ] Dependency injection prepared
 - [ ] Loading states implemented
-- [ ] Proper disposal implemented
+- [ ] CanExecute methods implemented for commands
 - [ ] Comprehensive TODO comments for business logic

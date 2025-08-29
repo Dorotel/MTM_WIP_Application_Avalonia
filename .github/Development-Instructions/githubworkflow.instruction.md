@@ -2,7 +2,7 @@
 # GitHub Workflow & CI/CD Instructions
 
 ## Overview
-This document provides comprehensive GitHub workflow and CI/CD instructions for the MTM WIP Application Avalonia project. The project uses .NET 8, Avalonia UI, and ReactiveUI.
+This document provides comprehensive GitHub workflow and CI/CD instructions for the MTM WIP Application Avalonia project. The project uses .NET 8, Avalonia UI, and standard .NET MVVM patterns.
 
 ## General GitHub Workflow Guidelines
 
@@ -32,7 +32,7 @@ This document provides comprehensive GitHub workflow and CI/CD instructions for 
 ### Update Process
 
 1. **Copy Updated Systems**: Copy modified files from main project to corresponding `Exportable/` locations
-2. **Remove Framework Dependencies**: Strip out Avalonia/ReactiveUI specific code to make framework-agnostic
+2. **Remove Framework Dependencies**: Strip out Avalonia specific code to make framework-agnostic
 3. **Update Documentation**: Update `Exportable/README.md` with any new systems or changes
 4. **Update Custom Prompts**: Add/modify prompts in `Exportable/exportable-customprompt.instruction.md` if new systems are added
 5. **Test Compilation**: Ensure all exportable systems compile independently
@@ -75,7 +75,6 @@ Exportable/
 ```xml
 <PackageReference Include="Avalonia" Version="11.3.4" />
 <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
-<PackageReference Include="Avalonia.ReactiveUI" Version="11.3.4" />
 <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
 <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4" />
 <PackageReference Include="Avalonia.Diagnostics" Version="11.3.4" Condition="'$(Configuration)' == 'Debug'" />
@@ -191,22 +190,21 @@ runs-on: ${{ matrix.os }}
     # Ensure no AXAML compilation errors with AvaloniaUseCompiledBindingsByDefault
 ```
 
-## ReactiveUI Testing Patterns
+## Standard .NET MVVM Testing Patterns
 
-### Unit Testing ReactiveUI ViewModels
+### Unit Testing Standard .NET ViewModels
 ```yaml
 - name: Install Test Dependencies
   run: |
-    dotnet add package Microsoft.Reactive.Testing
-    dotnet add package ReactiveUI.Testing
     dotnet add package xunit
     dotnet add package xunit.runner.visualstudio
     dotnet add package Microsoft.NET.Test.Sdk
+    dotnet add package Moq
 ```
 
 ### Test Configuration
 ```csharp
-// Example test setup for ReactiveUI ViewModels
+// Example test setup for Standard .NET ViewModels
 [Test]
 public void ViewModel_PropertyChanges_NotifyCorrectly()
 {
@@ -228,14 +226,14 @@ public void ViewModel_PropertyChanges_NotifyCorrectly()
 
 ### Command Testing Patterns
 ```yaml
-- name: Test ReactiveUI Commands
+- name: Test Standard .NET Commands
   run: |
     # Tests should validate:
     # - Command CanExecute behavior
     # - Async command completion
     # - Error handling in command execution
     # - Observable property changes triggered by commands
-    dotnet test --filter "Category=ReactiveUI" --logger trx
+    dotnet test --filter "Category=StandardMVVM" --logger trx
 ```
 
 ## MTM Project Deployment Guidelines
@@ -300,7 +298,7 @@ deploy:
       ## Changes
       - Automated release from CI/CD pipeline
       - .NET 8 Avalonia application
-      - ReactiveUI MVVM implementation
+      - Standard .NET MVVM implementation
       - Updated exportable core systems
       
       ## Exportable Systems
@@ -316,7 +314,7 @@ deploy:
 - All unit tests must pass
 - Code must compile without warnings in Release mode
 - AXAML files must compile successfully with compiled bindings
-- ReactiveUI property change notifications must work correctly
+- Standard .NET property change notifications must work correctly
 - No nullable reference warnings
 - **Exportable systems must compile independently**
 
@@ -340,7 +338,7 @@ deploy:
 
 ### Performance Testing
 - Include basic performance benchmarks for UI responsiveness
-- Validate memory usage patterns with ReactiveUI subscriptions
+- Validate memory usage patterns with standard .NET event handling
 - Test application startup time
 
 ### Code Quality Gates

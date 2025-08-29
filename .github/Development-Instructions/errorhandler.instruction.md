@@ -66,47 +66,54 @@ Each category has a specific user-facing message and recommended actions.
 
 ---
 
-## ReactiveUI Error Handling Patterns
+## Standard .NET MVVM Error Handling Patterns
 
 ### Command Error Handling
-All ReactiveCommand implementations should include centralized error handling using the ThrownExceptions observable:
+All ICommand implementations should include centralized error handling using try-catch patterns in command execution:
 
 ```csharp
-public ReactiveCommand<Unit, Unit> PerformOperationCommand { get; }
-public ReactiveCommand<Unit, Unit> SaveCommand { get; }
-public ReactiveCommand<Unit, Unit> LoadDataCommand { get; }
+public ICommand PerformOperationCommand { get; private set; }
+public ICommand SaveCommand { get; private set; }
+public ICommand LoadDataCommand { get; private set; }
 
 public SampleViewModel()
 {
     // Async command
-    LoadDataCommand = ReactiveCommand.CreateFromTask(async () =>
+    LoadDataCommand = new AsyncCommand(async () =>
     {
-        // Operation
-        await Task.CompletedTask;
+        try
+        {
+            // Operation
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            // TODO: Log to MySQL and file using Service_ErrorHandler
+            // Service_ErrorHandler.HandleException(ex, ErrorSeverity.Medium, "ViewName_LoadData");
+            // Show user-friendly message using Control_ErrorMessage or ErrorDialog_Enhanced
+        }
     });
 
     // Sync command with CanExecute
-    var canSave = this.WhenAnyValue(vm => vm.SomeProperty, s => !string.IsNullOrWhiteSpace(s));
-    SaveCommand = ReactiveCommand.Create(() =>
+    SaveCommand = new RelayCommand(() =>
     {
-        // TODO: Implement
-    }, canSave);
-
-    // Centralized error handling for all commands
-    LoadDataCommand.ThrownExceptions
-        .Merge(SaveCommand.ThrownExceptions)
-        .Subscribe(ex =>
+        try
+        {
+            // TODO: Implement
+        }
+        catch (Exception ex)
         {
             // TODO: Log to MySQL and file using Service_ErrorHandler
-            // Service_ErrorHandler.HandleException(ex, ErrorSeverity.Medium, "ViewName_CommandName");
+            // Service_ErrorHandler.HandleException(ex, ErrorSeverity.Medium, "ViewName_Save");
             // Show user-friendly message using Control_ErrorMessage or ErrorDialog_Enhanced
-        });
+        }
+    }, () => CanSave);
 }
 ```
 
 ### Command Error Patterns
-- **ThrownExceptions Observable**: Subscribe to command exceptions using `.ThrownExceptions.Subscribe()`
-- **Merge Multiple Commands**: Use `.Merge()` to handle errors from multiple commands in one place
+- **Try-Catch in Commands**: Wrap command logic in try-catch blocks for error handling
+- **Centralized Error Service**: Use consistent error handling service for all command errors
 - **Error Context**: Include command name and control context when logging errors
 - **User Feedback**: Always provide user-friendly error messages through UI components
 
@@ -323,21 +330,24 @@ catch (Exception ex)
 }
 ```
 
-Log from ReactiveCommand ThrownExceptions:
+Log from Command Error Handling:
 ```csharp
-SomeCommand.ThrownExceptions
-    .Subscribe(ex =>
-    {
-        Service_ErrorHandler.HandleException(
-            ex,
-            ErrorSeverity.Medium,
-            source: "ViewName_CommandName",
-            additionalData: new Dictionary<string, object> 
-            { 
-                ["Command"] = nameof(SomeCommand),
-                ["ViewModel"] = GetType().Name
-            });
-    });
+try
+{
+    // Command implementation
+}
+catch (Exception ex)
+{
+    Service_ErrorHandler.HandleException(
+        ex,
+        ErrorSeverity.Medium,
+        source: "ViewName_CommandName",
+        additionalData: new Dictionary<string, object> 
+        { 
+            ["Command"] = nameof(SomeCommand),
+            ["ViewModel"] = GetType().Name
+        });
+}
 ```
 
 Display error UI (when appropriate):
