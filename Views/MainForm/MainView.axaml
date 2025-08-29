@@ -61,24 +61,34 @@
               Padding="24,8"
               BoxShadow="0 2 8 0 #1A000000"
               HorizontalAlignment="Stretch">
-        <Menu Background="Transparent" 
-              Foreground="{StaticResource LightTextBrush}"
-              HorizontalAlignment="Left">
-          <MenuItem Header="_File" Foreground="{StaticResource LightTextBrush}">
-            <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
-            <Separator/>
-            <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
-          </MenuItem>
-          <MenuItem Header="_View" Foreground="{StaticResource LightTextBrush}">
-            <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
-          </MenuItem>
-          <!-- Development builds only -->
-          <MenuItem Header="_Help" 
-                    Foreground="{StaticResource LightTextBrush}"
-                    IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
-            <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
-          </MenuItem>
-        </Menu>
+        <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
+          <!-- Left side: Menu -->
+          <Menu Grid.Column="0"
+                Background="Transparent" 
+                Foreground="{StaticResource LightTextBrush}"
+                HorizontalAlignment="Left">
+            <MenuItem Header="_File" Foreground="{StaticResource LightTextBrush}">
+              <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
+              <Separator/>
+              <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_View" Foreground="{StaticResource LightTextBrush}">
+              <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
+            </MenuItem>
+            <!-- Development builds only -->
+            <MenuItem Header="_Help" 
+                      Foreground="{StaticResource LightTextBrush}"
+                      IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
+              <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
+            </MenuItem>
+          </Menu>
+          
+          <!-- Right side: Theme Quick Switcher -->
+          <views:ThemeQuickSwitcher Grid.Column="1"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Margin="16,0,0,0"/>
+        </Grid>
       </Border>
 
       <!-- Main Content Area - Content-aware sizing with proper constraints -->

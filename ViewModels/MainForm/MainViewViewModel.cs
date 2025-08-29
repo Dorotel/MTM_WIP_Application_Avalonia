@@ -230,7 +230,7 @@ public class MainViewViewModel : BaseViewModel
         SelectedTabIndex = 0;
 
         // Initialize commands (stubs; no business logic)
-        OpenSettingsCommand = new Commands.RelayCommand(() => { /* TODO: Show settings */ });
+        OpenSettingsCommand = new Commands.RelayCommand(OpenSettings);
         ExitCommand = new Commands.RelayCommand(() => { /* TODO: Exit app */ });
         OpenPersonalHistoryCommand = new Commands.RelayCommand(() => { /* TODO: Open history */ });
         RefreshCommand = new Commands.RelayCommand(() => 
@@ -490,5 +490,34 @@ public class MainViewViewModel : BaseViewModel
     {
         if (SwitchToAdvancedInventoryCommand.CanExecute(null))
             SwitchToAdvancedInventoryCommand.Execute(null);
+    }
+
+    /// <summary>
+    /// Opens the settings view using the navigation service
+    /// </summary>
+    private void OpenSettings()
+    {
+        try
+        {
+            // Get SettingsViewModel from DI container
+            var settingsViewModel = Program.GetService<SettingsViewModel>();
+            
+            // Create SettingsView with the ViewModel
+            var settingsView = new Views.SettingsView
+            {
+                DataContext = settingsViewModel
+            };
+            
+            // Navigate to the settings view
+            _navigationService.NavigateTo(settingsView);
+            
+            Logger.LogInformation("Navigated to Settings view");
+            StatusText = "Settings opened";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to open Settings view");
+            StatusText = "Failed to open settings";
+        }
     }
 }
