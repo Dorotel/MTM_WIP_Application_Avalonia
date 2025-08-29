@@ -7,7 +7,7 @@
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.SystemHealthView"
              x:DataType="vm:SystemHealthViewModel">
 
-    <!-- System Health & Diagnostics Panel -->
+    <!-- System Health &amp; Diagnostics Panel -->
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
         <StackPanel Spacing="16">
             

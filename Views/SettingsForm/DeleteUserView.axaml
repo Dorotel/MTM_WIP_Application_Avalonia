@@ -1,13 +1,277 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.DeleteUserView">
-    <StackPanel Spacing="20" MaxWidth="600">
-        <TextBlock Text="⚙️ DeleteUserView"
-                   FontSize="18"
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Center"/>
-        <TextBlock Text="DeleteUserView panel - implementation pending"
-                   HorizontalAlignment="Center"
-                   Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
-    </StackPanel>
+    
+    <!-- Delete User Panel -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+        <StackPanel Spacing="16" MaxWidth="600">
+            
+            <!-- Header -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel>
+                    <TextBlock Text="🗑️ Delete User Account"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Permanently remove a user account from the system"
+                               FontSize="14"
+                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               HorizontalAlignment="Center"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Warning Notice -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.WarningLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="⚠️"
+                                   FontSize="16"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Warning: User Deletion"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.WarningTextBrush}"/>
+                    </StackPanel>
+                    <TextBlock Text="Deleting a user account is PERMANENT and cannot be undone. All associated data and permissions will be removed from the system."
+                               FontSize="12"
+                               Foreground="{DynamicResource MTM_Shared_Logic.WarningTextBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- User Selection -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="👤 Select User to Delete"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Margin="0,0,0,8"/>
+                    
+                    <Grid ColumnDefinitions="140,*,Auto">
+                        <TextBlock Text="Select User:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <ComboBox Grid.Column="1"
+                                  SelectedIndex="-1"
+                                  Margin="0,0,8,0">
+                            <ComboBoxItem Content="john.doe - John Doe (Operator)"/>
+                            <ComboBoxItem Content="jane.smith - Jane Smith (Supervisor)"/>
+                            <ComboBoxItem Content="mike.wilson - Mike Wilson (Manager)"/>
+                            <ComboBoxItem Content="temp.user - Temporary User (Operator)"/>
+                        </ComboBox>
+                        <Button Grid.Column="2"
+                                Content="🔍"
+                                Classes="mtm-secondary"
+                                ToolTip.Tip="Search Users"
+                                Width="32"
+                                Height="32"/>
+                    </Grid>
+                    
+                    <TextBlock Text="Note: Administrator accounts cannot be deleted"
+                               FontSize="12"
+                               Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"
+                               FontStyle="Italic"/>
+                </StackPanel>
+            </Border>
+
+            <!-- User Details (shown when user is selected) -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16"
+                    IsVisible="False">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="📋 User Details to be Deleted"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.ErrorTextBrush}"/>
+                    
+                    <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Username:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="john.doe"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Full Name:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="John Doe"/>
+                        
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Email:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="john.doe@company.com"/>
+                        
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Role:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Operator"/>
+                        
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Last Login:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Today 09:45 AM"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Data Impact Assessment -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="16">
+                    <TextBlock Text="📊 Data Impact Assessment"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Margin="0,0,0,8"/>
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="The following data will be affected:"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,4"/>
+                        
+                        <Grid ColumnDefinitions="*,Auto" Margin="16,0,0,0">
+                            <TextBlock Grid.Column="0" Text="• Inventory transactions created by this user"/>
+                            <TextBlock Grid.Column="1" Text="247 records" FontWeight="SemiBold" Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"/>
+                        </Grid>
+                        
+                        <Grid ColumnDefinitions="*,Auto" Margin="16,0,0,0">
+                            <TextBlock Grid.Column="0" Text="• Reports generated by this user"/>
+                            <TextBlock Grid.Column="1" Text="12 reports" FontWeight="SemiBold" Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"/>
+                        </Grid>
+                        
+                        <Grid ColumnDefinitions="*,Auto" Margin="16,0,0,0">
+                            <TextBlock Grid.Column="0" Text="• System audit logs"/>
+                            <TextBlock Grid.Column="1" Text="89 entries" FontWeight="SemiBold" Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"/>
+                        </Grid>
+                    </StackPanel>
+                    
+                    <!-- Data Handling Options -->
+                    <StackPanel Spacing="8" Margin="0,16,0,0">
+                        <TextBlock Text="Data Handling Options:"
+                                   FontWeight="SemiBold"/>
+                        
+                        <RadioButton Content="🗄️ Archive user data (recommended)" 
+                                     IsChecked="True"
+                                     GroupName="DataHandling"/>
+                        <RadioButton Content="🔄 Transfer data to another user" 
+                                     GroupName="DataHandling"/>
+                        <RadioButton Content="🗑️ Delete all user data (permanent)" 
+                                     GroupName="DataHandling"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Transfer User Selection (shown when transfer option is selected) -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20"
+                    IsVisible="False">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="🔄 Transfer Data To:"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Text="Transfer to User:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <ComboBox Grid.Column="1">
+                            <ComboBoxItem Content="jane.smith - Jane Smith (Supervisor)"/>
+                            <ComboBoxItem Content="mike.wilson - Mike Wilson (Manager)"/>
+                            <ComboBoxItem Content="admin - Administrator (Admin)"/>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Confirmation -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="16">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="✋ Final Confirmation Required"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.ErrorTextBrush}"/>
+                    
+                    <CheckBox Content="I understand that this action cannot be undone"
+                              IsChecked="False"/>
+                    
+                    <CheckBox Content="I have reviewed the data impact assessment"
+                              IsChecked="False"/>
+                    
+                    <CheckBox Content="I confirm that I want to delete this user account"
+                              IsChecked="False"/>
+                    
+                    <Grid ColumnDefinitions="140,*" Margin="0,12,0,0">
+                        <TextBlock Text="Type DELETE:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.ErrorTextBrush}"/>
+                        <TextBox Grid.Column="1"
+                                 Watermark="Type DELETE to confirm"
+                                 Text=""/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12"
+                        HorizontalAlignment="Center"
+                        Margin="0,16,0,0">
+                
+                <Button Content="🗑️ Delete User"
+                        Classes="mtm-danger"
+                        MinWidth="120"
+                        Height="36"
+                        IsEnabled="False"/>
+                
+                <Button Content="❌ Cancel"
+                        Classes="mtm-light"
+                        MinWidth="80"
+                        Height="36"/>
+            </StackPanel>
+
+            <!-- Placeholder Notice -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12"
+                    Margin="0,16,0,0">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="ℹ️"
+                               FontSize="14"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="This is a placeholder interface. Full functionality will be implemented with backend integration and proper confirmation workflows."
+                               FontSize="12"
+                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

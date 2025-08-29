@@ -7,7 +7,7 @@
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.BackupRecoveryView"
              x:DataType="vm:BackupRecoveryViewModel">
 
-    <!-- Backup & Recovery Panel -->
+    <!-- Backup &amp; Recovery Panel -->
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
         <StackPanel Spacing="16">
             

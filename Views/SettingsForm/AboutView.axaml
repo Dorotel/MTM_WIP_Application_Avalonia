@@ -1,13 +1,258 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.AboutView">
-    <StackPanel Spacing="20" MaxWidth="600">
-        <TextBlock Text="⚙️ AboutView"
-                   FontSize="18"
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Center"/>
-        <TextBlock Text="AboutView panel - implementation pending"
-                   HorizontalAlignment="Center"
-                   Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
-    </StackPanel>
+    
+    <!-- About Panel -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+        <StackPanel Spacing="16" MaxWidth="600">
+            
+            <!-- Application Header -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
+                    CornerRadius="8"
+                    Padding="24">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="🏭 MTM WIP Application"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Work In Progress Inventory Management System"
+                               FontSize="16"
+                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Version 2.1.0"
+                               FontSize="14"
+                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               HorizontalAlignment="Center"
+                               Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Company Information -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="🏢 Company Information"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Margin="0,0,0,8"/>
+                    
+                    <Grid ColumnDefinitions="120,*">
+                        <TextBlock Grid.Column="0" Text="Company:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="Manitowoc Tool and Manufacturing"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="120,*">
+                        <TextBlock Grid.Column="0" Text="Industry:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="Manufacturing &amp; Industrial Equipment"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="120,*">
+                        <TextBlock Grid.Column="0" Text="Founded:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="1982"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="120,*">
+                        <TextBlock Grid.Column="0" Text="Website:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="www.mtm-manufacturing.com" 
+                                   Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Application Details -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="📱 Application Details"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Margin="0,0,0,8"/>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Version:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="2.1.0 (Build 2024.0315)"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Release Date:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="March 15, 2024"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Framework:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text=".NET 8.0"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="UI Framework:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="Avalonia UI 11.0"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Architecture:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="MVVM with Dependency Injection"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Database:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="SQL Server 2019+"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- System Information -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="💻 System Information"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Margin="0,0,0,8"/>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Operating System:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="Windows 11 Professional"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Runtime:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text=".NET 8.0.3"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Machine Name:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="MTM-WS-001"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Install Date:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="February 28, 2024"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Last Update:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="March 15, 2024"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Development Team -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="👥 Development Team"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Margin="0,0,0,8"/>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Lead Developer:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="MTM Software Development Team"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Project Manager:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="Sarah Johnson"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="UI/UX Designer:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="Michael Chen"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="QA Engineer:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="Lisa Rodriguez"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Support Information -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="🛠️ Support Information"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               Margin="0,0,0,8"/>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Support Email:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="support@mtm-manufacturing.com"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Support Phone:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="(920) 555-0123"/>
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Grid.Column="0" Text="Hours:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="Monday - Friday, 8:00 AM - 5:00 PM CST"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12"
+                        HorizontalAlignment="Center"
+                        Margin="0,16,0,0">
+                
+                <Button Content="📋 Copy System Info"
+                        Classes="mtm-primary"
+                        MinWidth="140"
+                        Height="36"/>
+                
+                <Button Content="🔍 Check for Updates"
+                        Classes="mtm-secondary"
+                        MinWidth="140"
+                        Height="36"/>
+                
+                <Button Content="📄 View License"
+                        Classes="mtm-light"
+                        MinWidth="120"
+                        Height="36"/>
+            </StackPanel>
+
+            <!-- Copyright -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+                    CornerRadius="4"
+                    Padding="12"
+                    Margin="0,16,0,0">
+                <TextBlock Text="© 2024 Manitowoc Tool and Manufacturing. All rights reserved."
+                           FontSize="12"
+                           Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"
+                           HorizontalAlignment="Center"/>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

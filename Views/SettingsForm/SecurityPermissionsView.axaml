@@ -7,7 +7,7 @@
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.SecurityPermissionsView"
              x:DataType="vm:SecurityPermissionsViewModel">
 
-    <!-- Security & Permissions Panel -->
+    <!-- Security &amp; Permissions Panel -->
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
         <StackPanel Spacing="16">
             
