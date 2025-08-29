@@ -26,6 +26,10 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IApplicationStateService, ApplicationStateService>();
         services.TryAddSingleton<INavigationService, NavigationService>();
         
+        // Theme and Settings services
+        services.TryAddSingleton<IThemeService, ThemeService>();
+        services.TryAddSingleton<ISettingsService, SettingsService>();
+        
         // Database services
         services.TryAddScoped<IDatabaseService, DatabaseService>();
         
@@ -43,6 +47,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<TransferItemViewModel>();
         services.TryAddTransient<AdvancedInventoryViewModel>();
         services.TryAddTransient<QuickButtonsViewModel>();
+        services.TryAddTransient<SettingsViewModel>();
 
         return services;
     }
@@ -95,6 +100,8 @@ public static class ServiceCollectionExtensions
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
             typeof(INavigationService),
+            typeof(IThemeService),
+            typeof(ISettingsService),
             typeof(IDatabaseService),
             typeof(IQuickButtonsService),
             typeof(IProgressService)
@@ -125,6 +132,8 @@ public static class ServiceCollectionExtensions
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
             typeof(INavigationService),
+            typeof(IThemeService),
+            typeof(ISettingsService),
             typeof(IDatabaseService),
             typeof(IQuickButtonsService),
             typeof(IProgressService)

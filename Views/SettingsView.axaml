@@ -1,0 +1,207 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsView"
+             x:Name="SettingsViewRoot"
+             x:DataType="vm:SettingsViewModel">
+
+    <!-- Settings View with MTM Theme Integration -->
+    <Viewbox Stretch="Uniform" StretchDirection="DownOnly">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Auto"
+                      Padding="20">
+            
+            <StackPanel Spacing="20" MaxWidth="800">
+                
+                <!-- Header Section -->
+                <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="⚙️ Settings"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Configure application preferences and themes"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Status Message -->
+                <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="12"
+                        IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- Theme Settings Section -->
+                <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="16">
+                        
+                        <!-- Section Header -->
+                        <TextBlock Text="🎨 Theme Settings"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                        
+                        <!-- Theme Selection -->
+                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                            <TextBlock Text="Theme:"
+                                       Grid.Column="0" Grid.Row="0"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,12,0"/>
+                            
+                            <ComboBox Grid.Column="1" Grid.Row="0"
+                                      ItemsSource="{Binding AvailableThemes}"
+                                      SelectedItem="{Binding SelectedTheme}"
+                                      MinWidth="200"
+                                      DisplayMemberBinding="{Binding DisplayName}"/>
+                            
+                            <Button Grid.Column="2" Grid.Row="0"
+                                    Content="Apply"
+                                    Classes="mtm-primary"
+                                    Command="{Binding ApplyThemeCommand}"
+                                    Margin="12,0,0,0"
+                                    MinWidth="80"/>
+                            
+                            <!-- Theme Description -->
+                            <TextBlock Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+                                       Text="{Binding SelectedTheme.Description}"
+                                       Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"
+                                       FontStyle="Italic"
+                                       Margin="0,8,0,0"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                        
+                        <!-- Auto Save Settings -->
+                        <CheckBox Content="Automatically save settings changes"
+                                  IsChecked="{Binding AutoSaveSettings}"
+                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Application Settings Section -->
+                <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="16">
+                        
+                        <!-- Section Header -->
+                        <TextBlock Text="🔧 Application Settings"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                        
+                        <!-- Advanced Features -->
+                        <CheckBox Content="Enable advanced features"
+                                  IsChecked="{Binding EnableAdvancedFeatures}"
+                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                        
+                        <!-- Real-time Updates -->
+                        <CheckBox Content="Enable real-time data updates"
+                                  IsChecked="{Binding EnableRealTimeUpdates}"
+                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                        
+                        <!-- Remember Window Size -->
+                        <CheckBox Content="Remember window size and position"
+                                  IsChecked="{Binding RememberWindowSize}"
+                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                        
+                        <!-- Default Page Size -->
+                        <Grid ColumnDefinitions="Auto,*">
+                            <TextBlock Text="Default page size:"
+                                       Grid.Column="0"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,12,0"/>
+                            
+                            <NumericUpDown Grid.Column="1"
+                                           Value="{Binding DefaultPageSize}"
+                                           Minimum="10"
+                                           Maximum="200"
+                                           Increment="10"
+                                           MinWidth="120"
+                                           HorizontalAlignment="Left"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Action Buttons Section -->
+                <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        
+                        <!-- Save Settings -->
+                        <Button Content="💾 Save Settings"
+                                Classes="mtm-primary"
+                                Command="{Binding SaveSettingsCommand}"
+                                IsEnabled="{Binding !IsLoading}"
+                                Margin="0,0,12,0"
+                                MinWidth="120"/>
+                        
+                        <!-- Load Settings -->
+                        <Button Content="📂 Load Settings"
+                                Classes="mtm-secondary"
+                                Command="{Binding LoadSettingsCommand}"
+                                IsEnabled="{Binding !IsLoading}"
+                                Margin="0,0,12,0"
+                                MinWidth="120"/>
+                        
+                        <!-- Reset to Defaults -->
+                        <Button Content="🔄 Reset to Defaults"
+                                Classes="mtm-secondary"
+                                Command="{Binding ResetSettingsCommand}"
+                                IsEnabled="{Binding !IsLoading}"
+                                MinWidth="140"/>
+                    </WrapPanel>
+                </Border>
+
+                <!-- Loading Indicator -->
+                <Border Background="{DynamicResource MTM_Shared_Logic.WarningLightBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="12"
+                        IsVisible="{Binding IsLoading}">
+                    <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Center">
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="200"
+                                     Height="4"
+                                     VerticalAlignment="Center"
+                                     Margin="0,0,12,0"/>
+                        <TextBlock Text="Processing..."
+                                   Foreground="{DynamicResource MTM_Shared_Logic.WarningTextBrush}"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Viewbox>
+
+</UserControl>

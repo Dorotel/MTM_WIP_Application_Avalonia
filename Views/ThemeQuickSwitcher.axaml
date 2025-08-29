@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher"
+             x:Name="ThemeQuickSwitcherRoot">
+
+    <!-- Theme Quick Switcher Component -->
+    <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="6"
+            Padding="8">
+        
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            
+            <!-- Theme Icon -->
+            <TextBlock Text="🎨"
+                       FontSize="14"
+                       VerticalAlignment="Center"
+                       ToolTip.Tip="Theme Selector"/>
+            
+            <!-- Theme Selector -->
+            <ComboBox x:Name="ThemeComboBox"
+                      MinWidth="120"
+                      FontSize="12"
+                      Padding="6,4"
+                      VerticalAlignment="Center"
+                      ToolTip.Tip="Select application theme">
+                
+                <!-- Hardcoded theme options for quick switcher -->
+                <ComboBoxItem Content="MTM Light" Tag="MTM_Light"/>
+                <ComboBoxItem Content="MTM Dark" Tag="MTM_Dark"/>
+                <ComboBoxItem Content="High Contrast" Tag="MTM_HighContrast"/>
+            </ComboBox>
+            
+            <!-- Quick Apply Button -->
+            <Button x:Name="ApplyButton"
+                    Content="Apply"
+                    Classes="mtm-secondary"
+                    FontSize="11"
+                    Padding="8,4"
+                    MinHeight="28"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="Apply selected theme"/>
+        </StackPanel>
+    </Border>
+
+</UserControl>
