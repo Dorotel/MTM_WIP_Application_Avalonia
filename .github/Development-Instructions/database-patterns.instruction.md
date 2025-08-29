@@ -141,46 +141,152 @@ var command = new MySqlCommand(query, connection);
 </details>
 
 <details>
-<summary><strong>📊 Standard MTM Stored Procedures</strong></summary>
+<summary><strong>📊 Complete MTM Stored Procedures Catalog</strong></summary>
 
-### **Inventory Management Procedures**
+### **Inventory Management Procedures (7 procedures)**
 ```sql
--- Add inventory item
-CALL inv_inventory_Add_Item(p_PartID, p_OperationID, p_LocationID, p_Quantity, p_UserID, p_TransactionType, @status, @message)
+-- Add inventory with automatic batch number generation
+CALL inv_inventory_Add_Item(p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType, p_User, p_Notes, @p_Status, @p_ErrorMsg)
 
--- Remove inventory item  
-CALL inv_inventory_Remove_Item(p_PartID, p_OperationID, p_LocationID, p_Quantity, p_UserID, @status, @message)
+-- Remove inventory with validation and audit trail
+CALL inv_inventory_Remove_Item(p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType, p_User, p_BatchNumber, p_Notes, @p_Status, @p_ErrorMsg)
 
--- Transfer inventory between locations
-CALL inv_inventory_Transfer_Item(p_PartID, p_OperationID, p_FromLocation, p_ToLocation, p_Quantity, p_UserID, @status, @message)
+-- Transfer entire part to new location
+CALL inv_inventory_Transfer_Part(p_BatchNumber, p_PartID, p_Operation, p_NewLocation, @p_Status, @p_ErrorMsg)
 
--- Search inventory
-CALL inv_inventory_Search(p_PartID, p_OperationID, p_LocationID, @status, @message)
+-- Transfer partial quantity with splitting
+CALL inv_inventory_Transfer_Quantity(p_BatchNumber, p_PartID, p_Operation, p_TransferQuantity, p_OriginalQuantity, p_NewLocation, p_User, @p_Status, @p_ErrorMsg)
+
+-- Retrieve inventory by part identifier
+CALL inv_inventory_Get_ByPartID(p_PartID, @p_Status, @p_ErrorMsg)
+
+-- Retrieve by part and operation
+CALL inv_inventory_Get_ByPartIDandOperation(p_PartID, p_Operation, @p_Status, @p_ErrorMsg)
+
+-- Retrieve user's inventory transactions
+CALL inv_inventory_Get_ByUser(p_User, @p_Status, @p_ErrorMsg)
 ```
 
-### **Master Data Procedures**
+### **Master Data Procedures (20 procedures)**
+
+#### **Part Management (5 procedures)**
 ```sql
--- Get part IDs for autocomplete
-CALL md_part_ids_Get_Active(@status, @message)
-
--- Get operations for autocomplete
-CALL md_operation_numbers_Get_Active(@status, @message)
-
--- Get locations for autocomplete  
-CALL md_locations_Get_Active(@status, @message)
-
--- Validate part ID
-CALL md_part_ids_Validate(p_PartID, @status, @message)
+-- Complete part management with business validation
+CALL md_part_ids_Add_Part(p_PartID, p_Customer, p_Description, p_IssuedBy, p_ItemType, @p_Status, @p_ErrorMsg)
+CALL md_part_ids_Update_Part(p_ID, p_PartID, p_Customer, p_Description, p_IssuedBy, p_ItemType, @p_Status, @p_ErrorMsg)
+CALL md_part_ids_Delete_ByItemNumber(p_ItemNumber, @p_Status, @p_ErrorMsg)
+CALL md_part_ids_Get_ByItemNumber(p_ItemNumber, @p_Status, @p_ErrorMsg)
+CALL md_part_ids_Get_All(@p_Status, @p_ErrorMsg)
 ```
 
-### **Transaction History Procedures**
+#### **Location Management (5 procedures)**
 ```sql
--- Get transaction history
-CALL inv_transactions_Get_History(p_PartID, p_StartDate, p_EndDate, p_Limit, @status, @message)
-
--- Get user transactions
-CALL inv_transactions_Get_By_User(p_UserID, p_StartDate, p_EndDate, @status, @message)
+-- Location management with building support
+CALL md_locations_Add_Location(p_Location, p_IssuedBy, p_Building, @p_Status, @p_ErrorMsg)
+CALL md_locations_Update_Location(p_OldLocation, p_Location, p_IssuedBy, p_Building, @p_Status, @p_ErrorMsg)
+CALL md_locations_Delete_ByLocation(p_Location, @p_Status, @p_ErrorMsg)
+CALL md_locations_Get_ByLocation(p_Location, @p_Status, @p_ErrorMsg)
+CALL md_locations_Get_All(@p_Status, @p_ErrorMsg)
 ```
+
+#### **Operation Management (5 procedures)**
+```sql
+-- Operation number management
+CALL md_operation_numbers_Add_Operation(p_Operation, p_IssuedBy, @p_Status, @p_ErrorMsg)
+CALL md_operation_numbers_Update_Operation(p_Operation, p_NewOperation, p_IssuedBy, @p_Status, @p_ErrorMsg)
+CALL md_operation_numbers_Delete_ByOperation(p_Operation, @p_Status, @p_ErrorMsg)
+CALL md_operation_numbers_Get_ByOperation(p_Operation, @p_Status, @p_ErrorMsg)
+CALL md_operation_numbers_Get_All(@p_Status, @p_ErrorMsg)
+```
+
+#### **Item Type Management (5 procedures)**
+```sql
+-- Item type classification management
+CALL md_item_types_Add_ItemType(p_ItemType, p_IssuedBy, @p_Status, @p_ErrorMsg)
+CALL md_item_types_Update_ItemType(p_ID, p_ItemType, p_IssuedBy, @p_Status, @p_ErrorMsg)
+CALL md_item_types_Delete_ByType(p_ItemType, @p_Status, @p_ErrorMsg)
+CALL md_item_types_Get_ByType(p_ItemType, @p_Status, @p_ErrorMsg)
+CALL md_item_types_Get_All(@p_Status, @p_ErrorMsg)
+```
+
+### **User Management Procedures (14 procedures)**
+
+#### **Core User Operations (8 procedures)**
+```sql
+-- Complete user lifecycle with inventory validation
+CALL usr_users_Add(p_Username, p_FirstName, p_LastName, p_Email, p_Role, p_IssuedBy, @p_Status, @p_ErrorMsg)
+CALL usr_users_Update(p_ID, p_Username, p_FirstName, p_LastName, p_Email, p_Role, p_IsActive, p_IssuedBy, @p_Status, @p_ErrorMsg)
+CALL usr_users_Delete_ByID(p_ID, @p_Status, @p_ErrorMsg)
+CALL usr_users_Get_ByID(p_ID, @p_Status, @p_ErrorMsg)
+CALL usr_users_Get_ByUser(p_Username, @p_Status, @p_ErrorMsg)
+CALL usr_users_Get_All(@p_Status, @p_ErrorMsg)
+CALL usr_users_Exists(p_Username, @p_Status, @p_ErrorMsg)
+
+-- Legacy user management for compatibility
+CALL usr_users_Add_User(p_User, p_FullName, p_Shift, p_VitsUser, p_Pin, p_LastShownVersion, p_HideChangeLog, p_ThemeName, p_ThemeFontSize, p_VisualUserName, p_VisualPassword, p_WipServerAddress, p_WipServerPort, p_WipDatabase, @p_Status, @p_ErrorMsg)
+CALL usr_users_Update_User(p_User, p_FullName, p_Shift, p_VitsUser, p_Pin, p_LastShownVersion, p_HideChangeLog, p_ThemeName, p_ThemeFontSize, p_VisualUserName, p_VisualPassword, p_WipServerAddress, p_WipServerPort, p_WipDatabase, @p_Status, @p_ErrorMsg)
+CALL usr_users_Delete_User(p_Username, @p_Status, @p_ErrorMsg)
+```
+
+#### **UI Settings Management (6 procedures)**
+```sql
+-- Theme, shortcuts, and settings persistence
+CALL usr_ui_settings_Get(p_UserId, @p_Status, @p_ErrorMsg)
+CALL usr_ui_settings_SetJsonSetting(p_UserId, p_SettingsJson, @p_Status, @p_ErrorMsg)
+CALL usr_ui_settings_SetThemeJson(p_UserId, p_ThemeJson, @p_Status, @p_ErrorMsg)
+CALL usr_ui_settings_GetThemeJson(p_UserId, @p_Status, @p_ErrorMsg)
+CALL usr_ui_settings_SetShortcutsJson(p_UserId, p_ShortcutsJson, @p_Status, @p_ErrorMsg)
+CALL usr_ui_settings_GetShortcutsJson(p_UserId, @p_Status, @p_ErrorMsg)
+```
+
+### **System Functions (7 procedures)**
+
+#### **Role Management (1 procedure)**
+```sql
+-- System role management
+CALL sys_roles_Get_All(@p_Status, @p_ErrorMsg)
+```
+
+#### **Transaction History (2 procedures)**
+```sql
+-- Transaction tracking and history (Note: These procedures don't follow MTM status pattern)
+CALL sys_last_10_transactions_Get_ByUser(p_UserID, p_Limit)
+CALL sys_last_10_transactions_Add_Transaction(p_TransactionType, p_BatchNumber, p_PartID, p_FromLocation, p_ToLocation, p_Operation, p_Quantity, p_Notes, p_User, p_ItemType, p_ReceiveDate, @p_Status, @p_ErrorMsg)
+```
+
+#### **QuickButton Management (4 procedures)**
+```sql
+-- User-specific quick button management (Note: Get procedure doesn't follow MTM status pattern)
+CALL qb_quickbuttons_Get_ByUser(p_User)
+CALL qb_quickbuttons_Save(p_User, p_Position, p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType, @p_Status, @p_ErrorMsg)
+CALL qb_quickbuttons_Remove(p_User, p_Position, @p_Status, @p_ErrorMsg)
+CALL qb_quickbuttons_Clear_ByUser(p_User, @p_Status, @p_ErrorMsg)
+```
+
+### **Technical Compliance & Standards**
+- ✅ **MySQL 5.7 Compatibility**: All procedures verified for MySQL 5.7 syntax
+- ✅ **Proper DROP Statements**: Clean installation with `DROP PROCEDURE IF EXISTS` for all 45 procedures
+- ✅ **MTM Error Handling**: Standardized `p_Status`/`p_ErrorMsg` output parameters (43 procedures)
+- ✅ **Transaction Safety**: ROLLBACK on errors with proper exception handling
+- ✅ **No SQL Comments**: Clean production-ready file as required
+- ✅ **Helper_Database_StoredProcedure**: Full integration with existing MTM patterns
+
+### **Database Operations Covered**
+```sql
+-- Inventory workflow with batch number management
+-- Master data CRUD with dependency validation  
+-- User management with inventory impact checking
+-- UI settings persistence with JSON support
+-- Transaction logging and history tracking
+-- QuickButton user customization
+```
+
+### **Non-Standard Procedures**
+**Note**: Two procedures don't follow the standard MTM pattern with output parameters:
+- `qb_quickbuttons_Get_ByUser` - Use `ExecuteDataTableDirect`
+- `sys_last_10_transactions_Get_ByUser` - Use `ExecuteDataTableDirect`
+
+All other procedures follow the standard pattern with `@p_Status` and `@p_ErrorMsg` output parameters.
 
 </details>
 
