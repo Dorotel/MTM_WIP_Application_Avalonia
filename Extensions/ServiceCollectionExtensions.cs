@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
@@ -30,6 +31,10 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IThemeService, ThemeService>();
         services.TryAddSingleton<ISettingsService, SettingsService>();
         
+        // SettingsForm services
+        services.TryAddSingleton<VirtualPanelManager>();
+        services.TryAddSingleton<SettingsPanelStateManager>();
+        
         // Database services
         services.TryAddScoped<IDatabaseService, DatabaseService>();
         
@@ -48,6 +53,28 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<AdvancedInventoryViewModel>();
         services.TryAddTransient<QuickButtonsViewModel>();
         services.TryAddTransient<SettingsViewModel>();
+        
+        // SettingsForm ViewModels
+        services.TryAddTransient<SettingsFormViewModel>();
+        services.TryAddTransient<DatabaseSettingsViewModel>();
+        services.TryAddTransient<AddUserViewModel>();
+        services.TryAddTransient<EditUserViewModel>();
+        services.TryAddTransient<DeleteUserViewModel>();
+        services.TryAddTransient<AddPartViewModel>();
+        services.TryAddTransient<EditPartViewModel>();
+        services.TryAddTransient<RemovePartViewModel>();
+        services.TryAddTransient<AddOperationViewModel>();
+        services.TryAddTransient<EditOperationViewModel>();
+        services.TryAddTransient<RemoveOperationViewModel>();
+        services.TryAddTransient<AddLocationViewModel>();
+        services.TryAddTransient<EditLocationViewModel>();
+        services.TryAddTransient<RemoveLocationViewModel>();
+        services.TryAddTransient<AddItemTypeViewModel>();
+        services.TryAddTransient<EditItemTypeViewModel>();
+        services.TryAddTransient<RemoveItemTypeViewModel>();
+        services.TryAddTransient<ThemeBuilderViewModel>();
+        services.TryAddTransient<ShortcutsViewModel>();
+        services.TryAddTransient<AboutViewModel>();
 
         return services;
     }

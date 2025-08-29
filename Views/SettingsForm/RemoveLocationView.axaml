@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.RemoveLocationView">
+    <StackPanel Spacing="20" MaxWidth="600">
+        <TextBlock Text="⚙️ RemoveLocationView"
+                   FontSize="18"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Center"/>
+        <TextBlock Text="RemoveLocationView panel - implementation pending"
+                   HorizontalAlignment="Center"
+                   Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
+    </StackPanel>
+</UserControl>

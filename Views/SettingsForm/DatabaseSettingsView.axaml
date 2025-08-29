@@ -1,0 +1,140 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.DatabaseSettingsView"
+             x:DataType="vm:DatabaseSettingsViewModel">
+
+    <!-- Database Settings Panel -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="20" MaxWidth="600">
+            
+            <!-- Connection Settings Section -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    
+                    <TextBlock Text="🗄️ Database Connection Settings"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    
+                    <!-- Server Name -->
+                    <Grid ColumnDefinitions="150,*">
+                        <TextBlock Text="Server Name:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <TextBox Grid.Column="1"
+                                 Text="{Binding ServerName}"
+                                 Watermark="localhost or server address"/>
+                    </Grid>
+                    
+                    <!-- Database Name -->
+                    <Grid ColumnDefinitions="150,*">
+                        <TextBlock Text="Database Name:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <TextBox Grid.Column="1"
+                                 Text="{Binding DatabaseName}"
+                                 Watermark="MTM_WIP"/>
+                    </Grid>
+                    
+                    <!-- Authentication -->
+                    <CheckBox Content="Use Windows Integrated Security"
+                              IsChecked="{Binding UseIntegratedSecurity}"/>
+                    
+                    <!-- Credentials (visible when not using integrated security) -->
+                    <StackPanel Spacing="12" IsVisible="{Binding RequiresCredentials}">
+                        <Grid ColumnDefinitions="150,*">
+                            <TextBlock Text="Username:"
+                                       Grid.Column="0"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding Username}"/>
+                        </Grid>
+                        
+                        <Grid ColumnDefinitions="150,*">
+                            <TextBlock Text="Password:"
+                                       Grid.Column="0"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding Password}"
+                                     PasswordChar="●"/>
+                        </Grid>
+                    </StackPanel>
+                    
+                    <!-- Timeout Settings -->
+                    <Grid ColumnDefinitions="150,*,20,150,*">
+                        <TextBlock Text="Connection Timeout:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <NumericUpDown Grid.Column="1"
+                                       Value="{Binding ConnectionTimeout}"
+                                       Minimum="5"
+                                       Maximum="300"/>
+                        
+                        <TextBlock Text="Command Timeout:"
+                                   Grid.Column="3"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <NumericUpDown Grid.Column="4"
+                                       Value="{Binding CommandTimeout}"
+                                       Minimum="30"
+                                       Maximum="600"/>
+                    </Grid>
+                    
+                    <!-- Action Buttons -->
+                    <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Button Content="🔍 Test Connection"
+                                Classes="mtm-primary"
+                                Command="{Binding TestConnectionCommand}"
+                                IsEnabled="{Binding !IsTesting}"
+                                Margin="0,0,12,0"
+                                MinWidth="140"/>
+                        
+                        <Button Content="💾 Save Settings"
+                                Classes="mtm-secondary"
+                                Command="{Binding SaveSettingsCommand}"
+                                MinWidth="120"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+            
+            <!-- Connection Status -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="16">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <TextBlock Text="📡"
+                               FontSize="16"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ConnectionStatus}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                    
+                    <!-- Loading indicator -->
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="100"
+                                 Height="4"
+                                 IsVisible="{Binding IsTesting}"
+                                 VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+            
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>
