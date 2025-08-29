@@ -127,6 +127,21 @@ public class QuickButtonsViewModel : BaseViewModel
             }
         });
 
+        // Initialize missing commands
+        ModifyModeCommand = new RelayCommand(() =>
+        {
+            Logger.LogInformation("ModifyModeCommand executed - Toggle modify mode for quick buttons");
+            // Toggle modify mode for quick buttons
+            // This could enable/disable drag-and-drop or show/hide management UI
+        });
+
+        ManageButtonsCommand = new RelayCommand(() =>
+        {
+            Logger.LogInformation("ManageButtonsCommand executed - Open quick button management interface");
+            // Open a management interface for quick buttons
+            // This could navigate to a dedicated management view
+        });
+
         // Handle collection changes to update count
         QuickButtons.CollectionChanged += (sender, e) =>
         {
