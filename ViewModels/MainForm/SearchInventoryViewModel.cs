@@ -11,6 +11,7 @@ using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Commands;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -341,15 +342,19 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
 
             if (partResult.IsSuccess)
             {
-                PartOptions.Clear();
-                foreach (DataRow row in partResult.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var partId = row["PartID"]?.ToString();
-                    if (!string.IsNullOrEmpty(partId))
+                    PartOptions.Clear();
+                    foreach (DataRow row in partResult.Data.Rows)
                     {
-                        PartOptions.Add(partId);
+                        var partId = row["PartID"]?.ToString();
+                        if (!string.IsNullOrEmpty(partId))
+                        {
+                            PartOptions.Add(partId);
+                        }
                     }
-                }
+                });
                 Logger.LogInformation("Loaded {Count} parts", PartOptions.Count);
             }
 
@@ -362,15 +367,19 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
 
             if (operationResult.IsSuccess)
             {
-                OperationOptions.Clear();
-                foreach (DataRow row in operationResult.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var operation = row["Operation"]?.ToString();
-                    if (!string.IsNullOrEmpty(operation))
+                    OperationOptions.Clear();
+                    foreach (DataRow row in operationResult.Data.Rows)
                     {
-                        OperationOptions.Add(operation);
+                        var operation = row["Operation"]?.ToString();
+                        if (!string.IsNullOrEmpty(operation))
+                        {
+                            OperationOptions.Add(operation);
+                        }
                     }
-                }
+                });
                 Logger.LogInformation("Loaded {Count} operations", OperationOptions.Count);
             }
 
@@ -383,15 +392,19 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
 
             if (locationResult.IsSuccess)
             {
-                LocationOptions.Clear();
-                foreach (DataRow row in locationResult.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var location = row["Location"]?.ToString();
-                    if (!string.IsNullOrEmpty(location))
+                    LocationOptions.Clear();
+                    foreach (DataRow row in locationResult.Data.Rows)
                     {
-                        LocationOptions.Add(location);
+                        var location = row["Location"]?.ToString();
+                        if (!string.IsNullOrEmpty(location))
+                        {
+                            LocationOptions.Add(location);
+                        }
                     }
-                }
+                });
                 Logger.LogInformation("Loaded {Count} locations", LocationOptions.Count);
             }
 
@@ -417,7 +430,9 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
         {
             IsSearching = true;
             StatusMessage = "Searching...";
-            SearchResults.Clear();
+
+            // Clear results on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() => SearchResults.Clear());
 
             Logger.LogInformation("Executing search with filters: Part={PartId}, Operation={Operation}, Location={Location}, User={User}",
                 PartIdFilter, OperationFilter, LocationFilter, UserFilter);
@@ -484,11 +499,14 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
                 .Take(ResultsPerPage)
                 .ToList();
 
-            // Update UI
-            foreach (var item in pagedResults)
+            // Update UI on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                SearchResults.Add(item);
-            }
+                foreach (var item in pagedResults)
+                {
+                    SearchResults.Add(item);
+                }
+            });
 
             StatusMessage = $"Found {TotalResults} results";
             Logger.LogInformation("Search completed. Found {Count} total results, showing {PagedCount} on page {CurrentPage}",
@@ -542,7 +560,10 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
         UserFilter = string.Empty;
         DateFromFilter = null;
         DateToFilter = null;
-        SearchResults.Clear();
+        
+        // Clear results on UI thread
+        Dispatcher.UIThread.Post(() => SearchResults.Clear());
+        
         CurrentPage = 1;
         TotalPages = 1;
         TotalResults = 0;

@@ -149,7 +149,7 @@ public class InventoryViewModel : BaseViewModel, INotifyPropertyChanged
 
             // For now, load all inventory and implement client-side paging
             // In a real application, you'd want server-side paging for performance
-            var dataTable = await _databaseService.GetAllInventoryAsync();
+            var dataTable = await _databaseService.GetAllPartIDsAsync();
             
             var allItems = ConvertDataTableToInventoryItems(dataTable).ToList();
             

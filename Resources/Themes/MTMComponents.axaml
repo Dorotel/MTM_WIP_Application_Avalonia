@@ -153,6 +153,16 @@
     <Style Selector="TextBox.mtm-input:focus">
         <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.InputFocusBrush}"/>
     </Style>
+
+    <!-- Global TextBox override to ensure text is visible -->
+    <Style Selector="TextBox">
+        <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+    </Style>
+
+    <!-- Global AutoCompleteBox override to ensure text is visible -->
+    <Style Selector="AutoCompleteBox">
+        <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+    </Style>
     
     <!-- ComboBox -->
     <Style Selector="ComboBox.mtm-combo">
@@ -168,6 +178,11 @@
     
     <Style Selector="ComboBox.mtm-combo:focus">
         <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.InputFocusBrush}"/>
+    </Style>
+
+    <!-- Global ComboBox override to ensure text is visible -->
+    <Style Selector="ComboBox">
+        <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
     </Style>
     
     <!-- ================================================================== -->

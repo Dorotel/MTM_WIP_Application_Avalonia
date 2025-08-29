@@ -38,7 +38,7 @@ namespace MTM_Shared_Logic.Models
         public int Theme_FontSize { get; set; } = 9;
         public string VisualUserName { get; set; } = "User Name";
         public string VisualPassword { get; set; } = "Password";
-        public string WipServerAddress { get; set; } = "172.16.1.104";
+        public string WipServerAddress { get; set; } = "localhost";
         public string WIPDatabase { get; set; } = MTM_WIP_Application_Avalonia.Models.Model_AppVariables.IsDebugMode ? "mtm_wip_application_test" : "mtm_wip_application";
         public string WipServerPort { get; set; } = "3306";
     }

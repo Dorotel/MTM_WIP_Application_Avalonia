@@ -99,7 +99,7 @@ namespace MTM_WIP_Application_Avalonia.Models
                         
                         // Try environment variable first, then fallback to default
                         _connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") 
-                            ?? $"Server=172.16.1.104;Database={databaseName};Uid={username};Pwd={password};";
+                            ?? $"Server=localhost;Database={databaseName};Uid={username};Pwd={password};";
                     }
                 }
                 return _connectionString;

@@ -10,6 +10,7 @@ using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -135,29 +136,29 @@ public class QuickButtonsViewModel : BaseViewModel
             OnPropertyChanged(nameof(CanAnyButtonMoveDown));
         };
 
-        Console.WriteLine("🔧🔧🔧 Starting Task.Run for LoadLast10TransactionsAsync");
-        System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Starting Task.Run for LoadLast10TransactionsAsync");
-        Logger.LogInformation("🔧 Starting Task.Run for LoadLast10TransactionsAsync");
+        Console.WriteLine("🔧🔧🔧 Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
+        System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
+        Logger.LogInformation("🔧 Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
 
-        // Load data from database service instead of sample data
-        _ = Task.Run(async () =>
+        // Load data from database service on UI thread to avoid threading issues
+        _ = Dispatcher.UIThread.InvokeAsync(async () =>
         {
             try
             {
-                Console.WriteLine("🔧🔧🔧 Inside Task.Run - about to call LoadLast10TransactionsAsync");
-                System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Inside Task.Run - about to call LoadLast10TransactionsAsync");
-                Logger.LogInformation("🔧 Inside Task.Run - about to call LoadLast10TransactionsAsync");
+                Console.WriteLine("🔧🔧🔧 Inside Dispatcher.UIThread.InvokeAsync - about to call LoadLast10TransactionsAsync");
+                System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Inside Dispatcher.UIThread.InvokeAsync - about to call LoadLast10TransactionsAsync");
+                Logger.LogInformation("🔧 Inside Dispatcher.UIThread.InvokeAsync - about to call LoadLast10TransactionsAsync");
                 await LoadLast10TransactionsAsync();
-                Console.WriteLine("🔧🔧🔧 Task.Run completed LoadLast10TransactionsAsync");
-                System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Task.Run completed LoadLast10TransactionsAsync");
-                Logger.LogInformation("🔧 Task.Run completed LoadLast10TransactionsAsync");
+                Console.WriteLine("🔧🔧🔧 Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
+                System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
+                Logger.LogInformation("🔧 Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"🔧🔧🔧 Failed to load initial quick buttons data in Task.Run: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Failed to load initial quick buttons data in Task.Run: {ex.Message}");
+                Console.WriteLine($"🔧🔧🔧 Failed to load initial quick buttons data in Dispatcher.UIThread.InvokeAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Failed to load initial quick buttons data in Dispatcher.UIThread.InvokeAsync: {ex.Message}");
                 Logger.LogError(ex, "Failed to load initial quick buttons data");
-                Logger.LogError(ex, "🔧 Failed to load initial quick buttons data in Task.Run");
+                Logger.LogError(ex, "🔧 Failed to load initial quick buttons data in Dispatcher.UIThread.InvokeAsync");
                 
                 // If database service fails, just load empty buttons
                 LoadEmptyButtons();
@@ -206,51 +207,55 @@ public class QuickButtonsViewModel : BaseViewModel
             System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 QuickButtons service returned {transactions.Count} transactions");
             Logger.LogInformation("🔧 QuickButtons service returned {Count} transactions", transactions.Count);
 
-            QuickButtons.Clear();
-
-            // Convert service data to ViewModel items
-            for (int i = 0; i < Math.Min(transactions.Count, 10); i++)
+            // Update collection on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                var transaction = transactions[i];
-                Logger.LogDebug("🔧 Creating button {Index}: PartId={PartId}, Operation={Operation}, Quantity={Quantity}",
-                    i + 1, transaction.PartId, transaction.Operation, transaction.Quantity);
+                QuickButtons.Clear();
 
-                var button = new QuickButtonItemViewModel
+                // Convert service data to ViewModel items
+                for (int i = 0; i < Math.Min(transactions.Count, 10); i++)
                 {
-                    Position = i + 1,
-                    PartId = transaction.PartId,
-                    Operation = transaction.Operation,
-                    Quantity = transaction.Quantity,
-                    DisplayText = transaction.PartId,
-                    SubText = $"{transaction.Operation} - {transaction.Quantity} parts",
-                    ToolTipText = $"Position {i + 1}: Click to populate Part ID: {transaction.PartId}, Operation: {transaction.Operation}, Quantity: {transaction.Quantity} in the active tab. Right-click for move and remove options."
-                };
+                    var transaction = transactions[i];
+                    Logger.LogDebug("🔧 Creating button {Index}: PartId={PartId}, Operation={Operation}, Quantity={Quantity}",
+                        i + 1, transaction.PartId, transaction.Operation, transaction.Quantity);
 
-                // Subscribe to property changes
-                button.PropertyChanged += OnButtonPropertyChanged;
-                QuickButtons.Add(button);
-            }
+                    var button = new QuickButtonItemViewModel
+                    {
+                        Position = i + 1,
+                        PartId = transaction.PartId,
+                        Operation = transaction.Operation,
+                        Quantity = transaction.Quantity,
+                        DisplayText = transaction.PartId,
+                        SubText = $"{transaction.Operation} - {transaction.Quantity} parts",
+                        ToolTipText = $"Position {i + 1}: Click to populate Part ID: {transaction.PartId}, Operation: {transaction.Operation}, Quantity: {transaction.Quantity} in the active tab. Right-click for move and remove options."
+                    };
 
-            Logger.LogInformation("🔧 Added {ActualButtonCount} transaction buttons to QuickButtons collection",
-                QuickButtons.Count(b => !b.IsEmpty));
+                    // Subscribe to property changes
+                    button.PropertyChanged += OnButtonPropertyChanged;
+                    QuickButtons.Add(button);
+                }
 
-            // Fill remaining slots with empty buttons
-            for (int i = transactions.Count; i < 10; i++)
-            {
-                var emptyButton = new QuickButtonItemViewModel
+                Logger.LogInformation("🔧 Added {ActualButtonCount} transaction buttons to QuickButtons collection",
+                    QuickButtons.Count(b => !b.IsEmpty));
+
+                // Fill remaining slots with empty buttons
+                for (int i = transactions.Count; i < 10; i++)
                 {
-                    Position = i + 1,
-                    PartId = string.Empty,
-                    Operation = "EMPTY",
-                    Quantity = 0,
-                    DisplayText = "Empty Slot",
-                    SubText = "Click to assign",
-                    ToolTipText = $"Empty slot {i + 1} - Click to assign a quick action. Right-click for options."
-                };
+                    var emptyButton = new QuickButtonItemViewModel
+                    {
+                        Position = i + 1,
+                        PartId = string.Empty,
+                        Operation = "EMPTY",
+                        Quantity = 0,
+                        DisplayText = "Empty Slot",
+                        SubText = "Click to assign",
+                        ToolTipText = $"Empty slot {i + 1} - Click to assign a quick action. Right-click for options."
+                    };
 
-                emptyButton.PropertyChanged += OnButtonPropertyChanged;
-                QuickButtons.Add(emptyButton);
-            }
+                    emptyButton.PropertyChanged += OnButtonPropertyChanged;
+                    QuickButtons.Add(emptyButton);
+                }
+            });
 
             Console.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {QuickButtons.Count} items ({QuickButtons.Count(b => !b.IsEmpty)} non-empty, {QuickButtons.Count(b => b.IsEmpty)} empty)");
             System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {QuickButtons.Count} items ({QuickButtons.Count(b => !b.IsEmpty)} non-empty, {QuickButtons.Count(b => b.IsEmpty)} empty)");
@@ -421,35 +426,39 @@ public class QuickButtonsViewModel : BaseViewModel
 
     private void LoadEmptyButtons()
     {
-        QuickButtons.Clear();
-        
-        // Load 10 empty button slots
-        for (int i = 1; i <= 10; i++)
+        // Ensure this runs on UI thread
+        Dispatcher.UIThread.Post(() =>
         {
-            var emptyButton = new QuickButtonItemViewModel
-            {
-                Position = i,
-                PartId = string.Empty,
-                Operation = "EMPTY",
-                Quantity = 0,
-                DisplayText = "Empty Slot",
-                SubText = "Click to assign",
-                ToolTipText = $"Empty slot {i} - Click to assign a quick action. Right-click for options."
-            };
+            QuickButtons.Clear();
             
-            // Subscribe to property changes to update count
-            emptyButton.PropertyChanged += OnButtonPropertyChanged;
-            QuickButtons.Add(emptyButton);
-        }
-        
-        // Update move command validation
-        UpdateMoveCommandValidation();
-        
-        // Raise initial count update
-        OnPropertyChanged(nameof(NonEmptyQuickButtonsCount));
-        OnPropertyChanged(nameof(NonEmptyQuickButtons));
-        
-        Logger.LogInformation("Loaded 10 empty quick button slots");
+            // Load 10 empty button slots
+            for (int i = 1; i <= 10; i++)
+            {
+                var emptyButton = new QuickButtonItemViewModel
+                {
+                    Position = i,
+                    PartId = string.Empty,
+                    Operation = "EMPTY",
+                    Quantity = 0,
+                    DisplayText = "Empty Slot",
+                    SubText = "Click to assign",
+                    ToolTipText = $"Empty slot {i} - Click to assign a quick action. Right-click for options."
+                };
+                
+                // Subscribe to property changes to update count
+                emptyButton.PropertyChanged += OnButtonPropertyChanged;
+                QuickButtons.Add(emptyButton);
+            }
+            
+            // Update move command validation
+            UpdateMoveCommandValidation();
+            
+            // Raise initial count update
+            OnPropertyChanged(nameof(NonEmptyQuickButtonsCount));
+            OnPropertyChanged(nameof(NonEmptyQuickButtons));
+            
+            Logger.LogInformation("Loaded 10 empty quick button slots");
+        });
     }
 
     /// <summary>

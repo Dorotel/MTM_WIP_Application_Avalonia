@@ -10,6 +10,7 @@ using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Commands;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -553,15 +554,19 @@ public class RemoveItemViewModel : BaseViewModel
 
             if (partResult.IsSuccess)
             {
-                PartOptions.Clear();
-                foreach (System.Data.DataRow row in partResult.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var partId = row["PartID"]?.ToString();
-                    if (!string.IsNullOrEmpty(partId))
+                    PartOptions.Clear();
+                    foreach (System.Data.DataRow row in partResult.Data.Rows)
                     {
-                        PartOptions.Add(partId);
+                        var partId = row["PartID"]?.ToString();
+                        if (!string.IsNullOrEmpty(partId))
+                        {
+                            PartOptions.Add(partId);
+                        }
                     }
-                }
+                });
                 Logger.LogInformation("Loaded {Count} parts", PartOptions.Count);
             }
             
@@ -574,15 +579,19 @@ public class RemoveItemViewModel : BaseViewModel
 
             if (operationResult.IsSuccess)
             {
-                OperationOptions.Clear();
-                foreach (System.Data.DataRow row in operationResult.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var operation = row["Operation"]?.ToString();
-                    if (!string.IsNullOrEmpty(operation))
+                    OperationOptions.Clear();
+                    foreach (System.Data.DataRow row in operationResult.Data.Rows)
                     {
-                        OperationOptions.Add(operation);
+                        var operation = row["Operation"]?.ToString();
+                        if (!string.IsNullOrEmpty(operation))
+                        {
+                            OperationOptions.Add(operation);
+                        }
                     }
-                }
+                });
                 Logger.LogInformation("Loaded {Count} operations", OperationOptions.Count);
             }
 
@@ -598,88 +607,94 @@ public class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Loads sample data for demonstration purposes
     /// </summary>
-    private void LoadSampleData()
+    private async Task LoadSampleDataAsync()
     {
-        // Clear existing data
-        PartOptions.Clear();
-        OperationOptions.Clear();
-
-        // Sample parts
-        var sampleParts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005" };
-        foreach (var part in sampleParts)
+        await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            PartOptions.Add(part);
-        }
+            // Clear existing data
+            PartOptions.Clear();
+            OperationOptions.Clear();
 
-        // Sample operations (MTM uses string numbers)
-        var sampleOperations = new[] { "90", "100", "110", "120", "130" };
-        foreach (var operation in sampleOperations)
-        {
-            OperationOptions.Add(operation);
-        }
+            // Sample parts
+            var sampleParts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005" };
+            foreach (var part in sampleParts)
+            {
+                PartOptions.Add(part);
+            }
+
+            // Sample operations (MTM uses string numbers)
+            var sampleOperations = new[] { "90", "100", "110", "120", "130" };
+            foreach (var operation in sampleOperations)
+            {
+                OperationOptions.Add(operation);
+            }
+        });
     }
 
     /// <summary>
     /// Loads sample inventory data for demonstration
     /// </summary>
-    private void LoadSampleInventoryData()
+    private async Task LoadSampleInventoryDataAsync()
     {
-        var sampleItems = new[]
+        await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            new InventoryItem
+            var sampleItems = new[]
             {
-                ID = 1,
-                PartID = "PART001",
-                Operation = "100",
-                Location = "WC01",
-                Quantity = 25,
-                Notes = "Ready for next operation",
-                User = "TestUser",
-                LastUpdated = DateTime.Now.AddHours(-2)
-            },
-            new InventoryItem
+                new InventoryItem
+                {
+                    ID = 1,
+                    PartID = "PART001",
+                    Operation = "100",
+                    Location = "WC01",
+                    Quantity = 25,
+                    Notes = "Ready for next operation",
+                    User = "TestUser",
+                    LastUpdated = DateTime.Now.AddHours(-2)
+                },
+                new InventoryItem
+                {
+                    ID = 2,
+                    PartID = "PART001", 
+                    Operation = "110",
+                    Location = "WC02",
+                    Quantity = 15,
+                    Notes = "Quality check required",
+                    User = "TestUser",
+                    LastUpdated = DateTime.Now.AddHours(-1)
+                },
+                new InventoryItem
+                {
+                    ID = 3,
+                    PartID = "PART002",
+                    Operation = "90",
+                    Location = "WC01",
+                    Quantity = 40,
+                    Notes = "Incoming from supplier",
+                    User = "TestUser",
+                    LastUpdated = DateTime.Now.AddMinutes(-30)
+                }
+            };
+
+            // Filter sample data based on search criteria
+            var filteredItems = sampleItems.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(SelectedPart))
             {
-                ID = 2,
-                PartID = "PART001", 
-                Operation = "110",
-                Location = "WC02",
-                Quantity = 15,
-                Notes = "Quality check required",
-                User = "TestUser",
-                LastUpdated = DateTime.Now.AddHours(-1)
-            },
-            new InventoryItem
-            {
-                ID = 3,
-                PartID = "PART002",
-                Operation = "90",
-                Location = "WC01",
-                Quantity = 40,
-                Notes = "Incoming from supplier",
-                User = "TestUser",
-                LastUpdated = DateTime.Now.AddMinutes(-30)
+                filteredItems = filteredItems.Where(item => 
+                    item.PartID.Equals(SelectedPart, StringComparison.OrdinalIgnoreCase));
             }
-        };
 
-        // Filter sample data based on search criteria
-        var filteredItems = sampleItems.AsEnumerable();
+            if (!string.IsNullOrWhiteSpace(SelectedOperation))
+            {
+                filteredItems = filteredItems.Where(item => 
+                    item.Operation?.Equals(SelectedOperation, StringComparison.OrdinalIgnoreCase) == true);
+            }
 
-        if (!string.IsNullOrWhiteSpace(SelectedPart))
-        {
-            filteredItems = filteredItems.Where(item => 
-                item.PartID.Equals(SelectedPart, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (!string.IsNullOrWhiteSpace(SelectedOperation))
-        {
-            filteredItems = filteredItems.Where(item => 
-                item.Operation?.Equals(SelectedOperation, StringComparison.OrdinalIgnoreCase) == true);
-        }
-
-        foreach (var item in filteredItems)
-        {
-            InventoryItems.Add(item);
-        }
+            foreach (var item in filteredItems)
+            {
+                InventoryItems.Add(item);
+            }
+        });
     }
 
     #endregion

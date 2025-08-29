@@ -11,6 +11,7 @@ using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -170,23 +171,28 @@ public class TransactionHistoryViewModel : BaseViewModel, INotifyPropertyChanged
             Logger.LogDebug("Loading available users for transaction history");
 
             var usersData = await _databaseService.GetAllUsersAsync();
-            var users = new ObservableCollection<string> { "All Users" }; // Add default option
             
-            foreach (DataRow row in usersData.Rows)
+            // Update collection on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (row["username"] != null)
+                var users = new ObservableCollection<string> { "All Users" }; // Add default option
+                
+                foreach (DataRow row in usersData.Rows)
                 {
-                    users.Add(row["username"].ToString() ?? string.Empty);
+                    if (row["username"] != null)
+                    {
+                        users.Add(row["username"].ToString() ?? string.Empty);
+                    }
                 }
-            }
-            
-            AvailableUsers = users;
-            if (SelectedUser == string.Empty)
-            {
-                SelectedUser = "All Users";
-            }
+                
+                AvailableUsers = users;
+                if (SelectedUser == string.Empty)
+                {
+                    SelectedUser = "All Users";
+                }
+            });
 
-            Logger.LogInformation("Loaded {Count} users for transaction history filtering", users.Count - 1);
+            Logger.LogInformation("Loaded {Count} users for transaction history filtering", AvailableUsers.Count - 1);
         }
         catch (Exception ex)
         {
@@ -247,7 +253,11 @@ public class TransactionHistoryViewModel : BaseViewModel, INotifyPropertyChanged
                 .Take(ItemsPerPage)
                 .ToList();
 
-            Transactions = new ObservableCollection<TransactionRecord>(pagedTransactions);
+            // Update collection on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Transactions = new ObservableCollection<TransactionRecord>(pagedTransactions);
+            });
             
             StatusMessage = $"Loaded {Transactions.Count} transactions";
             Logger.LogInformation("Successfully loaded {Count} transactions (Page {Page} of {TotalTransactions} total)", 

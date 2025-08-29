@@ -25,68 +25,40 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- Compact Input Styles -->
+    <!-- Color-Only Theme Styles - No Layout/Sizing Changes -->
     <Style Selector="TextBox.input-field">
       <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="3"/>
-      <Setter Property="Padding" Value="6,3"/>
       <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-      <Setter Property="FontSize" Value="10"/>
-      <Setter Property="MinHeight" Value="24"/>
-      <Setter Property="Margin" Value="2"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
     </Style>
 
-    <!-- Error state styling -->
+    <!-- Error state styling - Color only -->
     <Style Selector="TextBox.input-field.error">
       <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
-      <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
-    <!-- AutoCompleteBox Styling -->
+    <!-- AutoCompleteBox Color Theme -->
     <Style Selector="AutoCompleteBox.input-field">
       <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="3"/>
-      <Setter Property="Padding" Value="6,3"/>
       <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-      <Setter Property="FontSize" Value="10"/>
-      <Setter Property="MinHeight" Value="24"/>
-      <Setter Property="Margin" Value="2"/>
-      <Setter Property="MinimumPrefixLength" Value="0"/>
-      <Setter Property="FilterMode" Value="Contains"/>
-      <Setter Property="MaxDropDownHeight" Value="200"/>
+      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
     </Style>
 
-    <!-- Error state styling for AutoCompleteBox -->
+    <!-- Error state styling for AutoCompleteBox - Color only -->
     <Style Selector="AutoCompleteBox.input-field.error">
       <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
-      <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
-    <!-- Loading indicator for AutoCompleteBox -->
+    <!-- Loading indicator for AutoCompleteBox - Color only -->
     <Style Selector="AutoCompleteBox.input-field.loading">
       <Setter Property="Background" Value="#F0F0F0"/>
     </Style>
 
-    <!-- Compact Button Styles -->
-    <Style Selector="Button.action-button">
-      <Setter Property="Padding" Value="6,3"/>
-      <Setter Property="Margin" Value="2"/>
-      <Setter Property="FontSize" Value="10"/>
-      <Setter Property="FontWeight" Value="Medium"/>
-      <Setter Property="CornerRadius" Value="3"/>
-      <Setter Property="MinHeight" Value="24"/>
-      <Setter Property="Cursor" Value="Hand"/>
-      <Setter Property="HorizontalContentAlignment" Value="Center"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
-    </Style>
-    
+    <!-- Button Color Themes -->
     <Style Selector="Button.primary">
       <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
       <Setter Property="Foreground" Value="White"/>
       <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.primary:pointerover">
       <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
@@ -96,19 +68,15 @@
       <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
       <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
       <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.secondary:pointerover">
       <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
       <Setter Property="Foreground" Value="White"/>
     </Style>
 
-    <!-- Error message style -->
+    <!-- Error message color styling -->
     <Style Selector="TextBlock.error-message">
       <Setter Property="Foreground" Value="{StaticResource ErrorBrush}"/>
-      <Setter Property="FontSize" Value="9"/>
-      <Setter Property="FontWeight" Value="SemiBold"/>
-      <Setter Property="Margin" Value="4,2,4,4"/>
     </Style>
   </UserControl.Styles>
 

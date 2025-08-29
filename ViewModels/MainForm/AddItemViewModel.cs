@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -212,45 +213,55 @@ public class AddItemViewModel : BaseViewModel, INotifyPropertyChanged
 
             // Load available item types
             var itemTypesData = await _databaseService.GetAllItemTypesAsync();
-            var itemTypes = new ObservableCollection<string>();
             
-            foreach (System.Data.DataRow row in itemTypesData.Rows)
+            // Update collections on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (row["item_type"] != null)
+                var itemTypes = new ObservableCollection<string>();
+                foreach (System.Data.DataRow row in itemTypesData.Rows)
                 {
-                    itemTypes.Add(row["item_type"].ToString() ?? string.Empty);
+                    if (row["item_type"] != null)
+                    {
+                        itemTypes.Add(row["item_type"].ToString() ?? string.Empty);
+                    }
                 }
-            }
-            AvailableItemTypes = itemTypes;
+                AvailableItemTypes = itemTypes;
+            });
 
             // Load available locations
             var locationsData = await _databaseService.GetAllLocationsAsync();
-            var locations = new ObservableCollection<string>();
             
-            foreach (System.Data.DataRow row in locationsData.Rows)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (row["location"] != null)
+                var locations = new ObservableCollection<string>();
+                foreach (System.Data.DataRow row in locationsData.Rows)
                 {
-                    locations.Add(row["location"].ToString() ?? string.Empty);
+                    if (row["location"] != null)
+                    {
+                        locations.Add(row["location"].ToString() ?? string.Empty);
+                    }
                 }
-            }
-            AvailableLocations = locations;
+                AvailableLocations = locations;
+            });
 
             // Load available operations
             var operationsData = await _databaseService.GetAllOperationsAsync();
-            var operations = new ObservableCollection<string>();
             
-            foreach (System.Data.DataRow row in operationsData.Rows)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (row["operation"] != null)
+                var operations = new ObservableCollection<string>();
+                foreach (System.Data.DataRow row in operationsData.Rows)
                 {
-                    operations.Add(row["operation"].ToString() ?? string.Empty);
+                    if (row["operation"] != null)
+                    {
+                        operations.Add(row["operation"].ToString() ?? string.Empty);
+                    }
                 }
-            }
-            AvailableOperations = operations;
+                AvailableOperations = operations;
+            });
 
             Logger.LogInformation("Master data loaded successfully: {ItemTypes} item types, {Locations} locations, {Operations} operations", 
-                itemTypes.Count, locations.Count, operations.Count);
+                AvailableItemTypes.Count, AvailableLocations.Count, AvailableOperations.Count);
         }
         catch (Exception ex)
         {

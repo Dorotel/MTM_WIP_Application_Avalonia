@@ -10,6 +10,7 @@ using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Commands;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -593,15 +594,19 @@ public class TransferItemViewModel : BaseViewModel
 
             if (partResult.IsSuccess)
             {
-                PartOptions.Clear();
-                foreach (System.Data.DataRow row in partResult.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var partId = row["PartID"]?.ToString();
-                    if (!string.IsNullOrEmpty(partId))
+                    PartOptions.Clear();
+                    foreach (System.Data.DataRow row in partResult.Data.Rows)
                     {
-                        PartOptions.Add(partId);
+                        var partId = row["PartID"]?.ToString();
+                        if (!string.IsNullOrEmpty(partId))
+                        {
+                            PartOptions.Add(partId);
+                        }
                     }
-                }
+                });
                 Logger.LogInformation("Loaded {Count} parts for transfer", PartOptions.Count);
             }
             
@@ -614,15 +619,19 @@ public class TransferItemViewModel : BaseViewModel
 
             if (operationResult.IsSuccess)
             {
-                OperationOptions.Clear();
-                foreach (System.Data.DataRow row in operationResult.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var operation = row["Operation"]?.ToString();
-                    if (!string.IsNullOrEmpty(operation))
+                    OperationOptions.Clear();
+                    foreach (System.Data.DataRow row in operationResult.Data.Rows)
                     {
-                        OperationOptions.Add(operation);
+                        var operation = row["Operation"]?.ToString();
+                        if (!string.IsNullOrEmpty(operation))
+                        {
+                            OperationOptions.Add(operation);
+                        }
                     }
-                }
+                });
                 Logger.LogInformation("Loaded {Count} operations for transfer", OperationOptions.Count);
             }
 
@@ -635,15 +644,19 @@ public class TransferItemViewModel : BaseViewModel
 
             if (locationResult.IsSuccess)
             {
-                LocationOptions.Clear();
-                foreach (System.Data.DataRow row in locationResult.Data.Rows)
+                // Update collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var location = row["Location"]?.ToString();
-                    if (!string.IsNullOrEmpty(location))
+                    LocationOptions.Clear();
+                    foreach (System.Data.DataRow row in locationResult.Data.Rows)
                     {
-                        LocationOptions.Add(location);
+                        var location = row["Location"]?.ToString();
+                        if (!string.IsNullOrEmpty(location))
+                        {
+                            LocationOptions.Add(location);
+                        }
                     }
-                }
+                });
                 Logger.LogInformation("Loaded {Count} locations for transfer", LocationOptions.Count);
             }
 
@@ -655,6 +668,130 @@ public class TransferItemViewModel : BaseViewModel
             throw;
         }
     }
+
+    /// <summary>
+    /// Loads sample data for demonstration purposes
+    /// </summary>
+    private async Task LoadSampleDataAsync()
+    {
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            // Clear existing data
+            PartOptions.Clear();
+            OperationOptions.Clear();
+            LocationOptions.Clear();
+
+            // Sample parts
+            var sampleParts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005" };
+            foreach (var part in sampleParts)
+            {
+                PartOptions.Add(part);
+            }
+
+            // Sample operations (MTM uses string numbers)
+            var sampleOperations = new[] { "90", "100", "110", "120", "130" };
+            foreach (var operation in sampleOperations)
+            {
+                OperationOptions.Add(operation);
+            }
+
+            // Sample locations for transfer destinations
+            var sampleLocations = new[] { "WC01", "WC02", "WC03", "SHIP", "QC", "STORE" };
+            foreach (var location in sampleLocations)
+            {
+                LocationOptions.Add(location);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Loads sample inventory data for demonstration with proper filtering
+    /// </summary>
+    private async Task LoadSampleInventoryDataAsync()
+    {
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var sampleItems = new[]
+            {
+                new InventoryItem
+                {
+                    ID = 1,
+                    PartID = "PART001",
+                    Operation = "100",
+                    Location = "WC01",
+                    Quantity = 25,
+                    Notes = "Ready for transfer",
+                    User = "TestUser",
+                    LastUpdated = DateTime.Now.AddHours(-2),
+                    BatchNumber = "B001",
+                    ItemType = "WIP"
+                },
+                new InventoryItem
+                {
+                    ID = 2,
+                    PartID = "PART001",
+                    Operation = "110",
+                    Location = "WC02",
+                    Quantity = 15,
+                    Notes = "Quality check complete",
+                    User = "TestUser",
+                    LastUpdated = DateTime.Now.AddHours(-1),
+                    BatchNumber = "B002",
+                    ItemType = "WIP"
+                },
+                new InventoryItem
+                {
+                    ID = 3,
+                    PartID = "PART002",
+                    Operation = "90",
+                    Location = "WC01",
+                    Quantity = 40,
+                    Notes = "Incoming material",
+                    User = "TestUser",
+                    LastUpdated = DateTime.Now.AddMinutes(-30),
+                    BatchNumber = "B003",
+                    ItemType = "WIP"
+                },
+                new InventoryItem
+                {
+                    ID = 4,
+                    PartID = "PART003",
+                    Operation = "120",
+                    Location = "WC03",
+                    Quantity = 8,
+                    Notes = "Final operation",
+                    User = "TestUser",
+                    LastUpdated = DateTime.Now.AddMinutes(-15),
+                    BatchNumber = "B004",
+                    ItemType = "WIP"
+                }
+            };
+
+            // Filter sample data based on search criteria
+            var filteredItems = sampleItems.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(SelectedPart))
+            {
+                filteredItems = filteredItems.Where(item => 
+                    item.PartID.Equals(SelectedPart, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(SelectedOperation))
+            {
+                filteredItems = filteredItems.Where(item => 
+                    item.Operation?.Equals(SelectedOperation, StringComparison.OrdinalIgnoreCase) == true);
+            }
+
+            foreach (var item in filteredItems)
+            {
+                InventoryItems.Add(item);
+            }
+        });
+    }
+
+    #endregion
+
+    #region Helper Methods
 
     /// <summary>
     /// Updates maximum transfer quantity based on selected inventory item
@@ -675,120 +812,6 @@ public class TransferItemViewModel : BaseViewModel
         {
             MaxTransferQuantity = 0;
             TransferQuantity = 1;
-        }
-    }
-
-    /// <summary>
-    /// Loads sample data for demonstration purposes
-    /// </summary>
-    private void LoadSampleData()
-    {
-        // Clear existing data
-        PartOptions.Clear();
-        OperationOptions.Clear();
-        LocationOptions.Clear();
-
-        // Sample parts
-        var sampleParts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005" };
-        foreach (var part in sampleParts)
-        {
-            PartOptions.Add(part);
-        }
-
-        // Sample operations (MTM uses string numbers)
-        var sampleOperations = new[] { "90", "100", "110", "120", "130" };
-        foreach (var operation in sampleOperations)
-        {
-            OperationOptions.Add(operation);
-        }
-
-        // Sample locations for transfer destinations
-        var sampleLocations = new[] { "WC01", "WC02", "WC03", "SHIP", "QC", "STORE" };
-        foreach (var location in sampleLocations)
-        {
-            LocationOptions.Add(location);
-        }
-    }
-
-    /// <summary>
-    /// Loads sample inventory data for demonstration with proper filtering
-    /// </summary>
-    private void LoadSampleInventoryData()
-    {
-        var sampleItems = new[]
-        {
-            new InventoryItem
-            {
-                ID = 1,
-                PartID = "PART001",
-                Operation = "100",
-                Location = "WC01",
-                Quantity = 25,
-                Notes = "Ready for transfer",
-                User = "TestUser",
-                LastUpdated = DateTime.Now.AddHours(-2),
-                BatchNumber = "B001",
-                ItemType = "WIP"
-            },
-            new InventoryItem
-            {
-                ID = 2,
-                PartID = "PART001",
-                Operation = "110",
-                Location = "WC02",
-                Quantity = 15,
-                Notes = "Quality check complete",
-                User = "TestUser",
-                LastUpdated = DateTime.Now.AddHours(-1),
-                BatchNumber = "B002",
-                ItemType = "WIP"
-            },
-            new InventoryItem
-            {
-                ID = 3,
-                PartID = "PART002",
-                Operation = "90",
-                Location = "WC01",
-                Quantity = 40,
-                Notes = "Incoming material",
-                User = "TestUser",
-                LastUpdated = DateTime.Now.AddMinutes(-30),
-                BatchNumber = "B003",
-                ItemType = "WIP"
-            },
-            new InventoryItem
-            {
-                ID = 4,
-                PartID = "PART003",
-                Operation = "120",
-                Location = "WC03",
-                Quantity = 8,
-                Notes = "Final operation",
-                User = "TestUser",
-                LastUpdated = DateTime.Now.AddMinutes(-15),
-                BatchNumber = "B004",
-                ItemType = "WIP"
-            }
-        };
-
-        // Filter sample data based on search criteria
-        var filteredItems = sampleItems.AsEnumerable();
-
-        if (!string.IsNullOrWhiteSpace(SelectedPart))
-        {
-            filteredItems = filteredItems.Where(item => 
-                item.PartID.Equals(SelectedPart, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (!string.IsNullOrWhiteSpace(SelectedOperation))
-        {
-            filteredItems = filteredItems.Where(item => 
-                item.Operation?.Equals(SelectedOperation, StringComparison.OrdinalIgnoreCase) == true);
-        }
-
-        foreach (var item in filteredItems)
-        {
-            InventoryItems.Add(item);
         }
     }
 

@@ -117,8 +117,9 @@
     <None Include=".github\Development-Instructions\githubworkflow.instruction.md" />
     <None Include=".github\Development-Instructions\templates-documentation.instruction.md" />
     <None Include=".github\Custom-Prompts\MTM_Hotkey_Reference.md" />
-    <None Include=".github\issues\complete-inventory-database-implementation.md" />
-    <None Include=".github\issues\update-all-instruction-files-remove-reactiveui.md" />
+    <None Include=".github\issues\implement-settings-form.md" />
+    <None Include=".github\ISSUE_TEMPLATE\implement-settings-form-mvvm-architecture.md" />
+    <None Include=".github\issues\implement-advanced-theming.md" />
     <None Include=".github\Quality-Instructions\needsrepair.instruction.md" />
     <None Include=".github\UI-Instructions\avalonia-xaml-syntax.instruction.md" />
     <None Include=".github\UI-Instructions\ui-generation.instruction.md" />

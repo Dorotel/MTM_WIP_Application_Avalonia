@@ -41,17 +41,29 @@
     <KeyBinding Gesture="Ctrl+P" Command="{Binding RemoveItemViewModel.PrintCommand}"/>
   </UserControl.KeyBindings>
 
-  <!-- MANDATORY: Viewbox wrapper for proportional scaling -->
-  <Viewbox Stretch="Uniform" StretchDirection="Both">
-    <!-- Fixed dimensions for scaling reference -->
-    <Grid Width="1200" Height="700" RowDefinitions="Auto,*,Auto" Background="{StaticResource AppBackgroundBrush}">
+  <!-- RESPONSIVE: Dynamic sizing with content-aware scaling and monitor awareness -->
+  <Viewbox Stretch="Uniform" 
+           StretchDirection="Both"
+           HorizontalAlignment="Center"
+           VerticalAlignment="Center">
+    <!-- Dynamic dimensions that adapt to content size with proper constraints -->
+    <Grid MinWidth="800" MinHeight="500" 
+          MaxWidth="1600" MaxHeight="1200"
+          Width="1200" Height="700"
+          RowDefinitions="Auto,*,Auto" 
+          Background="{StaticResource AppBackgroundBrush}"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
       
-      <!-- Header Menu with Black/Gold Branding -->
+      <!-- Header Menu with Black/Gold Branding - Auto-sizing -->
       <Border Grid.Row="0" 
               Background="{StaticResource HeaderBackgroundBrush}"
               Padding="24,8"
-              BoxShadow="0 2 8 0 #1A000000">
-        <Menu Background="Transparent" Foreground="{StaticResource LightTextBrush}">
+              BoxShadow="0 2 8 0 #1A000000"
+              HorizontalAlignment="Stretch">
+        <Menu Background="Transparent" 
+              Foreground="{StaticResource LightTextBrush}"
+              HorizontalAlignment="Left">
           <MenuItem Header="_File" Foreground="{StaticResource LightTextBrush}">
             <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
             <Separator/>
@@ -69,46 +81,78 @@
         </Menu>
       </Border>
 
-      <!-- Main Content Area -->
-      <Grid Grid.Row="1">
+      <!-- Main Content Area - Content-aware sizing with proper constraints -->
+      <Grid Grid.Row="1" 
+            HorizontalAlignment="Stretch" 
+            VerticalAlignment="Stretch"
+            MinHeight="300">
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="{Binding QuickActionsPanelWidth}"/>
+          <ColumnDefinition Width="*" MinWidth="400" MaxWidth="1200"/>
+          <ColumnDefinition Width="{Binding QuickActionsPanelWidth}" MinWidth="0" MaxWidth="400"/>
         </Grid.ColumnDefinitions>
         
-        <!-- Left Panel: Modern Tab Control with Gold Accents -->
+        <!-- Left Panel: Modern Tab Control with Gold Accents - Responsive with constraints -->
         <Border Grid.Column="0" 
                 Background="{StaticResource CardBackgroundBrush}"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
                 Margin="16"
-                BoxShadow="0 2 8 0 #11000000">
+                BoxShadow="0 2 8 0 #11000000"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                MinWidth="350"
+                MinHeight="250">
           <TabControl x:Name="MainForm_TabControl"
                       SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay, FallbackValue=0}"
-                      Background="Transparent">
+                      Background="Transparent"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      VerticalContentAlignment="Stretch">
             <TabItem Header="📦 Inventory">
-              <Border Padding="16">
-                <!-- Control_InventoryTab placeholder -->
-                <ContentControl Content="{Binding InventoryContent}"/>
+              <Border Padding="16" 
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Stretch"
+                      MinHeight="200">
+                <!-- Content stretches to fill available space with size constraints -->
+                <ContentControl Content="{Binding InventoryContent}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"/>
               </Border>
             </TabItem>
             <TabItem Header="🗑️ Remove">
-              <Border Padding="16">
-                <!-- Control_RemoveTab placeholder -->
-                <ContentControl Content="{Binding RemoveContent}"/>
+              <Border Padding="16" 
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Stretch"
+                      MinHeight="200">
+                <!-- Content stretches to fill available space with size constraints -->
+                <ContentControl Content="{Binding RemoveContent}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"/>
               </Border>
             </TabItem>
             <TabItem Header="🔄 Transfer">
-              <Border Padding="16">
-                <!-- Control_TransferTab placeholder -->
-                <ContentControl Content="{Binding TransferContent}"/>
+              <Border Padding="16" 
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Stretch"
+                      MinHeight="200">
+                <!-- Content stretches to fill available space with size constraints -->
+                <ContentControl Content="{Binding TransferContent}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"/>
               </Border>
             </TabItem>
           </TabControl>
         </Border>
 
-        <!-- Right Panel: Quick Actions with Gold Theme -->
+        <!-- Right Panel: Quick Actions with Gold Theme - Responsive with constraints -->
         <Border Grid.Column="1"
                 Background="{StaticResource CardBackgroundBrush}"
                 BorderBrush="{StaticResource BorderBrush}"
@@ -116,14 +160,28 @@
                 CornerRadius="8"
                 Margin="0,16,16,16"
                 BoxShadow="0 2 8 0 #11000000"
-                IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}">
-          <Grid ColumnDefinitions="*,Auto">
-            <!-- Quick Actions Content -->
+                IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                MinWidth="150"
+                MaxWidth="350">
+          <Grid ColumnDefinitions="*,Auto"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+            <!-- Quick Actions Content - Scrollable and resizable with constraints -->
             <Border Grid.Column="0"
                     IsVisible="{Binding IsQuickActionsPanelExpanded, FallbackValue=True}"
-                    Padding="4">
-              <ScrollViewer>
-                <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"/>
+                    Padding="4"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    MinWidth="120">
+              <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch">
+                <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Top"/>
               </ScrollViewer>
             </Border>
 
@@ -133,8 +191,10 @@
                     BorderBrush="{StaticResource BorderBrush}"
                     BorderThickness="1,0,0,0"
                     Width="32"
-                    CornerRadius="0,8,8,0">
-              <Grid RowDefinitions="*,Auto,Auto,40">
+                    CornerRadius="0,8,8,0"
+                    VerticalAlignment="Stretch">
+              <Grid RowDefinitions="*,Auto,Auto,40"
+                    VerticalAlignment="Stretch">
                 <!-- Quick Actions Icon (Blue on Gold) -->
                 <TextBlock Grid.Row="1"
                            Text=" "
@@ -146,7 +206,7 @@
                            ToolTip.Tip="Quick Actions Panel"/>
                 
                 <!-- Toggle Button -->
-                <Button Grid.Row="4"
+                <Button Grid.Row="3"
                         Command="{Binding ToggleQuickActionsPanelCommand}"
                         Width="20"
                         Height="20"
@@ -155,7 +215,7 @@
                         BorderThickness="1"
                         BorderBrush="{StaticResource BorderBrush}"
                         CornerRadius="5"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
                         Margin="6,0,6,6"
                         Cursor="Hand"
@@ -171,16 +231,21 @@
         </Border>
       </Grid>
 
-      <!-- Modern Status Bar with Black/Gold Theme -->
+      <!-- Modern Status Bar with Black/Gold Theme - Auto-sizing with constraints -->
       <Border Grid.Row="2"
               Background="{StaticResource StatusBarBackgroundBrush}"
-              Padding="24,6">
-        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="24">
+              Padding="24,6"
+              HorizontalAlignment="Stretch"
+              MinHeight="32">
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
+              ColumnSpacing="24"
+              HorizontalAlignment="Stretch">
           <!-- Connection Status with Gold Accent -->
           <Border Grid.Column="0" 
                   Background="{StaticResource PrimaryDarkBrush}"
                   Padding="8,4"
-                  CornerRadius="20">
+                  CornerRadius="20"
+                  HorizontalAlignment="Left">
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="🔗" FontSize="12"/>
               <TextBlock Text="Connection:" 
@@ -194,12 +259,13 @@
             </StackPanel>
           </Border>
 
-          <!-- Progress Bar Area -->
+          <!-- Progress Bar Area - Flexible sizing with constraints -->
           <StackPanel Grid.Column="1" 
                       Orientation="Horizontal" 
                       Spacing="12" 
                       VerticalAlignment="Center"
-                      HorizontalAlignment="Center">
+                      HorizontalAlignment="Center"
+                      MinWidth="200">
             <!-- Connection Strength -->
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="Signal" 
@@ -235,7 +301,8 @@
                   BorderBrush="{StaticResource BorderBrush}"
                   BorderThickness="1"
                   Padding="8,4"
-                  CornerRadius="4">
+                  CornerRadius="4"
+                  HorizontalAlignment="Right">
             <TextBlock Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
                        Foreground="{StaticResource PrimaryTextBrush}"
                        FontSize="11"
@@ -248,7 +315,8 @@
                      Foreground="{StaticResource LightTextBrush}"
                      Opacity="0.6"
                      FontSize="9"
-                     VerticalAlignment="Center"/>
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Right"/>
         </Grid>
       </Border>
     </Grid>

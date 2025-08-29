@@ -55,7 +55,7 @@ public interface IDatabaseService
     // Additional Master Data Operations
     Task<DataTable> GetAllLocationsAsync();
     Task<DataTable> GetAllOperationsAsync();
-    Task<DataTable> GetAllInventoryAsync();
+    Task<DataTable> GetAllPartIDsAsync();
     Task<DataTable> GetAllRolesAsync();
     
     // User Management
@@ -827,13 +827,13 @@ public class DatabaseService : IDatabaseService
     }
 
     /// <summary>
-    /// Gets all inventory using inv_inventory_Get_All stored procedure.
+    /// Gets all Part IDs using md_part_ids_Get_All stored procedure.
     /// </summary>
-    public async Task<DataTable> GetAllInventoryAsync()
+    public async Task<DataTable> GetAllPartIDsAsync()
     {
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
             _connectionString,
-            "inv_inventory_Get_All",
+            "md_part_ids_Get_All",
             new Dictionary<string, object>()
         );
 
