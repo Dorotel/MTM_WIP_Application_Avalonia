@@ -20,16 +20,32 @@
             
             <!-- Theme Selector -->
             <ComboBox x:Name="ThemeComboBox"
-                      MinWidth="120"
+                      MinWidth="160"
                       FontSize="12"
                       Padding="6,4"
                       VerticalAlignment="Center"
                       ToolTip.Tip="Select application theme">
                 
-                <!-- Hardcoded theme options for quick switcher -->
+                <!-- Core MTM Themes -->
                 <ComboBoxItem Content="MTM Light" Tag="MTM_Light"/>
                 <ComboBoxItem Content="MTM Dark" Tag="MTM_Dark"/>
-                <ComboBoxItem Content="High Contrast" Tag="MTM_HighContrast"/>
+                <ComboBoxItem Content="MTM High Contrast" Tag="MTM_HighContrast"/>
+                
+                <!-- Professional Business Themes -->
+                <ComboBoxItem Content="MTM Professional Blue" Tag="MTM_Blue"/>
+                <ComboBoxItem Content="MTM Professional Blue Dark" Tag="MTM_Blue_Dark"/>
+                <ComboBoxItem Content="MTM Success Green" Tag="MTM_Green"/>
+                <ComboBoxItem Content="MTM Success Green Dark" Tag="MTM_Green_Dark"/>
+                <ComboBoxItem Content="MTM Focus Teal" Tag="MTM_Teal"/>
+                <ComboBoxItem Content="MTM Focus Teal Dark" Tag="MTM_Teal_Dark"/>
+                
+                <!-- Manufacturing-Specialized Themes -->
+                <ComboBoxItem Content="MTM Alert Red" Tag="MTM_Red"/>
+                <ComboBoxItem Content="MTM Industrial Amber" Tag="MTM_Amber"/>
+                <ComboBoxItem Content="MTM Deep Indigo" Tag="MTM_Indigo"/>
+                <ComboBoxItem Content="MTM Deep Indigo Dark" Tag="MTM_Indigo_Dark"/>
+                <ComboBoxItem Content="MTM Soft Rose" Tag="MTM_Rose"/>
+                <ComboBoxItem Content="MTM Modern Emerald" Tag="MTM_Emerald"/>
             </ComboBox>
             
             <!-- Quick Apply Button -->

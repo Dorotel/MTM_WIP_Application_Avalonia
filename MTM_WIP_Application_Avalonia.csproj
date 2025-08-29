@@ -42,6 +42,23 @@
   <ItemGroup>
     <AvaloniaXaml Include="Resources\Themes\MTMComponents.axaml" />
     <AvaloniaXaml Include="Resources\Themes\MTMTheme.axaml" />
+    
+    <!-- All 15 Theme Files for Dynamic Switching -->
+    <AvaloniaXaml Include="Resources\Themes\MTM_Light.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Dark.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_HighContrast.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Blue.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Blue_Dark.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Green.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Green_Dark.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Red.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Teal.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Teal_Dark.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Amber.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Indigo.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Indigo_Dark.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Rose.axaml" />
+    <AvaloniaXaml Include="Resources\Themes\MTM_Emerald.axaml" />
   </ItemGroup>
 
   <ItemGroup>

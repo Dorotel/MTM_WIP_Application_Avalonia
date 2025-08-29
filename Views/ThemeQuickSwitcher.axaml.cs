@@ -141,12 +141,12 @@ public partial class ThemeQuickSwitcher : UserControl
     {
         try
         {
-            // Simplified approach - just return null for now
-            // The theme switching will fall back to basic Avalonia theme variants
-            return null;
+            // Get the service from the application's service provider via Program class
+            return Program.GetOptionalService<IThemeService>();
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Error getting ThemeService: {ex.Message}");
             return null;
         }
     }

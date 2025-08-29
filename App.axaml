@@ -17,6 +17,9 @@
         <!-- Material Icons Styles - REQUIRED for Material.Icons.Avalonia -->
         <materialIcons:MaterialIconStyles />
         
+        <!-- MTM Component Styles -->
+        <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml"/>
+        
         <!-- CRITICAL FIX: Global text control overrides to ensure visible text -->
         <!-- =================================================================== -->
         <!-- COMPREHENSIVE AVALONIA UI COMPONENT STYLES                         -->
@@ -655,7 +658,25 @@
         <!-- Include MTM Theme Resources -->
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- Core MTM Theme Resources -->
                 <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMTheme.axaml"/>
+                
+                <!-- All 15 Available Themes for Dynamic Switching -->
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Dark.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_HighContrast.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue_Dark.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green_Dark.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal_Dark.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Amber.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo_Dark.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Emerald.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <!-- Additional legacy aliases for backward compatibility -->
