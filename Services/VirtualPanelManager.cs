@@ -177,6 +177,11 @@ public class VirtualPanelManager
         _panelViewTypes["theme-builder"] = typeof(Views.SettingsForm.ThemeBuilderView);
         _panelViewTypes["shortcuts"] = typeof(Views.SettingsForm.ShortcutsView);
         _panelViewTypes["about"] = typeof(Views.SettingsForm.AboutView);
+        
+        // Additional Administrative Features
+        _panelViewTypes["system-health"] = typeof(Views.SettingsForm.SystemHealthView);
+        _panelViewTypes["backup-recovery"] = typeof(Views.SettingsForm.BackupRecoveryView);
+        _panelViewTypes["security-permissions"] = typeof(Views.SettingsForm.SecurityPermissionsView);
     }
 
     /// <summary>

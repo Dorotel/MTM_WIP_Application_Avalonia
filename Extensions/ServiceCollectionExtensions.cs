@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 using MTM_WIP_Application_Avalonia.Services;
 
 namespace MTM_Shared_Logic.Extensions;
@@ -75,6 +76,11 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<ThemeBuilderViewModel>();
         services.TryAddTransient<ShortcutsViewModel>();
         services.TryAddTransient<AboutViewModel>();
+        
+        // Additional SettingsForm ViewModels
+        services.TryAddTransient<SystemHealthViewModel>();
+        services.TryAddTransient<BackupRecoveryViewModel>();
+        services.TryAddTransient<SecurityPermissionsViewModel>();
 
         return services;
     }

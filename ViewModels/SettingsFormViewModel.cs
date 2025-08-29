@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -497,6 +498,33 @@ public class SettingsFormViewModel : BaseViewModel
             DisplayName = "About Information",
             Icon = "ℹ️",
             PanelType = typeof(AboutViewModel)
+        });
+
+        // System Health & Diagnostics
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "system-health",
+            DisplayName = "System Health & Diagnostics",
+            Icon = "🩺",
+            PanelType = typeof(SystemHealthViewModel)
+        });
+
+        // Backup & Recovery
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "backup-recovery",
+            DisplayName = "Backup & Recovery",
+            Icon = "💾",
+            PanelType = typeof(BackupRecoveryViewModel)
+        });
+
+        // Security & Permissions
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "security-permissions",
+            DisplayName = "Security & Permissions",
+            Icon = "🔒",
+            PanelType = typeof(SecurityPermissionsViewModel)
         });
 
         // Select first category by default
