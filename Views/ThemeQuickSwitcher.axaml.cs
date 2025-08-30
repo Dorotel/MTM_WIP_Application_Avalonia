@@ -38,13 +38,15 @@ public partial class ThemeQuickSwitcher : UserControl
         try
         {
             // Get services from DI container
-            // Note: This is a simplified approach. In a full implementation,
-            // you'd inject these via constructor or use a service locator pattern
+            _logger = Program.GetOptionalService<ILogger<ThemeQuickSwitcher>>();
+            _logger?.LogDebug("ThemeQuickSwitcher OnLoaded event started");
             
             InitializeEventHandlers();
+            _logger?.LogInformation("ThemeQuickSwitcher initialized successfully");
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Error initializing ThemeQuickSwitcher");
             System.Diagnostics.Debug.WriteLine($"Error initializing ThemeQuickSwitcher: {ex.Message}");
         }
     }

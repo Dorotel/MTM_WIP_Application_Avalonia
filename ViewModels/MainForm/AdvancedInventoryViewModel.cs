@@ -256,15 +256,19 @@ public class AdvancedInventoryViewModel : BaseViewModel
                 IsBusy = true;
                 StatusMessage = "Loading options...";
 
-                PartIDOptions.Clear();
-                foreach (var p in new[] { "PART001", "PART002", "PART003", "PART004", "PART005" }) PartIDOptions.Add(p);
-                OperationOptions.Clear();
-                foreach (var o in new[] { "90", "100", "110", "120", "130" }) OperationOptions.Add(o);
-                LocationOptions.Clear();
-                foreach (var l in new[] { "WC01", "WC02", "WC03", "WC04", "WC05" }) LocationOptions.Add(l);
+                // Use Task.Run for CPU-bound operations to properly make this async
+                await Task.Run(() =>
+                {
+                    PartIDOptions.Clear();
+                    foreach (var p in new[] { "PART001", "PART002", "PART003", "PART004", "PART005" }) PartIDOptions.Add(p);
+                    OperationOptions.Clear();
+                    foreach (var o in new[] { "90", "100", "110", "120", "130" }) OperationOptions.Add(o);
+                    LocationOptions.Clear();
+                    foreach (var l in new[] { "WC01", "WC02", "WC03", "WC04", "WC05" }) LocationOptions.Add(l);
 
-                AvailableLocations.Clear();
-                foreach (var l in LocationOptions) AvailableLocations.Add(l);
+                    AvailableLocations.Clear();
+                    foreach (var l in LocationOptions) AvailableLocations.Add(l);
+                });
 
                 StatusMessage = "Ready";
             }

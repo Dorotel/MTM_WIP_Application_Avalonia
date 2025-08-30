@@ -49,7 +49,12 @@ public abstract class BaseViewModel : INotifyPropertyChanged, IDisposable
     {
         if (Equals(field, value)) return false;
         
+        var oldValue = field;
         field = value;
+        
+        Logger.LogDebug("Property changed: {PropertyName} from '{OldValue}' to '{NewValue}' in {ViewModelType}", 
+            propertyName, oldValue, value, GetType().Name);
+            
         OnPropertyChanged(propertyName);
         return true;
     }
@@ -59,7 +64,16 @@ public abstract class BaseViewModel : INotifyPropertyChanged, IDisposable
     /// </summary>
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        try
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Logger.LogTrace("PropertyChanged event raised for: {PropertyName} in {ViewModelType}", propertyName, GetType().Name);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error raising PropertyChanged event for property: {PropertyName} in {ViewModelType}", propertyName, GetType().Name);
+            throw;
+        }
     }
 
     /// <summary>
