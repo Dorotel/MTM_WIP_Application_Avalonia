@@ -9,12 +9,8 @@
              x:Class="MTM_WIP_Application_Avalonia.Controls.CollapsiblePanel">
 
   <UserControl.Resources>
-    <!-- MTM Color Scheme matching your design -->
-    <SolidColorBrush x:Key="HeaderBrush" Color="#FFD700"/>           <!-- Gold/Yellow header -->
-    <SolidColorBrush x:Key="ContentBackgroundBrush" Color="#F8F9FA"/> <!-- Light gray content background -->
-    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Border color -->
-    <SolidColorBrush x:Key="AccentBrush" Color="#6B7280"/>            <!-- Icon color -->
-    <SolidColorBrush x:Key="HeaderTextBrush" Color="#000000"/>        <!-- Header text color -->
+    <!-- Use theme colors instead of hardcoded MTM colors -->
+    <!-- All colors now reference theme resources -->
   </UserControl.Resources>
 
   <!-- Use explicit template to ensure proper initialization -->
@@ -23,10 +19,10 @@
       <!-- Empty grid that gets configured dynamically by code -->
       <Grid x:Name="RootGrid">
         
-        <!-- Gold Header Bar (position determined by HeaderPosition property) -->
+        <!-- Header Bar (position determined by HeaderPosition property) -->
         <Border x:Name="HeaderArea"
-                Background="{StaticResource HeaderBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 MinWidth="40"
                 MinHeight="40">
           
@@ -45,7 +41,7 @@
                                      Kind="ChevronRight"
                                      Width="12"
                                      Height="12"
-                                     Foreground="{StaticResource AccentBrush}"/>
+                                     Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
             </Button>
             
           </Grid>
@@ -53,8 +49,8 @@
 
         <!-- Content Area (position determined by HeaderPosition property) -->
         <Border x:Name="ContentArea"
-                Background="{StaticResource ContentBackgroundBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.ContentAreas}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 Padding="16">
           <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
         </Border>

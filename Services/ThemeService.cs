@@ -40,7 +40,7 @@ public class ThemeInfo
     public string DisplayName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public bool IsDark { get; set; }
-    public string PreviewColor { get; set; } = "#4B45ED";
+    public string PreviewColor { get; set; } = "#0078D4";
 }
 
 /// <summary>
@@ -86,6 +86,7 @@ public class ThemeService : IThemeService
     private readonly IConfigurationService _configurationService;
     private readonly List<ThemeInfo> _availableThemes;
     private ThemeInfo _currentTheme;
+    private const string DEFAULT_THEME_ID = "MTMTheme"; // Default to MTMTheme.axaml
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
@@ -96,9 +97,12 @@ public class ThemeService : IThemeService
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         
         _availableThemes = InitializeThemes();
-        _currentTheme = _availableThemes.First();
         
-        _logger.LogInformation("ThemeService initialized with {ThemeCount} available themes", _availableThemes.Count);
+        // Set default theme to MTMTheme if available, otherwise first theme
+        _currentTheme = _availableThemes.FirstOrDefault(t => t.Id == DEFAULT_THEME_ID) ?? _availableThemes.First();
+        
+        _logger.LogInformation("ThemeService initialized with {ThemeCount} available themes, default theme: {DefaultTheme}", 
+            _availableThemes.Count, _currentTheme.DisplayName);
     }
 
     public string CurrentTheme => _currentTheme.Id;
@@ -177,7 +181,15 @@ public class ThemeService : IThemeService
         {
             await Task.CompletedTask; // Placeholder for async configuration access
             
-            var preferredTheme = _configurationService.GetValue("User:PreferredTheme", "MTM_Light");
+            var preferredTheme = _configurationService.GetValue("User:PreferredTheme", DEFAULT_THEME_ID);
+            
+            // Validate that the preferred theme exists
+            if (!_availableThemes.Any(t => t.Id == preferredTheme))
+            {
+                _logger.LogWarning("User preferred theme '{PreferredTheme}' not found, using default '{DefaultTheme}'", 
+                    preferredTheme, DEFAULT_THEME_ID);
+                preferredTheme = DEFAULT_THEME_ID;
+            }
             
             _logger.LogDebug("Retrieved user preferred theme: {Theme}", preferredTheme);
             return ServiceResult<string>.Success(preferredTheme);
@@ -239,39 +251,31 @@ public class ThemeService : IThemeService
     }
 
     /// <summary>
-    /// Initializes available themes.
+    /// Initializes available themes from all theme files in Resources/Themes folder.
     /// </summary>
     private List<ThemeInfo> InitializeThemes()
     {
         return new List<ThemeInfo>
         {
-            // Original MTM Themes
+            // MTM Default Theme (MTMTheme.axaml)
+            new ThemeInfo
+            {
+                Id = "MTMTheme",
+                DisplayName = "MTM Default",
+                Description = "Default MTM theme with Windows 11 style professional blue palette",
+                IsDark = false,
+                PreviewColor = "#0078D4"
+            },
+            
+            // Light Themes
             new ThemeInfo
             {
                 Id = "MTM_Light",
-                DisplayName = "MTM Light",
-                Description = "Light theme with MTM purple branding",
+                DisplayName = "MTM Light Gold",
+                Description = "Light theme with warm gold industrial palette",
                 IsDark = false,
-                PreviewColor = "#4B45ED"
+                PreviewColor = "#B8860B"
             },
-            new ThemeInfo
-            {
-                Id = "MTM_Dark",
-                DisplayName = "MTM Dark",
-                Description = "Dark theme with MTM purple branding",
-                IsDark = true,
-                PreviewColor = "#4B45ED"
-            },
-            new ThemeInfo
-            {
-                Id = "MTM_HighContrast",
-                DisplayName = "MTM High Contrast",
-                Description = "High contrast theme for accessibility",
-                IsDark = false,
-                PreviewColor = "#2D1B69"
-            },
-            
-            // Professional Color Themes
             new ThemeInfo
             {
                 Id = "MTM_Blue",
@@ -282,27 +286,11 @@ public class ThemeService : IThemeService
             },
             new ThemeInfo
             {
-                Id = "MTM_Blue_Dark",
-                DisplayName = "MTM Professional Blue Dark",
-                Description = "Dark variant of professional blue theme",
-                IsDark = true,
-                PreviewColor = "#1565C0"
-            },
-            new ThemeInfo
-            {
                 Id = "MTM_Green",
                 DisplayName = "MTM Success Green",
                 Description = "Growth and success oriented green theme",
                 IsDark = false,
                 PreviewColor = "#43A047"
-            },
-            new ThemeInfo
-            {
-                Id = "MTM_Green_Dark",
-                DisplayName = "MTM Success Green Dark",
-                Description = "Dark variant of success green theme",
-                IsDark = true,
-                PreviewColor = "#2E7D32"
             },
             new ThemeInfo
             {
@@ -322,14 +310,6 @@ public class ThemeService : IThemeService
             },
             new ThemeInfo
             {
-                Id = "MTM_Teal_Dark",
-                DisplayName = "MTM Focus Teal Dark",
-                Description = "Dark variant of focus teal theme",
-                IsDark = true,
-                PreviewColor = "#00838F"
-            },
-            new ThemeInfo
-            {
                 Id = "MTM_Amber",
                 DisplayName = "MTM Industrial Amber",
                 Description = "Warm industrial amber theme for manufacturing",
@@ -346,14 +326,6 @@ public class ThemeService : IThemeService
             },
             new ThemeInfo
             {
-                Id = "MTM_Indigo_Dark",
-                DisplayName = "MTM Deep Indigo Dark",
-                Description = "Dark variant of deep indigo theme",
-                IsDark = true,
-                PreviewColor = "#283593"
-            },
-            new ThemeInfo
-            {
                 Id = "MTM_Rose",
                 DisplayName = "MTM Soft Rose",
                 Description = "Soft and approachable rose theme",
@@ -367,6 +339,82 @@ public class ThemeService : IThemeService
                 Description = "Fresh and modern emerald theme",
                 IsDark = false,
                 PreviewColor = "#00C853"
+            },
+            
+            // Dark Variants
+            new ThemeInfo
+            {
+                Id = "MTM_Dark",
+                DisplayName = "MTM Dark",
+                Description = "Dark theme with MTM professional styling",
+                IsDark = true,
+                PreviewColor = "#4B45ED"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Light_Dark",
+                DisplayName = "MTM Light Gold Dark",
+                Description = "Dark variant of MTM Light Gold theme",
+                IsDark = true,
+                PreviewColor = "#DAA520"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Blue_Dark",
+                DisplayName = "MTM Professional Blue Dark",
+                Description = "Dark variant of professional blue theme",
+                IsDark = true,
+                PreviewColor = "#1565C0"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Green_Dark",
+                DisplayName = "MTM Success Green Dark",
+                Description = "Dark variant of success green theme",
+                IsDark = true,
+                PreviewColor = "#2E7D32"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Red_Dark",
+                DisplayName = "MTM Alert Red Dark",
+                Description = "Dark variant of alert red theme",
+                IsDark = true,
+                PreviewColor = "#C62828"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Teal_Dark",
+                DisplayName = "MTM Focus Teal Dark",
+                Description = "Dark variant of focus teal theme",
+                IsDark = true,
+                PreviewColor = "#00838F"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Indigo_Dark",
+                DisplayName = "MTM Deep Indigo Dark",
+                Description = "Dark variant of deep indigo theme",
+                IsDark = true,
+                PreviewColor = "#283593"
+            },
+            new ThemeInfo
+            {
+                Id = "MTM_Rose_Dark",
+                DisplayName = "MTM Soft Rose Dark",
+                Description = "Dark variant of soft rose theme",
+                IsDark = true,
+                PreviewColor = "#AD1457"
+            },
+            
+            // Accessibility Theme
+            new ThemeInfo
+            {
+                Id = "MTM_HighContrast",
+                DisplayName = "MTM High Contrast",
+                Description = "High contrast theme for accessibility compliance",
+                IsDark = false,
+                PreviewColor = "#000000"
             }
         };
     }
@@ -485,15 +533,5 @@ public class ThemeService : IThemeService
             _logger.LogWarning(ex, "Error clearing theme resources");
             // Don't throw - continue with theme application
         }
-    }
-
-    /// <summary>
-    /// Apply theme-specific resources to the application.
-    /// </summary>
-    private void ApplyThemeResources(string themeId)
-    {
-        // This method is now handled by LoadThemeResourcesAsync
-        // Keeping it for backward compatibility but it's deprecated
-        _logger.LogDebug("ApplyThemeResources called for {ThemeId} - delegating to LoadThemeResourcesAsync", themeId);
     }
 }

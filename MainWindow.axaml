@@ -1,24 +1,23 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
         mc:Ignorable="d"
         d:DesignWidth="1200"
-        d:DesignHeight="700"
+        d:DesignHeight="800"
         x:Class="MTM_WIP_Application_Avalonia.MainWindow"
         x:CompileBindings="True"
         x:DataType="vm:MainWindowViewModel"
         Title="MTM WIP Application"
         Width="1200"
-        Height="700"
+        Height="800"
         Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
 
-    <!-- Main Window Content with Fixed Scaling -->
-    <Border Background="{DynamicResource MTM_Shared_Logic.MainBackground}"
-            CornerRadius="0">
-        <ContentControl Content="{Binding CurrentView}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"/>
-    </Border>
+    <!-- Main Window Content with proper stretching for MainView -->
+    <ContentControl Content="{Binding CurrentView}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"/>
 </Window>
