@@ -1,4 +1,4 @@
-# MTM Theme System Implementation Guide
+﻿# MTM Theme System Implementation Guide
 
 **Generated Date**: December 19, 2024  
 **Implementation Phase**: Phase 3A - Visual Enhancement  
@@ -30,20 +30,20 @@ The MTM Theme System provides comprehensive visual branding and theming capabili
 ### **Primary Brand Colors**
 ```csharp
 // Core MTM Purple Palette
-MTM_Shared_Logic.PrimaryBrush:        #4B45ED  // Main brand purple
-MTM_Shared_Logic.SecondaryBrush:      #8345ED  // Secondary purple
-MTM_Shared_Logic.MagentaAccentBrush:  #BA45ED  // Magenta accent
-MTM_Shared_Logic.BlueAccentBrush:     #4574ED  // Blue accent
-MTM_Shared_Logic.PinkAccentBrush:     #ED45E7  // Pink accent
-MTM_Shared_Logic.LightPurpleBrush:    #B594ED  // Light purple
+MTM_Shared_Logic.PrimaryAction:        #4B45ED  // Main brand purple
+MTM_Shared_Logic.PrimaryAction:      #8345ED  // Secondary purple
+MTM_Shared_Logic.Warning:  #BA45ED  // Magenta accent
+MTM_Shared_Logic.Status:     #4574ED  // Blue accent
+MTM_Shared_Logic.Critical:     #ED45E7  // Pink accent
+MTM_Shared_Logic.Highlight:    #B594ED  // Light purple
 ```
 
 ### **Extended Palette**
 ```csharp
 // Extended Brand Colors
-MTM_Shared_Logic.PrimaryDarkBrush:      #2D1B69  // Dark purple
-MTM_Shared_Logic.PrimaryLightBrush:     #E8E5FF  // Light purple background
-MTM_Shared_Logic.PrimaryExtraLightBrush: #F8F7FF  // Extra light background
+MTM_Shared_Logic.DarkNavigation:      #2D1B69  // Dark purple
+MTM_Shared_Logic.CardBackground:     #E8E5FF  // Light purple background
+MTM_Shared_Logic.HoverBackground: #F8F7FF  // Extra light background
 ```
 
 ### **Interactive States**
@@ -191,8 +191,8 @@ await _themeService.SaveUserPreferredThemeAsync("MTM_Dark");
 // Apply custom brand colors
 var customColors = new Dictionary<string, string>
 {
-    ["MTM_Shared_Logic.PrimaryBrush"] = "#FF6B5FFF",      // Custom primary
-    ["MTM_Shared_Logic.SecondaryBrush"] = "#FF9B5FFF",    // Custom secondary
+    ["MTM_Shared_Logic.PrimaryAction"] = "#FF6B5FFF",      // Custom primary
+    ["MTM_Shared_Logic.PrimaryAction"] = "#FF9B5FFF",    // Custom secondary
     ["MTM_Shared_Logic.AccentBrush"] = "#FFCB5FFF"        // Custom accent
 };
 
@@ -209,7 +209,7 @@ await _themeService.ApplyCustomColorsAsync(customColors);
     <!-- Header -->
     <Border Grid.Row="0" Classes="mtm-header">
         <TextBlock Text="Page Title" 
-                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                    FontSize="24" FontWeight="Bold"/>
     </Border>
     
@@ -228,7 +228,7 @@ await _themeService.ApplyCustomColorsAsync(customColors);
     <!-- Footer -->
     <Border Grid.Row="2" Classes="mtm-footer">
         <TextBlock Text="Status: Ready" 
-                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
     </Border>
 </Grid>
 ```
@@ -263,10 +263,10 @@ await _themeService.ApplyCustomColorsAsync(customColors);
     <StackPanel>
         <TextBlock Text="Welcome to MTM" 
                    FontSize="32" FontWeight="Bold"
-                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
         <TextBlock Text="Inventory Management System"
                    FontSize="16" 
-                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
     </StackPanel>
 </Border>
 ```

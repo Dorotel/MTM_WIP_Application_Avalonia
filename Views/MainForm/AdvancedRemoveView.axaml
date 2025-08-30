@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -55,24 +55,24 @@
     </Style>
     
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.primary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.DarkNavigation}"/>
     </Style>
 
     <Style Selector="Button.secondary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
     <Style Selector="Button.danger">
@@ -137,7 +137,7 @@
                                             Kind="Identifier"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Part ID"/>
               </Grid>
@@ -156,7 +156,7 @@
                                             Kind="MapMarker"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Location"/>
               </Grid>
@@ -175,7 +175,7 @@
                                             Kind="Cog"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Operation"/>
               </Grid>
@@ -194,7 +194,7 @@
                                             Kind="Account"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="User"/>
               </Grid>
@@ -213,7 +213,7 @@
                                             Kind="NoteText"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Notes"/>
               </Grid>
@@ -231,7 +231,7 @@
                                             Kind="Counter"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Quantity Range"/>
               </Grid>
@@ -256,7 +256,7 @@
               <CheckBox IsChecked="{Binding UseDateRange, Mode=TwoWay}"
                         FontSize="9"
                         FontWeight="Medium"
-                        Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                         Margin="0,0,0,3"
                         ToolTip.Tip="Enable date range filtering">
                 <CheckBox.Content>
@@ -265,7 +265,7 @@
                                                 Kind="CalendarRange"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" 
                                Text="Date Range:" 
@@ -297,7 +297,7 @@
                     <materialIcons:MaterialIcon Kind="Calendar"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Center"
                                                 Margin="0,0,4,0"
@@ -322,13 +322,13 @@
                                                             Kind="CalendarStart"
                                                             Width="12"
                                                             Height="12"
-                                                            Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                             VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="1"
                                            Text="Select Start Date"
                                            FontSize="10"
                                            FontWeight="Medium"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                               </Grid>
                               <DatePicker SelectedDate="{Binding RemovalDateRangeStart, Mode=TwoWay}"
                                           FontSize="9"
@@ -361,7 +361,7 @@
                     <materialIcons:MaterialIcon Kind="Calendar"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Center"
                                                 Margin="0,0,4,0"
@@ -386,13 +386,13 @@
                                                             Kind="CalendarEnd"
                                                             Width="12"
                                                             Height="12"
-                                                            Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                             VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="1"
                                            Text="Select End Date"
                                            FontSize="10"
                                            FontWeight="Medium"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                               </Grid>
                               <DatePicker SelectedDate="{Binding RemovalDateRangeEnd, Mode=TwoWay}"
                                           FontSize="9"
@@ -422,7 +422,7 @@
           <Grid RowDefinitions="Auto,*">
             <!-- Grid Header -->
             <Border Grid.Row="0" 
-                    Background="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
+                    Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                     CornerRadius="3"
                     Padding="6,4"
                     Margin="0,0,0,4">
@@ -431,14 +431,14 @@
                                             Kind="History"
                                             Width="14"
                                             Height="14"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             Margin="0,0,4,0"/>
                 <TextBlock Grid.Column="1"
                            Text="Removal History"
                            FontSize="11"
                            FontWeight="SemiBold"
-                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                            VerticalAlignment="Center"/>
                 <StackPanel Grid.Column="2" 
                             Orientation="Horizontal" 
@@ -446,11 +446,11 @@
                   <TextBlock Text="{Binding RemovalHistoryGrid.Count}"
                              FontSize="10"
                              FontWeight="Bold"
-                             Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                              VerticalAlignment="Center"/>
                   <TextBlock Text="records"
                              FontSize="9"
-                             Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                              VerticalAlignment="Center"/>
                 </StackPanel>
               </Grid>
@@ -496,40 +496,40 @@
                                               Kind="InformationOutline"
                                               Width="12"
                                               Height="12"
-                                              Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                              Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                               VerticalAlignment="Center"/>
                   <TextBlock Grid.Column="1"
                              Text="Selected Item Details"
                              FontSize="10"
                              FontWeight="SemiBold"
-                             Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                 </Grid>
                 
                 <!-- Details when item is selected -->
                 <StackPanel Spacing="4" IsVisible="{Binding SelectedHistoryItem, Converter={x:Static ObjectConverters.IsNotNull}}">
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Part ID:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.PartID}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Part ID:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.PartID}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Operation:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Operation}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Operation:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Operation}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Quantity:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Quantity}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Quantity:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Quantity}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Location:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Location}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Location:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Location}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="User:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.User}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="User:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.User}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Date:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.DateRemoved, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Date:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.DateRemoved, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                 </StackPanel>
                 
@@ -537,7 +537,7 @@
                 <TextBlock Text="Select an item to view details"
                            FontSize="9"
                            FontStyle="Italic"
-                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                            HorizontalAlignment="Center"
                            IsVisible="{Binding SelectedHistoryItem, Converter={x:Static ObjectConverters.IsNull}}"/>
               </StackPanel>
@@ -557,13 +557,13 @@
                                               Kind="FlashOutline"
                                               Width="12"
                                               Height="12"
-                                              Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                              Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                               VerticalAlignment="Center"/>
                   <TextBlock Grid.Column="1"
                              Text="Quick Actions"
                              FontSize="10"
                              FontWeight="SemiBold"
-                             Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                 </Grid>
                 
                 <!-- Action Buttons -->
@@ -616,28 +616,28 @@
                                               Kind="ChartLine"
                                               Width="12"
                                               Height="12"
-                                              Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                              Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                               VerticalAlignment="Center"/>
                   <TextBlock Grid.Column="1"
                              Text="Summary"
                              FontSize="10"
                              FontWeight="SemiBold"
-                             Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                 </Grid>
                 
                 <!-- Statistics -->
                 <StackPanel Spacing="3">
                   <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Total Records:" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding RemovalHistoryGrid.Count}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Total Records:" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding RemovalHistoryGrid.Count}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Total Quantity:" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="0" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Total Quantity:" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="0" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Unique Parts:" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="0" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Unique Parts:" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="0" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
                   </Grid>
                 </StackPanel>
               </StackPanel>

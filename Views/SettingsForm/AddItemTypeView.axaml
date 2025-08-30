@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.AddItemTypeView">
     
@@ -8,9 +8,9 @@
             <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}" CornerRadius="8" Padding="16">
                 <StackPanel>
                     <TextBlock Text="📦 Add New Item Type" FontSize="20" FontWeight="Bold" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" HorizontalAlignment="Center"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" HorizontalAlignment="Center"/>
                     <TextBlock Text="Create new item type classifications" FontSize="14" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
 
@@ -18,7 +18,7 @@
                     BorderThickness="1" CornerRadius="8" Padding="20">
                 <StackPanel Spacing="12">
                     <TextBlock Text="📋 Type Information" FontSize="16" FontWeight="SemiBold" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}" Margin="0,0,0,8"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" Margin="0,0,0,8"/>
                     <Grid ColumnDefinitions="120,*">
                         <TextBlock Text="Type Code:" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         <TextBox Grid.Column="1" Watermark="e.g., RAW, COMP, ASSY"/>
@@ -38,7 +38,7 @@
                     BorderThickness="1" CornerRadius="8" Padding="20">
                 <StackPanel Spacing="12">
                     <TextBlock Text="📊 Classification" FontSize="16" FontWeight="SemiBold" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}" Margin="0,0,0,8"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" Margin="0,0,0,8"/>
                     <Grid ColumnDefinitions="120,*">
                         <TextBlock Text="Category:" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         <ComboBox Grid.Column="1" SelectedIndex="0">

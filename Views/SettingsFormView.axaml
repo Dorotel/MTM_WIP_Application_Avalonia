@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -21,11 +21,11 @@
                 <TextBlock Text="⚙️ Advanced Settings &amp; Administration"
                            FontSize="24"
                            FontWeight="Bold"
-                           Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                            HorizontalAlignment="Center"/>
                 <TextBlock Text="Comprehensive configuration and administrative hub"
                            FontSize="14"
-                           Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                            HorizontalAlignment="Center"
                            Margin="0,8,0,0"/>
             </StackPanel>
@@ -46,12 +46,12 @@
                 <Grid RowDefinitions="Auto,*">
                     <!-- Navigator Header -->
                     <Border Grid.Row="0"
-                            Background="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
+                            Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                             CornerRadius="8,8,0,0"
                             Padding="12">
                         <TextBlock Text="📂 Settings Categories"
                                    FontWeight="SemiBold"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                    FontSize="14"/>
                     </Border>
                     
@@ -84,7 +84,7 @@
                                                        VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding DisplayName}"
                                                        FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                                        VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Border>
@@ -106,7 +106,7 @@
                 <Grid RowDefinitions="Auto,*">
                     <!-- Content Header -->
                     <Border Grid.Row="0"
-                            Background="{DynamicResource MTM_Shared_Logic.SecondaryBrush}"
+                            Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
                             CornerRadius="8,8,0,0"
                             Padding="20,12">
                         <Grid ColumnDefinitions="*,Auto">
@@ -117,7 +117,7 @@
                                 <TextBlock Text="{Binding SelectedCategory.DisplayName}"
                                            FontSize="18"
                                            FontWeight="SemiBold"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                            VerticalAlignment="Center"/>
                             </StackPanel>
                             
@@ -129,7 +129,7 @@
                                     IsVisible="{Binding HasUnsavedChanges}">
                                 <TextBlock Text="● Unsaved Changes"
                                            FontSize="12"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                            FontWeight="SemiBold"/>
                             </Border>
                         </Grid>
@@ -159,7 +159,7 @@
                 <!-- Status Message -->
                 <TextBlock Grid.Column="0"
                            Text="{Binding CurrentStatusMessage}"
-                           Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
                            VerticalAlignment="Center"/>
                 
                 <!-- Loading Indicator -->
@@ -174,7 +174,7 @@
                                  VerticalAlignment="Center"/>
                     <TextBlock Text="Processing..."
                                FontSize="12"
-                               Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
                                VerticalAlignment="Center"/>
                 </StackPanel>
                 

@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.ThemeBuilderView">
     
@@ -14,11 +14,11 @@
                     <TextBlock Text="🎨 Advanced Theme Builder"
                                FontSize="20"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Customize the application appearance with live preview"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                HorizontalAlignment="Center"
                                Margin="0,4,0,0"/>
                 </StackPanel>
@@ -35,7 +35,7 @@
                     <TextBlock Text="👁️ Current Theme Preview"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <!-- Preview Area -->
@@ -50,7 +50,7 @@
                             <!-- Sample UI Elements -->
                             <StackPanel Grid.Column="0" Spacing="8">
                                 <TextBlock Text="Sample Text"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                                 <Button Content="Primary Button"
                                         Classes="mtm-primary"
                                         Height="32"/>
@@ -60,7 +60,7 @@
                             
                             <StackPanel Grid.Column="1" Spacing="8">
                                 <TextBlock Text="Secondary Text"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
+                                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
                                 <Button Content="Secondary Button"
                                         Classes="mtm-secondary"
                                         Height="32"/>
@@ -94,7 +94,7 @@
                     <TextBlock Text="🎨 Base Theme"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <Grid ColumnDefinitions="*,*,*">
@@ -123,7 +123,7 @@
                     <TextBlock Text="🌈 Color Customization"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <!-- Primary Colors -->
@@ -228,7 +228,7 @@
                     <TextBlock Text="🔤 Typography Settings"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <!-- Font Family -->
@@ -281,7 +281,7 @@
                     <TextBlock Text="💾 Custom Theme Management"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <!-- Theme Name -->

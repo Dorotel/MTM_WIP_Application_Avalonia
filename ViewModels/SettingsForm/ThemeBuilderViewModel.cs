@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -347,12 +347,12 @@ public class ThemeBuilderViewModel : BaseViewModel
         {
             var colorOverrides = new Dictionary<string, string>
             {
-                ["MTM_Shared_Logic.PrimaryBrush"] = PrimaryColor.ToString(),
-                ["MTM_Shared_Logic.SecondaryBrush"] = SecondaryColor.ToString(),
+                ["MTM_Shared_Logic.PrimaryAction"] = PrimaryColor.ToString(),
+                ["MTM_Shared_Logic.SecondaryAction"] = SecondaryColor.ToString(),
                 ["MTM_Shared_Logic.AccentBrush"] = AccentColor.ToString(),
                 ["MTM_Shared_Logic.BackgroundBrush"] = BackgroundColor.ToString(),
                 ["MTM_Shared_Logic.SurfaceBrush"] = SurfaceColor.ToString(),
-                ["MTM_Shared_Logic.PrimaryTextBrush"] = TextColor.ToString(),
+                ["MTM_Shared_Logic.HeadingText"] = TextColor.ToString(),
                 ["MTM_Shared_Logic.BorderBrush"] = BorderColor.ToString()
             };
 

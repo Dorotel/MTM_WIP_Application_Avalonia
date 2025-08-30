@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.EditOperationView">
     
@@ -8,9 +8,9 @@
             <Border Background="{DynamicResource MTM_Shared_Logic.AccentBrush}" CornerRadius="8" Padding="16">
                 <StackPanel>
                     <TextBlock Text="✏️ Edit Operation Details" FontSize="20" FontWeight="Bold" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" HorizontalAlignment="Center"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" HorizontalAlignment="Center"/>
                     <TextBlock Text="Modify existing operation parameters" FontSize="14" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
 
@@ -18,7 +18,7 @@
                     BorderThickness="1" CornerRadius="8" Padding="20">
                 <StackPanel Spacing="12">
                     <TextBlock Text="🔍 Operation Selection" FontSize="16" FontWeight="SemiBold" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}" Margin="0,0,0,8"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" Margin="0,0,0,8"/>
                     <Grid ColumnDefinitions="120,*">
                         <TextBlock Text="Select Operation:" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         <ComboBox Grid.Column="1" SelectedIndex="0">
@@ -34,7 +34,7 @@
                     BorderThickness="1" CornerRadius="8" Padding="20">
                 <StackPanel Spacing="12">
                     <TextBlock Text="📋 Operation Information" FontSize="16" FontWeight="SemiBold" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}" Margin="0,0,0,8"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" Margin="0,0,0,8"/>
                     <Grid ColumnDefinitions="120,*">
                         <TextBlock Text="Operation Name:" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         <TextBox Grid.Column="1" Text="Cutting Operation"/>

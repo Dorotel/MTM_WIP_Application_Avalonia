@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -38,13 +38,13 @@
           MaxWidth="1600" MaxHeight="1200"
           Width="1200" Height="700"
           RowDefinitions="Auto,*,Auto" 
-          Background="{DynamicResource MTM_Shared_Logic.AppBackgroundBrush}"
+          Background="{DynamicResource MTM_Shared_Logic.MainBackground}"
           HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
       
       <!-- Header Menu with Black/Gold Branding - Auto-sizing -->
       <Border Grid.Row="0" 
-              Background="{DynamicResource MTM_Shared_Logic.HeaderBackgroundBrush}"
+              Background="{DynamicResource MTM_Shared_Logic.PageHeaders}"
               Padding="24,8"
               BoxShadow="0 2 8 0 #1A000000"
               HorizontalAlignment="Stretch">
@@ -52,19 +52,19 @@
           <!-- Left side: Menu -->
           <Menu Grid.Column="0"
                 Background="Transparent" 
-                Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                 HorizontalAlignment="Left">
-            <MenuItem Header="_File" Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}">
+            <MenuItem Header="_File" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}">
               <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
               <Separator/>
               <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
             </MenuItem>
-            <MenuItem Header="_View" Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}">
+            <MenuItem Header="_View" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}">
               <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
             </MenuItem>
             <!-- Development builds only -->
             <MenuItem Header="_Help" 
-                      Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                      Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                       IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
               <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
             </MenuItem>
@@ -184,7 +184,7 @@
 
             <!-- Collapsible Vertical Header Bar with Gold Theme -->
             <Border Grid.Column="1"
-                    Background="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
+                    Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                     BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                     BorderThickness="1,0,0,0"
                     Width="32"
@@ -196,7 +196,7 @@
                 <TextBlock Grid.Row="1"
                            Text=" "
                            FontSize="16"
-                           Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Margin="0,0,0,6"
@@ -208,7 +208,7 @@
                         Width="20"
                         Height="20"
                         Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                        Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                         BorderThickness="1"
                         BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                         CornerRadius="5"
@@ -239,18 +239,18 @@
               HorizontalAlignment="Stretch">
           <!-- Connection Status with Gold Accent -->
           <Border Grid.Column="0" 
-                  Background="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"
+                  Background="{DynamicResource MTM_Shared_Logic.DarkNavigation}"
                   Padding="8,4"
                   CornerRadius="20"
                   HorizontalAlignment="Left">
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="🔗" FontSize="12"/>
               <TextBlock Text="Connection:" 
-                         Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
                          Opacity="0.8"
                          FontSize="11"/>
               <TextBlock Text="{Binding ConnectionStatus, FallbackValue='Connected', TargetNullValue='Unknown'}"
-                         Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
+                         Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                          FontWeight="SemiBold"
                          FontSize="11"/>
             </StackPanel>
@@ -266,28 +266,28 @@
             <!-- Connection Strength -->
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="Signal" 
-                         Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
                          Opacity="0.8"
                          FontSize="10"/>
               <ProgressBar Minimum="0" Maximum="100" 
                            Width="80" Height="6" 
                            Value="{Binding ConnectionStrength, FallbackValue=100}"
-                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
-                           Background="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                           Background="{DynamicResource MTM_Shared_Logic.DarkNavigation}"
                            CornerRadius="3"/>
             </StackPanel>
 
             <!-- Main Progress -->
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="Progress" 
-                         Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
                          Opacity="0.8"
                          FontSize="10"/>
               <ProgressBar Minimum="0" Maximum="100"
                            Width="100" Height="6"
                            Value="{Binding ProgressValue, FallbackValue=0}"
-                           Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
-                           Background="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                           Background="{DynamicResource MTM_Shared_Logic.DarkNavigation}"
                            CornerRadius="3"/>
             </StackPanel>
           </StackPanel>
@@ -301,7 +301,7 @@
                   CornerRadius="4"
                   HorizontalAlignment="Right">
             <TextBlock Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
-                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                        FontSize="11"
                        VerticalAlignment="Center"/>
           </Border>
@@ -309,7 +309,7 @@
           <!-- Version Info -->
           <TextBlock Grid.Column="3"
                      Text="MTM WIP v1.0"
-                     Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                     Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                      Opacity="0.6"
                      FontSize="9"
                      VerticalAlignment="Center"

@@ -95,9 +95,9 @@ namespace MTM_WIP_Application_Avalonia
                         // Show startup dialog on UI thread
                         await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
                         {
-                            _logger?.LogDebug("Showing startup dialog on UI thread");
-                            await StartupDialog.ShowStartupInfoAsync(configuration);
-                            _logger?.LogDebug("Startup dialog completed");
+                           // _logger?.LogDebug("Showing startup dialog on UI thread");
+                           // await StartupDialog.ShowStartupInfoAsync(configuration);
+                           // _logger?.LogDebug("Startup dialog completed");
                         });
                     });
                 }

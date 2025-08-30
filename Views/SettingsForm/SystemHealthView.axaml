@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -19,11 +19,11 @@
                     <TextBlock Text="🩺 System Health &amp; Diagnostics"
                                FontSize="20"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Monitor system status, performance, and troubleshoot issues"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                HorizontalAlignment="Center"
                                Margin="0,4,0,0"/>
                 </StackPanel>
@@ -41,14 +41,14 @@
                                Text="🗄️ Database Connection"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,12"/>
                     
                     <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0" Spacing="8">
                             <TextBlock Text="{Binding DatabaseConnectionStatus}"
                                        FontSize="14"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
+                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
                             
                             <Border Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
                                     CornerRadius="12"
@@ -57,7 +57,7 @@
                                     IsVisible="{Binding IsDatabaseConnected}">
                                 <TextBlock Text="● Connected"
                                            FontSize="12"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                            FontWeight="SemiBold"/>
                             </Border>
                             
@@ -68,7 +68,7 @@
                                     IsVisible="{Binding !IsDatabaseConnected}">
                                 <TextBlock Text="● Disconnected"
                                            FontSize="12"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                            FontWeight="SemiBold"/>
                             </Border>
                         </StackPanel>
@@ -96,7 +96,7 @@
                                    Text="📊 System Performance Metrics"
                                    FontSize="16"
                                    FontWeight="SemiBold"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                                   Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                         
                         <Button Grid.Column="1"
                                 Content="🔄 Refresh"
@@ -128,7 +128,7 @@
                                                        FontSize="16"/>
                                             <TextBlock Text="{Binding Name}"
                                                        FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                                         </StackPanel>
                                         
                                         <TextBlock Text="{Binding Value}"
@@ -138,7 +138,7 @@
                                         
                                         <TextBlock Text="{Binding Timestamp, StringFormat='Updated: {0:HH:mm:ss}'}"
                                                    FontSize="10"
-                                                   Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
+                                                   Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -159,7 +159,7 @@
                                Text="💻 System Information"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,12"/>
                     
                     <Grid Grid.Row="1" ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto,Auto">
@@ -167,27 +167,27 @@
                         <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4">
                             <TextBlock Text="⚡ Performance"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
+                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
                             <TextBlock Text="{Binding SystemPerformance}"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                         </StackPanel>
                         
                         <!-- Memory Usage -->
                         <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4">
                             <TextBlock Text="💾 Memory"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
+                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
                             <TextBlock Text="{Binding MemoryUsage}"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                         </StackPanel>
                         
                         <!-- Log File Size -->
                         <StackPanel Grid.Column="2" Grid.Row="0" Spacing="4">
                             <TextBlock Text="📄 Logs"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
+                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
                             <TextBlock Text="{Binding LogFileSize}"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -205,7 +205,7 @@
                                Text="📋 Recent Log Entries"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,12"/>
                     
                     <ScrollViewer Grid.Row="1" 
@@ -224,7 +224,7 @@
                                                        Text="{Binding FormattedTimestamp}"
                                                        FontSize="12"
                                                        FontFamily="Consolas,Courier New"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"/>
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
                                             
                                             <Border Grid.Column="1"
                                                     Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
@@ -234,13 +234,13 @@
                                                 <TextBlock Text="{Binding Level}"
                                                            FontSize="10"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
                                             </Border>
                                             
                                             <TextBlock Grid.Column="2"
                                                        Text="{Binding Message}"
                                                        FontSize="12"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                                        TextWrapping="Wrap"/>
                                         </Grid>
                                     </Border>
@@ -283,7 +283,7 @@
                                  Width="120"
                                  Height="6"/>
                     <TextBlock Text="Running diagnostics..."
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                FontWeight="SemiBold"/>
                 </StackPanel>
             </Border>

@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.EditPartView">
     
@@ -14,11 +14,11 @@
                     <TextBlock Text="✏️ Edit Part Information"
                                FontSize="20"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Modify existing part details and specifications"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                HorizontalAlignment="Center"
                                Margin="0,4,0,0"/>
                 </StackPanel>
@@ -35,7 +35,7 @@
                     <TextBlock Text="🔍 Part Selection"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <Grid ColumnDefinitions="120,*,Auto">
@@ -61,7 +61,7 @@
                     <TextBlock Text="📋 Part Information"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <StackPanel Spacing="8" Margin="0,12,0,0">

@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -21,7 +21,7 @@
     <Style Selector="TextBox.input-field">
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
     <!-- Error state styling - Color only -->
@@ -33,7 +33,7 @@
     <Style Selector="AutoCompleteBox.input-field">
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
     <!-- Error state styling for AutoCompleteBox - Color only -->
@@ -48,22 +48,22 @@
 
     <!-- Button Color Themes -->
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
     </Style>
     <Style Selector="Button.primary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.DarkNavigation}"/>
     </Style>
 
     <Style Selector="Button.secondary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
     </Style>
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.LightTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
     </Style>
 
     <!-- Error message color styling -->
@@ -137,14 +137,14 @@
                                         Kind="Identifier"
                                         Width="10"
                                         Height="10"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Part ID"/>
             <TextBlock Grid.Column="1"
                        Text="Part ID:"
                        FontSize="9"
                        VerticalAlignment="Center"
-                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <AutoCompleteBox x:Name="PartAutoCompleteBox"
                           ItemsSource="{Binding PartIds}"
@@ -168,14 +168,14 @@
                                         Kind="Cog"
                                         Width="10"
                                         Height="10"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Operation"/>
             <TextBlock Grid.Column="1"
                        Text="Operation:"
                        FontSize="9"
                        VerticalAlignment="Center"
-                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <AutoCompleteBox x:Name="OperationAutoCompleteBox"
                           ItemsSource="{Binding Operations}"
@@ -199,14 +199,14 @@
                                         Kind="MapMarker"
                                         Width="10"
                                         Height="10"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Location"/>
             <TextBlock Grid.Column="1"
                        Text="Location:"
                        FontSize="9"
                        VerticalAlignment="Center"
-                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <AutoCompleteBox x:Name="LocationAutoCompleteBox"
                           ItemsSource="{Binding Locations}"
@@ -230,14 +230,14 @@
                                         Kind="Counter"
                                         Width="10"
                                         Height="10"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Quantity"/>
             <TextBlock Grid.Column="1"
                        Text="Quantity:"
                        FontSize="9"
                        VerticalAlignment="Center"
-                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <TextBox x:Name="QuantityTextBox"
                    Text="{Binding Quantity, Mode=TwoWay}"
@@ -256,7 +256,7 @@
                                         Kind="NoteText"
                                         Width="10"
                                         Height="10"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.AccentTextBrush}"
+                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Top"
                                         Margin="0,4,0,0"
                                         ToolTip.Tip="Notes"/>
@@ -264,7 +264,7 @@
                        Text="Notes:"
                        FontSize="9"
                        VerticalAlignment="Center"
-                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"/>
+                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <TextBox x:Name="NotesTextBox"
                    Text="{Binding Notes, Mode=TwoWay}"
@@ -364,7 +364,7 @@
           <!-- Version info -->
           <TextBlock Text="{Binding VersionText}"
                      FontSize="8"
-                     Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                     Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                      Opacity="0.7"
                      VerticalAlignment="Center"/>
         </StackPanel>

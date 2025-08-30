@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.ShortcutsView">
     
@@ -14,11 +14,11 @@
                     <TextBlock Text="⌨️ Keyboard Shortcuts Configuration"
                                FontSize="20"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Customize keyboard shortcuts for faster navigation and operations"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.LightTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                HorizontalAlignment="Center"
                                Margin="0,4,0,0"/>
                 </StackPanel>
@@ -60,7 +60,7 @@
                     <TextBlock Text="🧭 Navigation Shortcuts"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <!-- Shortcut Items -->
@@ -112,7 +112,7 @@
                     <TextBlock Text="📦 Inventory Operations"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <Grid ColumnDefinitions="250,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
@@ -190,7 +190,7 @@
                     <TextBlock Text="⚙️ Global Shortcut Settings"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryTextBrush}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                                Margin="0,0,0,8"/>
                     
                     <CheckBox Content="Enable keyboard shortcuts" IsChecked="True"/>
