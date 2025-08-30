@@ -82,13 +82,13 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = userId
+                ["p_User"] = userId
             };
 
             try
             {
-                // Use proper stored procedure execution with status handling
-                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                // Note: qb_quickbuttons_Get_ByUser doesn't follow MTM status pattern, use direct execution
+                var dataTable = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                     _databaseService.GetConnectionString(),
                     "qb_quickbuttons_Get_ByUser",
                     parameters
@@ -96,17 +96,17 @@ public class QuickButtonsService : IQuickButtonsService
 
                 var quickButtons = new List<QuickButtonData>();
 
-                if (result.IsSuccess && result.Data != null && result.Data.Rows.Count > 0)
+                if (dataTable != null && dataTable.Rows.Count > 0)
                 {
                     // Log available columns for debugging
-                    if (result.Data.Columns.Count > 0)
+                    if (dataTable.Columns.Count > 0)
                     {
-                        var columnNames = string.Join(", ", result.Data.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
+                        var columnNames = string.Join(", ", dataTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
                         _logger.LogDebug("Available columns in qb_quickbuttons_Get_ByUser result: {Columns}", columnNames);
                     }
 
                     // Convert DataTable rows to QuickButtonData objects
-                    foreach (DataRow row in result.Data.Rows)
+                    foreach (DataRow row in dataTable.Rows)
                     {
                         quickButtons.Add(new QuickButtonData
                         {
@@ -117,14 +117,10 @@ public class QuickButtonsService : IQuickButtonsService
                             Operation = SafeGetString(row, "Operation"),
                             Quantity = SafeGetInt32(row, "Quantity", 0),
                             Notes = SafeGetString(row, "Notes"),
-                            CreatedDate = SafeGetDateTime(row, "CreatedDate") ?? DateTime.Now,
-                            LastUsedDate = SafeGetDateTime(row, "LastUsedDate") ?? DateTime.Now
+                            CreatedDate = SafeGetDateTime(row, "DateCreated") ?? DateTime.Now,
+                            LastUsedDate = SafeGetDateTime(row, "DateModified") ?? SafeGetDateTime(row, "DateCreated") ?? DateTime.Now
                         });
                     }
-                }
-                else if (!result.IsSuccess)
-                {
-                    _logger.LogWarning("Failed to load quick buttons: {Message}", result.Message);
                 }
                 
                 _logger.LogInformation("Loaded {Count} quick buttons for user {UserId}", quickButtons.Count, userId);
@@ -169,64 +165,56 @@ public class QuickButtonsService : IQuickButtonsService
 
             _logger.LogInformation("Calling stored procedure sys_last_10_transactions_Get_ByUser with UserId: {UserId}, Limit: 10", userId);
 
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                 _databaseService.GetConnectionString(),
                 "sys_last_10_transactions_Get_ByUser",
                 parameters
             );
 
-            _logger.LogInformation("Stored procedure returned - Status: {Status}, Message: {Message}, RowCount: {RowCount}", 
-                result.Status, result.Message, result.Data?.Rows.Count ?? 0);
+            _logger.LogInformation("Stored procedure returned {RowCount} rows", result?.Rows.Count ?? 0);
 
             var transactions = new List<QuickButtonData>();
 
-            if (result.IsSuccess && result.Data != null && result.Data.Rows.Count > 0)
+            if (result != null && result.Rows.Count > 0)
             {
-                _logger.LogInformation("Processing {RowCount} rows from stored procedure result", result.Data.Rows.Count);
+                _logger.LogInformation("Processing {RowCount} rows from stored procedure result", result.Rows.Count);
 
                 // Log available columns for debugging
-                if (result.Data.Columns.Count > 0)
+                if (result.Columns.Count > 0)
                 {
-                    var columnNames = string.Join(", ", result.Data.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
+                    var columnNames = string.Join(", ", result.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
                     _logger.LogDebug("Available columns: {Columns}", columnNames);
                 }
 
                 // Convert DataTable rows to QuickButtonData objects
-                for (int i = 0; i < result.Data.Rows.Count; i++)
+                for (int i = 0; i < result.Rows.Count; i++)
                 {
-                    var row = result.Data.Rows[i];
+                    var row = result.Rows[i];
                     
                     // Log the row data for debugging
-                    _logger.LogDebug("Row {Index}: ID={ID}, PartID={PartID}, Operation={Operation}, Quantity={Quantity}", 
-                        i, SafeGetColumnValue(row, "ID"), SafeGetColumnValue(row, "PartID"), 
-                        SafeGetColumnValue(row, "Operation"), SafeGetColumnValue(row, "Quantity"));
+                    _logger.LogDebug("Row {Index}: PartID={PartID}, Operation={Operation}, Quantity={Quantity}", 
+                        i, SafeGetColumnValue(row, "PartID"), SafeGetColumnValue(row, "Operation"), 
+                        SafeGetColumnValue(row, "Quantity"));
                     
                     transactions.Add(new QuickButtonData
                     {
-                        Id = SafeGetInt32(row, "ID", i + 1),
+                        Id = i + 1, // Use row index + 1 as ID for transactions
                         UserId = userId,
-                        Position = SafeGetInt32(row, "Position", i + 1), // Use row index + 1 as fallback position
+                        Position = i + 1, // Use row index + 1 as position
                         PartId = SafeGetString(row, "PartID"),
                         Operation = SafeGetString(row, "Operation"),
                         Quantity = SafeGetInt32(row, "Quantity", 0),
                         Notes = SafeGetString(row, "Notes"),
-                        CreatedDate = SafeGetDateTime(row, "CreatedDate") ?? SafeGetDateTime(row, "ReceiveDate") ?? DateTime.Now,
-                        LastUsedDate = SafeGetDateTime(row, "LastUsedDate") ?? SafeGetDateTime(row, "ReceiveDate") ?? DateTime.Now
+                        CreatedDate = SafeGetDateTime(row, "ReceiveDate") ?? DateTime.Now,
+                        LastUsedDate = SafeGetDateTime(row, "ReceiveDate") ?? DateTime.Now
                     });
                 }
                 Debug.WriteLine($"Loaded {transactions.Count} transactions for user {userId}");
                 _logger.LogInformation("Successfully loaded {Count} recent transactions for user {UserId}", transactions.Count, userId);
             }
-            else if (!result.IsSuccess)
-            {
-                _logger.LogWarning("Stored procedure failed for user {UserId}: Status={Status}, Message={Message}", 
-                    userId, result.Status, result.Message);
-                Debug.WriteLine($"Stored procedure failed: {result.Message}");
-            }
             else
             {
-                _logger.LogInformation("Stored procedure succeeded but returned no data for user {UserId}. Status={Status}, Message={Message}", 
-                    userId, result.Status, result.Message);
+                _logger.LogInformation("Stored procedure returned no data for user {UserId}", userId);
                 Debug.WriteLine("No transactions found.");
             }
 
@@ -329,12 +317,13 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = quickButton.UserId,
+                ["p_User"] = quickButton.UserId,
                 ["p_Position"] = quickButton.Position,
                 ["p_PartID"] = quickButton.PartId,
+                ["p_Location"] = quickButton.Notes ?? string.Empty, // Use Notes field as Location for now
                 ["p_Operation"] = quickButton.Operation,
                 ["p_Quantity"] = quickButton.Quantity,
-                ["p_Notes"] = quickButton.Notes ?? string.Empty
+                ["p_ItemType"] = "Standard" // Default item type since we don't have this in QuickButtonData
             };
 
             // Use the proper stored procedure execution method that handles OUT parameters
@@ -378,12 +367,12 @@ public class QuickButtonsService : IQuickButtonsService
     {
         try
         {
-            _logger.LogDebug("Removing quick button: ID {ButtonId} for user {UserId}", buttonId, userId);
+            _logger.LogDebug("Removing quick button: Position {ButtonId} for user {UserId}", buttonId, userId);
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_ButtonID"] = buttonId,
-                ["p_UserID"] = userId
+                ["p_User"] = userId,
+                ["p_Position"] = buttonId // buttonId is actually the position in this context
             };
 
             // Use the proper stored procedure execution method that handles OUT parameters
@@ -428,7 +417,7 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = userId
+                ["p_User"] = userId
             };
 
             // Use the proper stored procedure execution method that handles OUT parameters
@@ -479,12 +468,13 @@ public class QuickButtonsService : IQuickButtonsService
             {
                 var parameters = new Dictionary<string, object>
                 {
-                    ["p_UserID"] = userId,
+                    ["p_User"] = userId,
                     ["p_Position"] = button.Position,
                     ["p_PartID"] = button.PartId,
+                    ["p_Location"] = button.Notes ?? string.Empty, // Use Notes field as Location for now
                     ["p_Operation"] = button.Operation,
                     ["p_Quantity"] = button.Quantity,
-                    ["p_Notes"] = button.Notes ?? string.Empty
+                    ["p_ItemType"] = "Standard" // Default item type since we don't have this in QuickButtonData
                 };
 
                 // Use the proper stored procedure execution method that handles OUT parameters
@@ -536,10 +526,17 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = userId,
+                ["p_TransactionType"] = "IN", // Default transaction type based on user intent
+                ["p_BatchNumber"] = DateTime.Now.ToString("yyyyMMddHHmmss"), // Generate batch number
                 ["p_PartID"] = partId,
+                ["p_FromLocation"] = DBNull.Value,
+                ["p_ToLocation"] = DBNull.Value,
                 ["p_Operation"] = operation,
-                ["p_Quantity"] = quantity
+                ["p_Quantity"] = quantity,
+                ["p_Notes"] = DBNull.Value,
+                ["p_User"] = userId,
+                ["p_ItemType"] = "Standard", // Default item type
+                ["p_ReceiveDate"] = DateTime.Now
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(

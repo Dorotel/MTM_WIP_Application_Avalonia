@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -12,10 +12,10 @@
         Title="MTM WIP Application"
         Width="1200"
         Height="700"
-        Background="{DynamicResource MTM_Shared_Logic.AppBackgroundBrush}">
+        Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
 
     <!-- Main Window Content with Fixed Scaling -->
-    <Border Background="{DynamicResource MTM_Shared_Logic.AppBackgroundBrush}"
+    <Border Background="{DynamicResource MTM_Shared_Logic.MainBackground}"
             CornerRadius="0">
         <ContentControl Content="{Binding CurrentView}"
                         HorizontalAlignment="Stretch"

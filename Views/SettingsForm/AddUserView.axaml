@@ -1,0 +1,208 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.AddUserView">
+    
+    <!-- Add User Panel -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+        <StackPanel Spacing="16" MaxWidth="600">
+            
+            <!-- Header -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel>
+                    <TextBlock Text="👤 Add New User"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Create a new user account with access permissions"
+                               FontSize="14"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- User Information Form -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="16">
+                    <TextBlock Text="📋 User Information"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,8"/>
+                    
+                    <!-- Username -->
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Text="Username:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <TextBox Grid.Column="1"
+                                 Watermark="Enter username (required)"
+                                 Text=""/>
+                    </Grid>
+                    
+                    <!-- Full Name -->
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Text="Full Name:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <TextBox Grid.Column="1"
+                                 Watermark="Enter full name"
+                                 Text=""/>
+                    </Grid>
+                    
+                    <!-- Email -->
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Text="Email:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <TextBox Grid.Column="1"
+                                 Watermark="user@company.com"
+                                 Text=""/>
+                    </Grid>
+                    
+                    <!-- Password -->
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Text="Password:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <TextBox Grid.Column="1"
+                                 Watermark="Enter password"
+                                 PasswordChar="●"
+                                 Text=""/>
+                    </Grid>
+                    
+                    <!-- Confirm Password -->
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Text="Confirm Password:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <TextBox Grid.Column="1"
+                                 Watermark="Confirm password"
+                                 PasswordChar="●"
+                                 Text=""/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- User Permissions -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="16">
+                    <TextBlock Text="🔐 Access Permissions"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,8"/>
+                    
+                    <!-- Role Selection -->
+                    <Grid ColumnDefinitions="140,*">
+                        <TextBlock Text="User Role:"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                        <ComboBox Grid.Column="1"
+                                  SelectedIndex="0">
+                            <ComboBoxItem Content="Operator - Basic access"/>
+                            <ComboBoxItem Content="Supervisor - Moderate access"/>
+                            <ComboBoxItem Content="Manager - Full access"/>
+                            <ComboBoxItem Content="Administrator - System access"/>
+                        </ComboBox>
+                    </Grid>
+                    
+                    <!-- Permission Checkboxes -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Specific Permissions:"
+                                   FontWeight="SemiBold"
+                                   Margin="0,8,0,4"/>
+                        
+                        <CheckBox Content="📦 View Inventory" IsChecked="True"/>
+                        <CheckBox Content="➕ Add Items" IsChecked="True"/>
+                        <CheckBox Content="✏️ Edit Items" IsChecked="False"/>
+                        <CheckBox Content="🗑️ Remove Items" IsChecked="False"/>
+                        <CheckBox Content="📊 View Reports" IsChecked="True"/>
+                        <CheckBox Content="⚙️ System Settings" IsChecked="False"/>
+                        <CheckBox Content="👥 User Management" IsChecked="False"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Account Settings -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="⚙️ Account Settings"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,8"/>
+                    
+                    <CheckBox Content="🔓 Account Enabled" IsChecked="True"/>
+                    <CheckBox Content="🔄 Must Change Password on First Login" IsChecked="True"/>
+                    <CheckBox Content="📧 Send Welcome Email" IsChecked="True"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12"
+                        HorizontalAlignment="Center"
+                        Margin="0,16,0,0">
+                
+                <Button Content="💾 Create User"
+                        Classes="mtm-primary"
+                        MinWidth="120"
+                        Height="36"/>
+                
+                <Button Content="🔄 Reset Form"
+                        Classes="mtm-secondary"
+                        MinWidth="100"
+                        Height="36"/>
+                
+                <Button Content="❌ Cancel"
+                        Classes="mtm-light"
+                        MinWidth="80"
+                        Height="36"/>
+            </StackPanel>
+
+            <!-- Placeholder Notice -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12"
+                    Margin="0,16,0,0">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="ℹ️"
+                               FontSize="14"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="This is a placeholder interface. Full functionality will be implemented with backend integration."
+                               FontSize="12"
+                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

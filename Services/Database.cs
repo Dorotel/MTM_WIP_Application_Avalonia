@@ -276,7 +276,7 @@ public class DatabaseService : IDatabaseService
 
     /// <summary>
     /// Gets the last 10 transactions for a user.
-    /// This stored procedure may have variable parameter requirements, so we try different approaches.
+    /// This stored procedure doesn't follow MTM status pattern, so we use direct execution.
     /// </summary>
     public async Task<DataTable> GetLastTransactionsForUserAsync(string? userId = null, int limit = 10)
     {
@@ -287,12 +287,10 @@ public class DatabaseService : IDatabaseService
 
         try
         {
-            // Try approach 1: Call with all possible parameters that the SP might expect
             var parameters = new Dictionary<string, object>
             {
                 ["p_UserID"] = currentUser,
-                ["p_Limit"] = limit,
-                ["p_Status"] = "ALL" // Add the missing parameter with a default value
+                ["p_Limit"] = limit
             };
 
             return await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
@@ -301,65 +299,24 @@ public class DatabaseService : IDatabaseService
                 parameters
             );
         }
-        catch (Exception ex1)
+        catch (Exception ex)
         {
-            _logger.LogWarning("First attempt failed, trying without p_Status parameter: {Error}", ex1.Message);
+            _logger.LogError(ex, "Failed to get transactions for user: {UserId}", currentUser);
             
-            try
-            {
-                // Try approach 2: Call with just the basic parameters
-                var basicParameters = new Dictionary<string, object>
-                {
-                    ["p_UserID"] = currentUser,
-                    ["p_Limit"] = limit
-                };
-
-                return await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
-                    _connectionString,
-                    "sys_last_10_transactions_Get_ByUser",
-                    basicParameters
-                );
-            }
-            catch (Exception ex2)
-            {
-                _logger.LogWarning("Second attempt failed, trying direct SQL approach: {Error}", ex2.Message);
-                
-                try
-                {
-                    // Try approach 3: Use CALL statement directly to bypass parameter validation
-                    var directQuery = "CALL sys_last_10_transactions_Get_ByUser(@p_UserID, @p_Limit)";
-                    var directParameters = new Dictionary<string, object>
-                    {
-                        ["p_UserID"] = currentUser,
-                        ["p_Limit"] = limit
-                    };
-
-                    var result = await ExecuteQueryAsync(directQuery, directParameters);
-                    _logger.LogDebug("Retrieved {RowCount} transactions for user {UserId} using direct CALL", 
-                        result.Rows.Count, currentUser);
-                    return result;
-                }
-                catch (Exception ex3)
-                {
-                    _logger.LogError("All approaches failed for getting transactions");
-                    
-                    // Use fully qualified namespace for ErrorHandling service
-                    await Services.ErrorHandling.HandleErrorAsync(ex3, "GetLastTransactionsForUserAsync", Environment.UserName, 
-                        new Dictionary<string, object> 
-                        { 
-                            ["UserId"] = userId ?? "", 
-                            ["Limit"] = limit,
-                            ["Operation"] = "GetLastTransactions",
-                            ["Service"] = "DatabaseService",
-                            ["StoredProcedure"] = "sys_last_10_transactions_Get_ByUser",
-                            ["AttemptedApproaches"] = "WithStatus,BasicParams,DirectCall"
-                        });
-                    
-                    // Return empty DataTable rather than throwing, so the UI doesn't crash
-                    _logger.LogWarning("Returning empty DataTable due to stored procedure failures");
-                    return new DataTable();
-                }
-            }
+            // Use fully qualified namespace for ErrorHandling service
+            await Services.ErrorHandling.HandleErrorAsync(ex, "GetLastTransactionsForUserAsync", Environment.UserName, 
+                new Dictionary<string, object> 
+                { 
+                    ["UserId"] = userId ?? "", 
+                    ["Limit"] = limit,
+                    ["Operation"] = "GetLastTransactions",
+                    ["Service"] = "DatabaseService",
+                    ["StoredProcedure"] = "sys_last_10_transactions_Get_ByUser"
+                });
+            
+            // Return empty DataTable rather than throwing, so the UI doesn't crash
+            _logger.LogWarning("Returning empty DataTable due to stored procedure failure");
+            return new DataTable();
         }
     }
 
@@ -786,7 +743,7 @@ public class DatabaseService : IDatabaseService
     {
         var parameters = new Dictionary<string, object>
         {
-            ["p_Type"] = itemType
+            ["p_ItemType"] = itemType
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -879,7 +836,7 @@ public class DatabaseService : IDatabaseService
     {
         var parameters = new Dictionary<string, object>
         {
-            ["p_User"] = username
+            ["p_Username"] = username
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -898,7 +855,7 @@ public class DatabaseService : IDatabaseService
     {
         var parameters = new Dictionary<string, object>
         {
-            ["p_User"] = username
+            ["p_Username"] = username
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -907,7 +864,13 @@ public class DatabaseService : IDatabaseService
             parameters
         );
 
-        return result.IsSuccess && result.Data.Rows.Count > 0;
+        if (result.IsSuccess && result.Data.Rows.Count > 0)
+        {
+            var userExists = Convert.ToInt32(result.Data.Rows[0]["UserExists"]);
+            return userExists > 0;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -977,7 +940,7 @@ public class DatabaseService : IDatabaseService
     {
         var parameters = new Dictionary<string, object>
         {
-            ["p_User"] = username
+            ["p_Username"] = username
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(

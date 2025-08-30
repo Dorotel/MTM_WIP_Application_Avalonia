@@ -15,7 +15,7 @@ using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class TransactionHistoryViewModel : BaseViewModel, INotifyPropertyChanged
+public class TransactionHistoryViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
@@ -416,6 +416,4 @@ public class TransactionHistoryViewModel : BaseViewModel, INotifyPropertyChanged
                 new Dictionary<string, object> { ["Operation"] = "ExecuteExportAsync" });
         }
     }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 }

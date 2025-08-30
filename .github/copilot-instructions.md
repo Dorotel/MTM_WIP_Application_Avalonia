@@ -91,10 +91,58 @@ services.TryAddScoped<IDatabaseService, DatabaseService>();
 ### Database Access Pattern (CRITICAL)
 ```csharp
 // CORRECT: Use stored procedures only via Database service
+// Inventory Operations
+var parameters = new Dictionary<string, object>
+{
+    ["p_PartID"] = partId,
+    ["p_Location"] = location,
+    ["p_Operation"] = operation,
+    ["p_Quantity"] = quantity,
+    ["p_ItemType"] = itemType,
+    ["p_User"] = user,
+    ["p_Notes"] = notes ?? DBNull.Value
+};
+
 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
     connectionString,
     "inv_inventory_Add_Item",
     parameters
+);
+
+// Master Data Operations
+var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    connectionString,
+    "md_part_ids_Get_All",
+    new Dictionary<string, object>()
+);
+
+// User Management Operations
+var userParams = new Dictionary<string, object>
+{
+    ["p_Username"] = username,
+    ["p_FirstName"] = firstName,
+    ["p_LastName"] = lastName,
+    ["p_Email"] = email,
+    ["p_Role"] = role,
+    ["p_IssuedBy"] = issuedBy
+};
+
+var userResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    connectionString,
+    "usr_users_Add",
+    userParams
+);
+
+// QuickButton Operations (Note: Get operation doesn't follow MTM status pattern)
+var quickButtonParams = new Dictionary<string, object>
+{
+    ["p_User"] = userId
+};
+
+var quickButtons = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+    connectionString,
+    "qb_quickbuttons_Get_ByUser",
+    quickButtonParams
 );
 
 // WRONG: Never use direct SQL

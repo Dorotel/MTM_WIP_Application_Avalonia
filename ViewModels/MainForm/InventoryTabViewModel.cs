@@ -49,12 +49,13 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     public ObservableCollection<string> Locations { get; } = new();
 
     // Commands using standard ICommand interface
-    public ICommand SaveCommand { get; private set; }
-    public ICommand ResetCommand { get; private set; }
-    public ICommand AdvancedEntryCommand { get; private set; }
-    public ICommand TogglePanelCommand { get; private set; }
-    public ICommand LoadDataCommand { get; private set; }
-    public ICommand RefreshDataCommand { get; private set; }
+    // Commands - initialized with default values to satisfy nullable analysis
+    public ICommand SaveCommand { get; private set; } = default!;
+    public ICommand ResetCommand { get; private set; } = default!;
+    public ICommand AdvancedEntryCommand { get; private set; } = default!;
+    public ICommand TogglePanelCommand { get; private set; } = default!;
+    public ICommand LoadDataCommand { get; private set; } = default!;
+    public ICommand RefreshDataCommand { get; private set; } = default!;
 
     // Events for integration with other components
     public event EventHandler<InventorySavedEventArgs>? SaveCompleted;

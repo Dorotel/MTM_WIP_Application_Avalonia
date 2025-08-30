@@ -551,7 +551,7 @@ public class AdvancedRemoveViewModel : BaseViewModel
             {
                 ID = item.ID,
                 PartID = item.PartID,
-                Operation = item.Operation,
+                Operation = item.Operation ?? string.Empty,
                 Location = item.Location,
                 Quantity = item.Quantity,
                 User = item.User,
