@@ -28,26 +28,87 @@ public partial class ThemeQuickSwitcher : UserControl
         }
         
         Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
     }
 
     /// <summary>
     /// Initialize services when control is loaded.
     /// </summary>
-    private void OnLoaded(object? sender, RoutedEventArgs e)
+    private async void OnLoaded(object? sender, RoutedEventArgs e)
     {
         try
         {
             // Get services from DI container
             _logger = Program.GetOptionalService<ILogger<ThemeQuickSwitcher>>();
+            _themeService = Program.GetOptionalService<IThemeService>();
+            
             _logger?.LogDebug("ThemeQuickSwitcher OnLoaded event started");
             
+            await InitializeThemeDropdownAsync();
             InitializeEventHandlers();
-            _logger?.LogInformation("ThemeQuickSwitcher initialized successfully");
+            
+            _logger?.LogInformation("ThemeQuickSwitcher initialized successfully with {ThemeCount} themes", 
+                ThemeComboBox?.Items.Count ?? 0);
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error initializing ThemeQuickSwitcher");
             System.Diagnostics.Debug.WriteLine($"Error initializing ThemeQuickSwitcher: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Initialize the theme dropdown with available themes and set current selection.
+    /// </summary>
+    private async System.Threading.Tasks.Task InitializeThemeDropdownAsync()
+    {
+        try
+        {
+            if (_themeService != null && ThemeComboBox != null)
+            {
+                // Get current theme and set selection
+                var currentTheme = _themeService.CurrentTheme;
+                
+                // Find the matching ComboBoxItem by Tag
+                var matchingItem = ThemeComboBox.Items.OfType<ComboBoxItem>()
+                    .FirstOrDefault(item => item.Tag?.ToString() == currentTheme);
+                
+                if (matchingItem != null)
+                {
+                    ThemeComboBox.SelectedItem = matchingItem;
+                    _logger?.LogDebug("Set current theme selection to: {ThemeId}", currentTheme);
+                }
+                else
+                {
+                    // Fallback to first item if current theme not found
+                    ThemeComboBox.SelectedIndex = 0;
+                    _logger?.LogWarning("Current theme {ThemeId} not found in dropdown, defaulting to first item", currentTheme);
+                }
+
+                // Subscribe to theme changes from service
+                _themeService.ThemeChanged += OnThemeServiceChanged;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error initializing theme dropdown");
+        }
+    }
+
+    /// <summary>
+    /// Handle theme changes from the theme service.
+    /// </summary>
+    private void OnThemeServiceChanged(object? sender, ThemeChangedEventArgs e)
+    {
+        try
+        {
+            // Update dropdown selection when theme changes externally
+            SetSelectedTheme(e.NewTheme.Id);
+            _logger?.LogDebug("Updated dropdown selection due to external theme change: {ThemeId}", e.NewTheme.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling theme service change event");
         }
     }
 
@@ -85,50 +146,62 @@ public partial class ThemeQuickSwitcher : UserControl
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Error in apply button click handler");
             System.Diagnostics.Debug.WriteLine($"Error applying theme: {ex.Message}");
         }
     }
 
     /// <summary>
-    /// Handle theme selection change.
+    /// Handle theme selection change - could implement instant preview here.
     /// </summary>
     private void OnThemeSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        // You could implement immediate theme preview here
         // For now, we require explicit Apply button click
+        // Could implement instant theme preview here in the future
+        _logger?.LogDebug("Theme selection changed in dropdown");
     }
 
     /// <summary>
-    /// Apply the selected theme.
+    /// Apply the selected theme using the ThemeService.
     /// </summary>
     private async System.Threading.Tasks.Task ApplyThemeAsync(string themeId)
     {
         try
         {
-            // Try to get theme service from application services
-            _themeService ??= GetThemeService();
-            
+            _logger?.LogInformation("Applying theme: {ThemeId}", themeId);
+
             if (_themeService != null)
             {
+                // Use the ThemeService to apply the theme
                 var result = await _themeService.SetThemeAsync(themeId);
                 
                 if (result.IsSuccess)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Theme applied successfully: {themeId}");
+                    _logger?.LogInformation("Theme applied successfully: {ThemeId} - {Message}", themeId, result.Message);
+                    
+                    // Save user preference if successful
+                    var saveResult = await _themeService.SaveUserPreferredThemeAsync(themeId);
+                    if (!saveResult.IsSuccess)
+                    {
+                        _logger?.LogWarning("Failed to save theme preference: {Message}", saveResult.Message);
+                    }
                 }
                 else
                 {
+                    _logger?.LogWarning("Failed to apply theme {ThemeId}: {Message}", themeId, result.Message);
                     System.Diagnostics.Debug.WriteLine($"Failed to apply theme: {result.Message}");
                 }
             }
             else
             {
+                _logger?.LogWarning("ThemeService not available, falling back to basic theme switching");
                 // Fallback: Apply basic theme switching via Avalonia's built-in mechanism
                 ApplyBasicTheme(themeId);
             }
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Error in ApplyThemeAsync for theme {ThemeId}", themeId);
             System.Diagnostics.Debug.WriteLine($"Error in ApplyThemeAsync: {ex.Message}");
             
             // Fallback to basic theme switching
@@ -137,24 +210,8 @@ public partial class ThemeQuickSwitcher : UserControl
     }
 
     /// <summary>
-    /// Get theme service from application services.
-    /// </summary>
-    private IThemeService? GetThemeService()
-    {
-        try
-        {
-            // Get the service from the application's service provider via Program class
-            return Program.GetOptionalService<IThemeService>();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error getting ThemeService: {ex.Message}");
-            return null;
-        }
-    }
-
-    /// <summary>
     /// Apply basic theme switching using Avalonia's built-in theme variants.
+    /// This is a fallback when ThemeService is not available.
     /// </summary>
     private void ApplyBasicTheme(string themeId)
     {
@@ -168,11 +225,13 @@ public partial class ThemeQuickSwitcher : UserControl
                 
                 Avalonia.Application.Current.RequestedThemeVariant = themeVariant;
                 
+                _logger?.LogInformation("Applied basic theme variant: {ThemeVariant} for theme {ThemeId}", themeVariant, themeId);
                 System.Diagnostics.Debug.WriteLine($"Applied basic theme variant: {themeVariant}");
             }
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Error applying basic theme for {ThemeId}", themeId);
             System.Diagnostics.Debug.WriteLine($"Error applying basic theme: {ex.Message}");
         }
     }
@@ -190,7 +249,33 @@ public partial class ThemeQuickSwitcher : UserControl
             if (matchingItem != null)
             {
                 ThemeComboBox.SelectedItem = matchingItem;
+                _logger?.LogDebug("Updated ComboBox selection to theme: {ThemeId}", themeId);
             }
+            else
+            {
+                _logger?.LogWarning("Could not find ComboBoxItem for theme: {ThemeId}", themeId);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Cleanup resources when the control is unloaded.
+    /// </summary>
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            // Unsubscribe from theme service events
+            if (_themeService != null)
+            {
+                _themeService.ThemeChanged -= OnThemeServiceChanged;
+            }
+
+            _logger?.LogDebug("ThemeQuickSwitcher unloaded and cleaned up");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error during ThemeQuickSwitcher cleanup");
         }
     }
 }

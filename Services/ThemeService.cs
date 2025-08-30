@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using Avalonia.Styling;
 using Microsoft.Extensions.Logging;
 
@@ -375,20 +376,22 @@ public class ThemeService : IThemeService
     /// </summary>
     private async Task ApplyThemeToApplicationAsync(ThemeInfo theme)
     {
-        await Task.CompletedTask; // Placeholder for async theme application
-        
         try
         {
-            if (Application.Current == null) return;
+            if (Application.Current == null) 
+            {
+                _logger.LogWarning("Application.Current is null, cannot apply theme");
+                return;
+            }
+
+            await Task.CompletedTask; // Make this actually async for future enhancements
 
             // Set the theme variant based on theme
             var themeVariant = theme.IsDark ? ThemeVariant.Dark : ThemeVariant.Light;
             Application.Current.RequestedThemeVariant = themeVariant;
 
-            // Apply theme-specific resource overrides
-            // Since all theme resources are loaded, we can dynamically change the active theme
-            // by updating the resource priority or by creating a new resource dictionary
-            ApplyThemeResources(theme.Id);
+            // Apply theme-specific resource file
+            await LoadThemeResourcesAsync(theme.Id);
             
             _logger.LogDebug("Applied theme variant: {Variant} for theme: {Theme}", themeVariant, theme.DisplayName);
         }
@@ -400,26 +403,97 @@ public class ThemeService : IThemeService
     }
 
     /// <summary>
+    /// Load theme-specific resources from the Resources/Themes folder.
+    /// </summary>
+    private async Task LoadThemeResourcesAsync(string themeId)
+    {
+        try
+        {
+            if (Application.Current?.Resources == null) 
+            {
+                _logger.LogWarning("Application resources not available");
+                return;
+            }
+
+            await Task.CompletedTask; // Make this actually async for future enhancements
+
+            // Build the resource URI for the specific theme
+            var themeResourceUri = new Uri($"avares://MTM_WIP_Application_Avalonia/Resources/Themes/{themeId}.axaml");
+            
+            try
+            {
+                // Load the theme resource dictionary using AvaloniaXamlLoader
+                var themeResources = new ResourceDictionary();
+                
+                try 
+                {
+                    // Try to load the resource dictionary directly
+                    themeResources = (ResourceDictionary)AvaloniaXamlLoader.Load(themeResourceUri);
+                    
+                    // Clear existing theme-specific resources and add new ones
+                    ClearThemeResources();
+                    
+                    // Merge the new theme resources
+                    Application.Current.Resources.MergedDictionaries.Add(themeResources);
+                    
+                    _logger.LogInformation("Successfully loaded theme resources from: {Uri}", themeResourceUri);
+                }
+                catch (Exception loadEx)
+                {
+                    _logger.LogWarning(loadEx, "Could not load theme resource file {Uri}, theme files may not exist yet", themeResourceUri);
+                    // Don't throw - this allows fallback to basic theme variant switching
+                }
+            }
+            catch (Exception resourceEx)
+            {
+                _logger.LogWarning(resourceEx, "Could not load theme resource file {Uri}, using basic theme switching", themeResourceUri);
+                // Don't throw - this allows fallback to basic theme variant switching
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in LoadThemeResourcesAsync for theme {ThemeId}", themeId);
+            // Don't throw - allow basic theme switching to work
+        }
+    }
+
+    /// <summary>
+    /// Clear existing theme-specific resources to prevent conflicts.
+    /// </summary>
+    private void ClearThemeResources()
+    {
+        try
+        {
+            if (Application.Current?.Resources?.MergedDictionaries == null) return;
+
+            // Remove any existing theme resource dictionaries
+            // We identify them by checking if they contain MTM theme keys
+            var themeResourceDictionaries = Application.Current.Resources.MergedDictionaries
+                .Where(dict => dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out _) || 
+                              dict.TryGetResource("MTM_Shared_Logic.CardBackgroundBrush", null, out _))
+                .ToList();
+
+            foreach (var themeDict in themeResourceDictionaries)
+            {
+                Application.Current.Resources.MergedDictionaries.Remove(themeDict);
+            }
+
+            _logger.LogDebug("Cleared {Count} existing theme resource dictionaries", themeResourceDictionaries.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error clearing theme resources");
+            // Don't throw - continue with theme application
+        }
+    }
+
+    /// <summary>
     /// Apply theme-specific resources to the application.
     /// </summary>
     private void ApplyThemeResources(string themeId)
     {
-        try
-        {
-            if (Application.Current?.Resources == null) return;
-
-            // Create a new resource dictionary for the specific theme
-            var themeResourceUri = new Uri($"avares://MTM_WIP_Application_Avalonia/Resources/Themes/{themeId}.axaml");
-            
-            // For Avalonia, we'll use a different approach since all resources are already loaded
-            // We can trigger a theme change by updating specific resource keys or refreshing the application
-            
-            _logger.LogDebug("Applied theme resources for: {ThemeId}", themeId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Error applying theme resources for {ThemeId}", themeId);
-            // Don't throw - fallback to basic theme variant switching
-        }
+        // This method is now handled by LoadThemeResourcesAsync
+        // Keeping it for backward compatibility but it's deprecated
+        _logger.LogDebug("ApplyThemeResources called for {ThemeId} - delegating to LoadThemeResourcesAsync", themeId);
     }
 }

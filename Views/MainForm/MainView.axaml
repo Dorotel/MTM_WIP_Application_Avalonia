@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -12,9 +12,131 @@
              x:DataType="vm:MainViewViewModel">
 
   <UserControl.Resources>
-    <!-- Theme resources will be provided by DynamicResource bindings -->
-    <!-- Remove hardcoded colors and use theme resources from App.axaml -->
+    <!-- Resources are now provided by DynamicResource bindings from MTM_Amber.axaml -->
   </UserControl.Resources>
+
+  <UserControl.Styles>
+    <!-- Custom TabControl styling with MTM Amber theme and animations -->
+    <Style Selector="TabControl">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <!-- TabItem header styling with industrial design -->
+    <Style Selector="TabItem">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Margin" Value="0,0,4,0"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <!-- Custom TabItem header with MTM industrial styling -->
+    <Style Selector="TabItem /template/ Border#PART_HeaderBorder">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
+      <Setter Property="BorderThickness" Value="1,1,1,0"/>
+      <Setter Property="CornerRadius" Value="8,8,0,0"/>
+      <Setter Property="Padding" Value="16,12"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="0:0:0.3"/>
+          <BrushTransition Property="BorderBrush" Duration="0:0:0.3"/>
+          <ThicknessTransition Property="BorderThickness" Duration="0:0:0.2"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <!-- Selected TabItem gets the MTM amber gradient highlight with animation -->
+    <Style Selector="TabItem:selected /template/ Border#PART_HeaderBorder">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="BorderThickness" Value="2,2,2,0"/>
+      <Setter Property="BoxShadow" Value="0 -2 8 0 #33FF8F00"/>
+    </Style>
+
+    <!-- Hover effect for non-selected tabs -->
+    <Style Selector="TabItem:pointerover:not(:selected) /template/ Border#PART_HeaderBorder">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+    </Style>
+
+    <!-- Tab content area styling -->
+    <Style Selector="TabControl /template/ Border#PART_ContentBorder">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="BorderThickness" Value="2,0,2,2"/>
+      <Setter Property="CornerRadius" Value="0,8,8,8"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <!-- Animated text styling for selected tabs -->
+    <Style Selector="TabItem:selected TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="RenderTransform" Value="scale(1.05)"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Foreground" Duration="0:0:0.3"/>
+          <TransformTransition Property="RenderTransform" Duration="0:0:0.4" Easing="0.2,0.9,0.2,1"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <!-- Non-selected tab text styling with smooth transitions -->
+    <Style Selector="TabItem:not(:selected) TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="RenderTransform" Value="scale(1.0)"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Foreground" Duration="0:0:0.3"/>
+          <TransformTransition Property="RenderTransform" Duration="0:0:0.4" Easing="0.2,0.9,0.2,1"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <!-- Animated icon styling for selected tabs -->
+    <Style Selector="TabItem:selected Border">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="RenderTransform" Value="scale(1.1) rotate(5deg)"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="0:0:0.3"/>
+          <TransformTransition Property="RenderTransform" Duration="0:0:0.5" Easing="0.68,-0.55,0.27,1.55"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <!-- Non-selected icon styling with smooth transitions -->
+    <Style Selector="TabItem:not(:selected) Border">
+      <Setter Property="RenderTransform" Value="scale(1.0) rotate(0deg)"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="0:0:0.3"/>
+          <TransformTransition Property="RenderTransform" Duration="0:0:0.5" Easing="0.68,-0.55,0.27,1.55"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <!-- Hover animations for icons -->
+    <Style Selector="TabItem:pointerover:not(:selected) Border">
+      <Setter Property="RenderTransform" Value="scale(1.05) rotate(2deg)"/>
+    </Style>
+
+    <!-- Hover animations for text -->
+    <Style Selector="TabItem:pointerover:not(:selected) TextBlock">
+      <Setter Property="RenderTransform" Value="scale(1.02)"/>
+    </Style>
+
+    <!-- Pulse animation for selected tab icon -->
+    <Style Selector="TabItem:selected Border TextBlock">
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformTransition Property="RenderTransform" Duration="0:0:0.6" Easing="0.25,0.46,0.45,0.94"/>
+        </Transitions>
+      </Setter>
+    </Style>
+  </UserControl.Styles>
 
   <!-- Keyboard shortcuts -->
   <UserControl.KeyBindings>
@@ -42,9 +164,9 @@
           HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
       
-      <!-- Header Menu with Black/Gold Branding - Auto-sizing -->
+      <!-- Header Menu with MTM Amber Branding - Auto-sizing -->
       <Border Grid.Row="0" 
-              Background="{DynamicResource MTM_Shared_Logic.PageHeaders}"
+              Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
               Padding="24,8"
               BoxShadow="0 2 8 0 #1A000000"
               HorizontalAlignment="Stretch">
@@ -88,14 +210,14 @@
           <ColumnDefinition Width="{Binding QuickActionsPanelWidth}" MinWidth="0" MaxWidth="400"/>
         </Grid.ColumnDefinitions>
         
-        <!-- Left Panel: Modern Tab Control with Gold Accents - Responsive with constraints -->
+        <!-- Left Panel: Modern Tab Control with MTM Amber Theme - Responsive with constraints -->
         <Border Grid.Column="0" 
                 Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                BorderThickness="1"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                BorderThickness="2"
                 CornerRadius="8"
                 Margin="16"
-                BoxShadow="0 2 8 0 #11000000"
+                BoxShadow="0 4 12 0 #22000000"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 MinWidth="350"
@@ -107,11 +229,34 @@
                       VerticalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch"
                       VerticalContentAlignment="Stretch">
-            <TabItem Header="📦 Inventory">
+            
+            <!-- Inventory Tab with MTM styling and animations -->
+            <TabItem>
+              <TabItem.Header>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                          CornerRadius="8"
+                          Width="20"
+                          Height="20"
+                          RenderTransformOrigin="0.5,0.5">
+                    <TextBlock Text="📦" 
+                               FontSize="12" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center"
+                               RenderTransformOrigin="0.5,0.5"/>
+                  </Border>
+                  <TextBlock Text="Inventory" 
+                             FontSize="14" 
+                             FontWeight="SemiBold"
+                             VerticalAlignment="Center"
+                             RenderTransformOrigin="0.5,0.5"/>
+                </StackPanel>
+              </TabItem.Header>
               <Border Padding="16" 
                       HorizontalAlignment="Stretch" 
                       VerticalAlignment="Stretch"
-                      MinHeight="200">
+                      MinHeight="200"
+                      Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}">
                 <!-- Content stretches to fill available space with size constraints -->
                 <ContentControl Content="{Binding InventoryContent}"
                                 HorizontalAlignment="Stretch"
@@ -120,11 +265,34 @@
                                 VerticalContentAlignment="Stretch"/>
               </Border>
             </TabItem>
-            <TabItem Header="🗑️ Remove">
+            
+            <!-- Remove Tab with MTM styling and animations -->
+            <TabItem>
+              <TabItem.Header>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Border Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                          CornerRadius="8"
+                          Width="20"
+                          Height="20"
+                          RenderTransformOrigin="0.5,0.5">
+                    <TextBlock Text="🗑️" 
+                               FontSize="12" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center"
+                               RenderTransformOrigin="0.5,0.5"/>
+                  </Border>
+                  <TextBlock Text="Remove" 
+                             FontSize="14" 
+                             FontWeight="SemiBold"
+                             VerticalAlignment="Center"
+                             RenderTransformOrigin="0.5,0.5"/>
+                </StackPanel>
+              </TabItem.Header>
               <Border Padding="16" 
                       HorizontalAlignment="Stretch" 
                       VerticalAlignment="Stretch"
-                      MinHeight="200">
+                      MinHeight="200"
+                      Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}">
                 <!-- Content stretches to fill available space with size constraints -->
                 <ContentControl Content="{Binding RemoveContent}"
                                 HorizontalAlignment="Stretch"
@@ -133,11 +301,34 @@
                                 VerticalContentAlignment="Stretch"/>
               </Border>
             </TabItem>
-            <TabItem Header="🔄 Transfer">
+            
+            <!-- Transfer Tab with MTM styling and animations -->
+            <TabItem>
+              <TabItem.Header>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Border Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                          CornerRadius="8"
+                          Width="20"
+                          Height="20"
+                          RenderTransformOrigin="0.5,0.5">
+                    <TextBlock Text="🔄" 
+                               FontSize="12" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center"
+                               RenderTransformOrigin="0.5,0.5"/>
+                  </Border>
+                  <TextBlock Text="Transfer" 
+                             FontSize="14" 
+                             FontWeight="SemiBold"
+                             VerticalAlignment="Center"
+                             RenderTransformOrigin="0.5,0.5"/>
+                </StackPanel>
+              </TabItem.Header>
               <Border Padding="16" 
                       HorizontalAlignment="Stretch" 
                       VerticalAlignment="Stretch"
-                      MinHeight="200">
+                      MinHeight="200"
+                      Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}">
                 <!-- Content stretches to fill available space with size constraints -->
                 <ContentControl Content="{Binding TransferContent}"
                                 HorizontalAlignment="Stretch"
@@ -149,14 +340,14 @@
           </TabControl>
         </Border>
 
-        <!-- Right Panel: Quick Actions with Gold Theme - Responsive with constraints -->
+        <!-- Right Panel: Quick Actions with MTM Amber Theme - Responsive with constraints -->
         <Border Grid.Column="1"
                 Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                BorderThickness="1"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                BorderThickness="2"
                 CornerRadius="8"
                 Margin="0,16,16,16"
-                BoxShadow="0 2 8 0 #11000000"
+                BoxShadow="0 4 12 0 #22000000"
                 IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -182,43 +373,50 @@
               </ScrollViewer>
             </Border>
 
-            <!-- Collapsible Vertical Header Bar with Gold Theme -->
+            <!-- Collapsible Vertical Header Bar with MTM Amber Theme -->
             <Border Grid.Column="1"
-                    Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
                     BorderThickness="1,0,0,0"
-                    Width="32"
+                    Width="36"
                     CornerRadius="0,8,8,0"
                     VerticalAlignment="Stretch">
-              <Grid RowDefinitions="*,Auto,Auto,40"
+              <Grid RowDefinitions="*,Auto,Auto,50"
                     VerticalAlignment="Stretch">
-                <!-- Quick Actions Icon (Blue on Gold) -->
-                <TextBlock Grid.Row="1"
-                           Text=" "
-                           FontSize="16"
-                           Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Margin="0,0,0,6"
-                           ToolTip.Tip="Quick Actions Panel"/>
+                <!-- Quick Actions Icon with MTM styling -->
+                <Border Grid.Row="1"
+                        Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                        CornerRadius="12"
+                        Width="24"
+                        Height="24"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,8">
+                  <TextBlock Text="⚡"
+                             FontSize="14"
+                             Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             ToolTip.Tip="Quick Actions Panel"/>
+                </Border>
                 
-                <!-- Toggle Button -->
+                <!-- Toggle Button with MTM styling -->
                 <Button Grid.Row="3"
                         Command="{Binding ToggleQuickActionsPanelCommand}"
-                        Width="20"
-                        Height="20"
+                        Width="24"
+                        Height="24"
                         Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                         BorderThickness="1"
-                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                        CornerRadius="5"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
+                        CornerRadius="6"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
-                        Margin="6,0,6,6"
+                        Margin="6,0,6,12"
                         Cursor="Hand"
                         ToolTip.Tip="Toggle Quick Actions Panel">
                   <TextBlock Text="{Binding QuickActionsCollapseButtonIcon, FallbackValue='◄', TargetNullValue='◄'}"
-                             FontSize="10"
+                             FontSize="12"
+                             FontWeight="Bold"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"/>
                 </Button>
@@ -228,92 +426,102 @@
         </Border>
       </Grid>
 
-      <!-- Modern Status Bar with Black/Gold Theme - Auto-sizing with constraints -->
+      <!-- Modern Status Bar with MTM Amber Theme - Auto-sizing with constraints -->
       <Border Grid.Row="2"
-              Background="{DynamicResource MTM_Shared_Logic.StatusBarBackgroundBrush}"
-              Padding="24,6"
+              Background="{DynamicResource MTM_Shared_Logic.FooterBackgroundBrush}"
+              Padding="24,8"
               HorizontalAlignment="Stretch"
-              MinHeight="32">
+              MinHeight="36">
         <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
               ColumnSpacing="24"
               HorizontalAlignment="Stretch">
-          <!-- Connection Status with Gold Accent -->
+          <!-- Connection Status with MTM Amber styling -->
           <Border Grid.Column="0" 
-                  Background="{DynamicResource MTM_Shared_Logic.DarkNavigation}"
-                  Padding="8,4"
-                  CornerRadius="20"
+                  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                  Padding="12,6"
+                  CornerRadius="16"
                   HorizontalAlignment="Left">
-            <StackPanel Orientation="Horizontal" Spacing="6">
-              <TextBlock Text="🔗" FontSize="12"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Border Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                      CornerRadius="8"
+                      Width="16"
+                      Height="16">
+                <TextBlock Text="🔗" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Border>
               <TextBlock Text="Connection:" 
                          Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
-                         Opacity="0.8"
-                         FontSize="11"/>
+                         FontSize="11"
+                         FontWeight="Medium"/>
               <TextBlock Text="{Binding ConnectionStatus, FallbackValue='Connected', TargetNullValue='Unknown'}"
-                         Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                         FontWeight="Bold"
                          FontSize="11"/>
             </StackPanel>
           </Border>
 
-          <!-- Progress Bar Area - Flexible sizing with constraints -->
+          <!-- Progress Bar Area - Flexible sizing with MTM theme -->
           <StackPanel Grid.Column="1" 
                       Orientation="Horizontal" 
-                      Spacing="12" 
+                      Spacing="16" 
                       VerticalAlignment="Center"
                       HorizontalAlignment="Center"
                       MinWidth="200">
-            <!-- Connection Strength -->
-            <StackPanel Orientation="Horizontal" Spacing="6">
+            <!-- Connection Strength with MTM styling -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
               <TextBlock Text="Signal" 
                          Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
-                         Opacity="0.8"
-                         FontSize="10"/>
+                         FontSize="10"
+                         FontWeight="Medium"/>
               <ProgressBar Minimum="0" Maximum="100" 
-                           Width="80" Height="6" 
+                           Width="80" Height="8" 
                            Value="{Binding ConnectionStrength, FallbackValue=100}"
-                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                           Background="{DynamicResource MTM_Shared_Logic.DarkNavigation}"
-                           CornerRadius="3"/>
+                           Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                           Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                           CornerRadius="4"/>
             </StackPanel>
 
-            <!-- Main Progress -->
-            <StackPanel Orientation="Horizontal" Spacing="6">
+            <!-- Main Progress with MTM styling -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
               <TextBlock Text="Progress" 
                          Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
-                         Opacity="0.8"
-                         FontSize="10"/>
+                         FontSize="10"
+                         FontWeight="Medium"/>
               <ProgressBar Minimum="0" Maximum="100"
-                           Width="100" Height="6"
+                           Width="100" Height="8"
                            Value="{Binding ProgressValue, FallbackValue=0}"
-                           Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                           Background="{DynamicResource MTM_Shared_Logic.DarkNavigation}"
-                           CornerRadius="3"/>
+                           Foreground="{DynamicResource MTM_Shared_Logic.ProcessingBrush}"
+                           Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                           CornerRadius="4"/>
             </StackPanel>
           </StackPanel>
 
-          <!-- Status Text with Modern Styling -->
+          <!-- Status Text with MTM styling -->
           <Border Grid.Column="2" 
                   Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
                   BorderThickness="1"
-                  Padding="8,4"
-                  CornerRadius="4"
+                  Padding="12,6"
+                  CornerRadius="6"
                   HorizontalAlignment="Right">
             <TextBlock Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                        FontSize="11"
+                       FontWeight="SemiBold"
                        VerticalAlignment="Center"/>
           </Border>
 
-          <!-- Version Info -->
-          <TextBlock Grid.Column="3"
-                     Text="MTM WIP v1.0"
-                     Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
-                     Opacity="0.6"
-                     FontSize="9"
-                     VerticalAlignment="Center"
-                     HorizontalAlignment="Right"/>
+          <!-- Version Info with MTM styling -->
+          <Border Grid.Column="3"
+                  Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                  CornerRadius="12"
+                  Padding="8,4"
+                  HorizontalAlignment="Right">
+            <TextBlock Text="MTM WIP v1.0"
+                       Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                       FontSize="9"
+                       FontWeight="Medium"
+                       VerticalAlignment="Center"/>
+          </Border>
         </Grid>
       </Border>
     </Grid>
