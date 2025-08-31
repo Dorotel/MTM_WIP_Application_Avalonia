@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="600"
@@ -66,6 +68,110 @@
       <Setter Property="Opacity" Value="0.7"/>
     </Style>
 
+
+	<!-- ================================================================== -->
+    <!-- MATERIAL ICONS - LOCAL OVERRIDE FOR TRANSPARENT BACKGROUNDS      -->
+    <!-- ================================================================== -->
+    
+    <!-- Force ALL Material Icons in this view to have transparent backgrounds -->
+    <Style Selector="materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Opacity" Value="1.0"/>
+    </Style>
+
+    <!-- Material Icons in Grid contexts -->
+    <Style Selector="Grid materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+      <Setter Property="Opacity" Value="1.0"/>
+    </Style>
+
+    <!-- Material Icons in StackPanel contexts -->
+    <Style Selector="StackPanel materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+      <Setter Property="Opacity" Value="1.0"/>
+    </Style>
+
+    <!-- Material Icons in Border contexts -->
+    <Style Selector="Border materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+      <Setter Property="Opacity" Value="1.0"/>
+    </Style>
+
+    <!-- Material Icons in error state -->
+    <Style Selector="materialIcons|MaterialIcon.error">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+      <Setter Property="Opacity" Value="1.0"/>
+    </Style>
+
+    <!-- Override any template-based backgrounds -->
+    <Style Selector="materialIcons|MaterialIcon /template/ Border">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <!-- Override any template-based content presenters -->
+    <Style Selector="materialIcons|MaterialIcon /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <!-- Specific icon types that might have default backgrounds -->
+    <Style Selector="materialIcons|MaterialIcon[Kind=Package]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+    </Style>
+
+    <Style Selector="materialIcons|MaterialIcon[Kind=AlertCircle]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+    </Style>
+
+    <Style Selector="materialIcons|MaterialIcon[Kind=Identifier]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+    </Style>
+
+    <Style Selector="materialIcons|MaterialIcon[Kind=Cog]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+    </Style>
+
+    <Style Selector="materialIcons|MaterialIcon[Kind=MapMarker]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+    </Style>
+
+    <Style Selector="materialIcons|MaterialIcon[Kind=Counter]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+    </Style>
+
+    <Style Selector="materialIcons|MaterialIcon[Kind=NoteText]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+    </Style>
+
+    <Style Selector="materialIcons|MaterialIcon[Kind=ContentSave]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+    </Style>
+
+    <Style Selector="materialIcons|MaterialIcon[Kind=Settings]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+    </Style>
+
+    <Style Selector="materialIcons|MaterialIcon[Kind=Refresh]">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+    </Style>
+
     <!-- Primary Button MTM Amber Theme -->
     <Style Selector="Button.action-button.primary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
@@ -95,7 +201,7 @@
     <!-- Secondary Button MTM Amber Theme -->
     <Style Selector="Button.action-button.secondary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="4"/>
@@ -111,6 +217,35 @@
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
+    </Style>
+
+    <!-- Force transparent backgrounds and proper colors on ALL Material Icons in buttons -->
+    <Style Selector="Button materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+
+    <!-- Specific button icon styling to ensure proper foreground colors -->
+    <Style Selector="Button.action-button.primary materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="Button.action-button.secondary materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="Button.action-button.secondary:pointerover materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
     </Style>
 
     <!-- Error message styling using MTM Error colors -->
@@ -162,6 +297,7 @@
                                         Kind="Package"
                                         Width="16"
                                         Height="16"
+										Background="Transparent"
                                         Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                                         VerticalAlignment="Center"
                                         Margin="0,0,8,0"/>
@@ -187,6 +323,7 @@
             <materialIcons:MaterialIcon Kind="AlertCircle"
                                         Width="16"
                                         Height="16"
+										Background="Transparent"
                                         Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
                                         VerticalAlignment="Top"
                                         Margin="0,2,0,0"/>
@@ -204,6 +341,7 @@
                                         Kind="Identifier"
                                         Width="14"
                                         Height="14"
+										Background="Transparent"
                                         Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Part ID"/>
@@ -212,11 +350,14 @@
                        FontSize="12"
                        FontWeight="Medium"
                        VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextAlignment="Left"
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <AutoCompleteBox x:Name="PartAutoCompleteBox"
                           ItemsSource="{Binding PartIds}"
-                          Text="{Binding SelectedPart, Mode=TwoWay}"
+                          SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
+                          Text="{Binding PartText, Mode=TwoWay}"
                           Classes="input-field"
                           Classes.error="{Binding !IsPartValid}"
                           Classes.loading="{Binding IsLoadingParts}"
@@ -224,9 +365,14 @@
                           Watermark="Select or enter part ID..."
                           ToolTip.Tip="Select or enter a part number"
                           TabIndex="1"
-                          MinimumPrefixLength="1"
+                          MinimumPrefixLength="0"
                           FilterMode="Contains"
-                          MaxDropDownHeight="200"/>
+                          MaxDropDownHeight="200"
+                          IsTextCompletionEnabled="False">
+            <i:Interaction.Behaviors>
+              <behaviors:AutoCompleteBoxNavigationBehavior />
+            </i:Interaction.Behaviors>
+          </AutoCompleteBox>
         </StackPanel>
 
         <!-- Operation -->
@@ -236,6 +382,7 @@
                                         Kind="Cog"
                                         Width="14"
                                         Height="14"
+										Background="Transparent"
                                         Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Operation"/>
@@ -244,11 +391,14 @@
                        FontSize="12"
                        FontWeight="Medium"
                        VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextAlignment="Left"
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <AutoCompleteBox x:Name="OperationAutoCompleteBox"
                           ItemsSource="{Binding Operations}"
-                          Text="{Binding SelectedOperation, Mode=TwoWay}"
+                          SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
+                          Text="{Binding OperationText, Mode=TwoWay}"
                           Classes="input-field"
                           Classes.error="{Binding !IsOperationValid}"
                           Classes.loading="{Binding IsLoadingOperations}"
@@ -258,7 +408,12 @@
                           TabIndex="2"
                           MinimumPrefixLength="0"
                           FilterMode="StartsWith"
-                          MaxDropDownHeight="200"/>
+                          MaxDropDownHeight="200"
+                          IsTextCompletionEnabled="False">
+            <i:Interaction.Behaviors>
+              <behaviors:AutoCompleteBoxNavigationBehavior />
+            </i:Interaction.Behaviors>
+          </AutoCompleteBox>
         </StackPanel>
 
         <!-- Location -->
@@ -268,6 +423,7 @@
                                         Kind="MapMarker"
                                         Width="14"
                                         Height="14"
+										Background="Transparent"
                                         Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Location"/>
@@ -276,11 +432,14 @@
                        FontSize="12"
                        FontWeight="Medium"
                        VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextAlignment="Left"
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <AutoCompleteBox x:Name="LocationAutoCompleteBox"
                           ItemsSource="{Binding Locations}"
-                          Text="{Binding SelectedLocation, Mode=TwoWay}"
+                          SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"
+                          Text="{Binding LocationText, Mode=TwoWay}"
                           Classes="input-field"
                           Classes.error="{Binding !IsLocationValid}"
                           Classes.loading="{Binding IsLoadingLocations}"
@@ -290,7 +449,12 @@
                           TabIndex="3"
                           MinimumPrefixLength="0"
                           FilterMode="StartsWith"
-                          MaxDropDownHeight="200"/>
+                          MaxDropDownHeight="200"
+                          IsTextCompletionEnabled="False">
+            <i:Interaction.Behaviors>
+              <behaviors:AutoCompleteBoxNavigationBehavior />
+            </i:Interaction.Behaviors>
+          </AutoCompleteBox>
         </StackPanel>
 
         <!-- Quantity -->
@@ -300,6 +464,7 @@
                                         Kind="Counter"
                                         Width="14"
                                         Height="14"
+										Background="Transparent"
                                         Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Quantity"/>
@@ -308,6 +473,8 @@
                        FontSize="12"
                        FontWeight="Medium"
                        VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextAlignment="Left"
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <TextBox x:Name="QuantityTextBox"
@@ -327,6 +494,7 @@
                                         Kind="NoteText"
                                         Width="14"
                                         Height="14"
+										Background="Transparent"
                                         Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Top"
                                         Margin="0,4,0,0"
@@ -336,6 +504,8 @@
                        FontSize="12"
                        FontWeight="Medium"
                        VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextAlignment="Left"
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <TextBox x:Name="NotesTextBox"
@@ -370,6 +540,8 @@
                     Spacing="8">
           <Button x:Name="SaveButton"
                   Classes="action-button primary"
+				  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+				  Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                   Width="80" 
                   Height="32"
                   Command="{Binding SaveCommand}"
@@ -378,7 +550,7 @@
                   TabIndex="6">
             <StackPanel Orientation="Horizontal" Spacing="6" 
                         HorizontalAlignment="Center" VerticalAlignment="Center">
-              <materialIcons:MaterialIcon Kind="ContentSave" Width="14" Height="14"/>
+              <materialIcons:MaterialIcon Kind="ContentSave" Width="14" Height="14" Background="Transparent" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
               <TextBlock Text="Save" FontSize="11" FontWeight="SemiBold"/>
             </StackPanel>
           </Button>
@@ -386,25 +558,29 @@
           <Button Classes="action-button secondary"
                   Width="90" 
                   Height="32"
+				  				  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+				  Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                   Command="{Binding AdvancedEntryCommand}"
                   ToolTip.Tip="Open advanced inventory features">
             <StackPanel Orientation="Horizontal" Spacing="6"
                         HorizontalAlignment="Center" VerticalAlignment="Center">
-              <materialIcons:MaterialIcon Kind="Settings" Width="14" Height="14"/>
-              <TextBlock Text="Advanced" FontSize="11"/>
+              <materialIcons:MaterialIcon Kind="Settings" Width="14" Height="14" />
+				<TextBlock Text="Advanced" FontSize="11"/>
             </StackPanel>
           </Button>
           
           <Button Classes="action-button secondary"
                   Width="70" 
                   Height="32"
+				  				  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+				  Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                   Command="{Binding ResetCommand}"
                   CommandParameter="False"
                   ToolTip.Tip="Reset form (F5 for soft reset, Shift+F5 for hard reset)">
             <StackPanel Orientation="Horizontal" Spacing="6"
                         HorizontalAlignment="Center" VerticalAlignment="Center">
-              <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14"/>
-              <TextBlock Text="Reset" FontSize="11"/>
+              <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14" Background="Transparent" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+				<TextBlock Text="Reset" FontSize="11"/>
             </StackPanel>
           </Button>
           

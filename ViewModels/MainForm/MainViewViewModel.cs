@@ -79,21 +79,8 @@ public class MainViewViewModel : BaseViewModel
     public bool IsQuickActionsPanelExpanded
     {
         get => _isQuickActionsPanelExpanded;
-        set 
-        {
-            if (SetProperty(ref _isQuickActionsPanelExpanded, value))
-            {
-                OnPropertyChanged(nameof(QuickActionsPanelWidth));
-                OnPropertyChanged(nameof(QuickActionsCollapseButtonIcon));
-            }
-        }
+        set => SetProperty(ref _isQuickActionsPanelExpanded, value);
     }
-
-    // QuickActions Panel Width - expands/collapses based on state (returns GridLength compatible values)
-    public GridLength QuickActionsPanelWidth => IsQuickActionsPanelExpanded ? new GridLength(240) : new GridLength(32);
-
-    // QuickActions Collapse Button Icon
-    public string QuickActionsCollapseButtonIcon => IsQuickActionsPanelExpanded ? "▶" : "◀";
 
     // Inventory Mode Management
     private bool _isAdvancedInventoryMode;
@@ -272,7 +259,6 @@ public class MainViewViewModel : BaseViewModel
         ToggleQuickActionsPanelCommand = new Commands.RelayCommand(() =>
         {
             IsQuickActionsPanelExpanded = !IsQuickActionsPanelExpanded;
-            Logger.LogInformation("QuickActions panel toggled: {IsExpanded}", IsQuickActionsPanelExpanded);
         });
 
         SwitchToAdvancedInventoryCommand = new Commands.RelayCommand(() =>

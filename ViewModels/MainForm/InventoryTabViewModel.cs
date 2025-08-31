@@ -43,6 +43,11 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     private string _errorMessage = string.Empty;
     private bool _hasError = false;
 
+    // Text properties for AutoCompleteBox two-way binding
+    private string _partText = string.Empty;
+    private string _operationText = string.Empty;
+    private string _locationText = string.Empty;
+
     // Collections for lookup data
     public ObservableCollection<string> PartIds { get; } = new();
     public ObservableCollection<string> Operations { get; } = new();
@@ -163,6 +168,25 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     {
         get => _hasError;
         set => SetProperty(ref _hasError, value);
+    }
+
+    // Text properties for AutoCompleteBox controls
+    public string PartText
+    {
+        get => _partText;
+        set => SetProperty(ref _partText, value ?? string.Empty);
+    }
+
+    public string OperationText
+    {
+        get => _operationText;
+        set => SetProperty(ref _operationText, value ?? string.Empty);
+    }
+
+    public string LocationText
+    {
+        get => _locationText;
+        set => SetProperty(ref _locationText, value ?? string.Empty);
     }
 
     // Computed properties
@@ -286,6 +310,9 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
             SelectedPart = string.Empty;
             SelectedOperation = string.Empty;
             SelectedLocation = string.Empty;
+            PartText = string.Empty;
+            OperationText = string.Empty;
+            LocationText = string.Empty;
             Quantity = 1;
             Notes = string.Empty;
             HasError = false;
@@ -764,21 +791,49 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         if (propertyName == nameof(SelectedPart))
         {
             OnPropertyChanged(nameof(IsPartValid));
+            // Synchronize Text property
+            if (PartText != SelectedPart)
+                PartText = SelectedPart;
         }
         
         if (propertyName == nameof(SelectedOperation))
         {
             OnPropertyChanged(nameof(IsOperationValid));
+            // Synchronize Text property
+            if (OperationText != SelectedOperation)
+                OperationText = SelectedOperation;
         }
         
         if (propertyName == nameof(SelectedLocation))
         {
             OnPropertyChanged(nameof(IsLocationValid));
+            // Synchronize Text property
+            if (LocationText != SelectedLocation)
+                LocationText = SelectedLocation;
         }
         
         if (propertyName == nameof(Quantity))
         {
             OnPropertyChanged(nameof(IsQuantityValid));
+        }
+
+        // Synchronize SelectedItem properties from Text properties
+        if (propertyName == nameof(PartText))
+        {
+            if (!string.IsNullOrEmpty(PartText) && PartIds.Contains(PartText) && SelectedPart != PartText)
+                SelectedPart = PartText;
+        }
+        
+        if (propertyName == nameof(OperationText))
+        {
+            if (!string.IsNullOrEmpty(OperationText) && Operations.Contains(OperationText) && SelectedOperation != OperationText)
+                SelectedOperation = OperationText;
+        }
+        
+        if (propertyName == nameof(LocationText))
+        {
+            if (!string.IsNullOrEmpty(LocationText) && Locations.Contains(LocationText) && SelectedLocation != LocationText)
+                SelectedLocation = LocationText;
         }
     }
 

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
+             xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="700"
@@ -18,84 +19,7 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- Custom TabControl styling with MTM theme - No animations -->
-    <Style Selector="TabControl">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="TabStripPlacement" Value="Top"/>
-    </Style>
-
-    <!-- TabItem header styling with better separation and alignment -->
-    <Style Selector="TabItem">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Margin" Value="0,0,12,0"/>
-      <Setter Property="Padding" Value="0"/>
-      <Setter Property="MinWidth" Value="140"/>
-      <Setter Property="HorizontalAlignment" Value="Left"/>
-    </Style>
-
-    <!-- Custom TabItem header with MTM industrial styling -->
-    <Style Selector="TabItem /template/ Border#PART_HeaderBorder">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
-      <Setter Property="BorderThickness" Value="2,2,2,0"/>
-      <Setter Property="CornerRadius" Value="8,8,0,0"/>
-      <Setter Property="Padding" Value="20,16"/>
-      <Setter Property="MinHeight" Value="50"/>
-    </Style>
-
-    <!-- Selected TabItem gets the MTM gradient highlight -->
-    <Style Selector="TabItem:selected /template/ Border#PART_HeaderBorder">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="BorderThickness" Value="3,3,3,0"/>
-      <Setter Property="BoxShadow" Value="0 -3 12 0 #44FF8F00"/>
-    </Style>
-
-    <!-- Hover effect for non-selected tabs -->
-    <Style Selector="TabItem:pointerover:not(:selected) /template/ Border#PART_HeaderBorder">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
-      <Setter Property="BorderThickness" Value="2,2,2,0"/>
-    </Style>
-
-    <!-- Tab content area styling with proper alignment -->
-    <Style Selector="TabControl /template/ Border#PART_ContentBorder">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
-      <Setter Property="BorderThickness" Value="2,0,2,2"/>
-      <Setter Property="CornerRadius" Value="0,8,8,8"/>
-      <Setter Property="Padding" Value="0"/>
-    </Style>
-
-    <!-- Selected tab text styling - readable colors -->
-    <Style Selector="TabItem:selected TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
-      <Setter Property="FontWeight" Value="Bold"/>
-      <Setter Property="FontSize" Value="15"/>
-    </Style>
-
-    <!-- Non-selected tab text styling -->
-    <Style Selector="TabItem:not(:selected) TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
-      <Setter Property="FontWeight" Value="SemiBold"/>
-      <Setter Property="FontSize" Value="14"/>
-    </Style>
-
-    <!-- Icon styling for selected tabs -->
-    <Style Selector="TabItem:selected Border">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
-    </Style>
-
-    <!-- Hover effects -->
-    <Style Selector="TabItem:pointerover:not(:selected) Border">
-      <Setter Property="Opacity" Value="0.9"/>
-    </Style>
-
-    <Style Selector="TabItem:pointerover:not(:selected) TextBlock">
-      <Setter Property="Opacity" Value="0.95"/>
-    </Style>
+    <!-- TabControl styling is now handled globally by MTMComponents.axaml -->
   </UserControl.Styles>
 
   <!-- Keyboard shortcuts -->
@@ -256,7 +180,7 @@
           Margin="8">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" MinWidth="400"/>
-        <ColumnDefinition Width="{Binding QuickActionsPanelWidth}" MinWidth="0"/>
+        <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
       
       <!-- Left Panel: Tab Control - Stretches fully -->
@@ -281,8 +205,7 @@
           <TabItem>
             <TabItem.Header>
               <StackPanel Orientation="Horizontal" Spacing="12">
-                <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                        CornerRadius="10"
+                <Border CornerRadius="10"
                         Width="24"
                         Height="24">
                   <TextBlock Text="📦" 
@@ -310,8 +233,7 @@
           <TabItem>
             <TabItem.Header>
               <StackPanel Orientation="Horizontal" Spacing="12">
-                <Border Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
-                        CornerRadius="10"
+                <Border CornerRadius="10"
                         Width="24"
                         Height="24">
                   <TextBlock Text="🗑️" 
@@ -339,8 +261,7 @@
           <TabItem>
             <TabItem.Header>
               <StackPanel Orientation="Horizontal" Spacing="12">
-                <Border Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
-                        CornerRadius="10"
+                <Border CornerRadius="10"
                         Width="24"
                         Height="24">
                   <TextBlock Text="🔄" 
@@ -366,87 +287,19 @@
         </TabControl>
       </Border>
 
-      <!-- Right Panel: Quick Actions -->
-      <Border Grid.Column="1"
-              Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-              BorderThickness="2"
-              CornerRadius="8"
-              Margin="0,8,8,8"
-              BoxShadow="0 4 12 0 #22000000"
-              IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
-        <Grid ColumnDefinitions="*,Auto"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
-          <!-- Quick Actions Content - Scrollable and responsive -->
-          <Border Grid.Column="0"
-                  IsVisible="{Binding IsQuickActionsPanelExpanded, FallbackValue=True}"
-                  Padding="4"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch">
-              <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"/>
-            </ScrollViewer>
-          </Border>
-
-          <!-- Collapsible Vertical Header Bar -->
-          <Border Grid.Column="1"
-                  Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
-                  BorderThickness="1,0,0,0"
-                  Width="36"
-                  CornerRadius="0,8,8,0"
-                  VerticalAlignment="Stretch">
-            <Grid RowDefinitions="*,Auto,Auto,50"
-                  VerticalAlignment="Stretch">
-              <!-- Quick Actions Icon -->
-              <Border Grid.Row="1"
-                      Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
-                      CornerRadius="12"
-                      Width="24"
-                      Height="24"
-                      HorizontalAlignment="Center"
-                      Margin="0,0,0,8">
-                <TextBlock Text="⚡"
-                           FontSize="14"
-                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           ToolTip.Tip="Quick Actions Panel"/>
-              </Border>
-              
-              <!-- Toggle Button -->
-              <Button Grid.Row="3"
-                      Command="{Binding ToggleQuickActionsPanelCommand}"
-                      Width="24"
-                      Height="24"
-                      Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                      Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                      BorderThickness="1"
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
-                      CornerRadius="6"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Bottom"
-                      Margin="6,0,6,12"
-                      Cursor="Hand"
-                      ToolTip.Tip="Toggle Quick Actions Panel">
-                <TextBlock Text="{Binding QuickActionsCollapseButtonIcon, FallbackValue='◄', TargetNullValue='◄'}"
-                           FontSize="12"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-              </Button>
-            </Grid>
-          </Border>
-        </Grid>
-      </Border>
+      <!-- Right Panel: Collapsible Quick Actions -->
+      <controls:CollapsiblePanel Grid.Column="1"
+                                HeaderPosition="Right"
+                                IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
+                                IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
+                                Margin="0,8,8,8"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                MinWidth="40">
+        <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"/>
+      </controls:CollapsiblePanel>
     </Grid>
   </DockPanel>
 </UserControl>

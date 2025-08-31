@@ -1,10 +1,12 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="800"
@@ -146,7 +148,15 @@
                                Classes="input-field"
                                HorizontalAlignment="Stretch"
                                Watermark="Enter Part ID..."
-                               ToolTip.Tip="Select or enter part ID to filter"/>
+                               ToolTip.Tip="Select or enter part ID to filter"
+                               MinimumPrefixLength="0"
+                               FilterMode="Contains"
+                               MaxDropDownHeight="200"
+                               IsTextCompletionEnabled="False">
+                <i:Interaction.Behaviors>
+                  <behaviors:AutoCompleteBoxNavigationBehavior />
+                </i:Interaction.Behaviors>
+              </AutoCompleteBox>
             </StackPanel>
 
             <!-- Location -->
@@ -165,7 +175,15 @@
                                Classes="input-field"
                                HorizontalAlignment="Stretch"
                                Watermark="Enter Location..."
-                               ToolTip.Tip="Select or enter location to filter"/>
+                               ToolTip.Tip="Select or enter location to filter"
+                               MinimumPrefixLength="0"
+                               FilterMode="Contains"
+                               MaxDropDownHeight="200"
+                               IsTextCompletionEnabled="False">
+                <i:Interaction.Behaviors>
+                  <behaviors:AutoCompleteBoxNavigationBehavior />
+                </i:Interaction.Behaviors>
+              </AutoCompleteBox>
             </StackPanel>
 
             <!-- Operation -->
@@ -184,7 +202,15 @@
                                Classes="input-field"
                                HorizontalAlignment="Stretch"
                                Watermark="Enter Operation..."
-                               ToolTip.Tip="Select or enter operation to filter"/>
+                               ToolTip.Tip="Select or enter operation to filter"
+                               MinimumPrefixLength="0"
+                               FilterMode="StartsWith"
+                               MaxDropDownHeight="200"
+                               IsTextCompletionEnabled="False">
+                <i:Interaction.Behaviors>
+                  <behaviors:AutoCompleteBoxNavigationBehavior />
+                </i:Interaction.Behaviors>
+              </AutoCompleteBox>
             </StackPanel>
 
             <!-- User -->
@@ -203,7 +229,15 @@
                                Classes="input-field"
                                HorizontalAlignment="Stretch"
                                Watermark="Enter User..."
-                               ToolTip.Tip="Select or enter user to filter"/>
+                               ToolTip.Tip="Select or enter user to filter"
+                               MinimumPrefixLength="0"
+                               FilterMode="Contains"
+                               MaxDropDownHeight="200"
+                               IsTextCompletionEnabled="False">
+                <i:Interaction.Behaviors>
+                  <behaviors:AutoCompleteBoxNavigationBehavior />
+                </i:Interaction.Behaviors>
+              </AutoCompleteBox>
             </StackPanel>
 
             <!-- Notes -->

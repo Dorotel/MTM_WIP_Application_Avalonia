@@ -203,6 +203,19 @@ public class AdvancedInventoryViewModel : BaseViewModel
                 OnPropertyChanged(nameof(FilterPanelWidth));
                 OnPropertyChanged(nameof(CollapseButtonIcon));
                 break;
+            // Add synchronization from Text properties back to SelectedItem properties
+            case nameof(PartIDText):
+                if (!string.IsNullOrEmpty(PartIDText) && PartIDOptions.Contains(PartIDText) && SelectedPartID != PartIDText)
+                    SelectedPartID = PartIDText;
+                break;
+            case nameof(OperationText):
+                if (!string.IsNullOrEmpty(OperationText) && OperationOptions.Contains(OperationText) && SelectedOperation != OperationText)
+                    SelectedOperation = OperationText;
+                break;
+            case nameof(LocationText):
+                if (!string.IsNullOrEmpty(LocationText) && LocationOptions.Contains(LocationText) && SelectedLocation != LocationText)
+                    SelectedLocation = LocationText;
+                break;
         }
     }
 

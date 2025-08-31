@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
@@ -185,6 +186,9 @@ public partial class ThemeQuickSwitcher : UserControl
                     {
                         _logger?.LogWarning("Failed to save theme preference: {Message}", saveResult.Message);
                     }
+
+                    // CRITICAL FIX: Force application-wide theme update
+                    await ForceApplicationThemeUpdateAsync();
                 }
                 else
                 {
@@ -210,29 +214,88 @@ public partial class ThemeQuickSwitcher : UserControl
     }
 
     /// <summary>
-    /// Apply basic theme switching using Avalonia's built-in theme variants.
-    /// This is a fallback when ThemeService is not available.
+    /// Forces application-wide theme update by invalidating visual trees.
+    /// This ensures all views refresh with the new theme resources.
     /// </summary>
-    private void ApplyBasicTheme(string themeId)
+    private async System.Threading.Tasks.Task ForceApplicationThemeUpdateAsync()
     {
         try
         {
+            await Task.Delay(50); // Small delay to allow resource loading
+
+            // Get all open windows and force their visual trees to re-evaluate
             if (Avalonia.Application.Current != null)
             {
-                var themeVariant = themeId.Contains("Dark") 
-                    ? Avalonia.Styling.ThemeVariant.Dark 
-                    : Avalonia.Styling.ThemeVariant.Light;
-                
-                Avalonia.Application.Current.RequestedThemeVariant = themeVariant;
-                
-                _logger?.LogInformation("Applied basic theme variant: {ThemeVariant} for theme {ThemeId}", themeVariant, themeId);
-                System.Diagnostics.Debug.WriteLine($"Applied basic theme variant: {themeVariant}");
+                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    // Force invalidation of all top-level windows
+                    foreach (var window in Avalonia.Application.Current.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                        ? desktop.Windows
+                        : new Avalonia.Controls.Window[0])
+                    {
+                        try
+                        {
+                            // Force re-evaluation of the visual tree
+                            window.InvalidateVisual();
+                            window.InvalidateMeasure();
+                            window.InvalidateArrange();
+                            
+                            // Recursively invalidate all child controls
+                            InvalidateControlTree(window);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger?.LogWarning(ex, "Error invalidating window during theme update");
+                        }
+                    }
+                });
+
+                _logger?.LogDebug("Forced application-wide theme update completed");
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error applying basic theme for {ThemeId}", themeId);
-            System.Diagnostics.Debug.WriteLine($"Error applying basic theme: {ex.Message}");
+            _logger?.LogError(ex, "Error during forced theme update");
+        }
+    }
+
+    /// <summary>
+    /// Recursively invalidates all controls in a visual tree to pick up new theme resources.
+    /// </summary>
+    private void InvalidateControlTree(Avalonia.Controls.Control control)
+    {
+        try
+        {
+            if (control == null) return;
+
+            // Invalidate this control
+            control.InvalidateVisual();
+            control.InvalidateMeasure();
+            control.InvalidateArrange();
+
+            // Recursively invalidate children
+            if (control is Avalonia.Controls.Panel panel)
+            {
+                foreach (var child in panel.Children)
+                {
+                    if (child is Avalonia.Controls.Control childControl)
+                    {
+                        InvalidateControlTree(childControl);
+                    }
+                }
+            }
+            else if (control is Avalonia.Controls.ContentControl contentControl && contentControl.Content is Avalonia.Controls.Control content)
+            {
+                InvalidateControlTree(content);
+            }
+            else if (control is Avalonia.Controls.Decorator decorator && decorator.Child is Avalonia.Controls.Control decoratorChild)
+            {
+                InvalidateControlTree(decoratorChild);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Error invalidating control during theme update");
         }
     }
 
@@ -276,6 +339,40 @@ public partial class ThemeQuickSwitcher : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error during ThemeQuickSwitcher cleanup");
+        }
+    }
+
+    /// <summary>
+    /// Apply basic theme switching using Avalonia's built-in theme variants.
+    /// This is a fallback when ThemeService is not available.
+    /// </summary>
+    private void ApplyBasicTheme(string themeId)
+    {
+        try
+        {
+            if (Avalonia.Application.Current != null)
+            {
+                var themeVariant = themeId.Contains("Dark") 
+                    ? Avalonia.Styling.ThemeVariant.Dark 
+                    : Avalonia.Styling.ThemeVariant.Light;
+                
+                Avalonia.Application.Current.RequestedThemeVariant = themeVariant;
+                
+                // CRITICAL FIX: Force immediate refresh for basic themes too
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(50);
+                    await ForceApplicationThemeUpdateAsync();
+                });
+                
+                _logger?.LogInformation("Applied basic theme variant: {ThemeVariant} for theme {ThemeId}", themeVariant, themeId);
+                System.Diagnostics.Debug.WriteLine($"Applied basic theme variant: {themeVariant}");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error applying basic theme for {ThemeId}", themeId);
+            System.Diagnostics.Debug.WriteLine($"Error applying basic theme: {ex.Message}");
         }
     }
 }

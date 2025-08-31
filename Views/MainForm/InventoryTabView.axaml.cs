@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
@@ -21,6 +22,7 @@ namespace MTM_WIP_Application_Avalonia.Views;
 /// Provides keyboard shortcuts, focus management, and UI event handling.
 /// Business logic and database operations are handled by the ViewModel.
 /// Uses standard .NET patterns without ReactiveUI dependencies.
+/// Arrow key navigation is handled globally by MainWindow.
 /// </summary>
 public partial class InventoryTabView : UserControl
 {
@@ -96,12 +98,13 @@ public partial class InventoryTabView : UserControl
 
     /// <summary>
     /// Sets up event handlers for UI controls.
+    /// Note: Arrow key handling removed - handled globally by MainWindow.
     /// </summary>
     private void SetupEventHandlers()
     {
         try
         {
-            // Global keyboard event handling
+            // Global keyboard event handling for F5, Enter, Escape (non-arrow keys)
             KeyDown += OnKeyDown;
 
             // AutoCompleteBox event handlers for UI interaction
@@ -110,7 +113,9 @@ public partial class InventoryTabView : UserControl
                 _partAutoCompleteBox.TextChanged += OnPartTextChanged;
                 _partAutoCompleteBox.SelectionChanged += OnPartSelectionChanged;
                 _partAutoCompleteBox.LostFocus += OnPartLostFocus;
-                _partAutoCompleteBox.KeyDown += OnControlKeyDown; // Prevent arrow key navigation
+                _partAutoCompleteBox.GotFocus += OnPartGotFocus; // Handle focus events
+                _partAutoCompleteBox.DropDownOpened += OnPartDropDownOpened; // Handle dropdown events
+                // REMOVED: Arrow key handling - now handled by MainWindow globally
             }
 
             if (_operationAutoCompleteBox != null)
@@ -118,7 +123,9 @@ public partial class InventoryTabView : UserControl
                 _operationAutoCompleteBox.TextChanged += OnOperationTextChanged;
                 _operationAutoCompleteBox.SelectionChanged += OnOperationSelectionChanged;
                 _operationAutoCompleteBox.LostFocus += OnOperationLostFocus;
-                _operationAutoCompleteBox.KeyDown += OnControlKeyDown; // Prevent arrow key navigation
+                _operationAutoCompleteBox.GotFocus += OnOperationGotFocus; // Handle focus events
+                _operationAutoCompleteBox.DropDownOpened += OnOperationDropDownOpened; // Handle dropdown events
+                // REMOVED: Arrow key handling - now handled by MainWindow globally
             }
 
             if (_locationAutoCompleteBox != null)
@@ -126,7 +133,9 @@ public partial class InventoryTabView : UserControl
                 _locationAutoCompleteBox.TextChanged += OnLocationTextChanged;
                 _locationAutoCompleteBox.SelectionChanged += OnLocationSelectionChanged;
                 _locationAutoCompleteBox.LostFocus += OnLocationLostFocus;
-                _locationAutoCompleteBox.KeyDown += OnControlKeyDown; // Prevent arrow key navigation
+                _locationAutoCompleteBox.GotFocus += OnLocationGotFocus; // Handle focus events
+                _locationAutoCompleteBox.DropDownOpened += OnLocationDropDownOpened; // Handle dropdown events
+                // REMOVED: Arrow key handling - now handled by MainWindow globally
             }
 
             // TextBox event handlers
@@ -134,13 +143,13 @@ public partial class InventoryTabView : UserControl
             {
                 _quantityTextBox.TextChanged += OnQuantityTextChanged;
                 _quantityTextBox.LostFocus += OnQuantityLostFocus;
-                _quantityTextBox.KeyDown += OnControlKeyDown; // Prevent arrow key navigation
+                // REMOVED: Arrow key handling - now handled by MainWindow globally
             }
 
             if (_notesTextBox != null)
             {
                 _notesTextBox.TextChanged += OnNotesTextChanged;
-                _notesTextBox.KeyDown += OnControlKeyDown; // Prevent arrow key navigation
+                // REMOVED: Arrow key handling - now handled by MainWindow globally
             }
 
             // Button event handlers
@@ -149,7 +158,7 @@ public partial class InventoryTabView : UserControl
                 _saveButton.Click += OnSaveButtonClick;
             }
 
-            _logger?.LogDebug("Event handlers set up successfully");
+            _logger?.LogDebug("Event handlers set up successfully - arrow key handling delegated to MainWindow");
         }
         catch (Exception ex)
         {
@@ -228,51 +237,6 @@ public partial class InventoryTabView : UserControl
         {
             _logger?.LogError(ex, "Error checking form validity");
             return false;
-        }
-    }
-
-    #endregion
-
-    #region Arrow Key Navigation Prevention
-
-    /// <summary>
-    /// Handles key down events for individual controls to prevent arrow key tab navigation.
-    /// </summary>
-    private void OnControlKeyDown(object? sender, KeyEventArgs e)
-    {
-        try
-        {
-            // Prevent arrow keys from causing tab navigation
-            if (e.Key == Key.Up || e.Key == Key.Down)
-            {
-                // For AutoCompleteBox controls, allow arrow keys for dropdown navigation
-                if (sender is AutoCompleteBox autoCompleteBox)
-                {
-                    // Only allow arrow keys if dropdown is open
-                    if (autoCompleteBox.IsDropDownOpen)
-                    {
-                        return; // Allow normal arrow key behavior in dropdown
-                    }
-                    else
-                    {
-                        e.Handled = true; // Prevent tab navigation when dropdown is closed
-                        return;
-                    }
-                }
-                
-                // For TextBox controls, prevent arrow key tab navigation
-                if (sender is TextBox)
-                {
-                    e.Handled = true;
-                    return;
-                }
-            }
-
-            // Allow other keys to pass through normally
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling control key down");
         }
     }
 
@@ -500,6 +464,60 @@ public partial class InventoryTabView : UserControl
     #region UI Event Handlers - Part ID
 
     /// <summary>
+    /// Handles Part ID gaining focus - ensures proper AutoCompleteBox behavior.
+    /// </summary>
+    private void OnPartGotFocus(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (sender is not AutoCompleteBox autoCompleteBox) return;
+
+            // If the AutoCompleteBox is empty and has items, show the dropdown
+            if (string.IsNullOrEmpty(autoCompleteBox.Text) && 
+                _viewModel?.PartIds.Count > 0 && 
+                !autoCompleteBox.IsDropDownOpen)
+            {
+                // Small delay to ensure focus is fully established
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(50);
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        if (autoCompleteBox.IsFocused)
+                        {
+                            autoCompleteBox.IsDropDownOpen = true;
+                        }
+                    });
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling part got focus");
+            System.Diagnostics.Debug.WriteLine($"Error handling part got focus: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Part ID dropdown opening - ensures items are filtered properly.
+    /// </summary>
+    private void OnPartDropDownOpened(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is not AutoCompleteBox autoCompleteBox) return;
+            
+            // Log dropdown opened for debugging
+            _logger?.LogDebug("Part AutoCompleteBox dropdown opened with {Count} items", _viewModel?.PartIds.Count ?? 0);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling part dropdown opened");
+            System.Diagnostics.Debug.WriteLine($"Error handling part dropdown opened: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Handles Part ID text changes.
     /// </summary>
     private void OnPartTextChanged(object? sender, TextChangedEventArgs e)
@@ -581,6 +599,60 @@ public partial class InventoryTabView : UserControl
     #region UI Event Handlers - Operation
 
     /// <summary>
+    /// Handles Operation gaining focus - ensures proper AutoCompleteBox behavior.
+    /// </summary>
+    private void OnOperationGotFocus(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (sender is not AutoCompleteBox autoCompleteBox) return;
+
+            // If the AutoCompleteBox is empty and has items, show the dropdown
+            if (string.IsNullOrEmpty(autoCompleteBox.Text) && 
+                _viewModel?.Operations.Count > 0 && 
+                !autoCompleteBox.IsDropDownOpen)
+            {
+                // Small delay to ensure focus is fully established
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(50);
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        if (autoCompleteBox.IsFocused)
+                        {
+                            autoCompleteBox.IsDropDownOpen = true;
+                        }
+                    });
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling operation got focus");
+            System.Diagnostics.Debug.WriteLine($"Error handling operation got focus: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Operation dropdown opening - ensures items are filtered properly.
+    /// </summary>
+    private void OnOperationDropDownOpened(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is not AutoCompleteBox autoCompleteBox) return;
+            
+            // Log dropdown opened for debugging
+            _logger?.LogDebug("Operation AutoCompleteBox dropdown opened with {Count} items", _viewModel?.Operations.Count ?? 0);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling operation dropdown opened");
+            System.Diagnostics.Debug.WriteLine($"Error handling operation dropdown opened: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Handles Operation text changes.
     /// </summary>
     private void OnOperationTextChanged(object? sender, TextChangedEventArgs e)
@@ -657,6 +729,60 @@ public partial class InventoryTabView : UserControl
     #endregion
 
     #region UI Event Handlers - Location
+
+    /// <summary>
+    /// Handles Location gaining focus - ensures proper AutoCompleteBox behavior.
+    /// </summary>
+    private void OnLocationGotFocus(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (sender is not AutoCompleteBox autoCompleteBox) return;
+
+            // If the AutoCompleteBox is empty and has items, show the dropdown
+            if (string.IsNullOrEmpty(autoCompleteBox.Text) && 
+                _viewModel?.Locations.Count > 0 && 
+                !autoCompleteBox.IsDropDownOpen)
+            {
+                // Small delay to ensure focus is fully established
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(50);
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        if (autoCompleteBox.IsFocused)
+                        {
+                            autoCompleteBox.IsDropDownOpen = true;
+                        }
+                    });
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling location got focus");
+            System.Diagnostics.Debug.WriteLine($"Error handling location got focus: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles Location dropdown opening - ensures items are filtered properly.
+    /// </summary>
+    private void OnLocationDropDownOpened(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is not AutoCompleteBox autoCompleteBox) return;
+            
+            // Log dropdown opened for debugging
+            _logger?.LogDebug("Location AutoCompleteBox dropdown opened with {Count} items", _viewModel?.Locations.Count ?? 0);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling location dropdown opened");
+            System.Diagnostics.Debug.WriteLine($"Error handling location dropdown opened: {ex.Message}");
+        }
+    }
 
     /// <summary>
     /// Handles Location text changes.
@@ -1019,6 +1145,7 @@ public partial class InventoryTabView : UserControl
     /// <summary>
     /// Handles keyboard shortcuts for enhanced user experience.
     /// F5: Reset form, Shift+F5: Hard reset, Enter: Next field/Save, Escape: Clear errors
+    /// Note: Arrow key handling removed - handled globally by MainWindow.
     /// </summary>
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
@@ -1053,6 +1180,11 @@ public partial class InventoryTabView : UserControl
                     ClearErrorState();
                     MoveFocusToFirstControl();
                     break;
+
+                // REMOVED: Arrow key handling - now handled globally by MainWindow
+                // case Key.Up:
+                // case Key.Down:
+                //     No longer handled here - MainWindow handles these globally
             }
         }
         catch (Exception ex)
@@ -1328,7 +1460,9 @@ public partial class InventoryTabView : UserControl
                 _partAutoCompleteBox.TextChanged -= OnPartTextChanged;
                 _partAutoCompleteBox.SelectionChanged -= OnPartSelectionChanged;
                 _partAutoCompleteBox.LostFocus -= OnPartLostFocus;
-                _partAutoCompleteBox.KeyDown -= OnControlKeyDown;
+                _partAutoCompleteBox.GotFocus -= OnPartGotFocus;
+                _partAutoCompleteBox.DropDownOpened -= OnPartDropDownOpened;
+                // REMOVED: Arrow key handler cleanup - no longer subscribed
             }
 
             if (_operationAutoCompleteBox != null)
@@ -1336,7 +1470,9 @@ public partial class InventoryTabView : UserControl
                 _operationAutoCompleteBox.TextChanged -= OnOperationTextChanged;
                 _operationAutoCompleteBox.SelectionChanged -= OnOperationSelectionChanged;
                 _operationAutoCompleteBox.LostFocus -= OnOperationLostFocus;
-                _operationAutoCompleteBox.KeyDown -= OnControlKeyDown;
+                _operationAutoCompleteBox.GotFocus -= OnOperationGotFocus;
+                _operationAutoCompleteBox.DropDownOpened -= OnOperationDropDownOpened;
+                // REMOVED: Arrow key handler cleanup - no longer subscribed
             }
 
             if (_locationAutoCompleteBox != null)
@@ -1344,20 +1480,22 @@ public partial class InventoryTabView : UserControl
                 _locationAutoCompleteBox.TextChanged -= OnLocationTextChanged;
                 _locationAutoCompleteBox.SelectionChanged -= OnLocationSelectionChanged;
                 _locationAutoCompleteBox.LostFocus -= OnLocationLostFocus;
-                _locationAutoCompleteBox.KeyDown -= OnControlKeyDown;
+                _locationAutoCompleteBox.GotFocus -= OnLocationGotFocus;
+                _locationAutoCompleteBox.DropDownOpened -= OnLocationDropDownOpened;
+                // REMOVED: Arrow key handler cleanup - no longer subscribed
             }
 
             if (_quantityTextBox != null)
             {
                 _quantityTextBox.TextChanged -= OnQuantityTextChanged;
                 _quantityTextBox.LostFocus -= OnQuantityLostFocus;
-                _quantityTextBox.KeyDown -= OnControlKeyDown;
+                // REMOVED: Arrow key handler cleanup - no longer subscribed
             }
 
             if (_notesTextBox != null)
             {
                 _notesTextBox.TextChanged -= OnNotesTextChanged;
-                _notesTextBox.KeyDown -= OnControlKeyDown;
+                // REMOVED: Arrow key handler cleanup - no longer subscribed
             }
 
             if (_saveButton != null)
@@ -1373,7 +1511,7 @@ public partial class InventoryTabView : UserControl
             
             // QuickButtons event handlers would be unsubscribed here using reflection if needed
             
-            _logger?.LogDebug("InventoryTabView cleanup completed");
+            _logger?.LogDebug("InventoryTabView cleanup completed - arrow key handling delegated to MainWindow");
         }
         catch (Exception ex)
         {

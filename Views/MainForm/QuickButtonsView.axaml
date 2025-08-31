@@ -130,8 +130,8 @@
     </Style>
   </UserControl.Styles>
 
-  <!-- Main container with MTM Amber background -->
-  <Grid Margin="4" Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+  <!-- Main container with transparent background to blend with parent -->
+  <Grid Margin="4" Background="Transparent">
     <!-- Header Section and Quick Buttons Area -->
     <Grid RowDefinitions="Auto,*">
       <!-- Quick Actions Header with MTM Amber gradient -->
@@ -187,12 +187,11 @@
         </Grid>
       </Border>
 
-      <!-- Quick Buttons Area with MTM styling and drag/drop support -->
+      <!-- Quick Buttons Area with transparent background to blend seamlessly -->
       <ScrollViewer Grid.Row="1" 
                     VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Disabled"
-                    Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-                    CornerRadius="0,0,6,6"
+                    Background="Transparent"
                     Padding="4">
         <ItemsControl ItemsSource="{Binding NonEmptyQuickButtons}">
           <!-- Use StackPanel for dynamic vertical layout with drag/drop -->

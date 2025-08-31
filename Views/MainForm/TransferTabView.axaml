@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="600"
@@ -278,7 +280,15 @@
                                    Classes="input-field"
                                    HorizontalAlignment="Stretch"
                                    Watermark="Select part ID..."
-                                   ToolTip.Tip="Select part to transfer"/>
+                                   ToolTip.Tip="Select part to transfer"
+                                   MinimumPrefixLength="0"
+                                   FilterMode="Contains"
+                                   MaxDropDownHeight="200"
+                                   IsTextCompletionEnabled="False">
+                    <i:Interaction.Behaviors>
+                      <behaviors:AutoCompleteBoxNavigationBehavior />
+                    </i:Interaction.Behaviors>
+                  </AutoCompleteBox>
                 </StackPanel>
 
                 <!-- Operation Section -->
@@ -304,7 +314,15 @@
                                    Classes="input-field"
                                    HorizontalAlignment="Stretch"
                                    Watermark="Select operation..."
-                                   ToolTip.Tip="Select operation (optional)"/>
+                                   ToolTip.Tip="Select operation (optional)"
+                                   MinimumPrefixLength="0"
+                                   FilterMode="StartsWith"
+                                   MaxDropDownHeight="200"
+                                   IsTextCompletionEnabled="False">
+                    <i:Interaction.Behaviors>
+                      <behaviors:AutoCompleteBoxNavigationBehavior />
+                    </i:Interaction.Behaviors>
+                  </AutoCompleteBox>
                 </StackPanel>
 
                 <!-- To Location Section -->
@@ -330,7 +348,15 @@
                                    Classes="input-field"
                                    HorizontalAlignment="Stretch"
                                    Watermark="Select destination..."
-                                   ToolTip.Tip="Select destination location"/>
+                                   ToolTip.Tip="Select destination location"
+                                   MinimumPrefixLength="0"
+                                   FilterMode="StartsWith"
+                                   MaxDropDownHeight="200"
+                                   IsTextCompletionEnabled="False">
+                    <i:Interaction.Behaviors>
+                      <behaviors:AutoCompleteBoxNavigationBehavior />
+                    </i:Interaction.Behaviors>
+                  </AutoCompleteBox>
                 </StackPanel>
 
                 <!-- Transfer Quantity Section -->

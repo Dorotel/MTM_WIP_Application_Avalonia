@@ -16,46 +16,54 @@
   <!-- Use explicit template to ensure proper initialization -->
   <UserControl.Template>
     <ControlTemplate>
-      <!-- Empty grid that gets configured dynamically by code -->
-      <Grid x:Name="RootGrid">
+      <!-- Root container with MTM styling matching the left panel -->
+      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+              BorderThickness="2"
+              CornerRadius="8"
+              BoxShadow="0 4 12 0 #22000000">
         
-        <!-- Header Bar (position determined by HeaderPosition property) -->
-        <Border x:Name="HeaderArea"
-                Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                MinWidth="40"
-                MinHeight="40">
+        <!-- Empty grid that gets configured dynamically by code -->
+        <Grid x:Name="RootGrid">
           
-          <!-- Simple grid for toggle button only -->
-          <Grid x:Name="HeaderContentGrid">
+          <!-- Header Bar (position determined by HeaderPosition property) -->
+          <Border x:Name="HeaderArea"
+                  Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
+                  MinWidth="40"
+                  MinHeight="40">
             
-            <!-- Toggle Button - positioned dynamically by code -->
-            <Button x:Name="ToggleButton"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Width="20"
-                    Height="20"
-                    Click="OnToggleClick"
-                    Cursor="Hand">
-              <material:MaterialIcon x:Name="ToggleIcon"
-                                     Kind="ChevronRight"
-                                     Width="12"
-                                     Height="12"
-                                     Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
-            </Button>
-            
-          </Grid>
-        </Border>
+            <!-- Simple grid for toggle button only -->
+            <Grid x:Name="HeaderContentGrid">
+              
+              <!-- Toggle Button - positioned dynamically by code -->
+              <Button x:Name="ToggleButton"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Width="20"
+                      Height="20"
+                      Click="OnToggleClick"
+                      Cursor="Hand">
+                <material:MaterialIcon x:Name="ToggleIcon"
+                                       Kind="ChevronRight"
+                                       Width="12"
+                                       Height="12"
+                                       Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+              </Button>
+              
+            </Grid>
+          </Border>
 
-        <!-- Content Area (position determined by HeaderPosition property) -->
-        <Border x:Name="ContentArea"
-                Background="{DynamicResource MTM_Shared_Logic.ContentAreas}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-                Padding="16">
-          <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
-        </Border>
+          <!-- Content Area (position determined by HeaderPosition property) -->
+          <Border x:Name="ContentArea"
+                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                  Padding="4">
+            <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
+          </Border>
 
-      </Grid>
+        </Grid>
+      </Border>
     </ControlTemplate>
   </UserControl.Template>
 

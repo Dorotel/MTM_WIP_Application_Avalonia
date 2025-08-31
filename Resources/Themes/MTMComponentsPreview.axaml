@@ -1,0 +1,281 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:themes="using:MTM_WIP_Application_Avalonia.Resources.Themes"
+             x:Class="MTM_WIP_Application_Avalonia.Resources.Themes.MTMComponentsPreview">
+
+    <!-- Theme-based preview without hardcoded colors -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="24" Margin="20">
+            
+            <!-- MTM Components Preview Header -->
+            <Border Classes="mtm-header"
+                    CornerRadius="12"
+                    Padding="24">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="MTM Components Preview"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Redesigned Button-Style TabControl &amp; Theme-Based Components"
+                               FontSize="14"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"
+                               Margin="0,8,0,0"
+                               Opacity="0.9"/>
+                </StackPanel>
+            </Border>
+
+            <!-- TabControl Preview Section -->
+            <Border Classes="mtm-card"
+                    Padding="24">
+                <StackPanel>
+                    <TextBlock Text="Redesigned TabControl - Button Style"
+                               Classes="mtm-heading"
+                               Margin="0,0,0,16"/>
+
+                    <!-- Primary TabControl Example with button-style tabs -->
+                    <TabControl Height="320" Margin="0,0,0,24" >
+						
+                        <TabItem Header="Inventory">
+                            <Border Margin="20" Background="Transparent">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="Inventory Tab Content"
+                                               Classes="mtm-subheading"/>
+                                    <TextBlock Text="This tab demonstrates the new button-style design with rounded corners and theme-based colors."
+                                               Classes="mtm-body"
+                                               TextWrapping="Wrap"/>
+                                    <Border Classes="mtm-card"
+                                            Padding="16">
+                                        <TextBlock Text="Features: Rounded button appearance, theme-based selection colors, hover effects"
+                                                   Classes="mtm-body"
+                                                   TextWrapping="Wrap"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </TabItem>
+                        
+                        <TabItem Header="Transactions">
+                            <Border Margin="20" Background="Transparent">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="Transactions Tab Content"
+                                               Classes="mtm-subheading"/>
+                                    <TextBlock Text="This demonstrates non-selected button appearance with theme colors."
+                                               Classes="mtm-body"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                        </TabItem>
+                        
+                        <TabItem Header="Reports">
+                            <Border Margin="20" Background="Transparent">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="Reports Tab Content"
+                                               Classes="mtm-subheading"/>
+                                    <TextBlock Text="Hover over tabs to see the interactive button effects."
+                                               Classes="mtm-body"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                        </TabItem>
+                        
+                        <TabItem Header="Settings">
+                            <Border Margin="20" Background="Transparent">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="Settings Tab Content"
+                                               Classes="mtm-subheading"/>
+                                    <TextBlock Text="All styling uses theme-based DynamicResource colors."
+                                               Classes="mtm-body"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                        </TabItem>
+                    </TabControl>
+
+                    <!-- Tab Styling Information -->
+                    <Border Classes="mtm-card"
+                            Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Button-Style Tab Features"
+                                       Classes="mtm-subheading"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="• Rounded button appearance with 20px corner radius"
+                                       Classes="mtm-body"/>
+                            <TextBlock Text="• Selected: Primary action color background with white text"
+                                       Classes="mtm-body"/>
+                            <TextBlock Text="• Non-selected: Card background with theme-based text"
+                                       Classes="mtm-body"/>
+                            <TextBlock Text="• Hover: Highlighted border and text color changes"
+                                       Classes="mtm-body"/>
+                            <TextBlock Text="• All colors from DynamicResource theme system"
+                                       Classes="mtm-body"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Button Components Preview -->
+            <Border Classes="mtm-card"
+                    Padding="24">
+                <StackPanel>
+                    <TextBlock Text="Button Components"
+                               Classes="mtm-heading"
+                               Margin="0,0,0,16"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,0,0,16">
+                        <!-- Primary Button -->
+                        <Button Classes="mtm-primary" Content="Primary Action"/>
+                        
+                        <!-- Secondary Button -->
+                        <Button Classes="mtm-secondary" Content="Secondary Action"/>
+                        
+                        <!-- Standard Button -->
+                        <Button Content="Standard Button"/>
+                        
+                        <!-- Disabled Button -->
+                        <Button Content="Disabled" IsEnabled="False"/>
+                    </StackPanel>
+
+                    <TextBlock Text="All buttons use theme-based DynamicResource colors for consistent theming."
+                               Classes="mtm-body"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Input Controls Preview -->
+            <Border Classes="mtm-card"
+                    Padding="24">
+                <StackPanel>
+                    <TextBlock Text="Input Controls"
+                               Classes="mtm-heading"
+                               Margin="0,0,0,16"/>
+
+                    <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="12" ColumnSpacing="12">
+                        
+                        <!-- TextBox -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TextBox:" VerticalAlignment="Center" Classes="mtm-subheading"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Watermark="Enter part ID..." Text="PART001"/>
+                        
+                        <!-- AutoCompleteBox -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="AutoCompleteBox:" VerticalAlignment="Center" Classes="mtm-subheading"/>
+                        <AutoCompleteBox Grid.Row="1" Grid.Column="1" 
+                                         Watermark="Type to search..."
+                                         Text="MTM-123"/>
+                        
+                        <!-- ComboBox -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="ComboBox:" VerticalAlignment="Center" Classes="mtm-subheading"/>
+                        <ComboBox Grid.Row="2" Grid.Column="1" SelectedIndex="0" PlaceholderText="Select operation...">
+                            <ComboBoxItem Content="Operation 90"/>
+                            <ComboBoxItem Content="Operation 100"/>
+                            <ComboBoxItem Content="Operation 110"/>
+                        </ComboBox>
+                    </Grid>
+
+                    <TextBlock Text="All input controls use theme colors for backgrounds, borders, and text."
+                               Classes="mtm-body"
+                               TextWrapping="Wrap"
+                               Margin="0,16,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Data Display Preview -->
+            <Border Classes="mtm-card"
+                    Padding="24">
+                <StackPanel>
+                    <TextBlock Text="Data Display Controls"
+                               Classes="mtm-heading"
+                               Margin="0,0,0,16"/>
+
+                    <!-- Sample DataGrid with MTM inventory data -->
+                    <DataGrid Name="SampleDataGrid"
+                              Height="200" 
+                              AutoGenerateColumns="True"
+                              CanUserReorderColumns="True"
+                              CanUserResizeColumns="True"
+                              GridLinesVisibility="Horizontal"
+                              HeadersVisibility="Column"
+                              IsReadOnly="True"
+                              Margin="0,0,0,16"/>
+
+                    <TextBlock Text="DataGrid demonstrates theme-based styling for headers, rows, and cells with realistic MTM inventory data including Part IDs, Operations (90/100/110), Locations, and Quantities. All styling uses DynamicResource theme colors that update immediately when themes are switched."
+                               Classes="mtm-body"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Theme Color Reference -->
+            <Border Classes="mtm-card"
+                    Padding="24">
+                <StackPanel>
+                    <TextBlock Text="MTM Theme Integration"
+                               Classes="mtm-heading"
+                               Margin="0,0,0,16"/>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                        
+                        <!-- Primary Theme Colors -->
+                        <StackPanel Grid.Column="0" Spacing="8">
+                            <TextBlock Text="Primary Theme Colors" Classes="mtm-subheading"/>
+                            
+                            <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}" Height="40" CornerRadius="4">
+                                <TextBlock Text="PrimaryAction" 
+                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                                           VerticalAlignment="Center" 
+                                           HorizontalAlignment="Center"
+                                           FontWeight="Bold"/>
+                            </Border>
+                            
+                            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" 
+                                    BorderThickness="1" 
+                                    Height="40" 
+                                    CornerRadius="4">
+                                <TextBlock Text="CardBackground" 
+                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                           VerticalAlignment="Center" 
+                                           HorizontalAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Supporting Theme Colors -->
+                        <StackPanel Grid.Column="1" Spacing="8">
+                            <TextBlock Text="Supporting Colors" Classes="mtm-subheading"/>
+                            
+                            <Border Background="{DynamicResource MTM_Shared_Logic.HoverBackground}" Height="40" CornerRadius="4">
+                                <TextBlock Text="HoverBackground" 
+                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                           VerticalAlignment="Center" 
+                                           HorizontalAlignment="Center"/>
+                            </Border>
+                            
+                            <Border Background="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" Height="40" CornerRadius="4">
+                                <TextBlock Text="BorderAccent" 
+                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                           VerticalAlignment="Center" 
+                                           HorizontalAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="✅ All colors use DynamicResource - No hardcoded values!"
+                               Classes="mtm-subheading"
+                               HorizontalAlignment="Center"
+                               Margin="0,16,0,0"
+                               Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Footer -->
+            <Border Classes="mtm-header"
+                    CornerRadius="8"
+                    Padding="16">
+                <TextBlock Text="MTM Components Preview - Version 2.0 - Button-Style Tabs &amp; Full Theme Integration"
+                           FontSize="12"
+                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                           HorizontalAlignment="Center"/>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

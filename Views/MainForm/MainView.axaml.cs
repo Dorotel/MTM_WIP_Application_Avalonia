@@ -15,6 +15,9 @@ namespace MTM_WIP_Application_Avalonia.Views
             InitializeComponent();
             Loaded += OnMainViewLoaded;
             SizeChanged += OnMainViewSizeChanged;
+            
+            // DEBUG: Add theme diagnostic when view loads
+            Loaded += OnMainViewLoadedThemeDebug;
         }
 
         private void OnMainViewLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -272,6 +275,81 @@ namespace MTM_WIP_Application_Avalonia.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error resetting window to default size: {ex.Message}");
+            }
+        }
+
+        private void OnMainViewLoadedThemeDebug(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            try
+            {
+                // Debug theme resource resolution
+                DebugThemeResources();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in theme debug: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Debug method to check what theme resources are actually resolved
+        /// </summary>
+        private void DebugThemeResources()
+        {
+            try
+            {
+                if (Application.Current?.Resources == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("DEBUG: Application.Current.Resources is null");
+                    return;
+                }
+
+                // Check key theme resources
+                var primaryAction = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var primaryValue);
+                var textOnDark = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.TextonDark", null, out var textValue);
+
+                System.Diagnostics.Debug.WriteLine($"DEBUG: MTM_Shared_Logic.PrimaryAction found: {primaryAction}, value: {primaryValue}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG: MTM_Shared_Logic.TextonDark found: {textOnDark}, value: {textValue}");
+
+                // Check if we can find tab-related resources
+                var cardBackground = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.CardBackgroundBrush", null, out var cardValue);
+                System.Diagnostics.Debug.WriteLine($"DEBUG: MTM_Shared_Logic.CardBackgroundBrush found: {cardBackground}, value: {cardValue}");
+
+                // Check additional theme resources
+                var borderAccent = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.BorderAccentBrush", null, out var borderValue);
+                var hoverBackground = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.HoverBackground", null, out var hoverValue);
+                var bodyText = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.BodyText", null, out var bodyTextValue);
+
+                System.Diagnostics.Debug.WriteLine($"DEBUG: MTM_Shared_Logic.BorderAccentBrush found: {borderAccent}, value: {borderValue}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG: MTM_Shared_Logic.HoverBackground found: {hoverBackground}, value: {hoverValue}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG: MTM_Shared_Logic.BodyText found: {bodyText}, value: {bodyTextValue}");
+
+                // Check the current theme variant
+                System.Diagnostics.Debug.WriteLine($"DEBUG: Current RequestedThemeVariant: {Application.Current.RequestedThemeVariant}");
+
+                // Check how many merged dictionaries we have
+                System.Diagnostics.Debug.WriteLine($"DEBUG: Merged dictionaries count: {Application.Current.Resources.MergedDictionaries.Count}");
+
+                // Try to find the active MTM Light theme
+                int lightThemeIndex = -1;
+                for (int i = 0; i < Application.Current.Resources.MergedDictionaries.Count; i++)
+                {
+                    var dict = Application.Current.Resources.MergedDictionaries[i];
+                    if (dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var testValue) && 
+                        testValue?.ToString() == "#B8860B")
+                    {
+                        lightThemeIndex = i;
+                        break;
+                    }
+                }
+                System.Diagnostics.Debug.WriteLine($"DEBUG: MTM Light theme found at index: {lightThemeIndex}");
+
+                // Force invalidate visual to trigger re-rendering
+                this.InvalidateVisual();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"DEBUG: Error checking theme resources: {ex.Message}");
             }
         }
 

@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using System;
-using Avalonia.ReactiveUI;
 using System.Reactive.Disposables;
 using Avalonia.Threading;
 

@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="800"
@@ -209,7 +211,15 @@
                                    Classes="input-field"
                                    HorizontalAlignment="Stretch"
                                    Watermark="Enter part ID..."
-                                   ToolTip.Tip="Select or enter part number"/>
+                                   ToolTip.Tip="Select or enter part number"
+                                   MinimumPrefixLength="0"
+                                   FilterMode="Contains"
+                                   MaxDropDownHeight="200"
+                                   IsTextCompletionEnabled="False">
+                    <i:Interaction.Behaviors>
+                      <behaviors:AutoCompleteBoxNavigationBehavior />
+                    </i:Interaction.Behaviors>
+                  </AutoCompleteBox>
                 </StackPanel>
 
                 <!-- Operation -->
@@ -229,7 +239,15 @@
                                    Classes="input-field"
                                    HorizontalAlignment="Stretch"
                                    Watermark="Enter operation..."
-                                   ToolTip.Tip="Select operation number"/>
+                                   ToolTip.Tip="Select operation number"
+                                   MinimumPrefixLength="0"
+                                   FilterMode="StartsWith"
+                                   MaxDropDownHeight="200"
+                                   IsTextCompletionEnabled="False">
+                    <i:Interaction.Behaviors>
+                      <behaviors:AutoCompleteBoxNavigationBehavior />
+                    </i:Interaction.Behaviors>
+                  </AutoCompleteBox>
                 </StackPanel>
 
                 <!-- Quantity -->
@@ -267,7 +285,15 @@
                                    Classes="input-field"
                                    HorizontalAlignment="Stretch"
                                    Watermark="Enter location..."
-                                   ToolTip.Tip="Select location"/>
+                                   ToolTip.Tip="Select location"
+                                   MinimumPrefixLength="0"
+                                   FilterMode="StartsWith"
+                                   MaxDropDownHeight="200"
+                                   IsTextCompletionEnabled="False">
+                    <i:Interaction.Behaviors>
+                      <behaviors:AutoCompleteBoxNavigationBehavior />
+                    </i:Interaction.Behaviors>
+                  </AutoCompleteBox>
                 </StackPanel>
 
                 <!-- Repeat Times -->

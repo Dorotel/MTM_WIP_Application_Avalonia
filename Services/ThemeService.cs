@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace MTM_WIP_Application_Avalonia.Services;
@@ -103,6 +104,37 @@ public class ThemeService : IThemeService
         
         _logger.LogInformation("ThemeService initialized with {ThemeCount} available themes, default theme: {DefaultTheme}", 
             _availableThemes.Count, _currentTheme.DisplayName);
+            
+        // Initialize with user's preferred theme asynchronously
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var preferredThemeResult = await GetUserPreferredThemeAsync();
+                if (preferredThemeResult.IsSuccess && !string.IsNullOrEmpty(preferredThemeResult.Value))
+                {
+                    await SetThemeAsync(preferredThemeResult.Value);
+                }
+                else
+                {
+                    // Apply the default theme to ensure resources are loaded
+                    await ApplyThemeToApplicationAsync(_currentTheme);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error applying initial theme");
+                // Fallback to applying default theme
+                try
+                {
+                    await ApplyThemeToApplicationAsync(_currentTheme);
+                }
+                catch (Exception fallbackEx)
+                {
+                    _logger.LogError(fallbackEx, "Error applying fallback theme");
+                }
+            }
+        });
     }
 
     public string CurrentTheme => _currentTheme.Id;
@@ -470,21 +502,25 @@ public class ThemeService : IThemeService
             
             try
             {
-                // Load the theme resource dictionary using AvaloniaXamlLoader
-                var themeResources = new ResourceDictionary();
+                // Clear existing theme-specific resources FIRST
+                ClearThemeResources();
                 
+                // Small delay to ensure cleanup completes
+                await Task.Delay(20);
+                
+                // Load the theme resource dictionary using AvaloniaXamlLoader
                 try 
                 {
                     // Try to load the resource dictionary directly
-                    themeResources = (ResourceDictionary)AvaloniaXamlLoader.Load(themeResourceUri);
-                    
-                    // Clear existing theme-specific resources and add new ones
-                    ClearThemeResources();
+                    var themeResources = (ResourceDictionary)AvaloniaXamlLoader.Load(themeResourceUri);
                     
                     // Merge the new theme resources
                     Application.Current.Resources.MergedDictionaries.Add(themeResources);
                     
                     _logger.LogInformation("Successfully loaded theme resources from: {Uri}", themeResourceUri);
+                    
+                    // CRITICAL FIX: Force immediate and complete resource refresh
+                    await ForceCompleteApplicationRefreshAsync();
                 }
                 catch (Exception loadEx)
                 {
@@ -506,6 +542,183 @@ public class ThemeService : IThemeService
     }
 
     /// <summary>
+    /// Forces a complete application refresh similar to a restart for theme changes.
+    /// This is the most aggressive approach to ensure all controls update.
+    /// </summary>
+    private async Task ForceCompleteApplicationRefreshAsync()
+    {
+        try
+        {
+            if (Application.Current == null) return;
+
+            await Task.Delay(50); // Allow resource loading to settle
+
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                try
+                {
+                    if (Application.Current.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+                    {
+                        foreach (var window in desktop.Windows.ToList()) // ToList to avoid modification during iteration
+                        {
+                            try
+                            {
+                                // Force complete window refresh
+                                RefreshWindowCompletely(window);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogWarning(ex, "Error during complete window refresh");
+                            }
+                        }
+                    }
+
+                    _logger.LogDebug("Complete application refresh completed");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Error during complete application refresh");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in ForceCompleteApplicationRefreshAsync");
+        }
+    }
+
+    /// <summary>
+    /// Performs the most aggressive window refresh possible short of recreating the window.
+    /// </summary>
+    private void RefreshWindowCompletely(Window window)
+    {
+        try
+        {
+            // Step 1: Force all visual invalidation
+            window.InvalidateVisual();
+            window.InvalidateMeasure();
+            window.InvalidateArrange();
+
+            // Step 2: Force all child controls to refresh recursively
+            InvalidateControlTreeRecursively(window);
+
+            // Step 3: Force re-application of styles by temporarily changing and restoring properties
+            var originalOpacity = window.Opacity;
+            window.Opacity = 0.99;
+            window.Opacity = originalOpacity;
+
+            // Step 4: Force layout update
+            window.UpdateLayout();
+
+            _logger.LogDebug("Complete window refresh performed");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error in RefreshWindowCompletely");
+        }
+    }
+
+    /// <summary>
+    /// Recursively invalidates all controls in a window's visual tree.
+    /// </summary>
+    private void InvalidateControlTreeRecursively(Avalonia.Controls.Control control)
+    {
+        try
+        {
+            if (control == null) return;
+
+            // Force visual re-evaluation to pick up new resource values
+            control.InvalidateVisual();
+            control.InvalidateMeasure();
+            control.InvalidateArrange();
+
+            // Special handling for TabControls - they need extra invalidation
+            if (control is Avalonia.Controls.TabControl tabControl)
+            {
+                ForceTabControlRefresh(tabControl);
+            }
+
+            // Recursively process children
+            if (control is Avalonia.Controls.Panel panel)
+            {
+                foreach (var child in panel.Children)
+                {
+                    if (child is Avalonia.Controls.Control childControl)
+                    {
+                        InvalidateControlTreeRecursively(childControl);
+                    }
+                }
+            }
+            else if (control is Avalonia.Controls.ContentControl contentControl && contentControl.Content is Avalonia.Controls.Control content)
+            {
+                InvalidateControlTreeRecursively(content);
+            }
+            else if (control is Avalonia.Controls.Decorator decorator && decorator.Child is Avalonia.Controls.Control decoratorChild)
+            {
+                InvalidateControlTreeRecursively(decoratorChild);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error invalidating control tree recursively");
+        }
+    }
+
+    /// <summary>
+    /// Forces TabControl refresh by manipulating selection and invalidating all TabItems.
+    /// </summary>
+    private void ForceTabControlRefresh(Avalonia.Controls.TabControl tabControl)
+    {
+        try
+        {
+            // Store current selection
+            var currentSelection = tabControl.SelectedIndex;
+            
+            // Force TabControl to refresh
+            tabControl.InvalidateVisual();
+            tabControl.InvalidateMeasure();
+            tabControl.InvalidateArrange();
+            
+            // Force style re-application by cycling through all TabItems
+            for (int i = 0; i < tabControl.Items.Count; i++)
+            {
+                try
+                {
+                    // Temporarily select each tab to force style refresh
+                    tabControl.SelectedIndex = i;
+                    Task.Delay(1).Wait(); // Minimal delay for style application
+                    
+                    // Force refresh after each selection change
+                    tabControl.InvalidateVisual();
+                    tabControl.InvalidateMeasure();
+                    tabControl.InvalidateArrange();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Error during TabItem {Index} refresh", i);
+                }
+            }
+            
+            // Restore original selection
+            tabControl.SelectedIndex = currentSelection;
+            
+            // Final comprehensive refresh
+            tabControl.InvalidateVisual();
+            tabControl.InvalidateMeasure();
+            tabControl.InvalidateArrange();
+            
+            // Force update of the entire TabControl layout
+            tabControl.UpdateLayout();
+            
+            _logger.LogDebug("Forced TabControl refresh with style cycling for theme update");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error during TabControl-specific refresh");
+        }
+    }
+
+    /// <summary>
     /// Clear existing theme-specific resources to prevent conflicts.
     /// </summary>
     private void ClearThemeResources()
@@ -517,8 +730,11 @@ public class ThemeService : IThemeService
             // Remove any existing theme resource dictionaries
             // We identify them by checking if they contain MTM theme keys
             var themeResourceDictionaries = Application.Current.Resources.MergedDictionaries
-                .Where(dict => dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out _) || 
-                              dict.TryGetResource("MTM_Shared_Logic.CardBackgroundBrush", null, out _))
+                .Where(dict => 
+                    dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out _) || 
+                    dict.TryGetResource("MTM_Shared_Logic.CardBackgroundBrush", null, out _) ||
+                    dict.TryGetResource("MTM_Shared_Logic.SecondaryAction", null, out _) ||
+                    dict.TryGetResource("MTM_Shared_Logic.MainBackground", null, out _))
                 .ToList();
 
             foreach (var themeDict in themeResourceDictionaries)
@@ -526,7 +742,25 @@ public class ThemeService : IThemeService
                 Application.Current.Resources.MergedDictionaries.Remove(themeDict);
             }
 
-            _logger.LogDebug("Cleared {Count} existing theme resource dictionaries", themeResourceDictionaries.Count);
+            // Also clear any direct MTM theme resources that might be cached
+            var mtmResourceKeys = Application.Current.Resources.Keys
+                .Where(key => key != null && key.ToString()?.StartsWith("MTM_Shared_Logic.") == true)
+                .ToList();
+
+            foreach (var key in mtmResourceKeys)
+            {
+                try
+                {
+                    Application.Current.Resources.Remove(key);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Error removing resource key {Key}", key);
+                }
+            }
+
+            _logger.LogDebug("Cleared {Count} existing theme resource dictionaries and {KeyCount} direct resources", 
+                themeResourceDictionaries.Count, mtmResourceKeys.Count);
         }
         catch (Exception ex)
         {
