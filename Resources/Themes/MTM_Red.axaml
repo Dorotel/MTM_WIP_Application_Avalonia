@@ -20,6 +20,8 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.HoverBackground" Color="#FFCDD2"/>
 
 	<!-- Advanced Interactive State Colors -->
+	<!-- Overlay Text Brush for Universal Contrast -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.OverlayTextBrush" Color="#000000"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryHoverBrush" Color="#F44336"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryHoverBrush" Color="#106EBE"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.MagentaHoverBrush" Color="#EF5350"/>

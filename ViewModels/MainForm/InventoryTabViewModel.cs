@@ -27,7 +27,7 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     private readonly IApplicationStateService _applicationStateService;
     private readonly INavigationService _navigationService;
     private readonly IDatabaseService _databaseService;
-    private readonly IConfigurationService _configurationService;
+    private readonly IConfigurationService? _configurationService;
 
     // Observable properties with backing fields
     private string _selectedPart = string.Empty;
@@ -101,25 +101,53 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     public string SelectedPart
     {
         get => _selectedPart;
-        set => SetProperty(ref _selectedPart, value);
+        set
+        {
+            if (SetProperty(ref _selectedPart, value))
+            {
+                OnPropertyChanged(nameof(CanSave));
+                if (SaveCommand is AsyncCommand ac) ac.RaiseCanExecuteChanged();
+            }
+        }
     }
 
     public string SelectedOperation
     {
         get => _selectedOperation;
-        set => SetProperty(ref _selectedOperation, value);
+        set
+        {
+            if (SetProperty(ref _selectedOperation, value))
+            {
+                OnPropertyChanged(nameof(CanSave));
+                if (SaveCommand is AsyncCommand ac) ac.RaiseCanExecuteChanged();
+            }
+        }
     }
 
     public string SelectedLocation
     {
         get => _selectedLocation;
-        set => SetProperty(ref _selectedLocation, value);
+        set
+        {
+            if (SetProperty(ref _selectedLocation, value))
+            {
+                OnPropertyChanged(nameof(CanSave));
+                if (SaveCommand is AsyncCommand ac) ac.RaiseCanExecuteChanged();
+            }
+        }
     }
 
     public int Quantity
     {
         get => _quantity;
-        set => SetProperty(ref _quantity, value);
+        set
+        {
+            if (SetProperty(ref _quantity, value))
+            {
+                OnPropertyChanged(nameof(CanSave));
+                if (SaveCommand is AsyncCommand ac) ac.RaiseCanExecuteChanged();
+            }
+        }
     }
 
     public string Notes

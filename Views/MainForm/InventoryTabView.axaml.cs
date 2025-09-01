@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,6 +14,7 @@ using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Models;
+using System.Diagnostics;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -44,6 +46,7 @@ public partial class InventoryTabView : UserControl
     /// </summary>
     public InventoryTabView()
     {
+
         try
         {
             InitializeComponent();
@@ -53,14 +56,114 @@ public partial class InventoryTabView : UserControl
             System.Diagnostics.Debug.WriteLine($"Error during InitializeComponent: {ex.Message}");
             // Continue with manual initialization if InitializeComponent fails
         }
-        
+
         // Set up event handling
         InitializeControlReferences();
         SetupEventHandlers();
-        
+
         // Set up loaded event to initialize ViewModel
         Loaded += OnLoaded;
+
+        // Subscribe to fuzzy suggestion overlay event
+        MTM_WIP_Application_Avalonia.Behaviors.TextBoxFuzzyValidationBehavior.SuggestionOverlayRequested += OnSuggestionOverlayRequested;
+
     }
+
+
+    private Control? _suggestionOverlay;
+
+    private void OnSuggestionOverlayRequested(TextBox sourceBox, List<object> suggestions)
+    {
+        Debug.WriteLine($"[DBG:OVERLAY] OnSuggestionOverlayRequested called. sourceBox={sourceBox?.Name}, suggestions.Count={suggestions?.Count}");
+        if (_suggestionOverlay != null) {
+            Debug.WriteLine("[DBG:OVERLAY] Overlay already exists. Returning early.");
+            return;
+        }
+        var rootGrid = FindRootGrid(this);
+        if (rootGrid == null) {
+            Debug.WriteLine("[DBG:OVERLAY] rootGrid is null. Cannot add overlay.");
+            return;
+        }
+        var suggestionStrings = suggestions.Select(x => x?.ToString() ?? string.Empty).ToList();
+        Debug.WriteLine($"[DBG:OVERLAY] suggestionStrings: [{string.Join(", ", suggestionStrings)}]");
+        var vm = new MTM_WIP_Application_Avalonia.ViewModels.MainForm.SuggestionOverlayViewModel(suggestionStrings);
+        Debug.WriteLine($"[DBG:OVERLAY] Created SuggestionOverlayViewModel. HashCode={vm.GetHashCode()}, Suggestions.Count={vm.Suggestions.Count}");
+        var overlay = new MTM_WIP_Application_Avalonia.Views.SuggestionOverlayView { DataContext = vm };
+        Debug.WriteLine($"[DBG:OVERLAY] Created SuggestionOverlayView. HashCode={overlay.GetHashCode()}");
+        _suggestionOverlay = overlay;
+        rootGrid.Children.Add(overlay);
+        Debug.WriteLine($"[DBG:OVERLAY] Overlay added to rootGrid. Children.Count={rootGrid.Children.Count}");
+        int rowSpan = Math.Max(1, rootGrid.RowDefinitions.Count);
+        int colSpan = Math.Max(1, rootGrid.ColumnDefinitions.Count);
+        Debug.WriteLine($"[DBG:OVERLAY] Setting Grid.RowSpan={rowSpan}, Grid.ColumnSpan={colSpan}");
+        Grid.SetRowSpan(overlay, rowSpan);
+        Grid.SetColumnSpan(overlay, colSpan);
+        void Cleanup()
+        {
+            Debug.WriteLine($"[DBG:OVERLAY] Cleanup called. Removing overlay from rootGrid.");
+            rootGrid.Children.Remove(overlay);
+            _suggestionOverlay = null;
+            Debug.WriteLine($"[DBG:OVERLAY] Overlay removed. Children.Count={rootGrid.Children.Count}");
+        }
+        vm.SuggestionSelected += result =>
+        {
+            Debug.WriteLine($"[DBG:OVERLAY] SuggestionSelected event. result='{result}'");
+            if (!string.IsNullOrEmpty(result))
+            {
+                Debug.WriteLine($"[DBG:OVERLAY] Setting sourceBox.Text to '{result}'");
+                sourceBox.Text = result;
+                sourceBox.CaretIndex = result.Length;
+            }
+            Debug.WriteLine("[DBG:OVERLAY] Refocusing sourceBox and cleaning up overlay.");
+            sourceBox.Focus();
+            Cleanup();
+        };
+        vm.Cancelled += () =>
+        {
+            Debug.WriteLine("[DBG:OVERLAY] Cancelled event. Refocusing sourceBox and cleaning up overlay.");
+            sourceBox.Focus();
+            Cleanup();
+        };
+        overlay.AttachedToVisualTree += (s, e) =>
+        {
+            Debug.WriteLine($"[DBG:OVERLAY] Overlay AttachedToVisualTree. overlay={overlay.GetHashCode()}");
+            var listBox = overlay.FindControl<ListBox>("SuggestionListBox");
+            if (listBox != null)
+            {
+                Debug.WriteLine("[DBG:OVERLAY] SuggestionListBox found. Setting SelectedIndex=0 and focusing.");
+                listBox.SelectedIndex = 0;
+                listBox.Focus();
+            }
+            else
+            {
+                Debug.WriteLine("[DBG:OVERLAY] SuggestionListBox not found in overlay.");
+            }
+        };
+
+    }
+
+    private static Grid? FindRootGrid(Control control)
+    {
+        if (control is Grid grid) return grid;
+        if (control is ContentControl cc && cc.Content is Control child)
+            return FindRootGrid(child);
+        if (control is Decorator decorator && decorator.Child is Control dChild)
+            return FindRootGrid(dChild);
+        if (control is Panel panel && panel.Children.Count > 0)
+        {
+            foreach (var c in panel.Children)
+            {
+                if (c is Control childControl)
+                {
+                    var found = FindRootGrid(childControl);
+                    if (found != null) return found;
+                }
+            }
+        }
+        return null;
+
+    }
+
 
     /// <summary>
     /// Initializes a new instance of the InventoryTabView with dependency injection support.
@@ -181,14 +284,14 @@ public partial class InventoryTabView : UserControl
             if (_viewModel == null || _saveButton == null) return;
 
             bool canSave = IsFormValid();
-            
+
             // Update ViewModel CanSave property if it exists
             var canSaveProperty = _viewModel.GetType().GetProperty("CanSave");
             if (canSaveProperty?.CanWrite == true)
             {
                 canSaveProperty.SetValue(_viewModel, canSave);
             }
-            
+
             // Directly update button state as fallback
             _saveButton.IsEnabled = canSave;
 
@@ -255,16 +358,16 @@ public partial class InventoryTabView : UserControl
             if (DataContext is InventoryTabViewModel vm)
             {
                 _viewModel = vm;
-                
+
                 // Subscribe to ViewModel events
                 _viewModel.PropertyChanged += OnViewModelPropertyChanged;
-                
+
                 // Initialize form state and focus
                 InitializeFormState();
-                
+
                 // Initial validation
                 ValidateAndUpdateSaveButton();
-                
+
                 _logger?.LogInformation("InventoryTabView ViewModel connected successfully");
             }
 
@@ -316,14 +419,14 @@ public partial class InventoryTabView : UserControl
             if (_serviceProvider?.GetService<IApplicationStateService>() is IApplicationStateService appStateService)
             {
                 // Set default operation if available and ViewModel property exists
-                if (!string.IsNullOrEmpty(appStateService.CurrentOperation) && 
+                if (!string.IsNullOrEmpty(appStateService.CurrentOperation) &&
                     string.IsNullOrEmpty(_viewModel.SelectedOperation))
                 {
                     _viewModel.SelectedOperation = appStateService.CurrentOperation;
                 }
 
                 // Set default location if available and ViewModel property exists
-                if (!string.IsNullOrEmpty(appStateService.CurrentLocation) && 
+                if (!string.IsNullOrEmpty(appStateService.CurrentLocation) &&
                     string.IsNullOrEmpty(_viewModel.SelectedLocation))
                 {
                     _viewModel.SelectedLocation = appStateService.CurrentLocation;
@@ -473,8 +576,8 @@ public partial class InventoryTabView : UserControl
             if (sender is not AutoCompleteBox autoCompleteBox) return;
 
             // If the AutoCompleteBox is empty and has items, show the dropdown
-            if (string.IsNullOrEmpty(autoCompleteBox.Text) && 
-                _viewModel?.PartIds.Count > 0 && 
+            if (string.IsNullOrEmpty(autoCompleteBox.Text) &&
+                _viewModel?.PartIds.Count > 0 &&
                 !autoCompleteBox.IsDropDownOpen)
             {
                 // Small delay to ensure focus is fully established
@@ -506,7 +609,7 @@ public partial class InventoryTabView : UserControl
         try
         {
             if (sender is not AutoCompleteBox autoCompleteBox) return;
-            
+
             // Log dropdown opened for debugging
             _logger?.LogDebug("Part AutoCompleteBox dropdown opened with {Count} items", _viewModel?.PartIds.Count ?? 0);
         }
@@ -552,15 +655,15 @@ public partial class InventoryTabView : UserControl
             if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
 
             var selectedPart = autoCompleteBox.SelectedItem?.ToString() ?? string.Empty;
-            
+
             if (!string.IsNullOrEmpty(selectedPart))
             {
                 _viewModel.SelectedPart = selectedPart;
-                
+
                 // Update validation and save button
                 UpdateValidationStates();
                 ValidateAndUpdateSaveButton();
-                
+
                 // Move to next field automatically
                 MoveFocusToNextControl();
             }
@@ -608,8 +711,8 @@ public partial class InventoryTabView : UserControl
             if (sender is not AutoCompleteBox autoCompleteBox) return;
 
             // If the AutoCompleteBox is empty and has items, show the dropdown
-            if (string.IsNullOrEmpty(autoCompleteBox.Text) && 
-                _viewModel?.Operations.Count > 0 && 
+            if (string.IsNullOrEmpty(autoCompleteBox.Text) &&
+                _viewModel?.Operations.Count > 0 &&
                 !autoCompleteBox.IsDropDownOpen)
             {
                 // Small delay to ensure focus is fully established
@@ -641,7 +744,7 @@ public partial class InventoryTabView : UserControl
         try
         {
             if (sender is not AutoCompleteBox autoCompleteBox) return;
-            
+
             // Log dropdown opened for debugging
             _logger?.LogDebug("Operation AutoCompleteBox dropdown opened with {Count} items", _viewModel?.Operations.Count ?? 0);
         }
@@ -684,15 +787,15 @@ public partial class InventoryTabView : UserControl
             if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
 
             var selectedOperation = autoCompleteBox.SelectedItem?.ToString() ?? string.Empty;
-            
+
             if (!string.IsNullOrEmpty(selectedOperation))
             {
                 _viewModel.SelectedOperation = selectedOperation;
-                
+
                 // Update validation and save button
                 UpdateValidationStates();
                 ValidateAndUpdateSaveButton();
-                
+
                 // Move to next field automatically
                 MoveFocusToNextControl();
             }
@@ -740,8 +843,8 @@ public partial class InventoryTabView : UserControl
             if (sender is not AutoCompleteBox autoCompleteBox) return;
 
             // If the AutoCompleteBox is empty and has items, show the dropdown
-            if (string.IsNullOrEmpty(autoCompleteBox.Text) && 
-                _viewModel?.Locations.Count > 0 && 
+            if (string.IsNullOrEmpty(autoCompleteBox.Text) &&
+                _viewModel?.Locations.Count > 0 &&
                 !autoCompleteBox.IsDropDownOpen)
             {
                 // Small delay to ensure focus is fully established
@@ -773,7 +876,7 @@ public partial class InventoryTabView : UserControl
         try
         {
             if (sender is not AutoCompleteBox autoCompleteBox) return;
-            
+
             // Log dropdown opened for debugging
             _logger?.LogDebug("Location AutoCompleteBox dropdown opened with {Count} items", _viewModel?.Locations.Count ?? 0);
         }
@@ -816,15 +919,15 @@ public partial class InventoryTabView : UserControl
             if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
 
             var selectedLocation = autoCompleteBox.SelectedItem?.ToString() ?? string.Empty;
-            
+
             if (!string.IsNullOrEmpty(selectedLocation))
             {
                 _viewModel.SelectedLocation = selectedLocation;
-                
+
                 // Update validation and save button
                 UpdateValidationStates();
                 ValidateAndUpdateSaveButton();
-                
+
                 // Move to next field automatically
                 MoveFocusToNextControl();
             }
@@ -872,7 +975,7 @@ public partial class InventoryTabView : UserControl
             if (_viewModel == null || sender is not TextBox textBox) return;
 
             var quantityText = textBox.Text?.Trim() ?? string.Empty;
-            
+
             // Parse and validate quantity
             if (int.TryParse(quantityText, out int quantity) && quantity > 0)
             {
@@ -903,7 +1006,7 @@ public partial class InventoryTabView : UserControl
             if (_viewModel == null || sender is not TextBox textBox) return;
 
             var quantityText = textBox.Text?.Trim() ?? string.Empty;
-            
+
             // Validate and format quantity
             if (int.TryParse(quantityText, out int quantity))
             {
@@ -951,7 +1054,7 @@ public partial class InventoryTabView : UserControl
             if (_viewModel == null || sender is not TextBox textBox) return;
 
             _viewModel.Notes = textBox.Text ?? string.Empty;
-            
+
             // Notes don't affect save button validation, but update states
             UpdateValidationStates();
         }
@@ -1012,7 +1115,7 @@ public partial class InventoryTabView : UserControl
             if (quickButtonsView?.DataContext is QuickButtonsViewModel quickButtonsViewModel)
             {
                 _quickButtonsViewModel = quickButtonsViewModel;
-                
+
                 // Subscribe to quick action executed events if they exist
                 var quickActionEvent = _quickButtonsViewModel.GetType().GetEvent("QuickActionExecuted");
                 if (quickActionEvent != null)
@@ -1021,7 +1124,7 @@ public partial class InventoryTabView : UserControl
                     var handler = new EventHandler<object>((sender, args) => OnQuickActionExecuted(sender, args));
                     quickActionEvent.AddEventHandler(_quickButtonsViewModel, handler);
                 }
-                
+
                 _logger?.LogInformation("QuickButtons integration initialized successfully");
             }
             else
@@ -1052,32 +1155,32 @@ public partial class InventoryTabView : UserControl
 
             if (!string.IsNullOrEmpty(partId))
             {
-                _logger?.LogInformation("Quick action applied: PartId={PartId}, Operation={Operation}, Quantity={Quantity}", 
+                _logger?.LogInformation("Quick action applied: PartId={PartId}, Operation={Operation}, Quantity={Quantity}",
                     partId, operation, quantity);
 
                 // Populate form fields with quick action data
                 _viewModel.SelectedPart = partId;
                 _viewModel.SelectedOperation = operation;
                 _viewModel.Quantity = quantity;
-                
+
                 // Clear previous error state if ViewModel has error properties
                 var hasErrorProperty = _viewModel.GetType().GetProperty("HasError");
                 var errorMessageProperty = _viewModel.GetType().GetProperty("ErrorMessage");
-                
+
                 if (hasErrorProperty?.CanWrite == true)
                 {
                     hasErrorProperty.SetValue(_viewModel, false);
                 }
-                
+
                 if (errorMessageProperty?.CanWrite == true)
                 {
                     errorMessageProperty.SetValue(_viewModel, string.Empty);
                 }
-                
+
                 // Update UI control states and save button
                 UpdateControlStates();
                 ValidateAndUpdateSaveButton();
-                
+
                 // Focus the location field (likely next field to fill)
                 _locationAutoCompleteBox?.Focus();
             }
@@ -1112,7 +1215,7 @@ public partial class InventoryTabView : UserControl
                     UpdateValidationStates();
                     ValidateAndUpdateSaveButton(); // Update save button on property changes
                     break;
-                    
+
                 case "IsLoading":
                 case "IsLoadingParts":
                 case "IsLoadingOperations":
@@ -1181,10 +1284,10 @@ public partial class InventoryTabView : UserControl
                     MoveFocusToFirstControl();
                     break;
 
-                // REMOVED: Arrow key handling - now handled globally by MainWindow
-                // case Key.Up:
-                // case Key.Down:
-                //     No longer handled here - MainWindow handles these globally
+                    // REMOVED: Arrow key handling - now handled globally by MainWindow
+                    // case Key.Up:
+                    // case Key.Down:
+                    //     No longer handled here - MainWindow handles these globally
             }
         }
         catch (Exception ex)
@@ -1258,12 +1361,12 @@ public partial class InventoryTabView : UserControl
         {
             var hasErrorProperty = _viewModel?.GetType().GetProperty("HasError");
             var errorMessageProperty = _viewModel?.GetType().GetProperty("ErrorMessage");
-            
+
             if (hasErrorProperty?.CanWrite == true)
             {
                 hasErrorProperty.SetValue(_viewModel, false);
             }
-            
+
             if (errorMessageProperty?.CanWrite == true)
             {
                 errorMessageProperty.SetValue(_viewModel, string.Empty);
@@ -1313,7 +1416,7 @@ public partial class InventoryTabView : UserControl
         try
         {
             var currentFocus = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
-            
+
             // Define the logical tab order
             if (currentFocus == _partAutoCompleteBox)
             {
@@ -1387,7 +1490,7 @@ public partial class InventoryTabView : UserControl
                         {
                             return quickButtonsView;
                         }
-                        
+
                         var found = FindQuickButtonsViewInChildren(child);
                         if (found != null)
                         {
@@ -1397,7 +1500,7 @@ public partial class InventoryTabView : UserControl
                 }
                 current = current.Parent;
             }
-            
+
             return null;
         }
         catch (Exception ex)
@@ -1418,7 +1521,7 @@ public partial class InventoryTabView : UserControl
             {
                 return quickButtonsView;
             }
-            
+
             if (control is Panel panel)
             {
                 foreach (var child in panel.Children)
@@ -1430,7 +1533,7 @@ public partial class InventoryTabView : UserControl
                     }
                 }
             }
-            
+
             return null;
         }
         catch
@@ -1453,7 +1556,7 @@ public partial class InventoryTabView : UserControl
             // Clean up event subscriptions
             KeyDown -= OnKeyDown;
             Loaded -= OnLoaded;
-            
+
             // UI control event handlers
             if (_partAutoCompleteBox != null)
             {
@@ -1502,15 +1605,15 @@ public partial class InventoryTabView : UserControl
             {
                 _saveButton.Click -= OnSaveButtonClick;
             }
-            
+
             // ViewModel event handlers
             if (_viewModel != null)
             {
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
             }
-            
+
             // QuickButtons event handlers would be unsubscribed here using reflection if needed
-            
+
             _logger?.LogDebug("InventoryTabView cleanup completed - arrow key handling delegated to MainWindow");
         }
         catch (Exception ex)
@@ -1522,7 +1625,7 @@ public partial class InventoryTabView : UserControl
         {
             base.OnDetachedFromVisualTree(e);
         }
-    }
+    }   
 
     #endregion
 }

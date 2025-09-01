@@ -182,9 +182,6 @@ private void ListBox_DragDrop(object sender, DragEventArgs e)
 private void ApplyTheming()
 {
     Core_Themes.ApplyThemeToControl(this);
-    // Apply consistent theming with parent application
-    listBox.BackColor = Core_Themes.GetControlBackColor();
-    listBox.ForeColor = Core_Themes.GetControlForeColor();
 }
 ```
 

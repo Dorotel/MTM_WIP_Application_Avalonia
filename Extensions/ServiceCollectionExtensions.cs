@@ -81,6 +81,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<SystemHealthViewModel>();
         services.TryAddTransient<BackupRecoveryViewModel>();
         services.TryAddTransient<SecurityPermissionsViewModel>();
+        services.TryAddTransient<SuggestionOverlayViewModel>();
 
         return services;
     }

@@ -14,8 +14,12 @@ using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Controls;
 
+
+
+
 namespace MTM_WIP_Application_Avalonia
 {
+
     public partial class App : Application
     {
         private ILogger<App>? _logger;
@@ -38,7 +42,7 @@ namespace MTM_WIP_Application_Avalonia
         public override void OnFrameworkInitializationCompleted()
         {
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] App.OnFrameworkInitializationCompleted() started");
-            
+
             // Check if we're in design mode and exit early
             if (IsDesignMode())
             {
@@ -50,11 +54,11 @@ namespace MTM_WIP_Application_Avalonia
             try
             {
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Initializing application services...");
-                
+
                 // Initialize configuration and application variables
                 var configuration = Program.GetService<IConfiguration>();
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Configuration service obtained");
-                
+
                 Model_AppVariables.Initialize(configuration);
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Model_AppVariables initialized");
 
@@ -63,7 +67,7 @@ namespace MTM_WIP_Application_Avalonia
                 var loggerFactory = Program.GetService<ILoggerFactory>();
                 var generalLogger = loggerFactory.CreateLogger("Helper_Database_StoredProcedure");
                 Helper_Database_StoredProcedure.SetLogger(generalLogger);
-                
+
                 _logger?.LogInformation("MTM WIP Application framework initialization started");
                 _logger?.LogInformation("Model_AppVariables and database helper initialized successfully");
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Logging infrastructure initialized");
@@ -77,12 +81,12 @@ namespace MTM_WIP_Application_Avalonia
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
                     Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Creating MainWindow with dependency injection...");
-                    
+
                     // Create MainWindow with injected ViewModel
                     var mainWindowViewModel = Program.GetService<MainWindowViewModel>();
                     _logger?.LogInformation("MainWindowViewModel service resolved successfully");
                     Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] MainWindowViewModel resolved");
-                    
+
                     desktop.MainWindow = new MainWindow
                     {
                         DataContext = mainWindowViewModel
@@ -98,15 +102,19 @@ namespace MTM_WIP_Application_Avalonia
                         _logger?.LogDebug("Startup dialog task started");
                         // Wait a moment for the main window to fully initialize
                         await Task.Delay(1000);
-                        
+
                         // Show startup dialog on UI thread
                         await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
                         {
-                           // _logger?.LogDebug("Showing startup dialog on UI thread");
-                           // await StartupDialog.ShowStartupInfoAsync(configuration);
-                           // _logger?.LogDebug("Startup dialog completed");
+                            // _logger?.LogDebug("Showing startup dialog on UI thread");
+                            // await StartupDialog.ShowStartupInfoAsync(configuration);
+                            // _logger?.LogDebug("Startup dialog completed");
                         });
                     });
+                    #if DEBUG
+    this.AttachDevTools();
+#endif
+    base.OnFrameworkInitializationCompleted();
                 }
 
                 _logger?.LogInformation("Framework initialization completed successfully");
@@ -118,9 +126,9 @@ namespace MTM_WIP_Application_Avalonia
                 var errorMessage = $"Error during application framework initialization: {ex.Message}";
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {errorMessage}");
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stack trace: {ex.StackTrace}");
-                
+
                 _logger?.LogError(ex, "Critical error during application framework initialization");
-                
+
                 // In case of service provider issues, create a minimal window for debugging
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow == null)
                 {
@@ -130,7 +138,7 @@ namespace MTM_WIP_Application_Avalonia
                         DataContext = null // Will use design-time data
                     };
                 }
-                
+
                 throw;
             }
         }
@@ -176,14 +184,14 @@ namespace MTM_WIP_Application_Avalonia
 
                 // Load MTM Light theme resources
                 var mtmLightUri = new Uri("avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml");
-                
+
                 try
                 {
                     mtmLightResources = (Avalonia.Controls.ResourceDictionary)AvaloniaXamlLoader.Load(mtmLightUri);
-                    
+
                     // Remove any existing MTM Light theme from merged dictionaries
                     var existingMTMLight = Application.Current.Resources.MergedDictionaries
-                        .Where(dict => dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var value) && 
+                        .Where(dict => dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var value) &&
                                value?.ToString() == "#B8860B") // MTM Light's primary color
                         .ToList();
 
@@ -194,16 +202,16 @@ namespace MTM_WIP_Application_Avalonia
 
                     // Add the MTM Light theme as the LAST dictionary to ensure it takes precedence
                     Application.Current.Resources.MergedDictionaries.Add(mtmLightResources);
-                    
+
                     Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] MTM Light theme resources force-loaded successfully");
-                    
+
                     // CRITICAL: Also manually force the key tab colors to ensure proper override
                     ForceTabThemeColors();
                 }
                 catch (Exception loadEx)
                 {
                     Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Could not load MTM Light theme resources: {loadEx.Message}");
-                    
+
                     // Fallback: Manually set key MTM Light colors
                     ForceMTMLightColors();
                 }
@@ -269,7 +277,7 @@ namespace MTM_WIP_Application_Avalonia
                     ["MTM_Shared_Logic.SidebarGradientBrush"] = "#B8860B",   // Sidebar gradient
                     ["MTM_Shared_Logic.FooterBackgroundBrush"] = "#8C7300",  // Footer background
                     ["MTM_Shared_Logic.PageHeaders"] = "#B8860B",            // Page headers
-                    
+
                     // CRITICAL TAB-SPECIFIC COLORS
                     ["MTM_Shared_Logic.CardBackgroundBrush"] = "#FFFFFF",    // White background for unselected tabs
                     ["MTM_Shared_Logic.BorderAccentBrush"] = "#FFEB9C",      // Light border accent
@@ -277,7 +285,7 @@ namespace MTM_WIP_Application_Avalonia
                     ["MTM_Shared_Logic.BodyText"] = "#666666",               // Dark gray for unselected tab text
                     ["MTM_Shared_Logic.BorderDarkBrush"] = "#F5F5DC",        // Light border for unselected tabs
                     ["MTM_Shared_Logic.HeadingText"] = "#8C7300",            // Heading text color
-                    
+
                     // Additional supporting colors
                     ["MTM_Shared_Logic.MainBackground"] = "#FFF9D1",         // Main background
                     ["MTM_Shared_Logic.ContentAreas"] = "#FFFFFF",           // Content areas
@@ -310,7 +318,7 @@ namespace MTM_WIP_Application_Avalonia
 
                 // Remove any existing theme resource dictionaries that might conflict
                 var conflictingThemes = Application.Current.Resources.MergedDictionaries
-                    .Where(dict => dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var value) && 
+                    .Where(dict => dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var value) &&
                            value?.ToString() != "#B8860B") // Remove anything that's not MTM Light gold
                     .ToList();
 
@@ -342,3 +350,4 @@ namespace MTM_WIP_Application_Avalonia
         }
     }
 }
+

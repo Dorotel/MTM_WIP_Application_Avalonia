@@ -29,6 +29,8 @@
 	<!-- Light Gold -->
 
 	<!-- Advanced Interactive State Colors -->
+	<!-- Overlay Text Brush for Universal Contrast - DARK FOR LIGHT THEME -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.OverlayTextBrush" Color="#000000"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryHoverBrush" Color="#DAA520"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryHoverBrush" Color="#FFF7CC"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.MagentaHoverBrush" Color="#BFA100"/>

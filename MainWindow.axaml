@@ -11,7 +11,7 @@
         x:DataType="vm:MainWindowViewModel"
         Title="MTM WIP Application"
         Width="1200"
-        Height="800"
+        Height="850"
         Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
 
     <!-- Main Window Content with proper stretching for MainView -->

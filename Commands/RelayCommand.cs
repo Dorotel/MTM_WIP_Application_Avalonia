@@ -20,7 +20,12 @@ public class RelayCommand : ICommand
 
     public event EventHandler? CanExecuteChanged;
 
-    public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
+    public bool CanExecute(object? parameter)
+    {
+        var result = _canExecute?.Invoke() ?? true;
+        System.Diagnostics.Debug.WriteLine($"[RelayCommand] CanExecute called. Result: {result}");
+        return result;
+    }
 
     public void Execute(object? parameter) => _execute();
 

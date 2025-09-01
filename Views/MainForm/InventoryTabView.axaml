@@ -32,6 +32,7 @@
     <Style Selector="TextBox.input-field.error">
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"/>
+  <!-- Removed unsupported WatermarkBrush property -->
     </Style>
 
     <!-- Focus state styling -->
@@ -54,6 +55,7 @@
     <Style Selector="AutoCompleteBox.input-field.error">
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"/>
+  <!-- Removed unsupported WatermarkBrush property -->
     </Style>
 
     <!-- Focus state for AutoCompleteBox -->
@@ -354,25 +356,20 @@
                        TextAlignment="Left"
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
-          <AutoCompleteBox x:Name="PartAutoCompleteBox"
-                          ItemsSource="{Binding PartIds}"
-                          SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
-                          Text="{Binding PartText, Mode=TwoWay}"
-                          Classes="input-field"
-                          Classes.error="{Binding !IsPartValid}"
-                          Classes.loading="{Binding IsLoadingParts}"
-                          HorizontalAlignment="Stretch"
-                          Watermark="Select or enter part ID..."
-                          ToolTip.Tip="Select or enter a part number"
-                          TabIndex="1"
-                          MinimumPrefixLength="0"
-                          FilterMode="Contains"
-                          MaxDropDownHeight="200"
-                          IsTextCompletionEnabled="False">
-            <i:Interaction.Behaviors>
-              <behaviors:AutoCompleteBoxNavigationBehavior />
-            </i:Interaction.Behaviors>
-          </AutoCompleteBox>
+          <TextBox x:Name="PartTextBox"
+                   Text="{Binding PartText, Mode=TwoWay}"
+                   Classes="input-field"
+                   HorizontalAlignment="Stretch"
+                   ToolTip.Tip="Select or enter a part number"
+                   TabIndex="1"
+                   behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
+                   behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding PartIds}" />
+            <TextBlock Text="Part ID is required"
+                       Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                       FontSize="11"
+                       Margin="4,0,0,0"
+                       IsVisible="{Binding !IsPartValid}"
+                       AutomationProperties.HelpText="Part ID is required"/>
         </StackPanel>
 
         <!-- Operation -->
@@ -382,7 +379,7 @@
                                         Kind="Cog"
                                         Width="14"
                                         Height="14"
-										Background="Transparent"
+                                        Background="Transparent"
                                         Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Operation"/>
@@ -395,25 +392,20 @@
                        TextAlignment="Left"
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
-          <AutoCompleteBox x:Name="OperationAutoCompleteBox"
-                          ItemsSource="{Binding Operations}"
-                          SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
-                          Text="{Binding OperationText, Mode=TwoWay}"
-                          Classes="input-field"
-                          Classes.error="{Binding !IsOperationValid}"
-                          Classes.loading="{Binding IsLoadingOperations}"
-                          HorizontalAlignment="Stretch"
-                          Watermark="Select operation..."
-                          ToolTip.Tip="Select an operation number"
-                          TabIndex="2"
-                          MinimumPrefixLength="0"
-                          FilterMode="StartsWith"
-                          MaxDropDownHeight="200"
-                          IsTextCompletionEnabled="False">
-            <i:Interaction.Behaviors>
-              <behaviors:AutoCompleteBoxNavigationBehavior />
-            </i:Interaction.Behaviors>
-          </AutoCompleteBox>
+          <TextBox x:Name="OperationTextBox"
+                   Text="{Binding OperationText, Mode=TwoWay}"
+                   Classes="input-field"
+                   HorizontalAlignment="Stretch"
+                   ToolTip.Tip="Select or enter an operation number"
+                   TabIndex="2"
+                   behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
+                   behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Operations}" />
+          <TextBlock Text="Operation is required"
+                     Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                     FontSize="11"
+                     Margin="4,0,0,0"
+                     IsVisible="{Binding !IsOperationValid}"
+                     AutomationProperties.HelpText="Operation is required"/>
         </StackPanel>
 
         <!-- Location -->
@@ -423,8 +415,7 @@
                                         Kind="MapMarker"
                                         Width="14"
                                         Height="14"
-										Background="Transparent"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                                        Background="Transparent"
                                         VerticalAlignment="Center"
                                         ToolTip.Tip="Location"/>
             <TextBlock Grid.Column="1"
@@ -436,25 +427,20 @@
                        TextAlignment="Left"
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
-          <AutoCompleteBox x:Name="LocationAutoCompleteBox"
-                          ItemsSource="{Binding Locations}"
-                          SelectedItem="{Binding SelectedLocation, Mode=TwoWay}"
-                          Text="{Binding LocationText, Mode=TwoWay}"
-                          Classes="input-field"
-                          Classes.error="{Binding !IsLocationValid}"
-                          Classes.loading="{Binding IsLoadingLocations}"
-                          HorizontalAlignment="Stretch"
-                          Watermark="Select location..."
-                          ToolTip.Tip="Select a location"
-                          TabIndex="3"
-                          MinimumPrefixLength="0"
-                          FilterMode="StartsWith"
-                          MaxDropDownHeight="200"
-                          IsTextCompletionEnabled="False">
-            <i:Interaction.Behaviors>
-              <behaviors:AutoCompleteBoxNavigationBehavior />
-            </i:Interaction.Behaviors>
-          </AutoCompleteBox>
+          <TextBox x:Name="LocationTextBox"
+                   Text="{Binding LocationText, Mode=TwoWay}"
+                   Classes="input-field"
+                   HorizontalAlignment="Stretch"
+                   ToolTip.Tip="Select or enter a location"
+                   TabIndex="3"
+                   behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
+                   behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Locations}" />
+          <TextBlock Text="Location is required"
+                     Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                     FontSize="11"
+                     Margin="4,0,0,0"
+                     IsVisible="{Binding !IsLocationValid}"
+                     AutomationProperties.HelpText="Location is required"/>
         </StackPanel>
 
         <!-- Quantity -->
@@ -540,8 +526,8 @@
                     Spacing="8">
           <Button x:Name="SaveButton"
                   Classes="action-button primary"
-				  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-				  Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+			  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+			  Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
                   Width="80" 
                   Height="32"
                   Command="{Binding SaveCommand}"

@@ -1,3 +1,4 @@
+
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:themes="using:MTM_WIP_Application_Avalonia.Resources.Themes"
@@ -148,6 +149,48 @@
 		<Setter Property="BorderThickness" Value="0"/>
 	</Style>
 
+
+	<!-- ================================================================== -->
+	<!-- LISTBOX & LISTBOXITEM - MTM OVERLAY/SUGGESTION THEME              -->
+	<!-- ================================================================== -->
+
+	<!-- Overlay/Suggestion ListBox Style (applies to overlays, suggestion popups, etc.) -->
+	<Style Selector="ListBox.mtm-overlay">
+		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+		<Setter Property="BorderThickness" Value="2"/>
+		<Setter Property="CornerRadius" Value="12"/>
+		<Setter Property="Padding" Value="0"/>
+		<Setter Property="Margin" Value="0"/>
+	</Style>
+
+	<!-- Overlay/Suggestion ListBoxItem Style -->
+	<Style Selector="ListBox.mtm-overlay ListBoxItem">
+		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+		<Setter Property="FontSize" Value="18"/>
+		<Setter Property="Padding" Value="8,4,8,4"/>
+		<Setter Property="Margin" Value="0"/>
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="CornerRadius" Value="6"/>
+	</Style>
+		<Style Selector="ListBox.mtm-overlay ListBoxItem:selected">
+			<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+			<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+		</Style>
+	<Style Selector="ListBox.mtm-overlay ListBoxItem:pointerover">
+		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+	</Style>
+	<Style Selector="ListBox.mtm-overlay ListBoxItem:focused">
+		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+	</Style>
+	<Style Selector="ListBox.mtm-overlay ListBoxItem:disabled">
+		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.MutedTextBrush}"/>
+	</Style>
+
 	<!-- ================================================================== -->
 	<!-- BUTTON STYLES - THEME-BASED COLORS ONLY                          -->
 	<!-- ================================================================== -->
@@ -269,7 +312,7 @@
 	<!-- AutoCompleteBox Dropdown ListBox Items -->
 	<Style Selector="AutoCompleteBox ListBoxItem">
 		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
 		<Setter Property="Padding" Value="8,6"/>
 		<Setter Property="MinHeight" Value="32"/>
 		<Setter Property="BorderThickness" Value="0"/>

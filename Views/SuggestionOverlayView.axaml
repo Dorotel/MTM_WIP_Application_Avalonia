@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SuggestionOverlayView"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
+             xmlns:conv="using:MTM_WIP_Application_Avalonia.Converters"
+             Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+             x:DataType="vm:SuggestionOverlayViewModel">
+  <UserControl.Resources>
+    <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
+  </UserControl.Resources>
+  <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+          BorderThickness="2"
+          CornerRadius="12"
+          Padding="32"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
+  <StackPanel Spacing="18">
+  <TextBlock Text="Did you mean?"
+    FontWeight="Bold"
+    FontSize="22"
+    Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+  <TextBlock Text="No exact match found. Please select from similar items:"
+    FontSize="14"
+    Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+
+  <ListBox Classes="mtm-overlay"
+               ItemsSource="{Binding Suggestions}"
+               SelectedItem="{Binding SelectedSuggestion, Mode=TwoWay}"
+               MaxHeight="400"
+               MinHeight="120"
+               FontSize="18"
+               BorderThickness="0"
+               Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+               HorizontalAlignment="Stretch"
+               x:Name="SuggestionListBox"
+               KeyDown="OnSuggestionListBoxKeyDown">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding}" Margin="8,4,8,4"
+                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                       DoubleTapped="OnSuggestionItemDoubleTapped"/>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+  <Button Content="Cancel" Command="{Binding CancelCommand}" Width="90"/>
+  <Button x:Name="SelectButton" Content="Select" Command="{Binding SelectCommand}" Width="90"/>
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</UserControl>

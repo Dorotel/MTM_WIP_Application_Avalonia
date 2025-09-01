@@ -132,8 +132,6 @@
                         <!-- Standard Button -->
                         <Button Content="Standard Button"/>
                         
-                        <!-- Disabled Button -->
-                        <Button Content="Disabled" IsEnabled="False"/>
                     </StackPanel>
 
                     <TextBlock Text="All buttons use theme-based DynamicResource colors for consistent theming."

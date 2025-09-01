@@ -267,11 +267,8 @@
                                    MinimumPrefixLength="0"
                                    FilterMode="Contains"
                                    MaxDropDownHeight="200"
-                                   IsTextCompletionEnabled="False">
-                    <i:Interaction.Behaviors>
-                      <behaviors:AutoCompleteBoxNavigationBehavior />
-                    </i:Interaction.Behaviors>
-                  </AutoCompleteBox>
+                                   IsTextCompletionEnabled="False"
+                                   behaviors:ComboBoxBehavior.EnableComboBoxBehavior="True" />
                 </StackPanel>
 
                 <!-- Operation Section -->
@@ -301,11 +298,8 @@
                                    MinimumPrefixLength="0"
                                    FilterMode="StartsWith"
                                    MaxDropDownHeight="200"
-                                   IsTextCompletionEnabled="False">
-                    <i:Interaction.Behaviors>
-                      <behaviors:AutoCompleteBoxNavigationBehavior />
-                    </i:Interaction.Behaviors>
-                  </AutoCompleteBox>
+                                   IsTextCompletionEnabled="False"
+                                   behaviors:ComboBoxBehavior.EnableComboBoxBehavior="True" />
                 </StackPanel>
 
               </StackPanel>
