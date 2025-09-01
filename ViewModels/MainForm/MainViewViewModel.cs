@@ -79,21 +79,8 @@ public class MainViewViewModel : BaseViewModel
     public bool IsQuickActionsPanelExpanded
     {
         get => _isQuickActionsPanelExpanded;
-        set 
-        {
-            if (SetProperty(ref _isQuickActionsPanelExpanded, value))
-            {
-                OnPropertyChanged(nameof(QuickActionsPanelWidth));
-                OnPropertyChanged(nameof(QuickActionsCollapseButtonIcon));
-            }
-        }
+        set => SetProperty(ref _isQuickActionsPanelExpanded, value);
     }
-
-    // QuickActions Panel Width - expands/collapses based on state (returns GridLength compatible values)
-    public GridLength QuickActionsPanelWidth => IsQuickActionsPanelExpanded ? new GridLength(240) : new GridLength(32);
-
-    // QuickActions Collapse Button Icon
-    public string QuickActionsCollapseButtonIcon => IsQuickActionsPanelExpanded ? "▶" : "◀";
 
     // Inventory Mode Management
     private bool _isAdvancedInventoryMode;
@@ -158,6 +145,7 @@ public class MainViewViewModel : BaseViewModel
 
     // Commands
     public ICommand OpenSettingsCommand { get; private set; }
+    public ICommand OpenAdvancedSettingsCommand { get; private set; }
     public ICommand ExitCommand { get; private set; }
     public ICommand OpenPersonalHistoryCommand { get; private set; }
     public ICommand RefreshCommand { get; private set; }
@@ -195,10 +183,10 @@ public class MainViewViewModel : BaseViewModel
         AdvancedRemoveViewModel = advancedRemoveViewModel ?? throw new ArgumentNullException(nameof(advancedRemoveViewModel));
 
         // Wire up Advanced Inventory events
-        AdvancedInventoryViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalInventoryCommand.Execute(null);
+        AdvancedInventoryViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalInventoryCommand?.Execute(null);
 
         // Wire up Advanced Remove events
-        AdvancedRemoveViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalRemoveCommand.Execute(null);
+        AdvancedRemoveViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalRemoveCommand?.Execute(null);
 
         // Set up initial tab content (normal mode)
         UpdateInventoryContent();
@@ -230,7 +218,8 @@ public class MainViewViewModel : BaseViewModel
         SelectedTabIndex = 0;
 
         // Initialize commands (stubs; no business logic)
-        OpenSettingsCommand = new Commands.RelayCommand(() => { /* TODO: Show settings */ });
+        OpenSettingsCommand = new Commands.RelayCommand(OpenSettings);
+        OpenAdvancedSettingsCommand = new Commands.RelayCommand(OpenAdvancedSettings);
         ExitCommand = new Commands.RelayCommand(() => { /* TODO: Exit app */ });
         OpenPersonalHistoryCommand = new Commands.RelayCommand(() => { /* TODO: Open history */ });
         RefreshCommand = new Commands.RelayCommand(() => 
@@ -270,7 +259,6 @@ public class MainViewViewModel : BaseViewModel
         ToggleQuickActionsPanelCommand = new Commands.RelayCommand(() =>
         {
             IsQuickActionsPanelExpanded = !IsQuickActionsPanelExpanded;
-            Logger.LogInformation("QuickActions panel toggled: {IsExpanded}", IsQuickActionsPanelExpanded);
         });
 
         SwitchToAdvancedInventoryCommand = new Commands.RelayCommand(() =>
@@ -340,58 +328,110 @@ public class MainViewViewModel : BaseViewModel
 
     private void OnQuickActionExecuted(object? sender, QuickActionExecutedEventArgs e)
     {
-        // Populate appropriate tab fields with QuickButton data based on current tab
-        switch (SelectedTabIndex)
-        {
-            case 0: // Inventory Tab
-                InventoryTabViewModel.SelectedPart = e.PartId;
-                InventoryTabViewModel.SelectedOperation = e.Operation;
-                InventoryTabViewModel.Quantity = e.Quantity;
-                break;
-            case 1: // Remove Tab
-                if (IsAdvancedRemoveMode)
-                {
-                    // Populate Advanced Remove text filters for wildcard search
-                    AdvancedRemoveViewModel.FilterPartIDText = e.PartId;
-                    AdvancedRemoveViewModel.FilterOperation = e.Operation;
-                    // Note: Advanced Remove doesn't use quantity directly but could pre-filter
-                }
-                else
-                {
-                    RemoveItemViewModel.SelectedPart = e.PartId;
-                    RemoveItemViewModel.SelectedOperation = e.Operation;
-                }
-                break;
-            case 2: // Transfer Tab
-                TransferItemViewModel.SelectedPart = e.PartId;
-                TransferItemViewModel.SelectedOperation = e.Operation;
-                TransferItemViewModel.TransferQuantity = e.Quantity;
-                break;
-        }
+        Logger.LogDebug("OnQuickActionExecuted event handler triggered - Sender: {SenderType}, PartId: {PartId}, Operation: {Operation}, Quantity: {Quantity}", 
+            sender?.GetType().Name ?? "null", e.PartId, e.Operation, e.Quantity);
         
-        StatusText = $"Quick action: {e.Operation} - {e.PartId} ({e.Quantity} units)";
+        try
+        {
+            // Populate appropriate tab fields with QuickButton data based on current tab
+            Logger.LogInformation("Processing quick action for tab {TabIndex}: {Operation} - {PartId} ({Quantity} units)", 
+                SelectedTabIndex, e.Operation, e.PartId, e.Quantity);
+                
+            switch (SelectedTabIndex)
+            {
+                case 0: // Inventory Tab
+                    Logger.LogDebug("Populating Inventory tab with quick action data");
+                    InventoryTabViewModel.SelectedPart = e.PartId;
+                    InventoryTabViewModel.SelectedOperation = e.Operation;
+                    InventoryTabViewModel.Quantity = e.Quantity;
+                    break;
+                case 1: // Remove Tab
+                    Logger.LogDebug("Populating Remove tab with quick action data - Advanced mode: {IsAdvanced}", IsAdvancedRemoveMode);
+                    if (IsAdvancedRemoveMode)
+                    {
+                        // Populate Advanced Remove text filters for wildcard search
+                        AdvancedRemoveViewModel.FilterPartIDText = e.PartId;
+                        AdvancedRemoveViewModel.FilterOperation = e.Operation;
+                        // Note: Advanced Remove doesn't use quantity directly but could pre-filter
+                    }
+                    else
+                    {
+                        RemoveItemViewModel.SelectedPart = e.PartId;
+                        RemoveItemViewModel.SelectedOperation = e.Operation;
+                    }
+                    break;
+                case 2: // Transfer Tab
+                    Logger.LogDebug("Populating Transfer tab with quick action data");
+                    TransferItemViewModel.SelectedPart = e.PartId;
+                    TransferItemViewModel.SelectedOperation = e.Operation;
+                    TransferItemViewModel.TransferQuantity = e.Quantity;
+                    break;
+                default:
+                    Logger.LogWarning("Unknown tab index {TabIndex} in quick action handler", SelectedTabIndex);
+                    break;
+            }
+            
+            StatusText = $"Quick action: {e.Operation} - {e.PartId} ({e.Quantity} units)";
+            Logger.LogInformation("Quick action processed successfully and status updated");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error processing quick action: {Operation} - {PartId} ({Quantity} units)", e.Operation, e.PartId, e.Quantity);
+            StatusText = "Error processing quick action";
+        }
     }
 
     private void OnItemsRemoved(object? sender, ItemsRemovedEventArgs e)
     {
-        // Update status with removal information
-        var totalQuantity = e.TotalQuantityRemoved;
-        var itemCount = e.RemovedItems.Count;
-        StatusText = $"Removed: {itemCount} item(s), {totalQuantity} total quantity";
+        Logger.LogDebug("OnItemsRemoved event handler triggered - Sender: {SenderType}, Items count: {ItemCount}", 
+            sender?.GetType().Name ?? "null", e.RemovedItems.Count);
         
-        // TODO: Update QuickButtons or other components as needed
-        Logger.LogInformation("Items removed: {ItemCount} items, {TotalQuantity} total quantity", 
-            itemCount, totalQuantity);
+        try
+        {
+            // Update status with removal information
+            var totalQuantity = e.TotalQuantityRemoved;
+            var itemCount = e.RemovedItems.Count;
+            StatusText = $"Removed: {itemCount} item(s), {totalQuantity} total quantity";
+            
+            Logger.LogInformation("Items removed successfully: {ItemCount} items, {TotalQuantity} total quantity", 
+                itemCount, totalQuantity);
+                
+            // Log details of removed items for debugging
+            foreach (var item in e.RemovedItems)
+            {
+                Logger.LogDebug("Removed item: {PartId} - {Operation} ({Quantity} units) from {Location}", 
+                    item.PartId, item.Operation, item.Quantity, item.Location);
+            }
+            
+            // TODO: Update QuickButtons or other components as needed
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in OnItemsRemoved event handler");
+            StatusText = "Error processing item removal";
+        }
     }
 
     private void OnItemsTransferred(object? sender, ItemsTransferredEventArgs e)
     {
-        // Update status with transfer information
-        StatusText = $"Transferred: {e.TransferredQuantity} units of {e.PartId} from {e.FromLocation} to {e.ToLocation}";
+        Logger.LogDebug("OnItemsTransferred event handler triggered - Sender: {SenderType}, PartId: {PartId}", 
+            sender?.GetType().Name ?? "null", e.PartId);
         
-        // TODO: Update QuickButtons with transfer information for future quick actions
-        Logger.LogInformation("Items transferred: {Quantity} units of {PartId} from {FromLocation} to {ToLocation}", 
-            e.TransferredQuantity, e.PartId, e.FromLocation, e.ToLocation);
+        try
+        {
+            // Update status with transfer information
+            StatusText = $"Transferred: {e.TransferredQuantity} units of {e.PartId} from {e.FromLocation} to {e.ToLocation}";
+            
+            Logger.LogInformation("Items transferred successfully: {Quantity} units of {PartId} from {FromLocation} to {ToLocation}", 
+                e.TransferredQuantity, e.PartId, e.FromLocation, e.ToLocation);
+            
+            // TODO: Update QuickButtons with transfer information for future quick actions
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in OnItemsTransferred event handler");
+            StatusText = "Error processing item transfer";
+        }
     }
 
     private void OnAdvancedRemovalRequested(object? sender, EventArgs e)
@@ -404,37 +444,80 @@ public class MainViewViewModel : BaseViewModel
 
     private void OnTabSelectionChanged(int tabIndex)
     {
-        switch (tabIndex)
-        {
-            case 0: // Inventory Tab
-                StatusText = IsAdvancedInventoryMode ? "Advanced Inventory Entry" : "Inventory Entry";
-                break;
-            case 1: // Remove Tab
-                StatusText = IsAdvancedRemoveMode ? "Advanced Inventory Removal" : "Inventory Removal";
-                // Load data when switching to Remove tab
-                if (IsAdvancedRemoveMode)
-                {
-                    if (AdvancedRemoveViewModel.LoadDataCommand.CanExecute(null))
-                        AdvancedRemoveViewModel.LoadDataCommand.Execute(null);
-                }
-                else
-                {
-                    if (RemoveItemViewModel.LoadDataCommand.CanExecute(null))
-                        RemoveItemViewModel.LoadDataCommand.Execute(null);
-                }
-                break;
-            case 2: // Transfer Tab
-                StatusText = "Inventory Transfer";
-                // Load data when switching to Transfer tab
-                if (TransferItemViewModel.LoadDataCommand.CanExecute(null))
-                    TransferItemViewModel.LoadDataCommand.Execute(null);
-                break;
-            default:
-                StatusText = "Ready";
-                break;
-        }
+        Logger.LogDebug("OnTabSelectionChanged triggered - Previous tab: {PreviousTab}, New tab: {NewTab}", 
+            _selectedTabIndex, tabIndex);
         
-        Logger.LogInformation("Tab changed to index: {TabIndex}", tabIndex);
+        try
+        {
+            switch (tabIndex)
+            {
+                case 0: // Inventory Tab
+                    StatusText = IsAdvancedInventoryMode ? "Advanced Inventory Entry" : "Inventory Entry";
+                    Logger.LogInformation("Switched to Inventory tab - Mode: {Mode}", 
+                        IsAdvancedInventoryMode ? "Advanced" : "Normal");
+                    break;
+                case 1: // Remove Tab
+                    StatusText = IsAdvancedRemoveMode ? "Advanced Inventory Removal" : "Inventory Removal";
+                    Logger.LogInformation("Switched to Remove tab - Mode: {Mode}", 
+                        IsAdvancedRemoveMode ? "Advanced" : "Normal");
+                    
+                    // Load data when switching to Remove tab
+                    if (IsAdvancedRemoveMode)
+                    {
+                        Logger.LogDebug("Loading data for Advanced Remove mode");
+                        if (AdvancedRemoveViewModel.LoadDataCommand.CanExecute(null))
+                        {
+                            AdvancedRemoveViewModel.LoadDataCommand.Execute(null);
+                            Logger.LogDebug("Advanced Remove LoadDataCommand executed");
+                        }
+                        else
+                        {
+                            Logger.LogWarning("Advanced Remove LoadDataCommand cannot execute");
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogDebug("Loading data for Normal Remove mode");
+                        if (RemoveItemViewModel.LoadDataCommand.CanExecute(null))
+                        {
+                            RemoveItemViewModel.LoadDataCommand.Execute(null);
+                            Logger.LogDebug("Normal Remove LoadDataCommand executed");
+                        }
+                        else
+                        {
+                            Logger.LogWarning("Normal Remove LoadDataCommand cannot execute");
+                        }
+                    }
+                    break;
+                case 2: // Transfer Tab
+                    StatusText = "Inventory Transfer";
+                    Logger.LogInformation("Switched to Transfer tab");
+                    
+                    // Load data when switching to Transfer tab
+                    Logger.LogDebug("Loading data for Transfer tab");
+                    if (TransferItemViewModel.LoadDataCommand.CanExecute(null))
+                    {
+                        TransferItemViewModel.LoadDataCommand.Execute(null);
+                        Logger.LogDebug("Transfer LoadDataCommand executed");
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Transfer LoadDataCommand cannot execute");
+                    }
+                    break;
+                default:
+                    StatusText = "Ready";
+                    Logger.LogWarning("Unknown tab index selected: {TabIndex}", tabIndex);
+                    break;
+            }
+            
+            Logger.LogInformation("Tab selection change completed successfully for index: {TabIndex}", tabIndex);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in OnTabSelectionChanged for tab: {TabIndex}", tabIndex);
+            StatusText = "Error switching tabs";
+        }
     }
 
     /// <summary>
@@ -490,5 +573,60 @@ public class MainViewViewModel : BaseViewModel
     {
         if (SwitchToAdvancedInventoryCommand.CanExecute(null))
             SwitchToAdvancedInventoryCommand.Execute(null);
+    }
+
+    /// <summary>
+    /// Opens the settings view using the navigation service
+    /// </summary>
+    private void OpenSettings()
+    {
+        try
+        {
+            // Get SettingsViewModel from DI container
+            var settingsViewModel = Program.GetService<SettingsViewModel>();
+            
+            // Create SettingsView with the ViewModel
+            var settingsView = new Views.SettingsView
+            {
+                DataContext = settingsViewModel
+            };
+            
+            // Navigate to the settings view
+            _navigationService.NavigateTo(settingsView);
+            
+            Logger.LogInformation("Navigated to Settings view");
+            StatusText = "Settings opened";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to open Settings view");
+            StatusText = "Failed to open settings";
+        }
+    }
+
+    private void OpenAdvancedSettings()
+    {
+        try
+        {
+            // Get SettingsFormViewModel from DI container
+            var settingsFormViewModel = Program.GetService<SettingsFormViewModel>();
+            
+            // Create SettingsFormView with the ViewModel
+            var settingsFormView = new Views.SettingsFormView
+            {
+                DataContext = settingsFormViewModel
+            };
+            
+            // Navigate to the advanced settings view
+            _navigationService.NavigateTo(settingsFormView);
+            
+            Logger.LogInformation("Navigated to Advanced Settings form");
+            StatusText = "Advanced Settings opened";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to open Advanced Settings form");
+            StatusText = "Failed to open advanced settings";
+        }
     }
 }

@@ -5,20 +5,19 @@
         xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
         mc:Ignorable="d"
         d:DesignWidth="1200"
-        d:DesignHeight="700"
+        d:DesignHeight="800"
         x:Class="MTM_WIP_Application_Avalonia.MainWindow"
         x:CompileBindings="True"
         x:DataType="vm:MainWindowViewModel"
         Title="MTM WIP Application"
         Width="1200"
-        Height="700"
-        Background="{DynamicResource MTM_Shared_Logic.AppBackgroundBrush}">
+        Height="800"
+        Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
 
-    <!-- Main Window Content with Fixed Scaling -->
-    <Border Background="{DynamicResource MTM_Shared_Logic.AppBackgroundBrush}"
-            CornerRadius="0">
-        <ContentControl Content="{Binding CurrentView}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"/>
-    </Border>
+    <!-- Main Window Content with proper stretching for MainView -->
+    <ContentControl Content="{Binding CurrentView}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"/>
 </Window>

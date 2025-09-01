@@ -1,0 +1,180 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.RemovePartView">
+    
+    <!-- 🗑️ Remove Part from System Panel -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+        <StackPanel Spacing="16" MaxWidth="600">
+            
+            <!-- Header -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel>
+                    <TextBlock Text="🗑️ Remove Part from System"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Permanently remove parts with safety checks"
+                               FontSize="14"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ⚠️ Warning -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.WarningLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="⚠️" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock Text="⚠️ Warning" FontSize="16" FontWeight="SemiBold" 
+                                   Foreground="{DynamicResource MTM_Shared_Logic.WarningTextBrush}"/>
+                    </StackPanel>
+                    <TextBlock Text="Part removal is permanent and cannot be undone"
+                               FontSize="14"
+                               Foreground="{DynamicResource MTM_Shared_Logic.WarningTextBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 👤 Part Selection -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="👤 Part Selection"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,8"/>
+                    
+                    <StackPanel Spacing="8" Margin="0,12,0,0">
+                        <Grid ColumnDefinitions="120,*">
+                            <TextBlock Text="Select Part:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Column="1" SelectedIndex="-1">
+                                <ComboBoxItem Content="MTM-001 - Steel Bracket (Stock: 25)"/>
+                                <ComboBoxItem Content="MTM-002 - Aluminum Plate (Stock: 0)"/>
+                                <ComboBoxItem Content="MTM-003 - Rubber Gasket (Stock: 150)"/>
+                            </ComboBox>
+                        </Grid>
+                        
+                        <TextBlock Text="Current stock display with current stock display"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 📊 Impact Assessment -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="📊 Impact Assessment"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.ErrorTextBrush}"
+                               Margin="0,0,0,8"/>
+                    
+                    <StackPanel Spacing="8" Margin="0,12,0,0">
+                        <TextBlock Text="Review transactions and dependencies"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                                   TextWrapping="Wrap"/>
+                        
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="• Active transactions:" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="3 records" FontWeight="SemiBold"/>
+                        </Grid>
+                        
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="• Historical records:" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="247 records" FontWeight="SemiBold"/>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ✋ Confirmation -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="✋ Confirmation"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,8"/>
+                    
+                    <StackPanel Spacing="8" Margin="0,12,0,0">
+                        <TextBlock Text="Multiple confirmation steps required"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                                   TextWrapping="Wrap"/>
+                        
+                        <CheckBox Content="I understand this action is permanent" IsChecked="False"/>
+                        <CheckBox Content="I have reviewed all dependencies" IsChecked="False"/>
+                        
+                        <Grid ColumnDefinitions="120,*">
+                            <TextBlock Text="Type DELETE:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Watermark="Type DELETE to confirm"/>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12"
+                        HorizontalAlignment="Center"
+                        Margin="0,16,0,0">
+                
+                <Button Content="🗑️ Remove Part"
+                        Classes="mtm-danger"
+                        MinWidth="120"
+                        Height="36"
+                        IsEnabled="False"/>
+                
+                <Button Content="❌ Cancel"
+                        Classes="mtm-light"
+                        MinWidth="80"
+                        Height="36"/>
+            </StackPanel>
+
+            <!-- Placeholder Notice -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12"
+                    Margin="0,16,0,0">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="ℹ️"
+                               FontSize="14"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="This is a placeholder interface. Full functionality will be implemented with backend integration."
+                               FontSize="12"
+                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

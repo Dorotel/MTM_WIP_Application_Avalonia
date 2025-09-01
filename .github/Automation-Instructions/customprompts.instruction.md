@@ -1,3 +1,44 @@
+# Custom Copilot Prompts - Master Index
+
+<details>
+<summary><strong>📑 Table of Contents</strong></summary>
+
+- [Comprehensive Hotkey System](#new-comprehensive-hotkey-system)
+- [Comprehensive Knowledge Assessment System](#new-comprehensive-knowledge-assessment-system)
+- [Prompt Types and Usage](#prompt-types-and-usage)
+- [Prompt Implementation Guidelines](#prompt-implementation-guidelines)
+- [Prompt Examples](#prompt-examples)
+- [Reference Links](#reference-links)
+
+<details>
+<summary><strong>🚀 NEW: Comprehensive Hotkey System</strong></summary>
+
+<details>
+<summary><strong>🧠 NEW: Comprehensive Knowledge Assessment System</strong></summary>
+
+<details>
+<summary><strong>📚 Knowledge Assessment and Training Prompts</strong></summary>
+
+#### **HTML Assessment Template Structure**
+```html
+<!DOCTYPE html>
+```sh
+<!-- Copilot: Keep. Valid shell shortcut usage. -->
+```sh
+**Example Usage**: `@ui:create inventory search component` instead of typing full file paths!
+
+<details>
+<summary><strong>📝 Prompt Types and Usage</strong></summary>
+
+<details>
+<summary><strong>⚙️ Prompt Implementation Guidelines</strong></summary>
+
+<details>
+<summary><strong>💡 Prompt Examples</strong></summary>
+
+<details>
+<summary><strong>🔗 Reference Links</strong></summary>
+
 <!-- Copilot: Reading custom-prompts.instruction.md — Custom Prompts and Copilot Personas -->
 
 # Custom Copilot Prompts - Master Index

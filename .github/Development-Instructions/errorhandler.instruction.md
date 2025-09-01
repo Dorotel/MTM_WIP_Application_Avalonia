@@ -1,9 +1,30 @@
 <!-- Copilot: Reading error_handler-instruction.md — Error Handler Requirements and Instructions -->
+
 # Error Handler Requirements and Instructions
+
+<details>
+<summary><strong>📑 Table of Contents</strong></summary>
+
+- [Logging to File Server](#logging-to-file-server)
+- [Log Entry Details](#log-entry-details)
+- [Error Categories](#error-categories)
+- [MySQL Logging](#mysql-logging)
+- [Duplicate Error Detection](#duplicate-error-detection)
+- [Additional Info](#additional-info)
+- [Configuration Source](#configuration-source)
+- [Standard .NET MVVM Error Handling Patterns](#standard-net-mvvm-error-handling-patterns)
+- [Avalonia UI Error Display Patterns](#avalonia-ui-error-display-patterns)
+- [MTM-Specific Error Scenarios](#mtm-specific-error-scenarios)
+- [Theme-Aware Error Styling](#theme-aware-error-styling)
+- [Reference Implementation in This Repository](#reference-implementation-in-this-repository)
+
+</details>
 
 > For prompt and persona standards related to error and logging, see [custom-prompts.instruction.md](custom-prompts.instruction.md) and [personas-instruction.md](personas-instruction.md).
 
-## Logging to File Server
+
+<details>
+<summary><strong>🗂️ Logging to File Server</strong></summary>
 
 - **Each user** gets their own subfolder in a central folder on the work file server.
     - The application creates the subfolder automatically if it doesn't exist.
@@ -13,7 +34,11 @@
     - The file includes a header row.
     - Do not log duplicate errors for the current session.
 
-## Log Entry Details
+
+</details>
+
+<details>
+<summary><strong>📝 Log Entry Details</strong></summary>
 
 Each log entry (CSV row) must include:
 - Timestamp
@@ -28,7 +53,11 @@ Each log entry (CSV row) must include:
 
 Include any extra information that would make it easier to diagnose and fix the error if the log entry was pasted into a chat window (as long as it doesn't duplicate existing fields).
 
-## Error Categories
+
+</details>
+
+<details>
+<summary><strong>📂 Error Categories</strong></summary>
 
 Errors are grouped into these categories:
 - UI
@@ -39,21 +68,37 @@ Errors are grouped into these categories:
 
 Each category has a specific user-facing message and recommended actions.
 
-## MySQL Logging
+
+</details>
+
+<details>
+<summary><strong>🗄️ MySQL Logging</strong></summary>
 
 - Log errors to MySQL as well.
 - Each category has a separate table, but all tables use the same structure/columns as above.
 
-## Duplicate Error Detection
+
+</details>
+
+<details>
+<summary><strong>🔁 Duplicate Error Detection</strong></summary>
 
 - For the current application session, do not log the same error more than once (per user, per category).
 
-## Additional Info
+
+</details>
+
+<details>
+<summary><strong>ℹ️ Additional Info</strong></summary>
 
 - The error handler should NOT capture process/thread details.
 - The log files and database tables should be focused on user, machine, and error details only.
 
-## Configuration Source
+
+</details>
+
+<details>
+<summary><strong>⚙️ Configuration Source</strong></summary>
 
 - Primary configuration file: `Config/appsettings.json`
   - Error handling settings are located in the `ErrorHandling` section.
@@ -66,7 +111,11 @@ Each category has a specific user-facing message and recommended actions.
 
 ---
 
-## Standard .NET MVVM Error Handling Patterns
+
+</details>
+
+<details>
+<summary><strong>🛠️ Standard .NET MVVM Error Handling Patterns</strong></summary>
 
 ### Command Error Handling
 All ICommand implementations should include centralized error handling using try-catch patterns in command execution:
@@ -149,7 +198,11 @@ private string ValidateProperty(string value)
 
 ---
 
-## Avalonia UI Error Display Patterns
+
+</details>
+
+<details>
+<summary><strong>🖼️ Avalonia UI Error Display Patterns</strong></summary>
 
 ### Inline Error Display (Non-blocking)
 Use `Controls/Control_ErrorMessage` for inline error presentation:
@@ -195,7 +248,11 @@ await ErrorDialog_Enhanced.ShowErrorAsync(this, ex, ErrorSeverity.High, "MyView_
 
 ---
 
-## MTM-Specific Error Scenarios
+
+</details>
+
+<details>
+<summary><strong>🧩 MTM-Specific Error Scenarios</strong></summary>
 
 ### Inventory System Errors
 - **Part Not Found**: When scanning non-existent part IDs
@@ -228,7 +285,11 @@ public enum MTMErrorCategory
 
 ---
 
-## Theme-Aware Error Styling
+
+</details>
+
+<details>
+<summary><strong>🎨 Theme-Aware Error Styling</strong></summary>
 
 ### MTM Purple Color Scheme Integration
 Apply MTM brand colors to error UI components:
@@ -289,7 +350,11 @@ Apply MTM brand colors to error UI components:
 
 ---
 
-## Reference Implementation in This Repository
+
+</details>
+
+<details>
+<summary><strong>🧑‍💻 Reference Implementation in This Repository</strong></summary>
 
 This repository includes a scaffolded error system that follows the above requirements:
 

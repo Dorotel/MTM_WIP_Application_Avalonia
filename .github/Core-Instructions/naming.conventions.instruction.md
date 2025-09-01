@@ -1,8 +1,34 @@
 <!-- Copilot: Reading naming-conventions.instruction.md — Naming Conventions -->
 
+
 # Naming Conventions
 
-## Project Structure and File Naming
+<details>
+<summary><strong>📑 Table of Contents</strong></summary>
+
+- [Project Structure and File Naming](#project-structure-and-file-naming)
+- [Core Naming Standards](#core-naming-standards)
+- [Legacy Naming Patterns (for migration reference)](#legacy-naming-patterns-for-migration-reference)
+- [Standard .NET Property Naming](#standard-net-property-naming)
+- [Observable Collections](#observable-collections)
+- [Commands](#commands)
+- [ObservableAsPropertyHelper (OAPH)](#observableaspropertyhelper-oaph)
+- [Service Naming Conventions](#service-naming-conventions)
+- [Service Category Naming Guidelines](#service-category-naming-guidelines)
+- [MTM Data Patterns](#mtm-data-patterns)
+- [Avalonia-Specific Naming](#avalonia-specific-naming)
+- [Event and Handler Naming](#event-and-handler-naming)
+- [Class and Interface Naming](#class-and-interface-naming)
+- [Style Class Naming](#style-class-naming)
+- [Variable and Field Naming](#variable-and-field-naming)
+- [Method Naming](#method-naming)
+- [Command Execution Methods](#command-execution-methods)
+
+</details>
+
+
+<details>
+<summary><strong>📁 Project Structure and File Naming</strong></summary>
 
 ### Avalonia UI Files
 - **Views (AXAML):** `{Name}View.axaml` (e.g., `MainView.axaml`, `InventoryView.axaml`)
@@ -55,7 +81,11 @@ Services/
 /Resources/       # Styles, themes, and assets
 ```
 
-## Legacy Naming Patterns (for migration reference)
+
+</details>
+
+<details>
+<summary><strong>🕰️ Legacy Naming Patterns (for migration reference)</strong></summary>
 - **Views:** `[parent]view_[child]` or `[parent]view` (e.g., `mainview`, `mainview_menubar`, `mainview_tab_inventory`)
 - **Controls:** `[parent]_[type]_[name]` (e.g., `mainview_usercontrol_inventorytab`, `mainview_splitcontainer_middle`)
 - **Menu Items:** `[parent]_[menutype]_[menuname]` (e.g., `mainview_menubar_file_settings`)
@@ -65,7 +95,11 @@ Services/
 - **Consistent Prefix:** Always prefix with the parent view or control (e.g., `mainview_`, `settingsview_`, etc.)
 - **Component Containers:** Name as `components` if using dependency containers or service locators.
 
-## Standard .NET Property Naming
+
+</details>
+
+<details>
+<summary><strong>🔤 Standard .NET Property Naming</strong></summary>
 
 ### Observable Properties
 ```csharp
@@ -103,7 +137,11 @@ private readonly ObservableAsPropertyHelper<string> _fullName;
 public string FullName => _fullName.Value;
 ```
 
-## Service Naming Conventions
+
+</details>
+
+<details>
+<summary><strong>🧩 Service Naming Conventions</strong></summary>
 
 ### Service Interfaces
 ```csharp
@@ -141,7 +179,11 @@ namespace MTM_Shared_Logic.Services
 - **LocationServices.cs**: Location management, validation, hierarchy
 - **SystemServices.cs**: Configuration, caching, logging, error handling
 
-## MTM Data Patterns
+
+</details>
+
+<details>
+<summary><strong>📦 MTM Data Patterns</strong></summary>
 
 ### MTM-Specific Naming
 - **Part ID:** `PartId` (string, e.g., "PART001")
@@ -166,7 +208,11 @@ Model_AppVariables.ConnectionString
 Model_AppVariables.CurrentUser
 ```
 
-## Avalonia-Specific Naming
+
+</details>
+
+<details>
+<summary><strong>🎨 Avalonia-Specific Naming</strong></summary>
 
 ### AXAML Controls
 ```xml
@@ -199,7 +245,11 @@ SidebarBackgroundBrush, ContentBackgroundBrush, StatusBarBackgroundBrush
 PrimaryGradientBrush, HeroGradientBrush
 ```
 
-## Event and Handler Naming
+
+</details>
+
+<details>
+<summary><strong>🔗 Event and Handler Naming</strong></summary>
 
 ### Standard .NET Event Patterns
 ```csharp
@@ -223,7 +273,11 @@ private async Task SaveDataAsync()
 private async Task ExecuteQuickActionAsync(QuickButtonItemViewModel button)
 ```
 
-## Class and Interface Naming
+
+</details>
+
+<details>
+<summary><strong>🏷️ Class and Interface Naming</strong></summary>
 
 ### ViewModel Naming
 ```csharp
@@ -253,7 +307,11 @@ public class InventorySearchModel
 public class ReportConfigurationModel
 ```
 
-## Style Class Naming
+
+</details>
+
+<details>
+<summary><strong>🎨 Style Class Naming</strong></summary>
 
 ### CSS-Style Classes for Avalonia
 ```xml
@@ -265,7 +323,11 @@ public class ReportConfigurationModel
 <Button Classes="quick-button" />
 ```
 
-## Variable and Field Naming
+
+</details>
+
+<details>
+<summary><strong>🔢 Variable and Field Naming</strong></summary>
 
 ### Local Variables
 ```csharp
@@ -290,7 +352,11 @@ private readonly IErrorService _errorService;
 private string _selectedPartId = string.Empty;
 ```
 
-## Method Naming
+
+</details>
+
+<details>
+<summary><strong>🔣 Method Naming</strong></summary>
 
 ### Async Methods
 ```csharp
@@ -317,3 +383,5 @@ private async Task ExecuteQuickActionAsync(QuickButtonItemViewModel button)
 ```
 
 > For details on control/event layout and UI mapping, see [ui-generation.instruction.md](ui-generation.instruction.md) and [ui-mapping.instruction.md](ui-mapping.instruction.md)
+
+</details>

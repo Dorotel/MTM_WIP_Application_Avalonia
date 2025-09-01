@@ -12,7 +12,7 @@ using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class AddItemViewModel : BaseViewModel, INotifyPropertyChanged
+public class AddItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
@@ -279,6 +279,4 @@ public class AddItemViewModel : BaseViewModel, INotifyPropertyChanged
             IsLoading = false;
         }
     }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 }

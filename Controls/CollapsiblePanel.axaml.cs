@@ -144,15 +144,23 @@ public partial class CollapsiblePanel : UserControl
         {
             case HeaderPosition.Left:
                 SetupLeftHeader();
+                // Content area gets right side rounded corners
+                _contentArea.CornerRadius = new Avalonia.CornerRadius(0, 8, 8, 0);
                 break;
             case HeaderPosition.Right:
                 SetupRightHeader();
+                // Content area gets left side rounded corners
+                _contentArea.CornerRadius = new Avalonia.CornerRadius(8, 0, 0, 8);
                 break;
             case HeaderPosition.Top:
                 SetupTopHeader();
+                // Content area gets bottom rounded corners
+                _contentArea.CornerRadius = new Avalonia.CornerRadius(0, 0, 8, 8);
                 break;
             case HeaderPosition.Bottom:
                 SetupBottomHeader();
+                // Content area gets top rounded corners
+                _contentArea.CornerRadius = new Avalonia.CornerRadius(8, 8, 0, 0);
                 break;
         }
 
@@ -170,6 +178,7 @@ public partial class CollapsiblePanel : UserControl
         Grid.SetColumn(_contentArea, 1);
         
         _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 1, 0);
+        _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 0, 0, 8); // Left side rounded corners
         _headerArea.Width = 40;
         _headerArea.Height = double.NaN;
     }
@@ -184,6 +193,7 @@ public partial class CollapsiblePanel : UserControl
         Grid.SetColumn(_headerArea, 1);
         
         _headerArea.BorderThickness = new Avalonia.Thickness(1, 0, 0, 0);
+        _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 8, 8, 0); // Right side rounded corners
         _headerArea.Width = 40;
         _headerArea.Height = double.NaN;
     }
@@ -198,6 +208,7 @@ public partial class CollapsiblePanel : UserControl
         Grid.SetRow(_contentArea, 1);
         
         _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 0, 1);
+        _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 8, 0, 0); // Top rounded corners
         _headerArea.Width = double.NaN;
         _headerArea.Height = 40;
     }
@@ -212,6 +223,7 @@ public partial class CollapsiblePanel : UserControl
         Grid.SetRow(_headerArea, 1);
         
         _headerArea.BorderThickness = new Avalonia.Thickness(0, 1, 0, 0);
+        _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 0, 8, 8); // Bottom rounded corners
         _headerArea.Width = double.NaN;
         _headerArea.Height = 40;
     }

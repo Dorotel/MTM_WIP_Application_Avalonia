@@ -214,19 +214,19 @@ public static class Program
 ### Current Command Infrastructure
 ```csharp
 // Standard ICommand implementations available
-public class AsyncCommand : ICommand
-{
-    private readonly Func<Task> _execute;
-    private readonly Func<bool>? _canExecute;
-    // Implementation in InventoryTabViewModel.cs
-}
-
-public class RelayCommand : ICommand
-{
-    private readonly Action _execute;
-    private readonly Func<bool>? _canExecute;
-    // Implementation in InventoryTabViewModel.cs
-}
+ public class AsyncCommand : ICommand
+ {
+     private readonly Func<Task> _execute;
+     private readonly Func<bool>? _canExecute;
+     // Implementation in InventoryTabViewModel.cs
+ }
+ 
+ public class RelayCommand : ICommand
+ {
+     private readonly Action _execute;
+     private readonly Func<bool>? _canExecute;
+     // Implementation in InventoryTabViewModel.cs
+ }
 ```
 
 </details>

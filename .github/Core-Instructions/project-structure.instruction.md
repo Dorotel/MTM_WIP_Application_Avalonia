@@ -1,6 +1,32 @@
+
 # Project Structure Guidelines
 
-## **Repository Organization**
+<details>
+<summary><strong>📑 Table of Contents</strong></summary>
+
+- [Repository Organization](#repository-organization)
+- [Database Files Structure](#database-files-structure)
+- [Services Directory Organization (CRITICAL)](#services-directory-organization-critical)
+- [Documentation Directory Structure](#documentation-directory-structure)
+- [Development Directory Structure](#development-directory-structure)
+- [File Placement Guidelines](#file-placement-guidelines)
+- [Service Organization Rules](#service-organization-rules)
+- [Documentation Update Files (MANDATORY PLACEMENT)](#documentation-update-files-mandatory-placement)
+- [Compliance Report Files (MANDATORY PLACEMENT)](#compliance-report-files-mandatory-placement)
+- [Custom Prompt Files (MANDATORY PLACEMENT)](#custom-prompt-files-mandatory-placement)
+- [Database Changes](#database-changes)
+- [Naming and Organization Principles](#naming-and-organization-principles)
+- [GitHub Organization](#github-organization)
+- [Instruction File Organization](#instruction-file-organization)
+- [Development Workflow Integration](#development-workflow-integration)
+- [Migration and Maintenance](#migration-and-maintenance)
+- [Quality Assurance Requirements](#quality-assurance-requirements)
+
+</details>
+
+
+<details>
+<summary><strong>📁 Repository Organization</strong></summary>
 
 ### **Root Level Structure**
 ```
@@ -273,7 +299,11 @@ Development/
 - **Modified procedures**: `Development/Documentation/Documentation/Development/Database_Files/Updated_Stored_Procedures.sql`
 - **Schema changes**: `Development/Documentation/Documentation/Development/Database_Files/Development_Database_Schema.sql`
 
-## **Naming and Organization Principles**
+
+</details>
+
+<details>
+<summary><strong>🔤 Naming and Organization Principles</strong></summary>
 
 ### **Folder Hierarchy**
 1. **Group by function** (Views, ViewModels, Services)
@@ -295,7 +325,11 @@ Development/
 - **Update documentation**: Link to related upgrade summaries from component documentation
 - **Compliance tracking**: Cross-reference compliance reports with related documentation
 
-## **GitHub Organization**
+
+</details>
+
+<details>
+<summary><strong>📁 GitHub Organization</strong></summary>
 
 ### **.github Directory Structure**
 ```
@@ -314,7 +348,11 @@ Development/
 - **Cross-referenced structure** with main instruction file
 - **Comprehensive coverage** of all development scenarios
 
-## **Development Workflow Integration**
+
+</details>
+
+<details>
+<summary><strong>⚙️ Development Workflow Integration</strong></summary>
 
 ### **New Feature Development**
 1. **Documentation first**: Create instruction files in `Development/UI_Documentation/`
@@ -351,7 +389,11 @@ Development/
 - **?? Change documentation**: Document all major changes in appropriate update summaries
 - **?? Quality tracking**: Regularly assess compliance and generate reports
 
-## **Migration and Maintenance**
+
+</details>
+
+<details>
+<summary><strong>🔄 Migration and Maintenance</strong></summary>
 
 ### **From Legacy Systems**
 - **Gradual migration**: Move components systematically to new structure
@@ -367,7 +409,11 @@ Development/
 - **?? Change history**: Maintain update summaries for audit trail and knowledge transfer
 - **?? Quality monitoring**: Regular compliance assessments to maintain standards
 
-## **Quality Assurance Requirements**
+
+</details>
+
+<details>
+<summary><strong>✅ Quality Assurance Requirements</strong></summary>
 
 ### **Documentation Synchronization (CRITICAL)**
 When creating files in `Documentation/Development/Updates/` or `Documentation/Development/Compliance Reports/`:

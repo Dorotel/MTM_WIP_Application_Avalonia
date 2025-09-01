@@ -1,0 +1,128 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.EditPartView">
+    
+    <!-- ✏️ Edit Part Information Panel -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+        <StackPanel Spacing="16" MaxWidth="600">
+            
+            <!-- Header -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel>
+                    <TextBlock Text="✏️ Edit Part Information"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Modify existing part details and specifications"
+                               FontSize="14"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 🔍 Part Selection -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="🔍 Part Selection"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,8"/>
+                    
+                    <Grid ColumnDefinitions="120,*,Auto">
+                        <TextBlock Text="Select Part:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Column="1" SelectedIndex="0" Margin="0,0,8,0">
+                            <ComboBoxItem Content="MTM-001 - Steel Bracket"/>
+                            <ComboBoxItem Content="MTM-002 - Aluminum Plate"/>
+                            <ComboBoxItem Content="MTM-003 - Rubber Gasket"/>
+                        </ComboBox>
+                        <Button Grid.Column="2" Content="🔍" Classes="mtm-secondary" Width="32" Height="32"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 📋 Part Information -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                
+                <StackPanel Spacing="12">
+                    <TextBlock Text="📋 Part Information"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,8"/>
+                    
+                    <StackPanel Spacing="8" Margin="0,12,0,0">
+                        <Grid ColumnDefinitions="120,*">
+                            <TextBlock Text="Part Number:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Text="MTM-001" IsReadOnly="True"/>
+                        </Grid>
+                        
+                        <Grid ColumnDefinitions="120,*">
+                            <TextBlock Text="Part Name:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Text="Steel Bracket"/>
+                        </Grid>
+                        
+                        <Grid ColumnDefinitions="120,*">
+                            <TextBlock Text="Description:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Text="Heavy-duty steel mounting bracket" AcceptsReturn="True" Height="60"/>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12"
+                        HorizontalAlignment="Center"
+                        Margin="0,16,0,0">
+                
+                <Button Content="💾 Save Changes"
+                        Classes="mtm-primary"
+                        MinWidth="120"
+                        Height="36"/>
+                
+                <Button Content="🔄 Reset"
+                        Classes="mtm-secondary"
+                        MinWidth="80"
+                        Height="36"/>
+                
+                <Button Content="❌ Cancel"
+                        Classes="mtm-light"
+                        MinWidth="80"
+                        Height="36"/>
+            </StackPanel>
+
+            <!-- Placeholder Notice -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12"
+                    Margin="0,16,0,0">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="ℹ️"
+                               FontSize="14"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="This is a placeholder interface. Full functionality will be implemented with backend integration."
+                               FontSize="12"
+                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

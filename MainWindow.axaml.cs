@@ -1,4 +1,8 @@
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using System;
 
 namespace MTM_WIP_Application_Avalonia
 {
@@ -7,7 +11,6 @@ namespace MTM_WIP_Application_Avalonia
         public MainWindow()
         {
             InitializeComponent();
-            // DataContext will be set by App.axaml.cs through dependency injection
         }
-    }
+    }  
 }

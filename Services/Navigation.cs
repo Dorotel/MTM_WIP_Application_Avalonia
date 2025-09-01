@@ -41,6 +41,7 @@ public class NavigationService : INavigationService
     public NavigationService(ILogger<NavigationService> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger.LogDebug("NavigationService constructed successfully");
     }
 
     public object? CurrentView
@@ -194,22 +195,51 @@ public class NavigationService : INavigationService
 
     private void NavigateToInternal(object newView)
     {
-        if (_currentView != null)
+        _logger.LogDebug("NavigateToInternal started - Current view: {CurrentViewType}, New view: {NewViewType}", 
+            _currentView?.GetType().Name ?? "null", newView?.GetType().Name ?? "null");
+            
+        try
         {
-            _backStack.Push(_currentView);
+            if (_currentView != null)
+            {
+                _backStack.Push(_currentView);
+                _logger.LogDebug("Current view added to back stack. Back stack count: {BackStackCount}", _backStack.Count);
+            }
+
+            // Clear forward stack when navigating to new view
+            _forwardStack.Clear();
+            _logger.LogDebug("Forward stack cleared. Forward stack count: {ForwardStackCount}", _forwardStack.Count);
+
+            CurrentView = newView;
+            _logger.LogInformation("Navigation completed successfully to: {NewViewType}", newView?.GetType().Name ?? "null");
+
+            _logger.LogDebug("Raising Navigated event with {SubscriberCount} subscribers", 
+                Navigated?.GetInvocationList()?.Length ?? 0);
+            
+            var eventArgs = new NavigationEventArgs(newView, NavigationDirection.New);
+            Navigated?.Invoke(this, eventArgs);
+            
+            _logger.LogDebug("Navigated event raised successfully");
         }
-
-        // Clear forward stack when navigating to new view
-        _forwardStack.Clear();
-
-        CurrentView = newView;
-
-        Navigated?.Invoke(this, new NavigationEventArgs(newView, NavigationDirection.New));
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in NavigateToInternal for view: {NewViewType}", newView?.GetType().Name ?? "null");
+            throw;
+        }
     }
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        try
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            _logger.LogTrace("PropertyChanged event raised for: {PropertyName} in NavigationService", propertyName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error raising PropertyChanged event for: {PropertyName} in NavigationService", propertyName);
+            throw;
+        }
     }
 }
 
@@ -220,11 +250,13 @@ public class NavigationEventArgs : EventArgs
 {
     public object? Target { get; }
     public NavigationDirection Direction { get; }
+    public object? Source { get; }
 
-    public NavigationEventArgs(object? target, NavigationDirection direction)
+    public NavigationEventArgs(object? target, NavigationDirection direction, object? source = null)
     {
         Target = target;
         Direction = direction;
+        Source = source;
     }
 }
 

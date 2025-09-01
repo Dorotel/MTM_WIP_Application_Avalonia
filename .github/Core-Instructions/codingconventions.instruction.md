@@ -1,9 +1,32 @@
 <!-- Copilot: Reading coding-conventions.instruction.md — Coding Conventions -->
+
 # GitHub Copilot Instructions: Coding Conventions for MTM Avalonia Application
+
+<details>
+<summary><strong>📑 Table of Contents</strong></summary>
+
+- [Your Development Rules](#your-development-rules)
+- [Service Organization Standards - CRITICAL](#service-organization-standards---critical)
+- [ViewModel Template - Always Use This Pattern](#viewmodel-template---always-use-this-pattern)
+- [AXAML View Template - Always Use This Pattern](#axaml-view-template---always-use-this-pattern)
+- [MTM Data Patterns - Always Follow](#mtm-data-patterns---always-follow)
+- [Control Mapping - WinForms to Avalonia](#control-mapping---winforms-to-avalonia)
+- [Layout Standards](#layout-standards)
+- [Context Menu Pattern - Use for Management Features](#context-menu-pattern---use-for-management-features)
+- [Error Handling Pattern](#error-handling-pattern)
+- [Dependency Injection Preparation](#dependency-injection-preparation)
+- [Modern UI Standards](#modern-ui-standards)
+- [Code Generation Rules](#code-generation-rules)
+- [Never Do](#never-do)
+- [Always Do](#always-do)
+
+</details>
 
 You are developing an Avalonia UI application for MTM (Manitowoc Tool and Manufacturing) WIP Inventory System using .NET 8, MVVM pattern with standard .NET patterns, and dependency injection.
 
-## Your Development Rules
+
+<details>
+<summary><strong>🧑‍💻 Your Development Rules</strong></summary>
 
 ### Generate Avalonia-specific code using these patterns:
 - Use BaseViewModel with INotifyPropertyChanged and SetProperty method
@@ -34,7 +57,11 @@ public string? Description { get; set; }
 public record InventoryItem(string PartId, string Operation, int Quantity);
 ```
 
-## Service Organization Standards - CRITICAL
+
+</details>
+
+<details>
+<summary><strong>📁 Service Organization Standards - CRITICAL</strong></summary>
 
 ### **📋 SERVICE FILE ORGANIZATION RULE**
 All service classes of the same category MUST be in the same .cs file. Interfaces must be in the `Services/Interfaces/` folder.
@@ -86,7 +113,11 @@ namespace MTM_Shared_Logic.Services.Interfaces
 - **LocationServices.cs**: Location management, validation, hierarchy
 - **SystemServices.cs**: Configuration, caching, logging, error handling
 
-## ViewModel Template - Always Use This Pattern
+
+</details>
+
+<details>
+<summary><strong>🧩 ViewModel Template - Always Use This Pattern</strong></summary>
 
 ```csharp
 using System.ComponentModel;
@@ -146,7 +177,11 @@ public class SampleViewModel : BaseViewModel, INotifyPropertyChanged
 }
 ```
 
-## AXAML View Template - Always Use This Pattern
+
+</details>
+
+<details>
+<summary><strong>🖼️ AXAML View Template - Always Use This Pattern</strong></summary>
 
 ```xml
 <UserControl xmlns="https://github.com/avaloniaui"
@@ -163,7 +198,11 @@ public class SampleViewModel : BaseViewModel, INotifyPropertyChanged
 </UserControl>
 ```
 
-## MTM Data Patterns - Always Follow
+
+</details>
+
+<details>
+<summary><strong>📦 MTM Data Patterns - Always Follow</strong></summary>
 
 ```csharp
 // MTM business objects
@@ -179,7 +218,11 @@ public class PartInfo
 var operations = new[] { "90", "100", "110", "120" }; // String numbers
 ```
 
-## Control Mapping - WinForms to Avalonia
+
+</details>
+
+<details>
+<summary><strong>🔀 Control Mapping - WinForms to Avalonia</strong></summary>
 
 When converting from WinForms:
 - `Form` → `Window` or `UserControl`
@@ -189,7 +232,11 @@ When converting from WinForms:
 - `Label` → `TextBlock`
 - `MenuStrip` → `Menu` with `MenuItem`
 
-## Layout Standards
+
+</details>
+
+<details>
+<summary><strong>📐 Layout Standards</strong></summary>
 
 Apply these spacing and layout rules:
 ```xml
@@ -206,7 +253,11 @@ Apply these spacing and layout rules:
 </Grid>
 ```
 
-## Context Menu Pattern - Use for Management Features
+
+</details>
+
+<details>
+<summary><strong>📋 Context Menu Pattern - Use for Management Features</strong></summary>
 
 ```xml
 <Button Content="Item">
@@ -221,7 +272,11 @@ Apply these spacing and layout rules:
 </Button>
 ```
 
-## Error Handling Pattern
+
+</details>
+
+<details>
+<summary><strong>🚨 Error Handling Pattern</strong></summary>
 
 ```csharp
 // In command implementation methods
@@ -246,7 +301,11 @@ private async Task ExecuteLoadDataAsync()
 }
 ```
 
-## Dependency Injection Preparation
+
+</details>
+
+<details>
+<summary><strong>🧩 Dependency Injection Preparation</strong></summary>
 
 Always prepare ViewModels for service injection:
 ```csharp
@@ -258,7 +317,11 @@ public SampleViewModel(/* TODO: Inject services when available */)
 }
 ```
 
-## Modern UI Standards
+
+</details>
+
+<details>
+<summary><strong>🎨 Modern UI Standards</strong></summary>
 
 Create modern interfaces with:
 - **Cards**: White background, CornerRadius="8", subtle shadows
@@ -266,7 +329,11 @@ Create modern interfaces with:
 - **Responsive grids**: Use UniformGrid or Grid for responsive layouts
 - **Typography**: FontSize="18" for headers, FontWeight="SemiBold"
 
-## Code Generation Rules
+
+</details>
+
+<details>
+<summary><strong>⚙️ Code Generation Rules</strong></summary>
 
 1. **Always use Avalonia controls** - Never WPF or WinForms patterns
 2. **Follow MVVM strictly** - No business logic in Views
@@ -277,7 +344,11 @@ Create modern interfaces with:
 7. **Use async patterns** - AsyncCommand for async operations
 8. **📋 Group services by category** - Multiple related services in one file
 
-## Never Do
+
+</details>
+
+<details>
+<summary><strong>🚫 Never Do</strong></summary>
 
 - Use WPF or WinForms syntax in Avalonia code
 - Put business logic in View code-behind files
@@ -286,7 +357,11 @@ Create modern interfaces with:
 - Register services individually (use AddMTMServices pattern)
 - **📋 Create separate files for related services** - Group by category instead
 
-## Always Do
+
+</details>
+
+<details>
+<summary><strong>✅ Always Do</strong></summary>
 
 - Use standard .NET MVVM patterns for ViewModels
 - Apply MTM data patterns (PartId as string, Operation as string numbers)

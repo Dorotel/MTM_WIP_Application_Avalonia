@@ -1,0 +1,376 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.SettingsForm"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.BackupRecoveryView"
+             x:DataType="vm:BackupRecoveryViewModel">
+
+    <!-- Backup &amp; Recovery Panel -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+        <StackPanel Spacing="16">
+            
+            <!-- Header Section -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel>
+                    <TextBlock Text="💾 Backup &amp; Recovery"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Protect your data with automated backups and recovery options"
+                               FontSize="14"
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               HorizontalAlignment="Center"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Quick Actions Section -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                
+                <Grid RowDefinitions="Auto,Auto">
+                    <TextBlock Grid.Row="0"
+                               Text="⚡ Quick Actions"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,16"/>
+                    
+                    <UniformGrid Grid.Row="1" Columns="2" Rows="2">
+                        <!-- Create Backup -->
+                        <Button Grid.Column="0" Grid.Row="0"
+                                Classes="mtm-primary"
+                                Command="{Binding CreateBackupCommand}"
+                                IsEnabled="{Binding !IsBackupInProgress}"
+                                Height="60"
+                                Margin="4">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="💾" FontSize="20" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Create Backup" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Restore Backup -->
+                        <Button Grid.Column="1" Grid.Row="0"
+                                Classes="mtm-secondary"
+                                Command="{Binding RestoreBackupCommand}"
+                                IsEnabled="{Binding !IsBackupInProgress}"
+                                Height="60"
+                                Margin="4">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="🔄" FontSize="20" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Restore Backup" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Export Settings -->
+                        <Button Grid.Column="0" Grid.Row="1"
+                                Classes="mtm-secondary"
+                                Command="{Binding ExportSettingsCommand}"
+                                IsEnabled="{Binding !IsBackupInProgress}"
+                                Height="60"
+                                Margin="4">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="📤" FontSize="20" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Export Settings" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Import Settings -->
+                        <Button Grid.Column="1" Grid.Row="1"
+                                Classes="mtm-secondary"
+                                Command="{Binding ImportSettingsCommand}"
+                                IsEnabled="{Binding !IsBackupInProgress}"
+                                Height="60"
+                                Margin="4">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="📥" FontSize="20" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Import Settings" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </UniformGrid>
+                </Grid>
+            </Border>
+
+            <!-- Backup Status -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                
+                <Grid RowDefinitions="Auto,Auto,Auto">
+                    <TextBlock Grid.Row="0"
+                               Text="📊 Backup Status"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,12"/>
+                    
+                    <Grid Grid.Row="1" ColumnDefinitions="*,*" Margin="0,0,0,12">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="🕒 Last Backup"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                            <TextBlock Text="{Binding LastBackupDate}"
+                                       FontSize="14"
+                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="📍 Backup Location"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                            <TextBox Text="{Binding BackupLocation}"
+                                     IsReadOnly="False"
+                                     FontSize="12"
+                                     FontFamily="Consolas,Courier New"/>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- Status Message -->
+                    <TextBlock Grid.Row="2"
+                               Text="{Binding BackupStatus}"
+                               FontSize="14"
+                               Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"
+                               FontWeight="SemiBold"/>
+                </Grid>
+            </Border>
+
+            <!-- Backup Configuration -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                
+                <Grid RowDefinitions="Auto,Auto">
+                    <TextBlock Grid.Row="0"
+                               Text="⚙️ Backup Configuration"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,16"/>
+                    
+                    <Grid Grid.Row="1" ColumnDefinitions="*,*,Auto" RowDefinitions="Auto,Auto">
+                        <!-- Auto Backup Toggle -->
+                        <StackPanel Grid.Column="0" Grid.Row="0" Spacing="8">
+                            <TextBlock Text="🔄 Automatic Backup"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                            <CheckBox IsChecked="{Binding AutoBackupEnabled}"
+                                      Content="Enable automatic backups"/>
+                        </StackPanel>
+                        
+                        <!-- Retention Period -->
+                        <StackPanel Grid.Column="1" Grid.Row="0" Spacing="8">
+                            <TextBlock Text="📅 Retention Period"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <NumericUpDown Value="{Binding BackupRetentionDays}"
+                                               Minimum="1"
+                                               Maximum="365"
+                                               Width="80"/>
+                                <TextBlock Text="days" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <!-- Schedule Backup Button -->
+                        <Button Grid.Column="2" Grid.Row="0"
+                                Content="⏰ Schedule"
+                                Classes="mtm-primary"
+                                Command="{Binding ScheduleBackupCommand}"
+                                Height="36"
+                                VerticalAlignment="Bottom"/>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Backup History -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0"
+                               Text="📋 Backup History"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,12"/>
+                    
+                    <ScrollViewer Grid.Row="1" Height="200" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding BackupHistory}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+                                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="12,8">
+                                        
+                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+                                            <!-- File Name -->
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding FileName}"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                                                <TextBlock Text="{Binding FormattedDate}"
+                                                           FontSize="12"
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                            </StackPanel>
+                                            
+                                            <!-- Size -->
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding Size}"
+                                                       FontSize="12"
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="8,0"/>
+                                            
+                                            <!-- Type -->
+                                            <Border Grid.Column="2"
+                                                    Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
+                                                    CornerRadius="4"
+                                                    Padding="6,2"
+                                                    Margin="4,0">
+                                                <TextBlock Text="{Binding Type}"
+                                                           FontSize="10"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                            </Border>
+                                            
+                                            <!-- Status -->
+                                            <Border Grid.Column="3"
+                                                    Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                                                    CornerRadius="4"
+                                                    Padding="6,2"
+                                                    Margin="4,0">
+                                                <TextBlock Text="{Binding Status}"
+                                                           FontSize="10"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                            </Border>
+                                            
+                                            <!-- Delete Button -->
+                                            <Button Grid.Column="4"
+                                                    Content="🗑️"
+                                                    Classes="mtm-danger"
+                                                    Command="{Binding $parent[ItemsControl].((vm:BackupRecoveryViewModel)DataContext).DeleteBackupCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Width="32"
+                                                    Height="28"
+                                                    Margin="8,0,0,0"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- Scheduled Backups -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0"
+                               Text="⏰ Scheduled Backups"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Margin="0,0,0,12"/>
+                    
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding ScheduledBackups}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+                                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="12"
+                                        Margin="0,4">
+                                    
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                        <!-- Enabled Toggle -->
+                                        <CheckBox Grid.Column="0"
+                                                  IsChecked="{Binding IsEnabled}"
+                                                  VerticalAlignment="Center"
+                                                  Margin="0,0,12,0"/>
+                                        
+                                        <!-- Schedule Info -->
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                                            <TextBlock Text="{Binding Schedule}"
+                                                       FontSize="12"
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Next Run -->
+                                        <StackPanel Grid.Column="2" HorizontalAlignment="Right" Margin="8,0">
+                                            <TextBlock Text="Next Run:"
+                                                       FontSize="10"
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                            <TextBlock Text="{Binding FormattedNextRun}"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Type Badge -->
+                                        <Border Grid.Column="3"
+                                                Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
+                                                CornerRadius="4"
+                                                Padding="6,4"
+                                                Margin="8,0,0,0">
+                                            <TextBlock Text="{Binding Type}"
+                                                       FontSize="10"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+
+            <!-- Loading Indicator -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                    CornerRadius="8"
+                    Padding="12"
+                    IsVisible="{Binding IsBackupInProgress}">
+                
+                <StackPanel Orientation="Horizontal" 
+                            Spacing="12"
+                            HorizontalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="120"
+                                 Height="6"/>
+                    <TextBlock Text="Processing backup operation..."
+                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               FontWeight="SemiBold"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

@@ -203,6 +203,19 @@ public class AdvancedInventoryViewModel : BaseViewModel
                 OnPropertyChanged(nameof(FilterPanelWidth));
                 OnPropertyChanged(nameof(CollapseButtonIcon));
                 break;
+            // Add synchronization from Text properties back to SelectedItem properties
+            case nameof(PartIDText):
+                if (!string.IsNullOrEmpty(PartIDText) && PartIDOptions.Contains(PartIDText) && SelectedPartID != PartIDText)
+                    SelectedPartID = PartIDText;
+                break;
+            case nameof(OperationText):
+                if (!string.IsNullOrEmpty(OperationText) && OperationOptions.Contains(OperationText) && SelectedOperation != OperationText)
+                    SelectedOperation = OperationText;
+                break;
+            case nameof(LocationText):
+                if (!string.IsNullOrEmpty(LocationText) && LocationOptions.Contains(LocationText) && SelectedLocation != LocationText)
+                    SelectedLocation = LocationText;
+                break;
         }
     }
 
@@ -256,15 +269,19 @@ public class AdvancedInventoryViewModel : BaseViewModel
                 IsBusy = true;
                 StatusMessage = "Loading options...";
 
-                PartIDOptions.Clear();
-                foreach (var p in new[] { "PART001", "PART002", "PART003", "PART004", "PART005" }) PartIDOptions.Add(p);
-                OperationOptions.Clear();
-                foreach (var o in new[] { "90", "100", "110", "120", "130" }) OperationOptions.Add(o);
-                LocationOptions.Clear();
-                foreach (var l in new[] { "WC01", "WC02", "WC03", "WC04", "WC05" }) LocationOptions.Add(l);
+                // Use Task.Run for CPU-bound operations to properly make this async
+                await Task.Run(() =>
+                {
+                    PartIDOptions.Clear();
+                    foreach (var p in new[] { "PART001", "PART002", "PART003", "PART004", "PART005" }) PartIDOptions.Add(p);
+                    OperationOptions.Clear();
+                    foreach (var o in new[] { "90", "100", "110", "120", "130" }) OperationOptions.Add(o);
+                    LocationOptions.Clear();
+                    foreach (var l in new[] { "WC01", "WC02", "WC03", "WC04", "WC05" }) LocationOptions.Add(l);
 
-                AvailableLocations.Clear();
-                foreach (var l in LocationOptions) AvailableLocations.Add(l);
+                    AvailableLocations.Clear();
+                    foreach (var l in LocationOptions) AvailableLocations.Add(l);
+                });
 
                 StatusMessage = "Ready";
             }

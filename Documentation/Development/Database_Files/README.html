@@ -39,24 +39,24 @@
             <h2>📁 Database Files Overview</h2>
             <p>This directory contains all database-related files for the MTM WIP Application, including stored procedures, table scripts, database schema definitions, and sample data. All database files are organized by functional category to provide clear separation of concerns and easy navigation.</p>
             
-            <p>The MTM WIP Application uses a SQL Server database with a comprehensive set of stored procedures for inventory management, master data management, user management, and system configuration. All database access in the application is performed through these stored procedures using the <code>Helper_Database_StoredProcedure</code> pattern.</p>
+            <p>The MTM WIP Application uses a MySQL database with a comprehensive set of 45 stored procedures for inventory management, master data management, user management, quick button operations, and system configuration. All database access in the application is performed through these stored procedures using the <code>Helper_Database_StoredProcedure</code> pattern for MySQL 5.7 compatibility.</p>
             
             <div class="quick-stats">
                 <div class="stat-card">
-                    <span class="stat-number">5</span>
+                    <span class="stat-number">6</span>
                     <span class="stat-label">SQL Files</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-number">50+</span>
+                    <span class="stat-number">45</span>
                     <span class="stat-label">Stored Procedures</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-number">4</span>
+                    <span class="stat-number">5</span>
                     <span class="stat-label">Functional Areas</span>
                 </div>
                 <div class="stat-card">
                     <span class="stat-number">100%</span>
-                    <span class="stat-label">Stored Proc Coverage</span>
+                    <span class="stat-label">MySQL 5.7 Compatible</span>
                 </div>
             </div>
         </section>
@@ -99,8 +99,13 @@
                     </li>
                     <li class="sql-file">
                         <strong>Updated_Stored_Procedures.sql</strong>
-                        <span class="status-indicator status-development">Development</span>
-                        <div class="file-description">Modified existing procedures</div>
+                        <span class="status-indicator status-production">Production Ready</span>
+                        <div class="file-description">Complete 45 stored procedures for all MTM operations - MySQL 5.7 compatible</div>
+                    </li>
+                    <li class="sql-file">
+                        <strong>Updated_Stored_Procedures.sql.backup</strong>
+                        <span class="status-indicator status-backup">Backup</span>
+                        <div class="file-description">Backup of stored procedures implementation</div>
                     </li>
                 </ul>
             </div>
@@ -147,24 +152,24 @@
             <h2>📂 Functional Categories</h2>
             <div class="category-grid">
                 <div class="category-item">
-                    <h3>🔧 Inventory Management</h3>
-                    <p>Complete collection of stored procedures for inventory operations including add, remove, transfer, and query operations. Includes transaction history and audit trails.</p>
-                    <strong>Key Procedures:</strong> inv_inventory_Add_Item, inv_inventory_Remove_Item, inv_inventory_Transfer_Item
+                    <h3>🔧 Inventory Management (7 procedures)</h3>
+                    <p>Complete collection of stored procedures for inventory operations including add, remove, transfer, and query operations. Includes automatic batch number generation and transaction history.</p>
+                    <strong>Key Procedures:</strong> inv_inventory_Add_Item, inv_inventory_Remove_Item, inv_inventory_Transfer_Part, inv_inventory_Transfer_Quantity, inv_inventory_Get_ByPartID
                 </div>
                 <div class="category-item">
-                    <h3>📊 Master Data Management</h3>
-                    <p>Procedures for managing reference data including part IDs, operations, locations, and system configuration settings.</p>
-                    <strong>Key Procedures:</strong> md_part_ids_Get_All, md_operations_Get_Active, md_locations_Get_All
+                    <h3>📊 Master Data Management (20 procedures)</h3>
+                    <p>Comprehensive procedures for managing reference data including part IDs, operations, locations, and item types with full CRUD operations and dependency validation.</p>
+                    <strong>Key Procedures:</strong> md_part_ids_*, md_operation_numbers_*, md_locations_*, md_item_types_* (5 procedures each)
                 </div>
                 <div class="category-item">
-                    <h3>👥 User Management</h3>
-                    <p>User authentication, authorization, and profile management procedures with role-based access control.</p>
-                    <strong>Key Procedures:</strong> usr_users_Authenticate, usr_users_Get_Permissions, usr_users_Get_All
+                    <h3>👥 User Management (14 procedures)</h3>
+                    <p>Complete user lifecycle management with inventory validation, UI settings persistence, and role-based access control including legacy compatibility.</p>
+                    <strong>Key Procedures:</strong> usr_users_Add, usr_users_Update, usr_users_Delete_ByID, usr_ui_settings_*, sys_roles_Get_All
                 </div>
                 <div class="category-item">
-                    <h3>⚙️ System Configuration</h3>
-                    <p>Application configuration, logging, error handling, and system maintenance procedures.</p>
-                    <strong>Key Procedures:</strong> sys_config_Get_Settings, sys_log_Insert_Entry, sys_error_Log_Exception
+                    <h3>⚡ Quick Button Operations (4 procedures)</h3>
+                    <p>User-specific quick button management with position-based operations and transaction history integration for rapid inventory operations.</p>
+                    <strong>Key Procedures:</strong> qb_quickbuttons_Get_ByUser, qb_quickbuttons_Save, qb_quickbuttons_Remove, qb_quickbuttons_Clear_ByUser, sys_last_10_transactions_*
                 </div>
             </div>
         </section>
@@ -182,9 +187,13 @@
                     <pre><code>// ✅ CORRECT: Use stored procedures via Helper_Database_StoredProcedure
 var parameters = new Dictionary&lt;string, object&gt;
 {
-    ["p_PartId"] = partId,
+    ["p_PartID"] = partId,
+    ["p_Location"] = location,
+    ["p_Operation"] = operation,
     ["p_Quantity"] = quantity,
-    ["p_UserId"] = userId
+    ["p_ItemType"] = itemType,
+    ["p_User"] = user,
+    ["p_Notes"] = notes ?? DBNull.Value
 };
 
 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -193,19 +202,26 @@ var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
     parameters
 );
 
-if (result.Status == "SUCCESS")
+if (result.IsSuccess)
 {
     // Process successful result
-    var data = result.DataTable;
+    var data = result.Data;
 }
 else
 {
     // Handle error with message
     throw new InvalidOperationException(result.Message);
-}</code></pre>
+}
+
+// For procedures that don't follow MTM status pattern
+var directResult = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+    connectionString,
+    "qb_quickbuttons_Get_ByUser",
+    new Dictionary&lt;string, object&gt; { ["p_User"] = userId }
+);</code></pre>
                     
                     <h4>Error Handling Pattern</h4>
-                    <p>All stored procedures follow a standardized return pattern with status and message values for consistent error handling throughout the application.</p>
+                    <p>All stored procedures follow a standardized return pattern with <code>p_Status</code> and <code>p_ErrorMsg</code> output parameters for consistent error handling throughout the application. 43 of 45 procedures follow this pattern, with 2 read-only procedures using direct execution.</p>
                 </div>
             </div>
             
@@ -218,10 +234,12 @@ else
                     <ul>
                         <li><strong>Inventory:</strong> <code>inv_</code> prefix (e.g., inv_inventory_Add_Item)</li>
                         <li><strong>Master Data:</strong> <code>md_</code> prefix (e.g., md_part_ids_Get_All)</li>
-                        <li><strong>User Management:</strong> <code>usr_</code> prefix (e.g., usr_users_Authenticate)</li>
-                        <li><strong>System:</strong> <code>sys_</code> prefix (e.g., sys_config_Get_Settings)</li>
+                        <li><strong>User Management:</strong> <code>usr_</code> prefix (e.g., usr_users_Add)</li>
+                        <li><strong>System:</strong> <code>sys_</code> prefix (e.g., sys_roles_Get_All)</li>
+                        <li><strong>QuickButtons:</strong> <code>qb_</code> prefix (e.g., qb_quickbuttons_Save)</li>
                         <li><strong>Parameters:</strong> <code>p_</code> prefix for input parameters</li>
-                        <li><strong>Output:</strong> Standardized <code>@status</code> and <code>@message</code> output parameters</li>
+                        <li><strong>Output:</strong> Standardized <code>p_Status</code> and <code>p_ErrorMsg</code> output parameters</li>
+                        <li><strong>MySQL 5.7:</strong> All procedures use DEFINER=`root`@`localhost` for compatibility</li>
                     </ul>
                 </div>
             </div>

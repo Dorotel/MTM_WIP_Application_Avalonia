@@ -1,6 +1,25 @@
 # Dependency Injection Setup Rules
 
 <details>
+
+<details>
+<summary><strong>📑 Table of Contents</strong></summary>
+
+- [CRITICAL: AddMTMServices Extension Method](#critical-addmtmservices-extension-method)
+- [SERVICE ORGANIZATION RULE - CRITICAL](#service-organization-rule---critical)
+- [DI Registration Pattern for Grouped Services](#di-registration-pattern-for-grouped-services)
+- [IMPLEMENTED - Complete Service Registration Pattern in Program.cs](#implemented---complete-service-registration-pattern-in-programcs)
+- [Common DI Registration Errors to Avoid](#common-di-registration-errors-to-avoid)
+- [IMPLEMENTED - Service Lifetime Guidelines](#implemented---service-lifetime-guidelines)
+- [IMPLEMENTED - Required Using Statements](#implemented---required-using-statements)
+- [IMPLEMENTED - Service Resolution in ViewModels](#implemented---service-resolution-in-viewmodels)
+- [IMPLEMENTED - Service Registration Validation](#implemented---service-registration-validation)
+- [Debugging DI Issues](#debugging-di-issues)
+- [Configuration Integration](#configuration-integration)
+- [Service Organization Benefits](#service-organization-benefits)
+- [Build Status](#build-status)
+
+</details>
 <summary><strong>🎯 CRITICAL: AddMTMServices Extension Method</strong></summary>
 
 ### **ALWAYS Use AddMTMServices Extension Method**

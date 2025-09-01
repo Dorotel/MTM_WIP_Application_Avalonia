@@ -5,6 +5,8 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="800"
@@ -13,36 +15,29 @@
              x:DataType="vm:AdvancedRemoveViewModel">
 
   <UserControl.Resources>
-    <!-- Black, White, Gold Color Scheme -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="#FFD700"/>           <!-- Gold -->
-    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#DAA520"/>       <!-- Dark Gold -->
-    <SolidColorBrush x:Key="SecondaryBrush" Color="#F5F5DC"/>         <!-- Beige -->
-    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>    <!-- White -->
-    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Light Gray -->
-    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#000000"/>       <!-- Black Text -->
-    <SolidColorBrush x:Key="AccentBrush" Color="#4169E1"/>            <!-- Royal Blue for icons -->
-    <SolidColorBrush x:Key="ErrorBrush" Color="#DC143C"/>             <!-- Crimson -->
+    <!-- Theme resources will be provided by DynamicResource bindings -->
+    <!-- Remove hardcoded colors and use theme resources from App.axaml -->
   </UserControl.Resources>
 
   <UserControl.Styles>
     <!-- Compact Input Styles -->
     <Style Selector="TextBox.input-field">
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="Padding" Value="6,3"/>
-      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="MinHeight" Value="24"/>
       <Setter Property="Margin" Value="2"/>
     </Style>
 
     <Style Selector="AutoCompleteBox.input-field">
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="Padding" Value="6,3"/>
-      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="MinHeight" Value="24"/>
       <Setter Property="Margin" Value="2"/>
@@ -62,37 +57,37 @@
     </Style>
     
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.primary:pointerover">
-      <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.DarkNavigation}"/>
     </Style>
 
     <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
     <Style Selector="Button.danger">
-      <Setter Property="Background" Value="{StaticResource ErrorBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
       <Setter Property="Foreground" Value="White"/>
-      <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
     <!-- DataGrid styling -->
     <Style Selector="DataGrid">
-      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="GridLinesVisibility" Value="Horizontal"/>
@@ -110,12 +105,12 @@
         HorizontalAlignment="Stretch" 
         VerticalAlignment="Stretch"
         Margin="0"
-        Background="{StaticResource CardBackgroundBrush}">
+        Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}">
 
     <!-- Main Panel with triple CollapsiblePanels -->
     <Border Grid.Row="0"
-            Background="{StaticResource CardBackgroundBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
             BorderThickness="1"
             CornerRadius="4"
             Padding="4"
@@ -144,7 +139,7 @@
                                             Kind="Identifier"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{StaticResource AccentBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Part ID"/>
               </Grid>
@@ -153,7 +148,15 @@
                                Classes="input-field"
                                HorizontalAlignment="Stretch"
                                Watermark="Enter Part ID..."
-                               ToolTip.Tip="Select or enter part ID to filter"/>
+                               ToolTip.Tip="Select or enter part ID to filter"
+                               MinimumPrefixLength="0"
+                               FilterMode="Contains"
+                               MaxDropDownHeight="200"
+                               IsTextCompletionEnabled="False">
+                <i:Interaction.Behaviors>
+                  <behaviors:AutoCompleteBoxNavigationBehavior />
+                </i:Interaction.Behaviors>
+              </AutoCompleteBox>
             </StackPanel>
 
             <!-- Location -->
@@ -163,7 +166,7 @@
                                             Kind="MapMarker"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{StaticResource AccentBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Location"/>
               </Grid>
@@ -172,7 +175,15 @@
                                Classes="input-field"
                                HorizontalAlignment="Stretch"
                                Watermark="Enter Location..."
-                               ToolTip.Tip="Select or enter location to filter"/>
+                               ToolTip.Tip="Select or enter location to filter"
+                               MinimumPrefixLength="0"
+                               FilterMode="Contains"
+                               MaxDropDownHeight="200"
+                               IsTextCompletionEnabled="False">
+                <i:Interaction.Behaviors>
+                  <behaviors:AutoCompleteBoxNavigationBehavior />
+                </i:Interaction.Behaviors>
+              </AutoCompleteBox>
             </StackPanel>
 
             <!-- Operation -->
@@ -182,7 +193,7 @@
                                             Kind="Cog"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{StaticResource AccentBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Operation"/>
               </Grid>
@@ -191,7 +202,15 @@
                                Classes="input-field"
                                HorizontalAlignment="Stretch"
                                Watermark="Enter Operation..."
-                               ToolTip.Tip="Select or enter operation to filter"/>
+                               ToolTip.Tip="Select or enter operation to filter"
+                               MinimumPrefixLength="0"
+                               FilterMode="StartsWith"
+                               MaxDropDownHeight="200"
+                               IsTextCompletionEnabled="False">
+                <i:Interaction.Behaviors>
+                  <behaviors:AutoCompleteBoxNavigationBehavior />
+                </i:Interaction.Behaviors>
+              </AutoCompleteBox>
             </StackPanel>
 
             <!-- User -->
@@ -201,7 +220,7 @@
                                             Kind="Account"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{StaticResource AccentBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="User"/>
               </Grid>
@@ -210,7 +229,15 @@
                                Classes="input-field"
                                HorizontalAlignment="Stretch"
                                Watermark="Enter User..."
-                               ToolTip.Tip="Select or enter user to filter"/>
+                               ToolTip.Tip="Select or enter user to filter"
+                               MinimumPrefixLength="0"
+                               FilterMode="Contains"
+                               MaxDropDownHeight="200"
+                               IsTextCompletionEnabled="False">
+                <i:Interaction.Behaviors>
+                  <behaviors:AutoCompleteBoxNavigationBehavior />
+                </i:Interaction.Behaviors>
+              </AutoCompleteBox>
             </StackPanel>
 
             <!-- Notes -->
@@ -220,7 +247,7 @@
                                             Kind="NoteText"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{StaticResource AccentBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Notes"/>
               </Grid>
@@ -238,7 +265,7 @@
                                             Kind="Counter"
                                             Width="10"
                                             Height="10"
-                                            Foreground="{StaticResource AccentBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="Quantity Range"/>
               </Grid>
@@ -263,7 +290,7 @@
               <CheckBox IsChecked="{Binding UseDateRange, Mode=TwoWay}"
                         FontSize="9"
                         FontWeight="Medium"
-                        Foreground="{StaticResource PrimaryTextBrush}"
+                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                         Margin="0,0,0,3"
                         ToolTip.Tip="Enable date range filtering">
                 <CheckBox.Content>
@@ -272,7 +299,7 @@
                                                 Kind="CalendarRange"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{StaticResource AccentBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" 
                                Text="Date Range:" 
@@ -286,10 +313,10 @@
                     IsEnabled="{Binding UseDateRange}">
                 <!-- Start Date -->
                 <Border Grid.Column="0"
-                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                         BorderThickness="1"
                         CornerRadius="3"
-                        Background="{StaticResource CardBackgroundBrush}"
+                        Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                         Cursor="Hand">
                   <Grid>
                     <TextBox Text="{Binding RemovalDateRangeStart, StringFormat='{}{0:MM/dd/yyyy}', Mode=OneWay}"
@@ -304,7 +331,7 @@
                     <materialIcons:MaterialIcon Kind="Calendar"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{StaticResource AccentBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Center"
                                                 Margin="0,0,4,0"
@@ -318,8 +345,8 @@
                             Margin="0">
                       <Button.Flyout>
                         <Flyout Placement="BottomEdgeAlignedLeft">
-                          <Border Background="{StaticResource CardBackgroundBrush}"
-                                  BorderBrush="{StaticResource BorderBrush}"
+                          <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                                   BorderThickness="1"
                                   CornerRadius="4"
                                   Padding="8">
@@ -329,13 +356,13 @@
                                                             Kind="CalendarStart"
                                                             Width="12"
                                                             Height="12"
-                                                            Foreground="{StaticResource AccentBrush}"
+                                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                             VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="1"
                                            Text="Select Start Date"
                                            FontSize="10"
                                            FontWeight="Medium"
-                                           Foreground="{StaticResource PrimaryTextBrush}"/>
+                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                               </Grid>
                               <DatePicker SelectedDate="{Binding RemovalDateRangeStart, Mode=TwoWay}"
                                           FontSize="9"
@@ -350,10 +377,10 @@
                 
                 <!-- End Date -->
                 <Border Grid.Column="2"
-                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                         BorderThickness="1"
                         CornerRadius="3"
-                        Background="{StaticResource CardBackgroundBrush}"
+                        Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                         Cursor="Hand">
                   <Grid>
                     <TextBox Text="{Binding RemovalDateRangeEnd, StringFormat='{}{0:MM/dd/yyyy}', Mode=OneWay}"
@@ -368,7 +395,7 @@
                     <materialIcons:MaterialIcon Kind="Calendar"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{StaticResource AccentBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Center"
                                                 Margin="0,0,4,0"
@@ -382,8 +409,8 @@
                             Margin="0">
                       <Button.Flyout>
                         <Flyout Placement="BottomEdgeAlignedLeft">
-                          <Border Background="{StaticResource CardBackgroundBrush}"
-                                  BorderBrush="{StaticResource BorderBrush}"
+                          <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                                   BorderThickness="1"
                                   CornerRadius="4"
                                   Padding="8">
@@ -393,13 +420,13 @@
                                                             Kind="CalendarEnd"
                                                             Width="12"
                                                             Height="12"
-                                                            Foreground="{StaticResource AccentBrush}"
+                                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                             VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="1"
                                            Text="Select End Date"
                                            FontSize="10"
                                            FontWeight="Medium"
-                                           Foreground="{StaticResource PrimaryTextBrush}"/>
+                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                               </Grid>
                               <DatePicker SelectedDate="{Binding RemovalDateRangeEnd, Mode=TwoWay}"
                                           FontSize="9"
@@ -420,7 +447,7 @@
         <!-- Center Panel: Main Results Grid (No CollapsiblePanel - static) -->
         <Border Grid.Column="1"
                 Background="#F8F9FA"
-                BorderBrush="{StaticResource BorderBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="4"
                 Padding="16"
@@ -429,7 +456,7 @@
           <Grid RowDefinitions="Auto,*">
             <!-- Grid Header -->
             <Border Grid.Row="0" 
-                    Background="{StaticResource PrimaryBrush}"
+                    Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                     CornerRadius="3"
                     Padding="6,4"
                     Margin="0,0,0,4">
@@ -438,14 +465,14 @@
                                             Kind="History"
                                             Width="14"
                                             Height="14"
-                                            Foreground="{StaticResource AccentBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             Margin="0,0,4,0"/>
                 <TextBlock Grid.Column="1"
                            Text="Removal History"
                            FontSize="11"
                            FontWeight="SemiBold"
-                           Foreground="{StaticResource PrimaryTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                            VerticalAlignment="Center"/>
                 <StackPanel Grid.Column="2" 
                             Orientation="Horizontal" 
@@ -453,11 +480,11 @@
                   <TextBlock Text="{Binding RemovalHistoryGrid.Count}"
                              FontSize="10"
                              FontWeight="Bold"
-                             Foreground="{StaticResource AccentBrush}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                              VerticalAlignment="Center"/>
                   <TextBlock Text="records"
                              FontSize="9"
-                             Foreground="{StaticResource PrimaryTextBrush}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                              VerticalAlignment="Center"/>
                 </StackPanel>
               </Grid>
@@ -491,8 +518,8 @@
           <StackPanel Spacing="8">
             
             <!-- Selected Item Details -->
-            <Border Background="{StaticResource CardBackgroundBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                     BorderThickness="1"
                     CornerRadius="4"
                     Padding="8">
@@ -503,40 +530,40 @@
                                               Kind="InformationOutline"
                                               Width="12"
                                               Height="12"
-                                              Foreground="{StaticResource AccentBrush}"
+                                              Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                               VerticalAlignment="Center"/>
                   <TextBlock Grid.Column="1"
                              Text="Selected Item Details"
                              FontSize="10"
                              FontWeight="SemiBold"
-                             Foreground="{StaticResource PrimaryTextBrush}"/>
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                 </Grid>
                 
                 <!-- Details when item is selected -->
                 <StackPanel Spacing="4" IsVisible="{Binding SelectedHistoryItem, Converter={x:Static ObjectConverters.IsNotNull}}">
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Part ID:" FontSize="9" FontWeight="Medium" Foreground="{StaticResource PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.PartID}" FontSize="9" Foreground="{StaticResource PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Part ID:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.PartID}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Operation:" FontSize="9" FontWeight="Medium" Foreground="{StaticResource PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Operation}" FontSize="9" Foreground="{StaticResource PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Operation:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Operation}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Quantity:" FontSize="9" FontWeight="Medium" Foreground="{StaticResource PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Quantity}" FontSize="9" Foreground="{StaticResource PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Quantity:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Quantity}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Location:" FontSize="9" FontWeight="Medium" Foreground="{StaticResource PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Location}" FontSize="9" Foreground="{StaticResource PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Location:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.Location}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="User:" FontSize="9" FontWeight="Medium" Foreground="{StaticResource PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.User}" FontSize="9" Foreground="{StaticResource PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="User:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.User}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Date:" FontSize="9" FontWeight="Medium" Foreground="{StaticResource PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.DateRemoved, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" FontSize="9" Foreground="{StaticResource PrimaryTextBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Date:" FontSize="9" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.DateRemoved, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                   </Grid>
                 </StackPanel>
                 
@@ -544,15 +571,15 @@
                 <TextBlock Text="Select an item to view details"
                            FontSize="9"
                            FontStyle="Italic"
-                           Foreground="{StaticResource PrimaryTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                            HorizontalAlignment="Center"
                            IsVisible="{Binding SelectedHistoryItem, Converter={x:Static ObjectConverters.IsNull}}"/>
               </StackPanel>
             </Border>
 
             <!-- Quick Actions for Selected Item -->
-            <Border Background="{StaticResource CardBackgroundBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                     BorderThickness="1"
                     CornerRadius="4"
                     Padding="8"
@@ -564,13 +591,13 @@
                                               Kind="FlashOutline"
                                               Width="12"
                                               Height="12"
-                                              Foreground="{StaticResource AccentBrush}"
+                                              Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                               VerticalAlignment="Center"/>
                   <TextBlock Grid.Column="1"
                              Text="Quick Actions"
                              FontSize="10"
                              FontWeight="SemiBold"
-                             Foreground="{StaticResource PrimaryTextBrush}"/>
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                 </Grid>
                 
                 <!-- Action Buttons -->
@@ -611,8 +638,8 @@
             </Border>
 
             <!-- Summary Statistics -->
-            <Border Background="{StaticResource CardBackgroundBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
+            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                     BorderThickness="1"
                     CornerRadius="4"
                     Padding="8">
@@ -623,28 +650,28 @@
                                               Kind="ChartLine"
                                               Width="12"
                                               Height="12"
-                                              Foreground="{StaticResource AccentBrush}"
+                                              Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                               VerticalAlignment="Center"/>
                   <TextBlock Grid.Column="1"
                              Text="Summary"
                              FontSize="10"
                              FontWeight="SemiBold"
-                             Foreground="{StaticResource PrimaryTextBrush}"/>
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
                 </Grid>
                 
                 <!-- Statistics -->
                 <StackPanel Spacing="3">
                   <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Total Records:" FontSize="9" Foreground="{StaticResource PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding RemovalHistoryGrid.Count}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Total Records:" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding RemovalHistoryGrid.Count}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Total Quantity:" FontSize="9" Foreground="{StaticResource PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="0" FontSize="9" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Total Quantity:" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="0" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
                   </Grid>
                   <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                    <TextBlock Grid.Column="0" Text="Unique Parts:" FontSize="9" Foreground="{StaticResource PrimaryTextBrush}"/>
-                    <TextBlock Grid.Column="1" Text="0" FontSize="9" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                    <TextBlock Grid.Column="0" Text="Unique Parts:" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                    <TextBlock Grid.Column="1" Text="0" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
                   </Grid>
                 </StackPanel>
               </StackPanel>
@@ -658,8 +685,8 @@
 
     <!-- Bottom Action Panel -->
     <Border Grid.Row="1"
-            Background="{StaticResource CardBackgroundBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
             BorderThickness="1"
             CornerRadius="4"
             Padding="6"

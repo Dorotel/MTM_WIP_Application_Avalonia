@@ -14,7 +14,7 @@ using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class InventoryViewModel : BaseViewModel, INotifyPropertyChanged
+public class InventoryViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
@@ -97,15 +97,15 @@ public class InventoryViewModel : BaseViewModel, INotifyPropertyChanged
     #endregion
 
     #region Commands
-    public ICommand LoadInventoryCommand { get; private set; }
-    public ICommand SearchCommand { get; private set; }
-    public ICommand RefreshCommand { get; private set; }
-    public ICommand SortCommand { get; private set; }
-    public ICommand FirstPageCommand { get; private set; }
-    public ICommand PreviousPageCommand { get; private set; }
-    public ICommand NextPageCommand { get; private set; }
-    public ICommand LastPageCommand { get; private set; }
-    public ICommand ViewDetailsCommand { get; private set; }
+    public ICommand LoadInventoryCommand { get; private set; } = default!;
+    public ICommand SearchCommand { get; private set; } = default!;
+    public ICommand RefreshCommand { get; private set; } = default!;
+    public ICommand SortCommand { get; private set; } = default!;
+    public ICommand FirstPageCommand { get; private set; } = default!;
+    public ICommand PreviousPageCommand { get; private set; } = default!;
+    public ICommand NextPageCommand { get; private set; } = default!;
+    public ICommand LastPageCommand { get; private set; } = default!;
+    public ICommand ViewDetailsCommand { get; private set; } = default!;
     #endregion
 
     public InventoryViewModel(
@@ -320,6 +320,4 @@ public class InventoryViewModel : BaseViewModel, INotifyPropertyChanged
                 new Dictionary<string, object> { ["PartId"] = item?.PartId ?? "Unknown" });
         }
     }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 }

@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher"
+             x:Name="ThemeQuickSwitcherRoot">
+
+    <!-- Theme Quick Switcher Component -->
+    <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="6"
+            Padding="8">
+        
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            
+            <!-- Theme Icon -->
+            <TextBlock Text="🎨"
+                       FontSize="14"
+                       VerticalAlignment="Center"
+                       ToolTip.Tip="Theme Selector"/>
+            
+            <!-- Theme Selector -->
+            <ComboBox x:Name="ThemeComboBox"
+                      MinWidth="160"
+                      FontSize="12"
+                      Padding="6,4"
+                      VerticalAlignment="Center"
+                      ToolTip.Tip="Select application theme">
+                
+                <!-- Core MTM Themes -->
+                <ComboBoxItem Content="MTM Light" Tag="MTM_Light"/>
+                <ComboBoxItem Content="MTM Dark" Tag="MTM_Dark"/>
+                <ComboBoxItem Content="MTM High Contrast" Tag="MTM_HighContrast"/>
+                
+                <!-- Professional Business Themes -->
+                <ComboBoxItem Content="MTM Professional Blue" Tag="MTM_Blue"/>
+                <ComboBoxItem Content="MTM Professional Blue Dark" Tag="MTM_Blue_Dark"/>
+                <ComboBoxItem Content="MTM Success Green" Tag="MTM_Green"/>
+                <ComboBoxItem Content="MTM Success Green Dark" Tag="MTM_Green_Dark"/>
+                <ComboBoxItem Content="MTM Focus Teal" Tag="MTM_Teal"/>
+                <ComboBoxItem Content="MTM Focus Teal Dark" Tag="MTM_Teal_Dark"/>
+                
+                <!-- Manufacturing-Specialized Themes -->
+                <ComboBoxItem Content="MTM Alert Red" Tag="MTM_Red"/>
+                <ComboBoxItem Content="MTM Industrial Amber" Tag="MTM_Amber"/>
+                <ComboBoxItem Content="MTM Deep Indigo" Tag="MTM_Indigo"/>
+                <ComboBoxItem Content="MTM Deep Indigo Dark" Tag="MTM_Indigo_Dark"/>
+                <ComboBoxItem Content="MTM Soft Rose" Tag="MTM_Rose"/>
+                <ComboBoxItem Content="MTM Modern Emerald" Tag="MTM_Emerald"/>
+            </ComboBox>
+            
+            <!-- Quick Apply Button -->
+            <Button x:Name="ApplyButton"
+                    Content="Apply"
+                    Classes="mtm-secondary"
+                    FontSize="11"
+                    Padding="8,4"
+                    MinHeight="28"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="Apply selected theme"/>
+        </StackPanel>
+    </Border>
+
+</UserControl>
