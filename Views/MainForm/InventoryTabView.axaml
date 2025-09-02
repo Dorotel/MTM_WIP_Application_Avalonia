@@ -126,7 +126,7 @@
     <!-- Specific icon types that might have default backgrounds -->
     <Style Selector="materialIcons|MaterialIcon[Kind=Package]">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </Style>
 
     <Style Selector="materialIcons|MaterialIcon[Kind=AlertCircle]">
@@ -161,23 +161,23 @@
 
     <Style Selector="materialIcons|MaterialIcon[Kind=ContentSave]">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </Style>
 
     <Style Selector="materialIcons|MaterialIcon[Kind=Settings]">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </Style>
 
     <Style Selector="materialIcons|MaterialIcon[Kind=Refresh]">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </Style>
 
     <!-- Primary Button MTM Amber Theme -->
     <Style Selector="Button.action-button.primary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="4"/>
@@ -211,13 +211,13 @@
     
     <Style Selector="Button.action-button.secondary:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
     </Style>
     
     <Style Selector="Button.action-button.secondary:pressed">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
     </Style>
 
@@ -231,7 +231,7 @@
     <!-- Specific button icon styling to ensure proper foreground colors -->
     <Style Selector="Button.action-button.primary materialIcons|MaterialIcon">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
     </Style>
@@ -245,7 +245,7 @@
 
     <Style Selector="Button.action-button.secondary:pointerover materialIcons|MaterialIcon">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
     </Style>
@@ -300,14 +300,14 @@
                                         Width="16"
                                         Height="16"
 										Background="Transparent"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                                        Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                         VerticalAlignment="Center"
                                         Margin="0,0,8,0"/>
             <TextBlock Grid.Column="1"
                        Text="MTM Inventory Entry"
                        FontSize="14"
                        FontWeight="Bold"
-                       Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                        VerticalAlignment="Center"/>
           </Grid>
         </Border>
@@ -527,7 +527,7 @@
           <Button x:Name="SaveButton"
                   Classes="action-button primary"
 			  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-			  Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+			  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                   Width="80" 
                   Height="32"
                   Command="{Binding SaveCommand}"
@@ -536,7 +536,7 @@
                   TabIndex="6">
             <StackPanel Orientation="Horizontal" Spacing="6" 
                         HorizontalAlignment="Center" VerticalAlignment="Center">
-              <materialIcons:MaterialIcon Kind="ContentSave" Width="14" Height="14" Background="Transparent" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+              <materialIcons:MaterialIcon Kind="ContentSave" Width="14" Height="14" Background="Transparent" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
               <TextBlock Text="Save" FontSize="11" FontWeight="SemiBold"/>
             </StackPanel>
           </Button>
@@ -545,7 +545,7 @@
                   Width="90" 
                   Height="32"
 				  				  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-				  Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+				  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                   Command="{Binding AdvancedEntryCommand}"
                   ToolTip.Tip="Open advanced inventory features">
             <StackPanel Orientation="Horizontal" Spacing="6"
@@ -559,7 +559,7 @@
                   Width="70" 
                   Height="32"
 				  				  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-				  Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+				  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                   Command="{Binding ResetCommand}"
                   CommandParameter="False"
                   ToolTip.Tip="Reset form (F5 for soft reset, Shift+F5 for hard reset)">

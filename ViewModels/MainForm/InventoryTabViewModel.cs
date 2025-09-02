@@ -28,6 +28,7 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     private readonly INavigationService _navigationService;
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService? _configurationService;
+        private readonly ISuggestionOverlayService _suggestionService;
 
     // Observable properties with backing fields
     private string _selectedPart = string.Empty;
@@ -65,7 +66,7 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
     // Events for integration with other components
     public event EventHandler<InventorySavedEventArgs>? SaveCompleted;
 
-    public InventoryTabViewModel() : this(null!, null!, null!, null!)
+    public InventoryTabViewModel() : this(null!, null!, null!, null!, null!)
     {
         // Design-time constructor
     }
@@ -74,12 +75,14 @@ public class InventoryTabViewModel : BaseViewModel, INotifyPropertyChanged
         IApplicationStateService applicationStateService,
         INavigationService navigationService, 
         IDatabaseService databaseService,
-        IConfigurationService configurationService) : base()
+        IConfigurationService configurationService,
+        ISuggestionOverlayService suggestionService) : base()
     {
         _applicationStateService = applicationStateService;
         _navigationService = navigationService;
         _databaseService = databaseService;
         _configurationService = configurationService;
+        _suggestionService = suggestionService;
 
         InitializeCommands();
         

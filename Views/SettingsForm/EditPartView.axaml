@@ -14,11 +14,11 @@
                     <TextBlock Text="✏️ Edit Part Information"
                                FontSize="20"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Modify existing part details and specifications"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"
                                Margin="0,4,0,0"/>
                 </StackPanel>

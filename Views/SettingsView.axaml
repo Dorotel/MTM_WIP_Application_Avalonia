@@ -24,11 +24,11 @@
                         <TextBlock Text="⚙️ Settings"
                                    FontSize="24"
                                    FontWeight="Bold"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                    HorizontalAlignment="Center"/>
                         <TextBlock Text="Configure application preferences and themes"
                                    FontSize="14"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                    HorizontalAlignment="Center"
                                    Margin="0,8,0,0"/>
                     </StackPanel>

@@ -44,7 +44,7 @@
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="Padding" Value="6,3"/>
-      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="MinHeight" Value="24"/>
       <Setter Property="Margin" Value="2"/>
@@ -68,44 +68,44 @@
     </Style>
     
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.primary:pointerover">
-      <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
     </Style>
 
     <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
     <Style Selector="Button.success">
-      <Setter Property="Background" Value="{StaticResource SuccessBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
       <Setter Property="Foreground" Value="White"/>
-      <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
     <Style Selector="Button.warning">
-      <Setter Property="Background" Value="{StaticResource WarningBrush}"/>
-      <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.Warning}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.Warning}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
     <!-- DataGrid styling -->
     <Style Selector="DataGrid">
-      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="GridLinesVisibility" Value="Horizontal"/>
@@ -123,12 +123,12 @@
         HorizontalAlignment="Stretch" 
         VerticalAlignment="Stretch"
         Margin="0"
-        Background="{StaticResource CardBackgroundBrush}">
+        Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}">
 
     <!-- Main Panel -->
     <Border Grid.Row="0"
-            Background="{StaticResource CardBackgroundBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
             BorderThickness="1"
             CornerRadius="4"
             Padding="4"
@@ -143,15 +143,15 @@
         
         <!-- Left Panel: Advanced Entry Form -->
         <Border Grid.Column="0"
-                Background="{StaticResource CardBackgroundBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="4">
           <Grid ColumnDefinitions="Auto,*">
             <!-- Vertical Header Bar -->
             <Border Grid.Column="0"
-                    Background="{StaticResource PrimaryBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
+                    Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                     BorderThickness="0,0,1,0"
                     Width="32"
                     CornerRadius="4,0,0,4">
@@ -161,7 +161,7 @@
                                             Kind="Settings"
                                             Width="14"
                                             Height="14"
-                                            Foreground="{StaticResource AccentBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             HorizontalAlignment="Center"
                                             Margin="0,0,0,3"
                                             ToolTip.Tip="Advanced Entry"/>
@@ -171,10 +171,10 @@
                         Command="{Binding ToggleFilterPanelCommand}"
                         Width="20"
                         Height="20"
-                        Background="{StaticResource CardBackgroundBrush}"
-                        Foreground="{StaticResource AccentBrush}"
+                        Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                         BorderThickness="1"
-                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                         CornerRadius="10"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -201,7 +201,7 @@
                                                 Kind="Identifier"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{StaticResource AccentBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 VerticalAlignment="Center"
                                                 ToolTip.Tip="Part ID"/>
                   </Grid>
@@ -226,7 +226,7 @@
                                                 Kind="Cog"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{StaticResource AccentBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 VerticalAlignment="Center"
                                                 ToolTip.Tip="Operation"/>
                   </Grid>
@@ -251,7 +251,7 @@
                                                 Kind="Counter"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{StaticResource AccentBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 VerticalAlignment="Center"
                                                 ToolTip.Tip="Quantity"/>
                   </Grid>
@@ -269,7 +269,7 @@
                                                 Kind="MapMarker"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{StaticResource AccentBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 VerticalAlignment="Center"
                                                 ToolTip.Tip="Location"/>
                   </Grid>
@@ -294,7 +294,7 @@
                                                 Kind="Repeat"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{StaticResource AccentBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 VerticalAlignment="Center"
                                                 ToolTip.Tip="Repeat Count"/>
                   </Grid>
@@ -312,7 +312,7 @@
                                                 Kind="NoteText"
                                                 Width="10"
                                                 Height="10"
-                                                Foreground="{StaticResource AccentBrush}"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                                 VerticalAlignment="Top"
                                                 Margin="0,4,0,0"
                                                 ToolTip.Tip="Notes"/>
@@ -333,15 +333,15 @@
 
         <!-- Right Panel: Preview Grid -->
         <Border Grid.Column="1"
-                Background="{StaticResource CardBackgroundBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="4"
                 Padding="4">
           <Grid RowDefinitions="Auto,*">
             <!-- Grid Header -->
             <Border Grid.Row="0" 
-                    Background="{StaticResource PrimaryBrush}"
+                    Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                     CornerRadius="3"
                     Padding="6,4"
                     Margin="0,0,0,4">
@@ -350,14 +350,14 @@
                                             Kind="Eye"
                                             Width="14"
                                             Height="14"
-                                            Foreground="{StaticResource AccentBrush}"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                                             VerticalAlignment="Center"
                                             Margin="0,0,4,0"/>
                 <TextBlock Grid.Column="1"
                            Text="Transaction Preview"
                            FontSize="11"
                            FontWeight="SemiBold"
-                           Foreground="{StaticResource PrimaryTextBrush}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                            VerticalAlignment="Center"/>
                 <StackPanel Grid.Column="2" 
                             Orientation="Horizontal" 
@@ -365,11 +365,11 @@
                   <TextBlock Text="{Binding SelectedLocations.Count}"
                              FontSize="10"
                              FontWeight="Bold"
-                             Foreground="{StaticResource AccentBrush}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                              VerticalAlignment="Center"/>
                   <TextBlock Text="items"
                              FontSize="9"
-                             Foreground="{StaticResource PrimaryTextBrush}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                              VerticalAlignment="Center"/>
                 </StackPanel>
               </Grid>
@@ -393,8 +393,8 @@
 
     <!-- Compact Bottom Action Panel -->
     <Border Grid.Row="1"
-            Background="{StaticResource CardBackgroundBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
             BorderThickness="1"
             CornerRadius="4"
             Padding="6"

@@ -101,7 +101,7 @@
 
 	<!-- SELECTED tab text styling - Theme-based white text for custom headers -->
 	<Style Selector="TabItem:selected StackPanel TextBlock">
-		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
 		<Setter Property="FontWeight" Value="Bold"/>
 		<Setter Property="FontSize" Value="15"/>
 	</Style>
@@ -127,7 +127,7 @@
 
 	<!-- FALLBACK: Simple tab text styling (for tabs without custom headers) -->
 	<Style Selector="TabItem:selected TextBlock">
-		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
 		<Setter Property="FontWeight" Value="Bold"/>
 		<Setter Property="FontSize" Value="15"/>
 	</Style>
@@ -198,7 +198,7 @@
 	<!-- Primary Button - Uses theme colors exclusively -->
 	<Style Selector="Button.mtm-primary">
 		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
 		<Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
 		<Setter Property="Padding" Value="16,10"/>
 		<Setter Property="CornerRadius" Value="8"/>
@@ -312,7 +312,7 @@
 	<!-- AutoCompleteBox Dropdown ListBox Items -->
 	<Style Selector="AutoCompleteBox ListBoxItem">
 		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
 		<Setter Property="Padding" Value="8,6"/>
 		<Setter Property="MinHeight" Value="32"/>
 		<Setter Property="BorderThickness" Value="0"/>
@@ -330,13 +330,13 @@
 	<!-- AutoCompleteBox Dropdown ListBox Item Selected -->
 	<Style Selector="AutoCompleteBox ListBoxItem:selected">
 		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
 	</Style>
 
 	<!-- AutoCompleteBox Dropdown ListBox Item Pressed -->
 	<Style Selector="AutoCompleteBox ListBoxItem:pressed">
 		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
 		<Setter Property="Opacity" Value="0.9"/>
 	</Style>
 

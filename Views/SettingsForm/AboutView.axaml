@@ -14,15 +14,15 @@
                     <TextBlock Text="🏭 MTM WIP Application"
                                FontSize="24"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Work In Progress Inventory Management System"
                                FontSize="16"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Version 2.1.0"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"
                                Margin="0,8,0,0"/>
                 </StackPanel>

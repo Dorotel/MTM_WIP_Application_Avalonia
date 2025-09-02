@@ -79,7 +79,7 @@
 
     <Style Selector="Button.danger">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
@@ -434,7 +434,7 @@
 
         <!-- Center Panel: Main Results Grid (No CollapsiblePanel - static) -->
         <Border Grid.Column="1"
-                Background="#F8F9FA"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                 BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="4"

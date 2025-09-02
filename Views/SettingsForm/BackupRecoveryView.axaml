@@ -19,11 +19,11 @@
                     <TextBlock Text="💾 Backup &amp; Recovery"
                                FontSize="20"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Protect your data with automated backups and recovery options"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"
                                Margin="0,4,0,0"/>
                 </StackPanel>
@@ -247,7 +247,7 @@
                                                 <TextBlock Text="{Binding Type}"
                                                            FontSize="10"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                             </Border>
                                             
                                             <!-- Status -->
@@ -259,7 +259,7 @@
                                                 <TextBlock Text="{Binding Status}"
                                                            FontSize="10"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                             </Border>
                                             
                                             <!-- Delete Button -->
@@ -342,7 +342,7 @@
                                             <TextBlock Text="{Binding Type}"
                                                        FontSize="10"
                                                        FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                         </Border>
                                     </Grid>
                                 </Border>
@@ -365,7 +365,7 @@
                                  Width="120"
                                  Height="6"/>
                     <TextBlock Text="Processing backup operation..."
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                FontWeight="SemiBold"/>
                 </StackPanel>
             </Border>

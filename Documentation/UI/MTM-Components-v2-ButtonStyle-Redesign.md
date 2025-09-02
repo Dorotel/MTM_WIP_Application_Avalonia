@@ -21,7 +21,7 @@ Complete redesign of the MTM TabControl system with button-style tabs and compre
 #### **Selected Tab (Button)**
 - Background: `{DynamicResource MTM_Shared_Logic.PrimaryAction}`
 - Border: `{DynamicResource MTM_Shared_Logic.PrimaryAction}` (2px)
-- Text: `{DynamicResource MTM_Shared_Logic.TextonDark}` (Bold, 14px)
+- Text: `{DynamicResource MTM_Shared_Logic.OverlayTextBrush}` (Bold, 14px)
 - Corner Radius: 20px
 - Box Shadow: Subtle glow effect using primary color
 - Padding: 16px horizontal, 8px vertical
@@ -135,7 +135,7 @@ Complete redesign of the MTM TabControl system with button-style tabs and compre
 
 All components now use these key theme resources:
 - `MTM_Shared_Logic.PrimaryAction` - Primary brand color
-- `MTM_Shared_Logic.TextonDark` - White text for dark backgrounds
+- `MTM_Shared_Logic.OverlayTextBrush` - White text for dark backgrounds
 - `MTM_Shared_Logic.CardBackgroundBrush` - Card/panel backgrounds
 - `MTM_Shared_Logic.BorderAccentBrush` - Borders and accents
 - `MTM_Shared_Logic.HoverBackground` - Hover state backgrounds

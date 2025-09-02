@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Windows.Input; // Add this for ICommand
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -32,21 +33,22 @@ public partial class InventoryTabView : UserControl
     private QuickButtonsViewModel? _quickButtonsViewModel;
     private readonly IServiceProvider? _serviceProvider;
     private readonly ILogger<InventoryTabView>? _logger;
+    private ISuggestionOverlayService? _suggestionOverlayService;
+
+    // Flag to prevent cascading suggestion overlays
+    private bool _isShowingSuggestionOverlay = false;
 
     // UI Control references for direct manipulation
-    private AutoCompleteBox? _partAutoCompleteBox;
-    private AutoCompleteBox? _operationAutoCompleteBox;
-    private AutoCompleteBox? _locationAutoCompleteBox;
+    private TextBox? _partTextBox;
+    private TextBox? _operationTextBox;
+    private TextBox? _locationTextBox;
     private TextBox? _quantityTextBox;
     private TextBox? _notesTextBox;
     private Button? _saveButton;
 
-    /// <summary>
-    /// Initializes a new instance of the InventoryTabView.
-    /// </summary>
+
     public InventoryTabView()
     {
-
         try
         {
             InitializeComponent();
@@ -54,124 +56,31 @@ public partial class InventoryTabView : UserControl
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error during InitializeComponent: {ex.Message}");
-            // Continue with manual initialization if InitializeComponent fails
         }
 
-        // Set up event handling
         InitializeControlReferences();
         SetupEventHandlers();
-
-        // Set up loaded event to initialize ViewModel
+        
         Loaded += OnLoaded;
-
-        // Subscribe to fuzzy suggestion overlay event
-        MTM_WIP_Application_Avalonia.Behaviors.TextBoxFuzzyValidationBehavior.SuggestionOverlayRequested += OnSuggestionOverlayRequested;
-
     }
 
-
-    private Control? _suggestionOverlay;
-
-    private void OnSuggestionOverlayRequested(TextBox sourceBox, List<object> suggestions)
-    {
-        Debug.WriteLine($"[DBG:OVERLAY] OnSuggestionOverlayRequested called. sourceBox={sourceBox?.Name}, suggestions.Count={suggestions?.Count}");
-        if (_suggestionOverlay != null) {
-            Debug.WriteLine("[DBG:OVERLAY] Overlay already exists. Returning early.");
-            return;
-        }
-        var rootGrid = FindRootGrid(this);
-        if (rootGrid == null) {
-            Debug.WriteLine("[DBG:OVERLAY] rootGrid is null. Cannot add overlay.");
-            return;
-        }
-        var suggestionStrings = suggestions.Select(x => x?.ToString() ?? string.Empty).ToList();
-        Debug.WriteLine($"[DBG:OVERLAY] suggestionStrings: [{string.Join(", ", suggestionStrings)}]");
-        var vm = new MTM_WIP_Application_Avalonia.ViewModels.MainForm.SuggestionOverlayViewModel(suggestionStrings);
-        Debug.WriteLine($"[DBG:OVERLAY] Created SuggestionOverlayViewModel. HashCode={vm.GetHashCode()}, Suggestions.Count={vm.Suggestions.Count}");
-        var overlay = new MTM_WIP_Application_Avalonia.Views.SuggestionOverlayView { DataContext = vm };
-        Debug.WriteLine($"[DBG:OVERLAY] Created SuggestionOverlayView. HashCode={overlay.GetHashCode()}");
-        _suggestionOverlay = overlay;
-        rootGrid.Children.Add(overlay);
-        Debug.WriteLine($"[DBG:OVERLAY] Overlay added to rootGrid. Children.Count={rootGrid.Children.Count}");
-        int rowSpan = Math.Max(1, rootGrid.RowDefinitions.Count);
-        int colSpan = Math.Max(1, rootGrid.ColumnDefinitions.Count);
-        Debug.WriteLine($"[DBG:OVERLAY] Setting Grid.RowSpan={rowSpan}, Grid.ColumnSpan={colSpan}");
-        Grid.SetRowSpan(overlay, rowSpan);
-        Grid.SetColumnSpan(overlay, colSpan);
-        void Cleanup()
-        {
-            Debug.WriteLine($"[DBG:OVERLAY] Cleanup called. Removing overlay from rootGrid.");
-            rootGrid.Children.Remove(overlay);
-            _suggestionOverlay = null;
-            Debug.WriteLine($"[DBG:OVERLAY] Overlay removed. Children.Count={rootGrid.Children.Count}");
-        }
-        vm.SuggestionSelected += result =>
-        {
-            Debug.WriteLine($"[DBG:OVERLAY] SuggestionSelected event. result='{result}'");
-            if (!string.IsNullOrEmpty(result))
-            {
-                Debug.WriteLine($"[DBG:OVERLAY] Setting sourceBox.Text to '{result}'");
-                sourceBox.Text = result;
-                sourceBox.CaretIndex = result.Length;
-            }
-            Debug.WriteLine("[DBG:OVERLAY] Refocusing sourceBox and cleaning up overlay.");
-            sourceBox.Focus();
-            Cleanup();
-        };
-        vm.Cancelled += () =>
-        {
-            Debug.WriteLine("[DBG:OVERLAY] Cancelled event. Refocusing sourceBox and cleaning up overlay.");
-            sourceBox.Focus();
-            Cleanup();
-        };
-        overlay.AttachedToVisualTree += (s, e) =>
-        {
-            Debug.WriteLine($"[DBG:OVERLAY] Overlay AttachedToVisualTree. overlay={overlay.GetHashCode()}");
-            var listBox = overlay.FindControl<ListBox>("SuggestionListBox");
-            if (listBox != null)
-            {
-                Debug.WriteLine("[DBG:OVERLAY] SuggestionListBox found. Setting SelectedIndex=0 and focusing.");
-                listBox.SelectedIndex = 0;
-                listBox.Focus();
-            }
-            else
-            {
-                Debug.WriteLine("[DBG:OVERLAY] SuggestionListBox not found in overlay.");
-            }
-        };
-
-    }
-
-    private static Grid? FindRootGrid(Control control)
-    {
-        if (control is Grid grid) return grid;
-        if (control is ContentControl cc && cc.Content is Control child)
-            return FindRootGrid(child);
-        if (control is Decorator decorator && decorator.Child is Control dChild)
-            return FindRootGrid(dChild);
-        if (control is Panel panel && panel.Children.Count > 0)
-        {
-            foreach (var c in panel.Children)
-            {
-                if (c is Control childControl)
-                {
-                    var found = FindRootGrid(childControl);
-                    if (found != null) return found;
-                }
-            }
-        }
-        return null;
-
-    }
-
-
-    /// <summary>
-    /// Initializes a new instance of the InventoryTabView with dependency injection support.
-    /// </summary>
     public InventoryTabView(IServiceProvider serviceProvider) : this()
     {
         _serviceProvider = serviceProvider;
         _logger = _serviceProvider?.GetService<ILogger<InventoryTabView>>();
+        
+        // Try to resolve the suggestion overlay service immediately if we have a service provider
+        try
+        {
+            _suggestionOverlayService = _serviceProvider?.GetService<ISuggestionOverlayService>();
+            _logger?.LogDebug("SuggestionOverlayService resolved in constructor: {ServiceResolved}", _suggestionOverlayService != null);
+            System.Diagnostics.Debug.WriteLine($"SuggestionOverlayService resolved in constructor: {_suggestionOverlayService != null}");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to resolve SuggestionOverlayService in constructor");
+            System.Diagnostics.Debug.WriteLine($"Failed to resolve SuggestionOverlayService in constructor: {ex.Message}");
+        }
     }
 
     #region Control Initialization
@@ -183,9 +92,9 @@ public partial class InventoryTabView : UserControl
     {
         try
         {
-            _partAutoCompleteBox = this.FindControl<AutoCompleteBox>("PartAutoCompleteBox");
-            _operationAutoCompleteBox = this.FindControl<AutoCompleteBox>("OperationAutoCompleteBox");
-            _locationAutoCompleteBox = this.FindControl<AutoCompleteBox>("LocationAutoCompleteBox");
+            _partTextBox = this.FindControl<TextBox>("PartTextBox");
+            _operationTextBox = this.FindControl<TextBox>("OperationTextBox");
+            _locationTextBox = this.FindControl<TextBox>("LocationTextBox");
             _quantityTextBox = this.FindControl<TextBox>("QuantityTextBox");
             _notesTextBox = this.FindControl<TextBox>("NotesTextBox");
             _saveButton = this.FindControl<Button>("SaveButton");
@@ -199,66 +108,39 @@ public partial class InventoryTabView : UserControl
         }
     }
 
-    /// <summary>
-    /// Sets up event handlers for UI controls.
-    /// Note: Arrow key handling removed - handled globally by MainWindow.
-    /// </summary>
     private void SetupEventHandlers()
     {
         try
         {
-            // Global keyboard event handling for F5, Enter, Escape (non-arrow keys)
+            if (_saveButton != null)
+                _saveButton.Click += OnSaveButtonClick;
+
             KeyDown += OnKeyDown;
 
-            // AutoCompleteBox event handlers for UI interaction
-            if (_partAutoCompleteBox != null)
+            // Attach TextChanged and LostFocus handlers for TextBox controls
+            if (_partTextBox != null)
             {
-                _partAutoCompleteBox.TextChanged += OnPartTextChanged;
-                _partAutoCompleteBox.SelectionChanged += OnPartSelectionChanged;
-                _partAutoCompleteBox.LostFocus += OnPartLostFocus;
-                _partAutoCompleteBox.GotFocus += OnPartGotFocus; // Handle focus events
-                _partAutoCompleteBox.DropDownOpened += OnPartDropDownOpened; // Handle dropdown events
-                // REMOVED: Arrow key handling - now handled by MainWindow globally
+                _partTextBox.LostFocus += OnPartLostFocus;
+                _partTextBox.TextChanged += OnPartTextChanged;
             }
-
-            if (_operationAutoCompleteBox != null)
+            if (_operationTextBox != null)
             {
-                _operationAutoCompleteBox.TextChanged += OnOperationTextChanged;
-                _operationAutoCompleteBox.SelectionChanged += OnOperationSelectionChanged;
-                _operationAutoCompleteBox.LostFocus += OnOperationLostFocus;
-                _operationAutoCompleteBox.GotFocus += OnOperationGotFocus; // Handle focus events
-                _operationAutoCompleteBox.DropDownOpened += OnOperationDropDownOpened; // Handle dropdown events
-                // REMOVED: Arrow key handling - now handled by MainWindow globally
+                _operationTextBox.LostFocus += OnOperationLostFocus;
+                _operationTextBox.TextChanged += OnOperationTextChanged;
             }
-
-            if (_locationAutoCompleteBox != null)
+            if (_locationTextBox != null)
             {
-                _locationAutoCompleteBox.TextChanged += OnLocationTextChanged;
-                _locationAutoCompleteBox.SelectionChanged += OnLocationSelectionChanged;
-                _locationAutoCompleteBox.LostFocus += OnLocationLostFocus;
-                _locationAutoCompleteBox.GotFocus += OnLocationGotFocus; // Handle focus events
-                _locationAutoCompleteBox.DropDownOpened += OnLocationDropDownOpened; // Handle dropdown events
-                // REMOVED: Arrow key handling - now handled by MainWindow globally
+                _locationTextBox.LostFocus += OnLocationLostFocus;
+                _locationTextBox.TextChanged += OnLocationTextChanged;
             }
-
-            // TextBox event handlers
             if (_quantityTextBox != null)
             {
-                _quantityTextBox.TextChanged += OnQuantityTextChanged;
                 _quantityTextBox.LostFocus += OnQuantityLostFocus;
-                // REMOVED: Arrow key handling - now handled by MainWindow globally
+                _quantityTextBox.TextChanged += OnQuantityTextChanged;
             }
-
             if (_notesTextBox != null)
             {
                 _notesTextBox.TextChanged += OnNotesTextChanged;
-                // REMOVED: Arrow key handling - now handled by MainWindow globally
-            }
-
-            // Button event handlers
-            if (_saveButton != null)
-            {
-                _saveButton.Click += OnSaveButtonClick;
             }
 
             _logger?.LogDebug("Event handlers set up successfully - arrow key handling delegated to MainWindow");
@@ -268,6 +150,62 @@ public partial class InventoryTabView : UserControl
             _logger?.LogError(ex, "Error setting up event handlers");
             System.Diagnostics.Debug.WriteLine($"Error setting up event handlers: {ex.Message}");
         }
+    }
+
+    private void AttachSuggestionOverlay(TextBox? textBox, string field)
+    {
+        if (textBox == null)
+        {
+            _logger?.LogWarning($"{field}TextBox not found in XAML. Overlay will not be available for this field.");
+            return;
+        }
+        textBox.LostFocus += async (s, e) =>
+        {
+            _logger?.LogInformation($"LostFocus event fired for {field}TextBox");
+            if (_viewModel == null || _suggestionOverlayService == null)
+            {
+                _logger?.LogWarning($"ViewModel or SuggestionOverlayService is null for {field}TextBox");
+                return;
+            }
+            var enteredText = textBox.Text?.Trim() ?? string.Empty;
+            _logger?.LogInformation($"Entered text for {field}: '{enteredText}'");
+            if (string.IsNullOrEmpty(enteredText))
+            {
+                _logger?.LogInformation($"Entered text is empty for {field}TextBox");
+                return;
+            }
+            IEnumerable<string> data = field switch
+            {
+                "Part" => _viewModel.PartIds ?? Enumerable.Empty<string>(),
+                "Operation" => _viewModel.Operations ?? Enumerable.Empty<string>(),
+                "Location" => _viewModel.Locations ?? Enumerable.Empty<string>(),
+                _ => Enumerable.Empty<string>()
+            };
+            _logger?.LogInformation($"Data for {field}: [{string.Join(", ", data)}]");
+            if (!data.Contains(enteredText, StringComparer.OrdinalIgnoreCase))
+            {
+                _logger?.LogInformation($"Invoking overlay for {field}: '{enteredText}' (not an exact match)");
+                var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, enteredText);
+                _logger?.LogInformation($"Overlay result for {field}: '{selected}'");
+                if (!string.IsNullOrEmpty(selected))
+                {
+                    switch (field)
+                    {
+                        case "Part": _viewModel.SelectedPart = selected; break;
+                        case "Operation": _viewModel.SelectedOperation = selected; break;
+                        case "Location": _viewModel.SelectedLocation = selected; break;
+                    }
+                    textBox.Text = selected;
+                    UpdateValidationStates();
+                    ValidateAndUpdateSaveButton();
+                }
+            }
+            else
+            {
+                _logger?.LogInformation($"Entered text '{enteredText}' is a valid {field}");
+            }
+        };
+        _logger?.LogDebug($"Overlay event handler attached to {field}TextBox");
     }
 
     #endregion
@@ -354,6 +292,12 @@ public partial class InventoryTabView : UserControl
     {
         try
         {
+            // Try to resolve services if not already resolved
+            if (_suggestionOverlayService == null)
+            {
+                TryResolveServices(); // Remove await since method is no longer async
+            }
+
             // Set up ViewModel if not already set
             if (DataContext is InventoryTabViewModel vm)
             {
@@ -378,6 +322,121 @@ public partial class InventoryTabView : UserControl
         {
             _logger?.LogError(ex, "Failed to initialize InventoryTabView");
             System.Diagnostics.Debug.WriteLine($"Error setting up InventoryTabView ViewModel: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Attempts to resolve required services from various sources.
+    /// </summary>
+    private void TryResolveServices()
+    {
+        try
+        {
+            // Method 1: Try the injected service provider
+            if (_serviceProvider != null && _suggestionOverlayService == null)
+            {
+                try
+                {
+                    _suggestionOverlayService = _serviceProvider.GetService<ISuggestionOverlayService>();
+                    _logger?.LogDebug("Method 1 - Service provider resolution: {ServiceResolved}", _suggestionOverlayService != null);
+                    System.Diagnostics.Debug.WriteLine($"Method 1 - Service provider resolution: {_suggestionOverlayService != null}");
+                    
+                    // Additional debugging - check if service is registered
+                    var allServices = _serviceProvider.GetServices<ISuggestionOverlayService>();
+                    var serviceCount = allServices?.Count() ?? 0;
+                    _logger?.LogDebug("ISuggestionOverlayService instances in container: {ServiceCount}", serviceCount);
+                    System.Diagnostics.Debug.WriteLine($"ISuggestionOverlayService instances in container: {serviceCount}");
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, "Failed to resolve ISuggestionOverlayService from service provider");
+                    System.Diagnostics.Debug.WriteLine($"Failed to resolve ISuggestionOverlayService: {ex.Message}");
+                }
+            }
+
+            // Method 2: Try to get from MainWindow if it has a service provider
+            if (_suggestionOverlayService == null)
+            {
+                try
+                {
+                    var mainWindow = TopLevel.GetTopLevel(this);
+                    if (mainWindow?.DataContext != null)
+                    {
+                        var serviceProviderProperty = mainWindow.DataContext.GetType().GetProperty("ServiceProvider");
+                        if (serviceProviderProperty?.GetValue(mainWindow.DataContext) is IServiceProvider windowServiceProvider)
+                        {
+                            _suggestionOverlayService = windowServiceProvider.GetService<ISuggestionOverlayService>();
+                            _logger?.LogDebug("Method 2 - MainWindow resolution: {ServiceResolved}", _suggestionOverlayService != null);
+                            System.Diagnostics.Debug.WriteLine($"Method 2 - MainWindow resolution: {_suggestionOverlayService != null}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "Failed to resolve ISuggestionOverlayService from MainWindow");
+                    System.Diagnostics.Debug.WriteLine($"Failed to resolve from MainWindow: {ex.Message}");
+                }
+            }
+
+            // Method 3: Try to create instance manually as fallback
+            if (_suggestionOverlayService == null)
+            {
+                try
+                {
+                    var loggerFactory = _serviceProvider?.GetService<ILoggerFactory>();
+                    if (loggerFactory != null)
+                    {
+                        var serviceLogger = loggerFactory.CreateLogger<SuggestionOverlayService>();
+                        _suggestionOverlayService = new SuggestionOverlayService(serviceLogger);
+                        _logger?.LogWarning("Method 3 - Manual creation successful as fallback");
+                        System.Diagnostics.Debug.WriteLine("Method 3 - Manual creation successful as fallback");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, "Failed to create SuggestionOverlayService manually");
+                    System.Diagnostics.Debug.WriteLine($"Failed to create SuggestionOverlayService manually: {ex.Message}");
+                }
+            }
+
+            // Log final result with detailed information
+            if (_suggestionOverlayService != null)
+            {
+                _logger?.LogInformation("SuggestionOverlayService successfully resolved - Type: {ServiceType}", _suggestionOverlayService.GetType().Name);
+                System.Diagnostics.Debug.WriteLine($"SuggestionOverlayService successfully resolved - Type: {_suggestionOverlayService.GetType().Name}");
+            }
+            else
+            {
+                _logger?.LogError("SuggestionOverlayService could not be resolved through any method - suggestion overlays will be disabled. Check if ISuggestionOverlayService is registered in DI container.");
+                System.Diagnostics.Debug.WriteLine("SuggestionOverlayService could not be resolved through any method - suggestion overlays will be disabled. Check service registration.");
+                
+                // Additional diagnostic information
+                if (_serviceProvider != null)
+                {
+                    try
+                    {
+                        var registeredServices = _serviceProvider.GetServices<object>().Count();
+                        _logger?.LogDebug("Service provider contains {ServiceCount} registered services", registeredServices);
+                        System.Diagnostics.Debug.WriteLine($"Service provider contains {registeredServices} registered services");
+                        
+                        // Check if the specific service type is registered
+                        var suggestionsServices = _serviceProvider.GetServices<ISuggestionOverlayService>();
+                        var suggestionServiceCount = suggestionsServices?.Count() ?? 0;
+                        _logger?.LogDebug("ISuggestionOverlayService registrations found: {Count}", suggestionServiceCount);
+                        System.Diagnostics.Debug.WriteLine($"ISuggestionOverlayService registrations found: {suggestionServiceCount}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger?.LogError(ex, "Error checking service registrations");
+                        System.Diagnostics.Debug.WriteLine($"Error checking service registrations: {ex.Message}");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error trying to resolve services");
+            System.Diagnostics.Debug.WriteLine($"Error trying to resolve services: {ex.Message}");
         }
     }
 
@@ -479,19 +538,19 @@ public partial class InventoryTabView : UserControl
             var isLoadingOperations = GetPropertyValue<bool>(_viewModel, "IsLoadingOperations");
             var isLoadingLocations = GetPropertyValue<bool>(_viewModel, "IsLoadingLocations");
 
-            if (_partAutoCompleteBox != null)
+            if (_partTextBox != null)
             {
-                _partAutoCompleteBox.Classes.Set("loading", isLoadingParts);
+                _partTextBox.Classes.Set("loading", isLoadingParts);
             }
 
-            if (_operationAutoCompleteBox != null)
+            if (_operationTextBox != null)
             {
-                _operationAutoCompleteBox.Classes.Set("loading", isLoadingOperations);
+                _operationTextBox.Classes.Set("loading", isLoadingOperations);
             }
 
-            if (_locationAutoCompleteBox != null)
+            if (_locationTextBox != null)
             {
-                _locationAutoCompleteBox.Classes.Set("loading", isLoadingLocations);
+                _locationTextBox.Classes.Set("loading", isLoadingLocations);
             }
         }
         catch (Exception ex)
@@ -515,19 +574,19 @@ public partial class InventoryTabView : UserControl
             var isLocationValid = GetPropertyValue<bool>(_viewModel, "IsLocationValid", true);
             var isQuantityValid = GetPropertyValue<bool>(_viewModel, "IsQuantityValid", true);
 
-            if (_partAutoCompleteBox != null)
+            if (_partTextBox != null)
             {
-                _partAutoCompleteBox.Classes.Set("error", !isPartValid);
+                _partTextBox.Classes.Set("error", !isPartValid);
             }
 
-            if (_operationAutoCompleteBox != null)
+            if (_operationTextBox != null)
             {
-                _operationAutoCompleteBox.Classes.Set("error", !isOperationValid);
+                _operationTextBox.Classes.Set("error", !isOperationValid);
             }
 
-            if (_locationAutoCompleteBox != null)
+            if (_locationTextBox != null)
             {
-                _locationAutoCompleteBox.Classes.Set("error", !isLocationValid);
+                _locationTextBox.Classes.Set("error", !isLocationValid);
             }
 
             if (_quantityTextBox != null)
@@ -567,69 +626,15 @@ public partial class InventoryTabView : UserControl
     #region UI Event Handlers - Part ID
 
     /// <summary>
-    /// Handles Part ID gaining focus - ensures proper AutoCompleteBox behavior.
-    /// </summary>
-    private void OnPartGotFocus(object? sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (sender is not AutoCompleteBox autoCompleteBox) return;
-
-            // If the AutoCompleteBox is empty and has items, show the dropdown
-            if (string.IsNullOrEmpty(autoCompleteBox.Text) &&
-                _viewModel?.PartIds.Count > 0 &&
-                !autoCompleteBox.IsDropDownOpen)
-            {
-                // Small delay to ensure focus is fully established
-                _ = Task.Run(async () =>
-                {
-                    await Task.Delay(50);
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        if (autoCompleteBox.IsFocused)
-                        {
-                            autoCompleteBox.IsDropDownOpen = true;
-                        }
-                    });
-                });
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling part got focus");
-            System.Diagnostics.Debug.WriteLine($"Error handling part got focus: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles Part ID dropdown opening - ensures items are filtered properly.
-    /// </summary>
-    private void OnPartDropDownOpened(object? sender, EventArgs e)
-    {
-        try
-        {
-            if (sender is not AutoCompleteBox autoCompleteBox) return;
-
-            // Log dropdown opened for debugging
-            _logger?.LogDebug("Part AutoCompleteBox dropdown opened with {Count} items", _viewModel?.PartIds.Count ?? 0);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling part dropdown opened");
-            System.Diagnostics.Debug.WriteLine($"Error handling part dropdown opened: {ex.Message}");
-        }
-    }
-
-    /// <summary>
     /// Handles Part ID text changes.
     /// </summary>
     private void OnPartTextChanged(object? sender, TextChangedEventArgs e)
     {
         try
         {
-            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+            if (_viewModel == null || sender is not TextBox textBox) return;
 
-            var partId = autoCompleteBox.Text?.Trim() ?? string.Empty;
+            var partId = textBox.Text?.Trim() ?? string.Empty;
 
             // Update ViewModel property
             _viewModel.SelectedPart = partId;
@@ -646,114 +651,146 @@ public partial class InventoryTabView : UserControl
     }
 
     /// <summary>
-    /// Handles Part ID selection from dropdown.
-    /// </summary>
-    private void OnPartSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        try
-        {
-            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
-
-            var selectedPart = autoCompleteBox.SelectedItem?.ToString() ?? string.Empty;
-
-            if (!string.IsNullOrEmpty(selectedPart))
-            {
-                _viewModel.SelectedPart = selectedPart;
-
-                // Update validation and save button
-                UpdateValidationStates();
-                ValidateAndUpdateSaveButton();
-
-                // Move to next field automatically
-                MoveFocusToNextControl();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling part selection");
-            System.Diagnostics.Debug.WriteLine($"Error handling part selection: {ex.Message}");
-        }
-    }
-
-    /// <summary>
     /// Handles Part ID field losing focus.
     /// </summary>
-    private void OnPartLostFocus(object? sender, RoutedEventArgs e)
+       /// <summary>
+    /// Generates sample suggestions for testing
+    /// </summary>
+    private List<string> GenerateSampleSuggestions(string input)
     {
-        try
+        // Sample data - replace with your actual data source
+        var allSuggestions = new List<string>
         {
-            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
-
-            var partId = autoCompleteBox.Text?.Trim() ?? string.Empty;
-            _viewModel.SelectedPart = partId;
-
-            UpdateValidationStates();
-            ValidateAndUpdateSaveButton();
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling part lost focus");
-            System.Diagnostics.Debug.WriteLine($"Error handling part lost focus: {ex.Message}");
-        }
+            "21001", "21002", "21003", "21010", "21020", "21030",
+            "210A1", "210B2", "210C3", "21-PART-001", "21-PART-002",
+            "21X", "21Y", "21Z", "21AA", "21BB", "21CC"
+        };
+        
+        return allSuggestions
+            .Where(s => s.Contains(input, StringComparison.OrdinalIgnoreCase))
+            .Take(10)
+            .ToList();
     }
+
+    private async void OnPartLostFocus(object? sender, RoutedEventArgs e)
+{
+    try
+    {
+        if (_viewModel == null || sender is not TextBox textBox) return;
+
+        // Ensure services are resolved before proceeding
+        TryResolveServices();
+
+        var value = textBox.Text?.Trim() ?? string.Empty;
+        // Use PartIds collection which is populated from the PartID column via stored procedure
+        var data = _viewModel.PartIds ?? Enumerable.Empty<string>();
+        int count = data.Count();
+
+        _logger?.LogInformation($"[FocusLost] PartTextBox lost focus. User entered: '{value}'. PartIds count: {count}");
+        System.Diagnostics.Debug.WriteLine($"[FocusLost] PartTextBox lost focus. User entered: '{value}'. PartIds count: {count}");
+
+        // Debug: Log sample of available part IDs
+        if (count > 0)
+        {
+            var sampleParts = string.Join(", ", data.Take(10));
+            _logger?.LogInformation($"Sample PartIDs: {sampleParts}");
+            System.Diagnostics.Debug.WriteLine($"Sample PartIDs: {sampleParts}");
+        }
+
+        // Show overlay only if:
+        // 1. User entered something (not blank)
+        // 2. Entered value is NOT an exact match to any PartID
+        // 3. Entered value IS a substring of one or more PartIDs (semi-matches)
+        var semiMatches = data
+            .Where(partId => !string.IsNullOrEmpty(partId) && 
+                           partId.Contains(value, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(partId => partId) // Sort suggestions alphabetically
+            .ToList();
+
+        bool isExactMatch = data.Any(partId => 
+            string.Equals(partId, value, StringComparison.OrdinalIgnoreCase));
+
+        _logger?.LogInformation($"Part '{value}' - ExactMatch: {isExactMatch}, SemiMatches: {semiMatches.Count}");
+        System.Diagnostics.Debug.WriteLine($"Part '{value}' - ExactMatch: {isExactMatch}, SemiMatches: {semiMatches.Count}");
+
+        if (!string.IsNullOrEmpty(value) && 
+            !isExactMatch && 
+            semiMatches.Count > 0 && 
+            _suggestionOverlayService != null &&
+            !_isShowingSuggestionOverlay)
+        {
+            _logger?.LogInformation($"Invoking overlay for Part: '{value}' with {semiMatches.Count} suggestions");
+            System.Diagnostics.Debug.WriteLine($"Invoking overlay for Part: '{value}' with {semiMatches.Count} suggestions");
+            
+            // Log first few suggestions for debugging
+            var firstFewSuggestions = string.Join(", ", semiMatches.Take(5));
+            _logger?.LogInformation($"First 5 suggestions: {firstFewSuggestions}");
+            System.Diagnostics.Debug.WriteLine($"First 5 suggestions: {firstFewSuggestions}");
+
+            try
+            {
+                _isShowingSuggestionOverlay = true;
+                var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, semiMatches, value);
+                
+                if (!string.IsNullOrEmpty(selected))
+                {
+                    _logger?.LogInformation($"Part overlay - User selected: '{selected}'");
+                    System.Diagnostics.Debug.WriteLine($"Part overlay - User selected: '{selected}'");
+                    _viewModel.SelectedPart = selected;
+                    textBox.Text = selected;
+                }
+                else
+                {
+                    _logger?.LogInformation($"Part overlay - User cancelled, keeping: '{value}'");
+                    System.Diagnostics.Debug.WriteLine($"Part overlay - User cancelled, keeping: '{value}'");
+                    _viewModel.SelectedPart = value;
+                }
+            }
+            finally
+            {
+                _isShowingSuggestionOverlay = false;
+            }
+        }
+        else
+        {
+            // Log why overlay was not shown
+            if (string.IsNullOrEmpty(value))
+            {
+                _logger?.LogInformation($"Part overlay not shown - value is empty");
+                System.Diagnostics.Debug.WriteLine($"Part overlay not shown - value is empty");
+            }
+            else if (isExactMatch)
+            {
+                _logger?.LogInformation($"Part overlay not shown - '{value}' is exact match");
+                System.Diagnostics.Debug.WriteLine($"Part overlay not shown - '{value}' is exact match");
+            }
+            else if (semiMatches.Count == 0)
+            {
+                _logger?.LogInformation($"Part overlay not shown - no semi-matches for '{value}'");
+                System.Diagnostics.Debug.WriteLine($"Part overlay not shown - no semi-matches for '{value}'");
+            }
+            else if (_suggestionOverlayService == null)
+            {
+                _logger?.LogWarning($"Part overlay not shown - SuggestionOverlayService is null");
+                System.Diagnostics.Debug.WriteLine($"Part overlay not shown - SuggestionOverlayService is null");
+            }
+            
+            _viewModel.SelectedPart = value;
+        }
+        
+        UpdateValidationStates();
+        ValidateAndUpdateSaveButton();
+    }
+    catch (Exception ex)
+    {
+        _logger?.LogError(ex, "Error handling part lost focus");
+        System.Diagnostics.Debug.WriteLine($"Error handling part lost focus: {ex.Message}");
+    }
+}
 
     #endregion
 
     #region UI Event Handlers - Operation
-
-    /// <summary>
-    /// Handles Operation gaining focus - ensures proper AutoCompleteBox behavior.
-    /// </summary>
-    private void OnOperationGotFocus(object? sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (sender is not AutoCompleteBox autoCompleteBox) return;
-
-            // If the AutoCompleteBox is empty and has items, show the dropdown
-            if (string.IsNullOrEmpty(autoCompleteBox.Text) &&
-                _viewModel?.Operations.Count > 0 &&
-                !autoCompleteBox.IsDropDownOpen)
-            {
-                // Small delay to ensure focus is fully established
-                _ = Task.Run(async () =>
-                {
-                    await Task.Delay(50);
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        if (autoCompleteBox.IsFocused)
-                        {
-                            autoCompleteBox.IsDropDownOpen = true;
-                        }
-                    });
-                });
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling operation got focus");
-            System.Diagnostics.Debug.WriteLine($"Error handling operation got focus: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles Operation dropdown opening - ensures items are filtered properly.
-    /// </summary>
-    private void OnOperationDropDownOpened(object? sender, EventArgs e)
-    {
-        try
-        {
-            if (sender is not AutoCompleteBox autoCompleteBox) return;
-
-            // Log dropdown opened for debugging
-            _logger?.LogDebug("Operation AutoCompleteBox dropdown opened with {Count} items", _viewModel?.Operations.Count ?? 0);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling operation dropdown opened");
-            System.Diagnostics.Debug.WriteLine($"Error handling operation dropdown opened: {ex.Message}");
-        }
-    }
 
     /// <summary>
     /// Handles Operation text changes.
@@ -762,9 +799,9 @@ public partial class InventoryTabView : UserControl
     {
         try
         {
-            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+            if (_viewModel == null || sender is not TextBox textBox) return;
 
-            var operation = autoCompleteBox.Text?.Trim() ?? string.Empty;
+            var operation = textBox.Text?.Trim() ?? string.Empty;
             _viewModel.SelectedOperation = operation;
 
             UpdateValidationStates();
@@ -778,54 +815,57 @@ public partial class InventoryTabView : UserControl
     }
 
     /// <summary>
-    /// Handles Operation selection from dropdown.
-    /// </summary>
-    private void OnOperationSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        try
-        {
-            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
-
-            var selectedOperation = autoCompleteBox.SelectedItem?.ToString() ?? string.Empty;
-
-            if (!string.IsNullOrEmpty(selectedOperation))
-            {
-                _viewModel.SelectedOperation = selectedOperation;
-
-                // Update validation and save button
-                UpdateValidationStates();
-                ValidateAndUpdateSaveButton();
-
-                // Move to next field automatically
-                MoveFocusToNextControl();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling operation selection");
-            System.Diagnostics.Debug.WriteLine($"Error handling operation selection: {ex.Message}");
-        }
-    }
-
-    /// <summary>
     /// Handles Operation field losing focus.
     /// </summary>
-    private void OnOperationLostFocus(object? sender, RoutedEventArgs e)
+    private async void OnOperationLostFocus(object? sender, RoutedEventArgs e)
     {
         try
         {
-            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+            if (_viewModel == null || sender is not TextBox textBox) return;
 
-            var operation = autoCompleteBox.Text?.Trim() ?? string.Empty;
-            _viewModel.SelectedOperation = operation;
+            // Ensure services are resolved before proceeding
+            TryResolveServices();
 
+            var value = textBox.Text?.Trim() ?? string.Empty;
+            var data = _viewModel.Operations ?? Enumerable.Empty<string>();
+            int count = data.Count();
+            _logger?.LogInformation($"[FocusLost] OperationTextBox lost focus. User entered: '{value}'. Operations count: {count}");
+
+            // Only show suggestions if the user actually entered something
+            if (!string.IsNullOrEmpty(value) && 
+                !data.Contains(value, StringComparer.OrdinalIgnoreCase) && 
+                _suggestionOverlayService != null &&
+                !_isShowingSuggestionOverlay)
+            {
+                try
+                {
+                    _isShowingSuggestionOverlay = true;
+                    var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, value);
+                    if (!string.IsNullOrEmpty(selected))
+                    {
+                        _viewModel.SelectedOperation = selected;
+                        textBox.Text = selected;
+                    }
+                    else
+                    {
+                        _viewModel.SelectedOperation = value;
+                    }
+                }
+                finally
+                {
+                    _isShowingSuggestionOverlay = false;
+                }
+            }
+            else
+            {
+                _viewModel.SelectedOperation = value;
+            }
             UpdateValidationStates();
             ValidateAndUpdateSaveButton();
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling operation lost focus");
-            System.Diagnostics.Debug.WriteLine($"Error handling operation lost focus: {ex.Message}");
         }
     }
 
@@ -834,69 +874,15 @@ public partial class InventoryTabView : UserControl
     #region UI Event Handlers - Location
 
     /// <summary>
-    /// Handles Location gaining focus - ensures proper AutoCompleteBox behavior.
-    /// </summary>
-    private void OnLocationGotFocus(object? sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (sender is not AutoCompleteBox autoCompleteBox) return;
-
-            // If the AutoCompleteBox is empty and has items, show the dropdown
-            if (string.IsNullOrEmpty(autoCompleteBox.Text) &&
-                _viewModel?.Locations.Count > 0 &&
-                !autoCompleteBox.IsDropDownOpen)
-            {
-                // Small delay to ensure focus is fully established
-                _ = Task.Run(async () =>
-                {
-                    await Task.Delay(50);
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        if (autoCompleteBox.IsFocused)
-                        {
-                            autoCompleteBox.IsDropDownOpen = true;
-                        }
-                    });
-                });
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling location got focus");
-            System.Diagnostics.Debug.WriteLine($"Error handling location got focus: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Handles Location dropdown opening - ensures items are filtered properly.
-    /// </summary>
-    private void OnLocationDropDownOpened(object? sender, EventArgs e)
-    {
-        try
-        {
-            if (sender is not AutoCompleteBox autoCompleteBox) return;
-
-            // Log dropdown opened for debugging
-            _logger?.LogDebug("Location AutoCompleteBox dropdown opened with {Count} items", _viewModel?.Locations.Count ?? 0);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling location dropdown opened");
-            System.Diagnostics.Debug.WriteLine($"Error handling location dropdown opened: {ex.Message}");
-        }
-    }
-
-    /// <summary>
     /// Handles Location text changes.
     /// </summary>
     private void OnLocationTextChanged(object? sender, TextChangedEventArgs e)
     {
         try
         {
-            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+            if (_viewModel == null || sender is not TextBox textBox) return;
 
-            var location = autoCompleteBox.Text?.Trim() ?? string.Empty;
+            var location = textBox.Text?.Trim() ?? string.Empty;
             _viewModel.SelectedLocation = location;
 
             UpdateValidationStates();
@@ -910,54 +896,57 @@ public partial class InventoryTabView : UserControl
     }
 
     /// <summary>
-    /// Handles Location selection from dropdown.
-    /// </summary>
-    private void OnLocationSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        try
-        {
-            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
-
-            var selectedLocation = autoCompleteBox.SelectedItem?.ToString() ?? string.Empty;
-
-            if (!string.IsNullOrEmpty(selectedLocation))
-            {
-                _viewModel.SelectedLocation = selectedLocation;
-
-                // Update validation and save button
-                UpdateValidationStates();
-                ValidateAndUpdateSaveButton();
-
-                // Move to next field automatically
-                MoveFocusToNextControl();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling location selection");
-            System.Diagnostics.Debug.WriteLine($"Error handling location selection: {ex.Message}");
-        }
-    }
-
-    /// <summary>
     /// Handles Location field losing focus.
     /// </summary>
-    private void OnLocationLostFocus(object? sender, RoutedEventArgs e)
+    private async void OnLocationLostFocus(object? sender, RoutedEventArgs e)
     {
         try
         {
-            if (_viewModel == null || sender is not AutoCompleteBox autoCompleteBox) return;
+            if (_viewModel == null || sender is not TextBox textBox) return;
 
-            var location = autoCompleteBox.Text?.Trim() ?? string.Empty;
-            _viewModel.SelectedLocation = location;
+            // Ensure services are resolved before proceeding
+            TryResolveServices();
 
+            var value = textBox.Text?.Trim() ?? string.Empty;
+            var data = _viewModel.Locations ?? Enumerable.Empty<string>();
+            int count = data.Count();
+            _logger?.LogInformation($"[FocusLost] LocationTextBox lost focus. User entered: '{value}'. Locations count: {count}");
+
+            // Only show suggestions if the user actually entered something
+            if (!string.IsNullOrEmpty(value) && 
+                !data.Contains(value, StringComparer.OrdinalIgnoreCase) && 
+                _suggestionOverlayService != null &&
+                !_isShowingSuggestionOverlay)
+            {
+                try
+                {
+                    _isShowingSuggestionOverlay = true;
+                    var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, value);
+                    if (!string.IsNullOrEmpty(selected))
+                    {
+                        _viewModel.SelectedLocation = selected;
+                        textBox.Text = selected;
+                    }
+                    else
+                    {
+                        _viewModel.SelectedLocation = value;
+                    }
+                }
+                finally
+                {
+                    _isShowingSuggestionOverlay = false;
+                }
+            }
+            else
+            {
+                _viewModel.SelectedLocation = value;
+            }
             UpdateValidationStates();
             ValidateAndUpdateSaveButton();
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling location lost focus");
-            System.Diagnostics.Debug.WriteLine($"Error handling location lost focus: {ex.Message}");
         }
     }
 
@@ -1086,7 +1075,7 @@ public partial class InventoryTabView : UserControl
             }
 
             // Execute save command (business logic handled by ViewModel)
-            var saveCommand = GetPropertyValue<System.Windows.Input.ICommand>(_viewModel, "SaveCommand");
+            var saveCommand = GetPropertyValue<ICommand>(_viewModel, "SaveCommand"); // Fix: Remove System.Windows.Input
             if (saveCommand?.CanExecute(null) == true)
             {
                 saveCommand.Execute(null);
@@ -1182,7 +1171,7 @@ public partial class InventoryTabView : UserControl
                 ValidateAndUpdateSaveButton();
 
                 // Focus the location field (likely next field to fill)
-                _locationAutoCompleteBox?.Focus();
+                _locationTextBox?.Focus();
             }
         }
         catch (Exception ex)
@@ -1304,7 +1293,7 @@ public partial class InventoryTabView : UserControl
     {
         try
         {
-            var resetCommand = GetPropertyValue<System.Windows.Input.ICommand>(_viewModel, "ResetCommand");
+            var resetCommand = GetPropertyValue<ICommand>(_viewModel, "ResetCommand"); // Fix: Remove System.Windows.Input
             if (resetCommand?.CanExecute(null) == true)
             {
                 resetCommand.Execute(null);
@@ -1329,14 +1318,14 @@ public partial class InventoryTabView : UserControl
             ExecuteSoftReset();
 
             // Refresh data command
-            var refreshCommand = GetPropertyValue<System.Windows.Input.ICommand>(_viewModel, "RefreshDataCommand");
+            var refreshCommand = GetPropertyValue<ICommand>(_viewModel, "RefreshDataCommand"); // Fix: Remove System.Windows.Input
             if (refreshCommand?.CanExecute(null) == true)
             {
                 refreshCommand.Execute(null);
             }
 
             // Refresh QuickButtons if available
-            var refreshButtonsCommand = GetPropertyValue<System.Windows.Input.ICommand>(_quickButtonsViewModel, "RefreshButtonsCommand");
+            var refreshButtonsCommand = GetPropertyValue<ICommand>(_quickButtonsViewModel, "RefreshButtonsCommand"); // Fix: Remove System.Windows.Input
             if (refreshButtonsCommand?.CanExecute(null) == true)
             {
                 refreshButtonsCommand.Execute(null);
@@ -1390,7 +1379,7 @@ public partial class InventoryTabView : UserControl
             // If focused on Save button and can save, execute save command
             if (source == _saveButton && IsFormValid())
             {
-                var saveCommand = GetPropertyValue<System.Windows.Input.ICommand>(_viewModel, "SaveCommand");
+                var saveCommand = GetPropertyValue<ICommand>(_viewModel, "SaveCommand"); // Fix: Remove System.Windows.Input
                 if (saveCommand?.CanExecute(null) == true)
                 {
                     saveCommand.Execute(null);
@@ -1418,15 +1407,15 @@ public partial class InventoryTabView : UserControl
             var currentFocus = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
 
             // Define the logical tab order
-            if (currentFocus == _partAutoCompleteBox)
+            if (currentFocus == _partTextBox)
             {
-                _operationAutoCompleteBox?.Focus();
+                _operationTextBox?.Focus();
             }
-            else if (currentFocus == _operationAutoCompleteBox)
+            else if (currentFocus == _operationTextBox)
             {
-                _locationAutoCompleteBox?.Focus();
+                _locationTextBox?.Focus();
             }
-            else if (currentFocus == _locationAutoCompleteBox)
+            else if (currentFocus == _locationTextBox)
             {
                 _quantityTextBox?.Focus();
             }
@@ -1458,7 +1447,7 @@ public partial class InventoryTabView : UserControl
     {
         try
         {
-            _partAutoCompleteBox?.Focus();
+            _partTextBox?.Focus();
         }
         catch (Exception ex)
         {
@@ -1558,47 +1547,30 @@ public partial class InventoryTabView : UserControl
             Loaded -= OnLoaded;
 
             // UI control event handlers
-            if (_partAutoCompleteBox != null)
+            if (_partTextBox != null)
             {
-                _partAutoCompleteBox.TextChanged -= OnPartTextChanged;
-                _partAutoCompleteBox.SelectionChanged -= OnPartSelectionChanged;
-                _partAutoCompleteBox.LostFocus -= OnPartLostFocus;
-                _partAutoCompleteBox.GotFocus -= OnPartGotFocus;
-                _partAutoCompleteBox.DropDownOpened -= OnPartDropDownOpened;
-                // REMOVED: Arrow key handler cleanup - no longer subscribed
+                _partTextBox.TextChanged -= OnPartTextChanged;
             }
 
-            if (_operationAutoCompleteBox != null)
+            if (_operationTextBox != null)
             {
-                _operationAutoCompleteBox.TextChanged -= OnOperationTextChanged;
-                _operationAutoCompleteBox.SelectionChanged -= OnOperationSelectionChanged;
-                _operationAutoCompleteBox.LostFocus -= OnOperationLostFocus;
-                _operationAutoCompleteBox.GotFocus -= OnOperationGotFocus;
-                _operationAutoCompleteBox.DropDownOpened -= OnOperationDropDownOpened;
-                // REMOVED: Arrow key handler cleanup - no longer subscribed
+                _operationTextBox.TextChanged -= OnOperationTextChanged;
             }
 
-            if (_locationAutoCompleteBox != null)
+            if (_locationTextBox != null)
             {
-                _locationAutoCompleteBox.TextChanged -= OnLocationTextChanged;
-                _locationAutoCompleteBox.SelectionChanged -= OnLocationSelectionChanged;
-                _locationAutoCompleteBox.LostFocus -= OnLocationLostFocus;
-                _locationAutoCompleteBox.GotFocus -= OnLocationGotFocus;
-                _locationAutoCompleteBox.DropDownOpened -= OnLocationDropDownOpened;
-                // REMOVED: Arrow key handler cleanup - no longer subscribed
+                _locationTextBox.TextChanged -= OnLocationTextChanged;
             }
 
             if (_quantityTextBox != null)
             {
                 _quantityTextBox.TextChanged -= OnQuantityTextChanged;
                 _quantityTextBox.LostFocus -= OnQuantityLostFocus;
-                // REMOVED: Arrow key handler cleanup - no longer subscribed
             }
 
             if (_notesTextBox != null)
             {
                 _notesTextBox.TextChanged -= OnNotesTextChanged;
-                // REMOVED: Arrow key handler cleanup - no longer subscribed
             }
 
             if (_saveButton != null)
@@ -1625,7 +1597,7 @@ public partial class InventoryTabView : UserControl
         {
             base.OnDetachedFromVisualTree(e);
         }
-    }   
+    }
 
     #endregion
 }

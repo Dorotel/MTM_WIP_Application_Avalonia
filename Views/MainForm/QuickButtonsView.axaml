@@ -42,7 +42,7 @@
     <Style Selector="Button.quick-button:pressed">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryAction}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </Style>
 
     <!-- MTM Position indicator style -->
@@ -142,7 +142,7 @@
         <Grid ColumnDefinitions="Auto,*,Auto">
           <!-- MTM Industrial Icon -->
           <Border Grid.Column="0"
-                  Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                  Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                   CornerRadius="12"
                   Width="20"
                   Height="20"
@@ -161,14 +161,14 @@
                      Text="Quick Actions"
                      FontSize="14"
                      FontWeight="Bold"
-                     Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                      VerticalAlignment="Center"/>
           
           <!-- Count indicator with MTM accent -->
           <StackPanel Grid.Column="2" 
                       Orientation="Horizontal" 
                       Spacing="6">
-            <Border Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+            <Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                     CornerRadius="8"
                     Padding="6,2">
               <StackPanel Orientation="Horizontal" Spacing="4">
@@ -241,7 +241,7 @@
                     <Grid>
                       <!-- Position number with MTM styling -->
                       <TextBlock Text="{Binding Position}"
-                                 Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                                 Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                  FontSize="11"
                                  FontWeight="Bold"
                                  HorizontalAlignment="Center"
@@ -250,23 +250,23 @@
                       <!-- Industrial drag dots overlay -->
                       <Canvas HorizontalAlignment="Right" VerticalAlignment="Bottom" 
                               Width="8" Height="8" Margin="0,0,2,2">
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                  Canvas.Left="0" Canvas.Top="0" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                  Canvas.Left="3" Canvas.Top="0" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                  Canvas.Left="6" Canvas.Top="0" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                  Canvas.Left="0" Canvas.Top="3" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                  Canvas.Left="3" Canvas.Top="3" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                  Canvas.Left="6" Canvas.Top="3" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                  Canvas.Left="0" Canvas.Top="6" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                  Canvas.Left="3" Canvas.Top="6" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                  Canvas.Left="6" Canvas.Top="6" Opacity="0.8"/>
                       </Canvas>
                     </Grid>
@@ -287,7 +287,7 @@
                           Padding="6,2"
                           VerticalAlignment="Center">
                     <TextBlock Text="{Binding Operation}"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                FontSize="10"
                                FontWeight="Bold"
                                ToolTip.Tip="Operation Number"/>

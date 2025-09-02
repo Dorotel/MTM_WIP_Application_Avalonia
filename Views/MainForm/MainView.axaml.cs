@@ -306,10 +306,10 @@ namespace MTM_WIP_Application_Avalonia.Views
 
                 // Check key theme resources
                 var primaryAction = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var primaryValue);
-                var textOnDark = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.TextonDark", null, out var textValue);
+                var OverlayTextBrush = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.OverlayTextBrush", null, out var textValue);
 
                 System.Diagnostics.Debug.WriteLine($"DEBUG: MTM_Shared_Logic.PrimaryAction found: {primaryAction}, value: {primaryValue}");
-                System.Diagnostics.Debug.WriteLine($"DEBUG: MTM_Shared_Logic.TextonDark found: {textOnDark}, value: {textValue}");
+                System.Diagnostics.Debug.WriteLine($"DEBUG: MTM_Shared_Logic.OverlayTextBrush found: {OverlayTextBrush}, value: {textValue}");
 
                 // Check if we can find tab-related resources
                 var cardBackground = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.CardBackgroundBrush", null, out var cardValue);
@@ -350,6 +350,82 @@ namespace MTM_WIP_Application_Avalonia.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"DEBUG: Error checking theme resources: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Shows the suggestion overlay panel with the specified content.
+        /// </summary>
+        /// <param name="overlayContent">The content to display in the overlay</param>
+        public void ShowSuggestionOverlay(Control overlayContent)
+        {
+            try
+            {
+                var overlayPanel = this.FindControl<Border>("SuggestionOverlayPanel");
+                var contentControl = this.FindControl<ContentControl>("SuggestionOverlayContent");
+                
+                if (overlayPanel != null && contentControl != null)
+                {
+                    contentControl.Content = overlayContent;
+                    overlayPanel.IsVisible = true;
+                    System.Diagnostics.Debug.WriteLine("Suggestion overlay panel shown successfully");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Could not find overlay panel or content control");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error showing suggestion overlay: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Hides the suggestion overlay panel.
+        /// </summary>
+        public void HideSuggestionOverlay()
+        {
+            try
+            {
+                var overlayPanel = this.FindControl<Border>("SuggestionOverlayPanel");
+                var contentControl = this.FindControl<ContentControl>("SuggestionOverlayContent");
+                
+                if (overlayPanel != null && contentControl != null)
+                {
+                    overlayPanel.IsVisible = false;
+                    contentControl.Content = null;
+                    System.Diagnostics.Debug.WriteLine("Suggestion overlay panel hidden successfully");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error hiding suggestion overlay: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Gets the current instance of MainView from the visual tree.
+        /// </summary>
+        /// <param name="control">Any control to start the search from</param>
+        /// <returns>The MainView instance or null if not found</returns>
+        public static MainView? FindMainView(Control control)
+        {
+            try
+            {
+                var current = control;
+                while (current != null)
+                {
+                    if (current is MainView mainView)
+                        return mainView;
+                    current = current.Parent as Control;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error finding MainView: {ex.Message}");
+                return null;
             }
         }
 

@@ -2,6 +2,7 @@ using System;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
@@ -14,6 +15,7 @@ public class MainViewViewModel : BaseViewModel
 {
     private readonly INavigationService _navigationService;
     private readonly IApplicationStateService _applicationState;
+    private readonly IServiceProvider _serviceProvider;
 
     // Tabs
     private int _selectedTabIndex;
@@ -106,6 +108,8 @@ public class MainViewViewModel : BaseViewModel
     public AdvancedRemoveViewModel AdvancedRemoveViewModel { get; }
     public TransferItemViewModel TransferItemViewModel { get; }
 
+    // SuggestionOverlayViewModel removed for overlay ViewModel reset
+
     // Status strip
     private string _connectionStatus = "Disconnected";
     public string ConnectionStatus
@@ -167,10 +171,13 @@ public class MainViewViewModel : BaseViewModel
         AdvancedInventoryViewModel advancedInventoryViewModel,
         AdvancedRemoveViewModel advancedRemoveViewModel,
         QuickButtonsViewModel quickButtonsViewModel,
+        IServiceProvider serviceProvider,
+    // SuggestionOverlayViewModel removed for overlay ViewModel reset
         ILogger<MainViewViewModel> logger) : base(logger)
     {
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
         Logger.LogInformation("MainViewViewModel initialized with dependency injection");
 
@@ -181,6 +188,7 @@ public class MainViewViewModel : BaseViewModel
         TransferItemViewModel = transferItemViewModel ?? throw new ArgumentNullException(nameof(transferItemViewModel));
         AdvancedInventoryViewModel = advancedInventoryViewModel ?? throw new ArgumentNullException(nameof(advancedInventoryViewModel));
         AdvancedRemoveViewModel = advancedRemoveViewModel ?? throw new ArgumentNullException(nameof(advancedRemoveViewModel));
+    // SuggestionOverlayViewModel removed for overlay ViewModel reset
 
         // Wire up Advanced Inventory events
         AdvancedInventoryViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalInventoryCommand?.Execute(null);
@@ -535,8 +543,8 @@ public class MainViewViewModel : BaseViewModel
         }
         else
         {
-            // Switch to Normal Inventory View
-            InventoryContent = new Views.InventoryTabView
+            // Switch to Normal Inventory View - pass service provider for proper DI
+            InventoryContent = new Views.InventoryTabView(_serviceProvider)
             {
                 DataContext = InventoryTabViewModel
             };

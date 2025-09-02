@@ -35,9 +35,10 @@
   </UserControl.KeyBindings>
 
   <!-- Main container that stretches to fill entire available space -->
-  <DockPanel HorizontalAlignment="Stretch" 
-             VerticalAlignment="Stretch"
-             LastChildFill="True">
+  <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <DockPanel HorizontalAlignment="Stretch" 
+               VerticalAlignment="Stretch"
+               LastChildFill="True">
     
     <!-- Header Menu with MTM Branding -->
     <Border DockPanel.Dock="Top"
@@ -49,19 +50,19 @@
         <!-- Left side: Menu -->
         <Menu Grid.Column="0"
               Background="Transparent" 
-              Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+              Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
               HorizontalAlignment="Left">
-          <MenuItem Header="_File" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}">
+          <MenuItem Header="_File" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}">
             <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
             <Separator/>
             <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
           </MenuItem>
-          <MenuItem Header="_View" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}">
+          <MenuItem Header="_View" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}">
             <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
           </MenuItem>
           <!-- Development builds only -->
           <MenuItem Header="_Help" 
-                    Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                    Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                     IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
             <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
           </MenuItem>
@@ -91,18 +92,18 @@
                 CornerRadius="16"
                 HorizontalAlignment="Left">
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <Border Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+            <Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                     CornerRadius="8"
                     Width="16"
                     Height="16">
               <TextBlock Text="🔗" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <TextBlock Text="Connection:" 
-                       Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                        FontSize="11"
                        FontWeight="Medium"/>
             <TextBlock Text="{Binding ConnectionStatus, FallbackValue='Connected', TargetNullValue='Unknown'}"
-                       Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                        FontWeight="Bold"
                        FontSize="11"/>
           </StackPanel>
@@ -118,7 +119,7 @@
           <!-- Connection Strength -->
           <StackPanel Orientation="Horizontal" Spacing="8">
             <TextBlock Text="Signal" 
-                       Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                        FontSize="10"
                        FontWeight="Medium"/>
             <ProgressBar Minimum="0" Maximum="100" 
@@ -132,7 +133,7 @@
           <!-- Main Progress -->
           <StackPanel Orientation="Horizontal" Spacing="8">
             <TextBlock Text="Progress" 
-                       Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                        FontSize="10"
                        FontWeight="Medium"/>
             <ProgressBar Minimum="0" Maximum="100"
@@ -161,7 +162,7 @@
 
         <!-- Version Info -->
         <Border Grid.Column="3"
-                Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                 CornerRadius="12"
                 Padding="8,4"
                 HorizontalAlignment="Right">
@@ -184,19 +185,20 @@
       </Grid.ColumnDefinitions>
       
       <!-- Left Panel: Tab Control - Stretches fully -->
-      <Border Grid.Column="0" 
-              Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-              BorderThickness="2"
-              CornerRadius="8"
-              Margin="8"
-              BoxShadow="0 4 12 0 #22000000"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
-        <TabControl x:Name="MainForm_TabControl"
-                    SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay, FallbackValue=0}"
-                    Background="Transparent"
-                    HorizontalAlignment="Stretch"
+      <Grid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <!-- Main Tab Control -->
+        <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                BorderThickness="2"
+                CornerRadius="8"
+                Margin="8"
+                BoxShadow="0 4 12 0 #22000000"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+          <TabControl x:Name="MainForm_TabControl"
+                      SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay, FallbackValue=0}"
+                      Background="Transparent"
+                      HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch">
@@ -285,7 +287,35 @@
             </DockPanel>
           </TabItem>
         </TabControl>
-      </Border>
+        </Border>
+        
+        <!-- Suggestion Overlay Panel - Covers entire left panel area when visible -->
+        <Border x:Name="SuggestionOverlayPanel"
+                IsVisible="False"
+                Background="#80000000"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="8"
+                CornerRadius="8"
+                ZIndex="1000">
+          <!-- Centered overlay container -->
+          <Border Padding="16"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                  BorderThickness="2"
+                  CornerRadius="12"
+                  BoxShadow="0 8 32 0 #40000000">
+            <!-- Overlay content will be dynamically set -->
+            <ContentControl x:Name="SuggestionOverlayContent"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"/>
+          </Border>
+        </Border>
+      </Grid>
 
       <!-- Right Panel: Collapsible Quick Actions -->
       <controls:CollapsiblePanel Grid.Column="1"
@@ -302,4 +332,7 @@
       </controls:CollapsiblePanel>
     </Grid>
   </DockPanel>
+
+  <!-- SuggestionOverlayView removed for overlay ViewModel reset -->
+  </Grid>
 </UserControl>

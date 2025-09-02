@@ -86,7 +86,7 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.HeadingText" Color="#FFFFFF"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.BodyText" Color="#E0E0E0"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#C0C0C0"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TextonDark" Color="#FFFFFF"/>
+	
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#9FA8DA"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#C5CAE9"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.MutedTextBrush" Color="#888888"/>
@@ -137,28 +137,28 @@
 							<TextBlock Text="MTM Indigo Dark Theme"
 									   FontSize="32"
 									   FontWeight="Bold"
-									   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+									   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
 									   HorizontalAlignment="Center"/>
 							<TextBlock Text="Maximum Robustness Edition - Premium Dark Indigo Aesthetic"
 									   FontSize="16"
-									   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+									   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
 									   HorizontalAlignment="Center"
 									   Margin="0,8,0,0"
 									   Opacity="0.9"/>
 							<StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center" Margin="0,16,0,0">
-								<Border Background="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+								<Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
 										CornerRadius="16" Padding="12,6">
 									<TextBlock Text="Industrial Grade" 
 											   Foreground="{DynamicResource MTM_Shared_Logic.DarkNavigation}" 
 											   FontWeight="SemiBold" FontSize="12"/>
 								</Border>
-								<Border Background="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+								<Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
 										CornerRadius="16" Padding="12,6">
 									<TextBlock Text="Premium Effects" 
 											   Foreground="{DynamicResource MTM_Shared_Logic.DarkNavigation}" 
 											   FontWeight="SemiBold" FontSize="12"/>
 								</Border>
-								<Border Background="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+								<Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
 										CornerRadius="16" Padding="12,6">
 									<TextBlock Text="Complete Coverage" 
 											   Foreground="{DynamicResource MTM_Shared_Logic.DarkNavigation}" 
@@ -300,21 +300,21 @@
 							<StackPanel Orientation="Horizontal" Spacing="16" Margin="0,0,0,16">
 								<Button Content="Primary Action"
 										Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-										Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+										Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
 										Padding="16,10"
 										CornerRadius="6"
 										BorderThickness="0"
 										FontWeight="SemiBold"/>
 								<Button Content="Secondary Action"
 										Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
-										Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+										Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
 										Padding="16,10"
 										CornerRadius="6"
 										BorderThickness="0"
 										FontWeight="SemiBold"/>
 								<Button Content="Gradient Button"
 										Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
-										Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+										Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
 										Padding="16,10"
 										CornerRadius="6"
 										BorderThickness="0"
@@ -453,7 +453,7 @@
 							<TextBlock Text="Industrial Navigation System"
 									   FontSize="18"
 									   FontWeight="Bold"
-									   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+									   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
 									   Margin="0,0,0,16"/>
 
 							<StackPanel Spacing="12">
@@ -470,7 +470,7 @@
 										Padding="16,12">
 									<StackPanel Orientation="Horizontal" Spacing="12">
 										<TextBlock Text="📦" FontSize="16"/>
-										<TextBlock Text="Inventory Management" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" VerticalAlignment="Center"/>
+										<TextBlock Text="Inventory Management" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" VerticalAlignment="Center"/>
 									</StackPanel>
 								</Border>
 								<Border Background="Transparent"
@@ -478,7 +478,7 @@
 										Padding="16,12">
 									<StackPanel Orientation="Horizontal" Spacing="12">
 										<TextBlock Text="🔄" FontSize="16"/>
-										<TextBlock Text="Work in Progress" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" VerticalAlignment="Center"/>
+										<TextBlock Text="Work in Progress" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" VerticalAlignment="Center"/>
 									</StackPanel>
 								</Border>
 								<Border Background="Transparent"
@@ -487,7 +487,7 @@
 									<StackPanel Orientation="Horizontal" Spacing="12">
 										<TextBlock Text="📈" FontSize="16"/>
 										<TextBlock Text="Analytics +
-												   Reports" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" VerticalAlignment="Center"/>
+												   Reports" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" VerticalAlignment="Center"/>
 									</StackPanel>
 								</Border>
 								<Border Background="Transparent"
@@ -495,7 +495,7 @@
 										Padding="16,12">
 									<StackPanel Orientation="Horizontal" Spacing="12">
 										<TextBlock Text="⚙️" FontSize="16"/>
-										<TextBlock Text="System Configuration" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" VerticalAlignment="Center"/>
+										<TextBlock Text="System Configuration" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" VerticalAlignment="Center"/>
 									</StackPanel>
 								</Border>
 							</StackPanel>
@@ -510,11 +510,11 @@
 							<TextBlock Text="MTM Indigo Dark Theme - Maximum Robustness Edition"
 									   FontSize="14"
 									   FontWeight="SemiBold"
-									   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+									   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
 									   HorizontalAlignment="Center"/>
 							<TextBlock Text="Complete industrial-grade theme system with 50+ specialized brushes and premium effects"
 									   FontSize="12"
-									   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+									   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
 									   HorizontalAlignment="Center"
 									   Margin="0,4,0,0"
 									   Opacity="0.8"/>

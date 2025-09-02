@@ -15,11 +15,11 @@
                     <TextBlock Text="MTM Components Preview"
                                FontSize="28"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Redesigned Button-Style TabControl &amp; Theme-Based Components"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"
                                Margin="0,8,0,0"
                                Opacity="0.9"/>
@@ -217,7 +217,7 @@
                             
                             <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}" Height="40" CornerRadius="4">
                                 <TextBlock Text="PrimaryAction" 
-                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" 
+                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                            VerticalAlignment="Center" 
                                            HorizontalAlignment="Center"
                                            FontWeight="Bold"/>
@@ -269,7 +269,7 @@
                     Padding="16">
                 <TextBlock Text="MTM Components Preview - Version 2.0 - Button-Style Tabs &amp; Full Theme Integration"
                            FontSize="12"
-                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                            HorizontalAlignment="Center"/>
             </Border>
 

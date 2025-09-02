@@ -66,20 +66,36 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
             var text = box.Text ?? string.Empty;
             if (string.IsNullOrWhiteSpace(text))
                 return;
+            
+            System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: Processing text '{text}'");
+            
             // Check for exact match
             var exact = source.Cast<object>().FirstOrDefault(item => string.Equals(item?.ToString(), text, StringComparison.OrdinalIgnoreCase));
             if (exact != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: Found exact match '{exact}', not firing event");
                 return; // Exact match, do nothing
+            }
+            
             // Fuzzy match: contains or startswith
             var like = source.Cast<object>()
                 .Where(item => item != null && item.ToString() != null && item.ToString()!.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0)
                 .Take(20)
                 .ToList();
+                
+            System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: Found {like.Count} matches");
+            
             if (like.Count == 0)
                 return;
+                
             var handler = SuggestionOverlayRequested;
+            System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: Event handler is {(handler != null ? "not null" : "null")}");
+            
             if (handler != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: Firing SuggestionOverlayRequested event with {like.Count} suggestions");
                 handler(box, like);
+            }
         }
 
     // REMOVED: ShowSuggestionFlyout. Overlay is now handled by parent.

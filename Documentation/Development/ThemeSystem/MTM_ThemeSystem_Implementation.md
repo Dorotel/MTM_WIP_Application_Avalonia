@@ -209,7 +209,7 @@ await _themeService.ApplyCustomColorsAsync(customColors);
     <!-- Header -->
     <Border Grid.Row="0" Classes="mtm-header">
         <TextBlock Text="Page Title" 
-                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                    FontSize="24" FontWeight="Bold"/>
     </Border>
     
@@ -228,7 +228,7 @@ await _themeService.ApplyCustomColorsAsync(customColors);
     <!-- Footer -->
     <Border Grid.Row="2" Classes="mtm-footer">
         <TextBlock Text="Status: Ready" 
-                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </Border>
 </Grid>
 ```
@@ -263,10 +263,10 @@ await _themeService.ApplyCustomColorsAsync(customColors);
     <StackPanel>
         <TextBlock Text="Welcome to MTM" 
                    FontSize="32" FontWeight="Bold"
-                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
         <TextBlock Text="Inventory Management System"
                    FontSize="16" 
-                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </StackPanel>
 </Border>
 ```

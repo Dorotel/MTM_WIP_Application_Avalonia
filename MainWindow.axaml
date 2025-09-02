@@ -14,10 +14,15 @@
         Height="850"
         Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
 
-    <!-- Main Window Content with proper stretching for MainView -->
-    <ContentControl Content="{Binding CurrentView}"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
-                    VerticalContentAlignment="Stretch"/>
+    <!-- Root Grid required for overlay support -->
+    <Grid>
+        <!-- Main Window Content with proper stretching for MainView -->
+        <ContentControl Content="{Binding CurrentView}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"/>
+        <!-- Overlay Host: overlays (e.g., SuggestionOverlayView) will be added here dynamically -->
+    <Grid x:Name="OverlayHost" />
+    </Grid>
 </Window>

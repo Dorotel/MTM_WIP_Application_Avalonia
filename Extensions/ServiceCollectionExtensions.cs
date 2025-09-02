@@ -43,6 +43,9 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IQuickButtonsService, QuickButtonsService>();
         services.TryAddSingleton<IProgressService, ProgressService>();
         
+        // Register SuggestionOverlay service
+        services.TryAddScoped<ISuggestionOverlayService, SuggestionOverlayService>();
+        
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
         services.TryAddTransient<MainViewViewModel>();
@@ -81,7 +84,6 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<SystemHealthViewModel>();
         services.TryAddTransient<BackupRecoveryViewModel>();
         services.TryAddTransient<SecurityPermissionsViewModel>();
-        services.TryAddTransient<SuggestionOverlayViewModel>();
 
         return services;
     }
@@ -138,7 +140,8 @@ public static class ServiceCollectionExtensions
             typeof(ISettingsService),
             typeof(IDatabaseService),
             typeof(IQuickButtonsService),
-            typeof(IProgressService)
+            typeof(IProgressService),
+            typeof(ISuggestionOverlayService)
         };
 
         var missingServices = requiredServices
@@ -170,7 +173,8 @@ public static class ServiceCollectionExtensions
             typeof(ISettingsService),
             typeof(IDatabaseService),
             typeof(IQuickButtonsService),
-            typeof(IProgressService)
+            typeof(IProgressService),
+            typeof(ISuggestionOverlayService)
         };
 
         var failedServices = criticalServices
@@ -196,3 +200,4 @@ public static class ServiceCollectionExtensions
         }
     }
 }
+

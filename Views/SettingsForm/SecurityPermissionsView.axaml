@@ -19,11 +19,11 @@
                     <TextBlock Text="🔒 Security &amp; Permissions"
                                FontSize="20"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Manage user roles, permissions, and security settings"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                HorizontalAlignment="Center"
                                Margin="0,4,0,0"/>
                 </StackPanel>
@@ -150,7 +150,7 @@
                                                         <TextBlock Text="{Binding UserCount, StringFormat={}{0} users}"
                                                                    FontSize="12"
                                                                    FontWeight="SemiBold"
-                                                                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                                     </Border>
                                                 </Grid>
                                                 
@@ -160,35 +160,35 @@
                                                             CornerRadius="4"
                                                             Padding="4,2"
                                                             IsVisible="{Binding CanAddItems}">
-                                                        <TextBlock Text="Add" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                        <TextBlock Text="Add" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                                     </Border>
                                                     
                                                     <Border Background="{DynamicResource MTM_Shared_Logic.WarningBrush}"
                                                             CornerRadius="4"
                                                             Padding="4,2"
                                                             IsVisible="{Binding CanEditItems}">
-                                                        <TextBlock Text="Edit" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                        <TextBlock Text="Edit" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                                     </Border>
                                                     
                                                     <Border Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
                                                             CornerRadius="4"
                                                             Padding="4,2"
                                                             IsVisible="{Binding CanDeleteItems}">
-                                                        <TextBlock Text="Delete" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                        <TextBlock Text="Delete" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                                     </Border>
                                                     
                                                     <Border Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
                                                             CornerRadius="4"
                                                             Padding="4,2"
                                                             IsVisible="{Binding CanViewReports}">
-                                                        <TextBlock Text="Reports" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                        <TextBlock Text="Reports" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                                     </Border>
                                                     
                                                     <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                                                             CornerRadius="4"
                                                             Padding="4,2"
                                                             IsVisible="{Binding CanManageUsers}">
-                                                        <TextBlock Text="Admin" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                        <TextBlock Text="Admin" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                                     </Border>
                                                 </StackPanel>
                                             </StackPanel>
@@ -284,7 +284,7 @@
                                                 <TextBlock Text="{Binding Status}"
                                                            FontSize="10"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                             </Border>
                                             
                                             <!-- End Session Button -->
@@ -354,7 +354,7 @@
                                                 <TextBlock Text="{Binding Action}"
                                                            FontSize="10"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                             </Border>
                                             
                                             <!-- User -->
@@ -374,7 +374,7 @@
                                                 <TextBlock Text="{Binding Result}"
                                                            FontSize="10"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+                                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                                             </Border>
                                             
                                             <!-- Details -->
@@ -405,7 +405,7 @@
                                  Width="120"
                                  Height="6"/>
                     <TextBlock Text="Processing security operations..."
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                FontWeight="SemiBold"/>
                 </StackPanel>
             </Border>

@@ -236,7 +236,7 @@ namespace MTM_WIP_Application_Avalonia
                 var tabThemeColors = new Dictionary<string, string>
                 {
                     ["MTM_Shared_Logic.PrimaryAction"] = "#B8860B",           // Dark goldenrod for selected tab background
-                    ["MTM_Shared_Logic.TextonDark"] = "#FFFFFF",             // White text for selected tabs
+                    ["MTM_Shared_Logic.OverlayTextBrush"] = "#FFFFFF",             // White text for selected tabs
                     ["MTM_Shared_Logic.CardBackgroundBrush"] = "#FFFFFF",    // White background for unselected tabs
                     ["MTM_Shared_Logic.BorderAccentBrush"] = "#FFEB9C",      // Light border accent
                     ["MTM_Shared_Logic.HoverBackground"] = "#FFF9D1",        // Light hover background
@@ -273,7 +273,7 @@ namespace MTM_WIP_Application_Avalonia
                 {
                     ["MTM_Shared_Logic.PrimaryAction"] = "#B8860B",          // Dark goldenrod - CRITICAL for selected tabs
                     ["MTM_Shared_Logic.SecondaryAction"] = "#DAA520",        // Goldenrod 
-                    ["MTM_Shared_Logic.TextonDark"] = "#FFFFFF",             // White - CRITICAL for selected tab text
+                    ["MTM_Shared_Logic.OverlayTextBrush"] = "#FFFFFF",             // White - CRITICAL for selected tab text
                     ["MTM_Shared_Logic.SidebarGradientBrush"] = "#B8860B",   // Sidebar gradient
                     ["MTM_Shared_Logic.FooterBackgroundBrush"] = "#8C7300",  // Footer background
                     ["MTM_Shared_Logic.PageHeaders"] = "#B8860B",            // Page headers

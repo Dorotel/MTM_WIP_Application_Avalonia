@@ -134,8 +134,9 @@ public class StartupInfoWindow : Window
         CanResize = false;
         ShowInTaskbar = false;
         
-        // Apply MTM styling
-        Background = new SolidColorBrush(Color.FromRgb(250, 250, 250));
+        // Apply MTM styling using theme resources
+        Background = Application.Current?.FindResource("MTM_Shared_Logic.CardBackgroundBrush") as IBrush ?? 
+                    new SolidColorBrush(Color.FromRgb(250, 250, 250));
         
         InitializeContent();
     }
@@ -148,7 +149,8 @@ public class StartupInfoWindow : Window
         // Header with MTM branding
         var headerPanel = new Border
         {
-            Background = new SolidColorBrush(Color.FromRgb(106, 13, 173)), // MTM Purple
+            Background = Application.Current?.FindResource("MTM_Shared_Logic.PrimaryAction") as IBrush ?? 
+                        new SolidColorBrush(Color.FromRgb(106, 13, 173)),
             Height = 60,
             [DockPanel.DockProperty] = Dock.Top
         };
@@ -156,7 +158,7 @@ public class StartupInfoWindow : Window
         var headerText = new TextBlock
         {
             Text = "MTM WIP Application",
-            Foreground = Brushes.White,
+            Foreground = Application.Current?.FindResource("MTM_Shared_Logic.OverlayTextBrush") as IBrush ?? Brushes.White,
             FontSize = 18,
             FontWeight = FontWeight.Bold,
             VerticalAlignment = VerticalAlignment.Center,
@@ -168,7 +170,8 @@ public class StartupInfoWindow : Window
         var buttonPanel = new Border
         {
             Height = 70,
-            Background = new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+            Background = Application.Current?.FindResource("MTM_Shared_Logic.PanelBackgroundBrush") as IBrush ?? 
+                       new SolidColorBrush(Color.FromRgb(240, 240, 240)),
             [DockPanel.DockProperty] = Dock.Bottom
         };
 
@@ -179,8 +182,9 @@ public class StartupInfoWindow : Window
             Height = 35,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
-            Background = new SolidColorBrush(Color.FromRgb(106, 13, 173)),
-            Foreground = Brushes.White,
+            Background = Application.Current?.FindResource("MTM_Shared_Logic.PrimaryAction") as IBrush ?? 
+                        new SolidColorBrush(Color.FromRgb(106, 13, 173)),
+            Foreground = Application.Current?.FindResource("MTM_Shared_Logic.OverlayTextBrush") as IBrush ?? Brushes.White,
             FontWeight = FontWeight.SemiBold
         };
         okButton.Click += (s, e) => Close();
@@ -205,7 +209,8 @@ public class StartupInfoWindow : Window
             FontSize = 14,
             TextWrapping = TextWrapping.Wrap,
             LineHeight = 22,
-            Foreground = new SolidColorBrush(Color.FromRgb(51, 51, 51))
+            Foreground = Application.Current?.FindResource("MTM_Shared_Logic.BodyText") as IBrush ?? 
+                       new SolidColorBrush(Color.FromRgb(51, 51, 51))
         };
         contentPanel.Children.Add(messageBlock);
         contentScrollViewer.Content = contentPanel;

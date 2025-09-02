@@ -33,7 +33,7 @@ $BrushMappings = @{
     "MTM_Shared_Logic.HeaderBackgroundBrush" = "MTM_Shared_Logic.PageHeaders"
     "MTM_Shared_Logic.PrimaryTextBrush" = "MTM_Shared_Logic.HeadingText"
     "MTM_Shared_Logic.SecondaryTextBrush" = "MTM_Shared_Logic.BodyText"
-    "MTM_Shared_Logic.LightTextBrush" = "MTM_Shared_Logic.TextonDark"
+    "MTM_Shared_Logic.LightTextBrush" = "MTM_Shared_Logic.OverlayTextBrush"
     "MTM_Shared_Logic.AccentTextBrush" = "MTM_Shared_Logic.InteractiveText"
 }
 

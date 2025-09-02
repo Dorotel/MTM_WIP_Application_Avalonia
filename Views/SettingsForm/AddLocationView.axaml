@@ -8,9 +8,9 @@
             <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}" CornerRadius="8" Padding="16">
                 <StackPanel>
                     <TextBlock Text="📍 Add New Location" FontSize="20" FontWeight="Bold" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" HorizontalAlignment="Center"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" HorizontalAlignment="Center"/>
                     <TextBlock Text="Create new storage or work locations" FontSize="14" 
-                               Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
 

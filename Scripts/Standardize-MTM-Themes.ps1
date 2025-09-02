@@ -80,7 +80,7 @@ $RequiredBrushes = @(
     "MTM_Shared_Logic.HeadingText",
     "MTM_Shared_Logic.BodyText",
     "MTM_Shared_Logic.TertiaryTextBrush",
-    "MTM_Shared_Logic.TextonDark",
+    "MTM_Shared_Logic.OverlayTextBrush",
     "MTM_Shared_Logic.InteractiveText",
     "MTM_Shared_Logic.LinkTextBrush",
     
@@ -221,98 +221,98 @@ function GenerateMissingBrushes {
             Primary = "#FF8F00"; Secondary = "#FFB300"; Warning = "#FFC107"; Status = "#F57F17"
             Critical = "#FF6F00"; Highlight = "#FFCA28"; DarkNav = "#E65100"; CardBg = "#FFF8E1"
             HoverBg = "#FFFDF7"; MainBg = "#FFFDF7"; ContentBg = "#FFFFFF"; SidebarDark = "#E65100"
-            PageHeaders = "#FF8F00"; HeadingText = "#E65100"; BodyText = "#666666"; TextonDark = "#FFFFFF"
+            PageHeaders = "#FF8F00"; HeadingText = "#E65100"; BodyText = "#666666"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#FF8F00"
         }
         "Blue" = @{
             Primary = "#1E88E5"; Secondary = "#42A5F5"; Warning = "#5C6BC0"; Status = "#1976D2"
             Critical = "#3F51B5"; Highlight = "#90CAF9"; DarkNav = "#0D47A1"; CardBg = "#E3F2FD"
             HoverBg = "#F8FEFF"; MainBg = "#F8FEFF"; ContentBg = "#FFFFFF"; SidebarDark = "#0D47A1"
-            PageHeaders = "#1E88E5"; HeadingText = "#0D47A1"; BodyText = "#666666"; TextonDark = "#FFFFFF"
+            PageHeaders = "#1E88E5"; HeadingText = "#0D47A1"; BodyText = "#666666"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#1E88E5"
         }
         "Blue_Dark" = @{
             Primary = "#42A5F5"; Secondary = "#64B5F6"; Warning = "#7986CB"; Status = "#1E88E5"
             Critical = "#1976D2"; Highlight = "#90CAF9"; DarkNav = "#0D47A1"; CardBg = "#1A237E"
             HoverBg = "#0D1421"; MainBg = "#121212"; ContentBg = "#1E1E1E"; SidebarDark = "#0D47A1"
-            PageHeaders = "#42A5F5"; HeadingText = "#90CAF9"; BodyText = "#BBBBBB"; TextonDark = "#FFFFFF"
+            PageHeaders = "#42A5F5"; HeadingText = "#90CAF9"; BodyText = "#BBBBBB"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#64B5F6"
         }
         "Red" = @{
             Primary = "#E53935"; Secondary = "#EF5350"; Warning = "#F44336"; Status = "#D32F2F"
             Critical = "#C62828"; Highlight = "#E57373"; DarkNav = "#B71C1C"; CardBg = "#FFEBEE"
             HoverBg = "#FFF8F8"; MainBg = "#FFF8F8"; ContentBg = "#FFFFFF"; SidebarDark = "#B71C1C"
-            PageHeaders = "#E53935"; HeadingText = "#B71C1C"; BodyText = "#666666"; TextonDark = "#FFFFFF"
+            PageHeaders = "#E53935"; HeadingText = "#B71C1C"; BodyText = "#666666"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#E53935"
         }
         "Green" = @{
             Primary = "#4CAF50"; Secondary = "#66BB6A"; Warning = "#8BC34A"; Status = "#2E7D32"
             Critical = "#1B5E20"; Highlight = "#A5D6A7"; DarkNav = "#1B5E20"; CardBg = "#E8F5E8"
             HoverBg = "#F8FFF8"; MainBg = "#F8FFF8"; ContentBg = "#FFFFFF"; SidebarDark = "#1B5E20"
-            PageHeaders = "#4CAF50"; HeadingText = "#1B5E20"; BodyText = "#666666"; TextonDark = "#FFFFFF"
+            PageHeaders = "#4CAF50"; HeadingText = "#1B5E20"; BodyText = "#666666"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#4CAF50"
         }
         "Green_Dark" = @{
             Primary = "#66BB6A"; Secondary = "#81C784"; Warning = "#9CCC65"; Status = "#4CAF50"
             Critical = "#2E7D32"; Highlight = "#A5D6A7"; DarkNav = "#1B5E20"; CardBg = "#1B3A1B"
             HoverBg = "#0D1F0D"; MainBg = "#121212"; ContentBg = "#1E1E1E"; SidebarDark = "#1B5E20"
-            PageHeaders = "#66BB6A"; HeadingText = "#A5D6A7"; BodyText = "#BBBBBB"; TextonDark = "#FFFFFF"
+            PageHeaders = "#66BB6A"; HeadingText = "#A5D6A7"; BodyText = "#BBBBBB"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#81C784"
         }
         "Dark" = @{
             Primary = "#BB86FC"; Secondary = "#CF6679"; Warning = "#FFB74D"; Status = "#03DAC6"
             Critical = "#F44336"; Highlight = "#FFCDD2"; DarkNav = "#3700B3"; CardBg = "#2C2C2C"
             HoverBg = "#1A1A1A"; MainBg = "#121212"; ContentBg = "#1E1E1E"; SidebarDark = "#3700B3"
-            PageHeaders = "#BB86FC"; HeadingText = "#E1BEE7"; BodyText = "#BBBBBB"; TextonDark = "#FFFFFF"
+            PageHeaders = "#BB86FC"; HeadingText = "#E1BEE7"; BodyText = "#BBBBBB"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#BB86FC"
         }
         "Light" = @{
             Primary = "#6200EE"; Secondary = "#3700B3"; Warning = "#FF6D00"; Status = "#018786"
             Critical = "#B00020"; Highlight = "#E1BEE7"; DarkNav = "#3700B3"; CardBg = "#F5F5F5"
             HoverBg = "#FAFAFA"; MainBg = "#FFFFFF"; ContentBg = "#FFFFFF"; SidebarDark = "#3700B3"
-            PageHeaders = "#6200EE"; HeadingText = "#3700B3"; BodyText = "#666666"; TextonDark = "#FFFFFF"
+            PageHeaders = "#6200EE"; HeadingText = "#3700B3"; BodyText = "#666666"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#6200EE"
         }
         "HighContrast" = @{
             Primary = "#000000"; Secondary = "#333333"; Warning = "#FFD700"; Status = "#0000FF"
             Critical = "#FF0000"; Highlight = "#CCCCCC"; DarkNav = "#000000"; CardBg = "#F8F8F8"
             HoverBg = "#FFFFFF"; MainBg = "#FFFFFF"; ContentBg = "#FFFFFF"; SidebarDark = "#000000"
-            PageHeaders = "#000000"; HeadingText = "#000000"; BodyText = "#000000"; TextonDark = "#FFFFFF"
+            PageHeaders = "#000000"; HeadingText = "#000000"; BodyText = "#000000"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#0000FF"
         }
         "Emerald" = @{
             Primary = "#00C853"; Secondary = "#00E676"; Warning = "#76FF03"; Status = "#00BFA5"
             Critical = "#DD2C00"; Highlight = "#B9F6CA"; DarkNav = "#00695C"; CardBg = "#E0F2F1"
             HoverBg = "#F0FFF0"; MainBg = "#F0FFF0"; ContentBg = "#FFFFFF"; SidebarDark = "#00695C"
-            PageHeaders = "#00C853"; HeadingText = "#00695C"; BodyText = "#666666"; TextonDark = "#FFFFFF"
+            PageHeaders = "#00C853"; HeadingText = "#00695C"; BodyText = "#666666"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#00C853"
         }
         "Indigo" = @{
             Primary = "#3F51B5"; Secondary = "#5C6BC0"; Warning = "#7E57C2"; Status = "#303F9F"
             Critical = "#D32F2F"; Highlight = "#C5CAE9"; DarkNav = "#1A237E"; CardBg = "#E8EAF6"
             HoverBg = "#F3F4F6"; MainBg = "#F3F4F6"; ContentBg = "#FFFFFF"; SidebarDark = "#1A237E"
-            PageHeaders = "#3F51B5"; HeadingText = "#1A237E"; BodyText = "#666666"; TextonDark = "#FFFFFF"
+            PageHeaders = "#3F51B5"; HeadingText = "#1A237E"; BodyText = "#666666"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#3F51B5"
         }
         "Indigo_Dark" = @{
             Primary = "#5C6BC0"; Secondary = "#7986CB"; Warning = "#9575CD"; Status = "#3F51B5"
             Critical = "#F44336"; Highlight = "#C5CAE9"; DarkNav = "#1A237E"; CardBg = "#232F5F"
             HoverBg = "#0F1419"; MainBg = "#121212"; ContentBg = "#1E1E1E"; SidebarDark = "#1A237E"
-            PageHeaders = "#5C6BC0"; HeadingText = "#C5CAE9"; BodyText = "#BBBBBB"; TextonDark = "#FFFFFF"
+            PageHeaders = "#5C6BC0"; HeadingText = "#C5CAE9"; BodyText = "#BBBBBB"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#7986CB"
         }
         "Rose" = @{
             Primary = "#E91E63"; Secondary = "#F06292"; Warning = "#FF8A65"; Status = "#C2185B"
             Critical = "#AD1457"; Highlight = "#F8BBD9"; DarkNav = "#880E4F"; CardBg = "#FCE4EC"
             HoverBg = "#FFF8FA"; MainBg = "#FFF8FA"; ContentBg = "#FFFFFF"; SidebarDark = "#880E4F"
-            PageHeaders = "#E91E63"; HeadingText = "#880E4F"; BodyText = "#666666"; TextonDark = "#FFFFFF"
+            PageHeaders = "#E91E63"; HeadingText = "#880E4F"; BodyText = "#666666"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#E91E63"
         }
         "Default" = @{
             Primary = "#6A5ACD"; Secondary = "#7B68EE"; Warning = "#FFD700"; Status = "#4169E1"
             Critical = "#DC143C"; Highlight = "#DDA0DD"; DarkNav = "#483D8B"; CardBg = "#F0F8FF"
             HoverBg = "#FAFAFA"; MainBg = "#FAFAFA"; ContentBg = "#FFFFFF"; SidebarDark = "#483D8B"
-            PageHeaders = "#6A5ACD"; HeadingText = "#483D8B"; BodyText = "#666666"; TextonDark = "#FFFFFF"
+            PageHeaders = "#6A5ACD"; HeadingText = "#483D8B"; BodyText = "#666666"; OverlayTextBrush = "#FFFFFF"
             InteractiveText = "#6A5ACD"
         }
     }
@@ -343,7 +343,7 @@ function GenerateMissingBrushes {
             "MTM_Shared_Logic.PageHeaders" { $colors.PageHeaders }
             "MTM_Shared_Logic.HeadingText" { $colors.HeadingText }
             "MTM_Shared_Logic.BodyText" { $colors.BodyText }
-            "MTM_Shared_Logic.TextonDark" { $colors.TextonDark }
+            "MTM_Shared_Logic.OverlayTextBrush" { $colors.OverlayTextBrush }
             "MTM_Shared_Logic.InteractiveText" { $colors.InteractiveText }
             
             # Interactive States - derived from primary colors

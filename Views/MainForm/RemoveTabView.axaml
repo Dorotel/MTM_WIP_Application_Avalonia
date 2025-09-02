@@ -91,7 +91,7 @@
     
     <Style Selector="Button.primary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
     </Style>
     
@@ -113,19 +113,19 @@
     
     <Style Selector="Button.secondary:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
     </Style>
     
     <Style Selector="Button.secondary:pressed">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
     </Style>
 
     <Style Selector="Button.danger">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextonDark}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
     </Style>
     
@@ -220,7 +220,7 @@
               <Grid RowDefinitions="*,Auto,*">
                 <!-- Remove Icon with MTM styling -->
                 <Border Grid.Row="1"
-                        Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                        Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                         CornerRadius="12"
                         Width="24"
                         Height="24"
@@ -322,7 +322,7 @@
                     Margin="0,0,0,8">
               <Grid ColumnDefinitions="Auto,*,Auto">
                 <Border Grid.Column="0"
-                        Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                        Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                         CornerRadius="12"
                         Width="20"
                         Height="20"
@@ -339,10 +339,10 @@
                            Text="Available Inventory"
                            FontSize="14"
                            FontWeight="Bold"
-                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                            VerticalAlignment="Center"/>
                 <Border Grid.Column="2"
-                        Background="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                        Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                         CornerRadius="8"
                         Padding="8,4">
                   <StackPanel Orientation="Horizontal" Spacing="6">

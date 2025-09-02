@@ -21,11 +21,11 @@
                 <TextBlock Text="⚙️ Advanced Settings &amp; Administration"
                            FontSize="24"
                            FontWeight="Bold"
-                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                            HorizontalAlignment="Center"/>
                 <TextBlock Text="Comprehensive configuration and administrative hub"
                            FontSize="14"
-                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                            HorizontalAlignment="Center"
                            Margin="0,8,0,0"/>
             </StackPanel>
@@ -51,7 +51,7 @@
                             Padding="12">
                         <TextBlock Text="📂 Settings Categories"
                                    FontWeight="SemiBold"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                    FontSize="14"/>
                     </Border>
                     
@@ -117,7 +117,7 @@
                                 <TextBlock Text="{Binding SelectedCategory.DisplayName}"
                                            FontSize="18"
                                            FontWeight="SemiBold"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                            VerticalAlignment="Center"/>
                             </StackPanel>
                             
@@ -129,7 +129,7 @@
                                     IsVisible="{Binding HasUnsavedChanges}">
                                 <TextBlock Text="● Unsaved Changes"
                                            FontSize="12"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.TextonDark}"
+                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                            FontWeight="SemiBold"/>
                             </Border>
                         </Grid>
