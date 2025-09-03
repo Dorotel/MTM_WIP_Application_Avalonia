@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_WIP_Application_Avalonia.Commands;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -19,11 +20,13 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// Provides comprehensive functionality for transferring inventory items between locations,
 /// including search capabilities, quantity specification, batch transfer operations, 
 /// and complete transaction history tracking.
+/// Uses MVVM Community Toolkit for modern .NET patterns.
 /// </summary>
-public class TransferItemViewModel : BaseViewModel
+public partial class TransferItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
+    private readonly ILogger<TransferItemViewModel> _logger;
 
     #region Observable Collections
     
@@ -51,119 +54,51 @@ public class TransferItemViewModel : BaseViewModel
 
     #region Search Criteria Properties
 
+    [ObservableProperty]
+    [StringLength(50, ErrorMessage = "Part selection cannot exceed 50 characters")]
     private string? _selectedPart;
-    /// <summary>
-    /// Selected part ID for filtering inventory searches
-    /// </summary>
-    public string? SelectedPart
-    {
-        get => _selectedPart;
-        set => SetProperty(ref _selectedPart, value);
-    }
 
+    [ObservableProperty]
+    [StringLength(50, ErrorMessage = "Operation selection cannot exceed 50 characters")]
     private string? _selectedOperation;
-    /// <summary>
-    /// Selected operation for refined filtering (optional)
-    /// </summary>
-    public string? SelectedOperation
-    {
-        get => _selectedOperation;
-        set => SetProperty(ref _selectedOperation, value);
-    }
 
-    // Text properties for AutoCompleteBox two-way binding
+    [ObservableProperty]
+    [StringLength(50, ErrorMessage = "Part text cannot exceed 50 characters")]
     private string _partText = string.Empty;
-    /// <summary>
-    /// Text content for Part AutoCompleteBox
-    /// </summary>
-    public string PartText
-    {
-        get => _partText;
-        set => SetProperty(ref _partText, value ?? string.Empty);
-    }
 
+    [ObservableProperty]
+    [StringLength(50, ErrorMessage = "Operation text cannot exceed 50 characters")]
     private string _operationText = string.Empty;
-    /// <summary>
-    /// Text content for Operation AutoCompleteBox
-    /// </summary>
-    public string OperationText
-    {
-        get => _operationText;
-        set => SetProperty(ref _operationText, value ?? string.Empty);
-    }
 
     #endregion
 
     #region Transfer Configuration Properties
 
+    [ObservableProperty]
+    [StringLength(50, ErrorMessage = "Destination location cannot exceed 50 characters")]
     private string? _selectedToLocation;
-    /// <summary>
-    /// Selected destination location for transfer operations
-    /// </summary>
-    public string? SelectedToLocation
-    {
-        get => _selectedToLocation;
-        set => SetProperty(ref _selectedToLocation, value);
-    }
 
-    // Text property for destination location AutoCompleteBox
+    [ObservableProperty]
+    [StringLength(50, ErrorMessage = "Location text cannot exceed 50 characters")]
     private string _toLocationText = string.Empty;
-    /// <summary>
-    /// Text content for To Location AutoCompleteBox
-    /// </summary>
-    public string ToLocationText
-    {
-        get => _toLocationText;
-        set => SetProperty(ref _toLocationText, value ?? string.Empty);
-    }
 
+    [ObservableProperty]
+    [Range(1, int.MaxValue, ErrorMessage = "Transfer quantity must be at least 1")]
     private int _transferQuantity = 1;
-    /// <summary>
-    /// Quantity to transfer (limited by available inventory)
-    /// </summary>
-    public int TransferQuantity
-    {
-        get => _transferQuantity;
-        set => SetProperty(ref _transferQuantity, value);
-    }
 
+    [ObservableProperty]
+    [Range(0, int.MaxValue, ErrorMessage = "Maximum transfer quantity must be 0 or greater")]
     private int _maxTransferQuantity = 0;
-    /// <summary>
-    /// Maximum quantity available for transfer from selected item
-    /// </summary>
-    public int MaxTransferQuantity
-    {
-        get => _maxTransferQuantity;
-        set => SetProperty(ref _maxTransferQuantity, value);
-    }
 
     #endregion
 
     #region Selection and State Properties
 
+    [ObservableProperty]
     private InventoryItem? _selectedInventoryItem;
-    /// <summary>
-    /// Currently selected inventory item for transfer operations
-    /// </summary>
-    public InventoryItem? SelectedInventoryItem
-    {
-        get => _selectedInventoryItem;
-        set
-        {
-            SetProperty(ref _selectedInventoryItem, value);
-            UpdateMaxTransferQuantity();
-        }
-    }
 
+    [ObservableProperty]
     private bool _isLoading;
-    /// <summary>
-    /// Indicates if a background operation is in progress
-    /// </summary>
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => SetProperty(ref _isLoading, value);
-    }
 
     /// <summary>
     /// Indicates if there are inventory items to display
@@ -183,40 +118,6 @@ public class TransferItemViewModel : BaseViewModel
     /// Indicates if search operations can be performed
     /// </summary>
     public bool CanSearch => !IsLoading;
-
-    #endregion
-
-    #region Commands
-
-    /// <summary>
-    /// Executes inventory search based on selected criteria with progress tracking
-    /// </summary>
-    public ICommand SearchCommand { get; private set; } = null!;
-
-    /// <summary>
-    /// Resets search criteria and refreshes all data
-    /// </summary>
-    public ICommand ResetCommand { get; private set; } = null!;
-
-    /// <summary>
-    /// Executes transfer operations for selected inventory items
-    /// </summary>
-    public ICommand TransferCommand { get; private set; } = null!;
-
-    /// <summary>
-    /// Prints current inventory view with transfer details
-    /// </summary>
-    public ICommand PrintCommand { get; private set; } = null!;
-
-    /// <summary>
-    /// Toggles quick actions panel
-    /// </summary>
-    public ICommand TogglePanelCommand { get; private set; } = null!;
-
-    /// <summary>
-    /// Loads initial data including parts, operations, and locations
-    /// </summary>
-    public ICommand LoadDataCommand { get; private set; } = null!;
 
     #endregion
 
@@ -243,15 +144,16 @@ public class TransferItemViewModel : BaseViewModel
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        Logger.LogInformation("TransferItemViewModel initialized with dependency injection");
+        _logger.LogInformation("TransferItemViewModel initialized with dependency injection");
 
-        InitializeCommands();
         _ = LoadComboBoxDataAsync(); // Load real data from database
-        
-        // Setup property change notifications for computed properties
-        PropertyChanged += OnPropertyChanged;
     }
+
+    #endregion
+
+    #region Command Implementations
     
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -307,39 +209,12 @@ public class TransferItemViewModel : BaseViewModel
 
     #endregion
 
-    #region Command Initialization
-
-    private void InitializeCommands()
-    {
-        // Search command with progress tracking
-        SearchCommand = new AsyncCommand(ExecuteSearchAsync, () => CanSearch);
-
-        // Reset command
-        ResetCommand = new AsyncCommand(ResetSearchAsync);
-
-        // Transfer command with validation
-        TransferCommand = new AsyncCommand(ExecuteTransferAsync, () => CanTransfer);
-
-        // Print command
-        PrintCommand = new AsyncCommand(ExecutePrintAsync, () => HasInventoryItems);
-
-        // Toggle panel command
-        TogglePanelCommand = new RelayCommand(() =>
-        {
-            PanelToggleRequested?.Invoke(this, EventArgs.Empty);
-        });
-
-        // Load data command
-        LoadDataCommand = new AsyncCommand(LoadComboBoxDataAsync);
-    }
-
-    #endregion
-
     #region Command Implementations
 
     /// <summary>
     /// Executes inventory search based on selected criteria with progress tracking
     /// </summary>
+    [RelayCommand(CanExecute = nameof(CanSearch))]
     private async Task ExecuteSearchAsync()
     {
         try
@@ -348,26 +223,26 @@ public class TransferItemViewModel : BaseViewModel
             InventoryItems.Clear();
             SelectedInventoryItem = null;
 
-            Logger.LogInformation("Executing transfer search for Part: {PartId}, Operation: {Operation}", 
-                _selectedPart, _selectedOperation);
+            _logger.LogInformation("Executing transfer search for Part: {PartId}, Operation: {Operation}", 
+                SelectedPart, SelectedOperation);
 
             // Dynamic search based on selection criteria
             System.Data.DataTable result;
             
-            if (!string.IsNullOrWhiteSpace(_selectedPart) && !string.IsNullOrWhiteSpace(_selectedOperation))
+            if (!string.IsNullOrWhiteSpace(SelectedPart) && !string.IsNullOrWhiteSpace(SelectedOperation))
             {
                 // Search by both part and operation
-                result = await _databaseService.GetInventoryByPartAndOperationAsync(_selectedPart, _selectedOperation);
+                result = await _databaseService.GetInventoryByPartAndOperationAsync(SelectedPart, SelectedOperation).ConfigureAwait(false);
             }
-            else if (!string.IsNullOrWhiteSpace(_selectedPart))
+            else if (!string.IsNullOrWhiteSpace(SelectedPart))
             {
                 // Search by part only
-                result = await _databaseService.GetInventoryByPartIdAsync(_selectedPart);
+                result = await _databaseService.GetInventoryByPartIdAsync(SelectedPart).ConfigureAwait(false);
             }
             else
             {
                 // No search criteria specified, don't load anything
-                Logger.LogWarning("No search criteria specified for transfer search");
+                _logger.LogWarning("No search criteria specified for transfer search");
                 return;
             }
 
@@ -392,7 +267,7 @@ public class TransferItemViewModel : BaseViewModel
                 InventoryItems.Add(inventoryItem);
             }
 
-            Logger.LogInformation("Transfer search completed. Found {Count} inventory items", InventoryItems.Count);
+            _logger.LogInformation("Transfer search completed. Found {Count} inventory items", InventoryItems.Count);
         }
         finally
         {
@@ -403,6 +278,7 @@ public class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Resets search criteria and refreshes all data
     /// </summary>
+    [RelayCommand]
     private async Task ResetSearchAsync()
     {
         try
@@ -422,9 +298,9 @@ public class TransferItemViewModel : BaseViewModel
             MaxTransferQuantity = 0;
 
             // Reload all ComboBox data
-            await LoadComboBoxDataAsync();
+            await LoadComboBoxDataAsync().ConfigureAwait(false);
 
-            Logger.LogInformation("Transfer search criteria reset and data refreshed");
+            _logger.LogInformation("Transfer search criteria reset and data refreshed");
         }
         finally
         {
@@ -435,11 +311,12 @@ public class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Executes transfer operations for selected inventory items with comprehensive validation
     /// </summary>
+    [RelayCommand(CanExecute = nameof(CanTransfer))]
     private async Task ExecuteTransferAsync()
     {
         if (SelectedInventoryItem == null || string.IsNullOrWhiteSpace(SelectedToLocation))
         {
-            Logger.LogWarning("Transfer operation attempted with invalid selection");
+            _logger.LogWarning("Transfer operation attempted with invalid selection");
             return;
         }
 
@@ -454,7 +331,7 @@ public class TransferItemViewModel : BaseViewModel
             // Critical: Validate destination location is different from source
             if (fromLocation.Equals(SelectedToLocation, StringComparison.OrdinalIgnoreCase))
             {
-                Logger.LogWarning("Transfer attempted to same location: {Location}", fromLocation);
+                _logger.LogWarning("Transfer attempted to same location: {Location}", fromLocation);
                 // TODO: Show user-friendly error message
                 return;
             }
@@ -462,7 +339,7 @@ public class TransferItemViewModel : BaseViewModel
             // Validate transfer quantity against available inventory
             if (TransferQuantity > SelectedInventoryItem.Quantity)
             {
-                Logger.LogWarning("Transfer quantity {TransferQuantity} exceeds available {Available}", 
+                _logger.LogWarning("Transfer quantity {TransferQuantity} exceeds available {Available}", 
                     TransferQuantity, SelectedInventoryItem.Quantity);
                 // TODO: Show user-friendly error message
                 return;
@@ -474,7 +351,7 @@ public class TransferItemViewModel : BaseViewModel
             if (TransferQuantity < SelectedInventoryItem.Quantity)
             {
                 // Partial quantity transfer
-                Logger.LogInformation("Executing partial transfer: {TransferQuantity} of {TotalQuantity} units", 
+                _logger.LogInformation("Executing partial transfer: {TransferQuantity} of {TotalQuantity} units", 
                     TransferQuantity, SelectedInventoryItem.Quantity);
                 
                 transferResult = await _databaseService.TransferQuantityAsync(
@@ -490,7 +367,7 @@ public class TransferItemViewModel : BaseViewModel
             else
             {
                 // Complete item transfer
-                Logger.LogInformation("Executing complete transfer: {TransferQuantity} units", TransferQuantity);
+                _logger.LogInformation("Executing complete transfer: {TransferQuantity} units", TransferQuantity);
                 
                 transferResult = await _databaseService.TransferPartAsync(
                     SelectedInventoryItem.BatchNumber ?? string.Empty,
@@ -502,7 +379,7 @@ public class TransferItemViewModel : BaseViewModel
 
             if (!transferResult)
             {
-                Logger.LogError("Transfer operation failed");
+                _logger.LogError("Transfer operation failed");
                 // TODO: Show user-friendly error message
                 return;
             }
@@ -531,7 +408,7 @@ public class TransferItemViewModel : BaseViewModel
                 TransferTime = DateTime.Now
             });
 
-            Logger.LogInformation("Successfully transferred {Quantity} units of {PartId} from {FromLocation} to {ToLocation}", 
+            _logger.LogInformation("Successfully transferred {Quantity} units of {PartId} from {FromLocation} to {ToLocation}", 
                 TransferQuantity, partId, fromLocation, SelectedToLocation);
 
             // Reset transfer form for next operation
@@ -547,6 +424,7 @@ public class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Prints current inventory view with transfer details and formatted output
     /// </summary>
+    [RelayCommand]
     private async Task ExecutePrintAsync()
     {
         try
@@ -561,10 +439,10 @@ public class TransferItemViewModel : BaseViewModel
             //     searchCriteria: $"Part: {SelectedPart}, Operation: {SelectedOperation}",
             //     transferConfiguration: $"Destination: {SelectedToLocation}, Quantity: {TransferQuantity}");
 
-            Logger.LogInformation("Print operation initiated for transfer inventory view with {Count} items", 
+            _logger.LogInformation("Print operation initiated for transfer inventory view with {Count} items", 
                 InventoryItems.Count);
 
-            await Task.Delay(1000); // Simulate print operation
+            await Task.Delay(1000).ConfigureAwait(false); // Simulate print operation
         }
         finally
         {
@@ -583,7 +461,7 @@ public class TransferItemViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogInformation("Loading transfer ComboBox data from database");
+            _logger.LogInformation("Loading transfer ComboBox data from database");
 
             // Load Parts using md_part_ids_Get_All stored procedure
             var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -607,7 +485,7 @@ public class TransferItemViewModel : BaseViewModel
                         }
                     }
                 });
-                Logger.LogInformation("Loaded {Count} parts for transfer", PartOptions.Count);
+                _logger.LogInformation("Loaded {Count} parts for transfer", PartOptions.Count);
             }
             
             // Load Operations using md_operation_numbers_Get_All stored procedure
@@ -632,7 +510,7 @@ public class TransferItemViewModel : BaseViewModel
                         }
                     }
                 });
-                Logger.LogInformation("Loaded {Count} operations for transfer", OperationOptions.Count);
+                _logger.LogInformation("Loaded {Count} operations for transfer", OperationOptions.Count);
             }
 
             // Load Locations using md_locations_Get_All stored procedure
@@ -657,14 +535,14 @@ public class TransferItemViewModel : BaseViewModel
                         }
                     }
                 });
-                Logger.LogInformation("Loaded {Count} locations for transfer", LocationOptions.Count);
+                _logger.LogInformation("Loaded {Count} locations for transfer", LocationOptions.Count);
             }
 
-            Logger.LogInformation("Transfer ComboBox data loaded successfully");
+            _logger.LogInformation("Transfer ComboBox data loaded successfully");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to load Transfer ComboBox data");
+            _logger.LogError(ex, "Failed to load Transfer ComboBox data");
             throw;
         }
     }
@@ -824,7 +702,7 @@ public class TransferItemViewModel : BaseViewModel
     /// </summary>
     private void HandleException(Exception ex)
     {
-        Logger.LogError(ex, "Error in TransferItemViewModel operation");
+        _logger.LogError(ex, "Error in TransferItemViewModel operation");
         
         // TODO: Present user-friendly error message via error service
         // await _errorService.LogErrorAsync(ex);
@@ -840,9 +718,9 @@ public class TransferItemViewModel : BaseViewModel
     /// </summary>
     public void TriggerSearch()
     {
-        if (SearchCommand != null)
+        if (ExecuteSearchCommand.CanExecute(null))
         {
-            SearchCommand.Execute(null);
+            ExecuteSearchCommand.Execute(null);
         }
     }
 

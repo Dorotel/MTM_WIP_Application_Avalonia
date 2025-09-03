@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -29,6 +30,15 @@ public interface IApplicationStateService : INotifyPropertyChanged
     string CurrentLocation { get; set; }
     string CurrentOperation { get; set; }
     bool IsOfflineMode { get; set; }
+    
+    // Progress communication for MainView integration
+    int ProgressValue { get; set; }
+    string StatusText { get; set; }
+    
+    // Async progress communication methods
+    Task SetProgressAsync(int value, string status);
+    Task ClearProgressAsync();
+    
     event EventHandler<StateChangedEventArgs>? StateChanged;
 }
 
@@ -128,6 +138,8 @@ public class ApplicationStateService : IApplicationStateService
     private string _currentLocation = string.Empty;
     private string _currentOperation = string.Empty;
     private bool _isOfflineMode = false;
+    private int _progressValue = 0;
+    private string _statusText = "Ready";
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler<StateChangedEventArgs>? StateChanged;
@@ -163,6 +175,36 @@ public class ApplicationStateService : IApplicationStateService
     {
         get => _isOfflineMode;
         set => SetProperty(ref _isOfflineMode, value, nameof(IsOfflineMode));
+    }
+
+    public int ProgressValue
+    {
+        get => _progressValue;
+        set => SetProperty(ref _progressValue, value, nameof(ProgressValue));
+    }
+
+    public string StatusText
+    {
+        get => _statusText;
+        set => SetProperty(ref _statusText, value, nameof(StatusText));
+    }
+
+    public async Task SetProgressAsync(int value, string status)
+    {
+        ProgressValue = Math.Clamp(value, 0, 100);
+        StatusText = status ?? "Processing...";
+        
+        _logger.LogDebug("Progress updated: {ProgressValue}% - {StatusText}", ProgressValue, StatusText);
+        await Task.CompletedTask;
+    }
+
+    public async Task ClearProgressAsync()
+    {
+        ProgressValue = 0;
+        StatusText = "Ready";
+        
+        _logger.LogDebug("Progress cleared");
+        await Task.CompletedTask;
     }
 
     private void SetProperty<T>(ref T field, T value, string propertyName)

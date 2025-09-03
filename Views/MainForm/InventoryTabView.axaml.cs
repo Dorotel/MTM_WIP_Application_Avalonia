@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Windows.Input; // Add this for ICommand
+using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -1075,7 +1075,7 @@ public partial class InventoryTabView : UserControl
             }
 
             // Execute save command (business logic handled by ViewModel)
-            var saveCommand = GetPropertyValue<ICommand>(_viewModel, "SaveCommand"); // Fix: Remove System.Windows.Input
+            var saveCommand = GetPropertyValue<ICommand>(_viewModel, "SaveCommand");
             if (saveCommand?.CanExecute(null) == true)
             {
                 saveCommand.Execute(null);
@@ -1095,7 +1095,7 @@ public partial class InventoryTabView : UserControl
     /// <summary>
     /// Initializes QuickButtons integration to handle quick action events.
     /// </summary>
-    private async Task InitializeQuickButtonsIntegrationAsync()
+    private Task InitializeQuickButtonsIntegrationAsync()
     {
         try
         {
@@ -1126,6 +1126,8 @@ public partial class InventoryTabView : UserControl
             _logger?.LogError(ex, "Error initializing QuickButtons integration");
             System.Diagnostics.Debug.WriteLine($"Error initializing QuickButtons integration: {ex.Message}");
         }
+        
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -1293,7 +1295,9 @@ public partial class InventoryTabView : UserControl
     {
         try
         {
-            var resetCommand = GetPropertyValue<ICommand>(_viewModel, "ResetCommand"); // Fix: Remove System.Windows.Input
+            if (_viewModel == null) return;
+            
+            var resetCommand = GetPropertyValue<ICommand>(_viewModel, "ResetCommand");
             if (resetCommand?.CanExecute(null) == true)
             {
                 resetCommand.Execute(null);
@@ -1317,18 +1321,24 @@ public partial class InventoryTabView : UserControl
             // Execute reset command
             ExecuteSoftReset();
 
-            // Refresh data command
-            var refreshCommand = GetPropertyValue<ICommand>(_viewModel, "RefreshDataCommand"); // Fix: Remove System.Windows.Input
-            if (refreshCommand?.CanExecute(null) == true)
+            if (_viewModel != null)
             {
-                refreshCommand.Execute(null);
+                // Refresh data command
+                var refreshCommand = GetPropertyValue<ICommand>(_viewModel, "RefreshDataCommand");
+                if (refreshCommand?.CanExecute(null) == true)
+                {
+                    refreshCommand.Execute(null);
+                }
             }
 
-            // Refresh QuickButtons if available
-            var refreshButtonsCommand = GetPropertyValue<ICommand>(_quickButtonsViewModel, "RefreshButtonsCommand"); // Fix: Remove System.Windows.Input
-            if (refreshButtonsCommand?.CanExecute(null) == true)
+            if (_quickButtonsViewModel != null)
             {
-                refreshButtonsCommand.Execute(null);
+                // Refresh QuickButtons if available
+                var refreshButtonsCommand = GetPropertyValue<ICommand>(_quickButtonsViewModel, "RefreshButtonsCommand");
+                if (refreshButtonsCommand?.CanExecute(null) == true)
+                {
+                    refreshButtonsCommand.Execute(null);
+                }
             }
 
             MoveFocusToFirstControl();
@@ -1379,7 +1389,7 @@ public partial class InventoryTabView : UserControl
             // If focused on Save button and can save, execute save command
             if (source == _saveButton && IsFormValid())
             {
-                var saveCommand = GetPropertyValue<ICommand>(_viewModel, "SaveCommand"); // Fix: Remove System.Windows.Input
+                var saveCommand = GetPropertyValue<ICommand>(_viewModel, "SaveCommand");
                 if (saveCommand?.CanExecute(null) == true)
                 {
                     saveCommand.Execute(null);

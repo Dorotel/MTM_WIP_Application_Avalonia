@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 using System.Collections.Generic;
 using System.Data;
 
@@ -8,7 +9,7 @@ namespace MTM_WIP_Application_Avalonia.Resources.Themes
     {
         public MTMComponentsPreview()
         {
-            InitializeComponent();
+            AvaloniaXamlLoader.Load(this);
             // Ensure DataGrid is populated after the control is fully initialized
             this.AttachedToVisualTree += OnAttachedToVisualTree;
         }

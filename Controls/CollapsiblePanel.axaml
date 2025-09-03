@@ -33,23 +33,35 @@
                   MinWidth="40"
                   MinHeight="40">
             
-            <!-- Simple grid for toggle button only -->
+            <!-- Simple grid for toggle button and header content -->
             <Grid x:Name="HeaderContentGrid">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
               
               <!-- Toggle Button - positioned dynamically by code -->
               <Button x:Name="ToggleButton"
+                      Grid.Column="0"
                       Background="Transparent"
                       BorderThickness="0"
                       Width="20"
                       Height="20"
-                      Click="OnToggleClick"
-                      Cursor="Hand">
+                      Click="OnToggleClick">
+                      <!-- Cursor="Hand" removed to prevent ICursorFactory issues -->
                 <material:MaterialIcon x:Name="ToggleIcon"
                                        Kind="ChevronRight"
                                        Width="12"
                                        Height="12"
                                        Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
               </Button>
+              
+              <!-- Header Content Presenter -->
+              <ContentPresenter x:Name="HeaderPresenter"
+                              Grid.Column="1"
+                              Content="{TemplateBinding Header}"
+                              VerticalAlignment="Center"
+                              Margin="8,0,0,0"/>
               
             </Grid>
           </Border>

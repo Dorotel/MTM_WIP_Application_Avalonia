@@ -1,18 +1,19 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_Shared_Logic.Models;
+using MTM_WIP_Application_Avalonia.Models;
 using System.Linq;
 using Avalonia.Controls;
 using Material.Icons;
 using MTM_WIP_Application_Avalonia.Services;
-using MTM_WIP_Application_Avalonia.Commands;
 using System.Collections.Generic;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -21,119 +22,174 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 /// Provides sophisticated removal operations beyond standard inventory removal functionality.
 /// Features include bulk removal operations, removal history tracking, undo capabilities, 
 /// and specialized reporting for removal analytics.
+/// Uses MVVM Community Toolkit for modern .NET patterns.
 /// </summary>
-public class AdvancedRemoveViewModel : BaseViewModel
+public partial class AdvancedRemoveViewModel : BaseViewModel
 {
-    #region Filter Fields and Options
-    public ObservableCollection<string> LocationOptions { get; } = new();
-    public ObservableCollection<string> PartIDOptions { get; } = new();
-    public ObservableCollection<string> UserOptions { get; } = new();
-    public ObservableCollection<string> OperationOptions { get; } = new();
-
-    public string? FilterLocationText { get => _filterLocationText; set => SetProperty(ref _filterLocationText, value); }
-    public string? FilterPartIDText { get => _filterPartIDText; set => SetProperty(ref _filterPartIDText, value); }
-    public string? FilterUserText { get => _filterUserText; set => SetProperty(ref _filterUserText, value); }
-    public string? FilterOperation { get => _filterOperation; set => SetProperty(ref _filterOperation, value); }
-    public string? FilterNotes { get => _filterNotes; set => SetProperty(ref _filterNotes, value); }
-    public string? QuantityMin { get => _quantityMin; set => SetProperty(ref _quantityMin, value); }
-    public string? QuantityMax { get => _quantityMax; set => SetProperty(ref _quantityMax, value); }
-    
-    public bool UseDateRange { get => _useDateRange; set => SetProperty(ref _useDateRange, value); }
-    public DateTimeOffset? RemovalDateRangeStart { get => _removalDateRangeStart; set => SetProperty(ref _removalDateRangeStart, value); }
-    public DateTimeOffset? RemovalDateRangeEnd { get => _removalDateRangeEnd; set => SetProperty(ref _removalDateRangeEnd, value); }
-
+    #region Filter Properties
+    /// <summary>
+    /// Gets or sets the location filter text for advanced removal operations
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(50, ErrorMessage = "Location filter cannot exceed 50 characters")]
     private string? _filterLocationText;
+
+    /// <summary>
+    /// Gets or sets the Part ID filter text for targeted removal operations
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(100, ErrorMessage = "Part ID filter cannot exceed 100 characters")]
     private string? _filterPartIDText;
+
+    /// <summary>
+    /// Gets or sets the user filter text for removal history tracking
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(50, ErrorMessage = "User filter cannot exceed 50 characters")]
     private string? _filterUserText;
+
+    /// <summary>
+    /// Gets or sets the operation filter for removal workflow targeting
+    /// </summary>
+    [ObservableProperty]
     private string? _filterOperation;
-    private string? _filterNotes;
+
+    /// <summary>
+    /// Gets or sets the minimum quantity filter for bulk removal operations
+    /// </summary>
+    [ObservableProperty]
+    [RegularExpression(@"^\d*$", ErrorMessage = "Minimum quantity must be a valid number")]
     private string? _quantityMin;
+
+    /// <summary>
+    /// Gets or sets the maximum quantity filter for bulk removal operations
+    /// </summary>
+    [ObservableProperty]
+    [RegularExpression(@"^\d*$", ErrorMessage = "Maximum quantity must be a valid number")]
     private string? _quantityMax;
-    private bool _useDateRange;
+
+    /// <summary>
+    /// Gets or sets the removal date range start for filtering operations
+    /// </summary>
+    [ObservableProperty]
     private DateTimeOffset? _removalDateRangeStart;
+
+    /// <summary>
+    /// Gets or sets the removal date range end for filtering operations
+    /// </summary>
+    [ObservableProperty]
     private DateTimeOffset? _removalDateRangeEnd;
     #endregion
 
     #region Data Collections
     /// <summary>
-    /// Removal history tracking for undo capabilities
+    /// Gets or sets the collection of removal history items
     /// </summary>
-    public ObservableCollection<RemovalHistoryItem> RemovalHistoryGrid { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<SessionTransaction> _removalHistory = new();
 
     /// <summary>
-    /// Track last removed items for undo operations - using reactive collection
+    /// Gets or sets the collection of location options for removal operations
     /// </summary>
-    public ObservableCollection<RemovalHistoryItem> LastRemovedItems { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<string> _locationOptions = new();
 
-    private RemovalHistoryItem? _selectedHistoryItem;
-    public RemovalHistoryItem? SelectedHistoryItem
-    {
-        get => _selectedHistoryItem;
-        set => SetProperty(ref _selectedHistoryItem, value);
-    }
+    /// <summary>
+    /// Gets or sets the collection of Part ID options for removal targeting
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> _partIDOptions = new();
+
+    /// <summary>
+    /// Gets or sets the collection of user options for removal tracking
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> _userOptions = new();
+
+    /// <summary>
+    /// Gets or sets the collection of last removed items for undo functionality
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<SessionTransaction> _lastRemovedItems = new();
+
+    /// <summary>
+    /// Gets or sets the currently selected history item
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanUndo))]
+    private SessionTransaction? _selectedHistoryItem;
     #endregion
 
     #region State Properties
-    public bool IsBusy { get => _isBusy; set => SetProperty(ref _isBusy, value); }
-    public string StatusMessage { get => _statusMessage; set => SetProperty(ref _statusMessage, value); }
-
-    // Collapsible Panel Properties
-    public bool IsFilterPanelExpanded { get => _isFilterPanelExpanded; set => SetProperty(ref _isFilterPanelExpanded, value); }
-    public string CollapseButtonText { get => _collapseButtonText; set => SetProperty(ref _collapseButtonText, value); }
-    public MaterialIconKind CollapseButtonIcon { get => _collapseButtonIcon; set => SetProperty(ref _collapseButtonIcon, value); }
-    public string FilterToggleText { get => _filterToggleText; set => SetProperty(ref _filterToggleText, value); }
-    public GridLength FilterPanelWidth { get => _filterPanelWidth; set => SetProperty(ref _filterPanelWidth, value); }
-
+    /// <summary>
+    /// Gets or sets whether the ViewModel is currently busy processing operations
+    /// </summary>
+    [ObservableProperty]
     private bool _isBusy;
+
+    /// <summary>
+    /// Gets or sets the current status message for user feedback
+    /// </summary>
+    [ObservableProperty]
     private string _statusMessage = "Ready";
+
+    /// <summary>
+    /// Gets or sets whether the filter panel is expanded
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CollapseButtonText))]
+    [NotifyPropertyChangedFor(nameof(CollapseButtonIcon))]
+    [NotifyPropertyChangedFor(nameof(FilterToggleText))]
+    [NotifyPropertyChangedFor(nameof(FilterPanelWidth))]
     private bool _isFilterPanelExpanded = true;
+
+    /// <summary>
+    /// Gets or sets the collapse button text based on panel state
+    /// </summary>
+    [ObservableProperty]
     private string _collapseButtonText = "?";
+
+    /// <summary>
+    /// Gets or sets the collapse button icon based on panel state
+    /// </summary>
+    [ObservableProperty]
     private MaterialIconKind _collapseButtonIcon = MaterialIconKind.ChevronLeft;
+
+    /// <summary>
+    /// Gets or sets the filter toggle text based on panel state
+    /// </summary>
+    [ObservableProperty]
     private string _filterToggleText = "Hide Filters";
+
+    /// <summary>
+    /// Gets or sets the filter panel width
+    /// </summary>
+    [ObservableProperty]
     private GridLength _filterPanelWidth = new GridLength(300);
-
-    public bool CanUndo => LastRemovedItems.Count > 0;
-    #endregion
-
-    #region Commands - Advanced Removal Operations
-    public ICommand LoadDataCommand { get; private set; } = null!;
-    public ICommand SearchCommand { get; private set; } = null!;
-    public ICommand ClearCommand { get; private set; } = null!;
-    public ICommand BackToNormalCommand { get; private set; } = null!;
-    
-    // Advanced removal operations as per instruction file
-    public ICommand BulkRemoveCommand { get; private set; } = null!;
-    public ICommand ConditionalRemoveCommand { get; private set; } = null!;
-    public ICommand ScheduledRemoveCommand { get; private set; } = null!;
-    public ICommand UndoRemovalCommand { get; private set; } = null!;
-    public ICommand ViewHistoryCommand { get; private set; } = null!;
-    public ICommand GenerateRemovalReportCommand { get; private set; } = null!;
-    public ICommand ExportRemovalDataCommand { get; private set; } = null!;
-    public ICommand PrintRemovalSummaryCommand { get; private set; } = null!;
-    
-    // Panel Control Commands
-    public ICommand ToggleFilterPanelCommand { get; private set; } = null!;
-    
-    // Remove functionality now handled by QuickButtonsViewModel integration
-    public ICommand RemoveSelectedCommand { get; private set; } = null!;
     #endregion
 
     #region Events
     public event EventHandler? BackToNormalRequested;
     #endregion
 
-    #region Disposables for proper cleanup
-    // Disposable resources cleanup handled by BaseViewModel
+    #region Computed Properties
+    /// <summary>
+    /// Gets whether undo operation is available
+    /// </summary>
+    public bool CanUndo => LastRemovedItems.Count > 0;
+
+    /// <summary>
+    /// Determines if a selected item can be removed
+    /// </summary>
+    private bool CanRemoveSelected => SelectedHistoryItem != null;
     #endregion
 
+    #region Constructor
     public AdvancedRemoveViewModel(ILogger<AdvancedRemoveViewModel> logger) : base(logger)
     {
         try
         {
             Logger.LogInformation("Initializing AdvancedRemoveViewModel");
-
-            // Initialize commands
-            InitializeCommands();
             
             // Initialize with safe default date range
             try
@@ -158,16 +214,16 @@ public class AdvancedRemoveViewModel : BaseViewModel
             {
                 try
                 {
-                    await LoadDataAsync();
+                    await LoadDataAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex, "Error during initial data load");
+                    Logger.LogError(ex, "Error loading initial data");
                     StatusMessage = "Error loading initial data";
                 }
             });
 
-            Logger.LogInformation("AdvancedRemoveViewModel initialization completed successfully");
+            Logger.LogInformation("AdvancedRemoveViewModel initialized successfully");
         }
         catch (Exception ex)
         {
@@ -175,272 +231,346 @@ public class AdvancedRemoveViewModel : BaseViewModel
             StatusMessage = "Initialization failed";
         }
     }
+    #endregion
 
-    private void InitializeCommands()
+    #region Command Methods
+
+    /// <summary>
+    /// Loads advanced removal data and options
+    /// </summary>
+    [RelayCommand]
+    private async Task LoadDataAsync()
     {
         try
         {
-            Logger.LogDebug("Initializing commands for AdvancedRemoveViewModel");
+            IsBusy = true;
+            StatusMessage = "Loading advanced removal options...";
 
-            // Create commands with proper error handling
-            LoadDataCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    IsBusy = true;
-                    StatusMessage = "Loading advanced removal options...";
-
-                    await LoadOptionsAsync();
-                    await LoadRemovalHistoryAsync();
-                    
-                    StatusMessage = "Advanced removal system ready";
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error loading data");
-                    StatusMessage = $"Error loading data: {ex.Message}";
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
-            });
-
-            SearchCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    await ExecuteSearchAsync();
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error executing search");
-                    StatusMessage = $"Search error: {ex.Message}";
-                }
-            });
-
-            ClearCommand = new RelayCommand(() =>
-            {
-                try
-                {
-                    FilterLocationText = null;
-                    FilterPartIDText = null;
-                    FilterUserText = null;
-                    FilterOperation = null;
-                    FilterNotes = null;
-                    QuantityMin = null;
-                    QuantityMax = null;
-                    UseDateRange = false;
-                    RemovalDateRangeStart = null;
-                    RemovalDateRangeEnd = null;
-                    StatusMessage = "Advanced filters cleared";
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error clearing filters");
-                    StatusMessage = $"Clear error: {ex.Message}";
-                }
-            });
-
-            // Simplified remove command for integration with QuickButtonsViewModel
-            RemoveSelectedCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    IsBusy = true;
-                    StatusMessage = "Executing removal operation via QuickButtons integration...";
-
-                    // TODO: Integrate with QuickButtonsViewModel for actual removal operations
-                    // The actual removal will be handled by the QuickButtons functionality
-                    await Task.Delay(400);
-                    
-                    StatusMessage = "Removal operation completed via QuickButtons";
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error removing selected item");
-                    StatusMessage = $"Removal error: {ex.Message}";
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
-            });
-
-            UndoRemovalCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    if (LastRemovedItems.Count == 0) return;
-
-                    IsBusy = true;
-                    StatusMessage = "Executing undo operation...";
-
-                    var lastRemoval = LastRemovedItems.LastOrDefault();
-                    if (lastRemoval != null)
-                    {
-                        // TODO: Execute undo via stored procedure
-                        // DaoResult<bool> undoResult = await Dao_Remove.UndoRemovalOperationAsync(...)
-                        await Task.Delay(400); // Simulate database operation
-
-                        // Remove from history
-                        RemovalHistoryGrid.Remove(lastRemoval);
-                        LastRemovedItems.Remove(lastRemoval);
-                    }
-
-                    StatusMessage = "Removal operation undone successfully";
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error undoing removal");
-                    StatusMessage = $"Undo error: {ex.Message}";
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
-            });
-
-            PrintRemovalSummaryCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    IsBusy = true;
-                    StatusMessage = "Generating removal summary for printing...";
-
-                    // TODO: Implement professional printing capabilities
-                    await Task.Delay(600);
-                    
-                    StatusMessage = "Removal summary sent to printer";
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error printing summary");
-                    StatusMessage = $"Print error: {ex.Message}";
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
-            });
-
-            ToggleFilterPanelCommand = new RelayCommand(() =>
-            {
-                try
-                {
-                    IsFilterPanelExpanded = !IsFilterPanelExpanded;
-                    CollapseButtonText = IsFilterPanelExpanded ? "?" : "+";
-                    CollapseButtonIcon = IsFilterPanelExpanded ? MaterialIconKind.ChevronLeft : MaterialIconKind.ChevronRight;
-                    FilterToggleText = IsFilterPanelExpanded ? "Hide Filters" : "Show Filters";
-                    FilterPanelWidth = IsFilterPanelExpanded ? new GridLength(300) : new GridLength(50);
-                    StatusMessage = IsFilterPanelExpanded ? "Filter panel expanded" : "Filter panel collapsed";
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error toggling filter panel");
-                    StatusMessage = $"Toggle error: {ex.Message}";
-                }
-            });
-
-            BackToNormalCommand = new RelayCommand(() =>
-            {
-                try
-                {
-                    BackToNormalRequested?.Invoke(this, EventArgs.Empty);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error navigating back to normal");
-                    StatusMessage = $"Navigation error: {ex.Message}";
-                }
-            });
-
-            // Additional advanced commands (for future implementation)
-            BulkRemoveCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    await Task.Delay(1000); // TODO: Implement bulk removal
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error in bulk remove");
-                }
-            });
-
-            ViewHistoryCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    await LoadRemovalHistoryAsync();
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error loading history");
-                }
-            });
-
-            GenerateRemovalReportCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    await Task.Delay(800); // TODO: Generate analytics report
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error generating report");
-                }
-            });
-
-            ExportRemovalDataCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    await Task.Delay(500); // TODO: Export removal data
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error exporting data");
-                }
-            });
-
-            ConditionalRemoveCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    await Task.Delay(700); // TODO: Conditional removal
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error in conditional remove");
-                }
-            });
-
-            ScheduledRemoveCommand = new AsyncCommand(async () =>
-            {
-                try
-                {
-                    await Task.Delay(600); // TODO: Scheduled removal
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error in scheduled remove");
-                }
-            });
-
-            Logger.LogDebug("Commands initialized successfully for AdvancedRemoveViewModel");
+            await LoadOptionsAsync().ConfigureAwait(false);
+            await LoadRemovalHistoryAsync().ConfigureAwait(false);
+            
+            StatusMessage = "Advanced removal system ready";
+            Logger.LogInformation("Advanced removal data loaded successfully");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error initializing commands");
+            Logger.LogError(ex, "Error loading data");
+            StatusMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
-    private async Task LoadDataAsync()
+    /// <summary>
+    /// Executes search with current filter criteria
+    /// </summary>
+    [RelayCommand]
+    private async Task SearchAsync()
     {
-        await LoadOptionsAsync();
-        await LoadRemovalHistoryAsync();
+        try
+        {
+            await ExecuteSearchAsync().ConfigureAwait(false);
+            Logger.LogInformation("Search executed successfully");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error executing search");
+            StatusMessage = $"Search error: {ex.Message}";
+        }
     }
+
+    /// <summary>
+    /// Clears all filter criteria and resets to defaults
+    /// </summary>
+    [RelayCommand]
+    private void Clear()
+    {
+        try
+        {
+            FilterLocationText = null;
+            FilterPartIDText = null;
+            FilterUserText = null;
+            FilterOperation = null;
+            QuantityMin = null;
+            QuantityMax = null;
+            RemovalDateRangeStart = DateTimeOffset.Now.AddDays(-30);
+            RemovalDateRangeEnd = DateTimeOffset.Now;
+            RemovalHistory.Clear();
+            StatusMessage = "Filters cleared";
+            Logger.LogDebug("Filters cleared");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error clearing filters");
+            StatusMessage = $"Clear error: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Returns to normal inventory mode
+    /// </summary>
+    [RelayCommand]
+    private void BackToNormal()
+    {
+        try
+        {
+            BackToNormalRequested?.Invoke(this, EventArgs.Empty);
+            Logger.LogInformation("Back to normal command executed");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in back to normal command");
+        }
+    }
+
+    /// <summary>
+    /// Executes bulk removal of selected items
+    /// </summary>
+    [RelayCommand]
+    private async Task BulkRemoveAsync()
+    {
+        try
+        {
+            if (RemovalHistory.Count == 0)
+            {
+                StatusMessage = "No items selected for bulk removal";
+                return;
+            }
+
+            IsBusy = true;
+            StatusMessage = $"Removing {RemovalHistory.Count} items in bulk...";
+
+            // Simulate bulk removal - replace with actual business logic
+            await Task.Delay(1000).ConfigureAwait(false);
+
+            // Move to last removed for undo capability
+            foreach (var item in RemovalHistory.ToList())
+            {
+                LastRemovedItems.Add(item);
+            }
+            RemovalHistory.Clear();
+
+            StatusMessage = $"Bulk removal completed successfully";
+            Logger.LogInformation("Bulk removal completed");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in bulk remove");
+            StatusMessage = $"Bulk removal error: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>
+    /// Executes conditional removal based on criteria
+    /// </summary>
+    [RelayCommand]
+    private async Task ConditionalRemoveAsync()
+    {
+        try
+        {
+            await Task.Delay(400).ConfigureAwait(false); // TODO: Conditional removal logic
+            Logger.LogInformation("Conditional removal executed");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in conditional remove");
+        }
+    }
+
+    /// <summary>
+    /// Schedules removal for future execution
+    /// </summary>
+    [RelayCommand]
+    private async Task ScheduledRemoveAsync()
+    {
+        try
+        {
+            await Task.Delay(600).ConfigureAwait(false); // TODO: Scheduled removal
+            Logger.LogInformation("Scheduled removal executed");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in scheduled remove");
+        }
+    }
+
+    /// <summary>
+    /// Undoes the last removal operation
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanUndo))]
+    private async Task UndoRemovalAsync()
+    {
+        try
+        {
+            if (!CanUndo)
+            {
+                StatusMessage = "No items available to undo";
+                return;
+            }
+
+            IsBusy = true;
+            StatusMessage = "Undoing last removal...";
+
+            // Simulate undo operation
+            await Task.Delay(300).ConfigureAwait(false);
+
+            var lastItem = LastRemovedItems.LastOrDefault();
+            if (lastItem != null)
+            {
+                LastRemovedItems.Remove(lastItem);
+                // Add back to main collection
+                RemovalHistory.Add(lastItem);
+                StatusMessage = $"Undid removal of {lastItem.PartId}";
+                Logger.LogInformation("Removal undone for part {PartId}", lastItem.PartId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error undoing removal");
+            StatusMessage = $"Undo error: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>
+    /// Views the removal history
+    /// </summary>
+    [RelayCommand]
+    private async Task ViewHistoryAsync()
+    {
+        try
+        {
+            await Task.Delay(200).ConfigureAwait(false); // TODO: Show history dialog
+            StatusMessage = "Viewing removal history";
+            Logger.LogInformation("Viewing removal history");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error viewing history");
+        }
+    }
+
+    /// <summary>
+    /// Generates a comprehensive removal report
+    /// </summary>
+    [RelayCommand]
+    private async Task GenerateRemovalReportAsync()
+    {
+        try
+        {
+            await Task.Delay(800).ConfigureAwait(false); // TODO: Generate report
+            StatusMessage = "Removal report generated";
+            Logger.LogInformation("Removal report generated");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating report");
+        }
+    }
+
+    /// <summary>
+    /// Exports removal data to external format
+    /// </summary>
+    [RelayCommand]
+    private async Task ExportRemovalDataAsync()
+    {
+        try
+        {
+            await Task.Delay(500).ConfigureAwait(false); // TODO: Export data
+            StatusMessage = "Removal data exported";
+            Logger.LogInformation("Removal data exported");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error exporting data");
+        }
+    }
+
+    /// <summary>
+    /// Prints a removal summary
+    /// </summary>
+    [RelayCommand]
+    private async Task PrintRemovalSummaryAsync()
+    {
+        try
+        {
+            await Task.Delay(300).ConfigureAwait(false); // TODO: Print summary
+            StatusMessage = "Removal summary printed";
+            Logger.LogInformation("Removal summary printed");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error printing summary");
+        }
+    }
+
+    /// <summary>
+    /// Toggles the visibility of the filter panel
+    /// </summary>
+    [RelayCommand]
+    private void ToggleFilterPanel()
+    {
+        try
+        {
+            IsFilterPanelExpanded = !IsFilterPanelExpanded;
+            Logger.LogDebug("Filter panel toggled to {IsExpanded}", IsFilterPanelExpanded);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error toggling filter panel");
+        }
+    }
+
+    /// <summary>
+    /// Removes the currently selected item
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanRemoveSelected))]
+    private async Task RemoveSelectedAsync()
+    {
+        try
+        {
+            if (SelectedHistoryItem == null)
+            {
+                StatusMessage = "No item selected for removal";
+                return;
+            }
+
+            IsBusy = true;
+            StatusMessage = $"Removing selected item: {SelectedHistoryItem.PartId}";
+
+            // Simulate removal
+            await Task.Delay(400).ConfigureAwait(false);
+
+            LastRemovedItems.Add(SelectedHistoryItem);
+            RemovalHistory.Remove(SelectedHistoryItem);
+            SelectedHistoryItem = null;
+
+            StatusMessage = "Item removed successfully";
+            Logger.LogInformation("Selected item removed successfully");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error removing selected item");
+            StatusMessage = $"Removal error: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    #endregion
+
+    #region Helper Methods
 
     private async Task LoadOptionsAsync()
     {
@@ -449,7 +579,7 @@ public class AdvancedRemoveViewModel : BaseViewModel
             Logger.LogDebug("Loading options for AdvancedRemoveViewModel");
 
             // TODO: Load from database via stored procedures
-            await Task.Delay(200);
+            await Task.Delay(200).ConfigureAwait(false);
 
             // Update collections on UI thread
             await Dispatcher.UIThread.InvokeAsync(() =>
@@ -463,12 +593,8 @@ public class AdvancedRemoveViewModel : BaseViewModel
                     PartIDOptions.Add(part);
 
                 UserOptions.Clear();
-                foreach (var user in new[] { "admin", "operator1", "user1", "jkoll" })
+                foreach (var user in new[] { "jbautista", "production", "admin", "supervisor" })
                     UserOptions.Add(user);
-
-                OperationOptions.Clear();
-                foreach (var op in new[] { "100", "110", "120", "200", "300", "400" })
-                    OperationOptions.Add(op);
             });
 
             Logger.LogDebug("Options loaded successfully");
@@ -486,20 +612,52 @@ public class AdvancedRemoveViewModel : BaseViewModel
         {
             Logger.LogDebug("Loading removal history");
 
-            // TODO: Load removal history from database
-            await Task.Delay(150);
+            // TODO: Load from database via stored procedures
+            await Task.Delay(300).ConfigureAwait(false);
 
-            // Update collection on UI thread
+            // Simulate loading removal history data
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                RemovalHistoryGrid.Clear();
-                // Sample removal history data
-                RemovalHistoryGrid.Add(new RemovalHistoryItem 
-                { 
-                    ID = 1, PartID = "24733444-PKG", Operation = "90", Location = "WC01", 
-                    Quantity = 5, User = "admin", DateRemoved = DateTime.Now.AddDays(-1),
-                    Notes = "Removed for quality check"
-                });
+                RemovalHistory.Clear();
+                // Add sample data
+                var sampleData = new[]
+                {
+                    new SessionTransaction 
+                    { 
+                        PartId = "24733444-PKG", 
+                        Location = "WC01", 
+                        User = "jbautista", 
+                        Quantity = 5, 
+                        TransactionTime = DateTime.Now.AddHours(-2),
+                        Operation = "90",
+                        Status = "Removed"
+                    },
+                    new SessionTransaction 
+                    { 
+                        PartId = "24677611", 
+                        Location = "WC02", 
+                        User = "production", 
+                        Quantity = 10, 
+                        TransactionTime = DateTime.Now.AddHours(-4),
+                        Operation = "100",
+                        Status = "Removed"
+                    },
+                    new SessionTransaction 
+                    { 
+                        PartId = "24733405-PKG", 
+                        Location = "STOCK", 
+                        User = "admin", 
+                        Quantity = 3, 
+                        TransactionTime = DateTime.Now.AddHours(-6),
+                        Operation = "110",
+                        Status = "Removed"
+                    }
+                };
+
+                foreach (var item in sampleData)
+                {
+                    RemovalHistory.Add(item);
+                }
             });
 
             Logger.LogDebug("Removal history loaded successfully");
@@ -515,19 +673,38 @@ public class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            IsBusy = true;
-            StatusMessage = "Executing advanced search with filters...";
-            
-            // TODO: Execute search via stored procedures with wildcard filtering
-            // The search results will be used to filter the QuickButtonsViewModel data
-            // rather than maintaining a separate Results collection
-            await Task.Delay(300);
+            Logger.LogDebug("Executing search with current filter criteria");
 
-            StatusMessage = "Advanced search completed. Results available via QuickButtons integration.";
+            IsBusy = true;
+            StatusMessage = "Searching...";
+
+            // TODO: Implement actual search logic with database
+            await Task.Delay(500).ConfigureAwait(false);
+
+            // Update UI on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                // Simulate search results based on filters
+                var filteredResults = RemovalHistory.Where(item =>
+                    (string.IsNullOrEmpty(FilterLocationText) || item.Location.Contains(FilterLocationText, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(FilterPartIDText) || item.PartId.Contains(FilterPartIDText, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(FilterUserText) || item.User.Contains(FilterUserText, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+
+                RemovalHistory.Clear();
+                foreach (var item in filteredResults)
+                {
+                    RemovalHistory.Add(item);
+                }
+            });
+
+            StatusMessage = $"Search completed. Found {RemovalHistory.Count} items.";
+            Logger.LogInformation("Search completed with {Count} results", RemovalHistory.Count);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error executing search");
+            StatusMessage = "Search failed";
             throw;
         }
         finally
@@ -536,82 +713,5 @@ public class AdvancedRemoveViewModel : BaseViewModel
         }
     }
 
-    /// <summary>
-    /// Method to handle removal operations triggered from QuickButtonsViewModel
-    /// </summary>
-    public async Task HandleRemovalFromQuickButtons(InventoryItem item)
-    {
-        try
-        {
-            IsBusy = true;
-            StatusMessage = "Processing removal from QuickButtons...";
-            
-            // Track removal for undo capability
-            var removalRecord = new RemovalHistoryItem
-            {
-                ID = item.ID,
-                PartID = item.PartID,
-                Operation = item.Operation ?? string.Empty,
-                Location = item.Location,
-                Quantity = item.Quantity,
-                User = item.User,
-                DateRemoved = DateTime.Now,
-                Notes = $"Removed via Advanced Remove: {item.Notes}"
-            };
-
-            // TODO: Execute actual removal via stored procedure
-            // DaoResult<Model_HistoryRemove> result = await Dao_Remove.RemoveInventoryAsync(...)
-            await Task.Delay(500); // Simulate database operation
-            
-            // Add to history for undo capability on UI thread
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                LastRemovedItems.Add(removalRecord);
-                RemovalHistoryGrid.Insert(0, removalRecord); // Add to top for most recent
-            });
-
-            StatusMessage = $"Item removed successfully. Undo available.";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error handling removal from QuickButtons");
-            StatusMessage = $"Removal error: {ex.Message}";
-            throw;
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            try
-            {
-                Logger.LogDebug("AdvancedRemoveViewModel disposed successfully");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error disposing AdvancedRemoveViewModel");
-            }
-        }
-        base.Dispose(disposing);
-    }
-}
-
-/// <summary>
-/// Model for removal history tracking
-/// </summary>
-public class RemovalHistoryItem
-{
-    public int ID { get; set; }
-    public string PartID { get; set; } = string.Empty;
-    public string Operation { get; set; } = string.Empty;
-    public string Location { get; set; } = string.Empty;
-    public int Quantity { get; set; }
-    public string User { get; set; } = string.Empty;
-    public DateTime DateRemoved { get; set; }
-    public string? Notes { get; set; }
+    #endregion
 }

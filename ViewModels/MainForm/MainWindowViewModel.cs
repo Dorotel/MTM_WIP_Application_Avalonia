@@ -40,27 +40,43 @@ public class MainWindowViewModel : BaseViewModel
         _navigationService.Navigated += OnNavigated;
         Logger.LogDebug("Successfully subscribed to NavigationService.Navigated event");
 
-        // Set MainView as the current content - TODO: Get this from DI container
-        Logger.LogDebug("Creating MainView with injected MainViewViewModel");
+        // Set MainView as the current content - defer creation to avoid service locator pattern during startup validation
+        Logger.LogDebug("Deferring MainView creation to avoid service provider dependency during startup validation");
+        // CurrentView will be set after full application startup via navigation or manual assignment
+        
+        Logger.LogDebug("MainWindowViewModel constructor completed successfully");
+    }
+
+    /// <summary>
+    /// Manually initialize the MainView after application startup is complete.
+    /// This avoids the service locator pattern during startup validation.
+    /// </summary>
+    public void InitializeMainView()
+    {
+        if (CurrentView != null)
+        {
+            Logger.LogDebug("MainView already initialized, skipping");
+            return;
+        }
+
+        Logger.LogDebug("Manually initializing MainView after startup");
         try
         {
             var mainViewViewModel = Program.GetService<MainViewViewModel>();
-            Logger.LogDebug("MainViewViewModel resolved successfully, type: {MainViewViewModelType}", mainViewViewModel.GetType().FullName);
+            Logger.LogDebug("MainViewViewModel resolved successfully for manual initialization, type: {MainViewViewModelType}", mainViewViewModel.GetType().FullName);
             
             CurrentView = new MainView
             {
                 DataContext = mainViewViewModel
             };
             
-            Logger.LogInformation("MainView created and set as CurrentView with injected MainViewViewModel");
+            Logger.LogInformation("MainView manually initialized and set as CurrentView");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to create MainView with injected MainViewViewModel");
+            Logger.LogError(ex, "Failed to manually initialize MainView");
             throw;
         }
-        
-        Logger.LogDebug("MainWindowViewModel constructor completed successfully");
     }
 
     private void OnNavigated(object? sender, Services.NavigationEventArgs e)

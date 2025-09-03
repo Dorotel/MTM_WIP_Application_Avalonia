@@ -2,16 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_WIP_Application_Avalonia.Commands;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -19,12 +20,13 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 /// ViewModel for advanced inventory search interface.
 /// Provides comprehensive search capabilities with multiple filter criteria,
 /// pagination, export functionality, and integration with MTM business operations.
-/// Uses standard .NET patterns without ReactiveUI dependencies.
+/// Uses MVVM Community Toolkit for modern .NET patterns.
 /// </summary>
-public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
+public partial class SearchInventoryViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
+    private readonly ILogger<SearchInventoryViewModel> _logger;
 
     #region Observable Collections
 
@@ -52,191 +54,74 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
 
     #region Search Filter Properties
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteSearchCommand))]
+    [StringLength(50, ErrorMessage = "Part ID cannot exceed 50 characters")]
     private string _partIdFilter = string.Empty;
-    /// <summary>
-    /// Part ID filter for search criteria
-    /// </summary>
-    public string PartIdFilter
-    {
-        get => _partIdFilter;
-        set => SetProperty(ref _partIdFilter, value);
-    }
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteSearchCommand))]
+    [StringLength(50, ErrorMessage = "Operation cannot exceed 50 characters")]
     private string _operationFilter = string.Empty;
-    /// <summary>
-    /// Operation filter for search criteria
-    /// </summary>
-    public string OperationFilter
-    {
-        get => _operationFilter;
-        set => SetProperty(ref _operationFilter, value);
-    }
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteSearchCommand))]
+    [StringLength(50, ErrorMessage = "Location cannot exceed 50 characters")]
     private string _locationFilter = string.Empty;
-    /// <summary>
-    /// Location filter for search criteria
-    /// </summary>
-    public string LocationFilter
-    {
-        get => _locationFilter;
-        set => SetProperty(ref _locationFilter, value);
-    }
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteSearchCommand))]
+    [StringLength(50, ErrorMessage = "User cannot exceed 50 characters")]
     private string _userFilter = string.Empty;
-    /// <summary>
-    /// User filter for search criteria
-    /// </summary>
-    public string UserFilter
-    {
-        get => _userFilter;
-        set => SetProperty(ref _userFilter, value);
-    }
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteSearchCommand))]
     private DateTime? _dateFromFilter;
-    /// <summary>
-    /// Start date filter for search criteria
-    /// </summary>
-    public DateTime? DateFromFilter
-    {
-        get => _dateFromFilter;
-        set => SetProperty(ref _dateFromFilter, value);
-    }
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteSearchCommand))]
     private DateTime? _dateToFilter;
-    /// <summary>
-    /// End date filter for search criteria
-    /// </summary>
-    public DateTime? DateToFilter
-    {
-        get => _dateToFilter;
-        set => SetProperty(ref _dateToFilter, value);
-    }
 
     #endregion
 
     #region Pagination Properties
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NavigateToFirstPageCommand), nameof(NavigateToPreviousPageCommand))]
+    [Range(1, int.MaxValue, ErrorMessage = "Current page must be 1 or greater")]
     private int _currentPage = 1;
-    /// <summary>
-    /// Current page number for pagination
-    /// </summary>
-    public int CurrentPage
-    {
-        get => _currentPage;
-        set => SetProperty(ref _currentPage, value);
-    }
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NavigateToFirstPageCommand), nameof(NavigateToPreviousPageCommand), nameof(NavigateToNextPageCommand), nameof(NavigateToLastPageCommand))]
+    [Range(1, int.MaxValue, ErrorMessage = "Total pages must be 1 or greater")]
     private int _totalPages = 1;
-    /// <summary>
-    /// Total number of pages available
-    /// </summary>
-    public int TotalPages
-    {
-        get => _totalPages;
-        set => SetProperty(ref _totalPages, value);
-    }
 
+    [ObservableProperty]
+    [Range(0, int.MaxValue, ErrorMessage = "Total results must be 0 or greater")]
     private int _totalResults = 0;
-    /// <summary>
-    /// Total number of search results
-    /// </summary>
-    public int TotalResults
-    {
-        get => _totalResults;
-        set => SetProperty(ref _totalResults, value);
-    }
 
+    [ObservableProperty]
+    [Range(1, 1000, ErrorMessage = "Results per page must be between 1 and 1000")]
     private int _resultsPerPage = 50;
-    /// <summary>
-    /// Number of results to display per page
-    /// </summary>
-    public int ResultsPerPage
-    {
-        get => _resultsPerPage;
-        set => SetProperty(ref _resultsPerPage, value);
-    }
 
     #endregion
 
     #region Selection Properties
 
+    [ObservableProperty]
     private InventoryItem? _selectedResult;
-    /// <summary>
-    /// Currently selected search result
-    /// </summary>
-    public InventoryItem? SelectedResult
-    {
-        get => _selectedResult;
-        set => SetProperty(ref _selectedResult, value);
-    }
 
     #endregion
 
     #region Status Properties
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteSearchCommand))]
     private bool _isSearching = false;
-    /// <summary>
-    /// Indicates if a search operation is in progress
-    /// </summary>
-    public bool IsSearching
-    {
-        get => _isSearching;
-        set => SetProperty(ref _isSearching, value);
-    }
 
+    [ObservableProperty]
+    [StringLength(500, ErrorMessage = "Status message cannot exceed 500 characters")]
     private string _statusMessage = "Ready to search";
-    /// <summary>
-    /// Status message for user feedback
-    /// </summary>
-    public string StatusMessage
-    {
-        get => _statusMessage;
-        set => SetProperty(ref _statusMessage, value);
-    }
-
-    #endregion
-
-    #region Commands
-
-    /// <summary>
-    /// Command to execute search with current filters
-    /// </summary>
-    public ICommand SearchCommand { get; private set; }
-
-    /// <summary>
-    /// Command to clear all search filters
-    /// </summary>
-    public ICommand ClearFiltersCommand { get; private set; }
-
-    /// <summary>
-    /// Command to export search results
-    /// </summary>
-    public ICommand ExportCommand { get; private set; }
-
-    /// <summary>
-    /// Command to refresh master data
-    /// </summary>
-    public ICommand RefreshDataCommand { get; private set; }
-
-    /// <summary>
-    /// Command to navigate to first page
-    /// </summary>
-    public ICommand FirstPageCommand { get; private set; }
-
-    /// <summary>
-    /// Command to navigate to previous page
-    /// </summary>
-    public ICommand PreviousPageCommand { get; private set; }
-
-    /// <summary>
-    /// Command to navigate to next page
-    /// </summary>
-    public ICommand NextPageCommand { get; private set; }
-
-    /// <summary>
-    /// Command to navigate to last page
-    /// </summary>
-    public ICommand LastPageCommand { get; private set; }
 
     #endregion
 
@@ -283,50 +168,23 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        Logger.LogInformation("SearchInventoryViewModel initialized with dependency injection");
+        _logger.LogInformation("SearchInventoryViewModel initialized with dependency injection");
 
-        InitializeCommands();
         _ = LoadMasterDataAsync(); // Load dropdown data from database
     }
 
     #endregion
 
-    #region Command Initialization
 
-    /// <summary>
-    /// Initializes all commands with their respective implementations
-    /// </summary>
-    private void InitializeCommands()
-    {
-        // Search command
-        SearchCommand = new AsyncCommand(ExecuteSearchAsync, () => CanSearch);
-
-        // Clear filters command
-        ClearFiltersCommand = new RelayCommand(ExecuteClearFilters);
-
-        // Export command
-        ExportCommand = new AsyncCommand(ExecuteExportAsync, () => CanExport);
-
-        // Refresh data command
-        RefreshDataCommand = new AsyncCommand(LoadMasterDataAsync);
-
-        // Pagination commands
-        FirstPageCommand = new AsyncCommand(NavigateToFirstPageAsync, () => CanNavigatePrevious);
-        PreviousPageCommand = new AsyncCommand(NavigateToPreviousPageAsync, () => CanNavigatePrevious);
-        NextPageCommand = new AsyncCommand(NavigateToNextPageAsync, () => CanNavigateNext);
-        LastPageCommand = new AsyncCommand(NavigateToLastPageAsync, () => CanNavigateNext);
-
-        Logger.LogInformation("Search commands initialized");
-    }
-
-    #endregion
 
     #region Data Loading
 
     /// <summary>
     /// Loads master data for dropdown controls
     /// </summary>
+    [RelayCommand]
     private async Task LoadMasterDataAsync()
     {
         try
@@ -424,6 +282,7 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
     /// <summary>
     /// Executes search with current filter criteria
     /// </summary>
+    [RelayCommand(CanExecute = nameof(CanSearch))]
     private async Task ExecuteSearchAsync()
     {
         try
@@ -552,6 +411,7 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
     /// <summary>
     /// Clears all search filters
     /// </summary>
+    [RelayCommand]
     private void ExecuteClearFilters()
     {
         PartIdFilter = string.Empty;
@@ -579,6 +439,7 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
     /// <summary>
     /// Exports search results to file
     /// </summary>
+    [RelayCommand(CanExecute = nameof(CanExport))]
     private async Task ExecuteExportAsync()
     {
         try
@@ -610,43 +471,47 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
     /// <summary>
     /// Navigates to the first page
     /// </summary>
+    [RelayCommand(CanExecute = nameof(CanNavigatePrevious))]
     private async Task NavigateToFirstPageAsync()
     {
         CurrentPage = 1;
-        await RefreshCurrentPageAsync();
+        await RefreshCurrentPageAsync().ConfigureAwait(false);
     }
 
     /// <summary>
     /// Navigates to the previous page
     /// </summary>
+    [RelayCommand(CanExecute = nameof(CanNavigatePrevious))]
     private async Task NavigateToPreviousPageAsync()
     {
         if (CurrentPage > 1)
         {
             CurrentPage--;
-            await RefreshCurrentPageAsync();
+            await RefreshCurrentPageAsync().ConfigureAwait(false);
         }
     }
 
     /// <summary>
     /// Navigates to the next page
     /// </summary>
+    [RelayCommand(CanExecute = nameof(CanNavigateNext))]
     private async Task NavigateToNextPageAsync()
     {
         if (CurrentPage < TotalPages)
         {
             CurrentPage++;
-            await RefreshCurrentPageAsync();
+            await RefreshCurrentPageAsync().ConfigureAwait(false);
         }
     }
 
     /// <summary>
     /// Navigates to the last page
     /// </summary>
+    [RelayCommand(CanExecute = nameof(CanNavigateNext))]
     private async Task NavigateToLastPageAsync()
     {
         CurrentPage = TotalPages;
-        await RefreshCurrentPageAsync();
+        await RefreshCurrentPageAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -660,38 +525,4 @@ public class SearchInventoryViewModel : BaseViewModel, INotifyPropertyChanged
 
     #endregion
 
-    #region Property Change Notifications
-
-    /// <summary>
-    /// Raises property changed events for computed properties
-    /// </summary>
-    protected override void OnPropertyChanged(string propertyName)
-    {
-        base.OnPropertyChanged(propertyName);
-
-        // Update computed properties when relevant properties change
-        switch (propertyName)
-        {
-            case nameof(IsSearching):
-            case nameof(PartIdFilter):
-            case nameof(OperationFilter):
-            case nameof(LocationFilter):
-            case nameof(UserFilter):
-            case nameof(DateFromFilter):
-            case nameof(DateToFilter):
-                OnPropertyChanged(nameof(CanSearch));
-                OnPropertyChanged(nameof(HasSearchCriteria));
-                break;
-            case nameof(SearchResults):
-                OnPropertyChanged(nameof(CanExport));
-                break;
-            case nameof(CurrentPage):
-            case nameof(TotalPages):
-                OnPropertyChanged(nameof(CanNavigatePrevious));
-                OnPropertyChanged(nameof(CanNavigateNext));
-                break;
-        }
-    }
-
-    #endregion
 }

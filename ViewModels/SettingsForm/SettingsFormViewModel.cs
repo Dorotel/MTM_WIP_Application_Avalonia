@@ -315,7 +315,7 @@ public class SettingsFormViewModel : BaseViewModel
             Id = "delete-user",
             DisplayName = "Delete User",
             Icon = "🗑️",
-            PanelType = typeof(DeleteUserViewModel),
+            PanelType = typeof(RemoveUserViewModel),
             Parent = userManagement
         });
         

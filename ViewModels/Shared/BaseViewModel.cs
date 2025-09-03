@@ -1,16 +1,19 @@
 using System;
-using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
-public abstract class BaseViewModel : INotifyPropertyChanged, IDisposable
+/// <summary>
+/// Base ViewModel using MVVM Community Toolkit's ObservableValidator for property change notifications and validation
+/// Provides design-time safe logging, validation support, and proper disposal patterns
+/// </summary>
+public abstract partial class BaseViewModel : ObservableValidator, IDisposable
 {
     protected readonly ILogger Logger;
     private bool _isDisposed = false;
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     // Design-time safe constructor
     protected BaseViewModel() : this(CreateDesignTimeLogger())
@@ -42,47 +45,39 @@ public abstract class BaseViewModel : INotifyPropertyChanged, IDisposable
     }
 
     /// <summary>
-    /// Sets a property value and raises PropertyChanged if the value has changed
-    /// Replaces ReactiveUI's RaiseAndSetIfChanged with standard INotifyPropertyChanged pattern
+    /// Enhanced SetProperty with logging - uses MVVM Community Toolkit's SetProperty internally
     /// </summary>
-    protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    protected bool SetPropertyWithLogging<T>(ref T field, T newValue, string? propertyName = null)
     {
-        if (Equals(field, value)) return false;
+        if (EqualityComparer<T>.Default.Equals(field, newValue)) return false;
         
         var oldValue = field;
-        field = value;
+        var result = SetProperty(ref field, newValue, propertyName);
         
-        Logger.LogDebug("Property changed: {PropertyName} from '{OldValue}' to '{NewValue}' in {ViewModelType}", 
-            propertyName, oldValue, value, GetType().Name);
+        if (result)
+        {
+            Logger.LogDebug("Property changed: {PropertyName} from '{OldValue}' to '{NewValue}' in {ViewModelType}", 
+                propertyName, oldValue, newValue, GetType().Name);
+        }
             
-        OnPropertyChanged(propertyName);
-        return true;
+        return result;
     }
 
     /// <summary>
-    /// Raises the PropertyChanged event
+    /// Override OnPropertyChanged to add logging
     /// </summary>
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         try
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            Logger.LogTrace("PropertyChanged event raised for: {PropertyName} in {ViewModelType}", propertyName, GetType().Name);
+            base.OnPropertyChanged(e);
+            Logger.LogTrace("PropertyChanged event raised for: {PropertyName} in {ViewModelType}", e.PropertyName, GetType().Name);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error raising PropertyChanged event for property: {PropertyName} in {ViewModelType}", propertyName, GetType().Name);
+            Logger.LogError(ex, "Error raising PropertyChanged event for property: {PropertyName} in {ViewModelType}", e.PropertyName, GetType().Name);
             throw;
         }
-    }
-
-    /// <summary>
-    /// Raises PropertyChanged for a specific property name
-    /// Replaces ReactiveUI's RaisePropertyChanged
-    /// </summary>
-    protected void RaisePropertyChanged(string propertyName)
-    {
-        OnPropertyChanged(propertyName);
     }
 
     protected virtual void Dispose(bool disposing)
@@ -92,6 +87,7 @@ public abstract class BaseViewModel : INotifyPropertyChanged, IDisposable
             if (disposing)
             {
                 // Dispose managed resources
+                Logger.LogDebug("Disposing {ViewModelType}", GetType().Name);
             }
             _isDisposed = true;
         }

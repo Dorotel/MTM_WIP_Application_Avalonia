@@ -6,15 +6,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class QuickButtonsViewModel : BaseViewModel
+/// <summary>
+/// QuickButtonsViewModel manages the quick action buttons that provide shortcuts
+/// to frequently used inventory operations. Uses MVVM Community Toolkit for 
+/// property and command management with comprehensive database integration.
+/// </summary>
+public partial class QuickButtonsViewModel : BaseViewModel
 {
     private readonly IQuickButtonsService _quickButtonsService;
     private readonly IProgressService _progressService;
@@ -24,31 +30,28 @@ public class QuickButtonsViewModel : BaseViewModel
     // Observable collections
     public ObservableCollection<QuickButtonItemViewModel> QuickButtons { get; } = new();
 
-    // Computed property to count non-empty quick buttons
-    public int NonEmptyQuickButtonsCount => QuickButtons.Count(button => !button.IsEmpty);
-
-    // Computed property to get non-empty quick buttons for display
-    public IEnumerable<QuickButtonItemViewModel> NonEmptyQuickButtons => 
-        QuickButtons.Where(button => !button.IsEmpty);
-
     // Event to notify the parent about quick action execution
     public event EventHandler<QuickActionExecutedEventArgs>? QuickActionExecuted;
 
-    // Commands - Now all accessible via context menu only
-    public ICommand RefreshButtonsCommand { get; }
-    public ICommand ExecuteQuickActionCommand { get; }
-    public ICommand RemoveButtonCommand { get; }
-    public ICommand ClearAllButtonsCommand { get; }
-    public ICommand ManageButtonsCommand { get; }
-    public ICommand ResetOrderCommand { get; }
-    public ICommand ModifyModeCommand { get; }
-    
-    // Manual reordering commands
-    public ICommand MoveButtonUpCommand { get; }
-    public ICommand MoveButtonDownCommand { get; }
+    /// <summary>
+    /// Gets the count of non-empty quick buttons for display
+    /// </summary>
+    public int NonEmptyQuickButtonsCount => QuickButtons.Count(button => !button.IsEmpty);
 
-    // Command validation properties for UI binding
+    /// <summary>
+    /// Gets the non-empty quick buttons for display
+    /// </summary>
+    public IEnumerable<QuickButtonItemViewModel> NonEmptyQuickButtons => 
+        QuickButtons.Where(button => !button.IsEmpty);
+
+    /// <summary>
+    /// Gets whether any button can move up
+    /// </summary>
     public bool CanAnyButtonMoveUp => QuickButtons.Any(CanMoveButtonUp);
+
+    /// <summary>
+    /// Gets whether any button can move down
+    /// </summary>
     public bool CanAnyButtonMoveDown => QuickButtons.Any(CanMoveButtonDown);
 
     public QuickButtonsViewModel(
@@ -76,71 +79,6 @@ public class QuickButtonsViewModel : BaseViewModel
 
         // Subscribe to service events
         _quickButtonsService.QuickButtonsChanged += OnQuickButtonsChanged;
-
-        // Initialize commands
-        RefreshButtonsCommand = new AsyncCommand(async () =>
-        {
-            Logger.LogInformation("🔧 RefreshButtonsCommand executed");
-            await LoadLast10TransactionsAsync();
-        });
-
-        ExecuteQuickActionCommand = new RelayCommand<QuickButtonItemViewModel>(async (button) =>
-        {
-            if (button != null)
-            {
-                await ExecuteQuickActionAsync(button);
-            }
-        });
-
-        RemoveButtonCommand = new RelayCommand<QuickButtonItemViewModel>(async (button) =>
-        {
-            if (button != null)
-            {
-                await RemoveButtonAsync(button);
-            }
-        });
-
-        ClearAllButtonsCommand = new AsyncCommand(async () =>
-        {
-            await ClearAllButtonsAsync();
-        });
-
-        ResetOrderCommand = new AsyncCommand(async () =>
-        {
-            await ResetButtonOrderAsync();
-        });
-
-        // Manual reordering commands
-        MoveButtonUpCommand = new RelayCommand<QuickButtonItemViewModel>((button) =>
-        {
-            if (button != null)
-            {
-                MoveButtonUp(button);
-            }
-        });
-
-        MoveButtonDownCommand = new RelayCommand<QuickButtonItemViewModel>((button) =>
-        {
-            if (button != null)
-            {
-                MoveButtonDown(button);
-            }
-        });
-
-        // Initialize missing commands
-        ModifyModeCommand = new RelayCommand(() =>
-        {
-            Logger.LogInformation("ModifyModeCommand executed - Toggle modify mode for quick buttons");
-            // Toggle modify mode for quick buttons
-            // This could enable/disable drag-and-drop or show/hide management UI
-        });
-
-        ManageButtonsCommand = new RelayCommand(() =>
-        {
-            Logger.LogInformation("ManageButtonsCommand executed - Open quick button management interface");
-            // Open a management interface for quick buttons
-            // This could navigate to a dedicated management view
-        });
 
         // Handle collection changes to update count
         QuickButtons.CollectionChanged += (sender, e) =>
@@ -184,6 +122,108 @@ public class QuickButtonsViewModel : BaseViewModel
         System.Diagnostics.Debug.WriteLine("🔧🔧🔧 QuickButtonsViewModel constructor COMPLETED");
         Logger.LogInformation("🔧 QuickButtonsViewModel constructor completed");
     }
+
+    #region RelayCommand Methods
+
+    /// <summary>
+    /// Refreshes the quick buttons by loading the last 10 transactions
+    /// </summary>
+    [RelayCommand]
+    private async Task RefreshButtons()
+    {
+        Logger.LogInformation("🔧 RefreshButtonsCommand executed");
+        await LoadLast10TransactionsAsync();
+    }
+
+    /// <summary>
+    /// Executes a quick action for the specified button
+    /// </summary>
+    [RelayCommand]
+    private async Task ExecuteQuickAction(QuickButtonItemViewModel? button)
+    {
+        if (button != null)
+        {
+            await ExecuteQuickActionAsync(button);
+        }
+    }
+
+    /// <summary>
+    /// Removes the specified quick button
+    /// </summary>
+    [RelayCommand]
+    private async Task RemoveButton(QuickButtonItemViewModel? button)
+    {
+        if (button != null)
+        {
+            await RemoveButtonAsync(button);
+        }
+    }
+
+    /// <summary>
+    /// Clears all quick buttons
+    /// </summary>
+    [RelayCommand]
+    private async Task ClearAllButtons()
+    {
+        await ClearAllButtonsAsync();
+    }
+
+    /// <summary>
+    /// Resets the button order to the last 10 transactions
+    /// </summary>
+    [RelayCommand]
+    private async Task ResetOrder()
+    {
+        await ResetButtonOrderAsync();
+    }
+
+    /// <summary>
+    /// Moves a button up one position
+    /// </summary>
+    [RelayCommand]
+    private void MoveButtonUp(QuickButtonItemViewModel? button)
+    {
+        if (button != null)
+        {
+            MoveButtonUpImplementation(button);
+        }
+    }
+
+    /// <summary>
+    /// Moves a button down one position
+    /// </summary>
+    [RelayCommand]
+    private void MoveButtonDown(QuickButtonItemViewModel? button)
+    {
+        if (button != null)
+        {
+            MoveButtonDownImplementation(button);
+        }
+    }
+
+    /// <summary>
+    /// Toggles modify mode for quick buttons
+    /// </summary>
+    [RelayCommand]
+    private void ModifyMode()
+    {
+        Logger.LogInformation("ModifyModeCommand executed - Toggle modify mode for quick buttons");
+        // Toggle modify mode for quick buttons
+        // This could enable/disable drag-and-drop or show/hide management UI
+    }
+
+    /// <summary>
+    /// Opens the quick button management interface
+    /// </summary>
+    [RelayCommand]
+    private void ManageButtons()
+    {
+        Logger.LogInformation("ManageButtonsCommand executed - Open quick button management interface");
+        // Open a management interface for quick buttons
+        // This could navigate to a dedicated management view
+    }
+
+    #endregion
 
     private async Task LoadLast10TransactionsAsync()
     {
@@ -726,7 +766,7 @@ public class QuickButtonsViewModel : BaseViewModel
     /// Moves a button up one position in the list and persists to server
     /// Prevents moving past position 1 or beyond the last non-empty button
     /// </summary>
-    private async void MoveButtonUp(QuickButtonItemViewModel button)
+    private async void MoveButtonUpImplementation(QuickButtonItemViewModel button)
     {
         var currentIndex = QuickButtons.IndexOf(button);
         
@@ -779,7 +819,7 @@ public class QuickButtonsViewModel : BaseViewModel
     /// Moves a button down one position in the list and persists to server
     /// Prevents moving past the last non-empty button (cannot move into empty slots)
     /// </summary>
-    private async void MoveButtonDown(QuickButtonItemViewModel button)
+    private async void MoveButtonDownImplementation(QuickButtonItemViewModel button)
     {
         var currentIndex = QuickButtons.IndexOf(button);
         
@@ -945,71 +985,69 @@ public class QuickButtonsViewModel : BaseViewModel
     }
 }
 
-public class QuickButtonItemViewModel : BaseViewModel
+/// <summary>
+/// QuickButtonItemViewModel represents a single quick action button
+/// with properties for part information and UI display. Uses MVVM
+/// Community Toolkit for efficient property change notifications.
+/// </summary>
+public partial class QuickButtonItemViewModel : BaseViewModel
 {
+    /// <summary>
+    /// Gets or sets the position of this button (1-based)
+    /// </summary>
+    [ObservableProperty]
     private int _position;
-    public int Position
-    {
-        get => _position;
-        set => SetProperty(ref _position, value);
-    }
 
+    /// <summary>
+    /// Gets or sets the part ID for this quick action
+    /// </summary>
+    [ObservableProperty]
     private string _partId = string.Empty;
-    public string PartId
-    {
-        get => _partId;
-        set => SetProperty(ref _partId, value);
-    }
 
+    /// <summary>
+    /// Gets or sets the operation for this quick action
+    /// </summary>
+    [ObservableProperty]
     private string _operation = string.Empty;
-    public string Operation
-    {
-        get => _operation;
-        set => SetProperty(ref _operation, value);
-    }
 
+    /// <summary>
+    /// Gets or sets the quantity for this quick action
+    /// </summary>
+    [ObservableProperty]
     private int _quantity;
-    public int Quantity
-    {
-        get => _quantity;
-        set => SetProperty(ref _quantity, value);
-    }
 
+    /// <summary>
+    /// Gets or sets the display text shown on the button
+    /// </summary>
+    [ObservableProperty]
     private string _displayText = string.Empty;
-    public string DisplayText
-    {
-        get => _displayText;
-        set => SetProperty(ref _displayText, value);
-    }
 
+    /// <summary>
+    /// Gets or sets the sub-text shown below the main text
+    /// </summary>
+    [ObservableProperty]
     private string _subText = string.Empty;
-    public string SubText
-    {
-        get => _subText;
-        set => SetProperty(ref _subText, value);
-    }
 
+    /// <summary>
+    /// Gets or sets the tooltip text for the button
+    /// </summary>
+    [ObservableProperty]
     private string _toolTipText = string.Empty;
-    public string ToolTipText
-    {
-        get => _toolTipText;
-        set => SetProperty(ref _toolTipText, value);
-    }
 
-    public bool IsEmpty => string.IsNullOrEmpty(PartId) || Operation == "EMPTY";
-    
-    // Properties for move command validation (set by parent ViewModel)
+    /// <summary>
+    /// Gets or sets whether this button can be moved up
+    /// </summary>
+    [ObservableProperty]
     private bool _canMoveUp;
-    public bool CanMoveUp
-    {
-        get => _canMoveUp;
-        set => SetProperty(ref _canMoveUp, value);
-    }
 
+    /// <summary>
+    /// Gets or sets whether this button can be moved down
+    /// </summary>
+    [ObservableProperty]
     private bool _canMoveDown;
-    public bool CanMoveDown
-    {
-        get => _canMoveDown;
-        set => SetProperty(ref _canMoveDown, value);
-    }
+
+    /// <summary>
+    /// Gets whether this button represents an empty slot
+    /// </summary>
+    public bool IsEmpty => string.IsNullOrEmpty(PartId) || Operation == "EMPTY";
 }

@@ -7,7 +7,6 @@
         d:DesignWidth="1200"
         d:DesignHeight="800"
         x:Class="MTM_WIP_Application_Avalonia.MainWindow"
-        x:CompileBindings="True"
         x:DataType="vm:MainWindowViewModel"
         Title="MTM WIP Application"
         Width="1200"

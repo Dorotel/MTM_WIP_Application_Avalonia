@@ -2,109 +2,121 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Commands;
+using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class AddItemViewModel : BaseViewModel
+/// <summary>
+/// ViewModel for adding new inventory items to the MTM system.
+/// Provides functionality for item creation with validation and master data loading.
+/// Uses MVVM Community Toolkit for property change notifications and command handling.
+/// </summary>
+public partial class AddItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
 
-    #region Private Fields
-    private string _partId = string.Empty;
-    private string _location = string.Empty;
-    private string _operation = string.Empty;
-    private int _quantity = 1;
-    private string _itemType = string.Empty;
-    private string _notes = string.Empty;
-    private bool _isLoading = false;
-    private string _statusMessage = string.Empty;
-    private ObservableCollection<string> _availableLocations = new();
-    private ObservableCollection<string> _availableOperations = new();
-    private ObservableCollection<string> _availableItemTypes = new();
+    #region Observable Properties
+
+    /// <summary>
+    /// Gets or sets the part identifier for the new inventory item.
+    /// </summary>
+    [ObservableProperty]
+    [Required(ErrorMessage = "Part ID is required")]
+    [StringLength(50, ErrorMessage = "Part ID cannot exceed 50 characters")]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteAddItemCommand))]
+    private string partId = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the location where the inventory item will be stored.
+    /// </summary>
+    [ObservableProperty]
+    [Required(ErrorMessage = "Location is required")]
+    [StringLength(30, ErrorMessage = "Location cannot exceed 30 characters")]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteAddItemCommand))]
+    private string location = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the operation number for the inventory item workflow.
+    /// </summary>
+    [ObservableProperty]
+    [Required(ErrorMessage = "Operation is required")]
+    [StringLength(10, ErrorMessage = "Operation cannot exceed 10 characters")]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteAddItemCommand))]
+    private string operation = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the quantity of items to add to inventory.
+    /// </summary>
+    [ObservableProperty]
+    [Range(1, 999999, ErrorMessage = "Quantity must be between 1 and 999,999")]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteAddItemCommand))]
+    private int quantity = 1;
+
+    /// <summary>
+    /// Gets or sets the type of inventory item being added.
+    /// </summary>
+    [ObservableProperty]
+    [Required(ErrorMessage = "Item type is required")]
+    [StringLength(20, ErrorMessage = "Item type cannot exceed 20 characters")]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteAddItemCommand))]
+    private string itemType = string.Empty;
+
+    /// <summary>
+    /// Gets or sets optional notes for the inventory item.
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
+    private string notes = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the ViewModel is currently loading data.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteAddItemCommand))]
+    private bool isLoading = false;
+
+    /// <summary>
+    /// Gets or sets the current status message for user feedback.
+    /// </summary>
+    [ObservableProperty]
+    private string statusMessage = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the collection of available locations for selection.
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> availableLocations = new();
+
+    /// <summary>
+    /// Gets or sets the collection of available operations for selection.
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> availableOperations = new();
+
+    /// <summary>
+    /// Gets or sets the collection of available item types for selection.
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> availableItemTypes = new();
+
     #endregion
 
-    #region Public Properties
-    public string PartId
-    {
-        get => _partId;
-        set => SetProperty(ref _partId, value);
-    }
-
-    public string Location
-    {
-        get => _location;
-        set => SetProperty(ref _location, value);
-    }
-
-    public string Operation
-    {
-        get => _operation;
-        set => SetProperty(ref _operation, value);
-    }
-
-    public int Quantity
-    {
-        get => _quantity;
-        set => SetProperty(ref _quantity, value);
-    }
-
-    public string ItemType
-    {
-        get => _itemType;
-        set => SetProperty(ref _itemType, value);
-    }
-
-    public string Notes
-    {
-        get => _notes;
-        set => SetProperty(ref _notes, value);
-    }
-
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => SetProperty(ref _isLoading, value);
-    }
-
-    public string StatusMessage
-    {
-        get => _statusMessage;
-        set => SetProperty(ref _statusMessage, value);
-    }
-
-    public ObservableCollection<string> AvailableLocations
-    {
-        get => _availableLocations;
-        set => SetProperty(ref _availableLocations, value);
-    }
-
-    public ObservableCollection<string> AvailableOperations
-    {
-        get => _availableOperations;
-        set => SetProperty(ref _availableOperations, value);
-    }
-
-    public ObservableCollection<string> AvailableItemTypes
-    {
-        get => _availableItemTypes;
-        set => SetProperty(ref _availableItemTypes, value);
-    }
-    #endregion
-
-    #region Commands
-    public ICommand AddItemCommand { get; private set; }
-    public ICommand ClearFormCommand { get; private set; }
-    public ICommand LoadMasterDataCommand { get; private set; }
-    #endregion
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddItemViewModel"/> class.
+    /// </summary>
+    /// <param name="applicationState">The application state service for managing user context.</param>
+    /// <param name="databaseService">The database service for inventory operations.</param>
+    /// <param name="logger">The logger for this ViewModel.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any required service is null.</exception>
     public AddItemViewModel(
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
@@ -115,19 +127,15 @@ public class AddItemViewModel : BaseViewModel
 
         Logger.LogInformation("AddItemViewModel initialized with dependency injection");
 
-        InitializeCommands();
         _ = LoadMasterDataAsync(); // Load master data on initialization
     }
 
-    private void InitializeCommands()
-    {
-        AddItemCommand = new AsyncCommand(ExecuteAddItemAsync, CanExecuteAddItem);
-        ClearFormCommand = new RelayCommand(ExecuteClearForm);
-        LoadMasterDataCommand = new AsyncCommand(LoadMasterDataAsync);
+    #region Command Methods
 
-        Logger.LogDebug("Commands initialized for AddItemViewModel");
-    }
-
+    /// <summary>
+    /// Determines whether the add item command can be executed.
+    /// </summary>
+    /// <returns>True if all required fields are valid and not loading; otherwise, false.</returns>
     private bool CanExecuteAddItem()
     {
         return !IsLoading && 
@@ -138,6 +146,11 @@ public class AddItemViewModel : BaseViewModel
                Quantity > 0;
     }
 
+    /// <summary>
+    /// Adds a new inventory item to the database with comprehensive validation and error handling.
+    /// </summary>
+    /// <returns>A task representing the asynchronous add operation.</returns>
+    [RelayCommand(CanExecute = nameof(CanExecuteAddItem))]
     private async Task ExecuteAddItemAsync()
     {
         if (IsLoading) return;
@@ -146,13 +159,15 @@ public class AddItemViewModel : BaseViewModel
         {
             IsLoading = true;
             StatusMessage = "Adding inventory item...";
+            
+            using var scope = Logger.BeginScope("AddInventoryItem");
             Logger.LogInformation("Adding inventory item: PartId={PartId}, Location={Location}, Operation={Operation}, Quantity={Quantity}", 
                 PartId, Location, Operation, Quantity);
 
             var currentUser = _applicationState.CurrentUser ?? "System";
             
             var result = await _databaseService.AddInventoryItemAsync(
-                PartId, Location, Operation, Quantity, ItemType, currentUser, Notes);
+                PartId, Location, Operation, Quantity, ItemType, currentUser, Notes).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {
@@ -171,7 +186,7 @@ public class AddItemViewModel : BaseViewModel
                     new Exception(result.Message),
                     "Add Inventory Item",
                     _applicationState.CurrentUser ?? "System",
-                    new Dictionary<string, object> { ["Message"] = result.Message, ["PartId"] = PartId });
+                    new Dictionary<string, object> { ["Message"] = result.Message, ["PartId"] = PartId }).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -183,7 +198,7 @@ public class AddItemViewModel : BaseViewModel
                 ex,
                 "Add Inventory Item",
                 _applicationState.CurrentUser ?? "System",
-                new Dictionary<string, object> { ["PartId"] = PartId, ["Operation"] = "ExecuteAddItemAsync" });
+                new Dictionary<string, object> { ["PartId"] = PartId, ["Operation"] = "ExecuteAddItemAsync" }).ConfigureAwait(false);
         }
         finally
         {
@@ -191,6 +206,10 @@ public class AddItemViewModel : BaseViewModel
         }
     }
 
+    /// <summary>
+    /// Clears all form fields and resets the form to initial state.
+    /// </summary>
+    [RelayCommand]
     private void ExecuteClearForm()
     {
         PartId = string.Empty;
@@ -204,15 +223,22 @@ public class AddItemViewModel : BaseViewModel
         Logger.LogDebug("Form cleared in AddItemViewModel");
     }
 
+    /// <summary>
+    /// Loads master data including available locations, operations, and item types.
+    /// </summary>
+    /// <returns>A task representing the asynchronous load operation.</returns>
+    [RelayCommand]
     private async Task LoadMasterDataAsync()
     {
         try
         {
             IsLoading = true;
+            
+            using var scope = Logger.BeginScope("LoadMasterData");
             Logger.LogDebug("Loading master data for AddItemViewModel");
 
             // Load available item types
-            var itemTypesData = await _databaseService.GetAllItemTypesAsync();
+            var itemTypesData = await _databaseService.GetAllItemTypesAsync().ConfigureAwait(false);
             
             // Update collections on UI thread
             await Dispatcher.UIThread.InvokeAsync(() =>
@@ -229,7 +255,7 @@ public class AddItemViewModel : BaseViewModel
             });
 
             // Load available locations
-            var locationsData = await _databaseService.GetAllLocationsAsync();
+            var locationsData = await _databaseService.GetAllLocationsAsync().ConfigureAwait(false);
             
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -245,7 +271,7 @@ public class AddItemViewModel : BaseViewModel
             });
 
             // Load available operations
-            var operationsData = await _databaseService.GetAllOperationsAsync();
+            var operationsData = await _databaseService.GetAllOperationsAsync().ConfigureAwait(false);
             
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -272,11 +298,13 @@ public class AddItemViewModel : BaseViewModel
                 ex,
                 "Load Master Data",
                 _applicationState.CurrentUser ?? "System",
-                new Dictionary<string, object> { ["Operation"] = "LoadMasterDataAsync" });
+                new Dictionary<string, object> { ["Operation"] = "LoadMasterDataAsync" }).ConfigureAwait(false);
         }
         finally
         {
             IsLoading = false;
         }
     }
+
+    #endregion
 }

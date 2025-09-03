@@ -2,112 +2,117 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class InventoryViewModel : BaseViewModel
+/// <summary>
+/// ViewModel for the main inventory view, providing comprehensive inventory management capabilities.
+/// Supports searching, sorting, pagination, and detailed inventory item operations.
+/// Uses MVVM Community Toolkit for property change notifications and command handling.
+/// </summary>
+public partial class InventoryViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
 
-    #region Private Fields
-    private ObservableCollection<InventoryItem> _inventoryItems = new();
-    private InventoryItem? _selectedItem;
-    private string _searchText = string.Empty;
-    private bool _isLoading = false;
-    private string _statusMessage = string.Empty;
-    private int _totalItems = 0;
-    private int _currentPage = 1;
-    private int _itemsPerPage = 50;
-    private string _sortColumn = "PartId";
-    private bool _sortAscending = true;
-    #endregion
+    #region Observable Properties
 
-    #region Public Properties
-    public ObservableCollection<InventoryItem> InventoryItems
-    {
-        get => _inventoryItems;
-        set => SetProperty(ref _inventoryItems, value);
-    }
+    /// <summary>
+    /// Gets or sets the collection of inventory items currently displayed.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DisplayInfo))]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteNextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteLastPageCommand))]
+    private ObservableCollection<InventoryItem> inventoryItems = new();
 
-    public InventoryItem? SelectedItem
-    {
-        get => _selectedItem;
-        set => SetProperty(ref _selectedItem, value);
-    }
+    /// <summary>
+    /// Gets or sets the currently selected inventory item.
+    /// </summary>
+    [ObservableProperty]
+    private InventoryItem? selectedItem;
 
-    public string SearchText
-    {
-        get => _searchText;
-        set => SetProperty(ref _searchText, value);
-    }
+    /// <summary>
+    /// Gets or sets the search text for filtering inventory items.
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(100, ErrorMessage = "Search text cannot exceed 100 characters")]
+    private string searchText = string.Empty;
 
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => SetProperty(ref _isLoading, value);
-    }
+    /// <summary>
+    /// Gets or sets a value indicating whether the inventory is currently loading.
+    /// </summary>
+    [ObservableProperty]
+    private bool isLoading = false;
 
-    public string StatusMessage
-    {
-        get => _statusMessage;
-        set => SetProperty(ref _statusMessage, value);
-    }
+    /// <summary>
+    /// Gets or sets the current status message for the inventory operations.
+    /// </summary>
+    [ObservableProperty]
+    private string statusMessage = string.Empty;
 
-    public int TotalItems
-    {
-        get => _totalItems;
-        set => SetProperty(ref _totalItems, value);
-    }
+    /// <summary>
+    /// Gets or sets the total number of inventory items matching the current filter.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DisplayInfo))]
+    private int totalItems = 0;
 
-    public int CurrentPage
-    {
-        get => _currentPage;
-        set => SetProperty(ref _currentPage, value);
-    }
+    /// <summary>
+    /// Gets or sets the current page number for pagination.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DisplayInfo))]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteFirstPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExecutePreviousPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteNextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExecuteLastPageCommand))]
+    [Range(1, int.MaxValue, ErrorMessage = "Current page must be greater than 0")]
+    private int currentPage = 1;
 
-    public int ItemsPerPage
-    {
-        get => _itemsPerPage;
-        set => SetProperty(ref _itemsPerPage, value);
-    }
+    /// <summary>
+    /// Gets or sets the number of items to display per page.
+    /// </summary>
+    [ObservableProperty]
+    [Range(10, 200, ErrorMessage = "Items per page must be between 10 and 200")]
+    private int itemsPerPage = 50;
 
-    public string SortColumn
-    {
-        get => _sortColumn;
-        set => SetProperty(ref _sortColumn, value);
-    }
+    /// <summary>
+    /// Gets or sets the column name used for sorting.
+    /// </summary>
+    [ObservableProperty]
+    private string sortColumn = "PartId";
 
-    public bool SortAscending
-    {
-        get => _sortAscending;
-        set => SetProperty(ref _sortAscending, value);
-    }
+    /// <summary>
+    /// Gets or sets a value indicating whether sorting is in ascending order.
+    /// </summary>
+    [ObservableProperty]
+    private bool sortAscending = true;
 
+    /// <summary>
+    /// Gets display information about the current inventory view including pagination details.
+    /// </summary>
     public string DisplayInfo => $"Showing {InventoryItems.Count} of {TotalItems} items (Page {CurrentPage})";
+
     #endregion
 
-    #region Commands
-    public ICommand LoadInventoryCommand { get; private set; } = default!;
-    public ICommand SearchCommand { get; private set; } = default!;
-    public ICommand RefreshCommand { get; private set; } = default!;
-    public ICommand SortCommand { get; private set; } = default!;
-    public ICommand FirstPageCommand { get; private set; } = default!;
-    public ICommand PreviousPageCommand { get; private set; } = default!;
-    public ICommand NextPageCommand { get; private set; } = default!;
-    public ICommand LastPageCommand { get; private set; } = default!;
-    public ICommand ViewDetailsCommand { get; private set; } = default!;
-    #endregion
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InventoryViewModel"/> class.
+    /// </summary>
+    /// <param name="applicationState">The application state service for managing user context.</param>
+    /// <param name="databaseService">The database service for inventory operations.</param>
+    /// <param name="logger">The logger for this ViewModel.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any required service is null.</exception>
     public InventoryViewModel(
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
@@ -118,25 +123,16 @@ public class InventoryViewModel : BaseViewModel
 
         Logger.LogInformation("InventoryViewModel initialized with dependency injection");
 
-        InitializeCommands();
         _ = LoadInventoryAsync(); // Load initial data
     }
 
-    private void InitializeCommands()
-    {
-        LoadInventoryCommand = new AsyncCommand(LoadInventoryAsync);
-        SearchCommand = new AsyncCommand(ExecuteSearchAsync);
-        RefreshCommand = new AsyncCommand(ExecuteRefreshAsync);
-        SortCommand = new AsyncCommand<string>(ExecuteSortAsync);
-        FirstPageCommand = new AsyncCommand(ExecuteFirstPageAsync, () => CurrentPage > 1);
-        PreviousPageCommand = new AsyncCommand(ExecutePreviousPageAsync, () => CurrentPage > 1);
-        NextPageCommand = new AsyncCommand(ExecuteNextPageAsync, () => InventoryItems.Count == ItemsPerPage);
-        LastPageCommand = new AsyncCommand(ExecuteLastPageAsync, () => InventoryItems.Count == ItemsPerPage);
-        ViewDetailsCommand = new AsyncCommand<InventoryItem>(ExecuteViewDetailsAsync);
+    #region Command Methods
 
-        Logger.LogDebug("Commands initialized for InventoryViewModel");
-    }
-
+    /// <summary>
+    /// Loads inventory data asynchronously with pagination, sorting, and filtering.
+    /// </summary>
+    /// <returns>A task representing the asynchronous load operation.</returns>
+    [RelayCommand]
     private async Task LoadInventoryAsync()
     {
         if (IsLoading) return;
@@ -145,11 +141,13 @@ public class InventoryViewModel : BaseViewModel
         {
             IsLoading = true;
             StatusMessage = "Loading inventory data...";
+            
+            using var scope = Logger.BeginScope("LoadInventory");
             Logger.LogInformation("Loading inventory data for page {Page}", CurrentPage);
 
             // For now, load all inventory and implement client-side paging
             // In a real application, you'd want server-side paging for performance
-            var dataTable = await _databaseService.GetAllPartIDsAsync();
+            var dataTable = await _databaseService.GetAllPartIDsAsync().ConfigureAwait(false);
             
             var allItems = ConvertDataTableToInventoryItems(dataTable).ToList();
             
@@ -193,7 +191,7 @@ public class InventoryViewModel : BaseViewModel
                 ex,
                 "Load Inventory",
                 _applicationState.CurrentUser ?? "System",
-                new Dictionary<string, object> { ["Operation"] = "LoadInventoryAsync" });
+                new Dictionary<string, object> { ["Operation"] = "LoadInventoryAsync" }).ConfigureAwait(false);
         }
         finally
         {
@@ -201,6 +199,164 @@ public class InventoryViewModel : BaseViewModel
         }
     }
 
+    /// <summary>
+    /// Executes a search operation and resets to the first page.
+    /// </summary>
+    /// <returns>A task representing the asynchronous search operation.</returns>
+    [RelayCommand]
+    private async Task ExecuteSearchAsync()
+    {
+        CurrentPage = 1; // Reset to first page when searching
+        await LoadInventoryAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Refreshes the inventory data by reloading the current view.
+    /// </summary>
+    /// <returns>A task representing the asynchronous refresh operation.</returns>
+    [RelayCommand]
+    private async Task ExecuteRefreshAsync()
+    {
+        await LoadInventoryAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Executes sorting by the specified column name.
+    /// </summary>
+    /// <param name="columnName">The name of the column to sort by.</param>
+    /// <returns>A task representing the asynchronous sort operation.</returns>
+    [RelayCommand]
+    private async Task ExecuteSortAsync(string? columnName)
+    {
+        if (string.IsNullOrEmpty(columnName)) return;
+
+        if (SortColumn == columnName)
+        {
+            SortAscending = !SortAscending;
+        }
+        else
+        {
+            SortColumn = columnName;
+            SortAscending = true;
+        }
+
+        await LoadInventoryAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Navigates to the first page of inventory results.
+    /// </summary>
+    /// <returns>A task representing the asynchronous navigation operation.</returns>
+    [RelayCommand(CanExecute = nameof(CanNavigateToFirstPage))]
+    private async Task ExecuteFirstPageAsync()
+    {
+        CurrentPage = 1;
+        await LoadInventoryAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Determines whether navigation to the first page is possible.
+    /// </summary>
+    /// <returns>True if not on the first page; otherwise, false.</returns>
+    private bool CanNavigateToFirstPage() => CurrentPage > 1;
+
+    /// <summary>
+    /// Navigates to the previous page of inventory results.
+    /// </summary>
+    /// <returns>A task representing the asynchronous navigation operation.</returns>
+    [RelayCommand(CanExecute = nameof(CanNavigateToPreviousPage))]
+    private async Task ExecutePreviousPageAsync()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+            await LoadInventoryAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Determines whether navigation to the previous page is possible.
+    /// </summary>
+    /// <returns>True if not on the first page; otherwise, false.</returns>
+    private bool CanNavigateToPreviousPage() => CurrentPage > 1;
+
+    /// <summary>
+    /// Navigates to the next page of inventory results.
+    /// </summary>
+    /// <returns>A task representing the asynchronous navigation operation.</returns>
+    [RelayCommand(CanExecute = nameof(CanNavigateToNextPage))]
+    private async Task ExecuteNextPageAsync()
+    {
+        CurrentPage++;
+        await LoadInventoryAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Determines whether navigation to the next page is possible.
+    /// </summary>
+    /// <returns>True if there are more items to display; otherwise, false.</returns>
+    private bool CanNavigateToNextPage() => InventoryItems.Count == ItemsPerPage;
+
+    /// <summary>
+    /// Navigates to the last page of inventory results.
+    /// </summary>
+    /// <returns>A task representing the asynchronous navigation operation.</returns>
+    [RelayCommand(CanExecute = nameof(CanNavigateToLastPage))]
+    private async Task ExecuteLastPageAsync()
+    {
+        // Calculate last page based on total items
+        var lastPage = (int)Math.Ceiling((double)TotalItems / ItemsPerPage);
+        CurrentPage = lastPage;
+        await LoadInventoryAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Determines whether navigation to the last page is possible.
+    /// </summary>
+    /// <returns>True if there are more items and not on the last page; otherwise, false.</returns>
+    private bool CanNavigateToLastPage() => InventoryItems.Count == ItemsPerPage;
+
+    /// <summary>
+    /// Displays details for the specified inventory item.
+    /// </summary>
+    /// <param name="item">The inventory item to view details for.</param>
+    /// <returns>A task representing the asynchronous view operation.</returns>
+    [RelayCommand]
+    private async Task ExecuteViewDetailsAsync(InventoryItem? item)
+    {
+        if (item == null) return;
+
+        try
+        {
+            SelectedItem = item;
+            
+            using var scope = Logger.BeginScope("ViewDetails");
+            Logger.LogInformation("Selected inventory item: PartId={PartId}, Location={Location}", 
+                item.PartId, item.Location);
+
+            // Here you could open a details view, edit dialog, etc.
+            StatusMessage = $"Selected: {item.PartId} at {item.Location}";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error viewing inventory item details");
+            await ErrorHandling.HandleErrorAsync(
+                ex,
+                "View Details",
+                _applicationState.CurrentUser ?? "System",
+                new Dictionary<string, object> { ["PartId"] = item?.PartId ?? "Unknown" }).ConfigureAwait(false);
+        }
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    /// <summary>
+    /// Converts a DataTable from database query results to a list of InventoryItem objects.
+    /// </summary>
+    /// <param name="dataTable">The DataTable containing inventory data from the database.</param>
+    /// <returns>A list of InventoryItem objects converted from the DataTable.</returns>
     private static List<InventoryItem> ConvertDataTableToInventoryItems(DataTable dataTable)
     {
         var items = new List<InventoryItem>();
@@ -225,6 +381,11 @@ public class InventoryViewModel : BaseViewModel
         return items;
     }
 
+    /// <summary>
+    /// Gets the sort value for the specified inventory item based on the current sort column.
+    /// </summary>
+    /// <param name="item">The inventory item to get the sort value for.</param>
+    /// <returns>The value to use for sorting the item.</returns>
     private object GetSortValue(InventoryItem item)
     {
         return SortColumn switch
@@ -240,84 +401,5 @@ public class InventoryViewModel : BaseViewModel
         };
     }
 
-    private async Task ExecuteSearchAsync()
-    {
-        CurrentPage = 1; // Reset to first page when searching
-        await LoadInventoryAsync();
-    }
-
-    private async Task ExecuteRefreshAsync()
-    {
-        await LoadInventoryAsync();
-    }
-
-    private async Task ExecuteSortAsync(string? columnName)
-    {
-        if (string.IsNullOrEmpty(columnName)) return;
-
-        if (SortColumn == columnName)
-        {
-            SortAscending = !SortAscending;
-        }
-        else
-        {
-            SortColumn = columnName;
-            SortAscending = true;
-        }
-
-        await LoadInventoryAsync();
-    }
-
-    private async Task ExecuteFirstPageAsync()
-    {
-        CurrentPage = 1;
-        await LoadInventoryAsync();
-    }
-
-    private async Task ExecutePreviousPageAsync()
-    {
-        if (CurrentPage > 1)
-        {
-            CurrentPage--;
-            await LoadInventoryAsync();
-        }
-    }
-
-    private async Task ExecuteNextPageAsync()
-    {
-        CurrentPage++;
-        await LoadInventoryAsync();
-    }
-
-    private async Task ExecuteLastPageAsync()
-    {
-        // Calculate last page based on total items
-        var lastPage = (int)Math.Ceiling((double)TotalItems / ItemsPerPage);
-        CurrentPage = lastPage;
-        await LoadInventoryAsync();
-    }
-
-    private async Task ExecuteViewDetailsAsync(InventoryItem? item)
-    {
-        if (item == null) return;
-
-        try
-        {
-            SelectedItem = item;
-            Logger.LogInformation("Selected inventory item: PartId={PartId}, Location={Location}", 
-                item.PartId, item.Location);
-
-            // Here you could open a details view, edit dialog, etc.
-            StatusMessage = $"Selected: {item.PartId} at {item.Location}";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error viewing inventory item details");
-            await ErrorHandling.HandleErrorAsync(
-                ex,
-                "View Details",
-                _applicationState.CurrentUser ?? "System",
-                new Dictionary<string, object> { ["PartId"] = item?.PartId ?? "Unknown" });
-        }
-    }
+    #endregion
 }

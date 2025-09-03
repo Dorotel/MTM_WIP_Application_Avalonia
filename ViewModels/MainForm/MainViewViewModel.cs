@@ -1,9 +1,12 @@
 using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using MTM_WIP_Application_Avalonia.Commands;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
@@ -11,94 +14,105 @@ using MTM_WIP_Application_Avalonia.Models;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class MainViewViewModel : BaseViewModel
+/// <summary>
+/// MainViewViewModel manages the main application view including tab navigation,
+/// child ViewModels, and status display. Uses MVVM Community Toolkit for property
+/// and command management with comprehensive dependency injection.
+/// </summary>
+public partial class MainViewViewModel : BaseViewModel
 {
     private readonly INavigationService _navigationService;
     private readonly IApplicationStateService _applicationState;
     private readonly IServiceProvider _serviceProvider;
 
-    // Tabs
+    /// <summary>
+    /// Gets or sets the currently selected tab index (0-based)
+    /// </summary>
+    [ObservableProperty]
     private int _selectedTabIndex;
-    public int SelectedTabIndex
-    {
-        get => _selectedTabIndex;
-        set 
-        {
-            if (SetProperty(ref _selectedTabIndex, value))
-            {
-                OnTabSelectionChanged(value);
-                HandleTabModeResets(value);
-            }
-        }
-    }
 
+    /// <summary>
+    /// Gets or sets the content for the inventory tab (normal or advanced view)
+    /// </summary>
+    [ObservableProperty]
     private object? _inventoryContent;
-    public object? InventoryContent
-    {
-        get => _inventoryContent;
-        set => SetProperty(ref _inventoryContent, value);
-    }
 
+    /// <summary>
+    /// Gets or sets the content for the remove tab (normal or advanced view)
+    /// </summary>
+    [ObservableProperty]
     private object? _removeContent;
-    public object? RemoveContent
-    {
-        get => _removeContent;
-        set => SetProperty(ref _removeContent, value);
-    }
 
+    /// <summary>
+    /// Gets or sets the content for the transfer tab
+    /// </summary>
+    [ObservableProperty]
     private object? _transferContent;
-    public object? TransferContent
-    {
-        get => _transferContent;
-        set => SetProperty(ref _transferContent, value);
-    }
 
+    /// <summary>
+    /// Gets or sets the content for the test controls tab
+    /// </summary>
+    [ObservableProperty]
     private object? _testControlsContent;
-    public object? TestControlsContent
-    {
-        get => _testControlsContent;
-        set => SetProperty(ref _testControlsContent, value);
-    }
 
-    // Quick Actions panel (renamed from Advanced panel)
+    /// <summary>
+    /// Gets or sets whether the Quick Actions panel is visible
+    /// </summary>
+    [ObservableProperty]
     private bool _isAdvancedPanelVisible = true;
-    public bool IsAdvancedPanelVisible
-    {
-        get => _isAdvancedPanelVisible;
-        set 
-        {
-            if (SetProperty(ref _isAdvancedPanelVisible, value))
-            {
-                OnPropertyChanged(nameof(AdvancedPanelToggleText));
-            }
-        }
-    }
 
-    public string AdvancedPanelToggleText => IsAdvancedPanelVisible ? "Hide" : "Show";
-
-    // Collapsible QuickActions Panel Properties
+    /// <summary>
+    /// Gets or sets whether the Quick Actions panel is expanded
+    /// </summary>
+    [ObservableProperty]
     private bool _isQuickActionsPanelExpanded = true;
-    public bool IsQuickActionsPanelExpanded
-    {
-        get => _isQuickActionsPanelExpanded;
-        set => SetProperty(ref _isQuickActionsPanelExpanded, value);
-    }
 
-    // Inventory Mode Management
+    /// <summary>
+    /// Gets or sets whether the inventory tab is in advanced mode
+    /// </summary>
+    [ObservableProperty]
     private bool _isAdvancedInventoryMode;
-    public bool IsAdvancedInventoryMode
-    {
-        get => _isAdvancedInventoryMode;
-        set => SetProperty(ref _isAdvancedInventoryMode, value);
-    }
 
-    // Remove Mode Management
+    /// <summary>
+    /// Gets or sets whether the remove tab is in advanced mode
+    /// </summary>
+    [ObservableProperty]
     private bool _isAdvancedRemoveMode;
-    public bool IsAdvancedRemoveMode
-    {
-        get => _isAdvancedRemoveMode;
-        set => SetProperty(ref _isAdvancedRemoveMode, value);
-    }
+
+    /// <summary>
+    /// Gets or sets the database connection status text
+    /// </summary>
+    [ObservableProperty]
+    private string _connectionStatus = "Disconnected";
+
+    /// <summary>
+    /// Gets or sets the connection strength percentage (0-100)
+    /// </summary>
+    [ObservableProperty]
+    private int _connectionStrength = 0;
+
+    /// <summary>
+    /// Gets or sets the progress value percentage (0-100)
+    /// </summary>
+    [ObservableProperty]
+    private int _progressValue = 0;
+
+    /// <summary>
+    /// Gets or sets the status text displayed in the status bar
+    /// </summary>
+    [ObservableProperty]
+    private string _statusText = "Ready";
+
+    /// <summary>
+    /// Gets or sets whether the development menu is visible
+    /// </summary>
+    [ObservableProperty]
+    private bool _showDevelopmentMenu = true; // TODO: Bind to build config/environment
+
+    /// <summary>
+    /// Gets the toggle text for the advanced panel button
+    /// </summary>
+    public string AdvancedPanelToggleText => IsAdvancedPanelVisible ? "Hide" : "Show";
 
     // Child ViewModels
     public QuickButtonsViewModel QuickButtonsViewModel { get; }
@@ -108,59 +122,22 @@ public class MainViewViewModel : BaseViewModel
     public AdvancedRemoveViewModel AdvancedRemoveViewModel { get; }
     public TransferItemViewModel TransferItemViewModel { get; }
 
-    // SuggestionOverlayViewModel removed for overlay ViewModel reset
-
-    // Status strip
-    private string _connectionStatus = "Disconnected";
-    public string ConnectionStatus
+    /// <summary>
+    /// Handles tab selection changes and triggers mode resets
+    /// </summary>
+    partial void OnSelectedTabIndexChanged(int value)
     {
-        get => _connectionStatus;
-        set => SetProperty(ref _connectionStatus, value);
+        OnTabSelectionChanged(value);
+        HandleTabModeResets(value);
     }
 
-    private int _connectionStrength = 0; // 0..100
-    public int ConnectionStrength
+    /// <summary>
+    /// Handles advanced panel visibility changes and updates toggle text
+    /// </summary>
+    partial void OnIsAdvancedPanelVisibleChanged(bool value)
     {
-        get => _connectionStrength;
-        set => SetProperty(ref _connectionStrength, value);
+        OnPropertyChanged(nameof(AdvancedPanelToggleText));
     }
-
-    private int _progressValue = 0; // 0..100
-    public int ProgressValue
-    {
-        get => _progressValue;
-        set => SetProperty(ref _progressValue, value);
-    }
-
-    private string _statusText = "Ready";
-    public string StatusText
-    {
-        get => _statusText;
-        set => SetProperty(ref _statusText, value);
-    }
-
-    // Dev menu visibility
-    private bool _showDevelopmentMenu = true; // TODO: Bind to build config/environment
-    public bool ShowDevelopmentMenu
-    {
-        get => _showDevelopmentMenu;
-        set => SetProperty(ref _showDevelopmentMenu, value);
-    }
-
-    // Commands
-    public ICommand OpenSettingsCommand { get; private set; }
-    public ICommand OpenAdvancedSettingsCommand { get; private set; }
-    public ICommand ExitCommand { get; private set; }
-    public ICommand OpenPersonalHistoryCommand { get; private set; }
-    public ICommand RefreshCommand { get; private set; }
-    public ICommand CancelCommand { get; private set; }
-    public ICommand ToggleAdvancedPanelCommand { get; private set; }
-    public ICommand ToggleQuickActionsPanelCommand { get; private set; }
-    public ICommand OpenAboutCommand { get; private set; }
-    public ICommand SwitchToAdvancedInventoryCommand { get; private set; }
-    public ICommand SwitchToNormalInventoryCommand { get; private set; }
-    public ICommand SwitchToAdvancedRemoveCommand { get; private set; }
-    public ICommand SwitchToNormalRemoveCommand { get; private set; }
 
     public MainViewViewModel(
         INavigationService navigationService,
@@ -181,6 +158,9 @@ public class MainViewViewModel : BaseViewModel
 
         Logger.LogInformation("MainViewViewModel initialized with dependency injection");
 
+        // Bind progress properties to ApplicationStateService for centralized progress system
+        _applicationState.PropertyChanged += OnApplicationStateChanged;
+
         // Inject child ViewModels instead of creating them
         QuickButtonsViewModel = quickButtonsViewModel ?? throw new ArgumentNullException(nameof(quickButtonsViewModel));
         InventoryTabViewModel = inventoryTabViewModel ?? throw new ArgumentNullException(nameof(inventoryTabViewModel));
@@ -191,10 +171,10 @@ public class MainViewViewModel : BaseViewModel
     // SuggestionOverlayViewModel removed for overlay ViewModel reset
 
         // Wire up Advanced Inventory events
-        AdvancedInventoryViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalInventoryCommand?.Execute(null);
+        AdvancedInventoryViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalInventory();
 
         // Wire up Advanced Remove events
-        AdvancedRemoveViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalRemoveCommand?.Execute(null);
+        AdvancedRemoveViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalRemove();
 
         // Set up initial tab content (normal mode)
         UpdateInventoryContent();
@@ -224,86 +204,204 @@ public class MainViewViewModel : BaseViewModel
 
         // UI-only initialization; child contents are provided elsewhere via composition
         SelectedTabIndex = 0;
-
-        // Initialize commands (stubs; no business logic)
-        OpenSettingsCommand = new Commands.RelayCommand(OpenSettings);
-        OpenAdvancedSettingsCommand = new Commands.RelayCommand(OpenAdvancedSettings);
-        ExitCommand = new Commands.RelayCommand(() => { /* TODO: Exit app */ });
-        OpenPersonalHistoryCommand = new Commands.RelayCommand(() => { /* TODO: Open history */ });
-        RefreshCommand = new Commands.RelayCommand(() => 
-        {
-            switch (SelectedTabIndex)
-            {
-                case 0: // Inventory Tab
-                    // TODO: Refresh inventory tab
-                    StatusText = "Refreshing inventory...";
-                    break;
-                case 1: // Remove Tab
-                    if (IsAdvancedRemoveMode)
-                    {
-                        if (AdvancedRemoveViewModel.LoadDataCommand.CanExecute(null))
-                            AdvancedRemoveViewModel.LoadDataCommand.Execute(null);
-                    }
-                    else
-                    {
-                        if (RemoveItemViewModel.SearchCommand.CanExecute(null))
-                            RemoveItemViewModel.SearchCommand.Execute(null);
-                    }
-                    break;
-                case 2: // Transfer Tab
-                    if (TransferItemViewModel.SearchCommand.CanExecute(null))
-                        TransferItemViewModel.SearchCommand.Execute(null);
-                    break;
-            }
-        });
-        CancelCommand = new Commands.RelayCommand(() => { /* TODO: Cancel current operation */ });
-        OpenAboutCommand = new Commands.RelayCommand(() => { /* TODO: Show about dialog */ });
-        
-        ToggleAdvancedPanelCommand = new Commands.RelayCommand(() =>
-        {
-            IsAdvancedPanelVisible = !IsAdvancedPanelVisible;
-        });
-
-        ToggleQuickActionsPanelCommand = new Commands.RelayCommand(() =>
-        {
-            IsQuickActionsPanelExpanded = !IsQuickActionsPanelExpanded;
-        });
-
-        SwitchToAdvancedInventoryCommand = new Commands.RelayCommand(() =>
-        {
-            IsAdvancedInventoryMode = true;
-            UpdateInventoryContent();
-            StatusText = "Advanced Inventory Mode";
-            Logger.LogInformation("Switched to Advanced Inventory Mode");
-        });
-
-        SwitchToNormalInventoryCommand = new Commands.RelayCommand(() =>
-        {
-            IsAdvancedInventoryMode = false;
-            UpdateInventoryContent();
-            StatusText = "Normal Inventory Mode";
-            Logger.LogInformation("Switched to Normal Inventory Mode");
-        });
-
-        SwitchToAdvancedRemoveCommand = new Commands.RelayCommand(() =>
-        {
-            IsAdvancedRemoveMode = true;
-            UpdateRemoveContent();
-            StatusText = "Advanced Remove Mode";
-            Logger.LogInformation("Switched to Advanced Remove Mode");
-        });
-
-        SwitchToNormalRemoveCommand = new Commands.RelayCommand(() =>
-        {
-            IsAdvancedRemoveMode = false;
-            UpdateRemoveContent();
-            StatusText = "Normal Remove Mode";
-            Logger.LogInformation("Switched to Normal Remove Mode");
-        });
-
-        // Property change handling is now done in property setters
-        // Command error handling is managed within individual commands using standard .NET patterns
     }
+
+    #region RelayCommand Methods
+
+    /// <summary>
+    /// Opens the settings view using the navigation service
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenSettingsAsync()
+    {
+        try
+        {
+            // Get SettingsViewModel from DI container
+            var settingsViewModel = Program.GetService<SettingsViewModel>();
+            
+            // Create SettingsView with the ViewModel
+            var settingsView = new Views.SettingsView
+            {
+                DataContext = settingsViewModel
+            };
+            
+            // Navigate to the settings view
+            await Task.Run(() => _navigationService.NavigateTo(settingsView)).ConfigureAwait(false);
+            
+            Logger.LogInformation("Navigated to Settings view");
+            StatusText = "Settings opened";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to open Settings view");
+            StatusText = "Failed to open settings";
+        }
+    }
+
+    /// <summary>
+    /// Opens the advanced settings form
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenAdvancedSettingsAsync()
+    {
+        try
+        {
+            // Get SettingsFormViewModel from DI container
+            var settingsFormViewModel = Program.GetService<SettingsFormViewModel>();
+            
+            // Create SettingsFormView with the ViewModel
+            var settingsFormView = new Views.SettingsFormView
+            {
+                DataContext = settingsFormViewModel
+            };
+            
+            // Navigate to the advanced settings view
+            await Task.Run(() => _navigationService.NavigateTo(settingsFormView)).ConfigureAwait(false);
+            
+            Logger.LogInformation("Navigated to Advanced Settings form");
+            StatusText = "Advanced Settings opened";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to open Advanced Settings form");
+            StatusText = "Failed to open advanced settings";
+        }
+    }
+
+    /// <summary>
+    /// Exits the application
+    /// </summary>
+    [RelayCommand]
+    private void Exit()
+    {
+        // TODO: Exit app
+    }
+
+    /// <summary>
+    /// Opens the personal history view
+    /// </summary>
+    [RelayCommand]
+    private void OpenPersonalHistory()
+    {
+        // TODO: Open history
+    }
+
+    /// <summary>
+    /// Refreshes the current tab's data
+    /// </summary>
+    [RelayCommand]
+    private void Refresh()
+    {
+        switch (SelectedTabIndex)
+        {
+            case 0: // Inventory Tab
+                // TODO: Refresh inventory tab
+                StatusText = "Refreshing inventory...";
+                break;
+            case 1: // Remove Tab
+                if (IsAdvancedRemoveMode)
+                {
+                    if (AdvancedRemoveViewModel.LoadDataCommand.CanExecute(null))
+                        AdvancedRemoveViewModel.LoadDataCommand.Execute(null);
+                }
+                else
+                {
+                    if (RemoveItemViewModel.SearchCommand.CanExecute(null))
+                        RemoveItemViewModel.SearchCommand.Execute(null);
+                }
+                break;
+            case 2: // Transfer Tab
+                if (TransferItemViewModel.ExecuteSearchCommand.CanExecute(null))
+                    TransferItemViewModel.ExecuteSearchCommand.Execute(null);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Cancels the current operation
+    /// </summary>
+    [RelayCommand]
+    private void Cancel()
+    {
+        // TODO: Cancel current operation
+    }
+
+    /// <summary>
+    /// Shows the about dialog
+    /// </summary>
+    [RelayCommand]
+    private void OpenAbout()
+    {
+        // TODO: Show about dialog
+    }
+
+    /// <summary>
+    /// Toggles the advanced panel visibility
+    /// </summary>
+    [RelayCommand]
+    private void ToggleAdvancedPanel()
+    {
+        IsAdvancedPanelVisible = !IsAdvancedPanelVisible;
+    }
+
+    /// <summary>
+    /// Toggles the quick actions panel expansion
+    /// </summary>
+    [RelayCommand]
+    private void ToggleQuickActionsPanel()
+    {
+        IsQuickActionsPanelExpanded = !IsQuickActionsPanelExpanded;
+    }
+
+    /// <summary>
+    /// Switches the inventory tab to advanced mode
+    /// </summary>
+    [RelayCommand]
+    private void SwitchToAdvancedInventory()
+    {
+        IsAdvancedInventoryMode = true;
+        UpdateInventoryContent();
+        StatusText = "Advanced Inventory Mode";
+        Logger.LogInformation("Switched to Advanced Inventory Mode");
+    }
+
+    /// <summary>
+    /// Switches the inventory tab to normal mode
+    /// </summary>
+    [RelayCommand]
+    private void SwitchToNormalInventory()
+    {
+        IsAdvancedInventoryMode = false;
+        UpdateInventoryContent();
+        StatusText = "Normal Inventory Mode";
+        Logger.LogInformation("Switched to Normal Inventory Mode");
+    }
+
+    /// <summary>
+    /// Switches the remove tab to advanced mode
+    /// </summary>
+    [RelayCommand]
+    private void SwitchToAdvancedRemove()
+    {
+        IsAdvancedRemoveMode = true;
+        UpdateRemoveContent();
+        StatusText = "Advanced Remove Mode";
+        Logger.LogInformation("Switched to Advanced Remove Mode");
+    }
+
+    /// <summary>
+    /// Switches the remove tab to normal mode
+    /// </summary>
+    [RelayCommand]
+    private void SwitchToNormalRemove()
+    {
+        IsAdvancedRemoveMode = false;
+        UpdateRemoveContent();
+        StatusText = "Normal Remove Mode";
+        Logger.LogInformation("Switched to Normal Remove Mode");
+    }
+
+    #endregion
 
     private void HandleTabModeResets(int tabIndex)
     {
@@ -445,15 +543,30 @@ public class MainViewViewModel : BaseViewModel
     private void OnAdvancedRemovalRequested(object? sender, EventArgs e)
     {
         // Switch to Advanced Remove Mode
-        if (SwitchToAdvancedRemoveCommand.CanExecute(null))
-            SwitchToAdvancedRemoveCommand.Execute(null);
+        SwitchToAdvancedRemoveCommand.Execute(null);
         Logger.LogInformation("Advanced removal features requested - switching to Advanced Remove Mode");
+    }
+
+    /// <summary>
+    /// Handles property changes from ApplicationStateService to update MainView progress
+    /// This enables centralized progress communication from child ViewModels
+    /// </summary>
+    private void OnApplicationStateChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IApplicationStateService.ProgressValue))
+        {
+            ProgressValue = _applicationState.ProgressValue;
+        }
+        else if (e.PropertyName == nameof(IApplicationStateService.StatusText))
+        {
+            StatusText = _applicationState.StatusText;
+        }
     }
 
     private void OnTabSelectionChanged(int tabIndex)
     {
         Logger.LogDebug("OnTabSelectionChanged triggered - Previous tab: {PreviousTab}, New tab: {NewTab}", 
-            _selectedTabIndex, tabIndex);
+            SelectedTabIndex, tabIndex);
         
         try
         {
@@ -503,15 +616,8 @@ public class MainViewViewModel : BaseViewModel
                     
                     // Load data when switching to Transfer tab
                     Logger.LogDebug("Loading data for Transfer tab");
-                    if (TransferItemViewModel.LoadDataCommand.CanExecute(null))
-                    {
-                        TransferItemViewModel.LoadDataCommand.Execute(null);
-                        Logger.LogDebug("Transfer LoadDataCommand executed");
-                    }
-                    else
-                    {
-                        Logger.LogWarning("Transfer LoadDataCommand cannot execute");
-                    }
+                    // Transfer ViewModel will load data when needed
+                    Logger.LogDebug("Transfer tab activated - data will load on demand");
                     break;
                 default:
                     StatusText = "Ready";
@@ -579,62 +685,66 @@ public class MainViewViewModel : BaseViewModel
     /// </summary>
     public void OnAdvancedEntryRequested()
     {
-        if (SwitchToAdvancedInventoryCommand.CanExecute(null))
-            SwitchToAdvancedInventoryCommand.Execute(null);
+        SwitchToAdvancedInventoryCommand.Execute(null);
     }
+
+    #region Resource Management
 
     /// <summary>
-    /// Opens the settings view using the navigation service
+    /// Releases resources used by the MainViewViewModel
     /// </summary>
-    private void OpenSettings()
+    /// <param name="disposing">True if disposing, false if finalizing</param>
+    protected override void Dispose(bool disposing)
     {
-        try
+        if (disposing)
         {
-            // Get SettingsViewModel from DI container
-            var settingsViewModel = Program.GetService<SettingsViewModel>();
-            
-            // Create SettingsView with the ViewModel
-            var settingsView = new Views.SettingsView
+            try
             {
-                DataContext = settingsViewModel
-            };
-            
-            // Navigate to the settings view
-            _navigationService.NavigateTo(settingsView);
-            
-            Logger.LogInformation("Navigated to Settings view");
-            StatusText = "Settings opened";
+                // Unsubscribe from events to prevent memory leaks
+                if (_applicationState != null)
+                {
+                    _applicationState.PropertyChanged -= OnApplicationStateChanged;
+                }
+
+                if (AdvancedInventoryViewModel != null)
+                {
+                    AdvancedInventoryViewModel.BackToNormalRequested -= (sender, e) => SwitchToNormalInventory();
+                }
+
+                if (AdvancedRemoveViewModel != null)
+                {
+                    AdvancedRemoveViewModel.BackToNormalRequested -= (sender, e) => SwitchToNormalRemove();
+                }
+
+                if (QuickButtonsViewModel != null)
+                {
+                    QuickButtonsViewModel.QuickActionExecuted -= OnQuickActionExecuted;
+                }
+
+                if (RemoveItemViewModel != null)
+                {
+                    RemoveItemViewModel.PanelToggleRequested -= OnPanelToggleRequested;
+                    RemoveItemViewModel.AdvancedRemovalRequested -= OnAdvancedRemovalRequested;
+                }
+
+                if (TransferItemViewModel != null)
+                {
+                    TransferItemViewModel.ItemsTransferred -= OnItemsTransferred;
+                    TransferItemViewModel.PanelToggleRequested -= OnPanelToggleRequested;
+                }
+
+                Logger.LogInformation("MainViewViewModel resources disposed successfully");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error during MainViewViewModel disposal");
+            }
         }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to open Settings view");
-            StatusText = "Failed to open settings";
-        }
+
+        // Call base class disposal
+        base.Dispose(disposing);
     }
 
-    private void OpenAdvancedSettings()
-    {
-        try
-        {
-            // Get SettingsFormViewModel from DI container
-            var settingsFormViewModel = Program.GetService<SettingsFormViewModel>();
-            
-            // Create SettingsFormView with the ViewModel
-            var settingsFormView = new Views.SettingsFormView
-            {
-                DataContext = settingsFormViewModel
-            };
-            
-            // Navigate to the advanced settings view
-            _navigationService.NavigateTo(settingsFormView);
-            
-            Logger.LogInformation("Navigated to Advanced Settings form");
-            StatusText = "Advanced Settings opened";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to open Advanced Settings form");
-            StatusText = "Failed to open advanced settings";
-        }
-    }
+    #endregion
+
 }

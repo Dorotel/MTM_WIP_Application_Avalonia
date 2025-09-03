@@ -151,7 +151,7 @@ public class VirtualPanelManager
         // User Management
         _panelViewTypes["add-user"] = typeof(Views.SettingsForm.AddUserView);
         _panelViewTypes["edit-user"] = typeof(Views.SettingsForm.EditUserView);
-        _panelViewTypes["delete-user"] = typeof(Views.SettingsForm.DeleteUserView);
+        _panelViewTypes["delete-user"] = typeof(Views.SettingsForm.RemoveUserView);
         
         // Part Numbers
         _panelViewTypes["add-part"] = typeof(Views.SettingsForm.AddPartView);

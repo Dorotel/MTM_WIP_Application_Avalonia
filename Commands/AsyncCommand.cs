@@ -1,3 +1,13 @@
+// Note: This file is maintained for legacy compatibility.
+// New ViewModels should use CommunityToolkit.Mvvm.Input.AsyncRelayCommand directly.
+// 
+// Usage in new ViewModels:
+// [RelayCommand]
+// private async Task ExecuteSomeActionAsync() { ... }
+// 
+// or manually:
+// public IAsyncRelayCommand SomeCommand => new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(ExecuteSomeActionAsync);
+
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -5,9 +15,10 @@ using System.Windows.Input;
 namespace MTM_WIP_Application_Avalonia.Commands;
 
 /// <summary>
-/// Async command implementation for asynchronous operations.
-/// Standard .NET ICommand implementation without ReactiveUI dependencies.
+/// Legacy async command implementation for backward compatibility.
+/// New code should use CommunityToolkit.Mvvm.Input.AsyncRelayCommand with [RelayCommand] attributes.
 /// </summary>
+[Obsolete("Use CommunityToolkit.Mvvm.Input.AsyncRelayCommand with [RelayCommand] attribute instead")]
 public class AsyncCommand : ICommand
 {
     private readonly Func<Task> _execute;
@@ -46,9 +57,10 @@ public class AsyncCommand : ICommand
 }
 
 /// <summary>
-/// Generic async command implementation for asynchronous operations with parameters.
-/// Standard .NET ICommand implementation without ReactiveUI dependencies.
+/// Legacy generic async command implementation for backward compatibility.
+/// New code should use CommunityToolkit.Mvvm.Input.AsyncRelayCommand<T> with [RelayCommand] attribute instead.
 /// </summary>
+[Obsolete("Use CommunityToolkit.Mvvm.Input.AsyncRelayCommand<T> with [RelayCommand] attribute instead")]
 public class AsyncCommand<T> : ICommand
 {
     private readonly Func<T?, Task> _execute;

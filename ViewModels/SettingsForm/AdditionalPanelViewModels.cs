@@ -21,11 +21,11 @@ public class EditUserViewModel : BaseViewModel
 /// <summary>
 /// ViewModel for deleting users.
 /// </summary>
-public class DeleteUserViewModel : BaseViewModel
+public class RemoveUserViewModel : BaseViewModel
 {
-    public DeleteUserViewModel(ILogger<DeleteUserViewModel> logger) : base(logger)
+    public RemoveUserViewModel(ILogger<RemoveUserViewModel> logger) : base(logger)
     {
-        Logger.LogInformation("DeleteUserViewModel initialized");
+        Logger.LogInformation("RemoveUserViewModel initialized");
     }
 }
 

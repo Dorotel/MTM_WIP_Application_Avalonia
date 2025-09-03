@@ -32,7 +32,7 @@ Settings Root
 ├── User Management
 │   ├── Add User (AddUserViewModel)
 │   ├── Edit User (EditUserViewModel)
-│   └── Delete User (DeleteUserViewModel)
+│   └── Delete User (RemoveUserViewModel)
 ├── Part Numbers
 │   ├── Add Part Number (AddPartViewModel)
 │   ├── Edit Part Number (EditPartViewModel)

@@ -1,6 +1,6 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.DeleteUserView">
+             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.RemoveUserView">
     
     <!-- Delete User Panel -->
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">

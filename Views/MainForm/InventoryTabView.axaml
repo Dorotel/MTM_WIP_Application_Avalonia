@@ -5,6 +5,7 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d"
              d:DesignWidth="800"
@@ -269,7 +270,7 @@
   </UserControl.Styles>
 
   <!-- Main container with MTM Amber background -->
-  <Grid RowDefinitions="*,Auto" 
+  <Grid RowDefinitions="*,Auto,Auto" 
         HorizontalAlignment="Stretch" 
         VerticalAlignment="Stretch"
         Margin="0"
@@ -573,18 +574,11 @@
 
         </StackPanel>
 
-        <!-- Right side - version and loading indicator -->
+        <!-- Right side - version info only (progress moved to MainView) -->
         <StackPanel Grid.Column="1" 
                     Orientation="Horizontal" 
                     HorizontalAlignment="Right"
                     Spacing="12">
-          <!-- Loading indicator with MTM theme -->
-          <ProgressBar IsVisible="{Binding IsLoading}"
-                       IsIndeterminate="True"
-                       Width="100"
-                       Height="20"
-                       VerticalAlignment="Center"/>
-          
           <!-- Version info with MTM text styling -->
           <TextBlock Text="{Binding VersionText}"
                      FontSize="10"
@@ -593,5 +587,86 @@
         </StackPanel>
       </Grid>
     </Border>
+
+    <!-- NEW: Session Transaction History Panel -->
+    <controls:CollapsiblePanel Grid.Row="2"
+                              HeaderPosition="Top"
+                              IsExpanded="{Binding IsHistoryPanelExpanded, Mode=TwoWay}"
+                              Margin="8,0,8,8"
+                              MinHeight="200"
+                              MaxHeight="400">
+      
+      <!-- History Panel Header -->
+      <controls:CollapsiblePanel.Header>
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <materialIcons:MaterialIcon Grid.Column="0" 
+                                     Kind="History" 
+                                     Width="16"
+                                     Height="16"
+                                     Background="Transparent"
+                                     Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                                     Margin="8,0"/>
+          <TextBlock Grid.Column="1" 
+                    Text="Session Transaction History"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                    VerticalAlignment="Center"/>
+          <TextBlock Grid.Column="2"
+                    Text="{Binding SessionTransactionCount, StringFormat='({0} transactions)'}"
+                    FontSize="11"
+                    Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                    Margin="8,0"
+                    VerticalAlignment="Center"/>
+        </Grid>
+      </controls:CollapsiblePanel.Header>
+      
+      <!-- History Panel Content -->
+      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+              BorderThickness="1"
+              CornerRadius="4"
+              Padding="8">
+        
+        <DataGrid ItemsSource="{Binding SessionTransactionHistory}"
+                  Background="Transparent"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  IsReadOnly="True"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  MinHeight="150">
+          
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Time" 
+                               Binding="{Binding TransactionTime, StringFormat='HH:mm:ss'}"
+                               Width="80"/>
+            <DataGridTextColumn Header="Part ID" 
+                               Binding="{Binding PartId}"
+                               Width="120"/>
+            <DataGridTextColumn Header="Operation" 
+                               Binding="{Binding Operation}"
+                               Width="80"/>
+            <DataGridTextColumn Header="Location" 
+                               Binding="{Binding Location}"
+                               Width="100"/>
+            <DataGridTextColumn Header="Quantity" 
+                               Binding="{Binding Quantity}"
+                               Width="80"/>
+            <DataGridTextColumn Header="Item Type" 
+                               Binding="{Binding ItemType}"
+                               Width="100"/>
+            <DataGridTextColumn Header="Batch #" 
+                               Binding="{Binding BatchNumber}"
+                               Width="100"/>
+            <DataGridTextColumn Header="Status" 
+                               Binding="{Binding Status}"
+                               Width="80"/>
+          </DataGrid.Columns>
+          
+        </DataGrid>
+        
+      </Border>
+    </controls:CollapsiblePanel>
   </Grid>
 </UserControl>

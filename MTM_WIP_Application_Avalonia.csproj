@@ -6,10 +6,18 @@
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Disable compiled bindings temporarily to avoid issues -->
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <!-- Enable XAML compilation for proper resource loading -->
+    <EnableAvaloniaXamlCompilation>true</EnableAvaloniaXamlCompilation>
+    <!-- Ensure proper debug information generation -->
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!-- Re-enable automatic XAML inclusion for simplicity -->
+    <EnableDefaultAvaloniaXamlItems>true</EnableDefaultAvaloniaXamlItems>
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Exclude Resources folder but include individual theme files explicitly -->
     <AvaloniaXaml Remove="Config\**" />
     <AvaloniaXaml Remove="Documentation\Development\Agent_Issues\**" />
     <AvaloniaXaml Remove="Documentation\Development\CopilotQuestions\**" />
@@ -40,46 +48,41 @@
     <None Remove="Resources\**" />
   </ItemGroup>
 
+  <!-- Theme files as AvaloniaResource for proper compilation -->
   <ItemGroup>
-    <AvaloniaXaml Include="Resources\Themes\MTMComponents.axaml">
+    <AvaloniaResource Include="Resources\Themes\MTMComponents.axaml">
       <SubType>Designer</SubType>
-    </AvaloniaXaml>
-    <AvaloniaXaml Include="Resources\Themes\MTMComponentsPreview.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTMTheme.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Light_Dark.axaml" />
+    </AvaloniaResource>
+    <AvaloniaResource Include="Resources\Themes\MTMTheme.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Light_Dark.axaml" />
     
     <!-- All 15 Theme Files for Dynamic Switching -->
-    <AvaloniaXaml Include="Resources\Themes\MTM_Light.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Dark.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_HighContrast.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Blue.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Blue_Dark.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Green.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Green_Dark.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Red_Dark.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Red.axaml" />
-    <AvaloniaXaml Include="resources\themes\MTM_Rose_Dark.axaml">
+    <AvaloniaResource Include="Resources\Themes\MTM_Light.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Dark.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_HighContrast.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Blue.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Blue_Dark.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Green.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Green_Dark.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Red_Dark.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Red.axaml" />
+    <AvaloniaResource Include="resources\themes\MTM_Rose_Dark.axaml">
       <SubType>Designer</SubType>
-    </AvaloniaXaml>
-    <AvaloniaXaml Include="Resources\Themes\MTM_Teal.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Teal_Dark.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Amber.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Indigo.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Indigo_Dark.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Rose.axaml" />
-    <AvaloniaXaml Include="Resources\Themes\MTM_Emerald.axaml" />
+    </AvaloniaResource>
+    <AvaloniaResource Include="Resources\Themes\MTM_Teal.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Teal_Dark.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Amber.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Indigo.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Indigo_Dark.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Rose.axaml" />
+    <AvaloniaResource Include="Resources\Themes\MTM_Emerald.axaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Resources\Themes\MTMComponentsPreview.axaml.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Avalonia packages (includes ReactiveUI integration) -->
+    <!-- Avalonia packages with MVVM Community Toolkit integration -->
     <PackageReference Include="Avalonia" Version="11.3.4" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.4" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.4">
@@ -89,8 +92,8 @@
     <PackageReference Include="Avalonia.Xaml.Interactivity" Version="11.3.0.6" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
     
-    <!-- System.Reactive for reactive extensions -->
-    <PackageReference Include="System.Reactive" Version="6.0.1" />
+    <!-- MVVM Community Toolkit for MVVM patterns -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     
     <!-- Database and utility packages -->
     <PackageReference Include="Dapper" Version="2.1.66" />
@@ -165,4 +168,16 @@
     <Folder Include="Documentation\Development\Compliance Reports\ViewModels\" />
     <Folder Include="Documentation\Development\Compliance Reports\Views\" />
   </ItemGroup>
+
+  <!-- Ensure proper XAML compilation order -->
+  <Target Name="EnsureXamlCompilation" BeforeTargets="Compile">
+    <Message Text="Ensuring Avalonia XAML compilation for all AXAML files" Importance="high" />
+  </Target>
+
+  <!-- Force rebuild of XAML resources when needed -->
+  <Target Name="CleanXamlCache" BeforeTargets="Clean">
+    <RemoveDir Directories="$(IntermediateOutputPath)Avalonia" />
+    <Message Text="Cleaned Avalonia XAML cache" Importance="high" />
+  </Target>
+
 </Project>

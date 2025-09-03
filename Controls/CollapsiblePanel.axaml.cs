@@ -33,6 +33,9 @@ public partial class CollapsiblePanel : UserControl
     public static readonly StyledProperty<HeaderPosition> HeaderPositionProperty =
         AvaloniaProperty.Register<CollapsiblePanel, HeaderPosition>(nameof(HeaderPosition), HeaderPosition.Left);
 
+    public static readonly StyledProperty<object?> HeaderProperty =
+        AvaloniaProperty.Register<CollapsiblePanel, object?>(nameof(Header));
+
     // Properties
     public bool IsExpanded
     {
@@ -44,6 +47,12 @@ public partial class CollapsiblePanel : UserControl
     {
         get => GetValue(HeaderPositionProperty);
         set => SetValue(HeaderPositionProperty, value);
+    }
+
+    public object? Header
+    {
+        get => GetValue(HeaderProperty);
+        set => SetValue(HeaderProperty, value);
     }
 
     // Legacy property for backward compatibility
@@ -126,7 +135,7 @@ public partial class CollapsiblePanel : UserControl
         }
     }
 
-    private void UpdateLayout()
+    private new void UpdateLayout()
     {
         if (_rootGrid == null || _headerArea == null || _contentArea == null)
             return;

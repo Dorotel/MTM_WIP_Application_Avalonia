@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -36,15 +37,15 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<VirtualPanelManager>();
         services.TryAddSingleton<SettingsPanelStateManager>();
         
-        // Database services
-        services.TryAddScoped<IDatabaseService, DatabaseService>();
+        // Database services - change to singleton for validation
+        services.TryAddSingleton<IDatabaseService, DatabaseService>();
         
-        // UI and Application services
-        services.TryAddScoped<IQuickButtonsService, QuickButtonsService>();
+        // UI and Application services - change to singleton for validation
+        services.TryAddSingleton<IQuickButtonsService, QuickButtonsService>();
         services.TryAddSingleton<IProgressService, ProgressService>();
         
-        // Register SuggestionOverlay service
-        services.TryAddScoped<ISuggestionOverlayService, SuggestionOverlayService>();
+        // Register SuggestionOverlay service - change to singleton for validation
+        services.TryAddSingleton<ISuggestionOverlayService, SuggestionOverlayService>();
         
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
@@ -63,7 +64,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<DatabaseSettingsViewModel>();
         services.TryAddTransient<AddUserViewModel>();
         services.TryAddTransient<EditUserViewModel>();
-        services.TryAddTransient<DeleteUserViewModel>();
+        services.TryAddTransient<RemoveUserViewModel>();
         services.TryAddTransient<AddPartViewModel>();
         services.TryAddTransient<EditPartViewModel>();
         services.TryAddTransient<RemovePartViewModel>();
@@ -177,25 +178,26 @@ public static class ServiceCollectionExtensions
             typeof(ISuggestionOverlayService)
         };
 
-        var failedServices = criticalServices
-            .Where(serviceType => 
+        var failedServices = new List<string>();
+
+        foreach (var serviceType in criticalServices)
+        {
+            try
             {
-                try
-                {
-                    serviceProvider.GetRequiredService(serviceType);
-                    return false;
-                }
-                catch
-                {
-                    return true;
-                }
-            })
-            .Select(serviceType => serviceType.Name)
-            .ToList();
+                var service = serviceProvider.GetRequiredService(serviceType);
+                Console.WriteLine($"[VALIDATION-SUCCESS] {serviceType.Name} resolved successfully");
+            }
+            catch (Exception ex)
+            {
+                var errorDetail = $"{serviceType.Name}: {ex.Message}";
+                failedServices.Add(errorDetail);
+                Console.WriteLine($"[VALIDATION-ERROR] {errorDetail}");
+            }
+        }
 
         if (failedServices.Count > 0)
         {
-            var errorMessage = $"Failed to resolve critical services: {string.Join(", ", failedServices)}";
+            var errorMessage = $"Failed to resolve critical services:{Environment.NewLine}{string.Join(Environment.NewLine, failedServices)}";
             throw new InvalidOperationException(errorMessage);
         }
     }
