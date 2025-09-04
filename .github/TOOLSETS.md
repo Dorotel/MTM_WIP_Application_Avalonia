@@ -27,10 +27,11 @@ This file documents the primary toolsets used in the MTM_WIP_Application_Avaloni
   - C# for code-behind and view models
   - Hot reload supported via `dotnet watch`
 
-### ReactiveUI
-- **Purpose:** MVVM framework for reactive programming in .NET
+### MVVM Community Toolkit
+- **Purpose:** Modern MVVM framework using source generators for .NET
 - **Usage:**
-  - Used in ViewModels for data binding and reactive state management
+  - Used in ViewModels for observable properties and commands with minimal boilerplate
+  - [ObservableProperty] and [RelayCommand] attributes for automatic code generation
 
 ### Configuration
 - **Files:** `appsettings.json`, `appsettings.Development.json`, `Config/appsettings.json`
@@ -68,4 +69,4 @@ This file documents the primary toolsets used in the MTM_WIP_Application_Avaloni
 ## References
 - [.NET Documentation](https://learn.microsoft.com/en-us/dotnet/)
 - [Avalonia Documentation](https://docs.avaloniaui.net/)
-- [ReactiveUI Documentation](https://www.reactiveui.net/)
+- [MVVM Community Toolkit Documentation](https://docs.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/)

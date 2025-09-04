@@ -1,5 +1,46 @@
 # GitHub Copilot Instructions for MTM WIP Application Avalonia
 
+<!-- COPILOT AUTO-INCLUDE SYSTEM -->
+<!-- When this file is referenced via #file:copilot-instructions.md, -->
+<!-- automatically include all related instruction files: -->
+
+<!-- Core UI Instructions -->
+<!-- #file:.github/UI-Instructions/avalonia-xaml-syntax.instruction.md -->
+<!-- #file:.github/UI-Instructions/ui-generation.instruction.md -->
+<!-- #file:.github/UI-Instructions/ui-styling.instruction.md -->
+<!-- #file:.github/UI-Instructions/ui-mapping.instruction.md -->
+<!-- #file:.github/UI-Instructions/suggestion-overlay-implementation.instruction.md -->
+<!-- #file:.github/UI-Instructions/suggestion-overlay-integration.instruction.md -->
+
+<!-- Development Instructions -->  
+<!-- #file:.github/Development-Instructions/database-patterns.instruction.md -->
+<!-- #file:.github/Development-Instructions/stored-procedures.instruction.md -->
+<!-- #file:.github/Development-Instructions/errorhandler.instruction.md -->
+<!-- #file:.github/Development-Instructions/githubworkflow.instruction.md -->
+<!-- #file:.github/Development-Instructions/templates-documentation.instruction.md -->
+
+<!-- Core Instructions -->
+<!-- #file:.github/Core-Instructions/dependency-injection.instruction.md -->
+<!-- #file:.github/Core-Instructions/naming.conventions.instruction.md -->
+
+<!-- New Template and Pattern Files -->
+<!-- #file:.github/copilot/templates/mtm-feature-request.md -->
+<!-- #file:.github/copilot/templates/mtm-ui-component.md -->
+<!-- #file:.github/copilot/templates/mtm-viewmodel-creation.md -->
+<!-- #file:.github/copilot/templates/mtm-database-operation.md -->
+<!-- #file:.github/copilot/templates/mtm-service-implementation.md -->
+
+<!-- Context Files -->
+<!-- #file:.github/copilot/context/mtm-business-domain.md -->
+<!-- #file:.github/copilot/context/mtm-technology-stack.md -->
+<!-- #file:.github/copilot/context/mtm-architecture-patterns.md -->
+<!-- #file:.github/copilot/context/mtm-database-procedures.md -->
+
+<!-- Pattern Files -->
+<!-- #file:.github/copilot/patterns/mtm-mvvm-community-toolkit.md -->
+<!-- #file:.github/copilot/patterns/mtm-stored-procedures-only.md -->
+<!-- #file:.github/copilot/patterns/mtm-avalonia-syntax.md -->
+
 **Generate code strictly following the established patterns found in this .NET 8 Avalonia MVVM application. Never introduce patterns not already present in the codebase.**
 
 <details>
@@ -28,6 +69,11 @@
 <details>
 <summary><strong>🚨 CRITICAL: Avalonia AXAML Syntax Requirements</strong></summary>
 
+> **Extended Guidance**: For complete AXAML patterns, see: 
+> - avalonia-xaml-syntax.instruction.md
+> - ui-generation.instruction.md
+> - mtm-avalonia-syntax.md
+
 **BEFORE generating ANY AXAML code, follow these critical rules to prevent AVLN2000 compilation errors:**
 
 ### **Avalonia-Specific Syntax Rules**
@@ -54,13 +100,18 @@
 </details>
 
 <details>
-<summary><strong>📋 Established Codebase Patterns (CRITICAL)</strong></summary>
+<summary><strong>🏗️ MVVM Community Toolkit Patterns (EXCLUSIVE)</strong></summary>
 
-### **MVVM Community Toolkit Patterns (REQUIRED)**
-Based on analysis of `BaseViewModel.cs`, `MainViewViewModel.cs`, and 20+ other ViewModels in the codebase:
+> **Extended Guidance**: For complete MVVM patterns, see:
+> - mtm-mvvm-community-toolkit.md
+> - mtm-viewmodel-creation.md
 
+**USE ONLY MVVM Community Toolkit patterns. ReactiveUI is completely removed from this codebase.**
+
+### **ViewModel Pattern (Source Generator Based)**
 ```csharp
 // ✅ CORRECT: MVVM Community Toolkit pattern (found in all ViewModels)
+[ObservableObject]
 public partial class InventoryViewModel : BaseViewModel
 {
     [ObservableProperty]
@@ -87,36 +138,36 @@ public partial class InventoryViewModel : BaseViewModel
         }
     }
 
-    public InventoryViewModel(ILogger<InventoryViewModel> logger) : base(logger)
+    public InventoryViewModel(ILogger<InventoryViewModel> logger, IInventoryService service)
+        : base(logger)
     {
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(service);
     }
 }
 ```
 
-### **Service Organization Pattern (CRITICAL)**
-Based on analysis of actual `Services/` folder structure:
+### **NEVER Use These ReactiveUI Patterns**
+- ❌ `ReactiveObject` - Use `[ObservableObject]`
+- ❌ `ReactiveCommand<T, R>` - Use `[RelayCommand]`
+- ❌ `this.RaiseAndSetIfChanged()` - Use `[ObservableProperty]`
+- ❌ `WhenAnyValue()` - Use property change handlers
+- ❌ Reactive subscriptions - Use standard event handling
 
-```csharp
-// ✅ CORRECT: Category-based service consolidation (actual pattern)
-// File: Services/ErrorHandling.cs
-namespace MTM_WIP_Application_Avalonia.Services
-{
-    public static class ErrorHandling { /* centralized error handling */ }
-    public class ErrorEntry { /* error data model */ }
-    public static class ErrorConfiguration { /* error configuration */ }
-}
+</details>
 
-// File: Services/Configuration.cs  
-namespace MTM_WIP_Application_Avalonia.Services
-{
-    public class ConfigurationService : IConfigurationService { /* actual implementation */ }
-    public class ApplicationStateService : IApplicationStateService { /* actual implementation */ }
-}
-```
+<details>
+<summary><strong>🗄️ Database Access Patterns (STORED PROCEDURES ONLY)</strong></summary>
 
-### **Database Access Pattern (CRITICAL)**
-Based on analysis of `Services/Database.cs` and `Helper_Database_StoredProcedure`:
+> **Extended Guidance**: For complete database patterns, see:
+> - database-patterns.instruction.md
+> - stored-procedures.instruction.md
+> - mtm-stored-procedures-only.md
+> - mtm-database-procedures.md
 
+**ALL database operations MUST use stored procedures via Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()**
+
+### **Standard Database Operation Pattern**
 ```csharp
 // ✅ CORRECT: Stored procedures only (established pattern)
 var parameters = new MySqlParameter[]
@@ -139,31 +190,26 @@ if (result.Status == 1)
 }
 ```
 
-### **Service Registration Pattern (CRITICAL)**  
-Based on analysis of `ServiceCollectionExtensions.cs`:
+### **45+ Available Stored Procedures**
+- **Inventory**: `inv_inventory_Add_Item`, `inv_inventory_Get_ByPartID`, `inv_inventory_Remove_Item`
+- **Transactions**: `inv_transaction_Add`, `inv_transaction_Get_History`
+- **Master Data**: `md_part_ids_Get_All`, `md_locations_Get_All`, `md_operation_numbers_Get_All`
+- **Error Logging**: `log_error_Add_Error`, `log_error_Get_All`
 
-```csharp
-// ✅ CORRECT: Actual service registration pattern
-public static class ServiceCollectionExtensions
-{
-    public static IServiceCollection AddMTMServices(
-        this IServiceCollection services, 
-        IConfiguration configuration)
-    {
-        // Use TryAdd methods as established
-        services.TryAddSingleton<IConfigurationService, ConfigurationService>();
-        services.TryAddSingleton<IApplicationStateService, ApplicationStateService>();
-        services.TryAddSingleton<INavigationService, NavigationService>();
-        services.TryAddScoped<IDatabaseService, DatabaseService>();
-        
-        return services;
-    }
-}
-```
+### **NEVER Use Direct SQL**
+- ❌ Manual SQL queries
+- ❌ String concatenation in SQL
+- ❌ Direct MySqlCommand usage
+
+</details>
+
+<details>
+<summary><strong>🏭 MTM Manufacturing Business Domain</strong></summary>
+
+> **Extended Guidance**: For complete business domain context, see:
+> - mtm-business-domain.md
 
 ### **Transaction Type Logic (MTM-SPECIFIC)**
-Based on business domain analysis:
-
 ```csharp
 // ✅ CORRECT: User intent determines transaction type (not operation numbers)
 public string DetermineTransactionType(UserAction action)
@@ -178,148 +224,7 @@ public string DetermineTransactionType(UserAction action)
 // Operation numbers ("90", "100", "110") are workflow steps, NOT transaction indicators
 ```
 
-</details>
-
-<details>
-<summary><strong>�️ Database Schema and Stored Procedures (CRITICAL)</strong></summary>
-
-### **MySQL Database Structure**
-Based on analysis of `Production_Database_Schema.sql` and `Development_Database_Schema.sql`:
-
-**Core Tables:**
-- **`inv_inventory`**: Main inventory tracking table
-- **`inv_transaction`**: Transaction history (IN/OUT/TRANSFER)
-- **`md_part_ids`**: Master data for part definitions
-- **`md_locations`**: Master data for location definitions
-- **`md_operation_numbers`**: Master data for operation/workflow steps
-- **`md_item_types`**: Master data for item type classifications
-
-### **Stored Procedure Patterns (REQUIRED)**
-All database operations MUST use stored procedures. Never use direct SQL queries.
-
-**Inventory Operations:**
-```sql
--- Adding inventory items
-CALL inv_inventory_Add_Item(p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType, p_User, p_Notes);
-
--- Retrieving inventory by part ID
-CALL inv_inventory_Get_ByPartID(p_PartID);
-
--- Retrieving inventory by part ID and operation
-CALL inv_inventory_Get_ByPartIDandOperation(p_PartID, o_Operation);
-
--- Removing inventory items
-CALL inv_inventory_Remove_Item(p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType, p_User, p_BatchNumber, p_Notes, @p_Status, @p_ErrorMsg);
-
--- Transferring inventory between locations
-CALL inv_inventory_Transfer_Part(in_BatchNumber, in_PartID, in_Operation, in_NewLocation);
-CALL inv_inventory_Transfer_Quantity(in_BatchNumber, in_PartID, in_Operation, in_TransferQuantity, in_OriginalQuantity, in_NewLocation, in_User);
-```
-
-**Master Data Operations:**
-```sql
--- Part IDs management
-CALL md_part_ids_Add_Part(p_ItemNumber, p_Customer, p_Description, p_IssuedBy, p_ItemType);
-CALL md_part_ids_Get_All();
-CALL md_part_ids_Get_ByItemNumber(p_ItemNumber);
-CALL md_part_ids_Update_Part(p_ID, p_ItemNumber, p_Customer, p_Description, p_IssuedBy, p_ItemType);
-CALL md_part_ids_Delete_ByItemNumber(p_ItemNumber);
-
--- Locations management
-CALL md_locations_Add_Location(p_Location, p_IssuedBy, p_Building);
-CALL md_locations_Get_All();
-CALL md_locations_Update_Location(p_OldLocation, p_Location, p_IssuedBy, p_Building);
-CALL md_locations_Delete_ByLocation(p_Location);
-
--- Operation numbers management
-CALL md_operation_numbers_Add_Operation(p_Operation, p_IssuedBy);
-CALL md_operation_numbers_Get_All();
-CALL md_operation_numbers_Update_Operation(p_Operation, p_NewOperation, p_IssuedBy);
-CALL md_operation_numbers_Delete_ByOperation(p_Operation);
-
--- Item types management
-CALL md_item_types_Add_ItemType(p_ItemType, p_IssuedBy);
-CALL md_item_types_Get_All();
-CALL md_item_types_Update_ItemType(p_ID, p_ItemType, p_IssuedBy);
-CALL md_item_types_Delete_ByType(p_ItemType);
-```
-
-**Transaction Logging:**
-```sql
--- Recording transactions
-CALL inv_transaction_Add(in_TransactionType, in_PartID, in_BatchNumber, in_FromLocation, in_ToLocation, in_Operation, in_Quantity, in_Notes, in_User, in_ItemType, in_ReceiveDate);
-```
-
-**Error Logging:**
-```sql
--- Error management
-CALL log_error_Add_Error(p_User, p_Severity, p_ErrorType, p_ErrorMessage, p_StackTrace, p_ModuleName, p_MethodName, p_AdditionalInfo, p_MachineName, p_OSVersion, p_AppVersion, p_ErrorTime, @p_Status, @p_ErrorMsg);
-CALL log_error_Get_All(@p_Status, @p_ErrorMsg);
-CALL log_error_Get_ByUser(p_User, @p_Status, @p_ErrorMsg);
-CALL log_error_Delete_All(@p_Status, @p_ErrorMsg);
-```
-
-### **Database Development Workflow**
-1. **New Procedures**: Add to both `Updated_Stored_Procedures.sql` and `Development_Stored_Procedures.sql`
-2. **Testing**: Test on Development database first (`mtm_wip_application_test`)
-3. **Production**: Move tested procedures to `Production_Stored_Procedures.sql`
-4. **Cleanup**: Remove from `Updated_Stored_Procedures.sql` after deployment
-
-### **Connection String Configuration**
-```csharp
-// Development database
-"ConnectionStrings:Development": "Server=localhost;Database=mtm_wip_application_test;..."
-
-// Production database  
-"ConnectionStrings:Production": "Server=localhost;Database=mtm_wip_application;..."
-```
-
-</details>
-
-<details>
-<summary><strong>� Code Generation Rules</strong></summary>
-
-### When generating UI components:
-1. **Always use Avalonia controls** - Not WPF or WinForms equivalents
-2. **Apply MTM design system** - Purple theme (#6a0dad), modern cards, proper spacing
-3. **Use standard bindings** - `{Binding PropertyName}` with INotifyPropertyChanged
-4. **Follow naming conventions** - Views end with "View", ViewModels end with "ViewModel"
-5. **Implement proper disposal** - Override OnDetachedFromVisualTree for cleanup
-
-### When generating ViewModels:
-1. **Inherit from BaseViewModel** - Use MVVM Community Toolkit patterns with `[ObservableProperty]` and `[RelayCommand]`
-2. **Use dependency injection** - Constructor injection for services and logging
-3. **Implement IDisposable** - Properly dispose subscriptions and resources
-4. **Apply validation** - Use standard .NET validation patterns
-5. **Follow established patterns** - Match existing ViewModel implementations
-
-### When generating business logic:
-1. **Use established services** - ErrorHandling, Configuration, Navigation, Database
-2. **Apply async/await** - For all I/O operations and database calls
-3. **Implement logging** - Use ILogger<T> dependency injection
-4. **Add error handling** - Use ErrorHandling.HandleErrorAsync for comprehensive error handling
-5. **Follow separation** - No UI dependencies in business logic
-
-### When generating services:
-1. **📋 Group by category** - Multiple related services in one file (ErrorHandling.cs, Configuration.cs, etc.)
-2. **📋 Follow established patterns** - Use existing service structure as template
-3. **Follow DI patterns** - Use constructor injection and proper lifetimes
-4. **Use stored procedures** - Via Database service and Helper_Database_StoredProcedure
-5. **Implement proper error handling** - Use ErrorHandling service for consistent error management
-
-### When generating database operations:
-1. **Use stored procedures ONLY** - Never write direct SQL queries
-2. **Follow existing patterns** - Use Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()
-3. **Add new procedures correctly** - Place in both Updated_Stored_Procedures.sql and Development_Stored_Procedures.sql
-4. **Handle results properly** - Check Status and process DataTable results
-5. **Include proper error handling** - Use output parameters for status and error messages
-
-</details>
-
-<details>
-<summary><strong>🔢 MTM-Specific Data Patterns</strong></summary>
-
-### Part Information
+### **Core Manufacturing Entities**
 ```csharp
 public class PartInfo
 {
@@ -330,7 +235,7 @@ public class PartInfo
 }
 ```
 
-### Operation Numbers Usage
+### **Operation Numbers Usage**
 ```csharp
 // CORRECT: Operations are workflow steps
 var operations = new[] { "90", "100", "110", "120" }; // String numbers representing workflow
@@ -342,111 +247,258 @@ if (operation == "90") transactionType = "IN"; // This is incorrect logic
 </details>
 
 <details>
-<summary><strong>⚙️ Required Project Setup</strong></summary>
+<summary><strong>⚙️ Service Layer Architecture</strong></summary>
+
+> **Extended Guidance**: For complete service patterns, see:
+> - mtm-architecture-patterns.md
+> - mtm-service-implementation.md
+
+### **Service Organization Pattern (CRITICAL)**
+Based on analysis of actual `Services/` folder structure:
 
 ```csharp
-using Avalonia;
-
-public static class Program
+// ✅ CORRECT: Category-based service consolidation (actual pattern)
+// File: Services/ErrorHandling.cs
+namespace MTM_WIP_Application_Avalonia.Services
 {
-    public static void Main(string[] args) => BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    public static class ErrorHandling { /* centralized error handling */ }
+    public class ErrorEntry { /* error data model */ }
+    public static class ErrorConfiguration { /* error configuration */ }
+}
 
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .LogToTrace();
+// File: Services/Configuration.cs  
+namespace MTM_WIP_Application_Avalonia.Services
+{
+    public class ConfigurationService : IConfigurationService { /* actual implementation */ }
+    public class ApplicationStateService : IApplicationStateService { /* actual implementation */ }
 }
 ```
 
-### Current Command Infrastructure
+### **Service Registration Pattern (CRITICAL)**  
 ```csharp
-// Standard ICommand implementations available
- public class AsyncCommand : ICommand
- {
-     private readonly Func<Task> _execute;
-     private readonly Func<bool>? _canExecute;
-     // Implementation in InventoryTabViewModel.cs
- }
- 
- public class RelayCommand : ICommand
- {
-     private readonly Action _execute;
-     private readonly Func<bool>? _canExecute;
-     // Implementation in InventoryTabViewModel.cs
- }
-```
-
-</details>
-
-<details>
-<summary><strong>📚 Documentation and Collapsible Sections (CRITICAL)</strong></summary>
-
-### Instruction File Formatting Rule (CRITICAL)
-**🆕 COLLAPSIBLE SECTIONS RULE**: All instruction files MUST use HTML `<details>` and `<summary>` tags to create collapsible sections for improved readability and navigation.
-
-```markdown
-<details>
-<summary><strong>📋 Section Title</strong></summary>
-
-Section content goes here...
-
-</details>
-```
-
-**Required Structure**:
-- Use `<strong>` tags with emoji prefixes for section titles
-- Group related information under logical sections
-- Make all major sections collapsible by default
-- Use consistent emoji patterns for visual organization
-
-### When modifying any .md files:
-1. **Maintain accuracy** - Ensure all information reflects current MVVM Community Toolkit implementation
-2. **Update cross-references** - Update all related links and references to match new patterns
-3. **Follow naming conventions** - Use established file naming patterns
-4. **Apply collapsible formatting** - Use `<details>/<summary>` tags for all major sections
-
-</details>
-
-<details>
-<summary><strong>🚨 CRITICAL: MVVM Community Toolkit Migration Status</strong></summary>
-
-### ✅ **COMPLETED - Services Layer**
-**All services use standard .NET patterns without ReactiveUI:**
-- ✅ **ErrorHandling.cs**: Comprehensive error handling without ReactiveUI
-- ✅ **Configuration.cs**: Configuration and application state with INotifyPropertyChanged
-- ✅ **Navigation.cs**: Simple navigation service with standard patterns
-- ✅ **Database.cs**: Complete database access with Helper_Database_StoredProcedure
-
-### ✅ **COMPLETED - Working Examples**
-- ✅ **InventoryTabViewModel**: Fully converted to MVVM Community Toolkit patterns with [ObservableProperty] and [RelayCommand]
-- ✅ **BaseViewModel**: Uses MVVM Community Toolkit ObservableValidator
-- ✅ **MainViewViewModel**: Full MVVM Community Toolkit implementation
-
-### 🎯 **MVVM Community Toolkit Patterns to Use**
-```csharp
-// Use these patterns (actual patterns from codebase):
-public partial class SomeViewModel : BaseViewModel
+// ✅ CORRECT: Actual service registration pattern
+public static class ServiceCollectionExtensions
 {
-    [ObservableProperty]
-    private string _property = string.Empty;
-    
-    [RelayCommand]
-    private async Task ExecuteSomeAsync()
+    public static IServiceCollection AddMTMServices(
+        this IServiceCollection services, 
+        IConfiguration configuration)
     {
-        // Implementation here
-    }
-    
-    public SomeViewModel(ILogger<SomeViewModel> logger) : base(logger)
-    {
+        // Use TryAdd methods as established
+        services.TryAddSingleton<IConfigurationService, ConfigurationService>();
+        services.TryAddScoped<IInventoryService, InventoryService>();
+        services.TryAddTransient<InventoryViewModel>();
+        
+        return services;
     }
 }
 ```
 
-**NO LONGER USE:**
-- ❌ ReactiveObject
-- ❌ ReactiveCommand<Unit, Unit>
-- ❌ this.RaiseAndSetIfChanged()
-- ❌ this.WhenActivated()
-- ❌ ReactiveUserControl<T>
+</details>
+
+<details>
+<summary><strong>🎨 MTM Design System & UI Patterns</strong></summary>
+
+> **Extended Guidance**: For complete UI patterns, see:
+> - ui-generation.instruction.md
+> - ui-styling.instruction.md
+> - mtm-ui-component.md
+
+### **MTM Purple Theme Implementation**
+```xml
+<!-- Primary MTM Colors -->
+<Button Background="#6a0dad"      <!-- Primary purple -->
+        Foreground="White"
+        Padding="12,8"
+        CornerRadius="4" />
+
+<Border Background="#8A2BE2"      <!-- Secondary purple -->
+        BorderBrush="#E0E0E0"
+        BorderThickness="1"
+        CornerRadius="8" />
+```
+
+### **Card-Based Layout System**
+```xml
+<Border Background="White"
+        BorderBrush="#E0E0E0" 
+        BorderThickness="1"
+        CornerRadius="8"
+        Padding="16"
+        Margin="8">
+    
+    <Grid x:Name="CardContent" RowDefinitions="Auto,*">
+        <Border Grid.Row="0" Background="#6a0dad" CornerRadius="8,8,0,0" Padding="16,8">
+            <TextBlock Text="Card Title" Foreground="White" FontWeight="Bold" />
+        </Border>
+        <StackPanel Grid.Row="1" Margin="16" Spacing="8">
+            <!-- Card content -->
+        </StackPanel>
+    </Grid>
+</Border>
+```
+
+### **Consistent Spacing System**
+- **Small spacing**: 8px margins and padding
+- **Medium spacing**: 16px for card padding and form spacing  
+- **Large spacing**: 24px for section separation
 
 </details>
+
+<details>
+<summary><strong>🔧 Dependency Injection & Configuration</strong></summary>
+
+> **Extended Guidance**: For complete DI patterns, see:
+> - dependency-injection.instruction.md
+
+### **Constructor Injection Pattern**
+```csharp
+public class SomeService : ISomeService
+{
+    private readonly ILogger<SomeService> _logger;
+    private readonly IConfigurationService _configurationService;
+    
+    public SomeService(
+        ILogger<SomeService> logger,
+        IConfigurationService configurationService)
+    {
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(configurationService);
+        
+        _logger = logger;
+        _configurationService = configurationService;
+    }
+}
+```
+
+### **Service Lifetimes**
+- **Singleton**: Theme services, configuration services
+- **Scoped**: Database services, business services  
+- **Transient**: ViewModels, short-lived services
+
+</details>
+
+<details>
+<summary><strong>🚨 Error Handling & Logging</strong></summary>
+
+> **Extended Guidance**: For complete error patterns, see:
+> - errorhandler.instruction.md
+
+### **Centralized Error Handling**
+```csharp
+try
+{
+    // Operation that might fail
+    await SomeService.PerformOperationAsync();
+}
+catch (Exception ex)
+{
+    // ALWAYS use centralized error handling
+    await Services.ErrorHandling.HandleErrorAsync(ex, "Operation context");
+}
+```
+
+### **Structured Logging**
+```csharp
+// Use Microsoft.Extensions.Logging throughout
+Logger.LogInformation("Operation started for {PartId}", partId);
+Logger.LogWarning("Operation failed with status {Status}", status);
+Logger.LogError(ex, "Critical error in {Operation}", operationName);
+```
+
+</details>
+
+<details>
+<summary><strong>✅ Instruction Loading Verification</strong></summary>
+
+**Before generating code, verify these instruction files are available:**
+- [ ] Avalonia AXAML syntax rules (AVLN2000 prevention)
+- [ ] Database stored procedure patterns  
+- [ ] MVVM Community Toolkit patterns
+- [ ] MTM design system guidelines
+- [ ] Service organization patterns
+- [ ] Manufacturing business domain rules
+- [ ] Error handling and logging patterns
+
+**If any are missing, explicitly request them in your prompt.**
+
+**Auto-Include System Status**: This file automatically includes all specialized instruction files when referenced. No manual file inclusion needed.
+
+</details>
+
+<details>
+<summary><strong>📚 View Code-Behind Pattern</strong></summary>
+
+### **Minimal Code-Behind Pattern**
+All 33 View files follow clean Avalonia architecture without ReactiveUI dependencies:
+
+```csharp
+// ✅ Standard Avalonia UserControl pattern
+public partial class SomeView : UserControl
+{
+    public SomeView()
+    {
+        InitializeComponent();
+        // Minimal initialization code only
+    }
+    
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        // Cleanup resources, subscriptions
+        base.OnDetachedFromVisualTree(e);
+    }
+}
+```
+
+### **View-ViewModel Connection**
+```xml
+<!-- DataContext set via dependency injection in parent -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SomeView">
+    <!-- No code-behind ViewModel instantiation -->
+</UserControl>
+```
+
+</details>
+
+<details>
+<summary><strong>🔗 Cross-Reference System</strong></summary>
+
+**This instruction system uses an interconnected reference model:**
+
+### **Template Files**
+- `mtm-feature-request.md` - Complete feature development template
+- `mtm-ui-component.md` - Avalonia UserControl creation template  
+- `mtm-viewmodel-creation.md` - MVVM Community Toolkit ViewModel template
+- `mtm-database-operation.md` - Stored procedure operation template
+- `mtm-service-implementation.md` - Service layer implementation template
+
+### **Context Files**
+- `mtm-business-domain.md` - Manufacturing domain knowledge
+- `mtm-technology-stack.md` - .NET 8, Avalonia 11.3.4, MySQL specifications
+- `mtm-architecture-patterns.md` - MVVM, DI, service organization patterns
+- `mtm-database-procedures.md` - Complete catalog of 45+ stored procedures
+
+### **Pattern Files**
+- `mtm-mvvm-community-toolkit.md` - Complete MVVM Community Toolkit implementation guide
+- `mtm-stored-procedures-only.md` - Database access pattern enforcement
+- `mtm-avalonia-syntax.md` - AXAML syntax rules and AVLN2000 prevention
+
+**All files are automatically included when this main instruction file is referenced.**
+
+</details>
+
+---
+
+## 🎯 Quick Reference Summary
+
+**For immediate development guidance:**
+
+1. **ViewModels**: Use `[ObservableObject]` + `[ObservableProperty]` + `[RelayCommand]` patterns only
+2. **Database**: Use `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()` with actual stored procedure names  
+3. **AXAML**: Use `x:Name` (not `Name`) on Grids, `xmlns="https://github.com/avaloniaui"` namespace
+4. **Services**: Category-based consolidation with dependency injection
+5. **Colors**: MTM purple `#6a0dad` for primary elements
+6. **Error Handling**: `await Services.ErrorHandling.HandleErrorAsync(ex, context)`
+7. **Business Logic**: Transaction types by user intent (IN/OUT/TRANSFER), operations are workflow steps
+
+**This instruction system provides comprehensive guidance for all MTM WIP Application development scenarios while maintaining consistency with established codebase patterns.**
