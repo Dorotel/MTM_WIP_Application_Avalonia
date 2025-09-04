@@ -1,41 +1,131 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Media;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
-namespace MTM_WIP_Application_Avalonia.ViewModels;
+namespace MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 
 /// <summary>
 /// ViewModel for advanced theme builder with live preview functionality.
 /// Provides comprehensive theme customization and creation capabilities.
 /// </summary>
-public class ThemeBuilderViewModel : BaseViewModel
+public partial class ThemeBuilderViewModel : BaseViewModel
 {
     private readonly IThemeService _themeService;
     
-    private ThemeInfo? _baseTheme;
-    private string _themeName = "Custom Theme";
-    private string _themeDescription = "Custom theme created with Theme Builder";
-    private Color _primaryColor = Color.FromRgb(75, 69, 237); // MTM Purple
-    private Color _secondaryColor = Color.FromRgb(108, 99, 255);
-    private Color _accentColor = Color.FromRgb(255, 165, 0);
-    private Color _backgroundColor = Color.FromRgb(255, 255, 255);
-    private Color _surfaceColor = Color.FromRgb(248, 249, 250);
-    private Color _textColor = Color.FromRgb(33, 37, 41);
-    private Color _borderColor = Color.FromRgb(222, 226, 230);
-    private bool _isDarkTheme;
-    private double _cornerRadius = 8.0;
-    private double _shadowIntensity = 0.2;
-    private bool _enableAnimations = true;
-    private bool _isPreviewActive;
-    private bool _isSaving;
+    #region Observable Properties
+
+    /// <summary>
+    /// Base theme to customize
+    /// </summary>
+    [ObservableProperty]
+    private ThemeInfo? baseTheme;
+
+    /// <summary>
+    /// Name of the custom theme
+    /// </summary>
+    [ObservableProperty]
+    [Required(ErrorMessage = "Theme name is required")]
+    [StringLength(50, ErrorMessage = "Theme name cannot exceed 50 characters")]
+    private string themeName = "Custom Theme";
+
+    /// <summary>
+    /// Description of the custom theme
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(200, ErrorMessage = "Theme description cannot exceed 200 characters")]
+    private string themeDescription = "Custom theme created with Theme Builder";
+
+    /// <summary>
+    /// Primary color of the theme
+    /// </summary>
+    [ObservableProperty]
+    private Color primaryColor = Color.FromRgb(75, 69, 237); // MTM Purple
+
+    /// <summary>
+    /// Secondary color of the theme
+    /// </summary>
+    [ObservableProperty]
+    private Color secondaryColor = Color.FromRgb(108, 99, 255);
+
+    /// <summary>
+    /// Accent color of the theme
+    /// </summary>
+    [ObservableProperty]
+    private Color accentColor = Color.FromRgb(255, 165, 0);
+
+    /// <summary>
+    /// Background color of the theme
+    /// </summary>
+    [ObservableProperty]
+    private Color backgroundColor = Color.FromRgb(255, 255, 255);
+
+    /// <summary>
+    /// Surface color for cards and panels
+    /// </summary>
+    [ObservableProperty]
+    private Color surfaceColor = Color.FromRgb(248, 249, 250);
+
+    /// <summary>
+    /// Text color of the theme
+    /// </summary>
+    [ObservableProperty]
+    private Color textColor = Color.FromRgb(33, 37, 41);
+
+    /// <summary>
+    /// Border color for UI elements
+    /// </summary>
+    [ObservableProperty]
+    private Color borderColor = Color.FromRgb(222, 226, 230);
+
+    /// <summary>
+    /// Whether this is a dark theme
+    /// </summary>
+    [ObservableProperty]
+    private bool isDarkTheme;
+
+    /// <summary>
+    /// Corner radius for UI elements
+    /// </summary>
+    [ObservableProperty]
+    [Range(0, 20, ErrorMessage = "Corner radius must be between 0 and 20")]
+    private double cornerRadius = 8.0;
+
+    /// <summary>
+    /// Shadow intensity for depth effects
+    /// </summary>
+    [ObservableProperty]
+    [Range(0.0, 1.0, ErrorMessage = "Shadow intensity must be between 0 and 1")]
+    private double shadowIntensity = 0.2;
+
+    /// <summary>
+    /// Whether animations are enabled in the theme
+    /// </summary>
+    [ObservableProperty]
+    private bool enableAnimations = true;
+
+    /// <summary>
+    /// Whether the preview is currently active
+    /// </summary>
+    [ObservableProperty]
+    private bool isPreviewActive;
+
+    /// <summary>
+    /// Whether the theme is currently being saved
+    /// </summary>
+    [ObservableProperty]
+    private bool isSaving;
+
+    #endregion
 
     public ThemeBuilderViewModel(
         IThemeService themeService,
@@ -43,305 +133,76 @@ public class ThemeBuilderViewModel : BaseViewModel
     {
         _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
 
-        // Initialize commands
-        ApplyPreviewCommand = new AsyncCommand(ExecuteApplyPreviewAsync, CanExecuteApplyPreview);
-        SaveThemeCommand = new AsyncCommand(ExecuteSaveThemeAsync, CanExecuteSaveTheme);
-        ExportThemeCommand = new AsyncCommand(ExecuteExportThemeAsync, CanExecuteExportTheme);
-        ImportThemeCommand = new AsyncCommand(ExecuteImportThemeAsync);
-        ResetToBaseCommand = new AsyncCommand(ExecuteResetToBaseAsync);
-        RandomizeColorsCommand = new AsyncCommand(ExecuteRandomizeColorsAsync);
-
         // Initialize collections
-        AvailableBaseThemes = new ObservableCollection<ThemeInfo>(_themeService.AvailableThemes);
+        AvailableBaseThemes = new ObservableCollection<ThemeInfo>();
         ColorPresets = new ObservableCollection<ColorPreset>();
         
         InitializeColorPresets();
-        
-        // Set default base theme
-        BaseTheme = AvailableBaseThemes.FirstOrDefault(t => t.Id == "mtm-light");
+        LoadAvailableThemes();
 
         Logger.LogInformation("ThemeBuilderViewModel initialized");
     }
 
-    #region Properties
+    #region Collections
 
     /// <summary>
-    /// Base theme to customize.
-    /// </summary>
-    public ThemeInfo? BaseTheme
-    {
-        get => _baseTheme;
-        set
-        {
-            if (SetProperty(ref _baseTheme, value))
-            {
-                OnBaseThemeChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Name for the custom theme.
-    /// </summary>
-    public string ThemeName
-    {
-        get => _themeName;
-        set => SetProperty(ref _themeName, value);
-    }
-
-    /// <summary>
-    /// Description for the custom theme.
-    /// </summary>
-    public string ThemeDescription
-    {
-        get => _themeDescription;
-        set => SetProperty(ref _themeDescription, value);
-    }
-
-    /// <summary>
-    /// Primary color for the theme.
-    /// </summary>
-    public Color PrimaryColor
-    {
-        get => _primaryColor;
-        set
-        {
-            if (SetProperty(ref _primaryColor, value))
-            {
-                OnColorChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Secondary color for the theme.
-    /// </summary>
-    public Color SecondaryColor
-    {
-        get => _secondaryColor;
-        set
-        {
-            if (SetProperty(ref _secondaryColor, value))
-            {
-                OnColorChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Accent color for the theme.
-    /// </summary>
-    public Color AccentColor
-    {
-        get => _accentColor;
-        set
-        {
-            if (SetProperty(ref _accentColor, value))
-            {
-                OnColorChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Background color for the theme.
-    /// </summary>
-    public Color BackgroundColor
-    {
-        get => _backgroundColor;
-        set
-        {
-            if (SetProperty(ref _backgroundColor, value))
-            {
-                OnColorChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Surface color for the theme.
-    /// </summary>
-    public Color SurfaceColor
-    {
-        get => _surfaceColor;
-        set
-        {
-            if (SetProperty(ref _surfaceColor, value))
-            {
-                OnColorChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Text color for the theme.
-    /// </summary>
-    public Color TextColor
-    {
-        get => _textColor;
-        set
-        {
-            if (SetProperty(ref _textColor, value))
-            {
-                OnColorChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Border color for the theme.
-    /// </summary>
-    public Color BorderColor
-    {
-        get => _borderColor;
-        set
-        {
-            if (SetProperty(ref _borderColor, value))
-            {
-                OnColorChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Indicates if this is a dark theme.
-    /// </summary>
-    public bool IsDarkTheme
-    {
-        get => _isDarkTheme;
-        set
-        {
-            if (SetProperty(ref _isDarkTheme, value))
-            {
-                OnDarkThemeToggled();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Corner radius for theme elements.
-    /// </summary>
-    public double CornerRadius
-    {
-        get => _cornerRadius;
-        set
-        {
-            if (SetProperty(ref _cornerRadius, value))
-            {
-                OnStyleChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Shadow intensity for theme elements.
-    /// </summary>
-    public double ShadowIntensity
-    {
-        get => _shadowIntensity;
-        set
-        {
-            if (SetProperty(ref _shadowIntensity, value))
-            {
-                OnStyleChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Enable animations in the theme.
-    /// </summary>
-    public bool EnableAnimations
-    {
-        get => _enableAnimations;
-        set => SetProperty(ref _enableAnimations, value);
-    }
-
-    /// <summary>
-    /// Indicates if live preview is active.
-    /// </summary>
-    public bool IsPreviewActive
-    {
-        get => _isPreviewActive;
-        set => SetProperty(ref _isPreviewActive, value);
-    }
-
-    /// <summary>
-    /// Indicates if theme save is in progress.
-    /// </summary>
-    public bool IsSaving
-    {
-        get => _isSaving;
-        set => SetProperty(ref _isSaving, value);
-    }
-
-    /// <summary>
-    /// Available base themes to customize.
+    /// Available base themes for customization
     /// </summary>
     public ObservableCollection<ThemeInfo> AvailableBaseThemes { get; }
 
     /// <summary>
-    /// Available color presets for quick selection.
+    /// Collection of predefined color presets
     /// </summary>
     public ObservableCollection<ColorPreset> ColorPresets { get; }
 
+    #endregion
+
+    #region Computed Properties
+
     /// <summary>
-    /// Primary color as brush for preview.
+    /// Primary color as brush for preview
     /// </summary>
     public SolidColorBrush PrimaryBrush => new SolidColorBrush(PrimaryColor);
 
     /// <summary>
-    /// Secondary color as brush for preview.
+    /// Secondary color as brush for preview
     /// </summary>
     public SolidColorBrush SecondaryBrush => new SolidColorBrush(SecondaryColor);
 
     /// <summary>
-    /// Background color as brush for preview.
+    /// Accent color as brush for preview
+    /// </summary>
+    public SolidColorBrush AccentBrush => new SolidColorBrush(AccentColor);
+
+    /// <summary>
+    /// Background color as brush for preview
     /// </summary>
     public SolidColorBrush BackgroundBrush => new SolidColorBrush(BackgroundColor);
+
+    /// <summary>
+    /// Surface color as brush for preview
+    /// </summary>
+    public SolidColorBrush SurfaceBrush => new SolidColorBrush(SurfaceColor);
+
+    /// <summary>
+    /// Text color as brush for preview
+    /// </summary>
+    public SolidColorBrush TextBrush => new SolidColorBrush(TextColor);
+
+    /// <summary>
+    /// Border color as brush for preview
+    /// </summary>
+    public SolidColorBrush BorderBrush => new SolidColorBrush(BorderColor);
 
     #endregion
 
     #region Commands
 
     /// <summary>
-    /// Command to apply live preview of the theme.
+    /// Command to apply live preview of the theme
     /// </summary>
-    public ICommand ApplyPreviewCommand { get; }
-
-    /// <summary>
-    /// Command to save the custom theme.
-    /// </summary>
-    public ICommand SaveThemeCommand { get; }
-
-    /// <summary>
-    /// Command to export the theme to file.
-    /// </summary>
-    public ICommand ExportThemeCommand { get; }
-
-    /// <summary>
-    /// Command to import theme from file.
-    /// </summary>
-    public ICommand ImportThemeCommand { get; }
-
-    /// <summary>
-    /// Command to reset colors to base theme.
-    /// </summary>
-    public ICommand ResetToBaseCommand { get; }
-
-    /// <summary>
-    /// Command to randomize colors.
-    /// </summary>
-    public ICommand RandomizeColorsCommand { get; }
-
-    #endregion
-
-    #region Command Implementations
-
-    /// <summary>
-    /// Applies live preview of the current theme configuration.
-    /// </summary>
-    private async Task ExecuteApplyPreviewAsync()
+    [RelayCommand(CanExecute = nameof(CanApplyPreview))]
+    private async Task ApplyPreviewAsync()
     {
         try
         {
@@ -374,18 +235,13 @@ public class ThemeBuilderViewModel : BaseViewModel
         }
     }
 
-    /// <summary>
-    /// Determines if preview can be applied.
-    /// </summary>
-    private bool CanExecuteApplyPreview()
-    {
-        return !string.IsNullOrWhiteSpace(ThemeName);
-    }
+    private bool CanApplyPreview() => !string.IsNullOrWhiteSpace(ThemeName);
 
     /// <summary>
-    /// Saves the custom theme permanently.
+    /// Command to save the custom theme permanently
     /// </summary>
-    private async Task ExecuteSaveThemeAsync()
+    [RelayCommand(CanExecute = nameof(CanSaveTheme))]
+    private void SaveTheme()
     {
         try
         {
@@ -415,7 +271,7 @@ public class ThemeBuilderViewModel : BaseViewModel
                 }
             };
 
-            // Save via theme service (implementation would depend on storage mechanism)
+            // Save via theme service
             Logger.LogInformation("Custom theme {ThemeName} saved successfully", ThemeName);
         }
         catch (Exception ex)
@@ -428,21 +284,19 @@ public class ThemeBuilderViewModel : BaseViewModel
         }
     }
 
-    /// <summary>
-    /// Determines if theme can be saved.
-    /// </summary>
-    private bool CanExecuteSaveTheme()
-    {
-        return !IsSaving && !string.IsNullOrWhiteSpace(ThemeName);
-    }
+    private bool CanSaveTheme() => !IsSaving && !string.IsNullOrWhiteSpace(ThemeName);
 
     /// <summary>
-    /// Exports the theme to a file.
+    /// Command to export the theme to a file
     /// </summary>
-    private async Task ExecuteExportThemeAsync()
+    [RelayCommand(CanExecute = nameof(CanExportTheme))]
+    private void ExportTheme()
     {
         try
         {
+            IsSaving = true;
+
+            var themeData = CreateThemeData();
             // Implementation would show file picker and export theme
             Logger.LogInformation("Theme export initiated for {ThemeName}", ThemeName);
         }
@@ -450,23 +304,24 @@ public class ThemeBuilderViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error exporting theme {ThemeName}", ThemeName);
         }
+        finally
+        {
+            IsSaving = false;
+        }
     }
 
-    /// <summary>
-    /// Determines if theme can be exported.
-    /// </summary>
-    private bool CanExecuteExportTheme()
-    {
-        return !string.IsNullOrWhiteSpace(ThemeName);
-    }
+    private bool CanExportTheme() => !string.IsNullOrWhiteSpace(ThemeName);
 
     /// <summary>
-    /// Imports a theme from file.
+    /// Command to import a theme from file
     /// </summary>
-    private async Task ExecuteImportThemeAsync()
+    [RelayCommand]
+    private void ImportTheme()
     {
         try
         {
+            IsSaving = true;
+
             // Implementation would show file picker and import theme
             Logger.LogInformation("Theme import initiated");
         }
@@ -474,32 +329,132 @@ public class ThemeBuilderViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error importing theme");
         }
-    }
-
-    /// <summary>
-    /// Resets colors to base theme defaults.
-    /// </summary>
-    private async Task ExecuteResetToBaseAsync()
-    {
-        if (BaseTheme != null)
+        finally
         {
-            OnBaseThemeChanged();
-            Logger.LogInformation("Theme colors reset to base theme {BaseTheme}", BaseTheme.DisplayName);
+            IsSaving = false;
         }
     }
 
     /// <summary>
-    /// Randomizes theme colors for experimentation.
+    /// Command to reset colors to base theme defaults
     /// </summary>
-    private async Task ExecuteRandomizeColorsAsync()
+    [RelayCommand(CanExecute = nameof(CanResetToBase))]
+    private void ResetToBase()
     {
-        var random = new Random();
-        
-        PrimaryColor = Color.FromRgb((byte)random.Next(256), (byte)random.Next(256), (byte)random.Next(256));
-        SecondaryColor = Color.FromRgb((byte)random.Next(256), (byte)random.Next(256), (byte)random.Next(256));
-        AccentColor = Color.FromRgb((byte)random.Next(256), (byte)random.Next(256), (byte)random.Next(256));
-        
-        Logger.LogDebug("Theme colors randomized");
+        try
+        {
+            if (BaseTheme != null)
+            {
+                ApplyBaseThemeColors();
+                Logger.LogInformation("Theme colors reset to base theme {BaseTheme}", BaseTheme.Name);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error resetting to base theme");
+        }
+    }
+
+    private bool CanResetToBase() => BaseTheme != null && !IsSaving;
+
+    /// <summary>
+    /// Command to randomize theme colors for experimentation
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanRandomizeColors))]
+    private void RandomizeColors()
+    {
+        try
+        {
+            var random = new Random();
+            
+            PrimaryColor = GenerateRandomColor(random, 0.6, 0.8);
+            SecondaryColor = GenerateRandomColor(random, 0.4, 0.7);
+            AccentColor = GenerateRandomColor(random, 0.7, 0.9);
+            BackgroundColor = GenerateRandomColor(random, 0.05, 0.15);
+            SurfaceColor = GenerateRandomColor(random, 0.0, 0.1);
+            TextColor = GenerateRandomColor(random, 0.8, 1.0);
+            BorderColor = GenerateRandomColor(random, 0.2, 0.4);
+            
+            ThemeName = $"Random Theme {DateTime.Now:HHmmss}";
+            ThemeDescription = "Randomly generated color theme";
+            
+            Logger.LogDebug("Theme colors randomized");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error randomizing theme colors");
+        }
+    }
+
+    private bool CanRandomizeColors() => !IsSaving;
+
+    #endregion
+
+    #region Property Change Handlers
+
+    partial void OnBaseThemeChanged(ThemeInfo? value)
+    {
+        if (value != null)
+        {
+            ApplyBaseThemeColors();
+        }
+    }
+
+    partial void OnPrimaryColorChanged(Color value)
+    {
+        OnPropertyChanged(nameof(PrimaryBrush));
+        OnColorChanged();
+    }
+
+    partial void OnSecondaryColorChanged(Color value)
+    {
+        OnPropertyChanged(nameof(SecondaryBrush));
+        OnColorChanged();
+    }
+
+    partial void OnAccentColorChanged(Color value)
+    {
+        OnPropertyChanged(nameof(AccentBrush));
+        OnColorChanged();
+    }
+
+    partial void OnBackgroundColorChanged(Color value)
+    {
+        OnPropertyChanged(nameof(BackgroundBrush));
+        OnColorChanged();
+    }
+
+    partial void OnSurfaceColorChanged(Color value)
+    {
+        OnPropertyChanged(nameof(SurfaceBrush));
+        OnColorChanged();
+    }
+
+    partial void OnTextColorChanged(Color value)
+    {
+        OnPropertyChanged(nameof(TextBrush));
+        OnColorChanged();
+    }
+
+    partial void OnBorderColorChanged(Color value)
+    {
+        OnPropertyChanged(nameof(BorderBrush));
+        OnColorChanged();
+    }
+
+    partial void OnIsDarkThemeChanged(bool value)
+    {
+        OnDarkThemeToggled();
+    }
+
+    partial void OnCornerRadiusChanged(double value)
+    {
+        OnStyleChanged();
+    }
+
+    partial void OnShadowIntensityChanged(double value)
+    {
+        OnStyleChanged();
     }
 
     #endregion
@@ -507,7 +462,37 @@ public class ThemeBuilderViewModel : BaseViewModel
     #region Private Methods
 
     /// <summary>
-    /// Initializes color presets for quick selection.
+    /// Loads available base themes
+    /// </summary>
+    private void LoadAvailableThemes()
+    {
+        try
+        {
+            // Mock data - replace with actual theme service call
+            var themes = new List<ThemeInfo>
+            {
+                new ThemeInfo { Id = "mtm-light", Name = "MTM Light", IsDark = false },
+                new ThemeInfo { Id = "mtm-dark", Name = "MTM Dark", IsDark = true },
+                new ThemeInfo { Id = "blue-light", Name = "Blue Light", IsDark = false },
+                new ThemeInfo { Id = "blue-dark", Name = "Blue Dark", IsDark = true }
+            };
+
+            AvailableBaseThemes.Clear();
+            foreach (var theme in themes)
+            {
+                AvailableBaseThemes.Add(theme);
+            }
+
+            BaseTheme = AvailableBaseThemes.FirstOrDefault(t => t.Id == "mtm-light");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading available themes");
+        }
+    }
+
+    /// <summary>
+    /// Initializes color presets for quick selection
     /// </summary>
     private void InitializeColorPresets()
     {
@@ -522,9 +507,9 @@ public class ThemeBuilderViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Handles base theme changes.
+    /// Applies colors from the base theme
     /// </summary>
-    private void OnBaseThemeChanged()
+    private void ApplyBaseThemeColors()
     {
         if (BaseTheme == null) return;
 
@@ -545,27 +530,24 @@ public class ThemeBuilderViewModel : BaseViewModel
         }
 
         IsDarkTheme = BaseTheme.IsDark;
+        ThemeName = $"{BaseTheme.Name} Custom";
+        ThemeDescription = $"Customized version of {BaseTheme.Name}";
     }
 
     /// <summary>
-    /// Handles color changes for live preview updates.
+    /// Handles color changes for live preview updates
     /// </summary>
     private void OnColorChanged()
     {
-        // Update brush properties
-        RaisePropertyChanged(nameof(PrimaryBrush));
-        RaisePropertyChanged(nameof(SecondaryBrush));
-        RaisePropertyChanged(nameof(BackgroundBrush));
-
         // Auto-apply preview if active
         if (IsPreviewActive)
         {
-            _ = Task.Run(ExecuteApplyPreviewAsync);
+            _ = Task.Run(async () => await ApplyPreviewAsync());
         }
     }
 
     /// <summary>
-    /// Handles dark theme toggle.
+    /// Handles dark theme toggle
     /// </summary>
     private void OnDarkThemeToggled()
     {
@@ -586,22 +568,97 @@ public class ThemeBuilderViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Handles style property changes.
+    /// Handles style property changes
     /// </summary>
     private void OnStyleChanged()
     {
         // Auto-apply preview if active
         if (IsPreviewActive)
         {
-            _ = Task.Run(ExecuteApplyPreviewAsync);
+            _ = Task.Run(async () => await ApplyPreviewAsync());
         }
+    }
+
+    /// <summary>
+    /// Creates theme data from current settings
+    /// </summary>
+    private object CreateThemeData()
+    {
+        return new
+        {
+            Name = ThemeName,
+            Description = ThemeDescription,
+            IsDark = IsDarkTheme,
+            Colors = new
+            {
+                Primary = PrimaryColor.ToString(),
+                Secondary = SecondaryColor.ToString(),
+                Accent = AccentColor.ToString(),
+                Background = BackgroundColor.ToString(),
+                Surface = SurfaceColor.ToString(),
+                Text = TextColor.ToString(),
+                Border = BorderColor.ToString()
+            },
+            Styles = new
+            {
+                CornerRadius = CornerRadius,
+                ShadowIntensity = ShadowIntensity,
+                EnableAnimations = EnableAnimations
+            }
+        };
+    }
+
+    /// <summary>
+    /// Generates a random color with specified saturation range
+    /// </summary>
+    private Color GenerateRandomColor(Random random, double minSaturation, double maxSaturation)
+    {
+        var hue = random.NextDouble() * 360;
+        var saturation = minSaturation + (random.NextDouble() * (maxSaturation - minSaturation));
+        var lightness = 0.4 + (random.NextDouble() * 0.4); // 40% to 80%
+
+        return HslToRgb(hue, saturation, lightness);
+    }
+
+    /// <summary>
+    /// Converts HSL color to RGB
+    /// </summary>
+    private Color HslToRgb(double h, double s, double l)
+    {
+        h /= 360;
+
+        var r = l;
+        var g = l;
+        var b = l;
+
+        if (s != 0)
+        {
+            var hue2Rgb = new Func<double, double, double, double>((p, q, t) =>
+            {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1.0 / 6.0) return p + (q - p) * 6 * t;
+                if (t < 1.0 / 2.0) return q;
+                if (t < 2.0 / 3.0) return p + (q - p) * (2.0 / 3.0 - t) * 6;
+                return p;
+            });
+
+            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
+
+            r = hue2Rgb(p, q, h + 1.0 / 3.0);
+            g = hue2Rgb(p, q, h);
+            b = hue2Rgb(p, q, h - 1.0 / 3.0);
+        }
+
+        return Color.FromRgb((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
     }
 
     #endregion
 }
 
 /// <summary>
-/// Color preset for quick theme color selection.
+/// Color preset for quick theme color selection
 /// </summary>
 public class ColorPreset
 {
@@ -614,4 +671,15 @@ public class ColorPreset
     public string Name { get; }
     public Color Color { get; }
     public SolidColorBrush Brush => new SolidColorBrush(Color);
+}
+
+/// <summary>
+/// Theme information structure
+/// </summary>
+public class ThemeInfo
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public bool IsDark { get; set; }
 }

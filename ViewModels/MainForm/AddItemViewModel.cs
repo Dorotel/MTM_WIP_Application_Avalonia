@@ -241,7 +241,7 @@ public partial class AddItemViewModel : BaseViewModel
             var itemTypesData = await _databaseService.GetAllItemTypesAsync().ConfigureAwait(false);
             
             // Update collections on UI thread
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 var itemTypes = new ObservableCollection<string>();
                 foreach (System.Data.DataRow row in itemTypesData.Rows)
@@ -257,7 +257,7 @@ public partial class AddItemViewModel : BaseViewModel
             // Load available locations
             var locationsData = await _databaseService.GetAllLocationsAsync().ConfigureAwait(false);
             
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 var locations = new ObservableCollection<string>();
                 foreach (System.Data.DataRow row in locationsData.Rows)
@@ -273,7 +273,7 @@ public partial class AddItemViewModel : BaseViewModel
             // Load available operations
             var operationsData = await _databaseService.GetAllOperationsAsync().ConfigureAwait(false);
             
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 var operations = new ObservableCollection<string>();
                 foreach (System.Data.DataRow row in operationsData.Rows)

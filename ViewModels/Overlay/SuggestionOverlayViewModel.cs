@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,9 +13,8 @@ using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 
 /// <summary>
-/// ViewModel for SuggestionOverlayView providing suggestion selection functionality.
-/// Designed for overlay management with comprehensive logging and debugging support.
-/// Uses MVVM Community Toolkit for property change notifications and command handling.
+/// ViewModel for managing suggestion overlay functionality with selection and cancellation capabilities.
+/// Provides a clean interface for displaying and interacting with suggestion lists.
 /// </summary>
 public partial class SuggestionOverlayViewModel : BaseViewModel
 {
@@ -33,7 +33,7 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
     /// Gets or sets the currently selected suggestion from the list.
     /// </summary>
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ExecuteSelectCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SelectCommand))]
     private string? selectedSuggestion;
 
     /// <summary>
@@ -53,116 +53,99 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
     #region Events
 
     /// <summary>
-    /// Occurs when a suggestion has been selected by the user.
+    /// Event raised when a suggestion is selected.
     /// </summary>
     public event Action<string?>? SuggestionSelected;
 
     /// <summary>
-    /// Occurs when the suggestion overlay has been cancelled by the user.
+    /// Event raised when the overlay is cancelled.
     /// </summary>
     public event Action? Cancelled;
 
     #endregion
 
+    #region Constructors
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="SuggestionOverlayViewModel"/> class.
+    /// Initializes a new instance of the SuggestionOverlayViewModel class.
     /// </summary>
-    /// <param name="logger">The logger for this ViewModel. Cannot be null.</param>
-    /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
-    public SuggestionOverlayViewModel(ILogger<SuggestionOverlayViewModel> logger) 
-        : base(logger ?? throw new ArgumentNullException(nameof(logger)))
+    /// <param name="logger">Logger for debugging and diagnostic information.</param>
+    public SuggestionOverlayViewModel(ILogger<SuggestionOverlayViewModel> logger) : base(logger)
     {
         _debugInstanceId = ++_debugInstanceIdCounter;
-        LogInfo($"[DBG:{_debugInstanceId}] SuggestionOverlayViewModel instance created");
-        Debug.WriteLine($"[DBG:{_debugInstanceId}] SuggestionOverlayViewModel instance created");
         
-        Logger.LogInformation("SuggestionOverlayViewModel initialized with dependency injection");
-    }
+        using var scope = Logger.BeginScope("SuggestionOverlayInitialization");
+        Logger.LogInformation("SuggestionOverlayViewModel instance {InstanceId} created", _debugInstanceId);
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SuggestionOverlayViewModel"/> class with suggestions.
-    /// </summary>
-    /// <param name="suggestions">The initial collection of suggestions. Cannot be null.</param>
-    /// <param name="logger">The logger for this ViewModel. Cannot be null.</param>
-    /// <exception cref="ArgumentNullException">Thrown when suggestions or logger is null.</exception>
-    public SuggestionOverlayViewModel(IEnumerable<string> suggestions, ILogger<SuggestionOverlayViewModel> logger) 
-        : this(logger ?? throw new ArgumentNullException(nameof(logger)))
-    {
-        if (suggestions == null)
-            throw new ArgumentNullException(nameof(suggestions));
-
-        Suggestions = new ObservableCollection<string>(suggestions);
-        Debug.WriteLine($"[DBG:VM] SuggestionOverlayViewModel constructor. Suggestions.Count={Suggestions.Count}");
-        LogInfo($"[DBG:{_debugInstanceId}] SuggestionOverlayViewModel constructor. Suggestions.Count={Suggestions.Count}");
+        // Initialize with empty collection
+        Suggestions = new ObservableCollection<string>();
         
-        // Ensure Select button state updates when Suggestions change
-        Suggestions.CollectionChanged += (_, __) =>
-        {
-            Debug.WriteLine($"[DBG:VM] Suggestions collection changed. Suggestions.Count={Suggestions.Count}");
-            LogInfo($"[DBG:{_debugInstanceId}] Suggestions collection changed. Suggestions.Count={Suggestions.Count}");
-            IsSuggestionSelected = SelectedSuggestion != null;
-        };
+        Logger.LogInformation("SuggestionOverlayViewModel initialized with empty suggestions");
+
+        // Set up collection change monitoring
+        SetupCollectionMonitoring();
 
         // Initial state update
-        IsSuggestionSelected = SelectedSuggestion != null;
-        Debug.WriteLine($"[DBG:VM] SuggestionOverlayViewModel initialized");
-        LogInfo($"[DBG:{_debugInstanceId}] SuggestionOverlayViewModel initialized");
+        UpdateSuggestionSelectedState();
     }
 
-    #region Property Change Handlers
-
     /// <summary>
-    /// Handles changes to the SelectedSuggestion property.
+    /// Initializes a new instance of the SuggestionOverlayViewModel class with suggestions.
     /// </summary>
-    /// <param name="value">The new selected suggestion value.</param>
-    partial void OnSelectedSuggestionChanged(string? value)
+    /// <param name="suggestions">The initial collection of suggestions to display.</param>
+    /// <param name="logger">Logger for debugging and diagnostic information.</param>
+    public SuggestionOverlayViewModel(
+        IEnumerable<string> suggestions,
+        ILogger<SuggestionOverlayViewModel> logger) : base(logger)
     {
-        var oldValue = SelectedSuggestion;
-        Debug.WriteLine($"[DBG:VM] SelectedSuggestion.SET triggered. OldValue='{oldValue}', NewValue='{value}'.");
-        LogInfo($"[DBG:{_debugInstanceId}] SelectedSuggestion changed from '{oldValue}' to '{value}'");
+        ArgumentNullException.ThrowIfNull(suggestions);
+
+        _debugInstanceId = ++_debugInstanceIdCounter;
         
-        IsSuggestionSelected = value != null;
-    }
+        using var scope = Logger.BeginScope("SuggestionOverlayInitialization");
+        Logger.LogInformation("SuggestionOverlayViewModel instance {InstanceId} created", _debugInstanceId);
 
-    /// <summary>
-    /// Handles changes to the IsSuggestionSelected property.
-    /// </summary>
-    /// <param name="value">The new suggestion selected state.</param>
-    partial void OnIsSuggestionSelectedChanged(bool value)
-    {
-        Debug.WriteLine($"[DBG:VM] IsSuggestionSelected changed to '{value}'");
-        LogInfo($"[DBG:{_debugInstanceId}] IsSuggestionSelected set to: {value}");
+        Suggestions = new ObservableCollection<string>(suggestions);
+        
+        Logger.LogInformation("SuggestionOverlayViewModel initialized with {SuggestionCount} suggestions", Suggestions.Count);
+
+        // Set up collection change monitoring
+        SetupCollectionMonitoring();
+
+        // Initial state update
+        UpdateSuggestionSelectedState();
     }
 
     #endregion
 
-    #region Command Methods
+    #region Commands
 
     /// <summary>
     /// Determines whether the select command can be executed.
     /// </summary>
-    /// <returns>True if a suggestion is selected and valid; otherwise, false.</returns>
-    private bool CanExecuteSelect()
+    /// <returns>True if a valid suggestion is selected; otherwise, false.</returns>
+    private bool CanSelect()
     {
-        bool result = !string.IsNullOrEmpty(SelectedSuggestion) && Suggestions.Contains(SelectedSuggestion!);
-        Debug.WriteLine($"[DBG:VM] SelectCommand.CanExecute check. SelectedSuggestion='{SelectedSuggestion}', Result={result}");
-        LogInfo($"[DBG:{_debugInstanceId}] SelectCommand.CanExecute check. SelectedSuggestion='{SelectedSuggestion}', Result={result}");
+        bool result = !string.IsNullOrEmpty(SelectedSuggestion) && 
+                     Suggestions.Contains(SelectedSuggestion);
+        
+        Logger.LogDebug("SelectCommand.CanExecute check: SelectedSuggestion='{SelectedSuggestion}', Result={Result}", 
+            SelectedSuggestion, result);
+        
         return result;
     }
 
     /// <summary>
     /// Executes the select command to confirm the selected suggestion.
     /// </summary>
-    [RelayCommand(CanExecute = nameof(CanExecuteSelect))]
-    private void ExecuteSelect()
+    [RelayCommand(CanExecute = nameof(CanSelect))]
+    private void Select()
     {
         try
         {
             using var scope = Logger.BeginScope("SuggestionSelection");
-            var sel = SelectedSuggestion ?? "null";
-            Debug.WriteLine($"[DBG:VM] OnSelect called. SelectedSuggestion='{sel}'");
-            Logger.LogInformation("SelectCommand executed: SelectedSuggestion={SelectedSuggestion}", sel);
-            
+            Logger.LogInformation("SelectCommand executed: SelectedSuggestion={SelectedSuggestion}", SelectedSuggestion);
+
             if (!string.IsNullOrEmpty(SelectedSuggestion))
             {
                 SuggestionSelected?.Invoke(SelectedSuggestion);
@@ -184,14 +167,13 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
     /// Executes the cancel command to close the overlay without selection.
     /// </summary>
     [RelayCommand]
-    private void ExecuteCancel()
+    private void Cancel()
     {
         try
         {
             using var scope = Logger.BeginScope("SuggestionCancellation");
-            Debug.WriteLine($"[DBG:VM] OnCancel called");
             Logger.LogInformation("CancelCommand executed - closing suggestion overlay");
-            
+
             Cancelled?.Invoke();
             IsVisible = false;
             Logger.LogInformation("Suggestion overlay cancelled and closed successfully");
@@ -204,27 +186,44 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
 
     #endregion
 
+    #region Property Change Handlers
+
+    /// <summary>
+    /// Handles changes to the SelectedSuggestion property.
+    /// </summary>
+    /// <param name="value">The new selected suggestion value.</param>
+    partial void OnSelectedSuggestionChanged(string? value)
+    {
+        Logger.LogDebug("SelectedSuggestion changed to '{SelectedSuggestion}'", value);
+        UpdateSuggestionSelectedState();
+        SelectCommand.NotifyCanExecuteChanged();
+    }
+
+    #endregion
+
     #region Helper Methods
 
     /// <summary>
-    /// Logs information with debug output support.
+    /// Sets up monitoring for collection changes.
     /// </summary>
-    /// <param name="message">The message to log.</param>
-    /// <param name="args">Optional message arguments.</param>
-    private void LogInfo(string message, params object[] args)
+    private void SetupCollectionMonitoring()
     {
-        Logger.LogInformation(message, args);
-        try
+        // Ensure Select button state updates when Suggestions change
+        Suggestions.CollectionChanged += (_, __) =>
         {
-            string debugMsg = args != null && args.Length > 0 
-                ? string.Format(message.Replace("{", "{0:"), args) 
-                : message;
-            Debug.WriteLine($"[SuggestionOverlayViewModel] {debugMsg}");
-        }
-        catch
-        {
-            Debug.WriteLine($"[SuggestionOverlayViewModel] {message} (logging error)");
-        }
+            Logger.LogDebug("Suggestions collection changed. Count: {SuggestionCount}", Suggestions.Count);
+            UpdateSuggestionSelectedState();
+            SelectCommand.NotifyCanExecuteChanged();
+        };
+    }
+
+    /// <summary>
+    /// Updates the suggestion selected state based on current selection.
+    /// </summary>
+    private void UpdateSuggestionSelectedState()
+    {
+        IsSuggestionSelected = !string.IsNullOrEmpty(SelectedSuggestion);
+        Logger.LogDebug("IsSuggestionSelected updated to {IsSuggestionSelected}", IsSuggestionSelected);
     }
 
     #endregion

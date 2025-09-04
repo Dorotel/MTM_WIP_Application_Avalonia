@@ -201,7 +201,7 @@ public partial class SearchInventoryViewModel : BaseViewModel
             if (partResult.IsSuccess)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     PartOptions.Clear();
                     foreach (DataRow row in partResult.Data.Rows)
@@ -226,7 +226,7 @@ public partial class SearchInventoryViewModel : BaseViewModel
             if (operationResult.IsSuccess)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     OperationOptions.Clear();
                     foreach (DataRow row in operationResult.Data.Rows)
@@ -251,7 +251,7 @@ public partial class SearchInventoryViewModel : BaseViewModel
             if (locationResult.IsSuccess)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     LocationOptions.Clear();
                     foreach (DataRow row in locationResult.Data.Rows)
@@ -291,7 +291,7 @@ public partial class SearchInventoryViewModel : BaseViewModel
             StatusMessage = "Searching...";
 
             // Clear results on UI thread
-            await Dispatcher.UIThread.InvokeAsync(() => SearchResults.Clear());
+            Dispatcher.UIThread.Post(() => SearchResults.Clear());
 
             Logger.LogInformation("Executing search with filters: Part={PartId}, Operation={Operation}, Location={Location}, User={User}",
                 PartIdFilter, OperationFilter, LocationFilter, UserFilter);
@@ -359,7 +359,7 @@ public partial class SearchInventoryViewModel : BaseViewModel
                 .ToList();
 
             // Update UI on UI thread
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 foreach (var item in pagedResults)
                 {

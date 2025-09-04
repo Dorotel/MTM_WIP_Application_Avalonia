@@ -252,13 +252,8 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         Logger.LogInformation("Connection string configured: {HasConnectionString}", 
             !string.IsNullOrEmpty(_configurationService?.GetConnectionString()));
         
-        // Load lookup data asynchronously on UI thread to avoid threading issues
-        _ = Dispatcher.UIThread.InvokeAsync(async () => 
-        {
-            Logger.LogInformation("Starting lookup data initialization...");
-            await InitializeLookupDataAsync();
-            Logger.LogInformation("Lookup data initialization completed");
-        });
+        // Database loading will be deferred until after UI is shown to prevent startup deadlocks
+        Logger.LogInformation("InventoryTabViewModel constructor completed - database loading deferred");
     }
 
     #endregion
@@ -575,7 +570,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                 var columnNames = string.Join(", ", masterResult.Data.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
                 Logger.LogInformation("Available columns: {Columns}", columnNames);
                 
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     PartIds.Clear();
                     foreach (DataRow row in masterResult.Data.Rows)
@@ -649,7 +644,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                     var invColumnNames = string.Join(", ", inventoryResult.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
                     Logger.LogInformation("Inventory columns: {Columns}", invColumnNames);
                     
-                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    Dispatcher.UIThread.Post(() =>
                     {
                         PartIds.Clear();
                         var uniqueParts = new HashSet<string>();
@@ -716,7 +711,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             if (result != null && result.Rows.Count > 0)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     Operations.Clear();
                     foreach (DataRow row in result.Rows)
@@ -765,7 +760,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             if (result != null && result.Rows.Count > 0)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     Locations.Clear();
                     foreach (DataRow row in result.Rows)
@@ -814,9 +809,9 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         Logger.LogInformation("Fallback data loaded for all AutoComplete boxes");
     }
 
-    private async Task LoadFallbackPartIdsAsync()
+    private Task LoadFallbackPartIdsAsync()
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             PartIds.Clear();
             var fallbackParts = new[] { "PART001", "PART002", "PART003", "ABC-123", "XYZ-789" };
@@ -825,12 +820,13 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                 PartIds.Add(part);
             }
         });
-        Logger.LogDebug("Loaded {Count} fallback Part IDs", PartIds.Count);
+        Logger.LogDebug("Loaded {Count} fallback Part IDs", 5);
+        return Task.CompletedTask;
     }
 
-    private async Task LoadFallbackOperationsAsync()
+    private Task LoadFallbackOperationsAsync()
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             Operations.Clear();
             var fallbackOperations = new[] { "90", "100", "110", "120", "130" };
@@ -839,12 +835,13 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                 Operations.Add(operation);
             }
         });
-        Logger.LogDebug("Loaded {Count} fallback Operations", Operations.Count);
+        Logger.LogDebug("Loaded {Count} fallback Operations", 5);
+        return Task.CompletedTask;
     }
 
-    private async Task LoadFallbackLocationsAsync()
+    private Task LoadFallbackLocationsAsync()
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             Locations.Clear();
             var fallbackLocations = new[] { "WC01", "WC02", "FLOOR", "QC", "SHIPPING" };
@@ -853,7 +850,8 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                 Locations.Add(location);
             }
         });
-        Logger.LogDebug("Loaded {Count} fallback Locations", Locations.Count);
+        Logger.LogDebug("Loaded {Count} fallback Locations", 5);
+        return Task.CompletedTask;
     }
 
     #endregion

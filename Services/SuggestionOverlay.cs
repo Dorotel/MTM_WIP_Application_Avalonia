@@ -115,8 +115,9 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                     return await ShowPopupOverlayAsync(targetControl, filteredSuggestions, userInput);
                 }
 
-                // Create the ViewModel with suggestions
-                var viewModel = new SuggestionOverlayViewModel(filteredSuggestions);
+                // Create the ViewModel with suggestions and logger
+                var vmLogger = Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<SuggestionOverlayViewModel>();
+                var viewModel = new SuggestionOverlayViewModel(filteredSuggestions, vmLogger);
                 
                 // Debug: Log the suggestions that were passed to the ViewModel
                 _logger.LogDebug("ViewModel created with {Count} suggestions: {Suggestions}", 
@@ -183,8 +184,9 @@ public class SuggestionOverlayService : ISuggestionOverlayService
             {
                 _logger.LogDebug("Using fallback popup overlay");
 
-                // Create the ViewModel with suggestions
-                var viewModel = new SuggestionOverlayViewModel(filteredSuggestions);
+                // Create the ViewModel with suggestions and logger
+                var vmLogger = Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<SuggestionOverlayViewModel>();
+                var viewModel = new SuggestionOverlayViewModel(filteredSuggestions, vmLogger);
                 
                 // Create the overlay view
                 var overlayView = new SuggestionOverlayView

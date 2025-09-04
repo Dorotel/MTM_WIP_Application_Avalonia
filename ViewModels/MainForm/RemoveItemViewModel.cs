@@ -536,7 +536,7 @@ public partial class RemoveItemViewModel : BaseViewModel
             if (partResult.IsSuccess)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     PartOptions.Clear();
                     foreach (System.Data.DataRow row in partResult.Data.Rows)
@@ -561,7 +561,7 @@ public partial class RemoveItemViewModel : BaseViewModel
             if (operationResult.IsSuccess)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     OperationOptions.Clear();
                     foreach (System.Data.DataRow row in operationResult.Data.Rows)
@@ -589,9 +589,9 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Loads sample data for demonstration purposes
     /// </summary>
-    private async Task LoadSampleDataAsync()
+    private Task LoadSampleDataAsync()
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             // Clear existing data
             PartOptions.Clear();
@@ -611,14 +611,15 @@ public partial class RemoveItemViewModel : BaseViewModel
                 OperationOptions.Add(operation);
             }
         });
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Loads sample inventory data for demonstration
     /// </summary>
-    private async Task LoadSampleInventoryDataAsync()
+    private Task LoadSampleInventoryDataAsync()
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             var sampleItems = new[]
             {
@@ -677,6 +678,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 InventoryItems.Add(item);
             }
         });
+        return Task.CompletedTask;
     }
 
     #endregion

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using Avalonia.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
@@ -10,9 +10,12 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// ViewModel for TreeView category items in SettingsForm navigation.
 /// Represents hierarchical settings categories with optional sub-categories.
 /// </summary>
-public class SettingsCategoryViewModel : INotifyPropertyChanged
+public partial class SettingsCategoryViewModel : ObservableObject
 {
+    [ObservableProperty]
     private bool _isSelected;
+
+    [ObservableProperty]
     private bool _isExpanded = true;
 
     public SettingsCategoryViewModel()
@@ -63,38 +66,6 @@ public class SettingsCategoryViewModel : INotifyPropertyChanged
     public bool HasSubCategories { get; set; }
 
     /// <summary>
-    /// Indicates if the category is currently selected.
-    /// </summary>
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set
-        {
-            if (_isSelected != value)
-            {
-                _isSelected = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
-            }
-        }
-    }
-
-    /// <summary>
-    /// Indicates if the category node is expanded in TreeView.
-    /// </summary>
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set
-        {
-            if (_isExpanded != value)
-            {
-                _isExpanded = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsExpanded)));
-            }
-        }
-    }
-
-    /// <summary>
     /// Indicates if this category represents an actual panel (not just a grouping).
     /// </summary>
     public bool IsPanel => PanelType != null;
@@ -113,12 +84,6 @@ public class SettingsCategoryViewModel : INotifyPropertyChanged
             return DisplayName;
         }
     }
-
-    #endregion
-
-    #region INotifyPropertyChanged
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     #endregion
 }

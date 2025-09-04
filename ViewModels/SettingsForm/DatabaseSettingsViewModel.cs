@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
@@ -15,21 +13,43 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// ViewModel for database settings configuration panel.
 /// Manages database connection settings and configuration options.
 /// </summary>
-public class DatabaseSettingsViewModel : BaseViewModel
+public partial class DatabaseSettingsViewModel : BaseViewModel
 {
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService _configurationService;
     
+    [ObservableProperty]
     private string _connectionString = string.Empty;
+
+    [ObservableProperty]
     private string _databaseName = string.Empty;
+
+    [ObservableProperty]
     private string _serverName = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RequiresCredentials))]
     private bool _useIntegratedSecurity = true;
+
+    [ObservableProperty]
     private string _username = string.Empty;
+
+    [ObservableProperty]
     private string _password = string.Empty;
+
+    [ObservableProperty]
     private int _connectionTimeout = 30;
+
+    [ObservableProperty]
     private int _commandTimeout = 60;
+
+    [ObservableProperty]
     private bool _isConnected;
+
+    [ObservableProperty]
     private bool _isTesting;
+
+    [ObservableProperty]
     private string _connectionStatus = "Not Connected";
 
     public DatabaseSettingsViewModel(
@@ -40,123 +60,10 @@ public class DatabaseSettingsViewModel : BaseViewModel
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
 
-        // Initialize commands
-        TestConnectionCommand = new AsyncCommand(ExecuteTestConnectionAsync, CanExecuteTestConnection);
-        SaveSettingsCommand = new AsyncCommand(ExecuteSaveSettingsAsync, CanExecuteSaveSettings);
-        LoadSettingsCommand = new AsyncCommand(ExecuteLoadSettingsAsync);
-        ResetToDefaultsCommand = new AsyncCommand(ExecuteResetToDefaultsAsync);
-
         // Load current settings
-        _ = ExecuteLoadSettingsAsync();
+        _ = LoadSettingsCommand.ExecuteAsync(null);
 
         Logger.LogInformation("DatabaseSettingsViewModel initialized");
-    }
-
-    #region Properties
-
-    /// <summary>
-    /// Database connection string.
-    /// </summary>
-    public string ConnectionString
-    {
-        get => _connectionString;
-        set => SetProperty(ref _connectionString, value);
-    }
-
-    /// <summary>
-    /// Database name.
-    /// </summary>
-    public string DatabaseName
-    {
-        get => _databaseName;
-        set => SetProperty(ref _databaseName, value);
-    }
-
-    /// <summary>
-    /// Database server name or address.
-    /// </summary>
-    public string ServerName
-    {
-        get => _serverName;
-        set => SetProperty(ref _serverName, value);
-    }
-
-    /// <summary>
-    /// Use Windows integrated security.
-    /// </summary>
-    public bool UseIntegratedSecurity
-    {
-        get => _useIntegratedSecurity;
-        set
-        {
-            if (SetProperty(ref _useIntegratedSecurity, value))
-            {
-                RaisePropertyChanged(nameof(RequiresCredentials));
-            }
-        }
-    }
-
-    /// <summary>
-    /// Database username (if not using integrated security).
-    /// </summary>
-    public string Username
-    {
-        get => _username;
-        set => SetProperty(ref _username, value);
-    }
-
-    /// <summary>
-    /// Database password (if not using integrated security).
-    /// </summary>
-    public string Password
-    {
-        get => _password;
-        set => SetProperty(ref _password, value);
-    }
-
-    /// <summary>
-    /// Connection timeout in seconds.
-    /// </summary>
-    public int ConnectionTimeout
-    {
-        get => _connectionTimeout;
-        set => SetProperty(ref _connectionTimeout, value);
-    }
-
-    /// <summary>
-    /// Command timeout in seconds.
-    /// </summary>
-    public int CommandTimeout
-    {
-        get => _commandTimeout;
-        set => SetProperty(ref _commandTimeout, value);
-    }
-
-    /// <summary>
-    /// Indicates if database connection is active.
-    /// </summary>
-    public bool IsConnected
-    {
-        get => _isConnected;
-        set => SetProperty(ref _isConnected, value);
-    }
-
-    /// <summary>
-    /// Indicates if connection test is in progress.
-    /// </summary>
-    public bool IsTesting
-    {
-        get => _isTesting;
-        set => SetProperty(ref _isTesting, value);
-    }
-
-    /// <summary>
-    /// Current connection status message.
-    /// </summary>
-    public string ConnectionStatus
-    {
-        get => _connectionStatus;
-        set => SetProperty(ref _connectionStatus, value);
     }
 
     /// <summary>
@@ -164,38 +71,11 @@ public class DatabaseSettingsViewModel : BaseViewModel
     /// </summary>
     public bool RequiresCredentials => !UseIntegratedSecurity;
 
-    #endregion
-
-    #region Commands
-
-    /// <summary>
-    /// Command to test database connection.
-    /// </summary>
-    public ICommand TestConnectionCommand { get; }
-
-    /// <summary>
-    /// Command to save database settings.
-    /// </summary>
-    public ICommand SaveSettingsCommand { get; }
-
-    /// <summary>
-    /// Command to load database settings.
-    /// </summary>
-    public ICommand LoadSettingsCommand { get; }
-
-    /// <summary>
-    /// Command to reset settings to defaults.
-    /// </summary>
-    public ICommand ResetToDefaultsCommand { get; }
-
-    #endregion
-
-    #region Command Implementations
-
     /// <summary>
     /// Tests the database connection with current settings.
     /// </summary>
-    private async Task ExecuteTestConnectionAsync()
+    [RelayCommand(CanExecute = nameof(CanTestConnection))]
+    private async Task TestConnectionAsync()
     {
         try
         {
@@ -203,7 +83,7 @@ public class DatabaseSettingsViewModel : BaseViewModel
             ConnectionStatus = "Testing connection...";
 
             // Simple connection test using existing TestConnectionAsync method
-            var result = await _databaseService.TestConnectionAsync();
+            var result = await _databaseService.TestConnectionAsync().ConfigureAwait(false);
 
             if (result)
             {
@@ -233,7 +113,7 @@ public class DatabaseSettingsViewModel : BaseViewModel
     /// <summary>
     /// Determines if connection test can be executed.
     /// </summary>
-    private bool CanExecuteTestConnection()
+    private bool CanTestConnection()
     {
         return !IsTesting && !string.IsNullOrWhiteSpace(ServerName) && !string.IsNullOrWhiteSpace(DatabaseName);
     }
@@ -241,7 +121,8 @@ public class DatabaseSettingsViewModel : BaseViewModel
     /// <summary>
     /// Saves current database settings to configuration.
     /// </summary>
-    private async Task ExecuteSaveSettingsAsync()
+    [RelayCommand(CanExecute = nameof(CanSaveSettings))]
+    private Task SaveSettingsAsync()
     {
         try
         {
@@ -254,12 +135,14 @@ public class DatabaseSettingsViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error saving database settings");
         }
+        
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Determines if settings can be saved.
     /// </summary>
-    private bool CanExecuteSaveSettings()
+    private bool CanSaveSettings()
     {
         return !string.IsNullOrWhiteSpace(ServerName) && !string.IsNullOrWhiteSpace(DatabaseName);
     }
@@ -267,7 +150,8 @@ public class DatabaseSettingsViewModel : BaseViewModel
     /// <summary>
     /// Loads database settings from configuration.
     /// </summary>
-    private async Task ExecuteLoadSettingsAsync()
+    [RelayCommand]
+    private Task LoadSettingsAsync()
     {
         try
         {
@@ -289,12 +173,15 @@ public class DatabaseSettingsViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error loading database settings");
         }
+        
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Resets all settings to default values.
     /// </summary>
-    private async Task ExecuteResetToDefaultsAsync()
+    [RelayCommand]
+    private Task ResetToDefaultsAsync()
     {
         try
         {
@@ -315,11 +202,9 @@ public class DatabaseSettingsViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error resetting database settings");
         }
+        
+        return Task.CompletedTask;
     }
-
-    #endregion
-
-    #region Private Methods
 
     /// <summary>
     /// Builds connection string from current settings.
@@ -396,6 +281,4 @@ public class DatabaseSettingsViewModel : BaseViewModel
             Logger.LogWarning(ex, "Error parsing connection string");
         }
     }
-
-    #endregion
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MTM_Shared_Logic.Extensions;
+using MTM_WIP_Application_Avalonia.Extensions;
 
 namespace MTM_WIP_Application_Avalonia.Core.Startup;
 

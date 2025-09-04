@@ -4,10 +4,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using MTM_WIP_Application_Avalonia.Core.Startup;
-using MTM_WIP_Application_Avalonia.Tests;
-using MTM_WIP_Application_Avalonia.ViewModels;
 
 namespace MTM_WIP_Application_Avalonia;
 
@@ -33,33 +30,6 @@ public static class Program
         
         try
         {
-            // Phase 1: Run startup infrastructure test (optional in release mode)
-            #if DEBUG
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Running startup infrastructure test...");
-            
-            // Run our simple startup test first
-            var simpleTestResult = await StartupTest.TestStartupInfrastructureAsync();
-            if (!simpleTestResult)
-            {
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Simple startup test failed - checking full infrastructure test");
-            }
-            else
-            {
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Simple startup test passed!");
-            }
-            
-            var testResult = await StartupInfrastructureTest.RunStartupInfrastructureTestAsync();
-            if (!testResult)
-            {
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Startup infrastructure test failed - continuing with degraded functionality");
-                Debug.WriteLine($"[PROGRAM] Startup infrastructure test failed");
-            }
-            else
-            {
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Startup infrastructure test passed");
-                Debug.WriteLine($"[PROGRAM] Startup infrastructure test completed successfully");
-            }
-            #endif
 
             // Phase 2: Configure services using ApplicationStartup infrastructure
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring services using ApplicationStartup...");

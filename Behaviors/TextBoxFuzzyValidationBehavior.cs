@@ -28,7 +28,7 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
 
         static TextBoxFuzzyValidationBehavior()
         {
-            EnableFuzzyValidationProperty.Changed.Subscribe(OnEnableFuzzyValidationChanged);
+            EnableFuzzyValidationProperty.Changed.AddClassHandler<TextBox>(OnEnableFuzzyValidationChanged);
         }
 
         public static IEnumerable? GetValidationSource(TextBox element) =>
@@ -41,9 +41,9 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
         public static void SetEnableFuzzyValidation(TextBox element, bool value) =>
             element.SetValue(EnableFuzzyValidationProperty, value);
 
-        private static void OnEnableFuzzyValidationChanged(AvaloniaPropertyChangedEventArgs<bool> e)
+        private static void OnEnableFuzzyValidationChanged(TextBox sender, AvaloniaPropertyChangedEventArgs args)
         {
-            if (e.Sender is TextBox box)
+            if (args is AvaloniaPropertyChangedEventArgs<bool> e && sender is TextBox box)
             {
                 if (e.NewValue.Value)
                 {

@@ -1,5 +1,48 @@
 # GitHub Copilot Instructions: Avalonia AXAML Syntax (Preventing AVLN2000 Errors)
 
+**Generate Avalonia AXAML code strictly following the established patterns in this .NET 8 Avalonia MVVM application. Prevent AVLN2000 compilation errors by using only Avalonia-compatible syntax.**
+
+<details>
+<summary><strong>🎯 Technology Version Detection for AXAML (CRITICAL)</strong></summary>
+
+**BEFORE generating ANY AXAML code, confirm these exact versions:**
+
+### **Core UI Technologies**
+- **Avalonia UI**: 11.3.4 (Primary UI framework - NOT WPF)
+- **.NET Version**: 8.0 with C# 12 features
+- **MVVM Community Toolkit**: 8.3.2 for property binding patterns
+- **Nullable Reference Types**: Enabled - affects binding expressions
+
+### **MTM Application AXAML Patterns**
+Based on analysis of Views folder structure:
+- **UserControl Pattern**: All views inherit from Avalonia UserControl
+- **Minimal Code-Behind**: Logic in ViewModels using MVVM Community Toolkit
+- **Standard Bindings**: `{Binding PropertyName}` with INotifyPropertyChanged
+- **Design System**: Purple theme (#6a0dad), card-based layouts, consistent spacing
+
+</details>
+
+<details>
+<summary><strong>🚨 Critical AVLN2000 Error Prevention Rules</strong></summary>
+
+**AVLN2000 errors occur when WPF XAML syntax is mistakenly used in Avalonia AXAML.**
+
+### **Primary Error Causes (CRITICAL TO AVOID)**
+1. **WPF property/control names** - Properties or controls that don't exist in Avalonia
+2. **Grid definition naming** - Using `Name` property on RowDefinition/ColumnDefinition
+3. **Wrong namespaces** - WPF presentation namespace instead of Avalonia
+4. **Unsupported markup** - WPF-only triggers, behaviors, or markup extensions
+5. **Incorrect bindings** - Missing x:DataType for compiled bindings, wrong ElementName syntax
+6. **Visibility enum usage** - WPF Visibility enum instead of Avalonia IsVisible boolean
+
+### **Error Detection Strategy**
+- **Namespace Check**: Always verify `xmlns="https://github.com/avaloniaui"`
+- **Control Validation**: Confirm all controls exist in Avalonia 11.3.4
+- **Property Verification**: Ensure all properties are Avalonia-compatible
+- **Binding Syntax**: Use standard bindings compatible with MVVM Community Toolkit
+
+</details>Instructions: Avalonia AXAML Syntax (Preventing AVLN2000 Errors)
+
 This document is a practical, copy-paste friendly guide for writing correct Avalonia AXAML and avoiding AVLN2000 errors that commonly happen when WPF XAML is used by mistake.
 
 <details>

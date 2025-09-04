@@ -93,16 +93,16 @@ public partial class QuickButtonsViewModel : BaseViewModel
         System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
         Logger.LogInformation("🔧 Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
 
-        // Load data from database service on UI thread to avoid threading issues
-        _ = Dispatcher.UIThread.InvokeAsync(async () =>
+        // Load data from database service asynchronously without blocking startup
+        Task.Run(async () =>
         {
             try
             {
-                Console.WriteLine("🔧🔧🔧 Inside Dispatcher.UIThread.InvokeAsync - about to call LoadLast10TransactionsAsync");
-                System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Inside Dispatcher.UIThread.InvokeAsync - about to call LoadLast10TransactionsAsync");
-                Logger.LogInformation("🔧 Inside Dispatcher.UIThread.InvokeAsync - about to call LoadLast10TransactionsAsync");
+                Console.WriteLine("🔧🔧🔧 Loading transactions in background - about to call LoadLast10TransactionsAsync");
+                System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Loading transactions in background - about to call LoadLast10TransactionsAsync");
+                Logger.LogInformation("🔧 Loading transactions in background - about to call LoadLast10TransactionsAsync");
                 await LoadLast10TransactionsAsync();
-                Console.WriteLine("🔧🔧🔧 Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
+                Console.WriteLine("🔧🔧🔧 Background loading completed LoadLast10TransactionsAsync");
                 System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
                 Logger.LogInformation("🔧 Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
             }
@@ -263,7 +263,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
             Logger.LogInformation("🔧 QuickButtons service returned {Count} transactions", transactions.Count);
 
             // Update collection on UI thread
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 QuickButtons.Clear();
 

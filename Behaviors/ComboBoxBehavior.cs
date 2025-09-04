@@ -17,7 +17,7 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
 
 		static ComboBoxBehavior()
 		{
-			EnableComboBoxBehaviorProperty.Changed.Subscribe(OnEnableComboBoxBehaviorChanged);
+			EnableComboBoxBehaviorProperty.Changed.AddClassHandler<AutoCompleteBox>(OnEnableComboBoxBehaviorChanged);
 		}
 
 		public static bool GetEnableComboBoxBehavior(AutoCompleteBox element) =>
@@ -26,9 +26,9 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
 		public static void SetEnableComboBoxBehavior(AutoCompleteBox element, bool value) =>
 			element.SetValue(EnableComboBoxBehaviorProperty, value);
 
-		private static void OnEnableComboBoxBehaviorChanged(AvaloniaPropertyChangedEventArgs<bool> e)
+		private static void OnEnableComboBoxBehaviorChanged(AutoCompleteBox sender, AvaloniaPropertyChangedEventArgs args)
 		{
-			if (e.Sender is AutoCompleteBox box)
+			if (args is AvaloniaPropertyChangedEventArgs<bool> e && sender is AutoCompleteBox box)
 			{
 				if (e.NewValue.Value)
 				{

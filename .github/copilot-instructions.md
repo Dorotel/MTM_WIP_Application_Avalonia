@@ -1,69 +1,171 @@
 # GitHub Copilot Instructions for MTM WIP Application Avalonia
 
-You are an expert Avalonia UI developer working on the MTM (Manitowoc Tool and Manufacturing) WIP Inventory System. This is a .NET 8 application using Avalonia with **standard .NET patterns** following MVVM architecture.
+**Generate code strictly following the established patterns found in this .NET 8 Avalonia MVVM application. Never introduce patterns not already present in the codebase.**
 
 <details>
-<summary><strong>🎯 Your Role and Expertise</strong></summary>
+<summary><strong>🎯 Technology Version Detection (CRITICAL)</strong></summary>
 
-- **Primary Focus**: Generate Avalonia UI components, standard .NET ViewModels, and business logic following MTM standards
-- **Architecture**: MVVM with standard .NET patterns, dependency injection, and service-oriented design
-- **Data Patterns**: MTM-specific patterns where Part ID = string, Operation = string numbers, Quantity = integer
-- **Database Access**: Use stored procedures only via `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()` - NEVER direct SQL
-- **UI Framework**: Avalonia (not WPF or WinForms) with standard data binding patterns
+**BEFORE generating ANY code, scan the codebase to identify these exact versions:**
+
+### **Core Technologies (FIXED VERSIONS)**
+- **.NET Version**: 8.0 (`<TargetFramework>net8.0</TargetFramework>`)
+- **C# Language Version**: C# 12 with nullable reference types enabled
+- **Avalonia UI**: 11.3.4 (Primary UI framework - NOT WPF)
+- **MVVM Community Toolkit**: 8.3.2 (Property/Command generation via source generators)
+- **MySQL Database**: 9.4.0 (MySql.Data package)
+- **Microsoft Extensions**: 9.0.8 (DI, Logging, Configuration, Hosting)
+
+### **Architecture Pattern Detection**
+- **Architecture**: MVVM with service-oriented design and comprehensive dependency injection
+- **Database Pattern**: Stored procedures ONLY via `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()`
+- **ViewModel Pattern**: MVVM Community Toolkit with `[ObservableProperty]` and `[RelayCommand]` attributes
+- **UI Pattern**: Avalonia UserControl inheritance with minimal code-behind
+- **Service Pattern**: Category-based service consolidation in single files
+- **Error Pattern**: Centralized error handling via `Services.ErrorHandling.HandleErrorAsync()`
 
 </details>
 
 <details>
-<summary><strong>🚨 CRITICAL: AVLN2000 Error Prevention</strong></summary>
+<summary><strong>🚨 CRITICAL: Avalonia AXAML Syntax Requirements</strong></summary>
 
-**BEFORE generating ANY AXAML code, consult [avalonia-xaml-syntax.instruction.md](.github/UI-Instructions/avalonia-xaml-syntax.instruction.md) to prevent AVLN2000 compilation errors.**
+**BEFORE generating ANY AXAML code, follow these critical rules to prevent AVLN2000 compilation errors:**
 
-### Key Rules to Prevent AVLN2000:
+### **Avalonia-Specific Syntax Rules**
 1. **NEVER use `Name` property on Grid definitions** - Use `x:Name` only
 2. **Use Avalonia namespace**: `xmlns="https://github.com/avaloniaui"` (NOT WPF namespace)
 3. **Grid syntax**: Use `ColumnDefinitions="Auto,*"` attribute form when possible
 4. **Control equivalents**: Use `TextBlock` instead of `Label`, `Flyout` instead of `Popup`
 5. **Use standard bindings**: `{Binding PropertyName}` with INotifyPropertyChanged
 
-**Reference the complete AVLN2000 prevention guide before any UI generation.**
+### **Required AXAML Header Structure**
+```xml
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SomeView">
+```
+
+### **MTM Design System Requirements**
+- **Primary Color**: Purple (#6a0dad) for buttons and accents
+- **Card-based Layout**: Use Border controls with rounded corners and subtle shadows
+- **Consistent Spacing**: 8px, 16px, 24px margins and padding
+- **Typography**: Use TextBlock with consistent FontSize and FontWeight patterns
 
 </details>
 
 <details>
-<summary><strong>📋 Critical Requirements - Always Follow</strong></summary>
+<summary><strong>📋 Established Codebase Patterns (CRITICAL)</strong></summary>
 
-### Service Organization Rule (CRITICAL)
-**📋 SERVICE FILE ORGANIZATION RULE**: All service classes of the same category MUST be in the same .cs file. Interfaces remain in the `Services/Interfaces/` folder.
+### **MVVM Community Toolkit Patterns (REQUIRED)**
+Based on analysis of `BaseViewModel.cs`, `MainViewViewModel.cs`, and 20+ other ViewModels in the codebase:
 
 ```csharp
-// ✅ CORRECT: Category-based service organization
+// ✅ CORRECT: MVVM Community Toolkit pattern (found in all ViewModels)
+public partial class InventoryViewModel : BaseViewModel
+{
+    [ObservableProperty]
+    private string partId = string.Empty;
+
+    [ObservableProperty] 
+    private bool isLoading;
+
+    [RelayCommand]
+    private async Task SearchAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            // Business logic here
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandling.HandleErrorAsync(ex, "Search operation failed");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    public InventoryViewModel(ILogger<InventoryViewModel> logger) : base(logger)
+    {
+    }
+}
+```
+
+### **Service Organization Pattern (CRITICAL)**
+Based on analysis of actual `Services/` folder structure:
+
+```csharp
+// ✅ CORRECT: Category-based service consolidation (actual pattern)
 // File: Services/ErrorHandling.cs
 namespace MTM_WIP_Application_Avalonia.Services
 {
-    public static class ErrorHandling { /* comprehensive error handling */ }
+    public static class ErrorHandling { /* centralized error handling */ }
     public class ErrorEntry { /* error data model */ }
-    public static class ErrorConfiguration { /* configuration */ }
+    public static class ErrorConfiguration { /* error configuration */ }
 }
 
 // File: Services/Configuration.cs  
 namespace MTM_WIP_Application_Avalonia.Services
 {
-    public interface IConfigurationService { /* interface */ }
-    public class ConfigurationService : IConfigurationService { /* implementation */ }
-    public interface IApplicationStateService { /* interface */ }
-    public class ApplicationStateService : IApplicationStateService { /* implementation */ }
+    public class ConfigurationService : IConfigurationService { /* actual implementation */ }
+    public class ApplicationStateService : IApplicationStateService { /* actual implementation */ }
 }
 ```
 
-**Current Service Structure**:
-- **ErrorHandling.cs**: Error handling, logging, user-friendly messages
-- **Configuration.cs**: Configuration management, application state
-- **Navigation.cs**: Application navigation service
-- **Database.cs**: Database access, stored procedures, Helper_Database_StoredProcedure
+### **Database Access Pattern (CRITICAL)**
+Based on analysis of `Services/Database.cs` and `Helper_Database_StoredProcedure`:
 
-### TransactionType Business Logic (CRITICAL)
 ```csharp
-// CORRECT: Based on user intent, not operation numbers
+// ✅ CORRECT: Stored procedures only (established pattern)
+var parameters = new MySqlParameter[]
+{
+    new("p_PartID", partId),
+    new("p_Operation", operation)
+};
+
+var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+    connectionString,
+    "inv_inventory_Get_ByPartIDandOperation",  // Use actual stored procedures
+    parameters
+);
+
+// Process result.Status and result.Data
+if (result.Status == 1)
+{
+    // Success - process DataTable
+    var dataTable = result.Data;
+}
+```
+
+### **Service Registration Pattern (CRITICAL)**  
+Based on analysis of `ServiceCollectionExtensions.cs`:
+
+```csharp
+// ✅ CORRECT: Actual service registration pattern
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddMTMServices(
+        this IServiceCollection services, 
+        IConfiguration configuration)
+    {
+        // Use TryAdd methods as established
+        services.TryAddSingleton<IConfigurationService, ConfigurationService>();
+        services.TryAddSingleton<IApplicationStateService, ApplicationStateService>();
+        services.TryAddSingleton<INavigationService, NavigationService>();
+        services.TryAddScoped<IDatabaseService, DatabaseService>();
+        
+        return services;
+    }
+}
+```
+
+### **Transaction Type Logic (MTM-SPECIFIC)**
+Based on business domain analysis:
+
+```csharp
+// ✅ CORRECT: User intent determines transaction type (not operation numbers)
 public string DetermineTransactionType(UserAction action)
 {
     return action.Intent switch
@@ -73,71 +175,109 @@ public string DetermineTransactionType(UserAction action)
         UserIntent.MovingStock => "TRANSFER" // User moving between locations
     };
 }
-// Operation numbers like "90", "100", "110" are workflow steps, NOT transaction indicators
-```
-
-### Service Registration Pattern (CRITICAL)
-```csharp
-// CORRECT: Use comprehensive registration
-services.AddMTMServices(configuration);
-
-// Current clean registration in ServiceCollectionExtensions.cs:
-services.TryAddSingleton<IConfigurationService, ConfigurationService>();
-services.TryAddSingleton<IApplicationStateService, ApplicationStateService>();
-services.TryAddSingleton<INavigationService, NavigationService>();
-services.TryAddScoped<IDatabaseService, DatabaseService>();
-```
-
-### Database Access Pattern (CRITICAL)
-```csharp
-// CORRECT: Use stored procedures only via Database service
-var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-    connectionString,
-    "inv_inventory_Add_Item",
-    parameters
-);
-
-// WRONG: Never use direct SQL
-var query = "SELECT * FROM inventory WHERE part_id = @partId";
-```
-
-### Standard .NET ViewModel Pattern (CRITICAL)
-```csharp
-public class InventoryViewModel : BaseViewModel, INotifyPropertyChanged
-{
-    private string _partId = string.Empty;
-    public string PartId
-    {
-        get => _partId;
-        set => SetProperty(ref _partId, value);
-    }
-
-    public ICommand SearchCommand { get; private set; }
-
-    public InventoryViewModel()
-    {
-        SearchCommand = new AsyncCommand(ExecuteSearchAsync);
-    }
-}
-```
-
-### Avalonia AXAML Patterns (CRITICAL)
-```xml
-<!-- CORRECT: Standard data bindings -->
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
-             x:Class="MTM_WIP_Application_Avalonia.Views.InventoryView">
-    
-    <TextBox Text="{Binding PartId}" />
-    <Button Content="Search" Command="{Binding SearchCommand}" />
-</UserControl>
+// Operation numbers ("90", "100", "110") are workflow steps, NOT transaction indicators
 ```
 
 </details>
 
 <details>
-<summary><strong>🔧 Code Generation Rules</strong></summary>
+<summary><strong>�️ Database Schema and Stored Procedures (CRITICAL)</strong></summary>
+
+### **MySQL Database Structure**
+Based on analysis of `Production_Database_Schema.sql` and `Development_Database_Schema.sql`:
+
+**Core Tables:**
+- **`inv_inventory`**: Main inventory tracking table
+- **`inv_transaction`**: Transaction history (IN/OUT/TRANSFER)
+- **`md_part_ids`**: Master data for part definitions
+- **`md_locations`**: Master data for location definitions
+- **`md_operation_numbers`**: Master data for operation/workflow steps
+- **`md_item_types`**: Master data for item type classifications
+
+### **Stored Procedure Patterns (REQUIRED)**
+All database operations MUST use stored procedures. Never use direct SQL queries.
+
+**Inventory Operations:**
+```sql
+-- Adding inventory items
+CALL inv_inventory_Add_Item(p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType, p_User, p_Notes);
+
+-- Retrieving inventory by part ID
+CALL inv_inventory_Get_ByPartID(p_PartID);
+
+-- Retrieving inventory by part ID and operation
+CALL inv_inventory_Get_ByPartIDandOperation(p_PartID, o_Operation);
+
+-- Removing inventory items
+CALL inv_inventory_Remove_Item(p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType, p_User, p_BatchNumber, p_Notes, @p_Status, @p_ErrorMsg);
+
+-- Transferring inventory between locations
+CALL inv_inventory_Transfer_Part(in_BatchNumber, in_PartID, in_Operation, in_NewLocation);
+CALL inv_inventory_Transfer_Quantity(in_BatchNumber, in_PartID, in_Operation, in_TransferQuantity, in_OriginalQuantity, in_NewLocation, in_User);
+```
+
+**Master Data Operations:**
+```sql
+-- Part IDs management
+CALL md_part_ids_Add_Part(p_ItemNumber, p_Customer, p_Description, p_IssuedBy, p_ItemType);
+CALL md_part_ids_Get_All();
+CALL md_part_ids_Get_ByItemNumber(p_ItemNumber);
+CALL md_part_ids_Update_Part(p_ID, p_ItemNumber, p_Customer, p_Description, p_IssuedBy, p_ItemType);
+CALL md_part_ids_Delete_ByItemNumber(p_ItemNumber);
+
+-- Locations management
+CALL md_locations_Add_Location(p_Location, p_IssuedBy, p_Building);
+CALL md_locations_Get_All();
+CALL md_locations_Update_Location(p_OldLocation, p_Location, p_IssuedBy, p_Building);
+CALL md_locations_Delete_ByLocation(p_Location);
+
+-- Operation numbers management
+CALL md_operation_numbers_Add_Operation(p_Operation, p_IssuedBy);
+CALL md_operation_numbers_Get_All();
+CALL md_operation_numbers_Update_Operation(p_Operation, p_NewOperation, p_IssuedBy);
+CALL md_operation_numbers_Delete_ByOperation(p_Operation);
+
+-- Item types management
+CALL md_item_types_Add_ItemType(p_ItemType, p_IssuedBy);
+CALL md_item_types_Get_All();
+CALL md_item_types_Update_ItemType(p_ID, p_ItemType, p_IssuedBy);
+CALL md_item_types_Delete_ByType(p_ItemType);
+```
+
+**Transaction Logging:**
+```sql
+-- Recording transactions
+CALL inv_transaction_Add(in_TransactionType, in_PartID, in_BatchNumber, in_FromLocation, in_ToLocation, in_Operation, in_Quantity, in_Notes, in_User, in_ItemType, in_ReceiveDate);
+```
+
+**Error Logging:**
+```sql
+-- Error management
+CALL log_error_Add_Error(p_User, p_Severity, p_ErrorType, p_ErrorMessage, p_StackTrace, p_ModuleName, p_MethodName, p_AdditionalInfo, p_MachineName, p_OSVersion, p_AppVersion, p_ErrorTime, @p_Status, @p_ErrorMsg);
+CALL log_error_Get_All(@p_Status, @p_ErrorMsg);
+CALL log_error_Get_ByUser(p_User, @p_Status, @p_ErrorMsg);
+CALL log_error_Delete_All(@p_Status, @p_ErrorMsg);
+```
+
+### **Database Development Workflow**
+1. **New Procedures**: Add to both `Updated_Stored_Procedures.sql` and `Development_Stored_Procedures.sql`
+2. **Testing**: Test on Development database first (`mtm_wip_application_test`)
+3. **Production**: Move tested procedures to `Production_Stored_Procedures.sql`
+4. **Cleanup**: Remove from `Updated_Stored_Procedures.sql` after deployment
+
+### **Connection String Configuration**
+```csharp
+// Development database
+"ConnectionStrings:Development": "Server=localhost;Database=mtm_wip_application_test;..."
+
+// Production database  
+"ConnectionStrings:Production": "Server=localhost;Database=mtm_wip_application;..."
+```
+
+</details>
+
+<details>
+<summary><strong>� Code Generation Rules</strong></summary>
 
 ### When generating UI components:
 1. **Always use Avalonia controls** - Not WPF or WinForms equivalents
@@ -147,11 +287,11 @@ public class InventoryViewModel : BaseViewModel, INotifyPropertyChanged
 5. **Implement proper disposal** - Override OnDetachedFromVisualTree for cleanup
 
 ### When generating ViewModels:
-1. **Inherit from BaseViewModel** - Use SetProperty for property changes
-2. **Use ICommand implementations** - AsyncCommand for async, RelayCommand for sync
+1. **Inherit from BaseViewModel** - Use MVVM Community Toolkit patterns with `[ObservableProperty]` and `[RelayCommand]`
+2. **Use dependency injection** - Constructor injection for services and logging
 3. **Implement IDisposable** - Properly dispose subscriptions and resources
 4. **Apply validation** - Use standard .NET validation patterns
-5. **Prepare for DI** - Design constructors for service injection
+5. **Follow established patterns** - Match existing ViewModel implementations
 
 ### When generating business logic:
 1. **Use established services** - ErrorHandling, Configuration, Navigation, Database
@@ -166,6 +306,13 @@ public class InventoryViewModel : BaseViewModel, INotifyPropertyChanged
 3. **Follow DI patterns** - Use constructor injection and proper lifetimes
 4. **Use stored procedures** - Via Database service and Helper_Database_StoredProcedure
 5. **Implement proper error handling** - Use ErrorHandling service for consistent error management
+
+### When generating database operations:
+1. **Use stored procedures ONLY** - Never write direct SQL queries
+2. **Follow existing patterns** - Use Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()
+3. **Add new procedures correctly** - Place in both Updated_Stored_Procedures.sql and Development_Stored_Procedures.sql
+4. **Handle results properly** - Check Status and process DataTable results
+5. **Include proper error handling** - Use output parameters for status and error messages
 
 </details>
 
@@ -232,7 +379,7 @@ public static class Program
 </details>
 
 <details>
-<summary><strong>📚 Documentation and HTML Synchronization (CRITICAL)</strong></summary>
+<summary><strong>📚 Documentation and Collapsible Sections (CRITICAL)</strong></summary>
 
 ### Instruction File Formatting Rule (CRITICAL)
 **🆕 COLLAPSIBLE SECTIONS RULE**: All instruction files MUST use HTML `<details>` and `<summary>` tags to create collapsible sections for improved readability and navigation.
@@ -253,7 +400,7 @@ Section content goes here...
 - Use consistent emoji patterns for visual organization
 
 ### When modifying any .md files:
-1. **Maintain accuracy** - Ensure all information reflects current ReactiveUI-free implementation
+1. **Maintain accuracy** - Ensure all information reflects current MVVM Community Toolkit implementation
 2. **Update cross-references** - Update all related links and references to match new patterns
 3. **Follow naming conventions** - Use established file naming patterns
 4. **Apply collapsible formatting** - Use `<details>/<summary>` tags for all major sections
@@ -261,71 +408,36 @@ Section content goes here...
 </details>
 
 <details>
-<summary><strong>📁 Required Instruction Files - ALWAYS REFERENCE</strong></summary>
-
-**🎯 CORE INFRASTRUCTURE (REQUIRED):**
-- [dependency-injection.instruction.md](.github/Core-Instructions/dependency-injection.instruction.md)
-- [codingconventions.instruction.md](.github/Core-Instructions/codingconventions.instruction.md) 
-- [project-structure.instruction.md](.github/Core-Instructions/project-structure.instruction.md)
-- [naming.conventions.instruction.md](.github/Core-Instructions/naming.conventions.instruction.md)
-
-**🚨 UI INSTRUCTIONS (CRITICAL):**
-- [avalonia-xaml-syntax.instruction.md](.github/UI-Instructions/avalonia-xaml-syntax.instruction.md)
-- [ui-generation.instruction.md](.github/UI-Instructions/ui-generation.instruction.md)
-- [ui-mapping.instruction.md](.github/UI-Instructions/ui-mapping.instruction.md)
-- [ui-styling.instruction.md](.github/UI-Instructions/ui-styling.instruction.md)
-
-**⚙️ DEVELOPMENT PATTERNS (REQUIRED):**
-- [database-patterns.instruction.md](.github/Development-Instructions/database-patterns.instruction.md)
-- [errorhandler.instruction.md](.github/Development-Instructions/errorhandler.instruction.md)
-- [templates-documentation.instruction.md](.github/Development-Instructions/templates-documentation.instruction.md)
-- [githubworkflow.instruction.md](.github/Development-Instructions/githubworkflow.instruction.md)
-
-**🎯 QUALITY & AUTOMATION (REQUIRED):**
-- [needsrepair.instruction.md](.github/Quality-Instructions/needsrepair.instruction.md)
-- [customprompts.instruction.md](.github/Automation-Instructions/customprompts.instruction.md)
-- [personas.instruction.md](.github/Automation-Instructions/personas.instruction.md)
-- [issue-pr-creation.instruction.md](.github/Automation-Instructions/issue-pr-creation.instruction.md)
-
-</details>
-
-<details>
-<summary><strong>🚨 CRITICAL: ReactiveUI Removal Status</strong></summary>
+<summary><strong>🚨 CRITICAL: MVVM Community Toolkit Migration Status</strong></summary>
 
 ### ✅ **COMPLETED - Services Layer**
-**All services are ReactiveUI-free and use standard .NET patterns:**
+**All services use standard .NET patterns without ReactiveUI:**
 - ✅ **ErrorHandling.cs**: Comprehensive error handling without ReactiveUI
 - ✅ **Configuration.cs**: Configuration and application state with INotifyPropertyChanged
 - ✅ **Navigation.cs**: Simple navigation service with standard patterns
 - ✅ **Database.cs**: Complete database access with Helper_Database_StoredProcedure
 
 ### ✅ **COMPLETED - Working Examples**
-- ✅ **InventoryTabViewModel**: Fully converted to standard .NET patterns with ICommand
-- ✅ **AdvancedRemoveView**: Converted to standard UserControl patterns
+- ✅ **InventoryTabViewModel**: Fully converted to MVVM Community Toolkit patterns with [ObservableProperty] and [RelayCommand]
+- ✅ **BaseViewModel**: Uses MVVM Community Toolkit ObservableValidator
+- ✅ **MainViewViewModel**: Full MVVM Community Toolkit implementation
 
-### ⚠️ **IN PROGRESS - ViewModels Conversion**
-**Following the ReactiveUI-Removal-Recovery-Plan.md:**
-- 🎯 **Phase 2**: Core ViewModels conversion (MainWindowViewModel, MainViewViewModel)
-- 🎯 **Phase 3**: Views and UI conversion
-- 🎯 **Phase 4**: Secondary ViewModels
-
-### 🎯 **Standard .NET Patterns to Use**
+### 🎯 **MVVM Community Toolkit Patterns to Use**
 ```csharp
-// Use these patterns instead of ReactiveUI:
-public class SomeViewModel : BaseViewModel, INotifyPropertyChanged
+// Use these patterns (actual patterns from codebase):
+public partial class SomeViewModel : BaseViewModel
 {
+    [ObservableProperty]
     private string _property = string.Empty;
-    public string Property
+    
+    [RelayCommand]
+    private async Task ExecuteSomeAsync()
     {
-        get => _property;
-        set => SetProperty(ref _property, value);
+        // Implementation here
     }
     
-    public ICommand SomeCommand { get; private set; }
-    
-    public SomeViewModel()
+    public SomeViewModel(ILogger<SomeViewModel> logger) : base(logger)
     {
-        SomeCommand = new AsyncCommand(ExecuteSomeAsync);
     }
 }
 ```

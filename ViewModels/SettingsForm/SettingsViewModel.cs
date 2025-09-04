@@ -3,225 +3,135 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
 /// <summary>
-/// Settings management ViewModel following standard .NET patterns.
-/// Provides unified interface for theme and application settings.
+/// Main coordinator ViewModel for comprehensive SettingsForm.
+/// Manages TreeView navigation, TabView panels, and state management.
 /// </summary>
-public class SettingsViewModel : BaseViewModel
+public partial class SettingsViewModel : BaseViewModel
 {
+    private readonly INavigationService _navigationService;
     private readonly IThemeService _themeService;
     private readonly ISettingsService _settingsService;
-    private readonly INavigationService _navigationService;
-    private bool _isLoading;
-    private string _statusMessage = string.Empty;
-    private ThemeInfo? _selectedTheme;
+    private readonly VirtualPanelManager _panelManager;
+    private readonly SettingsPanelStateManager _stateManager;
+    
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSaveChanges))]
+    private SettingsCategoryViewModel? _selectedCategory;
 
+    [ObservableProperty]
+    private SettingsPanelViewModel? _selectedPanel;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSaveChanges))]
+    private bool _isLoading;
+
+    [ObservableProperty]
+    private string _currentStatusMessage = "Ready";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSaveChanges))]
+    private bool _hasUnsavedChanges;
+
+    /// <summary>
+    /// Initializes a new instance of the SettingsViewModel class.
+    /// </summary>
+    /// <param name="navigationService">Service for navigation between views</param>
+    /// <param name="themeService">Service for theme management</param>
+    /// <param name="settingsService">Service for settings configuration</param>
+    /// <param name="panelManager">Manager for virtual panel lifecycle</param>
+    /// <param name="stateManager">Manager for panel state tracking</param>
+    /// <param name="logger">Logger for this ViewModel</param>
+    /// <exception cref="ArgumentNullException">Thrown when any service parameter is null</exception>
     public SettingsViewModel(
+        INavigationService navigationService,
         IThemeService themeService,
         ISettingsService settingsService,
-        INavigationService navigationService,
+        VirtualPanelManager panelManager,
+        SettingsPanelStateManager stateManager,
         ILogger<SettingsViewModel> logger) : base(logger)
     {
+        _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
-        _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
-        
-        // Initialize commands
-        ApplyThemeCommand = new AsyncCommand(ExecuteApplyThemeAsync, CanExecuteApplyTheme);
-        ResetSettingsCommand = new AsyncCommand(ExecuteResetSettingsAsync);
-        SaveSettingsCommand = new AsyncCommand(ExecuteSaveSettingsAsync);
-        LoadSettingsCommand = new AsyncCommand(ExecuteLoadSettingsAsync);
-        OpenAdvancedSettingsCommand = new RelayCommand(ExecuteOpenAdvancedSettings);
-        
+        _panelManager = panelManager ?? throw new ArgumentNullException(nameof(panelManager));
+        _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
+
         // Initialize collections
-        AvailableThemes = new ObservableCollection<ThemeInfo>(_themeService.AvailableThemes);
+        Categories = new ObservableCollection<SettingsCategoryViewModel>();
+        LoadedPanels = new ObservableCollection<SettingsPanelViewModel>();
+
+        // Initialize categories and panels
+        InitializeCategories();
         
-        // Set current theme selection
-        var currentTheme = AvailableThemes.FirstOrDefault(t => t.Id == _themeService.CurrentTheme);
-        if (currentTheme != null)
-        {
-            SelectedTheme = currentTheme;
-        }
-        
-        // Subscribe to service events
-        _themeService.ThemeChanged += OnThemeServiceThemeChanged;
-        _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
-        
-        Logger.LogInformation("SettingsViewModel initialized");
+        // Subscribe to events
+        _stateManager.StateChanged += OnStateManagerStateChanged;
+
+        Logger.LogInformation("SettingsViewModel initialized with {CategoryCount} categories", Categories.Count);
     }
 
     #region Properties
 
     /// <summary>
-    /// Available themes for selection.
+    /// TreeView navigation categories.
     /// </summary>
-    public ObservableCollection<ThemeInfo> AvailableThemes { get; }
+    public ObservableCollection<SettingsCategoryViewModel> Categories { get; }
 
     /// <summary>
-    /// Currently selected theme.
+    /// Currently loaded panels in TabView.
     /// </summary>
-    public ThemeInfo? SelectedTheme
-    {
-        get => _selectedTheme;
-        set => SetProperty(ref _selectedTheme, value);
-    }
+    public ObservableCollection<SettingsPanelViewModel> LoadedPanels { get; }
 
     /// <summary>
-    /// Indicates if settings operations are in progress.
+    /// Determines if changes can be saved.
     /// </summary>
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => SetProperty(ref _isLoading, value);
-    }
-
-    /// <summary>
-    /// Status message for user feedback.
-    /// </summary>
-    public string StatusMessage
-    {
-        get => _statusMessage;
-        set => SetProperty(ref _statusMessage, value);
-    }
-
-    /// <summary>
-    /// Auto-save settings option.
-    /// </summary>
-    public bool AutoSaveSettings
-    {
-        get => _settingsService.AutoSaveSettings;
-        set
-        {
-            _settingsService.AutoSaveSettings = value;
-            RaisePropertyChanged(nameof(AutoSaveSettings));
-        }
-    }
-
-    /// <summary>
-    /// Enable advanced features option.
-    /// </summary>
-    public bool EnableAdvancedFeatures
-    {
-        get => _settingsService.EnableAdvancedFeatures;
-        set
-        {
-            _settingsService.EnableAdvancedFeatures = value;
-            RaisePropertyChanged(nameof(EnableAdvancedFeatures));
-        }
-    }
-
-    /// <summary>
-    /// Default page size for data grids.
-    /// </summary>
-    public int DefaultPageSize
-    {
-        get => _settingsService.DefaultPageSize;
-        set
-        {
-            _settingsService.DefaultPageSize = value;
-            RaisePropertyChanged(nameof(DefaultPageSize));
-        }
-    }
-
-    /// <summary>
-    /// Enable real-time updates option.
-    /// </summary>
-    public bool EnableRealTimeUpdates
-    {
-        get => _settingsService.EnableRealTimeUpdates;
-        set
-        {
-            _settingsService.EnableRealTimeUpdates = value;
-            RaisePropertyChanged(nameof(EnableRealTimeUpdates));
-        }
-    }
-
-    /// <summary>
-    /// Remember window size option.
-    /// </summary>
-    public bool RememberWindowSize
-    {
-        get => _settingsService.RememberWindowSize;
-        set
-        {
-            _settingsService.RememberWindowSize = value;
-            RaisePropertyChanged(nameof(RememberWindowSize));
-        }
-    }
-
-    #endregion
-
-    #region Commands
-
-    /// <summary>
-    /// Command to apply selected theme.
-    /// </summary>
-    public ICommand ApplyThemeCommand { get; }
-
-    /// <summary>
-    /// Command to reset all settings to defaults.
-    /// </summary>
-    public ICommand ResetSettingsCommand { get; }
-
-    /// <summary>
-    /// Command to save current settings.
-    /// </summary>
-    public ICommand SaveSettingsCommand { get; }
-
-    /// <summary>
-    /// Command to load settings from configuration.
-    /// </summary>
-    public ICommand LoadSettingsCommand { get; }
-
-    /// <summary>
-    /// Command to open advanced settings form.
-    /// </summary>
-    public ICommand OpenAdvancedSettingsCommand { get; }
+    public bool CanSaveChanges => HasUnsavedChanges && !IsLoading;
 
     #endregion
 
     #region Command Implementations
 
     /// <summary>
-    /// Applies the selected theme.
+    /// Saves all changes across all loaded panels.
     /// </summary>
-    private async Task ExecuteApplyThemeAsync()
+    /// <summary>
+    /// Saves all changes across all loaded panels.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanExecuteSaveAllChanges))]
+    private async Task SaveAllChangesAsync()
     {
-        if (SelectedTheme == null) return;
-
         try
         {
             IsLoading = true;
-            StatusMessage = $"Applying theme: {SelectedTheme.DisplayName}...";
+            CurrentStatusMessage = "Saving all changes...";
 
-            var result = await _themeService.SetThemeAsync(SelectedTheme.Id);
+            var result = await _stateManager.SaveAllChangesAsync().ConfigureAwait(false);
             
             if (result.IsSuccess)
             {
-                // Update settings service to match
-                _settingsService.CurrentTheme = SelectedTheme.Id;
-                
-                StatusMessage = $"Theme applied: {SelectedTheme.DisplayName}";
-                Logger.LogInformation("Theme applied successfully: {Theme}", SelectedTheme.DisplayName);
+                CurrentStatusMessage = "All changes saved successfully";
+                HasUnsavedChanges = false;
+                Logger.LogInformation("All settings changes saved successfully");
             }
             else
             {
-                StatusMessage = $"Failed to apply theme: {result.Message}";
-                Logger.LogWarning("Failed to apply theme {Theme}: {Message}", SelectedTheme.DisplayName, result.Message);
+                CurrentStatusMessage = $"Failed to save changes: {result.Message}";
+                Logger.LogWarning("Failed to save all changes: {Message}", result.Message);
             }
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error applying theme: {ex.Message}";
-            Logger.LogError(ex, "Error applying theme {Theme}", SelectedTheme?.DisplayName);
+            CurrentStatusMessage = $"Error saving changes: {ex.Message}";
+            Logger.LogError(ex, "Error saving all settings changes");
         }
         finally
         {
@@ -230,50 +140,42 @@ public class SettingsViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Determines if theme can be applied.
+    /// Determines if save all changes can be executed.
     /// </summary>
-    private bool CanExecuteApplyTheme()
+    private bool CanExecuteSaveAllChanges()
     {
-        return SelectedTheme != null && !IsLoading;
+        return HasUnsavedChanges && !IsLoading;
     }
 
     /// <summary>
-    /// Resets all settings to default values.
+    /// Reverts all unsaved changes across panels.
     /// </summary>
-    private async Task ExecuteResetSettingsAsync()
+    [RelayCommand(CanExecute = nameof(CanExecuteRevertAllChanges))]
+    private async Task RevertAllChangesAsync()
     {
         try
         {
             IsLoading = true;
-            StatusMessage = "Resetting settings to defaults...";
+            CurrentStatusMessage = "Reverting all changes...";
 
-            var result = await _settingsService.ResetToDefaultsAsync();
+            var result = await _stateManager.RevertAllChangesAsync().ConfigureAwait(false);
             
             if (result.IsSuccess)
             {
-                // Reset theme selection to match settings
-                var defaultTheme = AvailableThemes.FirstOrDefault(t => t.Id == _settingsService.CurrentTheme);
-                if (defaultTheme != null)
-                {
-                    SelectedTheme = defaultTheme;
-                }
-                
-                // Refresh all property bindings
-                RefreshAllProperties();
-                
-                StatusMessage = "Settings reset to defaults";
-                Logger.LogInformation("Settings reset to defaults successfully");
+                CurrentStatusMessage = "All changes reverted";
+                HasUnsavedChanges = false;
+                Logger.LogInformation("All settings changes reverted successfully");
             }
             else
             {
-                StatusMessage = $"Failed to reset settings: {result.Message}";
-                Logger.LogWarning("Failed to reset settings: {Message}", result.Message);
+                CurrentStatusMessage = $"Failed to revert changes: {result.Message}";
+                Logger.LogWarning("Failed to revert all changes: {Message}", result.Message);
             }
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error resetting settings: {ex.Message}";
-            Logger.LogError(ex, "Error resetting settings");
+            CurrentStatusMessage = $"Error reverting changes: {ex.Message}";
+            Logger.LogError(ex, "Error reverting all settings changes");
         }
         finally
         {
@@ -282,158 +184,383 @@ public class SettingsViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Saves current settings.
+    /// Determines if revert all changes can be executed.
     /// </summary>
-    private async Task ExecuteSaveSettingsAsync()
+    private bool CanExecuteRevertAllChanges()
     {
-        try
-        {
-            IsLoading = true;
-            StatusMessage = "Saving settings...";
-
-            var result = await _settingsService.SaveSettingsAsync();
-            
-            if (result.IsSuccess)
-            {
-                StatusMessage = "Settings saved successfully";
-                Logger.LogInformation("Settings saved successfully");
-            }
-            else
-            {
-                StatusMessage = $"Failed to save settings: {result.Message}";
-                Logger.LogWarning("Failed to save settings: {Message}", result.Message);
-            }
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Error saving settings: {ex.Message}";
-            Logger.LogError(ex, "Error saving settings");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        return HasUnsavedChanges && !IsLoading;
     }
 
     /// <summary>
-    /// Loads settings from configuration.
+    /// Closes the settings form with unsaved changes check.
     /// </summary>
-    private async Task ExecuteLoadSettingsAsync()
+    [RelayCommand]
+    private void Close()
     {
+        if (HasUnsavedChanges)
+        {
+            CurrentStatusMessage = "Warning: You have unsaved changes. Use Save All or Revert before closing.";
+            return;
+        }
+
         try
         {
-            IsLoading = true;
-            StatusMessage = "Loading settings...";
-
-            var result = await _settingsService.LoadSettingsAsync();
-            
-            if (result.IsSuccess)
-            {
-                // Refresh theme selection to match loaded settings
-                var loadedTheme = AvailableThemes.FirstOrDefault(t => t.Id == _settingsService.CurrentTheme);
-                if (loadedTheme != null)
-                {
-                    SelectedTheme = loadedTheme;
-                }
-                
-                // Refresh all property bindings
-                RefreshAllProperties();
-                
-                StatusMessage = "Settings loaded successfully";
-                Logger.LogInformation("Settings loaded successfully");
-            }
-            else
-            {
-                StatusMessage = $"Failed to load settings: {result.Message}";
-                Logger.LogWarning("Failed to load settings: {Message}", result.Message);
-            }
+            // Navigate back or close via navigation service
+            _navigationService.GoBack();
+            Logger.LogInformation("Settings form closed");
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error loading settings: {ex.Message}";
-            Logger.LogError(ex, "Error loading settings");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    /// <summary>
-    /// Opens the advanced settings form.
-    /// </summary>
-    private void ExecuteOpenAdvancedSettings()
-    {
-        try
-        {
-            StatusMessage = "Opening Advanced Settings...";
-            
-            // Get SettingsFormViewModel from DI container
-            var settingsFormViewModel = Program.GetService<SettingsFormViewModel>();
-            
-            // Create SettingsFormView with the ViewModel
-            var settingsFormView = new Views.SettingsFormView
-            {
-                DataContext = settingsFormViewModel
-            };
-            
-            // Navigate to the advanced settings view
-            _navigationService.NavigateTo(settingsFormView);
-            
-            Logger.LogInformation("Navigated to Advanced Settings form from Settings view");
-            StatusMessage = "Advanced Settings opened";
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Failed to open Advanced Settings: {ex.Message}";
-            Logger.LogError(ex, "Failed to open Advanced Settings form from Settings view");
+            CurrentStatusMessage = $"Error closing form: {ex.Message}";
+            Logger.LogError(ex, "Error closing settings form");
         }
     }
 
     #endregion
 
-    #region Event Handlers
+    #region Property Change Handlers
 
     /// <summary>
-    /// Handles theme service theme changed events.
+    /// Handles changes to the SelectedCategory property and loads corresponding panel.
+    /// Implements virtual panel loading with state management integration.
     /// </summary>
-    private void OnThemeServiceThemeChanged(object? sender, ThemeChangedEventArgs e)
+    /// <param name="value">The newly selected category</param>
+    partial void OnSelectedCategoryChanged(SettingsCategoryViewModel? value)
     {
-        // Update selected theme to match service
-        var newTheme = AvailableThemes.FirstOrDefault(t => t.Id == e.NewTheme.Id);
-        if (newTheme != null && newTheme != SelectedTheme)
-        {
-            SelectedTheme = newTheme;
-        }
-        
-        StatusMessage = $"Theme changed to: {e.NewTheme.DisplayName}";
-    }
-
-    /// <summary>
-    /// Handles settings service settings changed events.
-    /// </summary>
-    private void OnSettingsServiceSettingsChanged(object? sender, SettingsChangedEventArgs e)
-    {
-        // Refresh property that changed
-        RaisePropertyChanged(e.SettingName);
-        
-        Logger.LogDebug("Settings property changed: {PropertyName}", e.SettingName);
+        OnSelectedCategoryChanged();
     }
 
     #endregion
 
-    #region Helper Methods
+    #region Private Methods
 
     /// <summary>
-    /// Refreshes all property change notifications.
+    /// Initializes the TreeView category structure with all available settings panels.
+    /// Creates hierarchical navigation structure for user management, part numbers,
+    /// operations, locations, item types, and system configuration.
     /// </summary>
-    private void RefreshAllProperties()
+    private void InitializeCategories()
     {
-        RaisePropertyChanged(nameof(AutoSaveSettings));
-        RaisePropertyChanged(nameof(EnableAdvancedFeatures));
-        RaisePropertyChanged(nameof(DefaultPageSize));
-        RaisePropertyChanged(nameof(EnableRealTimeUpdates));
-        RaisePropertyChanged(nameof(RememberWindowSize));
+        Categories.Clear();
+
+        // Database Settings
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "database",
+            DisplayName = "Database Settings",
+            Icon = "🗄️",
+            PanelType = typeof(DatabaseSettingsViewModel)
+        });
+
+        // User Management
+        var userManagement = new SettingsCategoryViewModel
+        {
+            Id = "user-management",
+            DisplayName = "User Management",
+            Icon = "👥",
+            HasSubCategories = true
+        };
+        
+        userManagement.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "add-user",
+            DisplayName = "Add User",
+            Icon = "➕",
+            PanelType = typeof(AddUserViewModel),
+            Parent = userManagement
+        });
+        
+        userManagement.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "edit-user",
+            DisplayName = "Edit User",
+            Icon = "✏️",
+            PanelType = typeof(EditUserViewModel),
+            Parent = userManagement
+        });
+        
+        userManagement.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "delete-user",
+            DisplayName = "Delete User",
+            Icon = "🗑️",
+            PanelType = typeof(RemoveUserViewModel),
+            Parent = userManagement
+        });
+        
+        Categories.Add(userManagement);
+
+        // Part Numbers
+        var partNumbers = new SettingsCategoryViewModel
+        {
+            Id = "part-numbers",
+            DisplayName = "Part Numbers",
+            Icon = "🔧",
+            HasSubCategories = true
+        };
+        
+        partNumbers.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "add-part",
+            DisplayName = "Add Part Number",
+            Icon = "➕",
+            PanelType = typeof(AddPartViewModel),
+            Parent = partNumbers
+        });
+        
+        partNumbers.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "edit-part",
+            DisplayName = "Edit Part Number",
+            Icon = "✏️",
+            PanelType = typeof(EditPartViewModel),
+            Parent = partNumbers
+        });
+        
+        partNumbers.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "remove-part",
+            DisplayName = "Remove Part Number",
+            Icon = "🗑️",
+            PanelType = typeof(RemovePartViewModel),
+            Parent = partNumbers
+        });
+        
+        Categories.Add(partNumbers);
+
+        // Operations
+        var operations = new SettingsCategoryViewModel
+        {
+            Id = "operations",
+            DisplayName = "Operations",
+            Icon = "⚙️",
+            HasSubCategories = true
+        };
+        
+        operations.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "add-operation",
+            DisplayName = "Add Operation",
+            Icon = "➕",
+            PanelType = typeof(AddOperationViewModel),
+            Parent = operations
+        });
+        
+        operations.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "edit-operation",
+            DisplayName = "Edit Operation",
+            Icon = "✏️",
+            PanelType = typeof(EditOperationViewModel),
+            Parent = operations
+        });
+        
+        operations.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "remove-operation",
+            DisplayName = "Remove Operation",
+            Icon = "🗑️",
+            PanelType = typeof(RemoveOperationViewModel),
+            Parent = operations
+        });
+        
+        Categories.Add(operations);
+
+        // Locations
+        var locations = new SettingsCategoryViewModel
+        {
+            Id = "locations",
+            DisplayName = "Locations",
+            Icon = "📍",
+            HasSubCategories = true
+        };
+        
+        locations.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "add-location",
+            DisplayName = "Add Location",
+            Icon = "➕",
+            PanelType = typeof(AddLocationViewModel),
+            Parent = locations
+        });
+        
+        locations.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "edit-location",
+            DisplayName = "Edit Location",
+            Icon = "✏️",
+            PanelType = typeof(EditLocationViewModel),
+            Parent = locations
+        });
+        
+        locations.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "remove-location",
+            DisplayName = "Remove Location",
+            Icon = "🗑️",
+            PanelType = typeof(RemoveLocationViewModel),
+            Parent = locations
+        });
+        
+        Categories.Add(locations);
+
+        // ItemTypes
+        var itemTypes = new SettingsCategoryViewModel
+        {
+            Id = "item-types",
+            DisplayName = "Item Types",
+            Icon = "📦",
+            HasSubCategories = true
+        };
+        
+        itemTypes.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "add-itemtype",
+            DisplayName = "Add Item Type",
+            Icon = "➕",
+            PanelType = typeof(AddItemTypeViewModel),
+            Parent = itemTypes
+        });
+        
+        itemTypes.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "edit-itemtype",
+            DisplayName = "Edit Item Type",
+            Icon = "✏️",
+            PanelType = typeof(EditItemTypeViewModel),
+            Parent = itemTypes
+        });
+        
+        itemTypes.SubCategories.Add(new SettingsCategoryViewModel
+        {
+            Id = "remove-itemtype",
+            DisplayName = "Remove Item Type",
+            Icon = "🗑️",
+            PanelType = typeof(RemoveItemTypeViewModel),
+            Parent = itemTypes
+        });
+        
+        Categories.Add(itemTypes);
+
+        // Advanced Theme Builder
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "theme-builder",
+            DisplayName = "Advanced Theme Builder",
+            Icon = "🎨",
+            PanelType = typeof(ThemeBuilderViewModel)
+        });
+
+        // Shortcuts Configuration
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "shortcuts",
+            DisplayName = "Shortcuts Configuration",
+            Icon = "⌨️",
+            PanelType = typeof(ShortcutsViewModel)
+        });
+
+        // About Information
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "about",
+            DisplayName = "About Information",
+            Icon = "ℹ️",
+            PanelType = typeof(AboutViewModel)
+        });
+
+        // System Health & Diagnostics
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "system-health",
+            DisplayName = "System Health & Diagnostics",
+            Icon = "🩺",
+            PanelType = typeof(SystemHealthViewModel)
+        });
+
+        // Backup & Recovery
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "backup-recovery",
+            DisplayName = "Backup & Recovery",
+            Icon = "💾",
+            PanelType = typeof(BackupRecoveryViewModel)
+        });
+
+        // Security & Permissions
+        Categories.Add(new SettingsCategoryViewModel
+        {
+            Id = "security-permissions",
+            DisplayName = "Security & Permissions",
+            Icon = "🔒",
+            PanelType = typeof(SecurityPermissionsViewModel)
+        });
+
+        // Select first category by default
+        if (Categories.Count > 0)
+        {
+            SelectedCategory = Categories.First();
+        }
+    }
+
+    /// <summary>
+    /// Handles selected category changes and loads corresponding panel.
+    /// </summary>
+    private async void OnSelectedCategoryChanged()
+    {
+        if (SelectedCategory?.PanelType == null) return;
+
+        try
+        {
+            IsLoading = true;
+            CurrentStatusMessage = $"Loading {SelectedCategory.DisplayName}...";
+
+            // Check if panel is already loaded
+            var existingPanel = LoadedPanels.FirstOrDefault(p => p.CategoryId == SelectedCategory.Id);
+            
+            if (existingPanel != null)
+            {
+                // Switch to existing panel
+                SelectedPanel = existingPanel;
+            }
+            else
+            {
+                // Create new virtual panel
+                var newPanel = await _panelManager.CreateVirtualPanelAsync(SelectedCategory).ConfigureAwait(false);
+                
+                if (newPanel != null)
+                {
+                    LoadedPanels.Add(newPanel);
+                    SelectedPanel = newPanel;
+                    
+                    // Create state snapshot for new panel
+                    _stateManager.CreateSnapshot(SelectedCategory.Id, newPanel.ViewModel);
+                }
+            }
+
+            CurrentStatusMessage = $"{SelectedCategory.DisplayName} loaded";
+        }
+        catch (Exception ex)
+        {
+            CurrentStatusMessage = $"Error loading panel: {ex.Message}";
+            Logger.LogError(ex, "Error loading panel for category {Category}", SelectedCategory?.Id);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Handles state manager state changed events and updates UI accordingly.
+    /// Updates unsaved changes status and command availability.
+    /// </summary>
+    /// <param name="sender">Event sender</param>
+    /// <param name="e">Panel state change event arguments</param>
+    private void OnStateManagerStateChanged(object? sender, PanelStateChangedEventArgs e)
+    {
+        HasUnsavedChanges = _stateManager.HasAnyUnsavedChanges;
+        OnPropertyChanged(nameof(CanSaveChanges));
     }
 
     #endregion
@@ -442,13 +569,21 @@ public class SettingsViewModel : BaseViewModel
 
     /// <summary>
     /// Dispose resources and unsubscribe from events.
+    /// Properly disposes all loaded panels and clears collections.
     /// </summary>
+    /// <param name="disposing">True if disposing managed resources</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            _themeService.ThemeChanged -= OnThemeServiceThemeChanged;
-            _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
+            _stateManager.StateChanged -= OnStateManagerStateChanged;
+            
+            // Dispose loaded panels
+            foreach (var panel in LoadedPanels)
+            {
+                panel.Dispose();
+            }
+            LoadedPanels.Clear();
         }
         
         base.Dispose(disposing);

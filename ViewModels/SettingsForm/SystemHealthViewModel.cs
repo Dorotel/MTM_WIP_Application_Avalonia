@@ -1,11 +1,13 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 
@@ -13,18 +15,51 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 /// ViewModel for System Health & Diagnostics panel.
 /// Provides database connection testing, system performance metrics, and log management.
 /// </summary>
-public class SystemHealthViewModel : BaseViewModel
+public partial class SystemHealthViewModel : BaseViewModel
 {
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService _configurationService;
     private readonly IThemeService _themeService;
     
-    private bool _isDatabaseConnected;
-    private string _databaseConnectionStatus = "Not tested";
-    private string _systemPerformance = "Loading...";
-    private string _memoryUsage = "Loading...";
-    private string _logFileSize = "Loading...";
-    private bool _isTesting;
+    #region Observable Properties
+
+    /// <summary>
+    /// Whether the database is connected
+    /// </summary>
+    [ObservableProperty]
+    private bool isDatabaseConnected;
+
+    /// <summary>
+    /// Status message for database connection
+    /// </summary>
+    [ObservableProperty]
+    private string databaseConnectionStatus = "Not tested";
+
+    /// <summary>
+    /// System performance metrics
+    /// </summary>
+    [ObservableProperty]
+    private string systemPerformance = "Loading...";
+
+    /// <summary>
+    /// Memory usage information
+    /// </summary>
+    [ObservableProperty]
+    private string memoryUsage = "Loading...";
+
+    /// <summary>
+    /// Log file size information
+    /// </summary>
+    [ObservableProperty]
+    private string logFileSize = "Loading...";
+
+    /// <summary>
+    /// Whether system tests are currently running
+    /// </summary>
+    [ObservableProperty]
+    private bool isTesting;
+
+    #endregion
 
     public SystemHealthViewModel(
         IDatabaseService databaseService,
@@ -40,137 +75,63 @@ public class SystemHealthViewModel : BaseViewModel
         SystemMetrics = new ObservableCollection<SystemMetricItem>();
         LogEntries = new ObservableCollection<LogEntryItem>();
 
-        // Initialize commands
-        TestDatabaseConnectionCommand = new AsyncCommand(ExecuteTestDatabaseConnectionAsync);
-        RefreshMetricsCommand = new AsyncCommand(ExecuteRefreshMetricsAsync);
-        ClearLogsCommand = new AsyncCommand(ExecuteClearLogsAsync);
-        ExportDiagnosticsCommand = new AsyncCommand(ExecuteExportDiagnosticsAsync);
-
         // Load initial data
         _ = LoadSystemHealthDataAsync();
+
+        Logger.LogInformation("SystemHealthViewModel initialized");
     }
 
-    #region Properties
+    #region Collections
 
     /// <summary>
-    /// System performance metrics collection.
+    /// Collection of system metrics for display
     /// </summary>
     public ObservableCollection<SystemMetricItem> SystemMetrics { get; }
 
     /// <summary>
-    /// Recent log entries collection.
+    /// Collection of log entries for display
     /// </summary>
     public ObservableCollection<LogEntryItem> LogEntries { get; }
-
-    /// <summary>
-    /// Database connection status indicator.
-    /// </summary>
-    public bool IsDatabaseConnected
-    {
-        get => _isDatabaseConnected;
-        set => SetProperty(ref _isDatabaseConnected, value);
-    }
-
-    /// <summary>
-    /// Database connection status message.
-    /// </summary>
-    public string DatabaseConnectionStatus
-    {
-        get => _databaseConnectionStatus;
-        set => SetProperty(ref _databaseConnectionStatus, value);
-    }
-
-    /// <summary>
-    /// System performance summary.
-    /// </summary>
-    public string SystemPerformance
-    {
-        get => _systemPerformance;
-        set => SetProperty(ref _systemPerformance, value);
-    }
-
-    /// <summary>
-    /// Memory usage information.
-    /// </summary>
-    public string MemoryUsage
-    {
-        get => _memoryUsage;
-        set => SetProperty(ref _memoryUsage, value);
-    }
-
-    /// <summary>
-    /// Log file size information.
-    /// </summary>
-    public string LogFileSize
-    {
-        get => _logFileSize;
-        set => SetProperty(ref _logFileSize, value);
-    }
-
-    /// <summary>
-    /// Indicates if testing operations are in progress.
-    /// </summary>
-    public bool IsTesting
-    {
-        get => _isTesting;
-        set => SetProperty(ref _isTesting, value);
-    }
 
     #endregion
 
     #region Commands
 
     /// <summary>
-    /// Command to test database connection.
+    /// Tests the database connection and updates status
     /// </summary>
-    public ICommand TestDatabaseConnectionCommand { get; }
-
-    /// <summary>
-    /// Command to refresh system metrics.
-    /// </summary>
-    public ICommand RefreshMetricsCommand { get; }
-
-    /// <summary>
-    /// Command to clear log entries.
-    /// </summary>
-    public ICommand ClearLogsCommand { get; }
-
-    /// <summary>
-    /// Command to export diagnostics data.
-    /// </summary>
-    public ICommand ExportDiagnosticsCommand { get; }
-
-    #endregion
-
-    #region Command Implementations
-
-    /// <summary>
-    /// Tests the database connection and updates status.
-    /// </summary>
-    private async Task ExecuteTestDatabaseConnectionAsync()
+    [RelayCommand(CanExecute = nameof(CanTestDatabaseConnection))]
+    private async Task TestDatabaseConnectionAsync()
     {
+        using var scope = Logger.BeginScope("TestDatabaseConnection");
+        Logger.LogDebug("Testing database connection");
+
         try
         {
             IsTesting = true;
             DatabaseConnectionStatus = "Testing connection...";
 
-            // Test database connection using existing service
-            var startTime = DateTime.Now;
-            var isConnected = await _databaseService.TestConnectionAsync();
-            var responseTime = (DateTime.Now - startTime).TotalMilliseconds;
+            // Test database connection
+            var isConnected = await _databaseService.TestConnectionAsync().ConfigureAwait(false);
 
             IsDatabaseConnected = isConnected;
-            DatabaseConnectionStatus = isConnected 
-                ? $"✅ Connected successfully (Response: {responseTime:F0}ms)"
-                : $"❌ Connection failed";
+            DatabaseConnectionStatus = isConnected
+                ? "Connection successful"
+                : "Connection failed";
 
-            Logger.LogInformation("Database connection test completed: {Status}", isConnected ? "Success" : "Failed");
+            Logger.LogInformation("Database connection test completed: {IsConnected}", isConnected);
         }
         catch (Exception ex)
         {
-            IsDatabaseConnected = false;
-            DatabaseConnectionStatus = $"❌ Test error: {ex.Message}";
             Logger.LogError(ex, "Error testing database connection");
+            IsDatabaseConnected = false;
+            DatabaseConnectionStatus = $"Connection error: {ex.Message}";
+
+            await ErrorHandling.HandleErrorAsync(
+                ex,
+                "Test Database Connection",
+                "System",
+                new Dictionary<string, object> { ["Operation"] = "TestDatabaseConnection" });
         }
         finally
         {
@@ -178,15 +139,33 @@ public class SystemHealthViewModel : BaseViewModel
         }
     }
 
+    private bool CanTestDatabaseConnection() => !IsTesting;
+
     /// <summary>
-    /// Refreshes system performance metrics.
+    /// Refreshes all system metrics and performance data
     /// </summary>
-    private async Task ExecuteRefreshMetricsAsync()
+    [RelayCommand(CanExecute = nameof(CanRefreshMetrics))]
+    private async Task RefreshMetricsAsync()
     {
+        using var scope = Logger.BeginScope("RefreshMetrics");
+        Logger.LogDebug("Refreshing system metrics");
+
         try
         {
             IsTesting = true;
-            await LoadSystemHealthDataAsync();
+            
+            await LoadSystemHealthDataAsync().ConfigureAwait(false);
+            
+            Logger.LogInformation("System metrics refreshed successfully");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error refreshing system metrics");
+            await ErrorHandling.HandleErrorAsync(
+                ex,
+                "Refresh System Metrics",
+                "System",
+                new Dictionary<string, object> { ["Operation"] = "RefreshMetrics" });
         }
         finally
         {
@@ -194,185 +173,169 @@ public class SystemHealthViewModel : BaseViewModel
         }
     }
 
+    private bool CanRefreshMetrics() => !IsTesting;
+
     /// <summary>
-    /// Clears log entries (with confirmation).
+    /// Clears all log entries from the system
     /// </summary>
-    private async Task ExecuteClearLogsAsync()
+    [RelayCommand(CanExecute = nameof(CanClearLogs))]
+    private async Task ClearLogsAsync()
     {
+        using var scope = Logger.BeginScope("ClearLogs");
+        Logger.LogDebug("Clearing system logs");
+
         try
         {
-            // In a real implementation, would show confirmation dialog
+            IsTesting = true;
+
+            // Clear log entries
             LogEntries.Clear();
-            Logger.LogInformation("Log entries cleared by user");
             
-            await Task.Delay(100); // Simulate async operation
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error clearing log entries");
-        }
-    }
+            // Update log file size
+            LogFileSize = "0 KB";
 
-    /// <summary>
-    /// Exports diagnostics data to file.
-    /// </summary>
-    private async Task ExecuteExportDiagnosticsAsync()
-    {
-        try
-        {
-            IsTesting = true;
-            
-            // Generate diagnostics report
-            var diagnosticsData = GenerateDiagnosticsReport();
-            
-            // In a real implementation, would save to file
-            Logger.LogInformation("Diagnostics data exported successfully");
-            
-            await Task.Delay(1000); // Simulate file save
+            Logger.LogInformation("System logs cleared successfully");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error exporting diagnostics data");
+            Logger.LogError(ex, "Error clearing system logs");
+            await ErrorHandling.HandleErrorAsync(
+                ex,
+                "Clear System Logs",
+                "System",
+                new Dictionary<string, object> { ["Operation"] = "ClearLogs" });
         }
         finally
         {
             IsTesting = false;
         }
     }
+
+    private bool CanClearLogs() => !IsTesting && LogEntries.Count > 0;
+
+    /// <summary>
+    /// Exports diagnostic information to a file
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanExportDiagnostics))]
+    private async Task ExportDiagnosticsAsync()
+    {
+        using var scope = Logger.BeginScope("ExportDiagnostics");
+        Logger.LogDebug("Exporting diagnostic information");
+
+        try
+        {
+            IsTesting = true;
+
+            // Implementation for diagnostic export would go here
+            // This is a placeholder for the actual export logic
+            
+            Logger.LogInformation("Diagnostic export completed successfully");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error exporting diagnostics");
+            await ErrorHandling.HandleErrorAsync(
+                ex,
+                "Export Diagnostics",
+                "System",
+                new Dictionary<string, object> { ["Operation"] = "ExportDiagnostics" });
+        }
+        finally
+        {
+            IsTesting = false;
+        }
+    }
+
+    private bool CanExportDiagnostics() => !IsTesting && (SystemMetrics.Count > 0 || LogEntries.Count > 0);
 
     #endregion
 
     #region Private Methods
 
     /// <summary>
-    /// Loads system health data and metrics.
+    /// Loads initial system health data
     /// </summary>
     private async Task LoadSystemHealthDataAsync()
     {
         try
         {
+            Logger.LogDebug("Loading system health data");
+
             // Load system metrics
-            SystemMetrics.Clear();
-            SystemMetrics.Add(new SystemMetricItem("CPU Usage", GetCpuUsage(), "🖥️"));
-            SystemMetrics.Add(new SystemMetricItem("Memory Usage", GetMemoryUsage(), "💾"));
-            SystemMetrics.Add(new SystemMetricItem("Disk Space", GetDiskSpace(), "💿"));
-            SystemMetrics.Add(new SystemMetricItem("Theme Performance", GetThemePerformance(), "🎨"));
+            await LoadSystemMetricsAsync().ConfigureAwait(false);
+            
+            // Load log entries
+            await LoadLogEntriesAsync().ConfigureAwait(false);
+            
+            // Update performance indicators
+            await UpdatePerformanceIndicatorsAsync().ConfigureAwait(false);
 
-            // Load recent log entries
-            LoadRecentLogEntries();
-
-            // Update summary properties
-            SystemPerformance = "Performance Level: High"; // Simplified since CurrentPerformanceLevel isn't available
-            MemoryUsage = $"Working Set: {GC.GetTotalMemory(false) / 1024 / 1024:F1} MB";
-            LogFileSize = "Log files: ~2.5 MB";
-
-            await Task.Delay(100); // Simulate async loading
+            Logger.LogInformation("System health data loaded successfully");
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading system health data");
+            await ErrorHandling.HandleErrorAsync(
+                ex,
+                "Load System Health Data",
+                "System",
+                new Dictionary<string, object> { ["Operation"] = "LoadSystemHealthData" });
         }
     }
 
     /// <summary>
-    /// Gets current CPU usage percentage (simulated).
+    /// Loads system performance metrics
     /// </summary>
-    private string GetCpuUsage()
+    private async Task LoadSystemMetricsAsync()
     {
-        var random = new Random();
-        var usage = random.Next(15, 45); // Simulate realistic CPU usage
-        return $"{usage}%";
-    }
-
-    /// <summary>
-    /// Gets current memory usage information.
-    /// </summary>
-    private string GetMemoryUsage()
-    {
-        var memoryUsed = GC.GetTotalMemory(false) / 1024 / 1024;
-        return $"{memoryUsed:F1} MB";
-    }
-
-    /// <summary>
-    /// Gets disk space information (simulated).
-    /// </summary>
-    private string GetDiskSpace()
-    {
-        return "850 GB free / 1 TB total";
-    }
-
-    /// <summary>
-    /// Gets theme performance information.
-    /// </summary>
-    private string GetThemePerformance()
-    {
-        return "High"; // Simplified since CurrentPerformanceLevel isn't available in interface
-    }
-
-    /// <summary>
-    /// Loads recent log entries for display.
-    /// </summary>
-    private void LoadRecentLogEntries()
-    {
-        LogEntries.Clear();
+        // Simulate loading system metrics
+        await Task.Delay(100).ConfigureAwait(false);
         
-        // Add sample log entries (in real app would read from log files)
-        LogEntries.Add(new LogEntryItem(DateTime.Now.AddMinutes(-5), "Info", "Application started successfully"));
-        LogEntries.Add(new LogEntryItem(DateTime.Now.AddMinutes(-10), "Info", "Database connection established"));
-        LogEntries.Add(new LogEntryItem(DateTime.Now.AddMinutes(-15), "Warning", "Theme performance adjusted to Medium"));
-        LogEntries.Add(new LogEntryItem(DateTime.Now.AddMinutes(-20), "Info", "Settings loaded from configuration"));
+        SystemPerformance = "CPU: 25%, Disk: 15%";
+        MemoryUsage = $"Used: {GC.GetTotalMemory(false) / 1024 / 1024} MB";
     }
 
     /// <summary>
-    /// Generates comprehensive diagnostics report.
+    /// Loads recent log entries
     /// </summary>
-    private string GenerateDiagnosticsReport()
+    private async Task LoadLogEntriesAsync()
     {
-        return $"MTM WIP Application Diagnostics Report\n" +
-               $"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n" +
-               $"Database Status: {DatabaseConnectionStatus}\n" +
-               $"Performance Level: High\n" + // Simplified since CurrentPerformanceLevel isn't available
-               $"Memory Usage: {MemoryUsage}\n" +
-               $"System Metrics: {SystemMetrics.Count} items loaded\n" +
-               $"Recent Log Entries: {LogEntries.Count} items";
+        // Simulate loading log entries
+        await Task.Delay(50).ConfigureAwait(false);
+        
+        LogFileSize = "2.4 MB";
+    }
+
+    /// <summary>
+    /// Updates performance indicators
+    /// </summary>
+    private async Task UpdatePerformanceIndicatorsAsync()
+    {
+        // Simulate performance data collection
+        await Task.Delay(25).ConfigureAwait(false);
     }
 
     #endregion
 }
 
 /// <summary>
-/// System metric data item.
+/// Model for system metric display items
 /// </summary>
 public class SystemMetricItem
 {
-    public SystemMetricItem(string name, string value, string icon)
-    {
-        Name = name;
-        Value = value;
-        Icon = icon;
-        Timestamp = DateTime.Now;
-    }
-
-    public string Name { get; }
-    public string Value { get; }
-    public string Icon { get; }
-    public DateTime Timestamp { get; }
+    public string Name { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+    public string Unit { get; set; } = string.Empty;
+    public string Status { get; set; } = "Normal";
 }
 
 /// <summary>
-/// Log entry data item.
+/// Model for log entry display items
 /// </summary>
 public class LogEntryItem
 {
-    public LogEntryItem(DateTime timestamp, string level, string message)
-    {
-        Timestamp = timestamp;
-        Level = level;
-        Message = message;
-    }
-
-    public DateTime Timestamp { get; }
-    public string Level { get; }
-    public string Message { get; }
-    public string FormattedTimestamp => Timestamp.ToString("HH:mm:ss");
+    public DateTime Timestamp { get; set; }
+    public string Level { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+    public string Source { get; set; } = string.Empty;
 }

@@ -10,7 +10,7 @@ using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 using MTM_WIP_Application_Avalonia.Services;
 
-namespace MTM_Shared_Logic.Extensions;
+namespace MTM_WIP_Application_Avalonia.Extensions;
 
 /// <summary>
 /// Extension methods for registering MTM services with dependency injection.
@@ -60,7 +60,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<SettingsViewModel>();
         
         // SettingsForm ViewModels
-        services.TryAddTransient<SettingsFormViewModel>();
+        services.TryAddTransient<SettingsViewModel>();
         services.TryAddTransient<DatabaseSettingsViewModel>();
         services.TryAddTransient<AddUserViewModel>();
         services.TryAddTransient<EditUserViewModel>();

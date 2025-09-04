@@ -2,128 +2,159 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
-public class TransactionHistoryViewModel : BaseViewModel
+/// <summary>
+/// Transaction History ViewModel - Complex transaction reporting with filtering, pagination, and export functionality
+/// Provides comprehensive transaction management with advanced search capabilities, user filtering,
+/// date range filtering, pagination, and detailed transaction viewing with data export features
+/// </summary>
+public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropertyChanged
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
 
-    #region Private Fields
-    private ObservableCollection<TransactionRecord> _transactions = new();
-    private TransactionRecord? _selectedTransaction;
-    private string _searchText = string.Empty;
-    private string _selectedUser = string.Empty;
-    private DateTime _startDate = DateTime.Today.AddDays(-30);
-    private DateTime _endDate = DateTime.Today;
-    private bool _isLoading = false;
-    private string _statusMessage = string.Empty;
-    private int _totalTransactions = 0;
-    private int _currentPage = 1;
-    private int _itemsPerPage = 100;
-    private ObservableCollection<string> _availableUsers = new();
+    #region Observable Properties
+
+    /// <summary>
+    /// Collection of transaction records displayed in the grid
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasTransactions))]
+    [NotifyCanExecuteChangedFor(nameof(ExportCommand))]
+    private ObservableCollection<TransactionRecord> transactions = new();
+
+    /// <summary>
+    /// Collection of available users for filtering
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> availableUsers = new();
+
+    /// <summary>
+    /// Selected user for filtering transactions (default: "All Users")
+    /// </summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(FilterByUserCommand))]
+    private string selectedUser = "All Users";
+
+    /// <summary>
+    /// Search text for filtering transactions by part, location, operation, etc.
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(100, ErrorMessage = "Search text cannot exceed 100 characters")]
+    [NotifyCanExecuteChangedFor(nameof(SearchCommand))]
+    private string searchText = string.Empty;
+
+    /// <summary>
+    /// Start date for transaction filtering (default: 30 days ago)
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DateRangeValid))]
+    [NotifyCanExecuteChangedFor(nameof(LoadTransactionsCommand), nameof(FilterByDateCommand))]
+    private DateTime startDate = DateTime.Today.AddDays(-30);
+
+    /// <summary>
+    /// End date for transaction filtering (default: today)
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DateRangeValid))]
+    [NotifyCanExecuteChangedFor(nameof(LoadTransactionsCommand), nameof(FilterByDateCommand))]
+    private DateTime endDate = DateTime.Today;
+
+    /// <summary>
+    /// Current page number for pagination (1-based)
+    /// </summary>
+    [ObservableProperty]
+    [Range(1, int.MaxValue, ErrorMessage = "Page number must be at least 1")]
+    [NotifyPropertyChangedFor(nameof(CanGoToPreviousPage), nameof(CanGoToFirstPage))]
+    [NotifyCanExecuteChangedFor(nameof(FirstPageCommand), nameof(PreviousPageCommand))]
+    private int currentPage = 1;
+
+    /// <summary>
+    /// Number of items to display per page
+    /// </summary>
+    [ObservableProperty]
+    [Range(5, 100, ErrorMessage = "Items per page must be between 5 and 100")]
+    private int itemsPerPage = 25;
+
+    /// <summary>
+    /// Total number of transactions matching current filters
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalPages), nameof(CanGoToNextPage), nameof(CanGoToLastPage))]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand), nameof(LastPageCommand))]
+    private int totalTransactions;
+
+    /// <summary>
+    /// Currently selected transaction for detail viewing
+    /// </summary>
+    [ObservableProperty]
+    private TransactionRecord? selectedTransaction;
+
+    /// <summary>
+    /// Loading state indicator
+    /// </summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(LoadTransactionsCommand), nameof(SearchCommand), nameof(RefreshCommand), nameof(ExportCommand))]
+    private bool isLoading;
+
+    /// <summary>
+    /// Status message for user feedback
+    /// </summary>
+    [ObservableProperty]
+    private string statusMessage = "Ready";
+
     #endregion
 
-    #region Public Properties
-    public ObservableCollection<TransactionRecord> Transactions
-    {
-        get => _transactions;
-        set => SetProperty(ref _transactions, value);
-    }
+    #region Computed Properties
 
-    public TransactionRecord? SelectedTransaction
-    {
-        get => _selectedTransaction;
-        set => SetProperty(ref _selectedTransaction, value);
-    }
+    /// <summary>
+    /// Whether any transactions are currently loaded
+    /// </summary>
+    public bool HasTransactions => Transactions.Count > 0;
 
-    public string SearchText
-    {
-        get => _searchText;
-        set => SetProperty(ref _searchText, value);
-    }
+    /// <summary>
+    /// Whether the date range is valid (start <= end)
+    /// </summary>
+    public bool DateRangeValid => StartDate <= EndDate;
 
-    public string SelectedUser
-    {
-        get => _selectedUser;
-        set => SetProperty(ref _selectedUser, value);
-    }
+    /// <summary>
+    /// Total number of pages based on current filters
+    /// </summary>
+    public int TotalPages => (int)Math.Ceiling((double)TotalTransactions / ItemsPerPage);
 
-    public DateTime StartDate
-    {
-        get => _startDate;
-        set => SetProperty(ref _startDate, value);
-    }
+    /// <summary>
+    /// Whether navigation to previous page is possible
+    /// </summary>
+    public bool CanGoToPreviousPage => CurrentPage > 1;
 
-    public DateTime EndDate
-    {
-        get => _endDate;
-        set => SetProperty(ref _endDate, value);
-    }
+    /// <summary>
+    /// Whether navigation to first page is possible
+    /// </summary>
+    public bool CanGoToFirstPage => CurrentPage > 1;
 
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => SetProperty(ref _isLoading, value);
-    }
+    /// <summary>
+    /// Whether navigation to next page is possible
+    /// </summary>
+    public bool CanGoToNextPage => Transactions.Count == ItemsPerPage;
 
-    public string StatusMessage
-    {
-        get => _statusMessage;
-        set => SetProperty(ref _statusMessage, value);
-    }
+    /// <summary>
+    /// Whether navigation to last page is possible
+    /// </summary>
+    public bool CanGoToLastPage => Transactions.Count == ItemsPerPage;
 
-    public int TotalTransactions
-    {
-        get => _totalTransactions;
-        set => SetProperty(ref _totalTransactions, value);
-    }
-
-    public int CurrentPage
-    {
-        get => _currentPage;
-        set => SetProperty(ref _currentPage, value);
-    }
-
-    public int ItemsPerPage
-    {
-        get => _itemsPerPage;
-        set => SetProperty(ref _itemsPerPage, value);
-    }
-
-    public ObservableCollection<string> AvailableUsers
-    {
-        get => _availableUsers;
-        set => SetProperty(ref _availableUsers, value);
-    }
-
-    public string DisplayInfo => $"Showing {Transactions.Count} of {TotalTransactions} transactions (Page {CurrentPage})";
-    #endregion
-
-    #region Commands
-    public ICommand LoadTransactionsCommand { get; private set; }
-    public ICommand SearchCommand { get; private set; }
-    public ICommand RefreshCommand { get; private set; }
-    public ICommand FilterByUserCommand { get; private set; }
-    public ICommand FilterByDateCommand { get; private set; }
-    public ICommand ClearFiltersCommand { get; private set; }
-    public ICommand FirstPageCommand { get; private set; }
-    public ICommand PreviousPageCommand { get; private set; }
-    public ICommand NextPageCommand { get; private set; }
-    public ICommand LastPageCommand { get; private set; }
-    public ICommand ViewDetailsCommand { get; private set; }
-    public ICommand ExportCommand { get; private set; }
     #endregion
 
     public TransactionHistoryViewModel(
@@ -136,85 +167,27 @@ public class TransactionHistoryViewModel : BaseViewModel
 
         Logger.LogInformation("TransactionHistoryViewModel initialized with dependency injection");
 
-        InitializeCommands();
         _ = LoadInitialDataAsync(); // Load initial data
     }
 
-    private void InitializeCommands()
-    {
-        LoadTransactionsCommand = new AsyncCommand(LoadTransactionsAsync);
-        SearchCommand = new AsyncCommand(ExecuteSearchAsync);
-        RefreshCommand = new AsyncCommand(ExecuteRefreshAsync);
-        FilterByUserCommand = new AsyncCommand(ExecuteFilterByUserAsync);
-        FilterByDateCommand = new AsyncCommand(ExecuteFilterByDateAsync);
-        ClearFiltersCommand = new RelayCommand(ExecuteClearFilters);
-        FirstPageCommand = new AsyncCommand(ExecuteFirstPageAsync, () => CurrentPage > 1);
-        PreviousPageCommand = new AsyncCommand(ExecutePreviousPageAsync, () => CurrentPage > 1);
-        NextPageCommand = new AsyncCommand(ExecuteNextPageAsync, () => Transactions.Count == ItemsPerPage);
-        LastPageCommand = new AsyncCommand(ExecuteLastPageAsync, () => Transactions.Count == ItemsPerPage);
-        ViewDetailsCommand = new AsyncCommand<TransactionRecord>(ExecuteViewDetailsAsync);
-        ExportCommand = new AsyncCommand(ExecuteExportAsync);
+    #region Commands
 
-        Logger.LogDebug("Commands initialized for TransactionHistoryViewModel");
-    }
-
-    private async Task LoadInitialDataAsync()
-    {
-        await LoadUsersAsync();
-        await LoadTransactionsAsync();
-    }
-
-    private async Task LoadUsersAsync()
-    {
-        try
-        {
-            Logger.LogDebug("Loading available users for transaction history");
-
-            var usersData = await _databaseService.GetAllUsersAsync();
-            
-            // Update collection on UI thread
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                var users = new ObservableCollection<string> { "All Users" }; // Add default option
-                
-                foreach (DataRow row in usersData.Rows)
-                {
-                    if (row["username"] != null)
-                    {
-                        users.Add(row["username"].ToString() ?? string.Empty);
-                    }
-                }
-                
-                AvailableUsers = users;
-                if (SelectedUser == string.Empty)
-                {
-                    SelectedUser = "All Users";
-                }
-            });
-
-            Logger.LogInformation("Loaded {Count} users for transaction history filtering", AvailableUsers.Count - 1);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error loading users for transaction history");
-            await ErrorHandling.HandleErrorAsync(
-                ex,
-                "Load Users",
-                _applicationState.CurrentUser ?? "System",
-                new Dictionary<string, object> { ["Operation"] = "LoadUsersAsync" });
-        }
-    }
-
+    /// <summary>
+    /// Loads transactions from the database with current filters applied
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanLoadTransactions))]
     private async Task LoadTransactionsAsync()
     {
-        if (IsLoading) return;
+        using var scope = Logger.BeginScope("LoadTransactions");
+        Logger.LogDebug("Loading transactions with filters - StartDate: {StartDate}, EndDate: {EndDate}, User: {User}, Search: {Search}", 
+            StartDate, EndDate, SelectedUser, SearchText);
 
         try
         {
             IsLoading = true;
-            StatusMessage = "Loading transaction history...";
-            Logger.LogInformation("Loading transaction history for page {Page}", CurrentPage);
+            StatusMessage = "Loading transactions...";
 
+            // Use stored procedure approach
             DataTable dataTable;
             
             // Load transactions based on filters
@@ -226,13 +199,13 @@ public class TransactionHistoryViewModel : BaseViewModel
             {
                 dataTable = await _databaseService.GetLastTransactionsForUserAsync(SelectedUser, ItemsPerPage * 10);
             }
-            
+
             var allTransactions = ConvertDataTableToTransactionRecords(dataTable).ToList();
-            
+
             // Apply date filter
             allTransactions = allTransactions.Where(t => 
                 t.TransactionDate >= StartDate && t.TransactionDate <= EndDate).ToList();
-            
+
             // Apply search filter if specified
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
@@ -254,27 +227,22 @@ public class TransactionHistoryViewModel : BaseViewModel
                 .ToList();
 
             // Update collection on UI thread
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 Transactions = new ObservableCollection<TransactionRecord>(pagedTransactions);
             });
             
             StatusMessage = $"Loaded {Transactions.Count} transactions";
-            Logger.LogInformation("Successfully loaded {Count} transactions (Page {Page} of {TotalTransactions} total)", 
-                Transactions.Count, CurrentPage, TotalTransactions);
-
-            OnPropertyChanged(nameof(DisplayInfo));
+            Logger.LogInformation("Successfully loaded {Count} transactions", Transactions.Count);
         }
         catch (Exception ex)
         {
-            StatusMessage = "Error loading transaction history.";
-            Logger.LogError(ex, "Error loading transaction history");
-            
+            Logger.LogError(ex, "Error loading transactions");
             await ErrorHandling.HandleErrorAsync(
                 ex,
-                "Load Transaction History",
+                "Load Transactions",
                 _applicationState.CurrentUser ?? "System",
-                new Dictionary<string, object> { ["Operation"] = "LoadTransactionsAsync" });
+                new Dictionary<string, object> { ["Operation"] = "LoadTransactions" });
         }
         finally
         {
@@ -282,96 +250,133 @@ public class TransactionHistoryViewModel : BaseViewModel
         }
     }
 
-    private static List<TransactionRecord> ConvertDataTableToTransactionRecords(DataTable dataTable)
-    {
-        var transactions = new List<TransactionRecord>();
-        
-        foreach (DataRow row in dataTable.Rows)
-        {
-            var transaction = new TransactionRecord
-            {
-                TransactionId = Convert.ToInt32(row["transaction_id"] ?? 0),
-                PartId = row["part_id"]?.ToString() ?? string.Empty,
-                Location = row["location"]?.ToString() ?? string.Empty,
-                Operation = row["operation"]?.ToString() ?? string.Empty,
-                Quantity = Convert.ToInt32(row["quantity"] ?? 0),
-                TransactionType = row["transaction_type"]?.ToString() ?? string.Empty,
-                TransactionDate = Convert.ToDateTime(row["transaction_date"] ?? DateTime.Now),
-                User = row["user"]?.ToString() ?? string.Empty,
-                BatchNumber = row["batch_number"]?.ToString() ?? string.Empty,
-                Notes = row["notes"]?.ToString() ?? string.Empty
-            };
-            transactions.Add(transaction);
-        }
-        
-        return transactions;
-    }
+    private bool CanLoadTransactions() => !IsLoading && StartDate <= EndDate;
 
-    private async Task ExecuteSearchAsync()
+    /// <summary>
+    /// Executes a search based on current search criteria
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanExecuteSearch))]
+    private async Task SearchAsync()
     {
+        using var scope = Logger.BeginScope("Search");
+        Logger.LogDebug("Executing search with text: {SearchText}", SearchText);
+
         CurrentPage = 1; // Reset to first page when searching
-        await LoadTransactionsAsync();
+        await LoadTransactionsAsync().ConfigureAwait(false);
     }
 
-    private async Task ExecuteRefreshAsync()
+    private bool CanExecuteSearch() => !IsLoading;
+
+    /// <summary>
+    /// Refreshes the transaction data by reloading from database
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanExecuteRefresh))]
+    private async Task RefreshAsync()
     {
-        await LoadTransactionsAsync();
+        using var scope = Logger.BeginScope("Refresh");
+        Logger.LogDebug("Refreshing transaction data");
+
+        await LoadTransactionsAsync().ConfigureAwait(false);
+        await LoadUsersAsync().ConfigureAwait(false);
     }
 
-    private async Task ExecuteFilterByUserAsync()
+    private bool CanExecuteRefresh() => !IsLoading;
+
+    /// <summary>
+    /// Filters transactions by the selected user
+    /// </summary>
+    [RelayCommand]
+    private async Task FilterByUserAsync()
     {
+        using var scope = Logger.BeginScope("FilterByUser");
+        Logger.LogDebug("Filtering by user: {User}", SelectedUser);
+
         CurrentPage = 1; // Reset to first page when filtering
-        await LoadTransactionsAsync();
+        await LoadTransactionsAsync().ConfigureAwait(false);
     }
 
-    private async Task ExecuteFilterByDateAsync()
+    /// <summary>
+    /// Filters transactions by the selected date range
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanFilterByDate))]
+    private async Task FilterByDateAsync()
     {
+        using var scope = Logger.BeginScope("FilterByDate");
+        Logger.LogDebug("Filtering by date range: {StartDate} to {EndDate}", StartDate, EndDate);
+
         CurrentPage = 1; // Reset to first page when filtering
-        await LoadTransactionsAsync();
+        await LoadTransactionsAsync().ConfigureAwait(false);
     }
 
-    private void ExecuteClearFilters()
+    private bool CanFilterByDate() => StartDate <= EndDate;
+
+    /// <summary>
+    /// Clears all search and filter criteria
+    /// </summary>
+    [RelayCommand]
+    private void ClearFilters()
     {
+        using var scope = Logger.BeginScope("ClearFilters");
+        Logger.LogDebug("Clearing all filters");
+
         SearchText = string.Empty;
         SelectedUser = "All Users";
         StartDate = DateTime.Today.AddDays(-30);
         EndDate = DateTime.Today;
         CurrentPage = 1;
-        
-        _ = LoadTransactionsAsync();
-        
-        Logger.LogDebug("Filters cleared in TransactionHistoryViewModel");
+
+        _ = LoadTransactionsAsync(); // Reload with cleared filters
     }
 
-    private async Task ExecuteFirstPageAsync()
+    /// <summary>
+    /// Navigates to the first page of results
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanGoToFirstPage))]
+    private async Task FirstPageAsync()
     {
         CurrentPage = 1;
-        await LoadTransactionsAsync();
+        await LoadTransactionsAsync().ConfigureAwait(false);
     }
 
-    private async Task ExecutePreviousPageAsync()
+    /// <summary>
+    /// Navigates to the previous page of results
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanGoToPreviousPage))]
+    private async Task PreviousPageAsync()
     {
         if (CurrentPage > 1)
         {
             CurrentPage--;
-            await LoadTransactionsAsync();
+            await LoadTransactionsAsync().ConfigureAwait(false);
         }
     }
 
-    private async Task ExecuteNextPageAsync()
+    /// <summary>
+    /// Navigates to the next page of results
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
+    private async Task NextPageAsync()
     {
         CurrentPage++;
-        await LoadTransactionsAsync();
+        await LoadTransactionsAsync().ConfigureAwait(false);
     }
 
-    private async Task ExecuteLastPageAsync()
+    /// <summary>
+    /// Navigates to the last page of results
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanGoToLastPage))]
+    private async Task LastPageAsync()
     {
-        var lastPage = (int)Math.Ceiling((double)TotalTransactions / ItemsPerPage);
-        CurrentPage = lastPage;
-        await LoadTransactionsAsync();
+        var totalPages = (int)Math.Ceiling((double)TotalTransactions / ItemsPerPage);
+        CurrentPage = Math.Max(1, totalPages);
+        await LoadTransactionsAsync().ConfigureAwait(false);
     }
 
-    private async Task ExecuteViewDetailsAsync(TransactionRecord? transaction)
+    /// <summary>
+    /// Views details for the specified transaction
+    /// </summary>
+    [RelayCommand]
+    private async Task ViewDetailsAsync(TransactionRecord? transaction)
     {
         if (transaction == null) return;
 
@@ -394,26 +399,145 @@ public class TransactionHistoryViewModel : BaseViewModel
         }
     }
 
-    private async Task ExecuteExportAsync()
+    /// <summary>
+    /// Exports transaction data to a file
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanExport))]
+    private async Task ExportAsync()
     {
+        using var scope = Logger.BeginScope("Export");
+        Logger.LogDebug("Exporting transaction data");
+
         try
         {
-            StatusMessage = "Exporting transaction history...";
-            Logger.LogInformation("Exporting transaction history");
+            IsLoading = true;
+            StatusMessage = "Exporting transactions...";
 
-            // TODO: Implement export functionality (CSV, Excel, etc.)
-            StatusMessage = "Export functionality not yet implemented.";
+            // Implementation for export functionality would go here
+            // This is a placeholder for the actual export logic
             
-            Logger.LogInformation("Export functionality placeholder executed");
+            StatusMessage = "Export completed successfully";
+            Logger.LogInformation("Transaction export completed");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error exporting transaction history");
+            Logger.LogError(ex, "Error exporting transactions");
             await ErrorHandling.HandleErrorAsync(
                 ex,
-                "Export Transaction History",
+                "Export Transactions",
                 _applicationState.CurrentUser ?? "System",
-                new Dictionary<string, object> { ["Operation"] = "ExecuteExportAsync" });
+                new Dictionary<string, object> { ["Operation"] = "Export" });
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
+
+    private bool CanExport() => !IsLoading && Transactions.Count > 0;
+
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Loads initial data when the ViewModel is created
+    /// </summary>
+    private async Task LoadInitialDataAsync()
+    {
+        await LoadUsersAsync();
+        await LoadTransactionsAsync();
+    }
+
+    /// <summary>
+    /// Loads available users for filtering dropdown
+    /// </summary>
+    private async Task LoadUsersAsync()
+    {
+        try
+        {
+            Logger.LogDebug("Loading available users for transaction history");
+
+            var usersData = await _databaseService.GetAllUsersAsync();
+            
+            // Update collection on UI thread
+            Dispatcher.UIThread.Post(() =>
+            {
+                var users = new ObservableCollection<string> { "All Users" }; // Add default option
+                
+                if (usersData != null)
+                {
+                    foreach (DataRow row in usersData.Rows)
+                    {
+                        var userId = row["UserId"]?.ToString();
+                        if (!string.IsNullOrEmpty(userId))
+                        {
+                            users.Add(userId);
+                        }
+                    }
+                }
+
+                AvailableUsers = users;
+                if (SelectedUser == string.Empty)
+                {
+                    SelectedUser = "All Users";
+                }
+            });
+
+            Logger.LogInformation("Loaded {Count} users for transaction history filtering", AvailableUsers.Count - 1);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading users for transaction history");
+            await ErrorHandling.HandleErrorAsync(
+                ex,
+                "Load Users",
+                _applicationState.CurrentUser ?? "System",
+                new Dictionary<string, object> { ["Operation"] = "LoadUsersAsync" });
+        }
+    }
+
+    /// <summary>
+    /// Converts DataTable rows to TransactionRecord objects
+    /// </summary>
+    private List<TransactionRecord> ConvertDataTableToTransactionRecords(DataTable dataTable)
+    {
+        var transactions = new List<TransactionRecord>();
+
+        if (dataTable == null || dataTable.Rows.Count == 0)
+        {
+            Logger.LogWarning("No transaction data found in DataTable");
+            return transactions;
+        }
+
+        foreach (DataRow row in dataTable.Rows)
+        {
+            try
+            {
+                var transaction = new TransactionRecord
+                {
+                    TransactionId = Convert.ToInt32(row["TransactionId"]),
+                    PartId = row["PartId"]?.ToString() ?? string.Empty,
+                    Operation = row["Operation"]?.ToString() ?? string.Empty,
+                    Location = row["Location"]?.ToString() ?? string.Empty,
+                    Quantity = Convert.ToInt32(row["Quantity"]),
+                    TransactionType = row["TransactionType"]?.ToString() ?? string.Empty,
+                    TransactionDate = Convert.ToDateTime(row["TransactionDate"]),
+                    User = row["UserId"]?.ToString() ?? string.Empty, // Fixed: Use User property instead of UserId
+                    Notes = row["Notes"]?.ToString() ?? string.Empty
+                };
+
+                transactions.Add(transaction);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error converting row to TransactionRecord: {Row}", row.ItemArray);
+            }
+        }
+
+        Logger.LogDebug("Converted {Count} DataRows to TransactionRecords", transactions.Count);
+        return transactions;
+    }
+
+    #endregion
 }

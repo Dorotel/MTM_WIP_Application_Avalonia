@@ -79,6 +79,19 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     /// </summary>
     [ObservableProperty]
     private DateTimeOffset? _removalDateRangeEnd;
+
+    /// <summary>
+    /// Gets or sets whether to use date range filtering
+    /// </summary>
+    [ObservableProperty]
+    private bool _useDateRange = true;
+
+    /// <summary>
+    /// Gets or sets the notes filter text for filtering operations
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(500, ErrorMessage = "Notes filter cannot exceed 500 characters")]
+    private string? _filterNotes;
     #endregion
 
     #region Data Collections
@@ -105,6 +118,12 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     /// </summary>
     [ObservableProperty]
     private ObservableCollection<string> _userOptions = new();
+
+    /// <summary>
+    /// Gets or sets the collection of operation options for removal filtering
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> _operationOptions = new();
 
     /// <summary>
     /// Gets or sets the collection of last removed items for undo functionality
@@ -179,6 +198,11 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     public bool CanUndo => LastRemovedItems.Count > 0;
 
     /// <summary>
+    /// Gets the removal history grid data (same as RemovalHistory)
+    /// </summary>
+    public ObservableCollection<SessionTransaction> RemovalHistoryGrid => RemovalHistory;
+
+    /// <summary>
     /// Determines if a selected item can be removed
     /// </summary>
     private bool CanRemoveSelected => SelectedHistoryItem != null;
@@ -209,19 +233,8 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             // Setup collection change notifications for CanUndo
             LastRemovedItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CanUndo));
 
-            // Load initial data on UI thread to avoid threading issues
-            _ = Dispatcher.UIThread.InvokeAsync(async () =>
-            {
-                try
-                {
-                    await LoadDataAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error loading initial data");
-                    StatusMessage = "Error loading initial data";
-                }
-            });
+            // Database loading will be deferred until after UI is shown to prevent startup deadlocks
+            Logger.LogInformation("AdvancedRemoveViewModel constructor completed - database loading deferred");
 
             Logger.LogInformation("AdvancedRemoveViewModel initialized successfully");
         }
@@ -582,7 +595,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             await Task.Delay(200).ConfigureAwait(false);
 
             // Update collections on UI thread
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 LocationOptions.Clear();
                 foreach (var loc in new[] { "WC01", "WC02", "WC03", "WC04", "WC05", "STOCK", "SHIP", "RECV" })
@@ -595,6 +608,10 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 UserOptions.Clear();
                 foreach (var user in new[] { "jbautista", "production", "admin", "supervisor" })
                     UserOptions.Add(user);
+
+                OperationOptions.Clear();
+                foreach (var operation in new[] { "10", "20", "30", "90", "100", "110", "120", "130" })
+                    OperationOptions.Add(operation);
             });
 
             Logger.LogDebug("Options loaded successfully");
@@ -616,7 +633,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             await Task.Delay(300).ConfigureAwait(false);
 
             // Simulate loading removal history data
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 RemovalHistory.Clear();
                 // Add sample data
@@ -682,7 +699,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             await Task.Delay(500).ConfigureAwait(false);
 
             // Update UI on UI thread
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 // Simulate search results based on filters
                 var filteredResults = RemovalHistory.Where(item =>

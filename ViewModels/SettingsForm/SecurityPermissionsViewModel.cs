@@ -2,8 +2,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Commands;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
@@ -12,19 +13,35 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 /// <summary>
 /// ViewModel for Security & Permissions panel.
 /// Provides user role management, password policies, and security settings.
+/// Uses MVVM Community Toolkit for modern .NET patterns.
 /// </summary>
-public class SecurityPermissionsViewModel : BaseViewModel
+public partial class SecurityPermissionsViewModel : BaseViewModel
 {
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService _configurationService;
     
+    [ObservableProperty]
     private bool _isLoading;
+    
+    [ObservableProperty]
     private bool _requirePasswordChange = true;
+    
+    [ObservableProperty]
     private int _passwordMinLength = 8;
+    
+    [ObservableProperty]
     private bool _requireSpecialCharacters = true;
+    
+    [ObservableProperty]
     private bool _requireNumbers = true;
+    
+    [ObservableProperty]
     private int _sessionTimeoutMinutes = 30;
+    
+    [ObservableProperty]
     private bool _enableAuditLogging = true;
+    
+    [ObservableProperty]
     private string _selectedUserId = string.Empty;
 
     public SecurityPermissionsViewModel(
@@ -41,16 +58,10 @@ public class SecurityPermissionsViewModel : BaseViewModel
         Permissions = new ObservableCollection<PermissionItem>();
         ActiveSessions = new ObservableCollection<ActiveSessionItem>();
 
-        // Initialize commands
-        AddRoleCommand = new AsyncCommand(ExecuteAddRoleAsync);
-        EditRoleCommand = new AsyncCommand<UserRoleItem>(ExecuteEditRoleAsync);
-        DeleteRoleCommand = new AsyncCommand<UserRoleItem>(ExecuteDeleteRoleAsync);
-        ResetPasswordCommand = new AsyncCommand<string>(ExecuteResetPasswordAsync);
-        EndSessionCommand = new AsyncCommand<ActiveSessionItem>(ExecuteEndSessionAsync);
-        ExportAuditLogCommand = new AsyncCommand(ExecuteExportAuditLogAsync);
-
         // Load initial data
         _ = LoadSecurityDataAsync();
+
+        Logger.LogInformation("SecurityPermissionsViewModel initialized");
     }
 
     #region Properties
@@ -75,120 +86,15 @@ public class SecurityPermissionsViewModel : BaseViewModel
     /// </summary>
     public ObservableCollection<ActiveSessionItem> ActiveSessions { get; }
 
-    /// <summary>
-    /// Indicates if operations are in progress.
-    /// </summary>
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => SetProperty(ref _isLoading, value);
-    }
-
-    /// <summary>
-    /// Require password change on first login.
-    /// </summary>
-    public bool RequirePasswordChange
-    {
-        get => _requirePasswordChange;
-        set => SetProperty(ref _requirePasswordChange, value);
-    }
-
-    /// <summary>
-    /// Minimum password length requirement.
-    /// </summary>
-    public int PasswordMinLength
-    {
-        get => _passwordMinLength;
-        set => SetProperty(ref _passwordMinLength, value);
-    }
-
-    /// <summary>
-    /// Require special characters in passwords.
-    /// </summary>
-    public bool RequireSpecialCharacters
-    {
-        get => _requireSpecialCharacters;
-        set => SetProperty(ref _requireSpecialCharacters, value);
-    }
-
-    /// <summary>
-    /// Require numbers in passwords.
-    /// </summary>
-    public bool RequireNumbers
-    {
-        get => _requireNumbers;
-        set => SetProperty(ref _requireNumbers, value);
-    }
-
-    /// <summary>
-    /// Session timeout in minutes.
-    /// </summary>
-    public int SessionTimeoutMinutes
-    {
-        get => _sessionTimeoutMinutes;
-        set => SetProperty(ref _sessionTimeoutMinutes, value);
-    }
-
-    /// <summary>
-    /// Enable audit logging.
-    /// </summary>
-    public bool EnableAuditLogging
-    {
-        get => _enableAuditLogging;
-        set => SetProperty(ref _enableAuditLogging, value);
-    }
-
-    /// <summary>
-    /// Currently selected user ID for operations.
-    /// </summary>
-    public string SelectedUserId
-    {
-        get => _selectedUserId;
-        set => SetProperty(ref _selectedUserId, value);
-    }
-
     #endregion
 
     #region Commands
 
     /// <summary>
-    /// Command to add new user role.
-    /// </summary>
-    public ICommand AddRoleCommand { get; }
-
-    /// <summary>
-    /// Command to edit user role.
-    /// </summary>
-    public ICommand EditRoleCommand { get; }
-
-    /// <summary>
-    /// Command to delete user role.
-    /// </summary>
-    public ICommand DeleteRoleCommand { get; }
-
-    /// <summary>
-    /// Command to reset user password.
-    /// </summary>
-    public ICommand ResetPasswordCommand { get; }
-
-    /// <summary>
-    /// Command to end user session.
-    /// </summary>
-    public ICommand EndSessionCommand { get; }
-
-    /// <summary>
-    /// Command to export audit log.
-    /// </summary>
-    public ICommand ExportAuditLogCommand { get; }
-
-    #endregion
-
-    #region Command Implementations
-
-    /// <summary>
     /// Adds a new user role.
     /// </summary>
-    private async Task ExecuteAddRoleAsync()
+    [RelayCommand]
+    private async Task AddRoleAsync()
     {
         try
         {
@@ -226,7 +132,8 @@ public class SecurityPermissionsViewModel : BaseViewModel
     /// <summary>
     /// Edits selected user role.
     /// </summary>
-    private async Task ExecuteEditRoleAsync(UserRoleItem? role)
+    [RelayCommand]
+    private async Task EditRoleAsync(UserRoleItem? role)
     {
         if (role == null) return;
 
@@ -252,7 +159,8 @@ public class SecurityPermissionsViewModel : BaseViewModel
     /// <summary>
     /// Deletes selected user role.
     /// </summary>
-    private async Task ExecuteDeleteRoleAsync(UserRoleItem? role)
+    [RelayCommand]
+    private async Task DeleteRoleAsync(UserRoleItem? role)
     {
         if (role == null) return;
 
@@ -279,7 +187,8 @@ public class SecurityPermissionsViewModel : BaseViewModel
     /// <summary>
     /// Resets password for specified user.
     /// </summary>
-    private async Task ExecuteResetPasswordAsync(string? userId)
+    [RelayCommand]
+    private async Task ResetPasswordAsync(string? userId)
     {
         if (string.IsNullOrEmpty(userId)) return;
 
@@ -315,7 +224,8 @@ public class SecurityPermissionsViewModel : BaseViewModel
     /// <summary>
     /// Ends specified user session.
     /// </summary>
-    private async Task ExecuteEndSessionAsync(ActiveSessionItem? session)
+    [RelayCommand]
+    private async Task EndSessionAsync(ActiveSessionItem? session)
     {
         if (session == null) return;
 
@@ -353,7 +263,8 @@ public class SecurityPermissionsViewModel : BaseViewModel
     /// <summary>
     /// Exports security audit log.
     /// </summary>
-    private async Task ExecuteExportAuditLogAsync()
+    [RelayCommand]
+    private async Task ExportAuditLogAsync()
     {
         try
         {

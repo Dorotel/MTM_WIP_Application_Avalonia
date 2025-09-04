@@ -452,6 +452,45 @@ public partial class TransferItemViewModel : BaseViewModel
 
     #endregion
 
+    #region Command Aliases for AXAML Bindings
+    /// <summary>
+    /// Alias command for ExecuteSearchCommand to match AXAML bindings
+    /// </summary>
+    public IRelayCommand SearchCommand => ExecuteSearchCommand;
+
+    /// <summary>
+    /// Alias command for ExecuteTransferCommand to match AXAML bindings
+    /// </summary>
+    public IRelayCommand TransferCommand => ExecuteTransferCommand;
+
+    /// <summary>
+    /// Alias command for ResetSearchCommand to match AXAML bindings
+    /// </summary>
+    public IRelayCommand ResetCommand => ResetSearchCommand;
+
+    /// <summary>
+    /// Alias command for ExecutePrintCommand to match AXAML bindings
+    /// </summary>
+    public IRelayCommand PrintCommand => ExecutePrintCommand;
+
+    /// <summary>
+    /// Toggles the visibility of the search panel
+    /// </summary>
+    [RelayCommand]
+    private void TogglePanel()
+    {
+        try
+        {
+            PanelToggleRequested?.Invoke(this, EventArgs.Empty);
+            _logger.LogDebug("Panel toggle requested");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error toggling panel");
+        }
+    }
+    #endregion
+
     #region Data Loading and Helper Methods
 
     /// <summary>
@@ -473,7 +512,7 @@ public partial class TransferItemViewModel : BaseViewModel
             if (partResult.IsSuccess)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     PartOptions.Clear();
                     foreach (System.Data.DataRow row in partResult.Data.Rows)
@@ -498,7 +537,7 @@ public partial class TransferItemViewModel : BaseViewModel
             if (operationResult.IsSuccess)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     OperationOptions.Clear();
                     foreach (System.Data.DataRow row in operationResult.Data.Rows)
@@ -523,7 +562,7 @@ public partial class TransferItemViewModel : BaseViewModel
             if (locationResult.IsSuccess)
             {
                 // Update collection on UI thread
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Post(() =>
                 {
                     LocationOptions.Clear();
                     foreach (System.Data.DataRow row in locationResult.Data.Rows)
@@ -550,9 +589,9 @@ public partial class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Loads sample data for demonstration purposes
     /// </summary>
-    private async Task LoadSampleDataAsync()
+    private Task LoadSampleDataAsync()
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             // Clear existing data
             PartOptions.Clear();
@@ -580,14 +619,15 @@ public partial class TransferItemViewModel : BaseViewModel
                 LocationOptions.Add(location);
             }
         });
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Loads sample inventory data for demonstration with proper filtering
     /// </summary>
-    private async Task LoadSampleInventoryDataAsync()
+    private Task LoadSampleInventoryDataAsync()
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             var sampleItems = new[]
             {
@@ -665,6 +705,7 @@ public partial class TransferItemViewModel : BaseViewModel
                 InventoryItems.Add(item);
             }
         });
+        return Task.CompletedTask;
     }
 
     #endregion

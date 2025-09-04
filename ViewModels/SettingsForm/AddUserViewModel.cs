@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Commands;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
@@ -16,20 +16,63 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// ViewModel for adding new users to the system.
 /// Provides user creation functionality with validation.
 /// </summary>
-public class AddUserViewModel : BaseViewModel
+public partial class AddUserViewModel : BaseViewModel
 {
     private readonly IDatabaseService _databaseService;
     
+    [ObservableProperty]
+    [Required(ErrorMessage = "Username is required")]
+    [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters")]
+    [NotifyCanExecuteChangedFor(nameof(CreateUserCommand))]
     private string _username = string.Empty;
+    
+    [ObservableProperty]
+    [Required(ErrorMessage = "Password is required")]
+    [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters")]
+    [NotifyCanExecuteChangedFor(nameof(CreateUserCommand))]
     private string _password = string.Empty;
+    
+    [ObservableProperty]
+    [Required(ErrorMessage = "Password confirmation is required")]
+    [NotifyCanExecuteChangedFor(nameof(CreateUserCommand))]
+    [NotifyPropertyChangedFor(nameof(PasswordsMatch))]
     private string _confirmPassword = string.Empty;
+    
+    [ObservableProperty]
+    [Required(ErrorMessage = "First name is required")]
+    [StringLength(50, ErrorMessage = "First name cannot exceed 50 characters")]
+    [NotifyCanExecuteChangedFor(nameof(CreateUserCommand))]
+    [NotifyPropertyChangedFor(nameof(FullName))]
     private string _firstName = string.Empty;
+    
+    [ObservableProperty]
+    [Required(ErrorMessage = "Last name is required")]
+    [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters")]
+    [NotifyCanExecuteChangedFor(nameof(CreateUserCommand))]
+    [NotifyPropertyChangedFor(nameof(FullName))]
     private string _lastName = string.Empty;
+    
+    [ObservableProperty]
+    [EmailAddress(ErrorMessage = "Invalid email address")]
+    [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
     private string _email = string.Empty;
+    
+    [ObservableProperty]
+    [Required(ErrorMessage = "Role is required")]
     private string _role = "User";
+    
+    [ObservableProperty]
     private bool _isActive = true;
+    
+    [ObservableProperty]
     private string _department = string.Empty;
+    
+    [ObservableProperty]
+    [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
     private string _notes = string.Empty;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CreateUserCommand))]
     private bool _isCreating;
 
     public AddUserViewModel(
@@ -37,11 +80,6 @@ public class AddUserViewModel : BaseViewModel
         ILogger<AddUserViewModel> logger) : base(logger)
     {
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
-
-        // Initialize commands
-        CreateUserCommand = new AsyncCommand(ExecuteCreateUserAsync, CanExecuteCreateUser);
-        ClearFormCommand = new AsyncCommand(ExecuteClearFormAsync);
-        ValidateUsernameCommand = new AsyncCommand(ExecuteValidateUsernameAsync);
 
         // Initialize collections
         AvailableRoles = new ObservableCollection<string>
@@ -58,124 +96,6 @@ public class AddUserViewModel : BaseViewModel
     }
 
     #region Properties
-
-    /// <summary>
-    /// Username for the new user.
-    /// </summary>
-    [Required(ErrorMessage = "Username is required")]
-    [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters")]
-    public string Username
-    {
-        get => _username;
-        set => SetProperty(ref _username, value);
-    }
-
-    /// <summary>
-    /// Password for the new user.
-    /// </summary>
-    [Required(ErrorMessage = "Password is required")]
-    [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters")]
-    public string Password
-    {
-        get => _password;
-        set => SetProperty(ref _password, value);
-    }
-
-    /// <summary>
-    /// Password confirmation.
-    /// </summary>
-    [Required(ErrorMessage = "Password confirmation is required")]
-    public string ConfirmPassword
-    {
-        get => _confirmPassword;
-        set
-        {
-            if (SetProperty(ref _confirmPassword, value))
-            {
-                RaisePropertyChanged(nameof(PasswordsMatch));
-            }
-        }
-    }
-
-    /// <summary>
-    /// First name of the user.
-    /// </summary>
-    [Required(ErrorMessage = "First name is required")]
-    [StringLength(50, ErrorMessage = "First name cannot exceed 50 characters")]
-    public string FirstName
-    {
-        get => _firstName;
-        set => SetProperty(ref _firstName, value);
-    }
-
-    /// <summary>
-    /// Last name of the user.
-    /// </summary>
-    [Required(ErrorMessage = "Last name is required")]
-    [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters")]
-    public string LastName
-    {
-        get => _lastName;
-        set => SetProperty(ref _lastName, value);
-    }
-
-    /// <summary>
-    /// Email address of the user.
-    /// </summary>
-    [EmailAddress(ErrorMessage = "Invalid email address")]
-    [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
-    public string Email
-    {
-        get => _email;
-        set => SetProperty(ref _email, value);
-    }
-
-    /// <summary>
-    /// Role assigned to the user.
-    /// </summary>
-    [Required(ErrorMessage = "Role is required")]
-    public string Role
-    {
-        get => _role;
-        set => SetProperty(ref _role, value);
-    }
-
-    /// <summary>
-    /// Indicates if the user account is active.
-    /// </summary>
-    public bool IsActive
-    {
-        get => _isActive;
-        set => SetProperty(ref _isActive, value);
-    }
-
-    /// <summary>
-    /// Department the user belongs to.
-    /// </summary>
-    public string Department
-    {
-        get => _department;
-        set => SetProperty(ref _department, value);
-    }
-
-    /// <summary>
-    /// Additional notes about the user.
-    /// </summary>
-    [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
-    public string Notes
-    {
-        get => _notes;
-        set => SetProperty(ref _notes, value);
-    }
-
-    /// <summary>
-    /// Indicates if user creation is in progress.
-    /// </summary>
-    public bool IsCreating
-    {
-        get => _isCreating;
-        set => SetProperty(ref _isCreating, value);
-    }
 
     /// <summary>
     /// Available user roles.
@@ -202,28 +122,10 @@ public class AddUserViewModel : BaseViewModel
     #region Commands
 
     /// <summary>
-    /// Command to create the new user.
-    /// </summary>
-    public ICommand CreateUserCommand { get; }
-
-    /// <summary>
-    /// Command to clear the form.
-    /// </summary>
-    public ICommand ClearFormCommand { get; }
-
-    /// <summary>
-    /// Command to validate username availability.
-    /// </summary>
-    public ICommand ValidateUsernameCommand { get; }
-
-    #endregion
-
-    #region Command Implementations
-
-    /// <summary>
     /// Creates a new user with the specified information.
     /// </summary>
-    private async Task ExecuteCreateUserAsync()
+    [RelayCommand(CanExecute = nameof(CanCreateUser))]
+    private async Task CreateUserAsync()
     {
         try
         {
@@ -241,10 +143,11 @@ public class AddUserViewModel : BaseViewModel
             
             // In a real implementation, this would call the appropriate stored procedure
             // For now, just simulate success
+            await Task.Delay(1000); // Simulate async operation
             Logger.LogInformation("User {Username} created successfully", Username);
             
             // Clear form after successful creation
-            await ExecuteClearFormAsync();
+            await ClearFormAsync();
         }
         catch (Exception ex)
         {
@@ -259,7 +162,7 @@ public class AddUserViewModel : BaseViewModel
     /// <summary>
     /// Determines if user can be created.
     /// </summary>
-    private bool CanExecuteCreateUser()
+    private bool CanCreateUser()
     {
         return !IsCreating &&
                !string.IsNullOrWhiteSpace(Username) &&
@@ -272,7 +175,8 @@ public class AddUserViewModel : BaseViewModel
     /// <summary>
     /// Clears all form fields.
     /// </summary>
-    private async Task ExecuteClearFormAsync()
+    [RelayCommand]
+    private async Task ClearFormAsync()
     {
         Username = string.Empty;
         Password = string.Empty;
@@ -286,12 +190,14 @@ public class AddUserViewModel : BaseViewModel
         Notes = string.Empty;
 
         Logger.LogDebug("User form cleared");
+        await Task.CompletedTask;
     }
 
     /// <summary>
     /// Validates if username is available.
     /// </summary>
-    private async Task ExecuteValidateUsernameAsync()
+    [RelayCommand]
+    private async Task ValidateUsernameAsync()
     {
         if (string.IsNullOrWhiteSpace(Username)) return;
 
@@ -302,6 +208,7 @@ public class AddUserViewModel : BaseViewModel
             
             // In a real implementation, this would check against the database
             // For now, just log the validation request
+            await Task.Delay(500); // Simulate async validation
             Logger.LogDebug("Username {Username} validation completed", Username);
         }
         catch (Exception ex)

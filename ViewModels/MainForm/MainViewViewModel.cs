@@ -246,17 +246,17 @@ public partial class MainViewViewModel : BaseViewModel
     {
         try
         {
-            // Get SettingsFormViewModel from DI container
-            var settingsFormViewModel = Program.GetService<SettingsFormViewModel>();
+            // Get SettingsViewModel from DI container
+            var SettingsViewModel = Program.GetService<SettingsViewModel>();
             
-            // Create SettingsFormView with the ViewModel
-            var settingsFormView = new Views.SettingsFormView
+            // Create SettingsView with the ViewModel
+            var SettingsView = new Views.SettingsView
             {
-                DataContext = settingsFormViewModel
+                DataContext = SettingsViewModel
             };
             
             // Navigate to the advanced settings view
-            await Task.Run(() => _navigationService.NavigateTo(settingsFormView)).ConfigureAwait(false);
+            await Task.Run(() => _navigationService.NavigateTo(SettingsView)).ConfigureAwait(false);
             
             Logger.LogInformation("Navigated to Advanced Settings form");
             StatusText = "Advanced Settings opened";
