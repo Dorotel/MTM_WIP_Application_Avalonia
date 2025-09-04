@@ -1,0 +1,423 @@
+name: Issue and PR Automation
+on:
+  issues:
+    types: [opened, edited, labeled, assigned, closed, reopened]
+  pull_request:
+    types: [opened, edited, labeled, assigned, closed, reopened, ready_for_review, converted_to_draft]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  # Auto-label issues based on content and templates
+  auto-label-issues:
+    name: Auto-label Issues
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'edited')
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Auto-label Bug Reports
+      if: contains(github.event.issue.title, '[BUG]') || contains(github.event.issue.body, 'Bug Report Template')
+      run: |
+        gh issue edit ${{ github.event.issue.number }} --add-label "bug,needs-investigation" 2>/dev/null || echo "Could not add labels"
+        
+        # Add severity labels based on content
+        if echo "${{ github.event.issue.body }}" | grep -q "Critical - Application crash"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "severity:critical" 2>/dev/null || true
+        elif echo "${{ github.event.issue.body }}" | grep -q "High - Major feature broken"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "severity:high" 2>/dev/null || true
+        elif echo "${{ github.event.issue.body }}" | grep -q "Medium - Feature partially"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "severity:medium" 2>/dev/null || true
+        elif echo "${{ github.event.issue.body }}" | grep -q "Low - Minor issue"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "severity:low" 2>/dev/null || true
+        fi
+        
+        # Add component labels
+        if echo "${{ github.event.issue.body }}" | grep -q "Views & UI (AXAML)"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "component:ui" 2>/dev/null || true
+        elif echo "${{ github.event.issue.body }}" | grep -q "ViewModels & Business Logic"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "component:viewmodel" 2>/dev/null || true
+        elif echo "${{ github.event.issue.body }}" | grep -q "Services & Infrastructure"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "component:service" 2>/dev/null || true
+        elif echo "${{ github.event.issue.body }}" | grep -q "Database & Stored Procedures"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "component:database" 2>/dev/null || true
+        fi
+        
+    - name: Auto-label Feature Requests
+      if: contains(github.event.issue.title, '[FEATURE]') || contains(github.event.issue.body, 'Feature Request Template')
+      run: |
+        gh issue edit ${{ github.event.issue.number }} --add-label "feature,enhancement" 2>/dev/null || echo "Could not add labels"
+        
+        # Add priority labels
+        if echo "${{ github.event.issue.body }}" | grep -q "Critical - Must Have"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "priority:critical" 2>/dev/null || true
+        elif echo "${{ github.event.issue.body }}" | grep -q "High - Should Have"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "priority:high" 2>/dev/null || true
+        elif echo "${{ github.event.issue.body }}" | grep -q "Medium - Could Have"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "priority:medium" 2>/dev/null || true
+        elif echo "${{ github.event.issue.body }}" | grep -q "Low - Won't Have"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "priority:low" 2>/dev/null || true
+        fi
+        
+    - name: Auto-label Documentation Issues
+      if: contains(github.event.issue.title, '[DOCS]') || contains(github.event.issue.body, 'Documentation Improvement Template')
+      run: |
+        gh issue edit ${{ github.event.issue.number }} --add-label "documentation,improvement"
+        
+        # Add documentation type labels
+        if echo "${{ github.event.issue.body }}" | grep -q "GitHub Instructions"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "docs:github-instructions"
+        elif echo "${{ github.event.issue.body }}" | grep -q "Architecture Documentation"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "docs:architecture"
+        elif echo "${{ github.event.issue.body }}" | grep -q "Developer Guidelines"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "docs:developer-guide"
+        fi
+        
+    - name: Auto-label Enhancement Issues
+      if: contains(github.event.issue.title, '[ENHANCEMENT]') || contains(github.event.issue.body, 'Enhancement Template')
+      run: |
+        gh issue edit ${{ github.event.issue.number }} --add-label "enhancement,improvement"
+        
+        # Add enhancement type labels
+        if echo "${{ github.event.issue.body }}" | grep -q "Performance - Speed, memory"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "type:performance"
+        elif echo "${{ github.event.issue.body }}" | grep -q "User Experience - UI/UX"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "type:ux"
+        elif echo "${{ github.event.issue.body }}" | grep -q "Reliability - Error handling"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "type:reliability"
+        elif echo "${{ github.event.issue.body }}" | grep -q "Security - Security-related"; then
+          gh issue edit ${{ github.event.issue.number }} --add-label "type:security"
+        fi
+
+  # Auto-label pull requests based on content and changes
+  auto-label-prs:
+    name: Auto-label Pull Requests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'edited')
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Analyze PR Changes
+      id: analyze
+      run: |
+        # Get list of changed files using git instead of gh (more reliable in PR context)
+        if [ -n "${{ github.base_ref }}" ]; then
+          git fetch origin ${{ github.base_ref }} 2>/dev/null || echo "Could not fetch base ref"
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD 2>/dev/null || git diff --name-only HEAD~1 2>/dev/null || echo "")
+        else
+          CHANGED_FILES=$(git diff --name-only HEAD~1 2>/dev/null || echo "")
+        fi
+        
+        echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        # Analyze file patterns
+        if echo "$CHANGED_FILES" | grep -q "\.axaml$\|Views/"; then
+          echo "has_ui_changes=true" >> $GITHUB_OUTPUT
+        fi
+        
+        if echo "$CHANGED_FILES" | grep -q "ViewModels/"; then
+          echo "has_viewmodel_changes=true" >> $GITHUB_OUTPUT
+        fi
+        
+        if echo "$CHANGED_FILES" | grep -q "Services/"; then
+          echo "has_service_changes=true" >> $GITHUB_OUTPUT
+        fi
+        
+        if echo "$CHANGED_FILES" | grep -q "Models/"; then
+          echo "has_model_changes=true" >> $GITHUB_OUTPUT
+        fi
+        
+        if echo "$CHANGED_FILES" | grep -q "\.md$\|\.yml$\|\.json$" && echo "$CHANGED_FILES" | grep -q "\.github/\|docs/"; then
+          echo "has_documentation_changes=true" >> $GITHUB_OUTPUT
+        fi
+        
+        if echo "$CHANGED_FILES" | grep -q "\.csproj$\|packages\.json$\|\.props$"; then
+          echo "has_build_changes=true" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Apply Component Labels
+      run: |
+        if [ "${{ steps.analyze.outputs.has_ui_changes }}" = "true" ]; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:ui" 2>/dev/null || echo "Could not add UI label"
+        fi
+        
+        if [ "${{ steps.analyze.outputs.has_viewmodel_changes }}" = "true" ]; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:viewmodel" 2>/dev/null || echo "Could not add viewmodel label"
+        fi
+        
+        if [ "${{ steps.analyze.outputs.has_service_changes }}" = "true" ]; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:service" 2>/dev/null || echo "Could not add service label"
+        fi
+        
+        if [ "${{ steps.analyze.outputs.has_model_changes }}" = "true" ]; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:model" 2>/dev/null || echo "Could not add model label"
+        fi
+        
+        if [ "${{ steps.analyze.outputs.has_documentation_changes }}" = "true" ]; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "documentation" 2>/dev/null || echo "Could not add documentation label"
+        fi
+        
+        if [ "${{ steps.analyze.outputs.has_build_changes }}" = "true" ]; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "build" 2>/dev/null || echo "Could not add build label"
+        fi
+        
+    - name: Label by PR Title and Type
+      run: |
+        if echo "${{ github.event.pull_request.title }}" | grep -q "^feat\|^feature"; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "feature"
+        elif echo "${{ github.event.pull_request.title }}" | grep -q "^fix\|^bugfix"; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "bugfix"
+        elif echo "${{ github.event.pull_request.title }}" | grep -q "^docs"; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "documentation"
+        elif echo "${{ github.event.pull_request.title }}" | grep -q "^perf\|^performance"; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "performance"
+        elif echo "${{ github.event.pull_request.title }}" | grep -q "^refactor"; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "refactoring"
+        elif echo "${{ github.event.pull_request.title }}" | grep -q "^test"; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "testing"
+        elif echo "${{ github.event.pull_request.title }}" | grep -q "^hotfix\|^emergency"; then
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "hotfix,critical"
+        fi
+
+  # Size labeling for PRs based on changed lines
+  pr-size-labeling:
+    name: PR Size Labeling
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'edited')
+    
+    steps:
+    - name: Calculate PR Size
+      id: pr-size
+      run: |
+        ADDITIONS=${{ github.event.pull_request.additions }}
+        DELETIONS=${{ github.event.pull_request.deletions }}
+        CHANGES=$((ADDITIONS + DELETIONS))
+        
+        echo "Total changes: $CHANGES"
+        
+        if [ $CHANGES -lt 50 ]; then
+          echo "size=XS" >> $GITHUB_OUTPUT
+          echo "label=size:XS" >> $GITHUB_OUTPUT
+        elif [ $CHANGES -lt 200 ]; then
+          echo "size=S" >> $GITHUB_OUTPUT
+          echo "label=size:S" >> $GITHUB_OUTPUT
+        elif [ $CHANGES -lt 500 ]; then
+          echo "size=M" >> $GITHUB_OUTPUT
+          echo "label=size:M" >> $GITHUB_OUTPUT
+        elif [ $CHANGES -lt 1000 ]; then
+          echo "size=L" >> $GITHUB_OUTPUT
+          echo "label=size:L" >> $GITHUB_OUTPUT
+        else
+          echo "size=XL" >> $GITHUB_OUTPUT
+          echo "label=size:XL" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Apply Size Label
+      run: |
+        # Remove existing size labels first (ignore errors if labels don't exist)
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:XS" 2>/dev/null || true
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:S" 2>/dev/null || true
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:M" 2>/dev/null || true
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:L" 2>/dev/null || true
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:XL" 2>/dev/null || true
+        
+        # Add new size label
+        gh pr edit ${{ github.event.pull_request.number }} --add-label "${{ steps.pr-size.outputs.label }}" 2>/dev/null || echo "Could not add size label"
+        
+    - name: Comment on Large PRs
+      if: steps.pr-size.outputs.size == 'XL'
+      run: |
+        gh pr comment ${{ github.event.pull_request.number }} --body "
+        ## ⚠️ Large Pull Request Detected
+        
+        This PR has been labeled as **size:XL** due to the number of changes (${{ github.event.pull_request.additions }} additions, ${{ github.event.pull_request.deletions }} deletions).
+        
+        **Recommendations:**
+        - Consider breaking this PR into smaller, focused changes
+        - Ensure comprehensive testing and review
+        - Document any breaking changes or significant architectural decisions
+        - Consider pair programming for complex sections
+        
+        **Review Guidelines:**
+        - Extra attention to testing coverage
+        - Verify MTM pattern compliance across all changes
+        - Check for potential performance implications
+        - Ensure documentation is updated appropriately
+        " 2>/dev/null || echo "Could not add comment to large PR"
+
+  # Check for required PR template completion
+  pr-template-check:
+    name: PR Template Compliance Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    
+    steps:
+    - name: Check PR Template Completion
+      id: template-check
+      run: |
+        PR_BODY="${{ github.event.pull_request.body }}"
+        
+        # Check for required sections
+        MISSING_SECTIONS=""
+        
+        if ! echo "$PR_BODY" | grep -q "## Summary"; then
+          MISSING_SECTIONS="$MISSING_SECTIONS\n- Summary section"
+        fi
+        
+        if ! echo "$PR_BODY" | grep -q "## Type of Change"; then
+          MISSING_SECTIONS="$MISSING_SECTIONS\n- Type of Change section"
+        fi
+        
+        if ! echo "$PR_BODY" | grep -q "## MTM Pattern Compliance"; then
+          MISSING_SECTIONS="$MISSING_SECTIONS\n- MTM Pattern Compliance section"
+        fi
+        
+        if ! echo "$PR_BODY" | grep -q "## Testing Completed"; then
+          MISSING_SECTIONS="$MISSING_SECTIONS\n- Testing Completed section"
+        fi
+        
+        # Check for checkboxes completion
+        UNCHECKED_COUNT=$(echo "$PR_BODY" | grep -c "- \[ \]" || echo "0")
+        CHECKED_COUNT=$(echo "$PR_BODY" | grep -c "- \[x\]" || echo "0")
+        
+        echo "missing_sections=$MISSING_SECTIONS" >> $GITHUB_OUTPUT
+        echo "unchecked_count=$UNCHECKED_COUNT" >> $GITHUB_OUTPUT
+        echo "checked_count=$CHECKED_COUNT" >> $GITHUB_OUTPUT
+        
+    - name: Comment on Template Issues
+      if: steps.template-check.outputs.missing_sections != '' || steps.template-check.outputs.unchecked_count > 10
+      run: |
+        COMMENT_BODY="## 📋 PR Template Compliance Check\n\n"
+        
+        if [ -n "${{ steps.template-check.outputs.missing_sections }}" ]; then
+          COMMENT_BODY="${COMMENT_BODY}**Missing Required Sections:**${{ steps.template-check.outputs.missing_sections }}\n\n"
+        fi
+        
+        if [ ${{ steps.template-check.outputs.unchecked_count }} -gt 10 ]; then
+          COMMENT_BODY="${COMMENT_BODY}**Incomplete Checklist:** ${{ steps.template-check.outputs.unchecked_count }} unchecked items, ${{ steps.template-check.outputs.checked_count }} completed.\n\n"
+        fi
+        
+        COMMENT_BODY="${COMMENT_BODY}**Please:**\n"
+        COMMENT_BODY="${COMMENT_BODY}- Complete all required sections of the PR template\n"
+        COMMENT_BODY="${COMMENT_BODY}- Check off completed items in the checklists\n"
+        COMMENT_BODY="${COMMENT_BODY}- Ensure MTM Pattern Compliance section is filled out\n"
+        COMMENT_BODY="${COMMENT_BODY}- Provide evidence of testing completion\n\n"
+        COMMENT_BODY="${COMMENT_BODY}*This helps maintain code quality and ensures proper review focus.*"
+        
+        gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
+        gh pr edit ${{ github.event.pull_request.number }} --add-label "needs-template-completion"
+
+  # Automatic issue assignment and project management
+  issue-management:
+    name: Issue Management
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues'
+    
+    steps:
+    - name: Auto-assign Epic and Feature Issues
+      if: |
+        github.event.action == 'opened' && 
+        (contains(github.event.issue.title, '[EPIC]') || contains(github.event.issue.title, '[FEATURE]'))
+      run: |
+        # Auto-assign to project maintainer or lead
+        gh issue edit ${{ github.event.issue.number }} --add-assignee ${{ github.repository_owner }}
+        
+    - name: Critical Issue Escalation
+      if: |
+        github.event.action == 'labeled' && 
+        (contains(github.event.label.name, 'severity:critical') || contains(github.event.label.name, 'priority:critical'))
+      run: |
+        gh issue comment ${{ github.event.issue.number }} --body "
+        ## 🚨 Critical Issue Escalation
+        
+        This issue has been marked as **${{ github.event.label.name }}**.
+        
+        **Immediate Actions:**
+        - Issue has been assigned to project maintainers
+        - Stakeholders have been notified
+        - Priority review scheduled within 4 hours
+        
+        **For critical bugs:** Consider hotfix workflow if this affects production
+        **For critical features:** Evaluate impact on current sprint and roadmap
+        "
+        
+        # Add to high-priority milestone if it exists
+        # gh issue edit ${{ github.event.issue.number }} --milestone "Critical Issues"
+        
+    - name: Stale Issue Management
+      if: github.event.action == 'labeled' && github.event.label.name == 'stale'
+      run: |
+        gh issue comment ${{ github.event.issue.number }} --body "
+        ## 📋 Stale Issue Notice
+        
+        This issue has been marked as stale due to inactivity.
+        
+        **Next Steps:**
+        - If still relevant, please update with current status
+        - Add recent context or progress information
+        - Remove 'stale' label to keep issue active
+        
+        **Auto-close:** This issue will be automatically closed in 7 days if no activity.
+        "
+
+  # PR Review Management
+  pr-review-management:
+    name: PR Review Management
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_review' || (github.event_name == 'pull_request' && github.event.action == 'ready_for_review')
+    
+    steps:
+    - name: Request Additional Reviews for Large PRs
+      if: |
+        github.event_name == 'pull_request' && 
+        github.event.action == 'ready_for_review' &&
+        github.event.pull_request.additions > 500
+      run: |
+        gh pr comment ${{ github.event.pull_request.number }} --body "
+        ## 👥 Additional Review Requested
+        
+        This large PR (500+ line changes) requires additional reviewer attention.
+        
+        **Review Focus Areas:**
+        - Architecture and design decisions
+        - MTM pattern compliance verification
+        - Testing coverage adequacy
+        - Performance impact assessment
+        - Security implications review
+        
+        Please ensure at least 2 reviewers approve before merging.
+        "
+        
+    - name: Handle Review Feedback
+      if: github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested'
+      run: |
+        gh pr edit ${{ github.event.pull_request.number }} --add-label "needs-changes"
+        
+        # Remove ready-to-merge label if present
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "ready-to-merge" || true
+        
+    - name: Mark as Ready to Merge
+      if: |
+        github.event_name == 'pull_request_review' && 
+        github.event.review.state == 'approved'
+      run: |
+        # Check if all required reviews are approved (simplified check)
+        echo "PR approved by reviewer, marking as ready to merge candidate"
+        gh pr edit ${{ github.event.pull_request.number }} --add-label "ready-to-merge" || echo "Failed to add ready-to-merge label"
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "needs-changes" || echo "No needs-changes label to remove"

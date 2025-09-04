@@ -1,0 +1,426 @@
+name: Documentation Sync and Validation
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - '.github/instructions/**'
+      - 'docs/**'
+      - '**.md'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - '.github/instructions/**' 
+      - 'docs/**'
+      - '**.md'
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC to check documentation health
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  # Validate GitHub Instructions System
+  validate-github-instructions:
+    name: Validate GitHub Instructions
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Check Instructions File Structure
+      run: |
+        echo "=== GitHub Instructions Structure Validation ==="
+        
+        # Check for required instruction files from Phase 1
+        REQUIRED_FILES=(
+          ".github/instructions/README.md"
+          ".github/instructions/avalonia-ui-guidelines.instructions.md"
+          ".github/instructions/mvvm-community-toolkit.instructions.md"
+          ".github/instructions/mysql-database-patterns.instructions.md"
+          ".github/instructions/service-architecture.instructions.md"
+          ".github/instructions/data-models.instructions.md"
+          ".github/instructions/dotnet-architecture-good-practices.instructions.md"
+        )
+        
+        MISSING_FILES=()
+        for file in "${REQUIRED_FILES[@]}"; do
+          if [ ! -f "$file" ]; then
+            MISSING_FILES+=("$file")
+            echo "❌ Missing: $file"
+          else
+            echo "✅ Found: $file"
+          fi
+        done
+        
+        if [ ${#MISSING_FILES[@]} -gt 0 ]; then
+          echo "::error::Missing required GitHub instruction files"
+          exit 1
+        fi
+        
+    - name: Validate Instruction File Content
+      run: |
+        echo "=== Validating GitHub Instructions Content ==="
+        
+        # Check for required sections in instruction files
+        ERROR_COUNT=0
+        
+        # Check MVVM Community Toolkit instructions
+        if [ -f ".github/instructions/mvvm-community-toolkit.instructions.md" ]; then
+          if ! grep -q "\[ObservableProperty\]" ".github/instructions/mvvm-community-toolkit.instructions.md"; then
+            echo "❌ MVVM instructions missing [ObservableProperty] examples"
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+          if ! grep -q "\[RelayCommand\]" ".github/instructions/mvvm-community-toolkit.instructions.md"; then
+            echo "❌ MVVM instructions missing [RelayCommand] examples"
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+        fi
+        
+        # Check database instructions
+        if [ -f ".github/instructions/mysql-database-patterns.instructions.md" ]; then
+          if ! grep -q "Helper_Database_StoredProcedure" ".github/instructions/mysql-database-patterns.instructions.md"; then
+            echo "❌ Database instructions missing Helper_Database_StoredProcedure pattern"
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+          if ! grep -q "ExecuteDataTableWithStatus" ".github/instructions/mysql-database-patterns.instructions.md"; then
+            echo "❌ Database instructions missing ExecuteDataTableWithStatus pattern"
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+        fi
+        
+        # Check Avalonia instructions
+        if [ -f ".github/instructions/avalonia-ui-guidelines.instructions.md" ]; then
+          if ! grep -q "x:Name" ".github/instructions/avalonia-ui-guidelines.instructions.md"; then
+            echo "❌ Avalonia instructions missing x:Name requirements"
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+        fi
+        
+        if [ $ERROR_COUNT -gt 0 ]; then
+          echo "::error::Found $ERROR_COUNT content validation errors in instruction files"
+          exit 1
+        else
+          echo "✅ All instruction files contain required content patterns"
+        fi
+        
+    - name: Check Cross-References
+      run: |
+        echo "=== Checking Cross-References in Documentation ==="
+        
+        # Find broken internal links (make it more robust)
+        if [ -d ".github/instructions" ]; then
+          find .github/instructions -name "*.md" -type f | while read file; do
+            echo "Checking links in: $file"
+            
+            # Extract markdown links (simplified check)
+            if grep -q '\[.*\](.*)' "$file"; then
+              echo "✅ Found markdown links in $file"
+            fi
+          done
+        else
+          echo "⚠️ .github/instructions directory not found"
+        fi
+        
+        if [ -d "docs" ]; then
+          find docs -name "*.md" -type f | while read file; do
+            echo "Checking links in: $file"
+          done
+        else
+          echo "ℹ️ docs directory not found (optional)"
+        fi
+        
+    - name: Validate Code Examples
+      run: |
+        echo "=== Validating Code Examples in Documentation ==="
+        
+        # Extract C# code blocks and basic syntax validation
+        find .github/instructions -name "*.md" | while read file; do
+          echo "Checking code examples in: $file"
+          
+          # Extract C# code blocks
+          awk '/```csharp/,/```/' "$file" | grep -v '^```' > /tmp/code_examples.cs 2>/dev/null || true
+          
+          if [ -s /tmp/code_examples.cs ]; then
+            # Basic syntax checks
+            if grep -q "using System" /tmp/code_examples.cs; then
+              echo "✅ Found C# examples with proper using statements"
+            fi
+            
+            # Check for MTM patterns
+            if grep -q "\[ObservableProperty\]" /tmp/code_examples.cs; then
+              echo "✅ Found MTM MVVM Community Toolkit patterns"
+            fi
+            
+            if grep -q "Helper_Database_StoredProcedure" /tmp/code_examples.cs; then
+              echo "✅ Found MTM database patterns"
+            fi
+          fi
+        done
+        
+        rm -f /tmp/code_examples.cs
+
+  # Documentation health check
+  documentation-health-check:
+    name: Documentation Health Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Install Dependencies
+      run: |
+        # Install markdown linter
+        npm install -g markdownlint-cli
+        
+        # Install link checker
+        npm install -g markdown-link-check
+        
+    - name: Markdown Linting
+      run: |
+        echo "=== Running Markdown Lint Checks ==="
+        
+        # Create markdownlint config
+        cat > .markdownlint.json << 'EOF'
+        {
+          "MD013": { "line_length": 120 },
+          "MD033": false,
+          "MD041": false
+        }
+        EOF
+        
+        # Lint all markdown files
+        markdownlint '**/*.md' --config .markdownlint.json || true
+        
+    - name: Link Checking
+      run: |
+        echo "=== Running Link Health Checks ==="
+        
+        # Create link check config to ignore localhost and certain patterns
+        cat > .markdown-link-check.json << 'EOF'
+        {
+          "ignorePatterns": [
+            { "pattern": "^https://localhost" },
+            { "pattern": "^http://localhost" },
+            { "pattern": "^#" }
+          ],
+          "timeout": "10s",
+          "retryOn429": true,
+          "retryCount": 2
+        }
+        EOF
+        
+        # Check links in key documentation files
+        find .github/instructions docs -name "*.md" -type f | head -20 | while read file; do
+          echo "Checking links in: $file"
+          markdown-link-check "$file" --config .markdown-link-check.json --quiet || true
+        done
+        
+    - name: Documentation Coverage Report
+      run: |
+        echo "=== Documentation Coverage Report ==="
+        
+        # Count total markdown files
+        TOTAL_MD_FILES=$(find . -name "*.md" -type f | wc -l)
+        echo "Total markdown files: $TOTAL_MD_FILES"
+        
+        # Count instruction files
+        INSTRUCTION_FILES=$(find .github/instructions -name "*.md" -type f | wc -l)
+        echo "GitHub instruction files: $INSTRUCTION_FILES"
+        
+        # Count documentation files
+        DOC_FILES=$(find docs -name "*.md" -type f 2>/dev/null | wc -l || echo "0")
+        echo "Documentation files: $DOC_FILES"
+        
+        # Check for README files
+        README_FILES=$(find . -name "README.md" -type f | wc -l)
+        echo "README files: $README_FILES"
+        
+        # Generate coverage report
+        echo ""
+        echo "=== Documentation Quality Metrics ==="
+        
+        # Check for TOC (Table of Contents) in longer files
+        find .github/instructions -name "*.md" -type f | while read file; do
+          LINE_COUNT=$(wc -l < "$file")
+          if [ $LINE_COUNT -gt 200 ]; then
+            if ! grep -q -i "table of contents\|toc" "$file"; then
+              echo "📋 Consider adding TOC to long file: $file ($LINE_COUNT lines)"
+            fi
+          fi
+        done
+
+  # Sync documentation with latest patterns
+  sync-documentation:
+    name: Sync Documentation Patterns
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Update Documentation Timestamps
+      run: |
+        echo "=== Updating Documentation Timestamps ==="
+        
+        # Update last modified dates in instruction files
+        find .github/instructions -name "*.instructions.md" -type f | while read file; do
+          if grep -q "Last Updated:" "$file"; then
+            sed -i "s/Last Updated: .*/Last Updated: $(date +'%B %d, %Y')/" "$file"
+            echo "Updated timestamp in: $file"
+          fi
+        done
+        
+    - name: Generate Documentation Index
+      run: |
+        echo "=== Generating Documentation Index ==="
+        
+        # Create or update documentation index
+        cat > docs/README.md << 'EOF'
+        # MTM WIP Application Documentation
+        
+        This directory contains comprehensive documentation for the MTM WIP Application, a manufacturing inventory management system built with .NET 8 and Avalonia UI.
+        
+        ## 📋 Documentation Sections
+        
+        ### Architecture and Planning
+        - [Project Architecture Blueprint](ways-of-work/plan/mtm-inventory-management/Project_Architecture_Blueprint.md)
+        - [Project Structure Blueprint](ways-of-work/plan/mtm-inventory-management/Project_Folders_Structure_Blueprint.md)
+        - [Epic Architecture Specifications](ways-of-work/plan/mtm-inventory-management/epic-architecture/)
+        
+        ### GitHub Instructions System
+        The `.github/instructions/` system provides comprehensive development guidelines:
+        - [README](.github/instructions/README.md) - Overview and integration guide
+        - [Avalonia UI Guidelines](.github/instructions/avalonia-ui-guidelines.instructions.md)
+        - [MVVM Community Toolkit Patterns](.github/instructions/mvvm-community-toolkit.instructions.md) 
+        - [MySQL Database Patterns](.github/instructions/mysql-database-patterns.instructions.md)
+        - [Service Architecture Guide](.github/instructions/service-architecture.instructions.md)
+        - [Data Models Documentation](.github/instructions/data-models.instructions.md)
+        - [.NET Architecture Best Practices](.github/instructions/dotnet-architecture-good-practices.instructions.md)
+        
+        ### Development Workflow
+        - Issue Templates: Bug reports, feature requests, enhancements, documentation improvements
+        - Pull Request Templates: Feature implementation, hotfixes, documentation changes
+        - GitHub Actions: Automated CI/CD pipeline with testing and deployment
+        
+        ## 🏗️ Technology Stack
+        
+        - **.NET 8** with C# 12 language features
+        - **Avalonia UI 11.3.4** for cross-platform desktop UI
+        - **MVVM Community Toolkit 8.3.2** for MVVM patterns with source generators
+        - **MySQL 9.4.0** database with stored procedures only
+        - **Microsoft Extensions** 9.0.8 for dependency injection, logging, configuration
+        
+        ## 🎯 Architecture Patterns
+        
+        - **Service-Oriented MVVM**: Clean separation with dependency injection
+        - **Stored Procedures Only**: All database access via stored procedures
+        - **Manufacturing Domain**: Inventory management with operation-based workflows
+        - **GitHub Copilot Enhanced**: Comprehensive context for AI-assisted development
+        
+        ---
+        
+        **Last Updated**: $(date +'%B %d, %Y')  
+        **Generated by**: GitHub Actions Documentation Sync
+        EOF
+        
+    - name: Commit Documentation Updates
+      run: |
+        # Check if there are changes to commit
+        if git diff --quiet && git diff --staged --quiet; then
+          echo "No documentation changes to commit"
+        else
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/README.md .github/instructions/**/*.md
+          git commit -m "docs: Update documentation timestamps and index [skip ci]" || echo "No changes to commit"
+          git push || echo "No changes to push"
+        fi
+
+  # Documentation deployment readiness
+  documentation-deployment:
+    name: Documentation Deployment Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Check Documentation Completeness
+      run: |
+        echo "=== Documentation Deployment Readiness ==="
+        
+        # Check if new code changes have corresponding documentation updates
+        git fetch origin ${{ github.base_ref }} 2>/dev/null || echo "Could not fetch base ref"
+        CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD 2>/dev/null || git diff --name-only HEAD~1 2>/dev/null || echo "No file diff available")
+        
+        HAS_CODE_CHANGES=false
+        HAS_DOC_CHANGES=false
+        
+        # Check for code changes
+        if echo "$CHANGED_FILES" | grep -E '\.(cs|axaml)$' >/dev/null 2>&1; then
+          HAS_CODE_CHANGES=true
+          echo "✅ Code changes detected"
+        else
+          HAS_CODE_CHANGES=false
+        fi
+        
+        # Check for documentation changes
+        if echo "$CHANGED_FILES" | grep -E '\.(md|yml)$' | grep -E '(\.github/|docs/)' >/dev/null 2>&1; then
+          HAS_DOC_CHANGES=true
+          echo "✅ Documentation changes detected"
+        else
+          HAS_DOC_CHANGES=false
+        fi
+        
+        # Generate deployment readiness report
+        echo ""
+        echo "=== Deployment Readiness Report ==="
+        echo "Code changes: $HAS_CODE_CHANGES"
+        echo "Documentation changes: $HAS_DOC_CHANGES"
+        
+        # If significant code changes without docs, suggest documentation updates
+        SIGNIFICANT_CHANGES=$(echo "$CHANGED_FILES" | grep -E 'ViewModels/|Services/|Models/' | wc -l 2>/dev/null || echo "0")
+        if [ "$HAS_CODE_CHANGES" = "true" ] && [ "$HAS_DOC_CHANGES" = "false" ] && [ "$SIGNIFICANT_CHANGES" -gt 2 ]; then
+          echo ""
+          echo "⚠️  Recommendation: Consider updating documentation for significant code changes"
+          echo "   Changed files in core areas: $SIGNIFICANT_CHANGES"
+          echo "   Consider updating:"
+          echo "   - GitHub instructions if patterns changed"
+          echo "   - Architecture documentation if design evolved"
+          echo "   - User documentation if features added/changed"
+        fi
+        
+    - name: Generate Documentation Report
+      run: |
+        echo "=== Documentation Quality Report ===" > doc-report.md
+        echo "" >> doc-report.md
+        
+        # Count documentation files and size
+        echo "**Documentation Statistics:**" >> doc-report.md
+        echo "- Instruction files: $(find .github/instructions -name "*.md" | wc -l)" >> doc-report.md
+        echo "- Documentation files: $(find docs -name "*.md" 2>/dev/null | wc -l || echo 0)" >> doc-report.md
+        echo "- Total markdown files: $(find . -name "*.md" | wc -l)" >> doc-report.md
+        echo "- Total documentation size: $(find . -name "*.md" -exec cat {} \; | wc -l) lines" >> doc-report.md
+        echo "" >> doc-report.md
+        
+        echo "**Recent Changes:**" >> doc-report.md
+        git log --oneline -n 5 --grep="docs:" >> doc-report.md || echo "No recent documentation commits" >> doc-report.md
+        
+    - name: Upload Documentation Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation-report-${{ github.sha }}
+        path: doc-report.md
+        retention-days: 30

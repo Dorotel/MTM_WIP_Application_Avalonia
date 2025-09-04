@@ -1,0 +1,475 @@
+name: "Enhancement"
+description: "Enhance existing functionality in the MTM application with improvements or optimizations"
+title: "[ENHANCEMENT] "
+labels: ["enhancement", "improvement"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Enhancement Template
+        Use this template to propose improvements to existing MTM application functionality.
+        
+        **MTM Context**: Enhancements should align with established Phase 1 patterns and manufacturing domain requirements.
+
+  - type: input
+    id: enhancement_title
+    attributes:
+      label: "Enhancement Title"
+      description: "Clear, descriptive title for the enhancement"
+      placeholder: "e.g., Improve QuickButtons performance for large datasets (20+ buttons)"
+    validations:
+      required: true
+
+  - type: input
+    id: existing_functionality
+    attributes:
+      label: "Existing Functionality Being Enhanced"
+      description: "What current feature or component is being improved?"
+      placeholder: "e.g., QuickButtons panel drag-and-drop reordering functionality"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: enhancement_type
+    attributes:
+      label: "Enhancement Type"
+      description: "Category of improvement being proposed"
+      options:
+        - "Performance - Speed, memory, or efficiency improvements"
+        - "User Experience - UI/UX improvements and usability"
+        - "Functionality - Adding capabilities to existing features"
+        - "Reliability - Error handling, stability improvements"
+        - "Accessibility - Making features more accessible"
+        - "Maintainability - Code quality and developer experience"
+        - "Security - Security-related improvements"
+        - "Integration - Better integration with other components"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: enhancement_priority
+    attributes:
+      label: "Enhancement Priority"
+      description: "Business and technical priority for this improvement"
+      options:
+        - "Critical - Addresses performance bottlenecks or critical usability issues"
+        - "High - Significant improvement to user experience or system reliability"
+        - "Medium - Valuable improvement with moderate impact"
+        - "Low - Nice-to-have improvement for future consideration"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected_component
+    attributes:
+      label: "Primary Component Area"
+      description: "Main application component being enhanced"
+      options:
+        - "Views & UI (AXAML) - User interface enhancements"
+        - "ViewModels & Business Logic - MVVM Community Toolkit improvements"
+        - "Services & Infrastructure - Service layer enhancements"
+        - "Models & Data Structures - Data model improvements"
+        - "Database & Stored Procedures - Database optimizations"
+        - "Behaviors & Converters - Avalonia behavior improvements"
+        - "Configuration & Settings - Configuration enhancements"
+        - "Build & Deployment - Development process improvements"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: "Current Behavior & Limitations"
+      description: "Describe how the functionality currently works and its limitations"
+      placeholder: |
+        **Current Implementation:**
+        - QuickButtons panel supports drag-and-drop reordering
+        - Uses MVVM Community Toolkit [RelayCommand] for drag operations
+        - Persists button order via stored procedure
+        
+        **Current Limitations:**
+        - Performance degrades significantly with >15 buttons
+        - No visual feedback during drag operations beyond cursor change
+        - Reorder operation is synchronous, causing UI freeze for 500ms+
+        - No batching of position updates leads to multiple database calls
+        - Touch input on tablets is less responsive than mouse input
+        
+        **User Pain Points:**
+        - Operators report sluggish response during busy periods
+        - No indication of drag operation success/failure
+        - Difficulty using on tablet devices in manufacturing environment
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_enhancement
+    attributes:
+      label: "Proposed Enhancement"
+      description: "Detailed description of the proposed improvement"
+      placeholder: |
+        **Performance Improvements:**
+        - Implement asynchronous position updates with progress indication
+        - Batch multiple position changes into single database operation
+        - Add UI virtualization for large button collections (20+ items)
+        - Optimize re-rendering during drag operations using transforms
+        
+        **User Experience Improvements:**
+        - Add visual drag preview with semi-transparent ghost button
+        - Show position indicators (drop zones) during drag operations
+        - Implement haptic feedback for touch devices
+        - Add smooth animation transitions when buttons snap to new positions
+        
+        **Technical Improvements:**
+        - Debounce rapid position changes to reduce database calls
+        - Implement optimistic UI updates with rollback on failure
+        - Add comprehensive error handling with user-friendly messages
+        - Improve touch input responsiveness with gesture recognizers
+        
+        **Accessibility Improvements:**
+        - Add keyboard navigation for button reordering (Alt+Arrow keys)
+        - Implement screen reader announcements for position changes
+        - Ensure proper focus management during reorder operations
+    validations:
+      required: true
+
+  - type: textarea
+    id: business_value
+    attributes:
+      label: "Business Value & User Impact"
+      description: "How will this enhancement benefit users and the business?"
+      placeholder: |
+        **Manufacturing Operator Benefits:**
+        - Faster customization of frequently-used actions (estimated 30% time saving)
+        - More responsive interface during high-activity periods
+        - Better tablet usability in manufacturing floor environment
+        - Reduced frustration with sluggish UI performance
+        
+        **Production Supervisor Benefits:**
+        - Smoother workflow configuration for team members
+        - Less time spent troubleshooting UI responsiveness issues
+        - Better adoption of quick action features due to improved usability
+        
+        **Business Benefits:**
+        - Improved operational efficiency through faster task completion
+        - Reduced training time for new operators (better UI responsiveness)
+        - Enhanced user satisfaction and system adoption rates
+        - Foundation for future scalability with larger button collections
+        
+        **Quantifiable Metrics:**
+        - Target: 80% reduction in reorder operation time (500ms → 100ms)
+        - Goal: Support 50+ quick buttons without performance degradation
+        - Metric: 90% user satisfaction rating for drag-drop experience
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_approach
+    attributes:
+      label: "Technical Implementation Approach"
+      description: "Detailed technical plan for implementing the enhancement"
+      placeholder: |
+        **Architecture Changes:**
+        - Refactor QuickButtonsViewModel to use async command patterns
+        - Implement batched position update service method
+        - Add UI virtualization container for button collection
+        
+        **Performance Optimizations:**
+        ```csharp
+        // Async command with progress indication
+        [RelayCommand]
+        private async Task ReorderButtonsAsync(ButtonReorderInfo reorderInfo)
+        {
+            IsReordering = true;
+            try
+            {
+                // Optimistic UI update
+                ApplyReorderToUI(reorderInfo);
+                
+                // Batched database update
+                await _quickButtonService.BatchUpdatePositionsAsync(reorderInfo.Changes);
+            }
+            catch (Exception ex)
+            {
+                // Rollback UI changes
+                RollbackReorderUI(reorderInfo);
+                await HandleErrorAsync(ex, "reordering buttons");
+            }
+            finally
+            {
+                IsReordering = false;
+            }
+        }
+        ```
+        
+        **UI/UX Improvements:**
+        - Implement custom Avalonia drag-drop behavior with visual feedback
+        - Add animation framework for smooth position transitions
+        - Create drag preview control with transparency effects
+        
+        **Database Optimization:**
+        - New stored procedure: `qb_quickbuttons_BatchUpdatePositions`
+        - Single transaction for multiple position updates
+        - Optimized for bulk operations
+        
+        **Testing Strategy:**
+        - Performance testing with 50+ buttons
+        - Touch input testing on tablet devices
+        - Stress testing with rapid reorder operations
+        - Accessibility testing with screen readers
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Enhancement Acceptance Criteria"
+      description: "Specific, measurable criteria for enhancement completion"
+      placeholder: |
+        **Performance Criteria:**
+        - [ ] Button reorder operation completes in <100ms (down from 500ms+)
+        - [ ] UI remains responsive during reorder operations
+        - [ ] Supports 50+ buttons without performance degradation
+        - [ ] Memory usage increase <10% with performance improvements
+        
+        **User Experience Criteria:**
+        - [ ] Visual drag preview appears immediately when drag starts
+        - [ ] Position indicators clearly show valid drop zones
+        - [ ] Smooth animations for button position transitions
+        - [ ] Touch input responsiveness equivalent to mouse input
+        - [ ] Error recovery gracefully handles database failures
+        
+        **Technical Criteria:**
+        - [ ] Uses async/await patterns throughout
+        - [ ] Implements proper error handling and rollback
+        - [ ] Maintains MVVM Community Toolkit pattern compliance
+        - [ ] Integrates with existing service layer architecture
+        - [ ] Follows MTM coding standards and patterns
+        
+        **Accessibility Criteria:**
+        - [ ] Keyboard navigation works for all reorder operations
+        - [ ] Screen reader announcements for position changes
+        - [ ] High contrast mode compatibility maintained
+        - [ ] Focus management preserves accessibility flow
+        
+        **Quality Criteria:**
+        - [ ] Unit tests cover all new functionality
+        - [ ] Integration tests verify database operations
+        - [ ] Performance tests validate improvement claims
+        - [ ] Manual testing confirms user experience improvements
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks_and_mitigation
+    attributes:
+      label: "Risks & Mitigation Strategies"
+      description: "Potential risks and how to address them"
+      placeholder: |
+        **High Risk - Performance Regression:**
+        - Risk: Complex animations or async operations could worsen performance
+        - Mitigation: Comprehensive before/after performance testing
+        - Contingency: Feature flags to disable animations if needed
+        
+        **Medium Risk - Breaking Existing Functionality:**
+        - Risk: Changes to core drag-drop logic could break existing behavior
+        - Mitigation: Extensive regression testing, gradual rollout
+        - Contingency: Maintain backward compatibility layer
+        
+        **Medium Risk - Cross-Platform Compatibility:**
+        - Risk: Touch optimizations may not work consistently across devices
+        - Mitigation: Testing on multiple device types and screen sizes
+        - Contingency: Device-specific behavior detection and adaptation
+        
+        **Low Risk - User Adoption:**
+        - Risk: Users may not notice or appreciate performance improvements
+        - Mitigation: User training and communication about enhancements
+        - Contingency: Gather user feedback and iterate based on responses
+        
+        **Technical Risks:**
+        - Database transaction complexity with batch operations
+        - Memory leaks from animation objects not properly disposed
+        - Race conditions in async position update operations
+        
+        **Mitigation Strategies:**
+        - Staged deployment to development → test → production
+        - Comprehensive automated testing suite
+        - Performance monitoring and alerting
+        - User feedback collection and rapid response process
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimated_effort
+    attributes:
+      label: "Estimated Development Effort"
+      description: "Time required to implement this enhancement"
+      options:
+        - "XS (1-2 days) - Minor improvement or optimization"
+        - "S (3-5 days) - Moderate enhancement with limited scope"
+        - "M (1-2 weeks) - Significant enhancement with multiple components"
+        - "L (3-4 weeks) - Major enhancement with architectural changes"
+        - "XL (1-2 months) - Comprehensive overhaul of functionality"
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing_strategy
+    attributes:
+      label: "Comprehensive Testing Strategy"
+      description: "How will this enhancement be thoroughly tested?"
+      placeholder: |
+        **Unit Testing:**
+        - Test async command execution and cancellation
+        - Verify position calculation algorithms
+        - Test error handling and rollback logic
+        - Mock service layer interactions
+        
+        **Integration Testing:**
+        - Test batch database operations
+        - Verify UI-to-service communication
+        - Test concurrent user scenarios
+        - Validate data persistence accuracy
+        
+        **Performance Testing:**
+        - Benchmark with 10, 25, 50, 100+ buttons
+        - Memory usage profiling during extended use
+        - Stress testing with rapid, repeated operations
+        - Performance comparison before/after enhancement
+        
+        **User Experience Testing:**
+        - Manual testing on multiple devices (desktop, tablet)
+        - Touch input testing with various gesture patterns
+        - Accessibility testing with screen readers
+        - Usability testing with actual manufacturing operators
+        
+        **Regression Testing:**
+        - Verify all existing functionality continues to work
+        - Test integration with other application components
+        - Validate theme and styling compatibility
+        - Confirm backward compatibility with existing data
+        
+        **Edge Case Testing:**
+        - Network interruption during batch updates
+        - Rapid-fire reorder operations
+        - Large dataset edge cases (0 buttons, 1000+ buttons)
+        - Database connectivity issues during operations
+    validations:
+      required: true
+
+  - type: textarea
+    id: components_affected
+    attributes:
+      label: "Components Affected"
+      description: "List all components that will be modified or created"
+      placeholder: |
+        **Modified Components:**
+        - ViewModels/MainForm/QuickButtonsViewModel.cs (major changes)
+        - Services/QuickButtons.cs (async method additions)
+        - Views/MainForm/Panels/QuickButtonsView.axaml (drag behavior updates)
+        - Behaviors/DragDropBehavior.cs (performance optimizations)
+        
+        **New Components:**
+        - Controls/DragPreviewControl.axaml (visual drag feedback)
+        - Converters/ButtonPositionConverter.cs (position calculations)
+        - Services/BatchUpdateService.cs (database batch operations)
+        
+        **Database Changes:**
+        - Stored Procedure: qb_quickbuttons_BatchUpdatePositions (new)
+        - Stored Procedure: qb_quickbuttons_UpdatePositions (optimization)
+        
+        **Configuration Changes:**
+        - appsettings.json: new performance tuning parameters
+        - Service registration: new batch update service
+        
+        **Testing Components:**
+        - Tests/ViewModels/QuickButtonsViewModelTests.cs (extended)
+        - Tests/Services/QuickButtonsServiceTests.cs (new async tests)
+        - Tests/Performance/QuickButtonsPerformanceTests.cs (new)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: enhancement_checklist
+    attributes:
+      label: "Enhancement Quality Checklist"
+      description: "Ensure enhancement meets MTM standards"
+      options:
+        - label: "Follows established MTM architecture patterns"
+          required: false
+        - label: "Uses MVVM Community Toolkit patterns correctly"
+          required: false
+        - label: "Integrates with existing service layer architecture"
+          required: false
+        - label: "Maintains backward compatibility where possible"
+          required: false
+        - label: "Includes comprehensive error handling"
+          required: false
+        - label: "Has measurable performance improvements"
+          required: false
+        - label: "Improves user experience measurably"
+          required: false
+        - label: "Supports manufacturing domain requirements"
+          required: false
+
+  - type: textarea
+    id: success_metrics
+    attributes:
+      label: "Success Metrics & Validation"
+      description: "How will success be measured after implementation?"
+      placeholder: |
+        **Performance Metrics:**
+        - Reorder operation time: Target <100ms (current: 500ms+)
+        - Memory usage increase: <10% with new functionality
+        - CPU usage during operations: <20% for batch operations
+        - Database query count: 1 batch query vs. N individual queries
+        
+        **User Experience Metrics:**
+        - User satisfaction survey: >90% positive feedback
+        - Task completion time: 30% reduction in button customization time
+        - Error rate: <1% failed reorder operations
+        - Adoption rate: >80% of users actively using drag-drop features
+        
+        **Technical Metrics:**
+        - Code coverage: >90% for new functionality
+        - Automated test pass rate: 100% for regression tests
+        - Performance test benchmarks: All targets met consistently
+        - Production error rate: <0.1% for reorder operations
+        
+        **Business Metrics:**
+        - Reduced support tickets related to UI responsiveness
+        - Increased quick button feature adoption
+        - Improved operator efficiency in manufacturing workflows
+        - Positive impact on overall application performance perception
+        
+        **Validation Timeline:**
+        - Week 1: Technical metrics validation
+        - Week 2-3: User testing and feedback collection
+        - Week 4: Performance monitoring in production
+        - Month 1: Business impact assessment
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Additional Notes"
+      description: "Any other relevant information for this enhancement"
+      placeholder: |
+        **Related Work:**
+        - Links to related enhancements or dependencies
+        - Previous attempts or related discussions
+        - Similar implementations in other applications
+        
+        **Future Considerations:**
+        - Potential for extending enhancements to other components
+        - Framework or technology updates that might affect implementation
+        - Long-term maintenance and evolution considerations
+        
+        **Stakeholder Input:**
+        - Feedback from manufacturing operators
+        - Input from system administrators
+        - Requirements from business stakeholders
+    validations:
+      required: false
