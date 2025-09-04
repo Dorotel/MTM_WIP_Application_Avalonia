@@ -1,0 +1,277 @@
+name: Performance Monitoring & Load Testing
+run-name: Performance Analysis by @${{ github.actor }}
+
+on:
+  schedule:
+    - cron: '0 2 * * MON'  # Weekly performance analysis
+  workflow_dispatch:
+    inputs:
+      load_test_duration:
+        description: 'Load test duration in minutes'
+        default: '10'
+        type: string
+      concurrent_users:
+        description: 'Number of concurrent users to simulate'
+        default: '50'
+        type: string
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  PERFORMANCE_DB: 'mtm_performance_test'
+  
+jobs:
+  performance-monitoring:
+    name: Application Performance Monitoring
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build application
+      run: dotnet build --configuration Release --no-restore
+      
+    # Performance baseline measurement
+    - name: Run Performance Benchmarks
+      run: |
+        dotnet run --project MTM_WIP_Application_Avalonia.PerformanceTests \
+          --configuration Release \
+          --export-type json \
+          --artifacts artifacts
+          
+    - name: Parse Performance Results
+      run: |
+        echo "## 📊 Performance Benchmark Results" >> $GITHUB_STEP_SUMMARY
+        echo "| Operation | Mean Time | 95th Percentile | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----------|-----------|-----------------|--------|" >> $GITHUB_STEP_SUMMARY
+        
+        # Parse JSON results and add to summary
+        jq -r '.Benchmarks[] | 
+          "\(.DisplayInfo) | \(.Statistics.Mean / 1000000 | . * 1000 | round)ms | \(.Statistics.P95 / 1000000 | . * 1000 | round)ms | " + 
+          (if (.Statistics.Mean / 1000000 * 1000) < 100 then "✅" else "⚠️" end)' \
+          artifacts/results/BenchmarkRun*.json >> $GITHUB_STEP_SUMMARY
+          
+    # Memory usage analysis
+    - name: Memory Usage Analysis
+      run: |
+        # Run memory profiling
+        dotnet run --project MTM_WIP_Application_Avalonia.MemoryTests \
+          --configuration Release > memory-report.txt
+          
+        echo "## 🧠 Memory Usage Analysis" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        head -20 memory-report.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        
+    # Database performance testing
+    - name: Database Performance Tests
+      run: |
+        # Setup test database
+        docker run -d --name mysql-perf-test \
+          -e MYSQL_ROOT_PASSWORD=testpassword \
+          -e MYSQL_DATABASE=${{ env.PERFORMANCE_DB }} \
+          -p 3307:3306 mysql:9.4.0
+          
+        sleep 30  # Wait for MySQL to start
+        
+        # Run database performance tests
+        dotnet test MTM_WIP_Application_Avalonia.DatabasePerformanceTests \
+          --configuration Release \
+          --logger:"console;verbosity=detailed" \
+          --results-directory ./performance-results/
+          
+    - name: Generate Performance Report
+      run: |
+        cat > performance-report.md << 'EOF'
+        # MTM WIP Application Performance Report
+        
+        **Test Date**: $(date)
+        **Commit**: ${{ github.sha }}
+        **Branch**: ${{ github.ref_name }}
+        
+        ## 🎯 Performance Targets
+        - Inventory Operations: < 100ms response time
+        - Database Queries: < 50ms average
+        - UI Responsiveness: < 16ms frame time
+        - Memory Usage: < 200MB working set
+        
+        ## 📊 Results Summary
+        EOF
+        
+        # Add benchmark results to report
+        jq -r '.Benchmarks[] | 
+          "- **\(.DisplayInfo)**: \(.Statistics.Mean / 1000000 | . * 1000 | round)ms (Target: < 100ms)"' \
+          artifacts/results/BenchmarkRun*.json >> performance-report.md
+          
+    - name: Upload Performance Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-results-${{ github.run_number }}
+        path: |
+          artifacts/
+          performance-results/
+          memory-report.txt
+          performance-report.md
+        retention-days: 30
+
+  load-testing:
+    name: Load Testing
+    runs-on: ubuntu-latest
+    needs: performance-monitoring
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Build Load Test Project
+      run: |
+        dotnet build MTM_WIP_Application_Avalonia.LoadTests \
+          --configuration Release
+          
+    # Setup test infrastructure
+    - name: Setup Test Infrastructure
+      run: |
+        # Start MySQL for load testing
+        docker run -d --name mysql-load-test \
+          -e MYSQL_ROOT_PASSWORD=loadtestpassword \
+          -e MYSQL_DATABASE=mtm_load_test \
+          -p 3308:3306 mysql:9.4.0
+          
+        sleep 30
+        
+        # Setup test data
+        docker exec mysql-load-test mysql -u root -ploadtestpassword mtm_load_test < scripts/setup-load-test-data.sql
+        
+    - name: Run Inventory Operations Load Test
+      run: |
+        dotnet run --project MTM_WIP_Application_Avalonia.LoadTests \
+          -- inventory-operations \
+          --duration ${{ inputs.load_test_duration || '10' }} \
+          --concurrent-users ${{ inputs.concurrent_users || '50' }} \
+          --output-file inventory-load-results.json
+          
+    - name: Run Database Load Test  
+      run: |
+        dotnet run --project MTM_WIP_Application_Avalonia.LoadTests \
+          -- database-operations \
+          --duration ${{ inputs.load_test_duration || '10' }} \
+          --concurrent-users ${{ inputs.concurrent_users || '50' }} \
+          --output-file database-load-results.json
+          
+    - name: Analyze Load Test Results
+      run: |
+        echo "## 🚀 Load Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "**Duration**: ${{ inputs.load_test_duration || '10' }} minutes" >> $GITHUB_STEP_SUMMARY
+        echo "**Concurrent Users**: ${{ inputs.concurrent_users || '50' }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Parse inventory operations results
+        echo "### Inventory Operations" >> $GITHUB_STEP_SUMMARY
+        echo "| Metric | Value | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|--------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+        
+        TOTAL_OPS=$(jq '.TotalOperations' inventory-load-results.json)
+        AVG_RESPONSE=$(jq '.AverageResponseTime' inventory-load-results.json)
+        P95_RESPONSE=$(jq '.P95ResponseTime' inventory-load-results.json)
+        ERROR_RATE=$(jq '.ErrorRate' inventory-load-results.json)
+        
+        echo "| Total Operations | $TOTAL_OPS | ✅ |" >> $GITHUB_STEP_SUMMARY
+        echo "| Average Response Time | ${AVG_RESPONSE}ms | $(if (( $(echo "$AVG_RESPONSE < 200" | bc -l) )); then echo "✅"; else echo "❌"; fi) |" >> $GITHUB_STEP_SUMMARY
+        echo "| 95th Percentile | ${P95_RESPONSE}ms | $(if (( $(echo "$P95_RESPONSE < 500" | bc -l) )); then echo "✅"; else echo "❌"; fi) |" >> $GITHUB_STEP_SUMMARY
+        echo "| Error Rate | ${ERROR_RATE}% | $(if (( $(echo "$ERROR_RATE < 1" | bc -l) )); then echo "✅"; else echo "❌"; fi) |" >> $GITHUB_STEP_SUMMARY
+        
+    - name: Performance Regression Check
+      run: |
+        # Compare with previous results if available
+        if [ -f previous-load-results.json ]; then
+          PREV_AVG=$(jq '.AverageResponseTime' previous-load-results.json)
+          CURR_AVG=$(jq '.AverageResponseTime' inventory-load-results.json)
+          
+          REGRESSION=$(echo "scale=2; ($CURR_AVG - $PREV_AVG) / $PREV_AVG * 100" | bc)
+          
+          if (( $(echo "$REGRESSION > 10" | bc -l) )); then
+            echo "::warning::Performance regression detected: ${REGRESSION}% slower than previous run"
+            echo "## ⚠️ Performance Regression Alert" >> $GITHUB_STEP_SUMMARY
+            echo "Response time increased by ${REGRESSION}% compared to previous run" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+        
+        # Save current results for next comparison
+        cp inventory-load-results.json previous-load-results.json
+        
+    - name: Upload Load Test Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: load-test-results-${{ github.run_number }}
+        path: |
+          *-load-results.json
+          load-test-report.html
+        retention-days: 30
+        
+    - name: Cleanup Test Infrastructure
+      if: always()
+      run: |
+        docker stop mysql-load-test mysql-perf-test || true
+        docker rm mysql-load-test mysql-perf-test || true
+
+  performance-alerts:
+    name: Performance Alerts
+    runs-on: ubuntu-latest
+    needs: [performance-monitoring, load-testing]
+    if: failure()
+    
+    steps:
+    - name: Create Performance Issue
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = `🚨 Performance Alert - ${new Date().toISOString().split('T')[0]}`;
+          const body = `
+          ## Performance Issue Detected
+          
+          **Workflow**: ${{ github.workflow }}
+          **Run ID**: ${{ github.run_id }}
+          **Commit**: ${{ github.sha }}
+          **Branch**: ${{ github.ref_name }}
+          
+          One or more performance tests failed or exceeded acceptable thresholds.
+          
+          ### 📊 Review Required
+          - Check performance benchmark results
+          - Review load test metrics
+          - Investigate memory usage patterns
+          - Analyze database query performance
+          
+          ### 🔍 Investigation Steps
+          1. Download performance artifacts from workflow run
+          2. Compare with baseline performance metrics
+          3. Identify performance regressions
+          4. Create targeted performance improvement tasks
+          
+          ### 📈 Performance Targets
+          - Inventory Operations: < 100ms
+          - Database Queries: < 50ms  
+          - Memory Usage: < 200MB
+          - Error Rate: < 1%
+          `;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['performance', 'priority-high', 'needs-investigation']
+          });
