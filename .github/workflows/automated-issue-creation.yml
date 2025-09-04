@@ -1,0 +1,237 @@
+name: Automated Issue Creation
+
+on:
+  schedule:
+    # Daily at 8 AM UTC (Monday-Friday)
+    - cron: '0 8 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      issue_type:
+        description: 'Type of issue to create'
+        required: true
+        default: 'technical-debt'
+        type: choice
+        options:
+          - technical-debt
+          - documentation
+          - code-review
+          - testing
+      priority:
+        description: 'Issue priority'
+        required: true
+        default: 'medium'
+        type: choice
+        options:
+          - critical
+          - high
+          - medium
+          - low
+
+jobs:
+  create-automated-issues:
+    name: Create Automated Issues
+    runs-on: ubuntu-latest
+    
+    permissions:
+      issues: write
+      contents: read
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Analyze Codebase for Technical Debt
+      id: analyze
+      run: |
+        # Analyze C# files for potential issues
+        echo "Analyzing codebase for technical debt..."
+        
+        # Count TODO comments
+        TODO_COUNT=$(find . -name "*.cs" -type f -exec grep -l "TODO\|FIXME\|HACK" {} \; | wc -l)
+        
+        # Count large files (> 500 lines)
+        LARGE_FILES=$(find . -name "*.cs" -type f -exec wc -l {} \; | awk '$1 > 500' | wc -l)
+        
+        # Count ViewModels without proper documentation
+        UNDOCUMENTED_VMS=$(find ./ViewModels -name "*.cs" -type f -exec grep -L "/// <summary>" {} \; | wc -l)
+        
+        # Count Views without proper documentation
+        UNDOCUMENTED_VIEWS=$(find ./Views -name "*.axaml.cs" -type f -exec grep -L "/// <summary>" {} \; | wc -l)
+        
+        echo "todo_count=$TODO_COUNT" >> $GITHUB_OUTPUT
+        echo "large_files=$LARGE_FILES" >> $GITHUB_OUTPUT
+        echo "undocumented_vms=$UNDOCUMENTED_VMS" >> $GITHUB_OUTPUT
+        echo "undocumented_views=$UNDOCUMENTED_VIEWS" >> $GITHUB_OUTPUT
+        
+        # Create analysis summary
+        cat > analysis_summary.md << EOF
+        ## MTM Codebase Analysis - $(date '+%Y-%m-%d')
+        
+        ### Technical Debt Indicators
+        - **TODO/FIXME Comments**: $TODO_COUNT files
+        - **Large Files (>500 lines)**: $LARGE_FILES files
+        - **Undocumented ViewModels**: $UNDOCUMENTED_VMS files
+        - **Undocumented Views**: $UNDOCUMENTED_VIEWS files
+        
+        ### Recommendations
+        - Address TODO comments in high-priority files
+        - Refactor large files into smaller components
+        - Add XML documentation to all ViewModels and Views
+        - Review code complexity metrics
+        EOF
+        
+    - name: Create Technical Debt Issue
+      if: steps.analyze.outputs.todo_count > 5 || github.event.inputs.issue_type == 'technical-debt'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const analysis = fs.readFileSync('analysis_summary.md', 'utf8');
+          
+          const issueBody = `${analysis}
+          
+          ## Action Items
+          - [ ] Review and address TODO/FIXME comments
+          - [ ] Refactor large files (>500 lines) into smaller components
+          - [ ] Add XML documentation to undocumented components
+          - [ ] Run static code analysis tools
+          - [ ] Update technical debt metrics in project dashboard
+          
+          ## Acceptance Criteria
+          - All TODO comments reviewed and either resolved or converted to proper issues
+          - Files over 500 lines evaluated for refactoring opportunities
+          - All ViewModels and Views have proper XML documentation
+          - Technical debt ratio reduced by at least 10%
+          
+          ---
+          *This issue was automatically created by the MTM Automation System*
+          *Analysis Date: ${new Date().toISOString().split('T')[0]}*
+          `;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `🔧 Technical Debt Review - ${new Date().toISOString().split('T')[0]}`,
+            body: issueBody,
+            labels: ['technical-debt', 'automated', 'priority:medium', 'type:maintenance']
+          });
+          
+    - name: Create Documentation Review Issue
+      if: github.event.inputs.issue_type == 'documentation' || github.event.inputs.issue_type == '' 
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const issueBody = `## Documentation Review Required
+          
+          This automated review identifies areas where MTM application documentation needs attention.
+          
+          ### Areas to Review
+          - [ ] **ViewModels Documentation**: ${process.env.UNDOCUMENTED_VMS} files need XML documentation
+          - [ ] **Views Documentation**: ${process.env.UNDOCUMENTED_VIEWS} files need XML documentation  
+          - [ ] **Service Layer Documentation**: Review all services for proper documentation
+          - [ ] **Database Procedures**: Ensure all 45+ stored procedures are documented
+          - [ ] **Architecture Decisions**: Update ADRs for recent changes
+          
+          ### Documentation Standards
+          - All public classes and methods must have XML documentation
+          - Complex business logic must have inline comments
+          - Database procedures must have purpose and parameter documentation
+          - Architecture decisions must be recorded in ADRs
+          
+          ### Acceptance Criteria
+          - [ ] XML documentation coverage increased by at least 20%
+          - [ ] All new stored procedures documented
+          - [ ] ADRs updated for architectural changes
+          - [ ] Documentation quality gates passing in CI/CD
+          
+          ---
+          *This issue was automatically created by the MTM Documentation Automation*
+          *Review Date: ${new Date().toISOString().split('T')[0]}*
+          `;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `📚 Documentation Review - ${new Date().toISOString().split('T')[0]}`,
+            body: issueBody,
+            labels: ['documentation', 'automated', 'priority:medium', 'type:improvement']
+          });
+      env:
+        UNDOCUMENTED_VMS: ${{ steps.analyze.outputs.undocumented_vms }}
+        UNDOCUMENTED_VIEWS: ${{ steps.analyze.outputs.undocumented_views }}
+        
+    - name: Create Weekly Sprint Planning Issue
+      if: github.event.schedule != '' && github.event.schedule == '0 8 * * 1'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const weekStart = new Date();
+          const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+          
+          const issueBody = `## Weekly Sprint Planning - Week of ${weekStart.toISOString().split('T')[0]}
+          
+          ### Sprint Objectives
+          - [ ] Review previous sprint retrospective items
+          - [ ] Plan current sprint backlog items
+          - [ ] Assign sprint tasks to team members
+          - [ ] Update project roadmap progress
+          
+          ### Key Focus Areas This Sprint
+          - [ ] **Phase 3 Automation**: Continue automation implementation
+          - [ ] **Code Quality**: Address technical debt items
+          - [ ] **Documentation**: Improve code and architecture documentation
+          - [ ] **Testing**: Enhance test coverage and quality
+          
+          ### Sprint Metrics to Track
+          - [ ] Velocity (story points completed)
+          - [ ] Cycle time (average time from start to completion)
+          - [ ] Code review coverage
+          - [ ] Test coverage percentage
+          - [ ] Technical debt ratio
+          
+          ### Definition of Done
+          - [ ] All sprint items meet acceptance criteria
+          - [ ] Code review completed and approved
+          - [ ] Tests written and passing
+          - [ ] Documentation updated
+          - [ ] Demo-ready for stakeholders
+          
+          ### Sprint Timeline
+          - **Start Date**: ${weekStart.toISOString().split('T')[0]}
+          - **End Date**: ${weekEnd.toISOString().split('T')[0]}
+          - **Sprint Review**: ${weekEnd.toISOString().split('T')[0]}
+          - **Retrospective**: ${weekEnd.toISOString().split('T')[0]}
+          
+          ---
+          *This issue was automatically created by MTM Sprint Automation*
+          `;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `🏃‍♂️ Sprint Planning - Week of ${weekStart.toISOString().split('T')[0]}`,
+            body: issueBody,
+            labels: ['sprint-planning', 'automated', 'priority:high', 'type:planning'],
+            assignees: ['Dorotel']
+          });
+          
+    - name: Upload Analysis Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: codebase-analysis-${{ github.sha }}
+        path: analysis_summary.md
+        retention-days: 30
+        
+    - name: Summary
+      run: |
+        echo "=== Automated Issue Creation Summary ==="
+        echo "Analysis completed for $(date)"
+        echo "TODO Count: ${{ steps.analyze.outputs.todo_count }}"
+        echo "Large Files: ${{ steps.analyze.outputs.large_files }}"
+        echo "Issues created based on triggers and thresholds"
+        echo "Next automated run: Tomorrow at 8 AM UTC"
