@@ -419,7 +419,7 @@ jobs:
         git log --oneline -n 5 --grep="docs:" >> doc-report.md || echo "No recent documentation commits" >> doc-report.md
         
     - name: Upload Documentation Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: documentation-report-${{ github.sha }}
         path: doc-report.md

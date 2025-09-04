@@ -123,7 +123,7 @@ jobs:
         
     - name: Upload Build Artifacts
       if: matrix.configuration == 'Release'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mtm-build-${{ github.sha }}
         path: |
@@ -254,7 +254,7 @@ jobs:
         "@ | Out-File -FilePath ./deployment/version.json -Encoding utf8
         
     - name: Upload Deployment Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mtm-deployment-${{ github.sha }}
         path: ./deployment/
@@ -273,7 +273,7 @@ jobs:
         
     - name: Upload Release Notes
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: release-notes-${{ github.sha }}
         path: release-notes.md
@@ -291,7 +291,7 @@ jobs:
     
     steps:
     - name: Download Deployment Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: mtm-deployment-${{ github.sha }}
         path: ./deployment/
@@ -337,7 +337,7 @@ jobs:
     
     steps:
     - name: Download Deployment Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: mtm-deployment-${{ github.sha }}
         path: ./deployment/
