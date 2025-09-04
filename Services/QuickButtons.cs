@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
 using MTM_WIP_Application_Avalonia.Models;
 
 namespace MTM_WIP_Application_Avalonia.Services;
@@ -82,13 +83,13 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_User"] = userId
+                ["p_UserID"] = userId
             };
 
             try
             {
-                // Note: qb_quickbuttons_Get_ByUser doesn't follow MTM status pattern, use direct execution
-                var dataTable = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+                // qb_quickbuttons_Get_ByUser uses MTM status pattern with OUT parameters
+                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     _databaseService.GetConnectionString(),
                     "qb_quickbuttons_Get_ByUser",
                     parameters
@@ -96,17 +97,17 @@ public class QuickButtonsService : IQuickButtonsService
 
                 var quickButtons = new List<QuickButtonData>();
 
-                if (dataTable != null && dataTable.Rows.Count > 0)
+                if (result != null && result.Data != null && result.Data.Rows.Count > 0)
                 {
                     // Log available columns for debugging
-                    if (dataTable.Columns.Count > 0)
+                    if (result.Data.Columns.Count > 0)
                     {
-                        var columnNames = string.Join(", ", dataTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
+                        var columnNames = string.Join(", ", result.Data.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
                         _logger.LogDebug("Available columns in qb_quickbuttons_Get_ByUser result: {Columns}", columnNames);
                     }
 
                     // Convert DataTable rows to QuickButtonData objects
-                    foreach (DataRow row in dataTable.Rows)
+                    foreach (DataRow row in result.Data.Rows)
                     {
                         quickButtons.Add(new QuickButtonData
                         {
@@ -117,8 +118,8 @@ public class QuickButtonsService : IQuickButtonsService
                             Operation = SafeGetString(row, "Operation"),
                             Quantity = SafeGetInt32(row, "Quantity", 0),
                             Notes = SafeGetString(row, "Notes"),
-                            CreatedDate = SafeGetDateTime(row, "DateCreated") ?? DateTime.Now,
-                            LastUsedDate = SafeGetDateTime(row, "DateModified") ?? SafeGetDateTime(row, "DateCreated") ?? DateTime.Now
+                            CreatedDate = SafeGetDateTime(row, "CreatedDate") ?? DateTime.Now,
+                            LastUsedDate = SafeGetDateTime(row, "LastUsedDate") ?? DateTime.Now
                         });
                     }
                 }
@@ -165,31 +166,31 @@ public class QuickButtonsService : IQuickButtonsService
 
             _logger.LogInformation("Calling stored procedure sys_last_10_transactions_Get_ByUser with UserId: {UserId}, Limit: 10", userId);
 
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "sys_last_10_transactions_Get_ByUser",
                 parameters
             );
 
-            _logger.LogInformation("Stored procedure returned {RowCount} rows", result?.Rows.Count ?? 0);
+            _logger.LogInformation("Stored procedure returned {RowCount} rows", result?.Data?.Rows.Count ?? 0);
 
             var transactions = new List<QuickButtonData>();
 
-            if (result != null && result.Rows.Count > 0)
+            if (result != null && result.Data != null && result.Data.Rows.Count > 0)
             {
-                _logger.LogInformation("Processing {RowCount} rows from stored procedure result", result.Rows.Count);
+                _logger.LogInformation("Processing {RowCount} rows from stored procedure result", result.Data.Rows.Count);
 
                 // Log available columns for debugging
-                if (result.Columns.Count > 0)
+                if (result.Data.Columns.Count > 0)
                 {
-                    var columnNames = string.Join(", ", result.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
+                    var columnNames = string.Join(", ", result.Data.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
                     _logger.LogDebug("Available columns: {Columns}", columnNames);
                 }
 
                 // Convert DataTable rows to QuickButtonData objects
-                for (int i = 0; i < result.Rows.Count; i++)
+                for (int i = 0; i < result.Data.Rows.Count; i++)
                 {
-                    var row = result.Rows[i];
+                    var row = result.Data.Rows[i];
                     
                     // Log the row data for debugging
                     _logger.LogDebug("Row {Index}: PartID={PartID}, Operation={Operation}, Quantity={Quantity}", 

@@ -1,0 +1,299 @@
+name: "Technical Enabler"
+description: "Create Technical Enabler for infrastructure, architecture, or technical debt work"
+title: "[ENABLER] "
+labels: ["enabler", "technical-debt", "infrastructure"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Technical Enabler Template
+        Use this template for technical work that enables future Features but doesn't directly deliver user value.
+        
+        **Examples**: "Database schema optimization", "MVVM pattern standardization", "Performance monitoring setup"
+
+  - type: input
+    id: enabler_title
+    attributes:
+      label: "Technical Enabler Title"
+      description: "Clear title describing the technical work"
+      placeholder: "e.g., Standardize MVVM Community Toolkit patterns across all ViewModels"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: enabler_type
+    attributes:
+      label: "Enabler Type"
+      description: "Category of technical work"
+      options:
+        - "Architecture - System design improvements"
+        - "Infrastructure - Platform and tooling"
+        - "Technical Debt - Code quality improvements"
+        - "Performance - Optimization and efficiency"
+        - "Security - Security enhancements"
+        - "Documentation - Technical documentation"
+        - "Testing - Test infrastructure and coverage"
+        - "DevOps - Build, deploy, monitoring"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: enabler_priority
+    attributes:
+      label: "Priority Level"
+      description: "Technical priority and urgency"
+      options:
+        - "Critical - Blocks current work"
+        - "High - Enables important Features"
+        - "Medium - Quality improvement"
+        - "Low - Future enhancement"
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_problem
+    attributes:
+      label: "Technical Problem Statement"
+      description: "What technical issue does this Enabler address?"
+      placeholder: |
+        **Current State:**
+        - ViewModels use inconsistent patterns (some ReactiveUI, some MVVM Toolkit)
+        - Inconsistent property notification implementation
+        - Varying command implementation patterns
+        
+        **Problems:**
+        - Difficult for new developers to understand patterns
+        - Code review complexity due to pattern variations
+        - Maintenance overhead with multiple patterns
+        
+        **Desired State:**
+        - All ViewModels use MVVM Community Toolkit patterns
+        - Consistent [ObservableProperty] and [RelayCommand] usage
+        - Clear base class inheritance structure
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_solution
+    attributes:
+      label: "Proposed Technical Solution"
+      description: "How will this technical problem be solved?"
+      placeholder: |
+        **Approach:**
+        1. Audit all 42 ViewModels for current pattern usage
+        2. Create standardized BaseViewModel using MVVM Community Toolkit
+        3. Convert ViewModels one by one to use new patterns
+        4. Update unit tests to work with new patterns
+        5. Create developer guidelines document
+        
+        **Technical Implementation:**
+        - Use [ObservableObject] partial class pattern
+        - Replace manual PropertyChanged with [ObservableProperty]
+        - Replace command implementations with [RelayCommand]
+        - Maintain existing public API for Views
+        
+        **Validation:**
+        - All ViewModels compile without warnings
+        - All existing functionality preserved
+        - Unit test coverage maintained
+        - Performance equivalent or better
+    validations:
+      required: true
+
+  - type: textarea
+    id: components_affected
+    attributes:
+      label: "Components Affected"
+      description: "List all components that will be modified"
+      placeholder: |
+        **ViewModels (42 files):**
+        - ViewModels/MainForm/*.cs (all files)
+        - ViewModels/SettingsForm/*.cs (all files)
+        - ViewModels/Shared/BaseViewModel.cs
+        
+        **Dependencies:**
+        - MVVM Community Toolkit package references
+        - Unit test projects
+        - Any Views that bind to ViewModel properties
+        
+        **New Components:**
+        - Documentation/MVVM-Patterns.md
+        - .github/instructions/mvvm-community-toolkit.instructions.md
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimated_effort
+    attributes:
+      label: "Estimated Effort"
+      description: "Development effort required"
+      options:
+        - "XS (1-2 days)"
+        - "S (3-5 days)"
+        - "M (1-2 weeks)"
+        - "L (3-4 weeks)"
+        - "XL (1-2 months)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: success_criteria
+    attributes:
+      label: "Success Criteria"
+      description: "How will we know this Enabler is complete?"
+      placeholder: |
+        **Functional Success:**
+        - [ ] All 42 ViewModels use MVVM Community Toolkit patterns
+        - [ ] No ReactiveUI dependencies remain in ViewModels
+        - [ ] All existing functionality works unchanged
+        - [ ] Unit tests pass with new patterns
+        
+        **Quality Success:**
+        - [ ] Code compiles without warnings
+        - [ ] Pattern consistency across all ViewModels
+        - [ ] Performance equal or better than before
+        - [ ] Memory usage not significantly increased
+        
+        **Documentation Success:**
+        - [ ] Developer guidelines document created
+        - [ ] Code review checklist updated
+        - [ ] Architecture decision recorded
+        - [ ] Migration guide created for future work
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks_mitigation
+    attributes:
+      label: "Risks & Mitigation Strategies"
+      description: "What could go wrong and how to prevent it?"
+      placeholder: |
+        **High Risk:**
+        - Breaking existing functionality during conversion
+          - Mitigation: Convert one ViewModel at a time, test thoroughly
+        
+        **Medium Risk:**
+        - Performance degradation with new patterns
+          - Mitigation: Performance testing before/after conversion
+        
+        **Low Risk:**
+        - Developer resistance to new patterns
+          - Mitigation: Clear documentation and training session
+        
+        **Contingency Plans:**
+        - Keep old ViewModels in separate branch as backup
+        - Plan rollback strategy if critical issues discovered
+        - Phased rollout to minimize blast radius
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing_strategy
+    attributes:
+      label: "Testing Strategy"
+      description: "How will this technical work be tested?"
+      placeholder: |
+        **Unit Testing:**
+        - Ensure all existing unit tests pass with new patterns
+        - Add tests for new MVVM Community Toolkit behaviors
+        - Test property change notifications
+        - Test command execution and CanExecute logic
+        
+        **Integration Testing:**
+        - Verify View-ViewModel binding still works correctly
+        - Test data flow through service layers
+        - Validate dependency injection continues to work
+        
+        **Manual Testing:**
+        - User acceptance testing for all affected screens
+        - Performance testing with large datasets
+        - Memory usage testing during extended use
+        
+        **Regression Testing:**
+        - Full application testing after all ViewModels converted
+        - Automated UI testing if available
+        - Database integration testing
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies_prerequisites
+    attributes:
+      label: "Dependencies & Prerequisites"
+      description: "What must be done before this Enabler can start?"
+      placeholder: |
+        **Prerequisites:**
+        - MVVM Community Toolkit package already referenced
+        - Current ViewModel patterns documented
+        - Testing strategy approved
+        - Developer training scheduled
+        
+        **Dependencies:**
+        - No other major ViewModel changes in progress
+        - Stable build available for rollback
+        - Test environment available for validation
+        
+        **Blockers:**
+        - Resource availability (developer time)
+        - Priority of user-facing features
+        - Approval for potentially disruptive changes
+    validations:
+      required: false
+
+  - type: textarea
+    id: future_benefits
+    attributes:
+      label: "Future Benefits & Enablement"
+      description: "What will this Enabler make possible in the future?"
+      placeholder: |
+        **Developer Experience:**
+        - Easier onboarding for new developers
+        - Consistent code review process
+        - Reduced mental overhead switching between patterns
+        
+        **Code Quality:**
+        - Less boilerplate code with source generators
+        - Reduced chance of property notification bugs
+        - Better performance with optimized patterns
+        
+        **Future Features:**
+        - Easier to add new ViewModels following established patterns
+        - Better tooling support with modern MVVM patterns
+        - Foundation for advanced MVVM features
+        
+        **Maintenance:**
+        - Single pattern to maintain and update
+        - Easier debugging with consistent structure
+        - Reduced technical debt accumulation
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: enabler_checklist
+    attributes:
+      label: "Enabler Readiness Checklist"
+      description: "Ensure enabler is ready for implementation"
+      options:
+        - label: "Technical approach is sound and feasible"
+          required: false
+        - label: "Risk mitigation strategies are defined"
+          required: false
+        - label: "Testing strategy covers all scenarios"
+          required: false
+        - label: "Success criteria are measurable"
+          required: false
+        - label: "Dependencies and prerequisites identified"
+          required: false
+        - label: "Resource allocation approved"
+          required: false
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Additional Notes"
+      description: "Any other relevant technical information"
+      placeholder: "Architecture diagrams, code examples, related issues, etc."
+    validations:
+      required: false

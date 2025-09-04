@@ -1,0 +1,210 @@
+name: "Epic Request"
+description: "Create a new Epic for major application areas or initiatives"
+title: "[EPIC] "
+labels: ["epic", "planning"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Epic Request Template
+        Use this template to create comprehensive Epics that span multiple Features and represent major application areas or business initiatives.
+        
+        **Example Epics**: "Inventory Management Evolution", "Master Data Management Overhaul", "UI/UX Modernization"
+
+  - type: input
+    id: epic_title
+    attributes:
+      label: "Epic Title"
+      description: "Descriptive title for this Epic (will be prefixed with [EPIC] automatically)"
+      placeholder: "e.g., Manufacturing Inventory Management System Evolution"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: epic_priority
+    attributes:
+      label: "Epic Priority"
+      description: "Business priority level for this Epic"
+      options:
+        - "Critical - Foundation/Infrastructure"
+        - "High - Core Features"
+        - "Medium - Enhancements"
+        - "Low - Future Considerations"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: epic_category
+    attributes:
+      label: "Epic Category"
+      description: "Primary application area this Epic addresses"
+      options:
+        - "Manufacturing Operations"
+        - "System Administration"
+        - "UI/UX & Design System"
+        - "Database & Infrastructure"
+        - "Quality & Testing"
+        - "Documentation & Standards"
+        - "Integration & Automation"
+    validations:
+      required: true
+
+  - type: textarea
+    id: business_context
+    attributes:
+      label: "Business Context & Problem Statement"
+      description: "Describe the business need and problem this Epic solves"
+      placeholder: |
+        **Problem Statement:**
+        Currently, the MTM application lacks...
+
+        **Business Impact:**
+        This affects operations by...
+
+        **Success Vision:**
+        When complete, users will be able to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope_boundaries
+    attributes:
+      label: "Scope & Boundaries"
+      description: "Define what IS and IS NOT included in this Epic"
+      placeholder: |
+        **In Scope:**
+        - Component A functionality
+        - Integration with System B
+        - User workflow C improvements
+
+        **Out of Scope:**
+        - Legacy system migrations
+        - Performance optimizations
+        - Third-party integrations
+    validations:
+      required: true
+
+  - type: textarea
+    id: success_metrics
+    attributes:
+      label: "Success Metrics & KPIs"
+      description: "How will we measure success of this Epic?"
+      placeholder: |
+        **Primary KPIs:**
+        - Metric 1: Target X% improvement
+        - Metric 2: Achieve Y threshold
+        
+        **Secondary KPIs:**
+        - User satisfaction score >Z
+        - Performance improvement of N%
+    validations:
+      required: true
+
+  - type: textarea
+    id: features_breakdown
+    attributes:
+      label: "Expected Features"
+      description: "List the major Features you expect this Epic to contain"
+      placeholder: |
+        1. **Feature Name 1** - Brief description
+        2. **Feature Name 2** - Brief description
+        3. **Feature Name 3** - Brief description
+        
+        (Features will be created as separate issues linked to this Epic)
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_considerations
+    attributes:
+      label: "Technical Architecture & Considerations"
+      description: "Key technical aspects, constraints, and architectural decisions"
+      placeholder: |
+        **Technology Stack:**
+        - .NET 8, Avalonia UI, MVVM Community Toolkit
+        - MySQL with stored procedures only
+        
+        **Architecture Patterns:**
+        - MVVM with dependency injection
+        - Service-oriented design
+        
+        **Key Constraints:**
+        - Must maintain existing database schema
+        - Avalonia AXAML syntax compliance required
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: "Dependencies & Blockers"
+      description: "What must be completed before or alongside this Epic?"
+      placeholder: |
+        **Internal Dependencies:**
+        - Epic/Feature X must be completed first
+        - Component Y integration required
+        
+        **External Dependencies:**
+        - Third-party system availability
+        - Infrastructure requirements
+        
+        **Potential Blockers:**
+        - Resource constraints
+        - Technical limitations
+    validations:
+      required: false
+
+  - type: dropdown
+    id: estimated_timeline
+    attributes:
+      label: "Estimated Timeline"
+      description: "Expected duration for this Epic"
+      options:
+        - "1-2 weeks (Small Epic)"
+        - "3-4 weeks (Medium Epic)"
+        - "5-8 weeks (Large Epic)"
+        - "2+ months (Major Initiative)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Epic Completion Criteria"
+      description: "How will we know this Epic is done?"
+      placeholder: |
+        - [ ] All planned Features completed and tested
+        - [ ] Success metrics achieved
+        - [ ] Documentation updated
+        - [ ] User acceptance testing passed
+        - [ ] No critical bugs remaining
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: epic_checklist
+    attributes:
+      label: "Epic Preparation Checklist"
+      description: "Ensure Epic is ready for development"
+      options:
+        - label: "Business stakeholders consulted"
+          required: false
+        - label: "Technical feasibility assessed"
+          required: false
+        - label: "Resource availability confirmed"
+          required: false
+        - label: "Success metrics are measurable"
+          required: false
+        - label: "Dependencies identified and planned"
+          required: false
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Additional Notes"
+      description: "Any other relevant information for this Epic"
+      placeholder: "Historical context, related discussions, links to documentation, etc."
+    validations:
+      required: false

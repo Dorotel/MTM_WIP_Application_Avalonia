@@ -145,6 +145,23 @@ public partial class App : Application
                     // Wait for main window initialization
                     await Task.Delay(1000);
 
+                    // Initialize master data service early for all ViewModels
+                    try
+                    {
+                        var masterDataService = Program.GetService<IMasterDataService>();
+                        if (masterDataService != null)
+                        {
+                            await masterDataService.LoadAllMasterDataAsync();
+                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Master data loaded successfully at startup");
+                            _logger?.LogInformation("Master data loaded successfully at application startup");
+                        }
+                    }
+                    catch (Exception masterDataEx)
+                    {
+                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Warning: Master data loading failed: {masterDataEx.Message}");
+                        _logger?.LogWarning(masterDataEx, "Master data loading failed at startup - will use fallback data");
+                    }
+
                     // Execute startup dialog on UI thread
                     await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
                     {

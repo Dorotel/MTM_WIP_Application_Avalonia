@@ -1718,5 +1718,9 @@ public class StoredProcedureResult
     public string Message { get; set; } = string.Empty;
     public DataTable Data { get; set; } = new DataTable();
 
-    public bool IsSuccess => Status == 0;
+    /// <summary>
+    /// Indicates if the stored procedure executed successfully.
+    /// IMPORTANT: MTM stored procedures use Status = 1 for SUCCESS, Status = 0 for ERROR
+    /// </summary>
+    public bool IsSuccess => Status == 1;
 }

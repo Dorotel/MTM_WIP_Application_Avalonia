@@ -1,0 +1,279 @@
+name: "User Story"
+description: "Create a User Story within a Feature for specific user scenarios"
+title: "[USER STORY] "
+labels: ["user-story", "requirement"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## User Story Template
+        Use this template to create specific User Stories that represent individual user scenarios within a Feature.
+        
+        **Examples**: "Operator reorders quick action buttons", "Manager views transaction history", "User switches application theme"
+
+  - type: input
+    id: story_title
+    attributes:
+      label: "User Story Title"
+      description: "Brief, specific title for this user scenario"
+      placeholder: "e.g., Operator reorders quick action buttons via drag and drop"
+    validations:
+      required: true
+
+  - type: input
+    id: parent_feature
+    attributes:
+      label: "Parent Feature"
+      description: "Link to the Feature this User Story belongs to (Feature ID or URL)"
+      placeholder: "MTM_FEATURE_001 or link to Feature issue"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: story_priority
+    attributes:
+      label: "Story Priority"
+      description: "Priority within the parent Feature"
+      options:
+        - "Critical - Core Workflow"
+        - "High - Important Scenario"
+        - "Medium - Common Use Case"
+        - "Low - Edge Case"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user_persona
+    attributes:
+      label: "Primary User Persona"
+      description: "Who is the primary user for this story?"
+      options:
+        - "Manufacturing Operator - Daily inventory tasks"
+        - "Production Supervisor - Monitoring and oversight"
+        - "Inventory Manager - Strategic inventory management"
+        - "System Administrator - System configuration and maintenance"
+        - "Quality Controller - Verification and auditing"
+        - "Maintenance Technician - Equipment and system maintenance"
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_story_statement
+    attributes:
+      label: "User Story Statement"
+      description: "Classic user story format with context"
+      placeholder: |
+        **As a** [specific user type]
+        **I want** [specific functionality]
+        **So that** [specific benefit/outcome]
+        
+        **Given** [context/preconditions]
+        **When** [user action/trigger]
+        **Then** [expected system response]
+        
+        **Example:**
+        As a manufacturing operator
+        I want to drag and drop quick action buttons to reorder them
+        So that I can arrange frequently used actions for faster access
+        
+        Given I have quick actions displayed on my main screen
+        When I drag a button to a new position using the drag handle
+        Then the system should visually indicate the new position and save the order permanently
+    validations:
+      required: true
+
+  - type: textarea
+    id: detailed_scenario
+    attributes:
+      label: "Detailed User Scenario"
+      description: "Step-by-step walkthrough of the user interaction"
+      placeholder: |
+        **User Journey:**
+        1. User opens the main inventory screen
+        2. User notices quick action buttons in current order
+        3. User hovers over a button to reveal drag handle
+        4. User clicks and holds the drag handle
+        5. User drags the button to desired position
+        6. System shows position indicator during drag
+        7. User releases button in new position
+        8. System confirms new order with visual feedback
+        9. System saves new order to database
+        10. User sees buttons in new order on next app restart
+        
+        **Alternative Flows:**
+        - User cancels drag operation (ESC key or drag outside area)
+        - User attempts to reorder when no buttons exist
+        - System fails to save new order (error handling)
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria_detailed
+    attributes:
+      label: "Detailed Acceptance Criteria"
+      description: "Specific, testable criteria for this User Story"
+      placeholder: |
+        **Functional Criteria:**
+        - [ ] Drag handles appear on hover over quick action buttons
+        - [ ] Clicking and dragging moves button with visual feedback
+        - [ ] Position indicators show valid drop zones during drag
+        - [ ] Releasing button in new position updates the order
+        - [ ] New order is immediately visible in the UI
+        - [ ] New order persists across application restarts
+        - [ ] ESC key cancels drag operation and returns button to original position
+        
+        **User Experience Criteria:**
+        - [ ] Drag operation feels smooth and responsive (< 50ms response time)
+        - [ ] Visual feedback clearly indicates valid drop zones
+        - [ ] Drag handle is easily discoverable but not intrusive
+        - [ ] Success confirmation is clear but not disruptive
+        
+        **Technical Criteria:**
+        - [ ] Uses MVVM Community Toolkit patterns
+        - [ ] Persists data via stored procedures only
+        - [ ] Includes comprehensive error handling
+        - [ ] Works with touch input for tablet users
+        
+        **Error Handling Criteria:**
+        - [ ] Graceful failure when database save fails
+        - [ ] User notification when reorder operation fails
+        - [ ] Rollback to previous order if save fails
+    validations:
+      required: true
+
+  - type: dropdown
+    id: story_complexity
+    attributes:
+      label: "Story Complexity"
+      description: "Development complexity estimate"
+      options:
+        - "Simple - Straightforward implementation"
+        - "Moderate - Some technical challenges"
+        - "Complex - Multiple technical challenges"
+        - "Very Complex - Research and experimentation needed"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: story_size
+    attributes:
+      label: "Story Size (Story Points)"
+      description: "Relative sizing for sprint planning"
+      options:
+        - "1 - Very Small (few hours)"
+        - "2 - Small (half day)"
+        - "3 - Medium (1 day)"
+        - "5 - Large (2-3 days)"
+        - "8 - Very Large (week)"
+        - "13 - Epic (needs breakdown)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: "Definition of Done"
+      description: "What constitutes completion for this User Story?"
+      placeholder: |
+        **Development Complete:**
+        - [ ] Code implemented following MTM patterns
+        - [ ] Unit tests written and passing
+        - [ ] Integration tests written and passing
+        - [ ] Code review completed
+        - [ ] No critical or high-priority bugs
+        
+        **User Experience Complete:**
+        - [ ] Manual testing completed by developer
+        - [ ] User acceptance testing passed
+        - [ ] Performance meets requirements (< 50ms response)
+        - [ ] Accessibility requirements met
+        - [ ] Visual design matches MTM theme standards
+        
+        **Documentation Complete:**
+        - [ ] Technical documentation updated
+        - [ ] User documentation updated (if needed)
+        - [ ] Code comments and documentation complete
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing_scenarios
+    attributes:
+      label: "Testing Scenarios"
+      description: "Specific test cases for this User Story"
+      placeholder: |
+        **Happy Path Tests:**
+        1. Successfully reorder buttons via drag and drop
+        2. Verify new order persists after application restart
+        3. Confirm visual feedback during drag operation
+        
+        **Edge Case Tests:**
+        1. Attempt to drag button to same position (no change)
+        2. Cancel drag operation using ESC key
+        3. Drag button outside valid drop zone
+        4. Reorder when only one button exists
+        5. Reorder when no buttons exist
+        
+        **Error Scenario Tests:**
+        1. Database save failure during reorder
+        2. Network interruption during save operation
+        3. Invalid data scenarios
+        
+        **Performance Tests:**
+        1. Reorder with 20+ buttons (performance < 50ms)
+        2. Multiple rapid reorder operations
+        3. Touch input responsiveness on tablet
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_notes
+    attributes:
+      label: "Technical Implementation Notes"
+      description: "Specific technical considerations for developers"
+      placeholder: |
+        **Key Implementation Details:**
+        - Use Avalonia drag-drop behaviors
+        - MVVM Community Toolkit [RelayCommand] for drag operations
+        - Stored procedure: qb_quickbuttons_UpdatePositions
+        - Model: QuickButton with Position property
+        
+        **Performance Considerations:**
+        - Debounce rapid position changes
+        - Batch database updates
+        - Use visual transforms for smooth drag animation
+        
+        **Error Handling:**
+        - Catch database exceptions during save
+        - Rollback UI state if save fails
+        - Show user-friendly error messages
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: story_checklist
+    attributes:
+      label: "Story Readiness Checklist"
+      description: "Ensure story is ready for development"
+      options:
+        - label: "User scenario is clear and specific"
+          required: false
+        - label: "Acceptance criteria are testable"
+          required: false
+        - label: "Definition of done is achievable"
+          required: false
+        - label: "Story size is appropriate for sprint"
+          required: false
+        - label: "Dependencies are identified"
+          required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "Additional Context"
+      description: "Any other relevant information"
+      placeholder: "Links to mockups, related stories, user feedback, etc."
+    validations:
+      required: false

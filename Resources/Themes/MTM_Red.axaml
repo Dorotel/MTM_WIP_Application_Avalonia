@@ -57,7 +57,7 @@
 		<GradientStop Color="#FFAB91" Offset="1" />
 	</LinearGradientBrush>
 
-	<RadialGradientBrush x:Key="MTM_Shared_Logic.AccentRadialBrush" Center="0.5,0.5" Radius="1">
+	<RadialGradientBrush x:Key="MTM_Shared_Logic.AccentRadialBrush" Center="0.5,0.5" RadiusX="100%" RadiusY="100%">
 		<GradientStop Color="#F44336" Offset="0"/>
 		<GradientStop Color="#D32F2F" Offset="0.7"/>
 		<GradientStop Color="#B71C1C" Offset="1"/>

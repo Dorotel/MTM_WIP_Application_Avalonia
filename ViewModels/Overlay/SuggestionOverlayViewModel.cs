@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
@@ -15,38 +12,66 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 /// <summary>
 /// ViewModel for managing suggestion overlay functionality with selection and cancellation capabilities.
 /// Provides a clean interface for displaying and interacting with suggestion lists.
+/// Uses manual property implementation following established MTM patterns.
 /// </summary>
 public partial class SuggestionOverlayViewModel : BaseViewModel
 {
     private static int _debugInstanceIdCounter = 0;
     private readonly int _debugInstanceId;
 
-    #region Observable Properties
+    #region Private Fields
+
+    private ObservableCollection<string> _suggestions = new();
+    private string? _selectedSuggestion;
+    private bool _isSuggestionSelected;
+    private bool _isVisible;
+
+    #endregion
+
+    #region Public Properties
 
     /// <summary>
     /// Gets or sets the collection of available suggestions for selection.
     /// </summary>
-    [ObservableProperty]
-    private ObservableCollection<string> suggestions = new();
+    public ObservableCollection<string> Suggestions
+    {
+        get => _suggestions;
+        set => SetPropertyWithLogging(ref _suggestions, value);
+    }
 
     /// <summary>
     /// Gets or sets the currently selected suggestion from the list.
     /// </summary>
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SelectCommand))]
-    private string? selectedSuggestion;
+    public string? SelectedSuggestion
+    {
+        get => _selectedSuggestion;
+        set
+        {
+            if (SetPropertyWithLogging(ref _selectedSuggestion, value))
+            {
+                UpdateSuggestionSelectedState();
+                SelectCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether a suggestion is currently selected.
     /// </summary>
-    [ObservableProperty]
-    private bool isSuggestionSelected;
+    public bool IsSuggestionSelected
+    {
+        get => _isSuggestionSelected;
+        set => SetPropertyWithLogging(ref _isSuggestionSelected, value);
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the overlay is visible.
     /// </summary>
-    [ObservableProperty]
-    private bool isVisible;
+    public bool IsVisible
+    {
+        get => _isVisible;
+        set => SetPropertyWithLogging(ref _isVisible, value);
+    }
 
     #endregion
 
@@ -64,6 +89,20 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
 
     #endregion
 
+    #region Commands
+
+    /// <summary>
+    /// Command to select the current suggestion.
+    /// </summary>
+    public IRelayCommand SelectCommand { get; }
+
+    /// <summary>
+    /// Command to cancel the suggestion selection.
+    /// </summary>
+    public IRelayCommand CancelCommand { get; }
+
+    #endregion
+
     #region Constructors
 
     /// <summary>
@@ -72,6 +111,8 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
     /// <param name="logger">Logger for debugging and diagnostic information.</param>
     public SuggestionOverlayViewModel(ILogger<SuggestionOverlayViewModel> logger) : base(logger)
     {
+        ArgumentNullException.ThrowIfNull(logger);
+
         _debugInstanceId = ++_debugInstanceIdCounter;
         
         using var scope = Logger.BeginScope("SuggestionOverlayInitialization");
@@ -81,6 +122,10 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
         Suggestions = new ObservableCollection<string>();
         
         Logger.LogInformation("SuggestionOverlayViewModel initialized with empty suggestions");
+
+        // Initialize commands
+        SelectCommand = new RelayCommand(ExecuteSelect, CanSelect);
+        CancelCommand = new RelayCommand(ExecuteCancel);
 
         // Set up collection change monitoring
         SetupCollectionMonitoring();
@@ -99,6 +144,7 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
         ILogger<SuggestionOverlayViewModel> logger) : base(logger)
     {
         ArgumentNullException.ThrowIfNull(suggestions);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _debugInstanceId = ++_debugInstanceIdCounter;
         
@@ -109,6 +155,10 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
         
         Logger.LogInformation("SuggestionOverlayViewModel initialized with {SuggestionCount} suggestions", Suggestions.Count);
 
+        // Initialize commands
+        SelectCommand = new RelayCommand(ExecuteSelect, CanSelect);
+        CancelCommand = new RelayCommand(ExecuteCancel);
+
         // Set up collection change monitoring
         SetupCollectionMonitoring();
 
@@ -118,7 +168,7 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
 
     #endregion
 
-    #region Commands
+    #region Command Methods
 
     /// <summary>
     /// Determines whether the select command can be executed.
@@ -138,8 +188,7 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
     /// <summary>
     /// Executes the select command to confirm the selected suggestion.
     /// </summary>
-    [RelayCommand(CanExecute = nameof(CanSelect))]
-    private void Select()
+    private void ExecuteSelect()
     {
         try
         {
@@ -166,8 +215,7 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
     /// <summary>
     /// Executes the cancel command to close the overlay without selection.
     /// </summary>
-    [RelayCommand]
-    private void Cancel()
+    private void ExecuteCancel()
     {
         try
         {
@@ -182,21 +230,6 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error executing cancel command for suggestion overlay");
         }
-    }
-
-    #endregion
-
-    #region Property Change Handlers
-
-    /// <summary>
-    /// Handles changes to the SelectedSuggestion property.
-    /// </summary>
-    /// <param name="value">The new selected suggestion value.</param>
-    partial void OnSelectedSuggestionChanged(string? value)
-    {
-        Logger.LogDebug("SelectedSuggestion changed to '{SelectedSuggestion}'", value);
-        UpdateSuggestionSelectedState();
-        SelectCommand.NotifyCanExecuteChanged();
     }
 
     #endregion

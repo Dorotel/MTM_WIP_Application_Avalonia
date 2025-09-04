@@ -47,6 +47,9 @@ public static class ServiceCollectionExtensions
         // Register SuggestionOverlay service - change to singleton for validation
         services.TryAddSingleton<ISuggestionOverlayService, SuggestionOverlayService>();
         
+        // Register Master Data service - singleton for shared access across ViewModels
+        services.TryAddSingleton<IMasterDataService, MasterDataService>();
+        
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
         services.TryAddTransient<MainViewViewModel>();
@@ -142,7 +145,8 @@ public static class ServiceCollectionExtensions
             typeof(IDatabaseService),
             typeof(IQuickButtonsService),
             typeof(IProgressService),
-            typeof(ISuggestionOverlayService)
+            typeof(ISuggestionOverlayService),
+            typeof(IMasterDataService)
         };
 
         var missingServices = requiredServices
@@ -175,7 +179,8 @@ public static class ServiceCollectionExtensions
             typeof(IDatabaseService),
             typeof(IQuickButtonsService),
             typeof(IProgressService),
-            typeof(ISuggestionOverlayService)
+            typeof(ISuggestionOverlayService),
+            typeof(IMasterDataService)
         };
 
         var failedServices = new List<string>();

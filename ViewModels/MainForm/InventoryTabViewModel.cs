@@ -41,6 +41,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService? _configurationService;
     private readonly ISuggestionOverlayService _suggestionService;
+    private readonly IMasterDataService _masterDataService;
 
     #endregion
 
@@ -150,22 +151,22 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
 
     #endregion
 
-    #region Collections for Lookup Data
+    #region Collections for Lookup Data - Using Centralized Master Data Service
 
     /// <summary>
-    /// Available Part IDs loaded from master data (md_part_ids table)
+    /// Available Part IDs from centralized master data service
     /// </summary>
-    public ObservableCollection<string> PartIds { get; } = new();
+    public ObservableCollection<string> PartIds => _masterDataService?.PartIds ?? new ObservableCollection<string>();
 
     /// <summary>
-    /// Available Operations loaded from master data (md_operation_numbers table)
+    /// Available Operations from centralized master data service
     /// </summary>
-    public ObservableCollection<string> Operations { get; } = new();
+    public ObservableCollection<string> Operations => _masterDataService?.Operations ?? new ObservableCollection<string>();
 
     /// <summary>
-    /// Available Locations loaded from master data (md_locations table)
+    /// Available Locations from centralized master data service
     /// </summary>
-    public ObservableCollection<string> Locations { get; } = new();
+    public ObservableCollection<string> Locations => _masterDataService?.Locations ?? new ObservableCollection<string>();
 
     #endregion
 
@@ -221,7 +222,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Design-time constructor for XAML designer support
     /// </summary>
-    public InventoryTabViewModel() : this(null!, null!, null!, null!, null!)
+    public InventoryTabViewModel() : this(null!, null!, null!, null!, null!, null!)
     {
         // Design-time constructor - services will be null but handled gracefully
     }
@@ -234,12 +235,14 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <param name="databaseService">Database operations service</param>
     /// <param name="configurationService">Configuration management service</param>
     /// <param name="suggestionService">Suggestion overlay service</param>
+    /// <param name="masterDataService">Master data service for shared reference data</param>
     public InventoryTabViewModel(
         IApplicationStateService applicationStateService,
         INavigationService navigationService, 
         IDatabaseService databaseService,
         IConfigurationService configurationService,
-        ISuggestionOverlayService suggestionService) : base()
+        ISuggestionOverlayService suggestionService,
+        IMasterDataService masterDataService) : base()
     {
         // Validate required dependencies with descriptive error messages
         _applicationStateService = applicationStateService ?? throw new ArgumentNullException(nameof(applicationStateService), "Application state service is required for inventory management");
@@ -247,10 +250,25 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService), "Database service is required for inventory operations");
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService), "Configuration service is required for database connectivity");
         _suggestionService = suggestionService ?? throw new ArgumentNullException(nameof(suggestionService), "Suggestion service is required for user experience");
+        _masterDataService = masterDataService ?? throw new ArgumentNullException(nameof(masterDataService), "Master data service is required for reference data");
 
         Logger.LogInformation("InventoryTabViewModel initialized with MVVM Community Toolkit patterns");
         Logger.LogInformation("Connection string configured: {HasConnectionString}", 
             !string.IsNullOrEmpty(_configurationService?.GetConnectionString()));
+        
+        // Initialize master data loading
+        _ = Task.Run(async () => 
+        {
+            try
+            {
+                await _masterDataService.LoadAllMasterDataAsync();
+                Logger.LogInformation("Master data loaded successfully for InventoryTabViewModel");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to load master data in InventoryTabViewModel");
+            }
+        });
         
         // Database loading will be deferred until after UI is shown to prevent startup deadlocks
         Logger.LogInformation("InventoryTabViewModel constructor completed - database loading deferred");

@@ -1,11 +1,11 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="MTM_WIP_Application_Avalonia.Views.SuggestionOverlayView"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
              xmlns:conv="using:MTM_WIP_Application_Avalonia.Converters"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
-             Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-             x:DataType="vm:SuggestionOverlayViewModel">
+             x:Class="MTM_WIP_Application_Avalonia.Views.SuggestionOverlayView"
+             x:DataType="vm:SuggestionOverlayViewModel"
+             Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}">
   
   <UserControl.Resources>
     <conv:NullToBoolConverter x:Key="NullToBoolConverter" />

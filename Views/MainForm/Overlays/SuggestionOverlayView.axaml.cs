@@ -3,9 +3,7 @@ using Avalonia.Interactivity;
 using Avalonia.Input;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace MTM_WIP_Application_Avalonia.Views
@@ -17,50 +15,41 @@ namespace MTM_WIP_Application_Avalonia.Views
 
         public SuggestionOverlayView() : this(null) { }
 
-        public SuggestionOverlayView(Microsoft.Extensions.Logging.ILogger<SuggestionOverlayView>? logger)
+    public SuggestionOverlayView(Microsoft.Extensions.Logging.ILogger<SuggestionOverlayView>? logger)
+    {
+        InitializeComponent();
+        _logger = logger;
+        _logger?.LogInformation("SuggestionOverlayView initialized");
+        
+        // Focus management: set focus to ListBox when overlay appears
+        this.AttachedToVisualTree += (s, e) =>
         {
-            InitializeComponent();
-            _logger = logger;
-            _logger?.LogInformation("SuggestionOverlayView initialized");
-            // Focus management: set focus to ListBox when overlay appears
-            this.AttachedToVisualTree += (s, e) =>
+            _logger?.LogInformation("SuggestionOverlayView attached to visual tree. DataContext type: {DataContextType}, IsEnabled: {IsEnabled}, ParentType: {ParentType}", 
+                DataContext?.GetType().FullName ?? "null", 
+                this.IsEnabled, 
+                this.Parent?.GetType().FullName ?? "null");
+
+            // Debug the suggestions in the ViewModel
+            if (DataContext is SuggestionOverlayViewModel vm)
             {
-                Debug.WriteLine($"[DBG:VIEW] SuggestionOverlayView attached. DataContext type: {DataContext?.GetType().FullName ?? "null"}");
-                Debug.WriteLine($"[DBG:VIEW] UserControl.IsEnabled: {this.IsEnabled}");
-                if (this.Parent is Control parent)
-                    Debug.WriteLine($"[DBG:VIEW] Parent control type: {parent.GetType().FullName}, IsEnabled: {parent.IsEnabled}");
-                _logger?.LogInformation("[DBG:VIEW] AttachedToVisualTree triggered. DataContext type: {DataContextType}, IsEnabled: {IsEnabled}, ParentType: {ParentType}", DataContext?.GetType().FullName ?? "null", this.IsEnabled, this.Parent?.GetType().FullName ?? "null");
+                _logger?.LogInformation("ViewModel has {Count} suggestions. First: {First}", 
+                    vm.Suggestions.Count, 
+                    vm.Suggestions.FirstOrDefault() ?? "none");
+            }
 
-                // Debug the suggestions in the ViewModel
-                if (DataContext is SuggestionOverlayViewModel vm)
-                {
-                    Debug.WriteLine($"[DBG:VIEW] ViewModel has {vm.Suggestions.Count} suggestions");
-                    if (vm.Suggestions.Count > 0)
-                    {
-                        Debug.WriteLine($"[DBG:VIEW] First suggestion: {vm.Suggestions.First()}");
-                    }
-                    _logger?.LogInformation("[DBG:VIEW] ViewModel has {Count} suggestions. First: {First}", vm.Suggestions.Count, vm.Suggestions.FirstOrDefault() ?? "none");
-                }
-
-                // Focus the ListBox for immediate keyboard navigation
-                var listBox = this.FindControl<ListBox>("SuggestionListBox");
-                if (listBox != null)
-                {
-                    Debug.WriteLine($"[DBG:VIEW] Found ListBox. ItemsSource set: {listBox.ItemsSource != null}");
-                    _logger?.LogInformation("[DBG:VIEW] Found ListBox. ItemsSource: {HasItemsSource}", listBox.ItemsSource != null);
-                    listBox.Focus();
-                }
-                else
-                {
-                    Debug.WriteLine("[DBG:VIEW] ListBox not found!");
-                    _logger?.LogWarning("[DBG:VIEW] ListBox not found!");
-                }
-
-                // TODO: Add open/close animation and accessibility improvements (screen reader hints, ARIA roles, etc.)
-            };
-        }
-
-        /// <summary>
+            // Focus the ListBox for immediate keyboard navigation
+            var listBox = this.FindControl<ListBox>("SuggestionListBox");
+            if (listBox != null)
+            {
+                _logger?.LogInformation("Found ListBox. ItemsSource: {HasItemsSource}", listBox.ItemsSource != null);
+                listBox.Focus();
+            }
+            else
+            {
+                _logger?.LogWarning("ListBox not found!");
+            }
+        };
+    }        /// <summary>
         /// Handles double-tap on the ListBox to select the currently selected suggestion.
         /// </summary>
         public void OnSuggestionListBoxDoubleTapped(object? sender, RoutedEventArgs e)

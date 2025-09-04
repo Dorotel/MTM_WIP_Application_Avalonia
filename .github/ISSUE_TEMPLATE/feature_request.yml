@@ -1,0 +1,268 @@
+name: "Feature Request"
+description: "Create a new Feature within an Epic"
+title: "[FEATURE] "
+labels: ["feature", "enhancement"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request Template
+        Use this template to create Features that represent complete user-facing functionality within an Epic.
+        
+        **Examples**: "Quick Actions Panel", "Inventory Transaction Management", "Master Data CRUD Operations"
+
+  - type: input
+    id: feature_title
+    attributes:
+      label: "Feature Title"
+      description: "Clear, descriptive title for this Feature"
+      placeholder: "e.g., Quick Actions Panel with Drag-Drop Reordering"
+    validations:
+      required: true
+
+  - type: input
+    id: parent_epic
+    attributes:
+      label: "Parent Epic"
+      description: "Link to the Epic this Feature belongs to (Epic ID or URL)"
+      placeholder: "MTM_EPIC_001 or link to Epic issue"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_priority
+    attributes:
+      label: "Feature Priority"
+      description: "Priority level within the parent Epic"
+      options:
+        - "Critical - Must Have"
+        - "High - Should Have"
+        - "Medium - Could Have"
+        - "Low - Won't Have This Time"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_category
+    attributes:
+      label: "Feature Category"
+      description: "Primary component area this Feature affects"
+      options:
+        - "Views & UI (AXAML)"
+        - "ViewModels & Business Logic"
+        - "Services & Infrastructure"
+        - "Models & Data Structures"
+        - "Database & Stored Procedures"
+        - "Behaviors & Converters"
+        - "Configuration & Settings"
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_story
+    attributes:
+      label: "User Story"
+      description: "Describe this Feature from the user's perspective"
+      placeholder: |
+        **As a** [type of user]
+        **I want** [functionality]
+        **So that** [benefit/value]
+        
+        **Example:**
+        As a manufacturing operator
+        I want to quickly access recent inventory transactions
+        So that I can repeat common operations without navigating through multiple screens
+    validations:
+      required: true
+
+  - type: textarea
+    id: functional_requirements
+    attributes:
+      label: "Functional Requirements"
+      description: "Detailed requirements using EARS notation where possible"
+      placeholder: |
+        **Primary Functions:**
+        1. The system SHALL display recent transactions when user opens quick actions
+        2. The system SHALL allow drag-drop reordering when user holds drag handle
+        3. The system SHALL persist button order when user completes reordering
+        
+        **Secondary Functions:**
+        - Context menu with additional actions
+        - Visual feedback during drag operations
+        - Position indicators during reordering
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_approach
+    attributes:
+      label: "Technical Implementation Approach"
+      description: "High-level technical design and architecture decisions"
+      placeholder: |
+        **Components Involved:**
+        - Views: QuickButtonsView.axaml
+        - ViewModels: QuickButtonsViewModel (MVVM Community Toolkit)
+        - Services: QuickButtonsService, Database access
+        - Models: QuickButton, PositionInfo
+        
+        **Key Patterns:**
+        - MVVM Community Toolkit with [ObservableProperty] and [RelayCommand]
+        - Stored procedures only for database access
+        - Avalonia AXAML syntax with drag-drop behaviors
+        
+        **Data Flow:**
+        User Action → ViewModel Command → Service Layer → Database → UI Update
+    validations:
+      required: true
+
+  - type: textarea
+    id: ui_ux_requirements
+    attributes:
+      label: "UI/UX Requirements"
+      description: "User interface and experience specifications"
+      placeholder: |
+        **Visual Design:**
+        - MTM Purple theme compliance (#0078D4 Windows 11 Blue)
+        - Card-based layout with 8px/16px/24px spacing
+        - Rounded corners and subtle shadows
+        
+        **Interaction Patterns:**
+        - Drag handles visible on hover
+        - Position indicators during drag
+        - Smooth animations for reordering
+        
+        **Responsive Behavior:**
+        - Works in different window sizes
+        - Touch-friendly for tablet use
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      description: "Specific, testable criteria for Feature completion"
+      placeholder: |
+        **User Interface:**
+        - [ ] Quick actions panel displays with recent transactions
+        - [ ] Drag handles are visible and functional
+        - [ ] Position indicators show during drag operations
+        - [ ] Visual feedback confirms successful reordering
+        
+        **Functionality:**
+        - [ ] Button order persists across application restarts
+        - [ ] Context menu provides additional actions
+        - [ ] Performance remains smooth with 20+ buttons
+        - [ ] Error handling for database save failures
+        
+        **Technical:**
+        - [ ] Follows MVVM Community Toolkit patterns
+        - [ ] Uses stored procedures for data persistence
+        - [ ] Complies with Avalonia AXAML syntax rules
+        - [ ] Includes comprehensive error handling
+    validations:
+      required: true
+
+  - type: textarea
+    id: components_affected
+    attributes:
+      label: "Components Affected"
+      description: "List specific files/components that will be created or modified"
+      placeholder: |
+        **New Components:**
+        - Views/MainForm/QuickButtonsView.axaml
+        - ViewModels/MainForm/QuickButtonsViewModel.cs
+        - Services/QuickButtons.cs
+        
+        **Modified Components:**
+        - Models/QuickButton.cs (if exists)
+        - Database: qb_quickbuttons_* stored procedures
+        
+        **Dependencies:**
+        - MVVM Community Toolkit
+        - Avalonia UI drag-drop behaviors
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing_strategy
+    attributes:
+      label: "Testing Strategy"
+      description: "How will this Feature be tested?"
+      placeholder: |
+        **Unit Tests:**
+        - ViewModel command execution
+        - Service layer business logic
+        - Model data validation
+        
+        **Integration Tests:**
+        - Database stored procedure calls
+        - Service-to-service communication
+        - UI binding verification
+        
+        **Manual Tests:**
+        - Drag-drop interaction testing
+        - Visual design verification
+        - Performance testing with large datasets
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimated_effort
+    attributes:
+      label: "Estimated Effort"
+      description: "Development effort estimate"
+      options:
+        - "XS (1-2 days)"
+        - "S (3-5 days)"
+        - "M (1-2 weeks)"
+        - "L (3-4 weeks)"
+        - "XL (1-2 months)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies_blockers
+    attributes:
+      label: "Dependencies & Blockers"
+      description: "What must be done before this Feature can start or complete?"
+      placeholder: |
+        **Prerequisites:**
+        - Epic planning completed
+        - Database schema validated
+        - UI design mockups approved
+        
+        **Blockers:**
+        - Dependency on external system
+        - Resource availability
+        - Technical feasibility questions
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: feature_checklist
+    attributes:
+      label: "Feature Readiness Checklist"
+      description: "Ensure Feature is ready for development"
+      options:
+        - label: "Requirements are clear and testable"
+          required: false
+        - label: "Technical approach is feasible"
+          required: false
+        - label: "UI/UX design is approved"
+          required: false
+        - label: "Dependencies are identified"
+          required: false
+        - label: "Testing strategy is defined"
+          required: false
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Additional Notes"
+      description: "Any other relevant information"
+      placeholder: "Links to design mockups, related discussions, historical context, etc."
+    validations:
+      required: false
