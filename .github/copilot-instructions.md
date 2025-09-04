@@ -92,7 +92,8 @@
 ```
 
 ### **MTM Design System Requirements**
-- **Primary Color**: Purple (#6a0dad) for buttons and accents
+- **Primary Color**: Windows 11 Blue (#0078D4) for buttons and accents
+- **Multiple Theme Support**: Use ThemeService for MTM_Blue, MTM_Green, MTM_Red, MTM_Dark themes
 - **Card-based Layout**: Use Border controls with rounded corners and subtle shadows
 - **Consistent Spacing**: 8px, 16px, 24px margins and padding
 - **Typography**: Use TextBlock with consistent FontSize and FontWeight patterns
@@ -306,12 +307,12 @@ public static class ServiceCollectionExtensions
 ### **MTM Purple Theme Implementation**
 ```xml
 <!-- Primary MTM Colors -->
-<Button Background="#6a0dad"      <!-- Primary purple -->
+<Button Background="#0078D4"      <!-- Primary Windows 11 blue -->
         Foreground="White"
         Padding="12,8"
         CornerRadius="4" />
 
-<Border Background="#8A2BE2"      <!-- Secondary purple -->
+<Border Background="#106EBE"      <!-- Secondary blue -->
         BorderBrush="#E0E0E0"
         BorderThickness="1"
         CornerRadius="8" />
@@ -327,7 +328,7 @@ public static class ServiceCollectionExtensions
         Margin="8">
     
     <Grid x:Name="CardContent" RowDefinitions="Auto,*">
-        <Border Grid.Row="0" Background="#6a0dad" CornerRadius="8,8,0,0" Padding="16,8">
+        <Border Grid.Row="0" Background="#0078D4" CornerRadius="8,8,0,0" Padding="16,8">
             <TextBlock Text="Card Title" Foreground="White" FontWeight="Bold" />
         </Border>
         <StackPanel Grid.Row="1" Margin="16" Spacing="8">
@@ -497,7 +498,7 @@ public partial class SomeView : UserControl
 2. **Database**: Use `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()` with actual stored procedure names  
 3. **AXAML**: Use `x:Name` (not `Name`) on Grids, `xmlns="https://github.com/avaloniaui"` namespace
 4. **Services**: Category-based consolidation with dependency injection
-5. **Colors**: MTM purple `#6a0dad` for primary elements
+5. **Colors**: MTM Windows 11 Blue `#0078D4` for primary elements with ThemeService support
 6. **Error Handling**: `await Services.ErrorHandling.HandleErrorAsync(ex, context)`
 7. **Business Logic**: Transaction types by user intent (IN/OUT/TRANSFER), operations are workflow steps
 

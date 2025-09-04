@@ -18,7 +18,7 @@ Based on analysis of Views folder structure:
 - **UserControl Pattern**: All views inherit from Avalonia UserControl
 - **Minimal Code-Behind**: Logic in ViewModels using MVVM Community Toolkit
 - **Standard Bindings**: `{Binding PropertyName}` with INotifyPropertyChanged
-- **Design System**: Purple theme (#6a0dad), card-based layouts, consistent spacing
+- **Design System**: Windows 11 Blue theme (#0078D4), card-based layouts, consistent spacing
 
 </details>
 

@@ -78,18 +78,21 @@ rules:
       - Connection strings via Helper_Database_Variables.GetConnectionString()
 
   - title: 'MTM Design System'
-    description: 'MTM purple theme and component standards'
+    description: 'MTM comprehensive theming system and component standards'
     patterns:
       - 'Views/**/*.axaml'
       - 'Resources/Themes/**/*.axaml'
       - 'Controls/**/*.axaml'
     instructions: |
       ## MTM Design Standards
-      - Primary Color: Purple (#6a0dad) for buttons and accents
-      - Card-based Layout: Use Border controls with rounded corners
+      - Primary Color: Windows 11 Blue (#0078D4) for buttons and accents
+      - Multiple theme support: MTM_Blue, MTM_Green, MTM_Red, MTM_Dark, MTM_Teal, etc.
+      - Use ThemeService for dynamic theme switching via IThemeService
+      - Card-based Layout: Use Border controls with rounded corners and subtle shadows
       - Consistent Spacing: 8px, 16px, 24px margins and padding
       - Typography: Use TextBlock with consistent FontSize and FontWeight
-      - Use MTM theme system with dynamic theme switching capability
+      - Theme resources: MTM_Shared_Logic.PrimaryAction, MTM_Shared_Logic.SecondaryAction
+      - Load themes via Resources/Themes/ folder with .axaml theme files
 
   - title: 'Error Handling & Logging'
     description: 'Centralized error management patterns'
