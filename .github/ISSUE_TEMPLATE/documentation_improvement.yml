@@ -1,0 +1,430 @@
+name: "Documentation Improvement"
+description: "Improve or create documentation for the MTM application and development processes"
+title: "[DOCS] "
+labels: ["documentation", "improvement"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Documentation Improvement Template
+        Use this template to request improvements to existing documentation or creation of new documentation.
+        
+        **MTM Context**: Integrates with the established `.github/instructions/` system and follows MTM documentation patterns.
+
+  - type: input
+    id: doc_title
+    attributes:
+      label: "Documentation Title"
+      description: "Clear title for the documentation improvement"
+      placeholder: "e.g., Add comprehensive examples to MVVM Community Toolkit patterns guide"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: doc_type
+    attributes:
+      label: "Documentation Type"
+      description: "Category of documentation being improved or created"
+      options:
+        - "GitHub Instructions - .github/instructions/ system enhancements"
+        - "Architecture Documentation - Technical architecture guides"
+        - "Developer Guidelines - Coding standards and patterns"
+        - "User Documentation - End-user guides and help"
+        - "API Documentation - Service and component APIs"
+        - "Process Documentation - Development workflow guides"
+        - "Troubleshooting Guides - Problem-solving documentation"
+        - "Best Practices - Pattern libraries and examples"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: doc_priority
+    attributes:
+      label: "Documentation Priority"
+      description: "Importance level for this documentation work"
+      options:
+        - "Critical - Blocks development or causes confusion"
+        - "High - Improves developer productivity significantly"
+        - "Medium - General improvement to documentation quality"
+        - "Low - Nice to have enhancement"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_state
+    attributes:
+      label: "Current Documentation State"
+      description: "What exists now and what are the gaps or problems?"
+      placeholder: |
+        **Current Documentation:**
+        - `.github/instructions/mvvm-community-toolkit.instructions.md` exists
+        - Contains basic patterns for [ObservableProperty] and [RelayCommand]
+        - Missing comprehensive real-world examples
+        
+        **Problems with Current State:**
+        - Examples are too simplistic for complex scenarios
+        - No coverage of advanced MVVM Community Toolkit features
+        - Missing integration examples with MTM service patterns
+        - No troubleshooting section for common issues
+        
+        **Documentation Gaps:**
+        - No examples of complex ViewModel hierarchies
+        - Missing validation patterns with [ObservableProperty]
+        - No async command patterns documentation
+        - Limited error handling examples
+    validations:
+      required: true
+
+  - type: textarea
+    id: target_audience
+    attributes:
+      label: "Target Audience"
+      description: "Who will use this documentation and what's their context?"
+      placeholder: |
+        **Primary Audience:**
+        - New developers joining the MTM project
+        - GitHub Copilot (enhanced context for better code generation)
+        - Existing developers implementing new ViewModels
+        
+        **Audience Context:**
+        - Familiar with C# and .NET development
+        - May be new to Avalonia UI and MVVM patterns
+        - Working within MTM manufacturing domain constraints
+        - Using Visual Studio with GitHub Copilot extension
+        
+        **Usage Scenarios:**
+        - Creating new ViewModels following MTM patterns
+        - Troubleshooting MVVM Community Toolkit issues
+        - Code review reference for pattern compliance
+        - Onboarding new team members
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_improvement
+    attributes:
+      label: "Proposed Documentation Improvement"
+      description: "Detailed description of what should be added or changed"
+      placeholder: |
+        **New Content to Add:**
+        1. **Advanced ViewModel Patterns Section**
+           - Complex hierarchical ViewModels
+           - Parent-child ViewModel communication
+           - Shared state management patterns
+        
+        2. **Real-World Examples Section**
+           - Complete InventoryTabViewModel example
+           - QuickButtonsViewModel with drag-drop
+           - SettingsViewModel with validation
+        
+        3. **Integration Patterns Section**
+           - ViewModel + Service layer integration
+           - Database error handling in ViewModels
+           - Dependency injection patterns
+        
+        4. **Troubleshooting Guide**
+           - Common compilation errors and fixes
+           - Property notification debugging
+           - Command binding troubleshooting
+        
+        **Content to Update:**
+        - Expand basic examples with full context
+        - Add error handling to all code samples
+        - Include performance considerations
+        - Add testing patterns for ViewModels
+    validations:
+      required: true
+
+  - type: textarea
+    id: success_criteria
+    attributes:
+      label: "Success Criteria"
+      description: "How will we know this documentation improvement is successful?"
+      placeholder: |
+        **Quality Criteria:**
+        - [ ] All code examples compile and run correctly
+        - [ ] Examples follow established MTM patterns from Phase 1
+        - [ ] Integration with existing `.github/instructions/` system
+        - [ ] GitHub Copilot can reference examples for better code generation
+        
+        **Completeness Criteria:**
+        - [ ] Covers all major MVVM Community Toolkit features used in MTM
+        - [ ] Includes troubleshooting for common developer issues
+        - [ ] Provides complete, copy-pasteable examples
+        - [ ] Links to related MTM architecture documentation
+        
+        **Usability Criteria:**
+        - [ ] New developers can follow examples successfully
+        - [ ] Existing developers find answers to common questions
+        - [ ] Documentation is discoverable and well-organized
+        - [ ] Examples work in both development and production contexts
+        
+        **Maintenance Criteria:**
+        - [ ] Documentation follows MTM documentation standards
+        - [ ] Version-controlled with clear change history
+        - [ ] Easy to update when patterns evolve
+        - [ ] Integrated with automated documentation tools
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mtm_integration
+    attributes:
+      label: "MTM Pattern Integration"
+      description: "How does this documentation relate to established MTM patterns?"
+      options:
+        - "Phase 1 Foundation - Builds on complete Phase 1 documentation"
+        - "Architecture Alignment - Integrates with service-oriented MVVM"
+        - "Manufacturing Domain - Manufacturing inventory context examples"
+        - "GitHub Copilot Enhancement - Improves AI code generation context"
+        - "Developer Onboarding - Supports new team member integration"
+        - "Quality Standards - Enforces MTM coding and pattern standards"
+    validations:
+      required: true
+
+  - type: textarea
+    id: content_outline
+    attributes:
+      label: "Detailed Content Outline"
+      description: "Structured outline of the documentation content"
+      placeholder: |
+        **I. Introduction and Context (estimated: 200 lines)**
+        - MTM MVVM patterns overview
+        - MVVM Community Toolkit integration
+        - Manufacturing domain considerations
+        
+        **II. Basic Patterns (estimated: 300 lines)**
+        - [ObservableProperty] with validation examples
+        - [RelayCommand] with async patterns
+        - BaseViewModel inheritance structure
+        
+        **III. Advanced Patterns (estimated: 400 lines)**
+        - Complex ViewModel hierarchies
+        - Service layer integration patterns
+        - Error handling and logging patterns
+        
+        **IV. Real-World Examples (estimated: 600 lines)**
+        - Complete InventoryTabViewModel
+        - QuickButtonsViewModel with drag-drop
+        - SettingsViewModel with validation
+        - TransactionHistoryViewModel with filtering
+        
+        **V. Integration Patterns (estimated: 300 lines)**
+        - Database service integration
+        - Error handling service integration
+        - Dependency injection configuration
+        
+        **VI. Testing Patterns (estimated: 200 lines)**
+        - Unit testing ViewModels
+        - Mocking service dependencies
+        - Integration testing strategies
+        
+        **VII. Troubleshooting (estimated: 200 lines)**
+        - Common issues and solutions
+        - Debugging techniques
+        - Performance considerations
+        
+        **Total Estimated Length:** ~2,200 lines
+    validations:
+      required: true
+
+  - type: textarea
+    id: example_content
+    attributes:
+      label: "Sample Content Preview"
+      description: "Provide a preview of the proposed documentation style and content"
+      placeholder: |
+        **Sample Section: Advanced ViewModel with Service Integration**
+        
+        ```csharp
+        // ✅ CORRECT: MTM ViewModel Pattern with Service Integration
+        [ObservableObject]
+        public partial class InventoryTabViewModel : BaseViewModel
+        {
+            private readonly IInventoryService _inventoryService;
+            private readonly IMasterDataService _masterDataService;
+            
+            public InventoryTabViewModel(
+                ILogger<InventoryTabViewModel> logger,
+                IInventoryService inventoryService,
+                IMasterDataService masterDataService) : base(logger)
+            {
+                _inventoryService = inventoryService;
+                _masterDataService = masterDataService;
+                
+                // Initialize collections
+                InventoryItems = new ObservableCollection<InventoryItem>();
+                AvailableOperations = new ObservableCollection<string>();
+            }
+            
+            [ObservableProperty]
+            [NotifyPropertyChangedFor(nameof(CanSearch))]
+            private string partId = string.Empty;
+            
+            [ObservableProperty]
+            [NotifyPropertyChangedFor(nameof(CanSearch))]
+            private string selectedOperation = string.Empty;
+            
+            [ObservableProperty]
+            private ObservableCollection<InventoryItem> inventoryItems = new();
+            
+            public bool CanSearch => !IsLoading && 
+                !string.IsNullOrWhiteSpace(PartId) && 
+                !string.IsNullOrWhiteSpace(SelectedOperation);
+            
+            [RelayCommand(CanExecute = nameof(CanSearch))]
+            private async Task SearchInventoryAsync()
+            {
+                try
+                {
+                    IsLoading = true;
+                    
+                    var results = await _inventoryService.GetInventoryAsync(PartId, SelectedOperation);
+                    
+                    InventoryItems.Clear();
+                    foreach (var item in results)
+                    {
+                        InventoryItems.Add(item);
+                    }
+                    
+                    StatusMessage = $"Found {results.Count} inventory items";
+                }
+                catch (Exception ex)
+                {
+                    await HandleErrorAsync(ex, "searching inventory");
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            }
+        }
+        ```
+        
+        **Key MTM Patterns Demonstrated:**
+        - MVVM Community Toolkit with [ObservableObject] and [RelayCommand]
+        - Service layer integration via constructor injection
+        - Proper error handling using inherited HandleErrorAsync method
+        - Manufacturing domain context (PartId, Operation, InventoryItems)
+        - Async patterns with loading states and status messages
+    validations:
+      required: true
+
+  - type: textarea
+    id: related_documentation
+    attributes:
+      label: "Related Documentation"
+      description: "Links to existing documentation that this improvement connects with"
+      placeholder: |
+        **Existing MTM Documentation:**
+        - `.github/instructions/mvvm-community-toolkit.instructions.md` (will be enhanced)
+        - `.github/instructions/service-architecture.instructions.md` (integration patterns)
+        - `.github/instructions/dotnet-architecture-good-practices.instructions.md` (coding standards)
+        
+        **Architecture Documents:**
+        - `docs/ways-of-work/plan/mtm-inventory-management/Project_Architecture_Blueprint.md`
+        - `docs/ways-of-work/plan/mtm-inventory-management/epic-architecture/specification.md`
+        
+        **External References:**
+        - Microsoft MVVM Community Toolkit documentation
+        - Avalonia UI documentation for MVVM patterns
+        - .NET 8 dependency injection patterns
+        
+        **Integration Points:**
+        - Will reference examples from existing ViewModels in the codebase
+        - Links to established service layer patterns
+        - Connections to database access patterns documentation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimated_effort
+    attributes:
+      label: "Estimated Effort"
+      description: "Time required to complete this documentation improvement"
+      options:
+        - "XS (1-2 hours) - Small addition or fix"
+        - "S (Half day) - Section enhancement"
+        - "M (1-2 days) - Major section or new guide"
+        - "L (3-5 days) - Complete new documentation set"
+        - "XL (1-2 weeks) - Comprehensive documentation overhaul"
+    validations:
+      required: true
+
+  - type: textarea
+    id: maintenance_plan
+    attributes:
+      label: "Maintenance & Update Plan"
+      description: "How will this documentation stay current and accurate?"
+      placeholder: |
+        **Regular Maintenance:**
+        - Review documentation quarterly for accuracy
+        - Update examples when MVVM Community Toolkit updates
+        - Verify code examples compile with latest dependencies
+        - Update links when file structures change
+        
+        **Update Triggers:**
+        - Major architectural pattern changes
+        - New MVVM Community Toolkit features adopted
+        - Feedback from developers about missing content
+        - Changes to MTM service layer patterns
+        
+        **Version Control:**
+        - All changes tracked in git with detailed commit messages
+        - Tag major documentation updates with version numbers
+        - Maintain changelog for significant documentation changes
+        - Archive old examples for historical reference
+        
+        **Quality Assurance:**
+        - Peer review for all significant changes
+        - Automated link checking where possible
+        - Regular developer feedback collection
+        - Integration with code review process for pattern compliance
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: documentation_checklist
+    attributes:
+      label: "Documentation Quality Checklist"
+      description: "Ensure documentation meets MTM standards"
+      options:
+        - label: "Follows established MTM documentation patterns and style"
+          required: false
+        - label: "All code examples are tested and compilable"
+          required: false
+        - label: "Integrates with existing .github/instructions/ system"
+          required: false
+        - label: "Provides value to GitHub Copilot for enhanced code generation"
+          required: false
+        - label: "Includes manufacturing domain context where appropriate"
+          required: false
+        - label: "Has clear navigation and organization structure"
+          required: false
+        - label: "Includes troubleshooting and common issue resolution"
+          required: false
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Additional Notes"
+      description: "Any other relevant information for this documentation improvement"
+      placeholder: |
+        **Research Sources:**
+        - Links to external documentation or examples
+        - Reference implementations from other projects
+        - Community best practices and recommendations
+        
+        **Collaboration Notes:**
+        - SMEs to consult for technical accuracy
+        - User groups to validate content usefulness
+        - Review processes for content approval
+        
+        **Future Enhancements:**
+        - Potential for interactive examples
+        - Integration with automated documentation generation
+        - Multilingual considerations if applicable
+    validations:
+      required: false

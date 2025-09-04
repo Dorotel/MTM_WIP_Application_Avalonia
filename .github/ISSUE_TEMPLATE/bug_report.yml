@@ -1,0 +1,248 @@
+name: "Bug Report"
+description: "Report a bug or defect in the MTM application with MTM-specific context"
+title: "[BUG] "
+labels: ["bug", "needs-investigation"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report Template
+        Use this template to report bugs, defects, or unexpected behavior in the MTM WIP Application.
+        
+        **MTM Context**: This template is optimized for the manufacturing inventory management domain with .NET 8, Avalonia UI 11.3.4, and MVVM Community Toolkit patterns.
+
+  - type: input
+    id: bug_title
+    attributes:
+      label: "Bug Title"
+      description: "Clear, descriptive title for the bug"
+      placeholder: "e.g., QuickButtons drag-drop fails when reordering more than 10 items"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: bug_severity
+    attributes:
+      label: "Bug Severity"
+      description: "Impact level of this bug on the application"
+      options:
+        - "Critical - Application crash or data loss"
+        - "High - Major feature broken or unusable"
+        - "Medium - Feature partially broken or workaround exists"
+        - "Low - Minor issue or cosmetic problem"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected_component
+    attributes:
+      label: "Affected Component"
+      description: "Primary application component where bug occurs"
+      options:
+        - "Views & UI (AXAML) - User interface issues"
+        - "ViewModels & Business Logic - MVVM Community Toolkit related"
+        - "Services & Infrastructure - Service layer problems"
+        - "Models & Data Structures - Data model issues"
+        - "Database & Stored Procedures - MySQL/database related"
+        - "Behaviors & Converters - Avalonia behaviors/converters"
+        - "Configuration & Settings - App configuration issues"
+        - "Build & Deployment - Project setup or deployment"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user_persona_affected
+    attributes:
+      label: "User Persona Most Affected"
+      description: "Which user type experiences this bug most?"
+      options:
+        - "Manufacturing Operator - Daily inventory operations"
+        - "Production Supervisor - Monitoring and oversight"
+        - "Inventory Manager - Strategic inventory management"
+        - "System Administrator - System configuration"
+        - "All Users - Affects everyone"
+        - "Developer - Development/testing environment only"
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug_description
+    attributes:
+      label: "Bug Description"
+      description: "Detailed description of the bug and its impact"
+      placeholder: |
+        **What happened:**
+        When attempting to reorder QuickButton items by dragging beyond the 10th position...
+
+        **What should happen:**
+        The system should allow reordering of any number of quick buttons up to the configured limit...
+
+        **Business Impact:**
+        Manufacturing operators cannot customize their frequently-used actions, reducing efficiency...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: "Steps to Reproduce"
+      description: "Exact steps to reproduce the bug"
+      placeholder: |
+        1. Open MTM WIP Application
+        2. Navigate to Quick Actions panel
+        3. Ensure more than 10 quick action buttons are configured
+        4. Attempt to drag button #12 to position #3
+        5. Release the button
+        
+        **Expected Result:** Button moves to position #3
+        **Actual Result:** Button snaps back to original position, error logged
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment_info
+    attributes:
+      label: "Environment Information"
+      description: "System and application version details"
+      placeholder: |
+        **Application Version:** v1.2.3 (or commit hash)
+        **Operating System:** Windows 11 22H2
+        **Framework:** .NET 8.0
+        **Avalonia Version:** 11.3.4
+        **Database:** MySQL 9.4.0
+        **Screen Resolution:** 1920x1080
+        **Additional Software:** Any relevant third-party software
+    validations:
+      required: true
+
+  - type: textarea
+    id: error_logs
+    attributes:
+      label: "Error Logs & Stack Traces"
+      description: "Relevant error messages, logs, or stack traces"
+      placeholder: |
+        **Application Logs:**
+        ```
+        [ERROR] 2024-09-04 10:30:15 - QuickButtonsService: Failed to update button positions
+        System.InvalidOperationException: Cannot reorder beyond configured limit
+           at MTM.Services.QuickButtons.UpdatePositionsAsync()
+        ```
+
+        **Database Logs:**
+        ```
+        MySQL Error 1062: Duplicate entry for key 'PRIMARY'
+        ```
+
+        **Console Output:**
+        Any relevant console messages...
+    validations:
+      required: false
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: "Workaround (if any)"
+      description: "Any temporary workaround that avoids the bug"
+      placeholder: |
+        **Current Workaround:**
+        Users can manually delete and recreate quick buttons in the desired order, though this loses button configuration...
+
+        **Limitations:**
+        - Time-consuming for operators
+        - Loses custom button labels and configurations
+        - Not practical for frequently-used operations
+    validations:
+      required: false
+
+  - type: dropdown
+    id: reproducibility
+    attributes:
+      label: "Reproducibility"
+      description: "How consistently can this bug be reproduced?"
+      options:
+        - "Always - 100% reproducible"
+        - "Often - Happens most of the time (>75%)"
+        - "Sometimes - Happens occasionally (25-75%)"
+        - "Rarely - Difficult to reproduce (<25%)"
+        - "Once - Happened only once so far"
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_context
+    attributes:
+      label: "Technical Context"
+      description: "Additional technical details for developers"
+      placeholder: |
+        **Relevant Code Areas:**
+        - ViewModels/MainForm/QuickButtonsViewModel.cs
+        - Services/QuickButtons.cs
+        - Views/MainForm/Panels/QuickButtonsView.axaml
+        
+        **MVVM Community Toolkit Context:**
+        - Bug occurs in [RelayCommand] method: ReorderButtonsCommand
+        - Observable collection update timing issue suspected
+        
+        **Database Context:**
+        - Stored procedure: qb_quickbuttons_UpdatePositions
+        - Potential race condition with position updates
+        
+        **Avalonia UI Context:**
+        - Drag-drop behavior: AutoCompleteBoxNavigationBehavior
+        - UI virtualization settings may be relevant
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: investigation_checklist
+    attributes:
+      label: "Initial Investigation Checklist"
+      description: "Basic troubleshooting steps attempted"
+      options:
+        - label: "Reproduced bug in development environment"
+          required: false
+        - label: "Checked application and system logs"
+          required: false
+        - label: "Verified bug with different user account"
+          required: false
+        - label: "Tested with different data/configuration"
+          required: false
+        - label: "Confirmed bug affects multiple users"
+          required: false
+        - label: "Identified potential root cause area"
+          required: false
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: "Additional Information"
+      description: "Any other relevant details"
+      placeholder: |
+        **Screenshots/Videos:** Links to visual evidence
+        **Related Issues:** Links to potentially related bugs or features
+        **User Feedback:** Direct quotes from affected users
+        **Historical Context:** When this functionality last worked correctly
+        **Similar Issues:** Any patterns noticed with similar bugs
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: bug_impact_assessment
+    attributes:
+      label: "Impact Assessment"
+      description: "Help prioritize this bug by indicating its impact"
+      options:
+        - label: "Blocks critical business operations"
+          required: false
+        - label: "Affects multiple user workflows"
+          required: false
+        - label: "Causes data integrity issues"
+          required: false
+        - label: "Results in user frustration/productivity loss"
+          required: false
+        - label: "Has security implications"
+          required: false
+        - label: "Affects system performance"
+          required: false
