@@ -362,8 +362,8 @@ jobs:
         echo "=== Documentation Deployment Readiness ==="
         
         # Check if new code changes have corresponding documentation updates
-        git fetch origin ${{ github.base_ref }} || echo "Could not fetch base ref"
-        CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD 2>/dev/null || echo "No file diff available")
+        git fetch origin ${{ github.base_ref }} 2>/dev/null || echo "Could not fetch base ref"
+        CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD 2>/dev/null || git diff --name-only HEAD~1 2>/dev/null || echo "No file diff available")
         
         HAS_CODE_CHANGES=false
         HAS_DOC_CHANGES=false
@@ -372,12 +372,16 @@ jobs:
         if echo "$CHANGED_FILES" | grep -E '\.(cs|axaml)$' >/dev/null 2>&1; then
           HAS_CODE_CHANGES=true
           echo "✅ Code changes detected"
+        else
+          HAS_CODE_CHANGES=false
         fi
         
         # Check for documentation changes
         if echo "$CHANGED_FILES" | grep -E '\.(md|yml)$' | grep -E '(\.github/|docs/)' >/dev/null 2>&1; then
           HAS_DOC_CHANGES=true
           echo "✅ Documentation changes detected"
+        else
+          HAS_DOC_CHANGES=false
         fi
         
         # Generate deployment readiness report

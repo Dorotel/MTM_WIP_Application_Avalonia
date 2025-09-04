@@ -29,44 +29,44 @@ jobs:
     - name: Auto-label Bug Reports
       if: contains(github.event.issue.title, '[BUG]') || contains(github.event.issue.body, 'Bug Report Template')
       run: |
-        gh issue edit ${{ github.event.issue.number }} --add-label "bug,needs-investigation"
+        gh issue edit ${{ github.event.issue.number }} --add-label "bug,needs-investigation" 2>/dev/null || echo "Could not add labels"
         
         # Add severity labels based on content
         if echo "${{ github.event.issue.body }}" | grep -q "Critical - Application crash"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "severity:critical"
+          gh issue edit ${{ github.event.issue.number }} --add-label "severity:critical" 2>/dev/null || true
         elif echo "${{ github.event.issue.body }}" | grep -q "High - Major feature broken"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "severity:high"
+          gh issue edit ${{ github.event.issue.number }} --add-label "severity:high" 2>/dev/null || true
         elif echo "${{ github.event.issue.body }}" | grep -q "Medium - Feature partially"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "severity:medium"
+          gh issue edit ${{ github.event.issue.number }} --add-label "severity:medium" 2>/dev/null || true
         elif echo "${{ github.event.issue.body }}" | grep -q "Low - Minor issue"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "severity:low"
+          gh issue edit ${{ github.event.issue.number }} --add-label "severity:low" 2>/dev/null || true
         fi
         
         # Add component labels
         if echo "${{ github.event.issue.body }}" | grep -q "Views & UI (AXAML)"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "component:ui"
+          gh issue edit ${{ github.event.issue.number }} --add-label "component:ui" 2>/dev/null || true
         elif echo "${{ github.event.issue.body }}" | grep -q "ViewModels & Business Logic"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "component:viewmodel"
+          gh issue edit ${{ github.event.issue.number }} --add-label "component:viewmodel" 2>/dev/null || true
         elif echo "${{ github.event.issue.body }}" | grep -q "Services & Infrastructure"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "component:service"
+          gh issue edit ${{ github.event.issue.number }} --add-label "component:service" 2>/dev/null || true
         elif echo "${{ github.event.issue.body }}" | grep -q "Database & Stored Procedures"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "component:database"
+          gh issue edit ${{ github.event.issue.number }} --add-label "component:database" 2>/dev/null || true
         fi
         
     - name: Auto-label Feature Requests
       if: contains(github.event.issue.title, '[FEATURE]') || contains(github.event.issue.body, 'Feature Request Template')
       run: |
-        gh issue edit ${{ github.event.issue.number }} --add-label "feature,enhancement"
+        gh issue edit ${{ github.event.issue.number }} --add-label "feature,enhancement" 2>/dev/null || echo "Could not add labels"
         
         # Add priority labels
         if echo "${{ github.event.issue.body }}" | grep -q "Critical - Must Have"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "priority:critical"
+          gh issue edit ${{ github.event.issue.number }} --add-label "priority:critical" 2>/dev/null || true
         elif echo "${{ github.event.issue.body }}" | grep -q "High - Should Have"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "priority:high"
+          gh issue edit ${{ github.event.issue.number }} --add-label "priority:high" 2>/dev/null || true
         elif echo "${{ github.event.issue.body }}" | grep -q "Medium - Could Have"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "priority:medium"
+          gh issue edit ${{ github.event.issue.number }} --add-label "priority:medium" 2>/dev/null || true
         elif echo "${{ github.event.issue.body }}" | grep -q "Low - Won't Have"; then
-          gh issue edit ${{ github.event.issue.number }} --add-label "priority:low"
+          gh issue edit ${{ github.event.issue.number }} --add-label "priority:low" 2>/dev/null || true
         fi
         
     - name: Auto-label Documentation Issues
@@ -115,8 +115,13 @@ jobs:
       id: analyze
       run: |
         # Get list of changed files using git instead of gh (more reliable in PR context)
-        git fetch origin ${{ github.base_ref }}
-        CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+        if [ -n "${{ github.base_ref }}" ]; then
+          git fetch origin ${{ github.base_ref }} 2>/dev/null || echo "Could not fetch base ref"
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD 2>/dev/null || git diff --name-only HEAD~1 2>/dev/null || echo "")
+        else
+          CHANGED_FILES=$(git diff --name-only HEAD~1 2>/dev/null || echo "")
+        fi
+        
         echo "changed_files<<EOF" >> $GITHUB_OUTPUT
         echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
@@ -149,27 +154,27 @@ jobs:
     - name: Apply Component Labels
       run: |
         if [ "${{ steps.analyze.outputs.has_ui_changes }}" = "true" ]; then
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:ui"
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:ui" 2>/dev/null || echo "Could not add UI label"
         fi
         
         if [ "${{ steps.analyze.outputs.has_viewmodel_changes }}" = "true" ]; then
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:viewmodel"
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:viewmodel" 2>/dev/null || echo "Could not add viewmodel label"
         fi
         
         if [ "${{ steps.analyze.outputs.has_service_changes }}" = "true" ]; then
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:service"
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:service" 2>/dev/null || echo "Could not add service label"
         fi
         
         if [ "${{ steps.analyze.outputs.has_model_changes }}" = "true" ]; then
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:model"
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "component:model" 2>/dev/null || echo "Could not add model label"
         fi
         
         if [ "${{ steps.analyze.outputs.has_documentation_changes }}" = "true" ]; then
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "documentation"
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "documentation" 2>/dev/null || echo "Could not add documentation label"
         fi
         
         if [ "${{ steps.analyze.outputs.has_build_changes }}" = "true" ]; then
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "build"
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "build" 2>/dev/null || echo "Could not add build label"
         fi
         
     - name: Label by PR Title and Type
@@ -226,14 +231,14 @@ jobs:
     - name: Apply Size Label
       run: |
         # Remove existing size labels first (ignore errors if labels don't exist)
-        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:XS" || true
-        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:S" || true
-        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:M" || true
-        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:L" || true
-        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:XL" || true
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:XS" 2>/dev/null || true
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:S" 2>/dev/null || true
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:M" 2>/dev/null || true
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:L" 2>/dev/null || true
+        gh pr edit ${{ github.event.pull_request.number }} --remove-label "size:XL" 2>/dev/null || true
         
         # Add new size label
-        gh pr edit ${{ github.event.pull_request.number }} --add-label "${{ steps.pr-size.outputs.label }}"
+        gh pr edit ${{ github.event.pull_request.number }} --add-label "${{ steps.pr-size.outputs.label }}" 2>/dev/null || echo "Could not add size label"
         
     - name: Comment on Large PRs
       if: steps.pr-size.outputs.size == 'XL'
@@ -254,7 +259,7 @@ jobs:
         - Verify MTM pattern compliance across all changes
         - Check for potential performance implications
         - Ensure documentation is updated appropriately
-        "
+        " 2>/dev/null || echo "Could not add comment to large PR"
 
   # Check for required PR template completion
   pr-template-check:
