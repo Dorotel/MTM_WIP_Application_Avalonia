@@ -1,15 +1,15 @@
-# 📋 Step-by-Step Guide: Creating Phase 2 GitHub Issue
+# 📋 GitHub Copilot Guide: Creating Phase 2 GitHub Issue
 
 ## 🎯 **Overview**
 
-This guide walks you through creating a comprehensive GitHub issue for Phase 2 implementation using our complete Phase 1 foundation. The issue will leverage all established documentation, architectural patterns, and GitHub Copilot optimization.
+This guide provides instructions for GitHub Copilot to create a comprehensive GitHub issue for Phase 2 implementation using our complete Phase 1 foundation. The issue will leverage all established documentation, architectural patterns, and GitHub Copilot context optimization.
 
 ---
 
-## 🔧 **Pre-Creation Setup**
+## 🔧 **Pre-Creation Validation**
 
 ### **Step 1: Verify Phase 1 Foundation**
-Ensure these assets are in place before creating the issue:
+Copilot should confirm these assets are accessible before creating the issue:
 
 ✅ **Documentation Assets (Complete)**
 - `docs/ways-of-work/plan/mtm-inventory-management/Project_Architecture_Blueprint.md`
@@ -17,10 +17,10 @@ Ensure these assets are in place before creating the issue:
 - Complete `.github/instructions/` folder with 7 instruction files
 - Epic and Feature PRDs (8 documents total)
 
-✅ **GitHub Repository Status**
+✅ **GitHub Repository Context**
 - Repository: `Dorotel/MTM_WIP_Application_Avalonia`
 - Branch: `master` (default)
-- Access: Write permissions for issue creation
+- User has appropriate permissions for issue creation
 
 ---
 
@@ -58,8 +58,8 @@ Phase 2: Infrastructure - GitHub Project Management and Memory Bank System Imple
 *Note: Create labels if they don't exist*
 
 #### **Assignees**
-- Assign to primary developer/maintainer
-- Can assign multiple people for different areas
+- Assign to yourself (issue creator and manager)
+- GitHub Copilot will implement the tasks through AI assistance
 
 #### **Projects** 
 - Link to GitHub Project if one exists
@@ -95,13 +95,13 @@ Replace placeholder references with actual links:
 - **GitHub Instructions**: [.github/instructions/](https://github.com/Dorotel/MTM_WIP_Application_Avalonia/tree/master/.github/instructions)
 ```
 
-#### **Add Team Context**
+#### **Add Implementation Context**
 ```markdown
-### **Team Assignment**
-- **Primary Assignee**: @[maintainer-username]
-- **Technical Review**: @[tech-lead-username]  
-- **Domain Expert**: @[business-analyst-username]
-- **GitHub Admin**: @[admin-username]
+### **Implementation Assignment**
+- **Issue Creator**: User (creating and managing the issue)
+- **Implementation**: GitHub Copilot (AI assistant will complete all 25 Phase 2 tasks)
+- **Oversight**: User (review and approval of Copilot's work)
+- **Integration**: Copilot will reference all Phase 1 foundation documents for context
 ```
 
 ### **Step 6: Create Connected Issues (Optional)**
@@ -171,7 +171,7 @@ jobs:
 ### **Before Creating Issue**
 - [ ] Phase 1 documentation complete and accessible
 - [ ] Repository write permissions confirmed
-- [ ] Team members identified for assignment
+- [ ] Ready to guide GitHub Copilot through implementation
 - [ ] GitHub Projects board planned or existing
 
 ### **During Issue Creation**
@@ -179,12 +179,12 @@ jobs:
 - [ ] All 5 labels applied (enhancement, documentation, infrastructure, phase-2, awesome-copilot)
 - [ ] Complete issue body from template copied
 - [ ] Repository-specific links updated
-- [ ] Team assignments configured
+- [ ] Self-assigned for management and Copilot coordination
 - [ ] Milestone created and assigned
 
 ### **After Issue Creation**
 - [ ] Issue number recorded for reference
-- [ ] Team members notified
+- [ ] GitHub Copilot notified and ready to begin implementation
 - [ ] Connected to GitHub Projects board
 - [ ] Child issues created if using breakdown approach
 - [ ] Automation rules tested
@@ -198,7 +198,7 @@ jobs:
 - [ ] **Clear Acceptance Criteria**: Each task has measurable completion criteria
 - [ ] **Technical Context**: Phase 1 foundation properly referenced
 - [ ] **Implementation Ready**: No missing dependencies or prerequisites
-- [ ] **Team Alignment**: Assignees understand scope and timeline
+- [ ] **Copilot Context**: GitHub Copilot has access to all Phase 1 foundation documents
 
 ### **GitHub Integration**
 - [ ] **Proper Labeling**: All labels applied and visible
