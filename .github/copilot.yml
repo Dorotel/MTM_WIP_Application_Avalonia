@@ -1,0 +1,108 @@
+# GitHub Copilot Workspace Configuration for MTM WIP Application Avalonia
+# Following awesome-copilot patterns with MTM manufacturing domain specifics
+
+version: '1'
+
+rules:
+  - title: 'MTM Manufacturing Domain Logic'
+    description: 'Inventory management business logic and transaction patterns'
+    patterns: 
+      - 'ViewModels/**/*.cs'
+      - 'Services/**/*.cs'
+      - 'Models/**/*.cs'
+      - 'Data/**/*.cs'
+    instructions: |
+      ## MTM Business Logic Rules
+      - Transaction types determined by user intent: IN/OUT/TRANSFER
+      - Operations ("90","100","110") are workflow steps, NOT transaction types
+      - Use Helper_Database_StoredProcedure.ExecuteDataTableWithStatus() for all database operations
+      - All database operations must use stored procedures only - never direct SQL queries
+      - Manufacturing parts have: PartID, Operation, Quantity, Location, ItemType
+      - Batch numbers track individual inventory items through the workflow
+
+  - title: 'Avalonia AXAML Prevention System'
+    description: 'Prevent AVLN2000 compilation errors in Avalonia AXAML'
+    patterns: 
+      - '**/*.axaml'
+      - 'Views/**/*.axaml.cs'
+    instructions: |
+      ## Critical AXAML Rules (AVLN2000 Prevention)
+      - NEVER use Name property on Grid definitions - use x:Name only
+      - Namespace: xmlns="https://github.com/avaloniaui" (NOT WPF namespace)
+      - Use TextBlock instead of Label
+      - Use Flyout instead of Popup
+      - Grid syntax: Use ColumnDefinitions="Auto,*" attribute form when possible
+      - Standard bindings: {Binding PropertyName} with INotifyPropertyChanged
+
+  - title: 'MVVM Community Toolkit Only'
+    description: 'Modern MVVM patterns exclusively - NO ReactiveUI'
+    patterns:
+      - 'ViewModels/**/*.cs'
+      - 'Commands/**/*.cs'
+    instructions: |
+      ## MVVM Community Toolkit Patterns
+      - Use [ObservableProperty] instead of manual SetProperty calls
+      - Use [RelayCommand] instead of AsyncCommand, DelegateCommand, RelayCommand classes
+      - Inherit from BaseViewModel with constructor dependency injection
+      - Use ArgumentNullException.ThrowIfNull for constructor parameters
+      - Apply [NotifyCanExecuteChangedFor] for command validation
+      - NO ReactiveUI patterns: no ReactiveObject, ReactiveCommand, RaiseAndSetIfChanged
+
+  - title: 'Service Layer Architecture'
+    description: 'Category-based service consolidation patterns'
+    patterns:
+      - 'Services/**/*.cs'
+      - 'Extensions/**/*.cs'
+    instructions: |
+      ## Service Organization Rules
+      - Category-based service consolidation in single files
+      - ErrorHandling.cs - centralized error management
+      - Configuration.cs - application settings and state
+      - Database.cs - database operations and connection management
+      - Use Microsoft.Extensions.DependencyInjection for all services
+      - Implement proper service lifetime management (Singleton, Scoped, Transient)
+
+  - title: 'Database Stored Procedures Only'
+    description: 'All database operations via stored procedures'
+    patterns:
+      - 'Data/**/*.cs'
+      - 'Helpers/Helper_Database*.cs'
+      - 'Services/Database.cs'
+    instructions: |
+      ## Database Pattern Requirements
+      - Use ONLY Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()
+      - Never write direct SQL queries in C# code
+      - All database operations must call existing stored procedures
+      - Handle result.Status and result.Data from stored procedure calls
+      - Use MySqlParameter arrays for all stored procedure parameters
+      - Connection strings via Helper_Database_Variables.GetConnectionString()
+
+  - title: 'MTM Design System'
+    description: 'MTM comprehensive theming system and component standards'
+    patterns:
+      - 'Views/**/*.axaml'
+      - 'Resources/Themes/**/*.axaml'
+      - 'Controls/**/*.axaml'
+    instructions: |
+      ## MTM Design Standards
+      - Primary Color: Windows 11 Blue (#0078D4) for buttons and accents
+      - Multiple theme support: MTM_Blue, MTM_Green, MTM_Red, MTM_Dark, MTM_Teal, etc.
+      - Use ThemeService for dynamic theme switching via IThemeService
+      - Card-based Layout: Use Border controls with rounded corners and subtle shadows
+      - Consistent Spacing: 8px, 16px, 24px margins and padding
+      - Typography: Use TextBlock with consistent FontSize and FontWeight
+      - Theme resources: MTM_Shared_Logic.PrimaryAction, MTM_Shared_Logic.SecondaryAction
+      - Load themes via Resources/Themes/ folder with .axaml theme files
+
+  - title: 'Error Handling & Logging'
+    description: 'Centralized error management patterns'
+    patterns:
+      - '**/*.cs'
+    instructions: |
+      ## Error Handling Requirements
+      - Use Services.ErrorHandling.HandleErrorAsync() for all exceptions
+      - Structured logging with Microsoft.Extensions.Logging
+      - Scoped logging contexts for meaningful trace correlation
+      - ConfigureAwait(false) for all I/O operations
+      - Comprehensive try-catch blocks for expected scenarios
+      - Store error details in log_error table via stored procedures

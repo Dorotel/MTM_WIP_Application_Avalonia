@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-MTM_WIP_Application_Avalonia is a desktop application built with [Avalonia UI](https://avaloniaui.net/) targeting .NET 8.0. It provides inventory and transaction management features, with a modular architecture using MVVM (Model-View-ViewModel) patterns. The project is organized into logical folders for Commands, Config, Controls, Extensions, Models, Services, ViewModels, and Views. Key technologies include C#, Avalonia, and ReactiveUI.
+MTM_WIP_Application_Avalonia is a desktop application built with [Avalonia UI](https://avaloniaui.net/) targeting .NET 8.0. It provides inventory and transaction management features, with a modular architecture using MVVM (Model-View-ViewModel) patterns with MVVM Community Toolkit. The project is organized into logical folders for Commands, Config, Controls, Extensions, Models, Services, ViewModels, and Views. Key technologies include C#, Avalonia, MVVM Community Toolkit, and MySQL database with stored procedures.
 
 ## Setup Commands
 
@@ -45,7 +45,7 @@ MTM_WIP_Application_Avalonia is a desktop application built with [Avalonia UI](h
 ## Code Style Guidelines
 
 - **Language**: C# 10+, .NET 8.0
-- **Frameworks**: Avalonia, ReactiveUI
+- **Frameworks**: Avalonia, MVVM Community Toolkit
 - **Linting**: Use built-in .NET analyzers and [EditorConfig](https://learn.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference) for code style.
 - **Formatting**: Run `dotnet format` to auto-format code.
 - **File organization**: Use folders for Commands, Config, Controls, Extensions, Models, Services, ViewModels, and Views. Shared code goes in `Shared/` subfolders.
