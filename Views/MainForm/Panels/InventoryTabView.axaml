@@ -16,38 +16,44 @@
   <UserControl.Styles>
     <!-- MTM Theme Input Field Styles -->
     <Style Selector="TextBox.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TextBoxBorder}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TextBoxBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextBoxText}"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="Padding" Value="8,6"/>
-      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="MinHeight" Value="34"/>
       <Setter Property="HorizontalContentAlignment" Value="Left"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="FontSize" Value="13"/>
     </Style>
 
     <!-- Error state styling -->
     <Style Selector="TextBox.input-field.error">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TextBoxErrorBorder}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TextBoxErrorBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextBoxErrorText}"/>
+      <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
     <!-- Focus state styling -->
     <Style Selector="TextBox.input-field:focus">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TextBoxFocusBorder}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TextBoxFocusBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextBoxFocusText}"/>
+      <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
     <!-- AutoCompleteBox styling -->
     <Style Selector="AutoCompleteBox.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TextBoxBorder}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TextBoxBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TextBoxText}"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="Padding" Value="8,6"/>
-      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="MinHeight" Value="34"/>
+      <Setter Property="FontSize" Value="13"/>
     </Style>
 
     <!-- Material Icons global styling -->
@@ -64,10 +70,34 @@
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="CornerRadius" Value="6"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
-      <Setter Property="MinHeight" Value="32"/>
-      <Setter Property="Padding" Value="12,6"/>
+      <Setter Property="MinHeight" Value="34"/>
+      <Setter Property="Padding" Value="16,8"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- Primary button hover -->
+    <Style Selector="Button.primary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- Primary button pressed -->
+    <Style Selector="Button.primary:pressed">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryPressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryPressedBrush}"/>
+    </Style>
+
+    <!-- Primary button disabled -->
+    <Style Selector="Button.primary:disabled">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryDisabledBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryDisabledBrush}"/>
+      <Setter Property="Cursor" Value="Arrow"/>
     </Style>
 
     <!-- Secondary Button styling -->
@@ -76,9 +106,34 @@
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="MinHeight" Value="32"/>
-      <Setter Property="Padding" Value="12,6"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="MinHeight" Value="34"/>
+      <Setter Property="Padding" Value="16,8"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- Secondary button hover -->
+    <Style Selector="Button.secondary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+    </Style>
+
+    <!-- Secondary button pressed -->
+    <Style Selector="Button.secondary:pressed">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <!-- Secondary button disabled -->
+    <Style Selector="Button.secondary:disabled">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryDisabledBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.InactiveBrush}"/>
+      <Setter Property="Cursor" Value="Arrow"/>
     </Style>
 
     <!-- Error message styling -->

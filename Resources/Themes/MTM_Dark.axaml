@@ -140,6 +140,25 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LoadingBrush" Color="#525252"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.ProcessingBrush" Color="#404040"/>
 
+	<!-- Icon Colors for Universal Theme Support (Dark Theme) -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.IconColor" Color="#CCCCCC"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.IconBackground" Color="#2D2D30"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.IconHoverColor" Color="#FFFFFF"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.IconHoverBackground" Color="#404040"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.IconDisabledColor" Color="#666666"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.IconDisabledBackground" Color="#1B1B1C"/>
+
+	<!-- TextBox and Input Field Colors (Dark Theme) -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TextBoxText" Color="#FFFFFF"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TextBoxBackground" Color="#2D2D30"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TextBoxBorder" Color="#525252"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TextBoxFocusText" Color="#FFFFFF"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TextBoxFocusBackground" Color="#3E3E42"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TextBoxFocusBorder" Color="#CCCCCC"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TextBoxErrorText" Color="#FFCCCB"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TextBoxErrorBackground" Color="#4D1B1B"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TextBoxErrorBorder" Color="#F44336"/>
+
 	<!-- Comprehensive Design.PreviewWith Showcase -->
 	<Design.PreviewWith>
 		<Border Padding="20" Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
