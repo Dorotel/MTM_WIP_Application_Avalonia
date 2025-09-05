@@ -131,10 +131,11 @@
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
-    <!-- Toggle Button Styles -->
+    <!-- Toggle Button Styles - Fixed contrast issues -->
     <Style Selector="Button.toggle-button">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="Padding" Value="6,4"/>
@@ -146,15 +147,25 @@
     <Style Selector="Button.toggle-button:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
     <Style Selector="Button.toggle-button.active">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <Style Selector="Button.toggle-button materialIcons|MaterialIcon">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+    </Style>
+
+    <Style Selector="Button.toggle-button:pointerover materialIcons|MaterialIcon">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
     <Style Selector="Button.toggle-button.active materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </Style>
   </UserControl.Styles>
 
@@ -230,12 +241,14 @@
                          IsVisible="{Binding !IsShowingHistory}"/>
               <TextBlock Text="transactions"
                          FontSize="10"
-                         Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                         FontWeight="Medium"
+                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                          VerticalAlignment="Center"
                          IsVisible="{Binding IsShowingHistory}"/>
               <TextBlock Text="actions"
                          FontSize="10"
-                         Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                         FontWeight="Medium"
+                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                          VerticalAlignment="Center"
                          IsVisible="{Binding !IsShowingHistory}"/>
             </StackPanel>

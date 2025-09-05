@@ -70,15 +70,21 @@
       <Setter Property="Padding" Value="12,6"/>
     </Style>
 
-    <!-- Secondary Button styling -->
+    <!-- Secondary Button styling - Enhanced border visibility -->
     <Style Selector="Button.secondary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="BorderThickness" Value="1.5"/>
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="MinHeight" Value="32"/>
       <Setter Property="Padding" Value="12,6"/>
+    </Style>
+
+    <Style Selector="Button.secondary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
     </Style>
 
     <!-- Error message styling -->
@@ -335,9 +341,9 @@
               Padding="12"
               Margin="0,0,0,8">
         
-        <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="*,Auto">
+        <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="*">
           
-          <!-- Left side - Action buttons -->
+          <!-- Action buttons -->
           <StackPanel Grid.Column="0"
                       Orientation="Horizontal"
                       HorizontalAlignment="Left"
@@ -363,7 +369,7 @@
             </Button>
             
             <Button Classes="secondary"
-                    Width="90"
+                    Width="100"
                     Command="{Binding AdvancedEntryCommand}"
                     ToolTip.Tip="Open advanced inventory features">
               <StackPanel Orientation="Horizontal" Spacing="6">
@@ -383,16 +389,6 @@
               </StackPanel>
             </Button>
             
-          </StackPanel>
-
-          <!-- Right side - Version info -->
-          <StackPanel Grid.Column="1"
-                      Orientation="Horizontal"
-                      HorizontalAlignment="Right">
-            <TextBlock Text="{Binding VersionText}"
-                       FontSize="10"
-                       Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
-                       VerticalAlignment="Center"/>
           </StackPanel>
           
         </Grid>
