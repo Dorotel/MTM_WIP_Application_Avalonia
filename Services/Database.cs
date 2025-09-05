@@ -102,45 +102,41 @@ public class DatabaseService : IDatabaseService
     }
 
     /// <summary>
-    /// Executes a query and returns results as DataTable.
+    /// Executes a stored procedure and returns results as DataTable.
+    /// This method has been updated to comply with MTM architecture - stored procedures only.
     /// </summary>
-    public async Task<DataTable> ExecuteQueryAsync(string query, Dictionary<string, object>? parameters = null)
+    [Obsolete("Use Helper_Database_StoredProcedure.ExecuteDataTableWithStatus instead")]
+    public async Task<DataTable> ExecuteQueryAsync(string storedProcedureName, Dictionary<string, object>? parameters = null)
     {
         try
         {
-            _logger.LogDebug("Executing query: {Query}", query);
+            _logger.LogDebug("Executing stored procedure: {StoredProcedure}", storedProcedureName);
 
-            using var connection = new MySqlConnection(_connectionString);
-            await connection.OpenAsync();
+            // Use the architecture-compliant stored procedure method
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString, 
+                storedProcedureName, 
+                parameters ?? new Dictionary<string, object>()
+            );
 
-            using var command = new MySqlCommand(query, connection);
-            
-            if (parameters != null)
+            if (result.Status != 1)
             {
-                foreach (var param in parameters)
-                {
-                    command.Parameters.AddWithValue($"@{param.Key}", param.Value ?? DBNull.Value);
-                }
+                throw new InvalidOperationException($"Stored procedure failed with status {result.Status}: {result.Message}");
             }
 
-            using var adapter = new MySqlDataAdapter(command);
-            var dataTable = new DataTable();
-            adapter.Fill(dataTable);
-
-            _logger.LogDebug("Query executed successfully, returned {RowCount} rows", dataTable.Rows.Count);
-            return dataTable;
+            _logger.LogDebug("Stored procedure executed successfully, returned {RowCount} rows", result.Data.Rows.Count);
+            return result.Data;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to execute query: {Query}", query);
+            _logger.LogError(ex, "Failed to execute stored procedure: {StoredProcedure}", storedProcedureName);
             
-            // Use fully qualified namespace for ErrorHandling service
             await Services.ErrorHandling.HandleErrorAsync(ex, "ExecuteQueryAsync", Environment.UserName, 
                 new Dictionary<string, object> 
                 { 
-                    ["Query"] = query, 
+                    ["StoredProcedure"] = storedProcedureName, 
                     ["Parameters"] = parameters ?? new Dictionary<string, object>(),
-                    ["Operation"] = "DatabaseQuery",
+                    ["Operation"] = "StoredProcedure",
                     ["Service"] = "DatabaseService"
                 });
             throw;
@@ -148,43 +144,49 @@ public class DatabaseService : IDatabaseService
     }
 
     /// <summary>
-    /// Executes a query and returns a single value.
+    /// Executes a stored procedure and returns a single value.
+    /// This method has been updated to comply with MTM architecture - stored procedures only.
     /// </summary>
-    public async Task<object?> ExecuteScalarAsync(string query, Dictionary<string, object>? parameters = null)
+    [Obsolete("Use Helper_Database_StoredProcedure.ExecuteDataTableWithStatus and extract scalar value instead")]
+    public async Task<object?> ExecuteScalarAsync(string storedProcedureName, Dictionary<string, object>? parameters = null)
     {
         try
         {
-            _logger.LogDebug("Executing scalar query: {Query}", query);
+            _logger.LogDebug("Executing stored procedure for scalar: {StoredProcedure}", storedProcedureName);
 
-            using var connection = new MySqlConnection(_connectionString);
-            await connection.OpenAsync();
+            // Use the architecture-compliant stored procedure method
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString, 
+                storedProcedureName, 
+                parameters ?? new Dictionary<string, object>()
+            );
 
-            using var command = new MySqlCommand(query, connection);
-    
-            if (parameters != null)
+            if (result.Status != 1)
             {
-                foreach (var param in parameters)
-                {
-                    command.Parameters.AddWithValue($"@{param.Key}", param.Value ?? DBNull.Value);
-                }
+                throw new InvalidOperationException($"Stored procedure failed with status {result.Status}: {result.Message}");
             }
 
-            var result = await command.ExecuteScalarAsync();
-            
-            _logger.LogDebug("Scalar query executed successfully, result: {Result}", result);
-            return result;
+            // Extract scalar value from the result
+            object? scalarResult = null;
+            if (result.Data.Rows.Count > 0 && result.Data.Columns.Count > 0)
+            {
+                scalarResult = result.Data.Rows[0][0];
+            }
+
+            _logger.LogDebug("Stored procedure executed successfully, result: {Result}", scalarResult);
+            return scalarResult;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to execute scalar query: {Query}", query);
+            _logger.LogError(ex, "Failed to execute stored procedure: {StoredProcedure}", storedProcedureName);
             
             // Use fully qualified namespace for ErrorHandling service
             await Services.ErrorHandling.HandleErrorAsync(ex, "ExecuteScalarAsync", Environment.UserName, 
                 new Dictionary<string, object> 
                 { 
-                    ["Query"] = query, 
+                    ["StoredProcedure"] = storedProcedureName, 
                     ["Parameters"] = parameters ?? new Dictionary<string, object>(),
-                    ["Operation"] = "DatabaseScalarQuery",
+                    ["Operation"] = "StoredProcedure",
                     ["Service"] = "DatabaseService"
                 });
             throw;
@@ -192,43 +194,42 @@ public class DatabaseService : IDatabaseService
     }
 
     /// <summary>
-    /// Executes a non-query command and returns affected rows.
+    /// Executes a stored procedure and returns affected rows.
+    /// This method has been updated to comply with MTM architecture - stored procedures only.
     /// </summary>
-    public async Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object>? parameters = null)
+    [Obsolete("Use Helper_Database_StoredProcedure.ExecuteWithStatus instead")]
+    public async Task<int> ExecuteNonQueryAsync(string storedProcedureName, Dictionary<string, object>? parameters = null)
     {
         try
         {
-            _logger.LogDebug("Executing non-query: {Query}", query);
+            _logger.LogDebug("Executing stored procedure for non-query: {StoredProcedure}", storedProcedureName);
 
-            using var connection = new MySqlConnection(_connectionString);
-            await connection.OpenAsync();
+            // Use the architecture-compliant stored procedure method
+            var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
+                _connectionString, 
+                storedProcedureName, 
+                parameters ?? new Dictionary<string, object>()
+            );
 
-            using var command = new MySqlCommand(query, connection);
-            
-            if (parameters != null)
+            if (result.Status != 1)
             {
-                foreach (var param in parameters)
-                {
-                    command.Parameters.AddWithValue($"@{param.Key}", param.Value ?? DBNull.Value);
-                }
+                throw new InvalidOperationException($"Stored procedure failed with status {result.Status}: {result.Message}");
             }
 
-            var affectedRows = await command.ExecuteNonQueryAsync();
-            
-            _logger.LogDebug("Non-query executed successfully, affected rows: {AffectedRows}", affectedRows);
-            return affectedRows;
+            _logger.LogDebug("Stored procedure executed successfully, status: {Status}", result.Status);
+            return result.Data.Rows.Count; // Use row count as a proxy for affected rows
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to execute non-query: {Query}", query);
+            _logger.LogError(ex, "Failed to execute stored procedure: {StoredProcedure}", storedProcedureName);
             
             // Use fully qualified namespace for ErrorHandling service
             await Services.ErrorHandling.HandleErrorAsync(ex, "ExecuteNonQueryAsync", Environment.UserName, 
                 new Dictionary<string, object> 
                 { 
-                    ["Query"] = query, 
+                    ["StoredProcedure"] = storedProcedureName, 
                     ["Parameters"] = parameters ?? new Dictionary<string, object>(),
-                    ["Operation"] = "DatabaseNonQuery",
+                    ["Operation"] = "StoredProcedure",
                     ["Service"] = "DatabaseService"
                 });
             throw;

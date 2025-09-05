@@ -157,8 +157,6 @@ public static class ErrorHandling
                 string.IsNullOrWhiteSpace(ErrorConfiguration.MySqlConnectionString))
                 return;
 
-            var tableName = GetMySqlTableName(errorEntry.Category);
-            
             // Use uppercase username for MySQL connection - MTM standard
             var connectionString = ErrorConfiguration.MySqlConnectionString;
             if (connectionString.Contains("Uid=") || connectionString.Contains("User="))
@@ -172,23 +170,34 @@ public static class ErrorHandling
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             }
             
-            using var connection = new MySqlConnection(connectionString);
-            await connection.OpenAsync();
-            
-            await EnsureTableExists(connection, tableName);
-            
-            var insertSql = $@"
-                INSERT INTO {tableName} 
-                (Timestamp, UserId, MachineName, Category, Severity, ErrorMessage, 
-                 FileName, MethodName, LineNumber, StackTrace, AdditionalData, ExceptionType, BusinessContext)
-                VALUES 
-                (@Timestamp, @UserId, @MachineName, @Category, @Severity, @ErrorMessage,
-                 @FileName, @MethodName, @LineNumber, @StackTrace, @AdditionalData, @ExceptionType, @BusinessContext)";
+            // Use architecture-compliant stored procedure approach instead of direct SQL
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_Timestamp"] = errorEntry.Timestamp,
+                ["p_UserId"] = errorEntry.UserId,
+                ["p_MachineName"] = errorEntry.MachineName,
+                ["p_Category"] = errorEntry.Category.ToString(),
+                ["p_Severity"] = errorEntry.Severity.ToString(),
+                ["p_ErrorMessage"] = errorEntry.ErrorMessage,
+                ["p_FileName"] = errorEntry.FileName,
+                ["p_MethodName"] = errorEntry.MethodName,
+                ["p_LineNumber"] = errorEntry.LineNumber,
+                ["p_StackTrace"] = errorEntry.StackTrace,
+                ["p_AdditionalData"] = errorEntry.AdditionalData,
+                ["p_ExceptionType"] = errorEntry.ExceptionType,
+                ["p_BusinessContext"] = errorEntry.BusinessContext
+            };
 
-            using var command = new MySqlCommand(insertSql, connection);
-            AddMySqlParameters(command, errorEntry);
-            
-            await command.ExecuteNonQueryAsync();
+            var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
+                connectionString,
+                "log_error_Add_Error", // Use existing MTM stored procedure
+                parameters
+            );
+
+            if (result.Status != 1)
+            {
+                Console.WriteLine($"Error logging stored procedure failed: {result.Message}");
+            }
         }
         catch (Exception ex)
         {
@@ -291,34 +300,35 @@ public static class ErrorHandling
         }
     }
 
+    /// <summary>
+    /// This method has been marked as obsolete to comply with MTM architecture.
+    /// Table creation should be handled through database migration scripts and stored procedures.
+    /// </summary>
+    [Obsolete("Table creation should be handled through database migration scripts, not direct SQL")]
     private static async Task EnsureTableExists(MySqlConnection connection, string tableName)
     {
-        var createTableSql = $@"
-            CREATE TABLE IF NOT EXISTS {tableName} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Timestamp DATETIME NOT NULL,
-                UserId VARCHAR(255) NOT NULL,
-                MachineName VARCHAR(255) NOT NULL,
-                Category VARCHAR(50) NOT NULL,
-                Severity VARCHAR(20) NOT NULL,
-                ErrorMessage TEXT,
-                FileName VARCHAR(500),
-                MethodName VARCHAR(255),
-                LineNumber INT,
-                StackTrace TEXT,
-                AdditionalData TEXT,
-                ExceptionType VARCHAR(500),
-                BusinessContext TEXT,
-                INDEX idx_timestamp (Timestamp),
-                INDEX idx_userid (UserId)
-            )";
-
-        using var command = new MySqlCommand(createTableSql, connection);
-        await command.ExecuteNonQueryAsync();
+        // Architecture compliance: Direct SQL CREATE TABLE statements are not allowed
+        // This method is retained for backward compatibility but marked as obsolete
+        Console.WriteLine($"Warning: EnsureTableExists called for table {tableName}. This should be handled through database migration scripts.");
+        
+        // Note: In a compliant implementation, table creation would be handled by:
+        // 1. Database migration scripts during deployment
+        // 2. Stored procedures for dynamic table management if absolutely necessary
+        // 3. Database administrators through proper schema management
+        
+        await Task.CompletedTask; // Placeholder to maintain async signature
     }
 
+    /// <summary>
+    /// This method has been marked as obsolete to comply with MTM architecture.
+    /// Parameter handling is now done through the stored procedure approach.
+    /// </summary>
+    [Obsolete("Use stored procedure parameter dictionary instead of direct MySqlCommand parameters")]
     private static void AddMySqlParameters(MySqlCommand command, ErrorEntry errorEntry)
     {
+        // Architecture compliance: This method is retained for backward compatibility
+        // but marked as obsolete. Parameter handling should use Dictionary<string, object>
+        // with Helper_Database_StoredProcedure.ExecuteWithStatus
         command.Parameters.AddWithValue("@Timestamp", errorEntry.Timestamp);
         command.Parameters.AddWithValue("@UserId", errorEntry.UserId);
         command.Parameters.AddWithValue("@MachineName", errorEntry.MachineName);
