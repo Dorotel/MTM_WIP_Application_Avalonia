@@ -318,7 +318,7 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_User"] = quickButton.UserId,
+                ["p_UserID"] = quickButton.UserId,
                 ["p_Position"] = quickButton.Position,
                 ["p_PartID"] = quickButton.PartId,
                 ["p_Location"] = quickButton.Notes ?? string.Empty, // Use Notes field as Location for now
@@ -372,7 +372,7 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_User"] = userId,
+                ["p_UserID"] = userId,
                 ["p_Position"] = buttonId // buttonId is actually the position in this context
             };
 
@@ -418,7 +418,7 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_User"] = userId
+                ["p_UserID"] = userId
             };
 
             // Use the proper stored procedure execution method that handles OUT parameters
@@ -469,7 +469,7 @@ public class QuickButtonsService : IQuickButtonsService
             {
                 var parameters = new Dictionary<string, object>
                 {
-                    ["p_User"] = userId,
+                    ["p_UserID"] = userId,
                     ["p_Position"] = button.Position,
                     ["p_PartID"] = button.PartId,
                     ["p_Location"] = button.Notes ?? string.Empty, // Use Notes field as Location for now
@@ -535,7 +535,7 @@ public class QuickButtonsService : IQuickButtonsService
                 ["p_Operation"] = operation,
                 ["p_Quantity"] = quantity,
                 ["p_Notes"] = DBNull.Value,
-                ["p_User"] = userId,
+                ["p_UserID"] = userId,
                 ["p_ItemType"] = "Standard", // Default item type
                 ["p_ReceiveDate"] = DateTime.Now
             };

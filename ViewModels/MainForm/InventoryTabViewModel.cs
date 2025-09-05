@@ -424,7 +424,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                 ["p_Operation"] = SelectedOperation,
                 ["p_Quantity"] = Quantity,
                 ["p_ItemType"] = "WIP", // Default item type for MTM
-                ["p_User"] = _applicationStateService.CurrentUser,
+                ["p_UserID"] = _applicationStateService.CurrentUser,
                 ["p_Notes"] = !string.IsNullOrWhiteSpace(Notes) ? Notes : DBNull.Value
             };
 
