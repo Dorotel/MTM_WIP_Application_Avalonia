@@ -296,13 +296,12 @@ public partial class RemoveItemViewModel : BaseViewModel
         }
         catch (InvalidOperationException ex)
         {
-            Logger.LogWarning(ex, "Invalid search operation: {Message}", ex.Message);
+            await HandleExceptionAsync(ex, "Search inventory");
             throw; // Re-throw for UI handling
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Unexpected error during inventory search for Part: {PartId}, Operation: {Operation}", 
-                SelectedPart, SelectedOperation);
+            await HandleExceptionAsync(ex, "Search inventory");
             throw new ApplicationException($"Failed to search inventory: {ex.Message}", ex);
         }
         finally
@@ -339,7 +338,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to reset search criteria and refresh data");
+            await HandleExceptionAsync(ex, "Reset search criteria");
             throw new ApplicationException("Failed to reset inventory data", ex);
         }
         finally
@@ -426,8 +425,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Unexpected error during inventory deletion for item: {PartId}", 
-                SelectedItem?.PartID ?? "Unknown");
+            await HandleExceptionAsync(ex, "Delete inventory item");
             throw new ApplicationException($"Failed to delete inventory item: {ex.Message}", ex);
         }
         finally
@@ -581,7 +579,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to load ComboBox data from database");
+            await HandleExceptionAsync(ex, "Load ComboBox data");
             throw new ApplicationException("Failed to initialize application data", ex);
         }
     }
@@ -686,15 +684,12 @@ public partial class RemoveItemViewModel : BaseViewModel
     #region Error Handling
 
     /// <summary>
-    /// Handles exceptions from command operations
+    /// Handles exceptions from command operations using centralized error handling
     /// </summary>
-    private void HandleException(Exception ex)
+    private async Task HandleExceptionAsync(Exception ex, string operation = "RemoveItemViewModel operation")
     {
-        Logger.LogError(ex, "Error in RemoveItemViewModel operation");
-        
-        // TODO: Present user-friendly error message
-        // await _errorService.LogErrorAsync(ex);
-        // Show user notification with appropriate message
+        // Use centralized error handling service
+        await ErrorHandling.HandleErrorAsync(ex, operation, Environment.UserName);
     }
 
     #endregion
