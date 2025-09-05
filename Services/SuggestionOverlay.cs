@@ -74,12 +74,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
             // Filter suggestions based on user input
             var filteredSuggestions = FilterSuggestions(suggestionList, userInput);
             
-            if (!filteredSuggestions.Any())
-            {
-                _logger.LogDebug("No matching suggestions found for input: '{UserInput}'", userInput);
-                return null;
-            }
-
+            // Always show overlay even if no traditional matches found (FilterSuggestions now includes "Add new" option)
             _logger.LogDebug("Showing {Count} suggestions for input: '{UserInput}'", filteredSuggestions.Count, userInput);
 
             // Create and show the actual overlay
@@ -140,7 +135,12 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User selected suggestion: '{Suggestion}'", selectedSuggestion);
                     mainView.HideSuggestionOverlay();
-                    completionSource.TrySetResult(selectedSuggestion);
+                    
+                    // Process "Add new:" selections to return clean user input
+                    var processedResult = ProcessSelectedSuggestion(selectedSuggestion, userInput);
+                    _logger.LogDebug("Processed selection result: '{ProcessedResult}'", processedResult);
+                    
+                    completionSource.TrySetResult(processedResult);
                 };
 
                 // Handle cancellation
@@ -223,7 +223,12 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User selected suggestion: '{Suggestion}'", selectedSuggestion);
                     popup.IsOpen = false;
-                    completionSource.TrySetResult(selectedSuggestion);
+                    
+                    // Process "Add new:" selections to return clean user input
+                    var processedResult = ProcessSelectedSuggestion(selectedSuggestion, userInput);
+                    _logger.LogDebug("Processed selection result: '{ProcessedResult}'", processedResult);
+                    
+                    completionSource.TrySetResult(processedResult);
                 };
 
                 // Handle cancellation
@@ -264,10 +269,11 @@ public class SuggestionOverlayService : ISuggestionOverlayService
 
     /// <summary>
     /// Filters suggestions based on user input using case-insensitive substring matching.
+    /// Always includes an "Add new" option when no exact matches are found.
     /// </summary>
     /// <param name="suggestions">All available suggestions</param>
     /// <param name="userInput">The user's current input</param>
-    /// <returns>Filtered list of suggestions that match the input</returns>
+    /// <returns>Filtered list of suggestions that match the input, plus "Add new" option if needed</returns>
     private List<string> FilterSuggestions(List<string> suggestions, string userInput)
     {
         if (string.IsNullOrEmpty(userInput))
@@ -281,10 +287,42 @@ public class SuggestionOverlayService : ISuggestionOverlayService
             .OrderBy(s => s.StartsWith(userInput, StringComparison.OrdinalIgnoreCase) ? 0 : 1) // Prefer starts-with matches
             .ThenBy(s => s.Length) // Prefer shorter matches
             .ThenBy(s => s) // Alphabetical order as final tie-breaker
-            .Take(10) // Limit to 10 suggestions for performance
+            .Take(9) // Limit to 9 suggestions to leave room for "Add new" option
             .ToList();
 
+        // If no matches found or user input is not an exact match, add "Add new" option
+        var hasExactMatch = suggestions.Any(s => string.Equals(s, userInput, StringComparison.OrdinalIgnoreCase));
+        if (!hasExactMatch)
+        {
+            filtered.Add($"Add new: {userInput}");
+        }
+
         return filtered;
+    }
+
+    /// <summary>
+    /// Processes a selected suggestion to handle "Add new:" entries by returning the clean user input.
+    /// </summary>
+    /// <param name="selectedSuggestion">The suggestion selected by the user</param>
+    /// <param name="originalUserInput">The original user input</param>
+    /// <returns>The processed result - either the selected suggestion or clean user input for "Add new:" entries</returns>
+    private string ProcessSelectedSuggestion(string? selectedSuggestion, string originalUserInput)
+    {
+        if (string.IsNullOrEmpty(selectedSuggestion))
+        {
+            return string.Empty;
+        }
+
+        // Check if this is an "Add new:" selection
+        if (selectedSuggestion.StartsWith("Add new: ", StringComparison.OrdinalIgnoreCase))
+        {
+            // Return the original user input instead of the "Add new:" prefixed version
+            _logger.LogDebug("Processing 'Add new' selection, returning original user input: '{UserInput}'", originalUserInput);
+            return originalUserInput;
+        }
+
+        // Return the selected suggestion as-is for normal matches
+        return selectedSuggestion;
     }
 }
 
