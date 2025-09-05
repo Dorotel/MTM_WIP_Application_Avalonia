@@ -135,11 +135,11 @@ public class SettingsPanelStateManager
     /// <summary>
     /// Saves changes for the specified panel.
     /// </summary>
-    public async Task<ServiceResult> SaveChangesAsync(string panelId)
+    public Task<ServiceResult> SaveChangesAsync(string panelId)
     {
         if (!_stateSnapshots.TryGetValue(panelId, out var snapshot))
         {
-            return ServiceResult.Failure($"No snapshot found for panel {panelId}");
+            return Task.FromResult(ServiceResult.Failure($"No snapshot found for panel {panelId}"));
         }
 
         try
@@ -153,12 +153,12 @@ public class SettingsPanelStateManager
             OnStateChanged(panelId, false);
 
             _logger.LogInformation("Successfully saved changes for panel {PanelId}", panelId);
-            return ServiceResult.Success();
+            return Task.FromResult(ServiceResult.Success());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving changes for panel {PanelId}", panelId);
-            return ServiceResult.Failure($"Error saving changes: {ex.Message}");
+            return Task.FromResult(ServiceResult.Failure($"Error saving changes: {ex.Message}"));
         }
     }
 
@@ -202,11 +202,11 @@ public class SettingsPanelStateManager
     /// <summary>
     /// Reverts changes for the specified panel to original state.
     /// </summary>
-    public async Task<ServiceResult> RevertChangesAsync(string panelId, BaseViewModel viewModel)
+    public Task<ServiceResult> RevertChangesAsync(string panelId, BaseViewModel viewModel)
     {
         if (!_stateSnapshots.TryGetValue(panelId, out var snapshot))
         {
-            return ServiceResult.Failure($"No snapshot found for panel {panelId}");
+            return Task.FromResult(ServiceResult.Failure($"No snapshot found for panel {panelId}"));
         }
 
         try
@@ -222,25 +222,25 @@ public class SettingsPanelStateManager
             OnStateChanged(panelId, false);
 
             _logger.LogInformation("Successfully reverted changes for panel {PanelId}", panelId);
-            return ServiceResult.Success();
+            return Task.FromResult(ServiceResult.Success());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error reverting changes for panel {PanelId}", panelId);
-            return ServiceResult.Failure($"Error reverting changes: {ex.Message}");
+            return Task.FromResult(ServiceResult.Failure($"Error reverting changes: {ex.Message}"));
         }
     }
 
     /// <summary>
     /// Reverts changes for all panels with unsaved changes.
     /// </summary>
-    public async Task<ServiceResult> RevertAllChangesAsync()
+    public Task<ServiceResult> RevertAllChangesAsync()
     {
         var panelsWithChanges = PanelsWithUnsavedChanges.ToList();
         
         if (!panelsWithChanges.Any())
         {
-            return ServiceResult.Success("No changes to revert");
+            return Task.FromResult(ServiceResult.Success("No changes to revert"));
         }
 
         try
@@ -259,12 +259,12 @@ public class SettingsPanelStateManager
             }
 
             _logger.LogInformation("Successfully reverted all changes for {Count} panels", panelsWithChanges.Count);
-            return ServiceResult.Success($"Reverted changes for {panelsWithChanges.Count} panels");
+            return Task.FromResult(ServiceResult.Success($"Reverted changes for {panelsWithChanges.Count} panels"));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error reverting all changes");
-            return ServiceResult.Failure($"Error reverting all changes: {ex.Message}");
+            return Task.FromResult(ServiceResult.Failure($"Error reverting all changes: {ex.Message}"));
         }
     }
 

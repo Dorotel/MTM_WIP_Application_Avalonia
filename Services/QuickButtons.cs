@@ -79,6 +79,13 @@ public class QuickButtonsService : IQuickButtonsService
     {
         try
         {
+            // Validate required parameters
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                _logger.LogError("UserId is null or empty - cannot load quick buttons");
+                return new List<QuickButtonData>(); // Return empty list instead of null
+            }
+
             _logger.LogDebug("Loading quick buttons for user: {UserId}", userId);
 
             var parameters = new Dictionary<string, object>
@@ -313,8 +320,29 @@ public class QuickButtonsService : IQuickButtonsService
     {
         try
         {
-            _logger.LogDebug("Saving quick button: Position {Position}, Part {PartId}", 
-                quickButton.Position, quickButton.PartId);
+            // Validate required parameters before building dictionary
+            if (quickButton == null)
+            {
+                _logger.LogError("QuickButtonData is null - cannot save");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(quickButton.UserId))
+            {
+                _logger.LogError("QuickButton UserId is null or empty - cannot save. Position: {Position}, PartId: {PartId}", 
+                    quickButton.Position, quickButton.PartId);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(quickButton.PartId))
+            {
+                _logger.LogError("QuickButton PartId is null or empty - cannot save. UserId: {UserId}, Position: {Position}", 
+                    quickButton.UserId, quickButton.Position);
+                return false;
+            }
+
+            _logger.LogDebug("Saving quick button: Position {Position}, Part {PartId}, User {UserId}", 
+                quickButton.Position, quickButton.PartId, quickButton.UserId);
 
             var parameters = new Dictionary<string, object>
             {
@@ -322,7 +350,7 @@ public class QuickButtonsService : IQuickButtonsService
                 ["p_Position"] = quickButton.Position,
                 ["p_PartID"] = quickButton.PartId,
                 ["p_Location"] = quickButton.Notes ?? string.Empty, // Use Notes field as Location for now
-                ["p_Operation"] = quickButton.Operation,
+                ["p_Operation"] = quickButton.Operation ?? string.Empty, // Ensure not null
                 ["p_Quantity"] = quickButton.Quantity,
                 ["p_ItemType"] = "Standard" // Default item type since we don't have this in QuickButtonData
             };
@@ -368,6 +396,13 @@ public class QuickButtonsService : IQuickButtonsService
     {
         try
         {
+            // Validate required parameters
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                _logger.LogError("UserId is null or empty - cannot remove quick button. ButtonId: {ButtonId}", buttonId);
+                return false;
+            }
+
             _logger.LogDebug("Removing quick button: Position {ButtonId} for user {UserId}", buttonId, userId);
 
             var parameters = new Dictionary<string, object>
@@ -414,6 +449,13 @@ public class QuickButtonsService : IQuickButtonsService
     {
         try
         {
+            // Validate required parameters
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                _logger.LogError("UserId is null or empty - cannot clear quick buttons");
+                return false;
+            }
+
             _logger.LogDebug("Clearing all quick buttons for user: {UserId}", userId);
 
             var parameters = new Dictionary<string, object>
