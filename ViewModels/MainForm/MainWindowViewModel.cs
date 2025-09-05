@@ -8,11 +8,22 @@ using MTM_WIP_Application_Avalonia.Views;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
+/// <summary>
+/// MainWindowViewModel manages the primary application window and serves as the top-level coordination point
+/// for view navigation and application state management. Handles initial application startup, view transitions,
+/// and provides a clean separation between the MainWindow and the main application views.
+/// Uses MVVM Community Toolkit patterns with dependency injection for service access.
+/// </summary>
 public class MainWindowViewModel : BaseViewModel
 {
     private readonly INavigationService _navigationService;
     private readonly IApplicationStateService _applicationState;
 
+    /// <summary>
+    /// Gets or sets the current view displayed in the main window content area.
+    /// This property is bound to the MainWindow's content presenter and changes
+    /// when navigation occurs through the NavigationService.
+    /// </summary>
     private object? _currentView;
     public object? CurrentView
     {
@@ -20,6 +31,14 @@ public class MainWindowViewModel : BaseViewModel
         set => SetProperty(ref _currentView, value);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the MainWindowViewModel with required services.
+    /// Sets up navigation event subscriptions and prepares the window for content display.
+    /// </summary>
+    /// <param name="navigationService">Service for handling view navigation between application sections</param>
+    /// <param name="applicationState">Service for managing global application state and configuration</param>
+    /// <param name="logger">Logger instance for diagnostic and debugging information</param>
+    /// <exception cref="ArgumentNullException">Thrown when navigationService or applicationState is null</exception>
     public MainWindowViewModel(
         INavigationService navigationService,
         IApplicationStateService applicationState,
@@ -78,6 +97,12 @@ public class MainWindowViewModel : BaseViewModel
         }
     }
 
+    /// <summary>
+    /// Handles navigation events from the NavigationService to update the current view.
+    /// This method is called whenever the application navigates to a new view/section.
+    /// </summary>
+    /// <param name="sender">The NavigationService that triggered the navigation</param>
+    /// <param name="e">Event arguments containing the target view and navigation context</param>
     private void OnNavigated(object? sender, Services.NavigationEventArgs e)
     {
         Logger.LogDebug("OnNavigated event handler triggered - Sender: {SenderType}, Target: {TargetType}", 
@@ -99,6 +124,11 @@ public class MainWindowViewModel : BaseViewModel
         }
     }
 
+    /// <summary>
+    /// Releases resources used by the MainWindowViewModel, specifically event subscriptions
+    /// to prevent memory leaks from the NavigationService.
+    /// </summary>
+    /// <param name="disposing">True if disposing managed resources, false if finalizing</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing)
