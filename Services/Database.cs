@@ -327,13 +327,53 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public async Task<StoredProcedureResult> AddInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string notes)
     {
+        // Validate required parameters before building dictionary
+        if (string.IsNullOrWhiteSpace(partId))
+        {
+            var errorResult = new StoredProcedureResult 
+            { 
+                Status = -1,
+                Message = "PartID cannot be null or empty",
+                Data = new DataTable()
+            };
+            _logger?.LogError("AddInventoryItem failed: PartID is null or empty");
+            return errorResult;
+        }
+
+        if (string.IsNullOrWhiteSpace(user))
+        {
+            var errorResult = new StoredProcedureResult 
+            { 
+                Status = -1,
+                Message = "User cannot be null or empty",
+                Data = new DataTable()
+            };
+            _logger?.LogError("AddInventoryItem failed: User is null or empty for PartID: {PartId}", partId);
+            return errorResult;
+        }
+
+        if (quantity <= 0)
+        {
+            var errorResult = new StoredProcedureResult 
+            { 
+                Status = -1,
+                Message = "Quantity must be greater than 0",
+                Data = new DataTable()
+            };
+            _logger?.LogError("AddInventoryItem failed: Invalid quantity {Quantity} for PartID: {PartId}", quantity, partId);
+            return errorResult;
+        }
+
+        _logger?.LogDebug("Adding inventory item: PartID {PartId}, Location {Location}, Operation {Operation}, Quantity {Quantity}, User {User}", 
+            partId, location, operation, quantity, user);
+
         var parameters = new Dictionary<string, object>
         {
             ["p_PartID"] = partId,
-            ["p_Location"] = location,
-            ["p_Operation"] = operation,
+            ["p_Location"] = location ?? string.Empty,
+            ["p_Operation"] = operation ?? string.Empty,
             ["p_Quantity"] = quantity,
-            ["p_ItemType"] = itemType,
+            ["p_ItemType"] = itemType ?? "Standard",
             ["p_User"] = user,
             ["p_Notes"] = !string.IsNullOrWhiteSpace(notes) ? notes : DBNull.Value
         };

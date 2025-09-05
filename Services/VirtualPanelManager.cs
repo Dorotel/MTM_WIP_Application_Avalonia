@@ -96,12 +96,12 @@ public class VirtualPanelManager
     /// <summary>
     /// Optimizes panel collection based on current performance level.
     /// </summary>
-    public async Task OptimizePanelCollectionAsync(IList<SettingsPanelViewModel> panels)
+    public Task OptimizePanelCollectionAsync(IList<SettingsPanelViewModel> panels)
     {
         var performanceLevel = GetCurrentPerformanceLevel();
         var maxPanels = GetMaxPanelsForPerformanceLevel(performanceLevel);
 
-        if (panels.Count <= maxPanels) return;
+        if (panels.Count <= maxPanels) return Task.CompletedTask;
 
         // Find panels eligible for disposal
         var eligiblePanels = new List<SettingsPanelViewModel>();
@@ -134,6 +134,8 @@ public class VirtualPanelManager
             _logger.LogInformation("Optimized panel collection: disposed {Count} panels for {PerformanceLevel} performance", 
                 panelsToDispose, performanceLevel);
         }
+        
+        return Task.CompletedTask;
     }
 
     #endregion

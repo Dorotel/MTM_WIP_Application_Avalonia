@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using Avalonia.Input;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +23,7 @@ namespace MTM_WIP_Application_Avalonia.Views
         _logger?.LogInformation("SuggestionOverlayView initialized");
         
         // Focus management: set focus to ListBox when overlay appears
-        this.AttachedToVisualTree += (s, e) =>
+        this.AttachedToVisualTree += async (s, e) =>
         {
             _logger?.LogInformation("SuggestionOverlayView attached to visual tree. DataContext type: {DataContextType}, IsEnabled: {IsEnabled}, ParentType: {ParentType}", 
                 DataContext?.GetType().FullName ?? "null", 
@@ -37,12 +38,25 @@ namespace MTM_WIP_Application_Avalonia.Views
                     vm.Suggestions.FirstOrDefault() ?? "none");
             }
 
-            // Focus the ListBox for immediate keyboard navigation
+            // Enhanced focus management with delay to ensure proper rendering
+            await Task.Delay(50); // Allow UI to complete rendering
+            
             var listBox = this.FindControl<ListBox>("SuggestionListBox");
             if (listBox != null)
             {
-                _logger?.LogInformation("Found ListBox. ItemsSource: {HasItemsSource}", listBox.ItemsSource != null);
+                _logger?.LogInformation("Found ListBox. ItemsSource: {HasItemsSource}, Items count: {Count}", 
+                    listBox.ItemsSource != null, 
+                    listBox.ItemCount);
+
+                // Focus the ListBox for immediate keyboard navigation
                 listBox.Focus();
+
+                // If there are items, select the first one automatically
+                if (listBox.ItemCount > 0)
+                {
+                    listBox.SelectedIndex = 0;
+                    _logger?.LogInformation("Automatically selected first item in suggestion list");
+                }
             }
             else
             {

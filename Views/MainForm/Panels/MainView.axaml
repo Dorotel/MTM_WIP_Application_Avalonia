@@ -82,94 +82,104 @@
             Padding="24,8"
             HorizontalAlignment="Stretch"
             MinHeight="36">
-      <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
-            ColumnSpacing="24"
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" 
+            ColumnSpacing="16"
             HorizontalAlignment="Stretch">
-        <!-- Connection Status -->
+        
+        <!-- Enhanced Connection Status with integrated signal bar -->
         <Border Grid.Column="0" 
                 Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                Padding="12,6"
-                CornerRadius="16"
+                Padding="12,8"
+                CornerRadius="20"
                 HorizontalAlignment="Left">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                    CornerRadius="8"
-                    Width="16"
-                    Height="16">
-              <TextBlock Text="🔗" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Border>
-            <TextBlock Text="Connection:" 
-                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                       FontSize="11"
-                       FontWeight="Medium"/>
-            <TextBlock Text="{Binding ConnectionStatus, FallbackValue='Connected', TargetNullValue='Unknown'}"
-                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                       FontWeight="Bold"
-                       FontSize="11"/>
+          <StackPanel Orientation="Vertical" Spacing="4">
+            <!-- Top: Connection info -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                      CornerRadius="8"
+                      Width="16"
+                      Height="16">
+                <TextBlock Text="🔗" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Border>
+              <TextBlock Text="Connection:" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                         FontSize="11"
+                         FontWeight="Medium"/>
+              <TextBlock Text="{Binding ConnectionStatus, FallbackValue='Connected', TargetNullValue='Unknown'}"
+                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                         FontWeight="Bold"
+                         FontSize="11"/>
+            </StackPanel>
+            
+            <!-- Bottom: Integrated signal bar -->
+            <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+              <TextBlock Text="Signal:" 
+                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                         FontSize="9"
+                         FontWeight="Medium"/>
+              <ProgressBar Minimum="0" Maximum="100" 
+                           Width="60" Height="6" 
+                           Value="{Binding ConnectionStrength, FallbackValue=100}"
+                           Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                           Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                           CornerRadius="3"/>
+            </StackPanel>
           </StackPanel>
         </Border>
 
-        <!-- Progress Bar Area -->
-        <StackPanel Grid.Column="1" 
-                    Orientation="Horizontal" 
-                    Spacing="16" 
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"
-                    MinWidth="200">
-          <!-- Connection Strength -->
+        <!-- Main Progress Bar (repositioned) -->
+        <Border Grid.Column="1"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                BorderThickness="1"
+                Padding="12,6"
+                CornerRadius="12"
+                HorizontalAlignment="Left">
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="Signal" 
-                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                       FontSize="10"
-                       FontWeight="Medium"/>
-            <ProgressBar Minimum="0" Maximum="100" 
-                         Width="80" Height="8" 
-                         Value="{Binding ConnectionStrength, FallbackValue=100}"
-                         Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
-                         Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                         CornerRadius="4"/>
-          </StackPanel>
-
-          <!-- Main Progress -->
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="Progress" 
-                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+            <TextBlock Text="Progress:" 
+                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
                        FontSize="10"
                        FontWeight="Medium"/>
             <ProgressBar Minimum="0" Maximum="100"
                          Width="100" Height="8"
                          Value="{Binding ProgressValue, FallbackValue=0}"
                          Foreground="{DynamicResource MTM_Shared_Logic.ProcessingBrush}"
-                         Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                         Background="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
                          CornerRadius="4"/>
           </StackPanel>
-        </StackPanel>
+        </Border>
 
-        <!-- Status Text -->
-        <Border Grid.Column="2" 
+        <!-- Spacer -->
+        <Border Grid.Column="2" Background="Transparent"/>
+
+        <!-- Enhanced Status Text Box -->
+        <Border Grid.Column="3" 
                 Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                 BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
                 BorderThickness="1"
-                Padding="12,6"
-                CornerRadius="6"
+                Padding="16,8"
+                CornerRadius="8"
+                MinWidth="120"
                 HorizontalAlignment="Right">
           <TextBlock Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
                      Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                     FontSize="11"
+                     FontSize="12"
                      FontWeight="SemiBold"
-                     VerticalAlignment="Center"/>
+                     VerticalAlignment="Center"
+                     TextTrimming="CharacterEllipsis"
+                     ToolTip.Tip="{Binding StatusText}"/>
         </Border>
 
-        <!-- Version Info -->
-        <Border Grid.Column="3"
-                Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+        <!-- Enhanced Version Display -->
+        <Border Grid.Column="4"
+                Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                 CornerRadius="12"
-                Padding="8,4"
+                Padding="12,6"
                 HorizontalAlignment="Right">
-          <TextBlock Text="MTM WIP v1.0"
-                     Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
-                     FontSize="9"
-                     FontWeight="Medium"
+          <TextBlock Text="Ver. 5.0"
+                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                     FontSize="10"
+                     FontWeight="SemiBold"
                      VerticalAlignment="Center"/>
         </Border>
       </Grid>

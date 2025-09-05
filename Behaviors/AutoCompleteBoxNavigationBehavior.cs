@@ -206,7 +206,7 @@ public class AutoCompleteBoxNavigationBehavior : Behavior<AutoCompleteBox>
         if (newIndex != currentIndex)
         {
             _listBox.SelectedIndex = newIndex;
-            _listBox.ScrollIntoView(_listBox.SelectedItem);
+            _listBox.ScrollIntoView(_listBox.SelectedItem!);
         }
     }
     

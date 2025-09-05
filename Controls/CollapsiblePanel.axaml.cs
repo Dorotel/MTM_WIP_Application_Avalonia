@@ -180,7 +180,7 @@ public partial class CollapsiblePanel : UserControl
     private void SetupLeftHeader()
     {
         // Root grid: Header | Content
-        _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(40)));
+        _rootGrid!.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(40)));
         _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
         
         if (_headerArea != null)
@@ -204,7 +204,7 @@ public partial class CollapsiblePanel : UserControl
     private void SetupRightHeader()
     {
         // Root grid: Content | Header
-        _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
+        _rootGrid!.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
         _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(40)));
         
         if (_contentArea != null)
@@ -225,7 +225,7 @@ public partial class CollapsiblePanel : UserControl
     private void SetupTopHeader()
     {
         // Root grid: Header / Content
-        _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40)));
+        _rootGrid!.RowDefinitions.Add(new RowDefinition(new GridLength(40)));
         _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
         
         if (_headerArea != null)
@@ -245,7 +245,7 @@ public partial class CollapsiblePanel : UserControl
     private void SetupBottomHeader()
     {
         // Root grid: Content / Header
-        _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
+        _rootGrid!.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
         _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40)));
         
         if (_contentArea != null)

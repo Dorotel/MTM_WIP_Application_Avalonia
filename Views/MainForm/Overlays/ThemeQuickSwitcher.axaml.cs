@@ -35,7 +35,7 @@ public partial class ThemeQuickSwitcher : UserControl
     /// <summary>
     /// Initialize services when control is loaded.
     /// </summary>
-    private async void OnLoaded(object? sender, RoutedEventArgs e)
+    private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         try
         {
