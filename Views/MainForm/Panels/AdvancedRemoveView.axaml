@@ -119,13 +119,6 @@
               CornerRadius="8"
               Padding="16"
               Margin="0,0,0,8">
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-            BorderThickness="1"
-            CornerRadius="4"
-            Padding="4"
-            Margin="4"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
       <Grid ColumnSpacing="6">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>   <!-- Left Panel: Auto-sizes based on CollapsiblePanel state -->

@@ -196,8 +196,9 @@ public partial class CollapsiblePanel : UserControl
         {
             _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 1, 0);
             _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 0, 0, 8); // Left side rounded corners
-        _headerArea.Width = 40;
-        _headerArea.Height = double.NaN;
+            _headerArea.Width = 40;
+            _headerArea.Height = double.NaN;
+        }
     }
 
     private void SetupRightHeader()
