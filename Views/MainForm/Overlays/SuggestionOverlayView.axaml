@@ -182,36 +182,40 @@
       <Grid RowDefinitions="Auto,*">
         <!-- Info text -->
         <TextBlock Grid.Row="0"
-                   Text="No exact match found. Please select from similar items:"
+                   Text="No exact match found. Please select from similar items (scroll for more, use % as wildcard):"
                    FontSize="12"
                    Margin="0,0,0,12"
                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
 
-        <!-- Suggestions ListBox with modern styling -->
-        <ListBox Grid.Row="1"
-                 ItemsSource="{Binding Suggestions}"
-                 SelectedItem="{Binding SelectedSuggestion, Mode=TwoWay}"
-                 MinHeight="120"
-                 FontSize="13"
-                 x:Name="SuggestionListBox"
-                 KeyDown="OnSuggestionListBoxKeyDown"
-                 DoubleTapped="OnSuggestionListBoxDoubleTapped">
-          <ListBox.ItemTemplate>
-            <DataTemplate>
-              <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent">
-                <materialIcons:MaterialIcon Kind="Package"
-                                            Width="14"
-                                            Height="14"
-                                            VerticalAlignment="Center"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-                <TextBlock Text="{Binding}"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                           Background="Transparent"/>
-              </StackPanel>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
+        <!-- Suggestions ListBox with modern styling and scrolling support -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      MaxHeight="300"
+                      MinHeight="120">
+          <ListBox ItemsSource="{Binding Suggestions}"
+                   SelectedItem="{Binding SelectedSuggestion, Mode=TwoWay}"
+                   FontSize="13"
+                   x:Name="SuggestionListBox"
+                   KeyDown="OnSuggestionListBoxKeyDown"
+                   DoubleTapped="OnSuggestionListBoxDoubleTapped">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent">
+                  <materialIcons:MaterialIcon Kind="Package"
+                                              Width="14"
+                                              Height="14"
+                                              VerticalAlignment="Center"
+                                              Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                  <TextBlock Text="{Binding}"
+                             VerticalAlignment="Center"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             Background="Transparent"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </ScrollViewer>
       </Grid>
     </Border>
 
@@ -229,7 +233,7 @@
                                       Width="14"
                                       Height="14"
                                       Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-          <TextBlock Text="Double-click to select, or use buttons"
+          <TextBlock Text="Double-click to select, or use buttons. Use % for wildcards (e.g., R-%-0%)"
                      FontSize="11"
                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
         </StackPanel>

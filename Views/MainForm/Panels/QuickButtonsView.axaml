@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d"
              d:DesignWidth="240"
              d:DesignHeight="600"
@@ -128,176 +129,306 @@
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
+
+    <!-- Toggle Button Styles -->
+    <Style Selector="Button.toggle-button">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="Padding" Value="6,4"/>
+      <Setter Property="Margin" Value="2,0"/>
+      <Setter Property="MinHeight" Value="28"/>
+      <Setter Property="MinWidth" Value="28"/>
+    </Style>
+
+    <Style Selector="Button.toggle-button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
+    </Style>
+
+    <Style Selector="Button.toggle-button.active">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+    </Style>
+
+    <Style Selector="Button.toggle-button.active materialIcons|MaterialIcon">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+    </Style>
   </UserControl.Styles>
 
   <!-- Main container with transparent background to blend with parent -->
   <Grid Margin="4" Background="Transparent">
     <!-- Header Section and Quick Buttons Area -->
     <Grid RowDefinitions="Auto,*">
-      <!-- Quick Actions Header with MTM Amber gradient -->
+      <!-- Dynamic Header with Toggle Functionality -->
       <Border Grid.Row="0"
               Classes="header-panel"
               Padding="12,8"
               Margin="0,0,0,8">
         <Grid ColumnDefinitions="Auto,*,Auto">
-          <!-- MTM Industrial Icon -->
-          <Border Grid.Column="0"
-                  Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                  CornerRadius="12"
-                  Width="20"
-                  Height="20"
-                  VerticalAlignment="Center"
-                  Margin="0,0,8,0">
-            <TextBlock Text="⚡"
-                       FontSize="12"
-                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       ToolTip.Tip="Quick Actions"/>
-          </Border>
-          
-          <!-- Title with MTM styling -->
-          <TextBlock Grid.Column="1"
-                     Text="Quick Actions"
-                     FontSize="14"
-                     FontWeight="Bold"
-                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                     VerticalAlignment="Center"/>
-          
-          <!-- Count indicator with MTM accent -->
-          <StackPanel Grid.Column="2" 
-                      Orientation="Horizontal" 
-                      Spacing="6">
+          <!-- Left: Dynamic Icon and Title -->
+          <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
             <Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                    CornerRadius="8"
-                    Padding="6,2">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <TextBlock Text="{Binding NonEmptyQuickButtonsCount}"
-                           FontSize="11"
-                           FontWeight="Bold"
-                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                           VerticalAlignment="Center"/>
-                <TextBlock Text="actions"
-                           FontSize="10"
-                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                           VerticalAlignment="Center"/>
-              </StackPanel>
+                    CornerRadius="12"
+                    Width="20"
+                    Height="20"
+                    VerticalAlignment="Center">
+              <Grid>
+                <materialIcons:MaterialIcon Kind="Flash"
+                                           Width="12"
+                                           Height="12"
+                                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           IsVisible="{Binding !IsShowingHistory}"/>
+                <materialIcons:MaterialIcon Kind="ClockOutline"
+                                           Width="12"
+                                           Height="12"
+                                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           IsVisible="{Binding IsShowingHistory}"/>
+              </Grid>
             </Border>
+            <Grid>
+              <TextBlock Text="Quick Actions"
+                         FontSize="14"
+                         FontWeight="Bold"
+                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                         VerticalAlignment="Center"
+                         IsVisible="{Binding !IsShowingHistory}"/>
+              <TextBlock Text="Transaction History"
+                         FontSize="14"
+                         FontWeight="Bold"
+                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                         VerticalAlignment="Center"
+                         IsVisible="{Binding IsShowingHistory}"/>
+            </Grid>
+          </StackPanel>
+
+          <!-- Center: Count/Status -->
+          <Border Grid.Column="1" 
+                  Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                  CornerRadius="8"
+                  Padding="6,2"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <TextBlock Text="{Binding SessionTransactionCount}"
+                         FontSize="11"
+                         FontWeight="Bold"
+                         Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                         VerticalAlignment="Center"
+                         IsVisible="{Binding IsShowingHistory}"/>
+              <TextBlock Text="{Binding NonEmptyQuickButtonsCount}"
+                         FontSize="11"
+                         FontWeight="Bold"
+                         Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                         VerticalAlignment="Center"
+                         IsVisible="{Binding !IsShowingHistory}"/>
+              <TextBlock Text="transactions"
+                         FontSize="10"
+                         Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                         VerticalAlignment="Center"
+                         IsVisible="{Binding IsShowingHistory}"/>
+              <TextBlock Text="actions"
+                         FontSize="10"
+                         Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                         VerticalAlignment="Center"
+                         IsVisible="{Binding !IsShowingHistory}"/>
+            </StackPanel>
+          </Border>
+
+          <!-- Right: Toggle Buttons -->
+          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="2">
+            <Button Classes="toggle-button"
+                    Classes.active="{Binding !IsShowingHistory}"
+                    Command="{Binding ShowQuickActionsCommand}"
+                    ToolTip.Tip="Show Quick Actions">
+              <materialIcons:MaterialIcon Kind="Flash" Width="14" Height="14" 
+                                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+            </Button>
+            <Button Classes="toggle-button"
+                    Classes.active="{Binding IsShowingHistory}"
+                    Command="{Binding ShowHistoryCommand}"
+                    ToolTip.Tip="Show Transaction History">
+              <materialIcons:MaterialIcon Kind="ClockOutline" Width="14" Height="14"
+                                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+            </Button>
           </StackPanel>
         </Grid>
       </Border>
 
-      <!-- Quick Buttons Area with transparent background to blend seamlessly -->
-      <ScrollViewer Grid.Row="1" 
-                    VerticalScrollBarVisibility="Auto"
-                    HorizontalScrollBarVisibility="Disabled"
-                    Background="Transparent"
-                    Padding="4">
-        <ItemsControl ItemsSource="{Binding NonEmptyQuickButtons}">
-          <!-- Use StackPanel for dynamic vertical layout with drag/drop -->
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <StackPanel Orientation="Vertical" Spacing="4"/>
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="vm:QuickButtonItemViewModel">
-              <Button Classes="quick-button draggable-button"
-                      Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
-                      CommandParameter="{Binding}"
-                      ToolTip.Tip="{Binding ToolTipText}"
-                      PointerPressed="OnButtonPointerPressed"
-                      PointerMoved="OnButtonPointerMoved"
-                      PointerReleased="OnButtonPointerReleased">
-                <Button.ContextMenu>
-                  <ContextMenu>
-                    <MenuItem Header="🗑️ Remove Button"
-                              Click="OnRemoveButtonClick"
-                              ToolTip.Tip="Delete this quick action"/>
-                    <Separator/>
-                    <MenuItem Header="↑ Move Up"
-                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).MoveButtonUpCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="Move button up in order"/>
-                    <MenuItem Header="↓ Move Down"
-                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).MoveButtonDownCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="Move button down in order"/>
-                    <Separator/>
-                    <MenuItem Header="🔄 Refresh Buttons"
-                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RefreshButtonsCommand}"
-                              ToolTip.Tip="Reload quick actions from database"/>
-                    <MenuItem Header="🧹 Clear All Buttons"
-                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ClearAllButtonsCommand}"
-                              ToolTip.Tip="Remove all quick actions"/>
-                    <MenuItem Header="↕️ Reset Order"
-                              Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ResetOrderCommand}"
-                              ToolTip.Tip="Restore default button order"/>
-                  </ContextMenu>
-                </Button.ContextMenu>
-                <Grid ColumnDefinitions="Auto,8,*,Auto">
-                  <!-- MTM Industrial position indicator with drag handle -->
-                  <Border Grid.Column="0" Classes="position-indicator drag-handle">
-                    <Grid>
-                      <!-- Position number with MTM styling -->
-                      <TextBlock Text="{Binding Position}"
+      <!-- Dynamic Content Area -->
+      <Grid Grid.Row="1" Background="Transparent">
+        
+        <!-- Quick Actions Panel -->
+        <ScrollViewer IsVisible="{Binding !IsShowingHistory}"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Background="Transparent"
+                      Padding="4">
+          <ItemsControl ItemsSource="{Binding NonEmptyQuickButtons}">
+            <!-- Use StackPanel for dynamic vertical layout with drag/drop -->
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Vertical" Spacing="4"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:QuickButtonItemViewModel">
+                <Button Classes="quick-button draggable-button"
+                        Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
+                        CommandParameter="{Binding}"
+                        ToolTip.Tip="{Binding ToolTipText}"
+                        PointerPressed="OnButtonPointerPressed"
+                        PointerMoved="OnButtonPointerMoved"
+                        PointerReleased="OnButtonPointerReleased">
+                  <Button.ContextMenu>
+                    <ContextMenu>
+                      <MenuItem Header="🗑️ Remove Button"
+                                Click="OnRemoveButtonClick"
+                                ToolTip.Tip="Delete this quick action"/>
+                      <Separator/>
+                      <MenuItem Header="↑ Move Up"
+                                Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).MoveButtonUpCommand}"
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="Move button up in order"/>
+                      <MenuItem Header="↓ Move Down"
+                                Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).MoveButtonDownCommand}"
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="Move button down in order"/>
+                      <Separator/>
+                      <MenuItem Header="🔄 Refresh Buttons"
+                                Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).RefreshButtonsCommand}"
+                                ToolTip.Tip="Reload quick actions from database"/>
+                      <MenuItem Header="🧹 Clear All Buttons"
+                                Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ClearAllButtonsCommand}"
+                                ToolTip.Tip="Remove all quick actions"/>
+                      <MenuItem Header="↕️ Reset Order"
+                                Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ResetOrderCommand}"
+                                ToolTip.Tip="Restore default button order"/>
+                    </ContextMenu>
+                  </Button.ContextMenu>
+                  <Grid ColumnDefinitions="Auto,8,*,Auto">
+                    <!-- MTM Industrial position indicator with drag handle -->
+                    <Border Grid.Column="0" Classes="position-indicator drag-handle">
+                      <Grid>
+                        <!-- Position number with MTM styling -->
+                        <TextBlock Text="{Binding Position}"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                                   FontSize="11"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   ToolTip.Tip="Drag to reorder"/>
+                        <!-- Industrial drag dots overlay -->
+                        <Canvas HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                                Width="8" Height="8" Margin="0,0,2,2">
+                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                   Canvas.Left="0" Canvas.Top="0" Opacity="0.8"/>
+                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                   Canvas.Left="3" Canvas.Top="0" Opacity="0.8"/>
+                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                   Canvas.Left="6" Canvas.Top="0" Opacity="0.8"/>
+                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                   Canvas.Left="0" Canvas.Top="3" Opacity="0.8"/>
+                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                   Canvas.Left="3" Canvas.Top="3" Opacity="0.8"/>
+                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                   Canvas.Left="6" Canvas.Top="3" Opacity="0.8"/>
+                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                   Canvas.Left="0" Canvas.Top="6" Opacity="0.8"/>
+                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                   Canvas.Left="3" Canvas.Top="6" Opacity="0.8"/>
+                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                   Canvas.Left="6" Canvas.Top="6" Opacity="0.8"/>
+                        </Canvas>
+                      </Grid>
+                    </Border>
+                    
+                    <!-- Button content with MTM typography -->
+                    <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding DisplayText}"
+                                 Classes="primary-text"/>
+                      <TextBlock Text="{Binding SubText}"
+                                 Classes="secondary-text"/>
+                    </StackPanel>
+                    
+                    <!-- Operation indicator with MTM accent color -->
+                    <Border Grid.Column="3"
+                            Background="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                            CornerRadius="4"
+                            Padding="6,2"
+                            VerticalAlignment="Center">
+                      <TextBlock Text="{Binding Operation}"
                                  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                                 FontSize="11"
+                                 FontSize="10"
                                  FontWeight="Bold"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center"
-                                 ToolTip.Tip="Drag to reorder"/>
-                      <!-- Industrial drag dots overlay -->
-                      <Canvas HorizontalAlignment="Right" VerticalAlignment="Bottom" 
-                              Width="8" Height="8" Margin="0,0,2,2">
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                 Canvas.Left="0" Canvas.Top="0" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                 Canvas.Left="3" Canvas.Top="0" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                 Canvas.Left="6" Canvas.Top="0" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                 Canvas.Left="0" Canvas.Top="3" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                 Canvas.Left="3" Canvas.Top="3" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                 Canvas.Left="6" Canvas.Top="3" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                 Canvas.Left="0" Canvas.Top="6" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                 Canvas.Left="3" Canvas.Top="6" Opacity="0.8"/>
-                        <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                 Canvas.Left="6" Canvas.Top="6" Opacity="0.8"/>
-                      </Canvas>
-                    </Grid>
-                  </Border>
-                  
-                  <!-- Button content with MTM typography -->
-                  <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding DisplayText}"
-                               Classes="primary-text"/>
-                    <TextBlock Text="{Binding SubText}"
-                               Classes="secondary-text"/>
-                  </StackPanel>
-                  
-                  <!-- Operation indicator with MTM accent color -->
-                  <Border Grid.Column="3"
-                          Background="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                          CornerRadius="4"
-                          Padding="6,2"
-                          VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Operation}"
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                               FontSize="10"
-                               FontWeight="Bold"
-                               ToolTip.Tip="Operation Number"/>
-                  </Border>
-                </Grid>
-              </Button>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </ScrollViewer>
+                                 ToolTip.Tip="Operation Number"/>
+                    </Border>
+                  </Grid>
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Transaction History Panel -->
+        <ScrollViewer IsVisible="{Binding IsShowingHistory}"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Auto"
+                      Background="Transparent"
+                      Padding="4">
+          <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="8"
+                  MinHeight="400">
+            
+            <DataGrid ItemsSource="{Binding SessionTransactionHistory}"
+                      Background="Transparent"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Horizontal"
+                      IsReadOnly="True"
+                      CanUserReorderColumns="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      MinHeight="350"
+                      FontSize="9">
+              
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Time" 
+                                   Binding="{Binding TransactionTime, StringFormat='HH:mm:ss'}"
+                                   Width="50"/>
+                <DataGridTextColumn Header="Part" 
+                                   Binding="{Binding PartId}"
+                                   Width="80"/>
+                <DataGridTextColumn Header="Op" 
+                                   Binding="{Binding Operation}"
+                                   Width="40"/>
+                <DataGridTextColumn Header="Loc" 
+                                   Binding="{Binding Location}"
+                                   Width="60"/>
+                <DataGridTextColumn Header="Qty" 
+                                   Binding="{Binding Quantity}"
+                                   Width="40"/>
+                <DataGridTextColumn Header="Type" 
+                                   Binding="{Binding ItemType}"
+                                   Width="60"/>
+                <DataGridTextColumn Header="Status" 
+                                   Binding="{Binding Status}"
+                                   Width="50"/>
+              </DataGrid.Columns>
+              
+            </DataGrid>
+            
+          </Border>
+        </ScrollViewer>
+
+      </Grid>
     </Grid>
   </Grid>
 </UserControl>

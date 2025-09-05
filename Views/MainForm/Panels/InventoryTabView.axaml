@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
-             xmlns:i="using:Avalonia.Xaml.Interactivity"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d"
@@ -14,12 +13,8 @@
              x:CompileBindings="True"
              x:DataType="vm:InventoryTabViewModel">
 
-  <UserControl.Resources>
-    <!-- Theme resources are provided by DynamicResource bindings from MTM_Amber.axaml -->
-  </UserControl.Resources>
-
   <UserControl.Styles>
-    <!-- MTM Amber Theme Input Field Styles -->
+    <!-- MTM Theme Input Field Styles -->
     <Style Selector="TextBox.input-field">
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
@@ -27,13 +22,15 @@
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="Padding" Value="8,6"/>
+      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
 
-    <!-- Error state styling using MTM Error colors -->
+    <!-- Error state styling -->
     <Style Selector="TextBox.input-field.error">
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"/>
-  <!-- Removed unsupported WatermarkBrush property -->
     </Style>
 
     <!-- Focus state styling -->
@@ -42,7 +39,7 @@
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
     </Style>
 
-    <!-- AutoCompleteBox MTM Amber Theme -->
+    <!-- AutoCompleteBox styling -->
     <Style Selector="AutoCompleteBox.input-field">
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
@@ -50,623 +47,357 @@
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="Padding" Value="8,6"/>
+      <Setter Property="MinHeight" Value="32"/>
     </Style>
 
-    <!-- Error state styling for AutoCompleteBox -->
-    <Style Selector="AutoCompleteBox.input-field.error">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"/>
-  <!-- Removed unsupported WatermarkBrush property -->
-    </Style>
-
-    <!-- Focus state for AutoCompleteBox -->
-    <Style Selector="AutoCompleteBox.input-field:focus">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
-    </Style>
-
-    <!-- Loading indicator for AutoCompleteBox -->
-    <Style Selector="AutoCompleteBox.input-field.loading">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.LoadingBrush}"/>
-      <Setter Property="Opacity" Value="0.7"/>
-    </Style>
-
-
-	<!-- ================================================================== -->
-    <!-- MATERIAL ICONS - LOCAL OVERRIDE FOR TRANSPARENT BACKGROUNDS      -->
-    <!-- ================================================================== -->
-    
-    <!-- Force ALL Material Icons in this view to have transparent backgrounds -->
+    <!-- Material Icons global styling -->
     <Style Selector="materialIcons|MaterialIcon">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
-      <Setter Property="Opacity" Value="1.0"/>
     </Style>
 
-    <!-- Material Icons in Grid contexts -->
-    <Style Selector="Grid materialIcons|MaterialIcon">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-      <Setter Property="Opacity" Value="1.0"/>
-    </Style>
-
-    <!-- Material Icons in StackPanel contexts -->
-    <Style Selector="StackPanel materialIcons|MaterialIcon">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-      <Setter Property="Opacity" Value="1.0"/>
-    </Style>
-
-    <!-- Material Icons in Border contexts -->
-    <Style Selector="Border materialIcons|MaterialIcon">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-      <Setter Property="Opacity" Value="1.0"/>
-    </Style>
-
-    <!-- Material Icons in error state -->
-    <Style Selector="materialIcons|MaterialIcon.error">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-      <Setter Property="Opacity" Value="1.0"/>
-    </Style>
-
-    <!-- Override any template-based backgrounds -->
-    <Style Selector="materialIcons|MaterialIcon /template/ Border">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-
-    <!-- Override any template-based content presenters -->
-    <Style Selector="materialIcons|MaterialIcon /template/ ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-    </Style>
-
-    <!-- Specific icon types that might have default backgrounds -->
-    <Style Selector="materialIcons|MaterialIcon[Kind=Package]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-    </Style>
-
-    <Style Selector="materialIcons|MaterialIcon[Kind=AlertCircle]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-    </Style>
-
-    <Style Selector="materialIcons|MaterialIcon[Kind=Identifier]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-    </Style>
-
-    <Style Selector="materialIcons|MaterialIcon[Kind=Cog]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-    </Style>
-
-    <Style Selector="materialIcons|MaterialIcon[Kind=MapMarker]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-    </Style>
-
-    <Style Selector="materialIcons|MaterialIcon[Kind=Counter]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-    </Style>
-
-    <Style Selector="materialIcons|MaterialIcon[Kind=NoteText]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-    </Style>
-
-    <Style Selector="materialIcons|MaterialIcon[Kind=ContentSave]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-    </Style>
-
-    <Style Selector="materialIcons|MaterialIcon[Kind=Settings]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-    </Style>
-
-    <Style Selector="materialIcons|MaterialIcon[Kind=Refresh]">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-    </Style>
-
-    <!-- Primary Button MTM Amber Theme -->
-    <Style Selector="Button.action-button.primary">
+    <!-- Primary Button styling -->
+    <Style Selector="Button.primary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
-    </Style>
-    
-    <Style Selector="Button.action-button.primary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
-    </Style>
-    
-    <Style Selector="Button.action-button.primary:pressed">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryPressedBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryPressedBrush}"/>
-    </Style>
-    
-    <Style Selector="Button.action-button.primary:disabled">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryDisabledBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryDisabledBrush}"/>
-      <Setter Property="Opacity" Value="0.6"/>
+      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="Padding" Value="12,6"/>
     </Style>
 
-    <!-- Secondary Button MTM Amber Theme -->
-    <Style Selector="Button.action-button.secondary">
+    <!-- Secondary Button styling -->
+    <Style Selector="Button.secondary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="4"/>
-    </Style>
-    
-    <Style Selector="Button.action-button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
-    </Style>
-    
-    <Style Selector="Button.action-button.secondary:pressed">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
+      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="Padding" Value="12,6"/>
     </Style>
 
-    <!-- Force transparent backgrounds and proper colors on ALL Material Icons in buttons -->
-    <Style Selector="Button materialIcons|MaterialIcon">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="BorderBrush" Value="Transparent"/>
-    </Style>
-
-    <!-- Specific button icon styling to ensure proper foreground colors -->
-    <Style Selector="Button.action-button.primary materialIcons|MaterialIcon">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="BorderBrush" Value="Transparent"/>
-    </Style>
-
-    <Style Selector="Button.action-button.secondary materialIcons|MaterialIcon">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="BorderBrush" Value="Transparent"/>
-    </Style>
-
-    <Style Selector="Button.action-button.secondary:pointerover materialIcons|MaterialIcon">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="BorderBrush" Value="Transparent"/>
-    </Style>
-
-    <!-- Error message styling using MTM Error colors -->
+    <!-- Error message styling -->
     <Style Selector="TextBlock.error-message">
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorDarkBrush}"/>
       <Setter Property="FontWeight" Value="Medium"/>
-    </Style>
-
-    <!-- Header styling using MTM gradient -->
-    <Style Selector="Border.header-panel">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"/>
-      <Setter Property="CornerRadius" Value="4"/>
-    </Style>
-
-    <!-- Progress bar MTM theming -->
-    <Style Selector="ProgressBar">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ProcessingBrush}"/>
+      <Setter Property="FontSize" Value="11"/>
     </Style>
   </UserControl.Styles>
 
-  <!-- Main container with MTM Amber background -->
-  <Grid RowDefinitions="*,Auto,Auto" 
-        HorizontalAlignment="Stretch" 
-        VerticalAlignment="Stretch"
-        Margin="0"
-        Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+  <!-- Main Layout Container - ScrollViewer for overflow handling -->
+  <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto"
+                Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+    
+    <Grid x:Name="MainContainer" 
+          RowDefinitions="*,Auto"
+          MinWidth="600"
+          MinHeight="400"
+          Margin="8">
 
-    <!-- Main Panel -->
-    <Border Grid.Row="0"
-            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
-            BorderThickness="1"
-            CornerRadius="6"
-            Padding="12"
-            Margin="8"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
-      
-      <!-- Inventory Entry Form -->
-      <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*">
-        
-        <!-- Header with MTM Amber gradient -->
-        <Border Grid.Row="0" 
-                Classes="header-panel"
-                Padding="12,8"
-                Margin="0,0,0,12">
-          <Grid ColumnDefinitions="Auto,*,Auto">
-            <materialIcons:MaterialIcon Grid.Column="0"
-                                        Kind="Package"
-                                        Width="16"
-                                        Height="16"
-										Background="Transparent"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                                        VerticalAlignment="Center"
-                                        Margin="0,0,8,0"/>
-            <TextBlock Grid.Column="1"
-                       Text="MTM Inventory Entry"
-                       FontSize="14"
-                       FontWeight="Bold"
-                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                       VerticalAlignment="Center"/>
-          </Grid>
-        </Border>
-
-        <!-- Error Message Display with MTM Error styling -->
-        <Border Grid.Row="1" 
-                IsVisible="{Binding HasError}"
-                Background="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
-                BorderThickness="2"
-                CornerRadius="4"
-                Padding="12,8"
-                Margin="0,0,0,12">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <materialIcons:MaterialIcon Kind="AlertCircle"
-                                        Width="16"
-                                        Height="16"
-										Background="Transparent"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
-                                        VerticalAlignment="Top"
-                                        Margin="0,2,0,0"/>
-            <TextBlock Text="{Binding ErrorMessage}"
-                       Classes="error-message"
-                       TextWrapping="Wrap"
-                       VerticalAlignment="Center"/>
-          </StackPanel>
-        </Border>
-
-        <!-- Part ID -->
-        <StackPanel Grid.Row="2" Spacing="6" Margin="0,4">
-          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,0,0,4">
-            <materialIcons:MaterialIcon Grid.Column="0"
-                                        Kind="Identifier"
-                                        Width="14"
-                                        Height="14"
-										Background="Transparent"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                                        VerticalAlignment="Center"
-                                        ToolTip.Tip="Part ID"/>
-            <TextBlock Grid.Column="1"
-                       Text="Part ID:"
-                       FontSize="12"
-                       FontWeight="Medium"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Left"
-                       TextAlignment="Left"
-                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
-          </Grid>
-          <TextBox x:Name="PartTextBox"
-                   Text="{Binding SelectedPart, Mode=TwoWay}"
-                   Classes="input-field"
-                   HorizontalAlignment="Stretch"
-                   ToolTip.Tip="Select or enter a part number"
-                   TabIndex="1"
-                   behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
-                   behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding PartIds}" />
-            <TextBlock Text="Part ID is required"
-                       Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
-                       FontSize="11"
-                       Margin="4,0,0,0"
-                       IsVisible="{Binding !IsPartValid}"
-                       AutomationProperties.HelpText="Part ID is required"/>
-        </StackPanel>
-
-        <!-- Operation -->
-        <StackPanel Grid.Row="3" Spacing="6" Margin="0,4">
-          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,0,0,4">
-            <materialIcons:MaterialIcon Grid.Column="0"
-                                        Kind="Cog"
-                                        Width="14"
-                                        Height="14"
-                                        Background="Transparent"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                                        VerticalAlignment="Center"
-                                        ToolTip.Tip="Operation"/>
-            <TextBlock Grid.Column="1"
-                       Text="Operation:"
-                       FontSize="12"
-                       FontWeight="Medium"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Left"
-                       TextAlignment="Left"
-                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
-          </Grid>
-          <TextBox x:Name="OperationTextBox"
-                   Text="{Binding SelectedOperation, Mode=TwoWay}"
-                   Classes="input-field"
-                   HorizontalAlignment="Stretch"
-                   ToolTip.Tip="Select or enter an operation number"
-                   TabIndex="2"
-                   behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
-                   behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Operations}" />
-          <TextBlock Text="Operation is required"
-                     Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
-                     FontSize="11"
-                     Margin="4,0,0,0"
-                     IsVisible="{Binding !IsOperationValid}"
-                     AutomationProperties.HelpText="Operation is required"/>
-        </StackPanel>
-
-        <!-- Location -->
-        <StackPanel Grid.Row="4" Spacing="6" Margin="0,4">
-          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,0,0,4">
-            <materialIcons:MaterialIcon Grid.Column="0"
-                                        Kind="MapMarker"
-                                        Width="14"
-                                        Height="14"
-                                        Background="Transparent"
-                                        VerticalAlignment="Center"
-                                        ToolTip.Tip="Location"/>
-            <TextBlock Grid.Column="1"
-                       Text="Location:"
-                       FontSize="12"
-                       FontWeight="Medium"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Left"
-                       TextAlignment="Left"
-                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
-          </Grid>
-          <TextBox x:Name="LocationTextBox"
-                   Text="{Binding SelectedLocation, Mode=TwoWay}"
-                   Classes="input-field"
-                   HorizontalAlignment="Stretch"
-                   ToolTip.Tip="Select or enter a location"
-                   TabIndex="3"
-                   behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
-                   behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Locations}" />
-          <TextBlock Text="Location is required"
-                     Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
-                     FontSize="11"
-                     Margin="4,0,0,0"
-                     IsVisible="{Binding !IsLocationValid}"
-                     AutomationProperties.HelpText="Location is required"/>
-        </StackPanel>
-
-        <!-- Quantity -->
-        <StackPanel Grid.Row="5" Spacing="6" Margin="0,4">
-          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,0,0,4">
-            <materialIcons:MaterialIcon Grid.Column="0"
-                                        Kind="Counter"
-                                        Width="14"
-                                        Height="14"
-										Background="Transparent"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                                        VerticalAlignment="Center"
-                                        ToolTip.Tip="Quantity"/>
-            <TextBlock Grid.Column="1"
-                       Text="Quantity:"
-                       FontSize="12"
-                       FontWeight="Medium"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Left"
-                       TextAlignment="Left"
-                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
-          </Grid>
-          <TextBox x:Name="QuantityTextBox"
-                   Text="{Binding Quantity, Mode=TwoWay}"
-                   Classes="input-field"
-                   Classes.error="{Binding !IsQuantityValid}"
-                   HorizontalAlignment="Stretch"
-                   Watermark="Enter quantity..."
-                   ToolTip.Tip="Enter numeric quantity"
-                   TabIndex="4"/>
-        </StackPanel>
-
-        <!-- Notes -->
-        <StackPanel Grid.Row="6" Spacing="6" Margin="0,4">
-          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,0,0,4">
-            <materialIcons:MaterialIcon Grid.Column="0"
-                                        Kind="NoteText"
-                                        Width="14"
-                                        Height="14"
-										Background="Transparent"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                                        VerticalAlignment="Top"
-                                        Margin="0,4,0,0"
-                                        ToolTip.Tip="Notes"/>
-            <TextBlock Grid.Column="1"
-                       Text="Notes:"
-                       FontSize="12"
-                       FontWeight="Medium"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Left"
-                       TextAlignment="Left"
-                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
-          </Grid>
-          <TextBox x:Name="NotesTextBox"
-                   Text="{Binding Notes, Mode=TwoWay}"
-                   Classes="input-field"
-                   HorizontalAlignment="Stretch"
-                   VerticalAlignment="Stretch"
-                   AcceptsReturn="True"
-                   TextWrapping="Wrap"
-                   MinHeight="80"
-                   Watermark="Optional notes..."
-                   ToolTip.Tip="Optional notes or comments"
-                   TabIndex="5"/>
-        </StackPanel>
-
-      </Grid>
-    </Border>
-
-    <!-- Bottom Action Panel with MTM Amber styling -->
-    <Border Grid.Row="1"
-            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-            BorderThickness="1"
-            CornerRadius="6"
-            Padding="12"
-            Margin="8,0,8,8">
-      <Grid ColumnDefinitions="*,Auto">
-        <!-- Left side buttons -->
-        <StackPanel Grid.Column="0" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Left" 
-                    Spacing="8">
-          <Button x:Name="SaveButton"
-                  Classes="action-button primary"
-			  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-			  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                  Width="80" 
-                  Height="32"
-                  Command="{Binding SaveCommand}"
-                  IsEnabled="{Binding CanSave}"
-                  ToolTip.Tip="Save inventory item (Enter to execute)"
-                  TabIndex="6">
-            <StackPanel Orientation="Horizontal" Spacing="6" 
-                        HorizontalAlignment="Center" VerticalAlignment="Center">
-              <materialIcons:MaterialIcon Kind="ContentSave" Width="14" Height="14" Background="Transparent" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-              <TextBlock Text="Save" FontSize="11" FontWeight="SemiBold"/>
-            </StackPanel>
-          </Button>
-          
-          <Button Classes="action-button secondary"
-                  Width="90" 
-                  Height="32"
-				  				  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-				  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                  Command="{Binding AdvancedEntryCommand}"
-                  ToolTip.Tip="Open advanced inventory features">
-            <StackPanel Orientation="Horizontal" Spacing="6"
-                        HorizontalAlignment="Center" VerticalAlignment="Center">
-              <materialIcons:MaterialIcon Kind="Settings" Width="14" Height="14" />
-				<TextBlock Text="Advanced" FontSize="11"/>
-            </StackPanel>
-          </Button>
-          
-          <Button Classes="action-button secondary"
-                  Width="70" 
-                  Height="32"
-				  				  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-				  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                  Command="{Binding ResetCommand}"
-                  CommandParameter="False"
-                  ToolTip.Tip="Reset form (F5 for soft reset, Shift+F5 for hard reset)">
-            <StackPanel Orientation="Horizontal" Spacing="6"
-                        HorizontalAlignment="Center" VerticalAlignment="Center">
-              <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14" Background="Transparent" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
-				<TextBlock Text="Reset" FontSize="11"/>
-            </StackPanel>
-          </Button>
-          
-
-        </StackPanel>
-
-        <!-- Right side - version info only (progress moved to MainView) -->
-        <StackPanel Grid.Column="1" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right"
-                    Spacing="12">
-          <!-- Version info with MTM text styling -->
-          <TextBlock Text="{Binding VersionText}"
-                     FontSize="10"
-                     Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
-                     VerticalAlignment="Center"/>
-        </StackPanel>
-      </Grid>
-    </Border>
-
-    <!-- NEW: Session Transaction History Panel -->
-    <controls:CollapsiblePanel Grid.Row="2"
-                              HeaderPosition="Top"
-                              IsExpanded="{Binding IsHistoryPanelExpanded, Mode=TwoWay}"
-                              Margin="8,0,8,8"
-                              MinHeight="200"
-                              MaxHeight="400">
-      
-      <!-- History Panel Header -->
-      <controls:CollapsiblePanel.Header>
-        <Grid ColumnDefinitions="Auto,*,Auto">
-          <materialIcons:MaterialIcon Grid.Column="0" 
-                                     Kind="History" 
-                                     Width="16"
-                                     Height="16"
-                                     Background="Transparent"
-                                     Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                                     Margin="8,0"/>
-          <TextBlock Grid.Column="1" 
-                    Text="Session Transaction History"
-                    FontWeight="SemiBold"
-                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                    VerticalAlignment="Center"/>
-          <TextBlock Grid.Column="2"
-                    Text="{Binding SessionTransactionCount, StringFormat='({0} transactions)'}"
-                    FontSize="11"
-                    Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
-                    Margin="8,0"
-                    VerticalAlignment="Center"/>
-        </Grid>
-      </controls:CollapsiblePanel.Header>
-      
-      <!-- History Panel Content -->
-      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+      <!-- Main Entry Panel -->
+      <Border Grid.Row="0"
+              Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
               BorderThickness="1"
-              CornerRadius="4"
-              Padding="8">
+              CornerRadius="8"
+              Padding="16"
+              Margin="0,0,0,8">
         
-        <DataGrid ItemsSource="{Binding SessionTransactionHistory}"
-                  Background="Transparent"
-                  HeadersVisibility="Column"
-                  GridLinesVisibility="Horizontal"
-                  IsReadOnly="True"
-                  CanUserReorderColumns="True"
-                  CanUserResizeColumns="True"
-                  CanUserSortColumns="True"
-                  MinHeight="150">
+        <Grid x:Name="EntryFormGrid" RowDefinitions="Auto,Auto,*">
           
-          <DataGrid.Columns>
-            <DataGridTextColumn Header="Time" 
-                               Binding="{Binding TransactionTime, StringFormat='HH:mm:ss'}"
-                               Width="80"/>
-            <DataGridTextColumn Header="Part ID" 
-                               Binding="{Binding PartId}"
-                               Width="120"/>
-            <DataGridTextColumn Header="Operation" 
-                               Binding="{Binding Operation}"
-                               Width="80"/>
-            <DataGridTextColumn Header="Location" 
-                               Binding="{Binding Location}"
-                               Width="100"/>
-            <DataGridTextColumn Header="Quantity" 
-                               Binding="{Binding Quantity}"
-                               Width="80"/>
-            <DataGridTextColumn Header="Item Type" 
-                               Binding="{Binding ItemType}"
-                               Width="100"/>
-            <DataGridTextColumn Header="Batch #" 
-                               Binding="{Binding BatchNumber}"
-                               Width="100"/>
-            <DataGridTextColumn Header="Status" 
-                               Binding="{Binding Status}"
-                               Width="80"/>
-          </DataGrid.Columns>
-          
-        </DataGrid>
-        
+          <!-- Header Section -->
+          <Border Grid.Row="0"
+                  Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
+                  CornerRadius="6"
+                  Padding="12,8"
+                  Margin="0,0,0,16">
+            <Grid x:Name="HeaderGrid" ColumnDefinitions="Auto,*">
+              <materialIcons:MaterialIcon Grid.Column="0"
+                                          Kind="Package"
+                                          Width="16"
+                                          Height="16"
+                                          Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,8,0"/>
+              <TextBlock Grid.Column="1"
+                         Text="MTM Inventory Entry"
+                         FontSize="14"
+                         FontWeight="Bold"
+                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                         VerticalAlignment="Center"/>
+            </Grid>
+          </Border>
+
+          <!-- Error Display Section -->
+          <Border Grid.Row="1"
+                  Background="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                  BorderThickness="2"
+                  CornerRadius="4"
+                  Padding="12,8"
+                  Margin="0,0,0,16"
+                  IsVisible="{Binding HasError}">
+            <Grid x:Name="ErrorGrid" ColumnDefinitions="Auto,*">
+              <materialIcons:MaterialIcon Grid.Column="0"
+                                          Kind="AlertCircle"
+                                          Width="16"
+                                          Height="16"
+                                          Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                                          VerticalAlignment="Top"
+                                          Margin="0,2,8,0"/>
+              <TextBlock Grid.Column="1"
+                         Text="{Binding ErrorMessage}"
+                         Classes="error-message"
+                         TextWrapping="Wrap"
+                         VerticalAlignment="Center"/>
+            </Grid>
+          </Border>
+
+          <!-- Form Fields Section -->
+          <Grid x:Name="FormFieldsGrid" 
+                Grid.Row="2"
+                RowDefinitions="Auto,Auto,Auto,Auto,*"
+                RowSpacing="12">
+
+            <!-- Part ID Field -->
+            <Grid x:Name="PartIdGrid" 
+                  Grid.Row="0" 
+                  ColumnDefinitions="90,*" 
+                  ColumnSpacing="12">
+              <StackPanel Grid.Column="0" 
+                          Orientation="Horizontal" 
+                          Spacing="6"
+                          VerticalAlignment="Center"
+                          Width="90">
+                <materialIcons:MaterialIcon Kind="Identifier"
+                                            Width="14"
+                                            Height="14"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                <TextBlock Text="Part ID:"
+                           FontSize="12"
+                           FontWeight="Medium"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                           VerticalAlignment="Center"/>
+              </StackPanel>
+              <TextBox Grid.Column="1"
+                       x:Name="PartTextBox"
+                       Text="{Binding SelectedPart, Mode=TwoWay}"
+                       Watermark="{Binding PartWatermark}"
+                       Classes="input-field"
+                       ToolTip.Tip="Select or enter a part number"
+                       TabIndex="1"
+                       behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
+                       behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding PartIds}" />
+            </Grid>
+
+            <!-- Operation Field -->
+            <Grid x:Name="OperationGrid" 
+                  Grid.Row="1" 
+                  ColumnDefinitions="90,*" 
+                  ColumnSpacing="12">
+              <StackPanel Grid.Column="0" 
+                          Orientation="Horizontal" 
+                          Spacing="6"
+                          VerticalAlignment="Center"
+                          Width="90">
+                <materialIcons:MaterialIcon Kind="Cog"
+                                            Width="14"
+                                            Height="14"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                <TextBlock Text="Operation:"
+                           FontSize="12"
+                           FontWeight="Medium"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                           VerticalAlignment="Center"/>
+              </StackPanel>
+              <TextBox Grid.Column="1"
+                       x:Name="OperationTextBox"
+                       Text="{Binding SelectedOperation, Mode=TwoWay}"
+                       Watermark="{Binding OperationWatermark}"
+                       Classes="input-field"
+                       ToolTip.Tip="Select or enter an operation number"
+                       TabIndex="2"
+                       behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
+                       behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Operations}" />
+            </Grid>
+
+            <!-- Location Field -->
+            <Grid x:Name="LocationGrid" 
+                  Grid.Row="2" 
+                  ColumnDefinitions="90,*" 
+                  ColumnSpacing="12">
+              <StackPanel Grid.Column="0" 
+                          Orientation="Horizontal" 
+                          Spacing="6"
+                          VerticalAlignment="Center"
+                          Width="90">
+                <materialIcons:MaterialIcon Kind="MapMarker"
+                                            Width="14"
+                                            Height="14"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                <TextBlock Text="Location:"
+                           FontSize="12"
+                           FontWeight="Medium"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                           VerticalAlignment="Center"/>
+              </StackPanel>
+              <TextBox Grid.Column="1"
+                       x:Name="LocationTextBox"
+                       Text="{Binding SelectedLocation, Mode=TwoWay}"
+                       Watermark="{Binding LocationWatermark}"
+                       Classes="input-field"
+                       ToolTip.Tip="Select or enter a location"
+                       TabIndex="3"
+                       behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
+                       behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Locations}" />
+            </Grid>
+
+            <!-- Quantity Field -->
+            <Grid x:Name="QuantityGrid" 
+                  Grid.Row="3" 
+                  ColumnDefinitions="90,*" 
+                  ColumnSpacing="12">
+              <StackPanel Grid.Column="0" 
+                          Orientation="Horizontal" 
+                          Spacing="6"
+                          VerticalAlignment="Center"
+                          Width="90">
+                <materialIcons:MaterialIcon Kind="Counter"
+                                            Width="14"
+                                            Height="14"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                <TextBlock Text="Quantity:"
+                           FontSize="12"
+                           FontWeight="Medium"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                           VerticalAlignment="Center"/>
+              </StackPanel>
+              <TextBox Grid.Column="1"
+                       x:Name="QuantityTextBox"
+                       Text="{Binding Quantity, Mode=TwoWay}"
+                       Watermark="{Binding QuantityWatermark}"
+                       Classes="input-field"
+                       Classes.error="{Binding !IsQuantityValid}"
+                       ToolTip.Tip="Enter numeric quantity"
+                       TabIndex="4"/>
+            </Grid>
+
+            <!-- Notes Field -->
+            <Grid x:Name="NotesGrid" 
+                  Grid.Row="4" 
+                  ColumnDefinitions="90,*" 
+                  ColumnSpacing="12">
+              <StackPanel Grid.Column="0" 
+                          Orientation="Horizontal" 
+                          Spacing="6"
+                          VerticalAlignment="Top"
+                          Width="90"
+                          Margin="0,4,0,0">
+                <materialIcons:MaterialIcon Kind="NoteText"
+                                            Width="14"
+                                            Height="14"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                <TextBlock Text="Notes:"
+                           FontSize="12"
+                           FontWeight="Medium"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                           VerticalAlignment="Center"/>
+              </StackPanel>
+              <TextBox Grid.Column="1"
+                       x:Name="NotesTextBox"
+                       Text="{Binding Notes, Mode=TwoWay}"
+                       Watermark="{Binding NotesWatermark}"
+                       Classes="input-field"
+                       AcceptsReturn="False"
+                       TextWrapping="NoWrap"
+                       MinHeight="40"
+                       MaxHeight="120"
+                       ToolTip.Tip="Optional notes or comments"
+                       TabIndex="5"/>
+            </Grid>
+
+          </Grid>
+        </Grid>
       </Border>
-    </controls:CollapsiblePanel>
-  </Grid>
+
+      <!-- Action Buttons Panel -->
+      <Border Grid.Row="1"
+              Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+              BorderThickness="1"
+              CornerRadius="6"
+              Padding="12"
+              Margin="0,0,0,8">
+        
+        <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="*,Auto">
+          
+          <!-- Left side - Action buttons -->
+          <StackPanel Grid.Column="0"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Left"
+                      Spacing="8">
+            
+            <Button x:Name="SaveButton"
+                    Classes="primary"
+                    Width="80"
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding CanSave}"
+                    ToolTip.Tip="Save inventory item (Enter to execute)"
+                    TabIndex="6">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <materialIcons:MaterialIcon Kind="ContentSave" 
+                                            Width="14" 
+                                            Height="14" 
+                                            Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                <TextBlock Text="Save" 
+                           FontSize="11" 
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+              </StackPanel>
+            </Button>
+            
+            <Button Classes="secondary"
+                    Width="90"
+                    Command="{Binding AdvancedEntryCommand}"
+                    ToolTip.Tip="Open advanced inventory features">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <materialIcons:MaterialIcon Kind="Settings" Width="14" Height="14"/>
+                <TextBlock Text="Advanced" FontSize="11"/>
+              </StackPanel>
+            </Button>
+            
+            <Button Classes="secondary"
+                    Width="70"
+                    Command="{Binding ResetCommand}"
+                    CommandParameter="False"
+                    ToolTip.Tip="Reset form (F5 for soft reset, Shift+F5 for hard reset)">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14"/>
+                <TextBlock Text="Reset" FontSize="11"/>
+              </StackPanel>
+            </Button>
+            
+          </StackPanel>
+
+          <!-- Right side - Version info -->
+          <StackPanel Grid.Column="1"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Right">
+            <TextBlock Text="{Binding VersionText}"
+                       FontSize="10"
+                       Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                       VerticalAlignment="Center"/>
+          </StackPanel>
+          
+        </Grid>
+      </Border>
+
+    </Grid>
+  </ScrollViewer>
 </UserControl>

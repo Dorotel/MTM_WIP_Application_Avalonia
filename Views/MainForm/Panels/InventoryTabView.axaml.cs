@@ -159,6 +159,8 @@ public partial class InventoryTabView : UserControl
             _logger?.LogWarning($"{field}TextBox not found in XAML. Overlay will not be available for this field.");
             return;
         }
+
+        // Handle LostFocus for non-wildcard validation
         textBox.LostFocus += async (s, e) =>
         {
             _logger?.LogInformation($"LostFocus event fired for {field}TextBox");
@@ -174,6 +176,14 @@ public partial class InventoryTabView : UserControl
                 _logger?.LogInformation($"Entered text is empty for {field}TextBox");
                 return;
             }
+
+            // Skip processing if text contains wildcards (handled by KeyDown event)
+            if (enteredText.Contains('%'))
+            {
+                _logger?.LogInformation($"Text contains wildcards, skipping LostFocus processing for {field}");
+                return;
+            }
+
             IEnumerable<string> data = field switch
             {
                 "Part" => _viewModel.PartIds ?? Enumerable.Empty<string>(),
@@ -205,6 +215,51 @@ public partial class InventoryTabView : UserControl
                 _logger?.LogInformation($"Entered text '{enteredText}' is a valid {field}");
             }
         };
+
+        // Handle KeyDown for wildcard functionality
+        textBox.KeyDown += async (s, e) =>
+        {
+            // Only trigger on Enter key when text contains wildcards
+            if (e.Key != Avalonia.Input.Key.Enter) return;
+
+            if (_viewModel == null || _suggestionOverlayService == null) return;
+            
+            var enteredText = textBox.Text?.Trim() ?? string.Empty;
+            if (string.IsNullOrEmpty(enteredText) || !enteredText.Contains('%')) return;
+
+            _logger?.LogInformation($"Wildcard search triggered for {field}: '{enteredText}'");
+
+            IEnumerable<string> data = field switch
+            {
+                "Part" => _viewModel.PartIds ?? Enumerable.Empty<string>(),
+                "Operation" => _viewModel.Operations ?? Enumerable.Empty<string>(),
+                "Location" => _viewModel.Locations ?? Enumerable.Empty<string>(),
+                _ => Enumerable.Empty<string>()
+            };
+
+            if (data.Any())
+            {
+                _logger?.LogInformation($"Showing wildcard suggestions for {field}: '{enteredText}'");
+                var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, enteredText);
+                _logger?.LogInformation($"Wildcard overlay result for {field}: '{selected}'");
+                
+                if (!string.IsNullOrEmpty(selected))
+                {
+                    switch (field)
+                    {
+                        case "Part": _viewModel.SelectedPart = selected; break;
+                        case "Operation": _viewModel.SelectedOperation = selected; break;
+                        case "Location": _viewModel.SelectedLocation = selected; break;
+                    }
+                    textBox.Text = selected;
+                    UpdateValidationStates();
+                    ValidateAndUpdateSaveButton();
+                }
+                
+                e.Handled = true;
+            }
+        };
+        
         _logger?.LogDebug($"Overlay event handler attached to {field}TextBox");
     }
 
@@ -689,6 +744,23 @@ public partial class InventoryTabView : UserControl
         _logger?.LogInformation($"[FocusLost] PartTextBox lost focus. User entered: '{value}'. PartIds count: {count}");
         System.Diagnostics.Debug.WriteLine($"[FocusLost] PartTextBox lost focus. User entered: '{value}'. PartIds count: {count}");
 
+        // Check if no data is available from server
+        if (count == 0)
+        {
+            _logger?.LogWarning("No Part IDs available - likely database connectivity issue");
+            System.Diagnostics.Debug.WriteLine("No Part IDs available - likely database connectivity issue");
+            
+            // Clear the textbox and show error message about data unavailability
+            textBox.Text = string.Empty;
+            _viewModel.SelectedPart = string.Empty;
+            _viewModel.HasError = true;
+            _viewModel.ErrorMessage = "No Part IDs available due to server connectivity issues. Please check server connection.";
+            
+            UpdateValidationStates();
+            ValidateAndUpdateSaveButton();
+            return;
+        }
+
         // Debug: Log sample of available part IDs
         if (count > 0)
         {
@@ -768,6 +840,28 @@ public partial class InventoryTabView : UserControl
             {
                 _logger?.LogInformation($"Part overlay not shown - no semi-matches for '{value}'");
                 System.Diagnostics.Debug.WriteLine($"Part overlay not shown - no semi-matches for '{value}'");
+                
+                // MTM Pattern: Clear textbox when no matches found to maintain data integrity
+                _logger?.LogInformation($"Part '{value}' has no matches in validation source. Clearing textbox for data integrity.");
+                System.Diagnostics.Debug.WriteLine($"Part '{value}' has no matches in validation source. Clearing textbox for data integrity.");
+                
+                textBox.Text = string.Empty;
+                _viewModel.SelectedPart = string.Empty;
+                
+                // Show user feedback about the clearing action
+                try
+                {
+                    await Services.ErrorHandling.HandleErrorAsync(
+                        new ArgumentException($"Invalid Part ID: '{value}' not found in available parts."),
+                        "Part ID validation failed - input cleared",
+                        "System"
+                    );
+                }
+                catch (Exception errorEx)
+                {
+                    _logger?.LogWarning(errorEx, "Failed to show error message for invalid Part ID");
+                    System.Diagnostics.Debug.WriteLine($"Failed to show error message for invalid Part ID: {errorEx.Message}");
+                }
             }
             else if (_suggestionOverlayService == null)
             {
@@ -831,29 +925,77 @@ public partial class InventoryTabView : UserControl
             int count = data.Count();
             _logger?.LogInformation($"[FocusLost] OperationTextBox lost focus. User entered: '{value}'. Operations count: {count}");
 
+            // Check if no data is available from server
+            if (count == 0)
+            {
+                _logger?.LogWarning("No Operations available - likely database connectivity issue");
+                System.Diagnostics.Debug.WriteLine("No Operations available - likely database connectivity issue");
+                
+                // Clear the textbox and show error message about data unavailability
+                textBox.Text = string.Empty;
+                _viewModel.SelectedOperation = string.Empty;
+                _viewModel.HasError = true;
+                _viewModel.ErrorMessage = "No Operations available due to server connectivity issues. Please check server connection.";
+                
+                UpdateValidationStates();
+                ValidateAndUpdateSaveButton();
+                return;
+            }
+
             // Only show suggestions if the user actually entered something
             if (!string.IsNullOrEmpty(value) && 
                 !data.Contains(value, StringComparer.OrdinalIgnoreCase) && 
                 _suggestionOverlayService != null &&
                 !_isShowingSuggestionOverlay)
             {
-                try
+                // Check if the value has any partial matches in the data
+                var hasPartialMatches = data.Any(op => 
+                    op.Contains(value, StringComparison.OrdinalIgnoreCase));
+
+                if (hasPartialMatches)
                 {
-                    _isShowingSuggestionOverlay = true;
-                    var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, value);
-                    if (!string.IsNullOrEmpty(selected))
+                    try
                     {
-                        _viewModel.SelectedOperation = selected;
-                        textBox.Text = selected;
+                        _isShowingSuggestionOverlay = true;
+                        var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, value);
+                        if (!string.IsNullOrEmpty(selected))
+                        {
+                            _viewModel.SelectedOperation = selected;
+                            textBox.Text = selected;
+                        }
+                        else
+                        {
+                            _viewModel.SelectedOperation = value;
+                        }
                     }
-                    else
+                    finally
                     {
-                        _viewModel.SelectedOperation = value;
+                        _isShowingSuggestionOverlay = false;
                     }
                 }
-                finally
+                else
                 {
-                    _isShowingSuggestionOverlay = false;
+                    // MTM Pattern: Clear textbox when no matches found to maintain data integrity
+                    _logger?.LogInformation($"Operation '{value}' has no matches in validation source. Clearing textbox for data integrity.");
+                    System.Diagnostics.Debug.WriteLine($"Operation '{value}' has no matches in validation source. Clearing textbox for data integrity.");
+                    
+                    textBox.Text = string.Empty;
+                    _viewModel.SelectedOperation = string.Empty;
+                    
+                    // Show user feedback about the clearing action
+                    try
+                    {
+                        await Services.ErrorHandling.HandleErrorAsync(
+                            new ArgumentException($"Invalid Operation: '{value}' not found in available operations."),
+                            "Operation validation failed - input cleared",
+                            "System"
+                        );
+                    }
+                    catch (Exception errorEx)
+                    {
+                        _logger?.LogWarning(errorEx, "Failed to show error message for invalid Operation");
+                        System.Diagnostics.Debug.WriteLine($"Failed to show error message for invalid Operation: {errorEx.Message}");
+                    }
                 }
             }
             else
@@ -912,29 +1054,77 @@ public partial class InventoryTabView : UserControl
             int count = data.Count();
             _logger?.LogInformation($"[FocusLost] LocationTextBox lost focus. User entered: '{value}'. Locations count: {count}");
 
+            // Check if no data is available from server
+            if (count == 0)
+            {
+                _logger?.LogWarning("No Locations available - likely database connectivity issue");
+                System.Diagnostics.Debug.WriteLine("No Locations available - likely database connectivity issue");
+                
+                // Clear the textbox and show error message about data unavailability
+                textBox.Text = string.Empty;
+                _viewModel.SelectedLocation = string.Empty;
+                _viewModel.HasError = true;
+                _viewModel.ErrorMessage = "No Locations available due to server connectivity issues. Please check server connection.";
+                
+                UpdateValidationStates();
+                ValidateAndUpdateSaveButton();
+                return;
+            }
+
             // Only show suggestions if the user actually entered something
             if (!string.IsNullOrEmpty(value) && 
                 !data.Contains(value, StringComparer.OrdinalIgnoreCase) && 
                 _suggestionOverlayService != null &&
                 !_isShowingSuggestionOverlay)
             {
-                try
+                // Check if the value has any partial matches in the data
+                var hasPartialMatches = data.Any(loc => 
+                    loc.Contains(value, StringComparison.OrdinalIgnoreCase));
+
+                if (hasPartialMatches)
                 {
-                    _isShowingSuggestionOverlay = true;
-                    var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, value);
-                    if (!string.IsNullOrEmpty(selected))
+                    try
                     {
-                        _viewModel.SelectedLocation = selected;
-                        textBox.Text = selected;
+                        _isShowingSuggestionOverlay = true;
+                        var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, value);
+                        if (!string.IsNullOrEmpty(selected))
+                        {
+                            _viewModel.SelectedLocation = selected;
+                            textBox.Text = selected;
+                        }
+                        else
+                        {
+                            _viewModel.SelectedLocation = value;
+                        }
                     }
-                    else
+                    finally
                     {
-                        _viewModel.SelectedLocation = value;
+                        _isShowingSuggestionOverlay = false;
                     }
                 }
-                finally
+                else
                 {
-                    _isShowingSuggestionOverlay = false;
+                    // MTM Pattern: Clear textbox when no matches found to maintain data integrity
+                    _logger?.LogInformation($"Location '{value}' has no matches in validation source. Clearing textbox for data integrity.");
+                    System.Diagnostics.Debug.WriteLine($"Location '{value}' has no matches in validation source. Clearing textbox for data integrity.");
+                    
+                    textBox.Text = string.Empty;
+                    _viewModel.SelectedLocation = string.Empty;
+                    
+                    // Show user feedback about the clearing action
+                    try
+                    {
+                        await Services.ErrorHandling.HandleErrorAsync(
+                            new ArgumentException($"Invalid Location: '{value}' not found in available locations."),
+                            "Location validation failed - input cleared",
+                            "System"
+                        );
+                    }
+                    catch (Exception errorEx)
+                    {
+                        _logger?.LogWarning(errorEx, "Failed to show error message for invalid Location");
+                        System.Diagnostics.Debug.WriteLine($"Failed to show error message for invalid Location: {errorEx.Message}");
+                    }
                 }
             }
             else

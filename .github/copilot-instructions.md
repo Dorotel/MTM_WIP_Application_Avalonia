@@ -202,6 +202,93 @@ if (result.Status == 1)
 - ❌ String concatenation in SQL
 - ❌ Direct MySqlCommand usage
 
+### **CRITICAL: Database Column Validation Rules**
+```csharp
+// ✅ CORRECT: Always validate column names against actual database schema
+// NEVER assume column names - always check User model documentation
+public async Task<List<string>> LoadUsersFromDatabaseAsync()
+{
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        connectionString,
+        "usr_users_Get_All",
+        Array.Empty<MySqlParameter>()
+    );
+
+    if (result.Status == 1)
+    {
+        var users = new List<string>();
+        foreach (DataRow row in result.Data.Rows)
+        {
+            // ✅ CORRECT: Use "User" column (as documented in User model)
+            users.Add(row["User"].ToString() ?? string.Empty);
+        }
+        return users;
+    }
+
+    return new List<string>(); // Return empty on failure - NO FALLBACK DATA
+}
+
+// ❌ WRONG: Incorrect column name assumption
+public async Task<List<string>> LoadUsersFromDatabaseAsync_WRONG()
+{
+    // This will cause: System.ArgumentException - Column 'UserId' does not belong to table
+    var userName = row["UserId"].ToString(); // WRONG - column is "User"
+}
+```
+
+### **Database Model Column Mapping Reference**
+```csharp
+// CRITICAL: Column names vs Property names (from User model documentation)
+// User Table: Column = "User", Property = "User_Name" (to avoid conflicts)
+// Part Table: Column = "PartID", Property = "PartId"
+// Operation Table: Column = "OperationNumber", Property = "OperationNumber"
+// Location Table: Column = "Location", Property = "Location"
+```
+
+### **NO FALLBACK DATA PATTERN (MANDATORY)**
+```csharp
+// ✅ CORRECT: Return empty collections on database failure
+public async Task<List<string>> GetMasterDataAsync(string procedureName, string columnName)
+{
+    try
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            connectionString, procedureName, Array.Empty<MySqlParameter>()
+        );
+
+        if (result.Status == 1)
+        {
+            var data = new List<string>();
+            foreach (DataRow row in result.Data.Rows)
+            {
+                data.Add(row[columnName].ToString() ?? string.Empty);
+            }
+            return data;
+        }
+        
+        // Database operation failed - return empty (NO fallback data)
+        await ErrorHandling.HandleErrorAsync(
+            new InvalidOperationException($"Database operation failed with status: {result.Status}"),
+            $"Failed to load data from {procedureName}"
+        );
+        return new List<string>();
+    }
+    catch (Exception ex)
+    {
+        // Database connection failed - return empty (NO fallback data)
+        await ErrorHandling.HandleErrorAsync(ex, $"Database connection failed for {procedureName}");
+        return new List<string>();
+    }
+}
+
+// ❌ WRONG: Never provide fallback/dummy data
+public async Task<List<string>> GetMasterDataAsync_WRONG()
+{
+    // NEVER do this - fallback data removed from MTM application
+    return new List<string> { "FALLBACK001", "ERROR002" }; // WRONG
+}
+```
+
 </details>
 
 <details>

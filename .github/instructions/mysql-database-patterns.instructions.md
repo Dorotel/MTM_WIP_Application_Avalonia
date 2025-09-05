@@ -270,6 +270,30 @@ public async Task<List<string>> GetAllOperationsAsync()
 "usr_sessions_Get_Active"              // Get active sessions
 "usr_sessions_Cleanup"                 // Cleanup old sessions
 
+// CRITICAL: User Table Column Validation
+// The User model shows: "Column is 'User' but property is User_Name to avoid conflicts"
+// ALWAYS use "User" column name when accessing User table data
+public async Task<List<string>> GetAllUsersAsync()
+{
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        connectionString,
+        "usr_users_Get_All",
+        Array.Empty<MySqlParameter>()
+    );
+
+    var users = new List<string>();
+    if (result.Status == 1)
+    {
+        foreach (DataRow row in result.Data.Rows)
+        {
+            // ✅ CORRECT: Use "User" column (not "UserId" or "User_Name")
+            users.Add(row["User"].ToString() ?? string.Empty);
+        }
+    }
+
+    return users;
+}
+
 // Usage Example:
 public async Task<bool> CreateUserSessionAsync(string username, string sessionId)
 {
@@ -650,6 +674,291 @@ public class WorkflowStatus
 
 ---
 
+## 🚫 NO FALLBACK DATA PATTERN (CRITICAL)
+
+### Database Connectivity Validation Rules
+**MANDATORY: Never provide fallback or dummy data when database operations fail.**
+
+```csharp
+// ✅ CORRECT: Return empty collections with server connectivity error
+public async Task<List<string>> GetAllPartIdsAsync()
+{
+    try 
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            connectionString,
+            "md_part_ids_Get_All",
+            Array.Empty<MySqlParameter>()
+        );
+
+        if (result.Status == 1)
+        {
+            var partIds = new List<string>();
+            foreach (DataRow row in result.Data.Rows)
+            {
+                partIds.Add(row["PartID"].ToString() ?? string.Empty);
+            }
+            return partIds;
+        }
+        else
+        {
+            // Database operation failed - return empty collection
+            await ErrorHandling.HandleErrorAsync(
+                new InvalidOperationException($"Database operation failed with status: {result.Status}"),
+                "Failed to load Part IDs from database"
+            );
+            return new List<string>();
+        }
+    }
+    catch (Exception ex)
+    {
+        // Database connection failed - return empty collection
+        await ErrorHandling.HandleErrorAsync(ex, "Failed to connect to database for Part IDs");
+        return new List<string>();
+    }
+}
+
+// ✅ CORRECT: UI validation with empty collection detection
+private async void OnPartLostFocus(object? sender, RoutedEventArgs e)
+{
+    if (sender is not TextBox textBox || DataContext is not InventoryViewModel viewModel)
+        return;
+
+    var inputValue = textBox.Text?.Trim() ?? string.Empty;
+    
+    if (string.IsNullOrEmpty(inputValue))
+        return;
+
+    // Check if master data is available
+    if (!viewModel.MasterData.PartIds.Any())
+    {
+        // Show server connectivity error - don't clear textbox
+        textBox.BorderBrush = new SolidColorBrush(Colors.Orange);
+        MessageBox.Show("No Part IDs available - check server connection.", "Server Connection Warning");
+        return;
+    }
+
+    // Validate against available data
+    if (!viewModel.MasterData.PartIds.Contains(inputValue))
+    {
+        textBox.Text = string.Empty; // Clear invalid entry
+        textBox.BorderBrush = new SolidColorBrush(Colors.Red);
+        MessageBox.Show($"Part ID '{inputValue}' not found. TextBox cleared.", "Invalid Part ID");
+    }
+    else
+    {
+        textBox.BorderBrush = new SolidColorBrush(Colors.Green);
+    }
+}
+
+// ❌ WRONG: Never provide fallback data
+public async Task<List<string>> GetAllPartIdsAsync_WRONG()
+{
+    try 
+    {
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            connectionString,
+            "md_part_ids_Get_All",
+            Array.Empty<MySqlParameter>()
+        );
+
+        if (result.Status == 1)
+        {
+            // Process actual data...
+        }
+        else
+        {
+            // ❌ WRONG: Never return fallback data
+            return new List<string> { "FALLBACK001", "FALLBACK002" };
+        }
+    }
+    catch (Exception ex)
+    {
+        // ❌ WRONG: Never return fallback data on database errors
+        return new List<string> { "ERROR001", "ERROR002" };
+    }
+}
+```
+
+### Master Data Service No-Fallback Pattern
+```csharp
+// ✅ CORRECT: MasterDataService without fallback methods
+public class MasterDataService : IMasterDataService
+{
+    private readonly IDatabaseService _databaseService;
+    private readonly ILogger<MasterDataService> _logger;
+
+    // Master data collections - empty when database unavailable
+    public ObservableCollection<string> PartIds { get; } = new();
+    public ObservableCollection<string> Operations { get; } = new();
+    public ObservableCollection<string> Locations { get; } = new();
+    public ObservableCollection<string> Users { get; } = new();
+
+    // Load data methods - return empty on failure
+    public async Task LoadAllDataAsync()
+    {
+        try
+        {
+            var partIds = await GetAllPartIdsAsync();
+            var operations = await GetAllOperationsAsync();
+            var locations = await GetAllLocationsAsync();
+            var users = await GetAllUsersAsync();
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                PartIds.Clear();
+                Operations.Clear();
+                Locations.Clear();
+                Users.Clear();
+
+                foreach (var partId in partIds) PartIds.Add(partId);
+                foreach (var operation in operations) Operations.Add(operation);
+                foreach (var location in locations) Locations.Add(location);
+                foreach (var user in users) Users.Add(user);
+            });
+
+            _logger.LogInformation("Master data loaded successfully. PartIds: {PartCount}, Operations: {OpCount}, Locations: {LocCount}, Users: {UserCount}",
+                partIds.Count, operations.Count, locations.Count, users.Count);
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandling.HandleErrorAsync(ex, "Failed to load master data");
+            
+            // Collections remain empty - UI will show "no data available" messages
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                PartIds.Clear();
+                Operations.Clear(); 
+                Locations.Clear();
+                Users.Clear();
+            });
+        }
+    }
+
+    // ❌ REMOVED: All fallback data methods eliminated
+    // - GetFallbackPartIds()
+    // - GetFallbackOperations()
+    // - GetFallbackLocations()
+    // - GetFallbackUsers()
+}
+```
+
+### TextBox Validation Behavior Pattern
+```csharp
+// ✅ CORRECT: TextBoxClearOnNoMatchBehavior with server connectivity awareness
+public class TextBoxClearOnNoMatchBehavior : Behavior<TextBox>
+{
+    public static readonly StyledProperty<ObservableCollection<string>> DataSourceProperty =
+        AvaloniaProperty.Register<TextBoxClearOnNoMatchBehavior, ObservableCollection<string>>(nameof(DataSource));
+
+    public ObservableCollection<string> DataSource
+    {
+        get => GetValue(DataSourceProperty);
+        set => SetValue(DataSourceProperty, value);
+    }
+
+    protected override void OnAttached()
+    {
+        base.OnAttached();
+        if (AssociatedObject != null)
+        {
+            AssociatedObject.LostFocus += OnLostFocus;
+        }
+    }
+
+    private void OnLostFocus(object? sender, RoutedEventArgs e)
+    {
+        if (AssociatedObject?.Text is not string inputValue || string.IsNullOrEmpty(inputValue.Trim()))
+            return;
+
+        inputValue = inputValue.Trim();
+
+        // Check if data source is available
+        if (DataSource == null || !DataSource.Any())
+        {
+            // Show server connectivity warning - don't clear textbox
+            AssociatedObject.BorderBrush = new SolidColorBrush(Colors.Orange);
+            
+            // Optional: Show user-friendly message
+            MessageBox.Show(
+                "No values exist due to no data able to be pulled from the server. Check your connection.",
+                "Server Connection Warning",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning
+            );
+            return;
+        }
+
+        // Validate against available data
+        if (!DataSource.Contains(inputValue))
+        {
+            AssociatedObject.Text = string.Empty; // Clear invalid entry
+            AssociatedObject.BorderBrush = new SolidColorBrush(Colors.Red);
+            
+            MessageBox.Show(
+                $"'{inputValue}' not found in available options. TextBox cleared.",
+                "Invalid Entry",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
+        }
+        else
+        {
+            AssociatedObject.BorderBrush = new SolidColorBrush(Colors.Green);
+        }
+    }
+}
+```
+
+### Column Name Validation Rules
+```csharp
+// ✅ CRITICAL: Always validate column names against actual database schema
+public async Task<List<string>> LoadDataFromTableAsync(string procedureName, string columnName)
+{
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        connectionString,
+        procedureName,
+        Array.Empty<MySqlParameter>()
+    );
+
+    if (result.Status == 1)
+    {
+        var data = new List<string>();
+        foreach (DataRow row in result.Data.Rows)
+        {
+            try
+            {
+                // Validate column exists before accessing
+                if (result.Data.Columns.Contains(columnName))
+                {
+                    data.Add(row[columnName].ToString() ?? string.Empty);
+                }
+                else
+                {
+                    throw new ArgumentException($"Column '{columnName}' does not exist in result set. Available columns: {string.Join(", ", result.Data.Columns.Cast<DataColumn>().Select(c => c.ColumnName))}");
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                await ErrorHandling.HandleErrorAsync(ex, $"Column validation failed for procedure {procedureName}");
+                return new List<string>(); // Return empty on column validation failure
+            }
+        }
+        return data;
+    }
+    
+    return new List<string>(); // Return empty on database failure
+}
+
+// Database Model Column Mapping Reference:
+// User Table: Column = "User", Property = "User_Name" (to avoid conflicts)
+// Part Table: Column = "PartID", Property = "PartId"
+// Operation Table: Column = "OperationNumber", Property = "OperationNumber"  
+// Location Table: Column = "Location", Property = "Location"
+```
+
+---
+
 ## 🔄 Connection Management and Performance
 
 ### Connection String Management
@@ -847,6 +1156,6 @@ public class MockDatabaseHelper
 ---
 
 **Document Status**: ✅ Complete Database Reference  
-**Database Version**: MySQL 9.4.0  
+**Database Version**: MySQL 8.0.0  
 **Last Updated**: September 4, 2025  
 **Database Owner**: MTM Development Team

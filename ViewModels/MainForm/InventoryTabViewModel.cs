@@ -28,7 +28,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 /// - MVVM Community Toolkit with [ObservableProperty] and [RelayCommand] source generators
 /// - Centralized progress reporting via IApplicationStateService 
 /// - MTM database integration with stored procedures
-/// - Real-time transaction history tracking
+/// - Comprehensive input validation with user feedback
 /// - Comprehensive input validation with user feedback
 /// - Dependency injection with proper service lifetimes
 /// </summary>
@@ -137,17 +137,54 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     [ObservableProperty]
     private string _locationText = string.Empty;
 
-    /// <summary>
-    /// Controls the expanded state of the transaction history panel
-    /// </summary>
-    [ObservableProperty]
-    private bool _isHistoryPanelExpanded = false;
+    #endregion
+
+    #region Property Change Notifications for Watermarks
 
     /// <summary>
-    /// Collection of transactions performed in the current session
+    /// Called when SelectedPart property changes - triggers watermark and validation updates
     /// </summary>
-    [ObservableProperty]
-    private ObservableCollection<SessionTransaction> _sessionTransactionHistory = new();
+    partial void OnSelectedPartChanged(string value)
+    {
+        OnPropertyChanged(nameof(PartWatermark));
+        OnPropertyChanged(nameof(IsPartValid));
+    }
+
+    /// <summary>
+    /// Called when SelectedOperation property changes - triggers watermark and validation updates
+    /// </summary>
+    partial void OnSelectedOperationChanged(string value)
+    {
+        OnPropertyChanged(nameof(OperationWatermark));
+        OnPropertyChanged(nameof(IsOperationValid));
+    }
+
+    /// <summary>
+    /// Called when SelectedLocation property changes - triggers watermark and validation updates
+    /// </summary>
+    partial void OnSelectedLocationChanged(string value)
+    {
+        OnPropertyChanged(nameof(LocationWatermark));
+        OnPropertyChanged(nameof(IsLocationValid));
+    }
+
+    /// <summary>
+    /// Called when Quantity property changes - triggers watermark and validation updates
+    /// </summary>
+    partial void OnQuantityChanged(int value)
+    {
+        OnPropertyChanged(nameof(QuantityWatermark));
+        OnPropertyChanged(nameof(IsQuantityValid));
+    }
+
+    /// <summary>
+    /// Called when Notes property changes - triggers watermark and validation updates
+    /// </summary>
+    partial void OnNotesChanged(string value)
+    {
+        OnPropertyChanged(nameof(NotesWatermark));
+        OnPropertyChanged(nameof(IsNotesValid));
+    }
 
     #endregion
 
@@ -187,9 +224,19 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     public bool IsPartValid => !string.IsNullOrWhiteSpace(SelectedPart);
 
     /// <summary>
+    /// Dynamic watermark for Part ID field - shows error or placeholder
+    /// </summary>
+    public string PartWatermark => IsPartValid ? "Enter or select a part number..." : "Part ID is required";
+
+    /// <summary>
     /// Validation state for Operation field
     /// </summary>
     public bool IsOperationValid => !string.IsNullOrWhiteSpace(SelectedOperation);
+
+    /// <summary>
+    /// Dynamic watermark for Operation field - shows error or placeholder
+    /// </summary>
+    public string OperationWatermark => IsOperationValid ? "Enter or select an operation..." : "Operation is required";
 
     /// <summary>
     /// Validation state for Location field
@@ -197,14 +244,29 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     public bool IsLocationValid => !string.IsNullOrWhiteSpace(SelectedLocation);
 
     /// <summary>
+    /// Dynamic watermark for Location field - shows error or placeholder
+    /// </summary>
+    public string LocationWatermark => IsLocationValid ? "Enter or select a location..." : "Location is required";
+
+    /// <summary>
     /// Validation state for Quantity field
     /// </summary>
     public bool IsQuantityValid => Quantity > 0;
 
     /// <summary>
-    /// Count of transactions in current session
+    /// Dynamic watermark for Quantity field - shows error or placeholder
     /// </summary>
-    public int SessionTransactionCount => SessionTransactionHistory.Count;
+    public string QuantityWatermark => IsQuantityValid ? "Enter quantity..." : "Quantity must be greater than 0";
+
+    /// <summary>
+    /// Validation state for Notes field
+    /// </summary>
+    public bool IsNotesValid => string.IsNullOrEmpty(Notes) || Notes.Length <= DatabaseConstraints.Notes_MaxLength;
+
+    /// <summary>
+    /// Dynamic watermark for Notes field - shows error or placeholder
+    /// </summary>
+    public string NotesWatermark => IsNotesValid ? "Optional notes or comments..." : $"Notes cannot exceed {DatabaseConstraints.Notes_MaxLength} characters";
 
     #endregion
 
@@ -336,11 +398,6 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                 // Generate batch number for session tracking
                 var batchNumber = $"BATCH-{DateTime.Now:yyyyMMdd-HHmmss}";
                 
-                // Add to session history for user feedback
-                AddToSessionHistory(
-                    SelectedPart, SelectedOperation, SelectedLocation, Quantity, 
-                    "WIP", batchNumber, "Success");
-                
                 // Fire event to notify parent components
                 SaveCompleted?.Invoke(this, new InventorySavedEventArgs
                 {
@@ -366,11 +423,6 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             }
             else
             {
-                // Add failed transaction to history for user tracking
-                AddToSessionHistory(
-                    SelectedPart, SelectedOperation, SelectedLocation, Quantity, 
-                    "WIP", "N/A", "Failed");
-                
                 HasError = true;
                 ErrorMessage = result.Message;
                 Logger.LogWarning("Failed to save inventory item: {Error}", result.Message);
@@ -380,11 +432,6 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         }
         catch (Exception ex)
         {
-            // Add error transaction to history
-            AddToSessionHistory(
-                SelectedPart, SelectedOperation, SelectedLocation, Quantity, 
-                "WIP", "N/A", "Error");
-            
             HasError = true;
             ErrorMessage = Services.ErrorHandling.GetUserFriendlyMessage(ex);
             await Services.ErrorHandling.HandleErrorAsync(ex, "SaveInventoryItem", _applicationStateService.CurrentUser,
@@ -947,52 +994,11 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             return false;
         }
 
+        // All validation passed - clear error state
+        HasError = false;
+        ErrorMessage = string.Empty;
+
         return true;
-    }
-
-    #endregion
-
-    #region Transaction History Management
-
-    /// <summary>
-    /// Adds a transaction to the session history for display in the history panel
-    /// Provides immediate user feedback and audit trail for inventory operations
-    /// </summary>
-    /// <param name="partId">Part identifier for the transaction</param>
-    /// <param name="operation">Operation number for the transaction</param>
-    /// <param name="location">Location where the transaction occurred</param>
-    /// <param name="quantity">Quantity of items in the transaction</param>
-    /// <param name="itemType">Type of inventory item (typically "WIP")</param>
-    /// <param name="batchNumber">Batch tracking number for the transaction</param>
-    /// <param name="status">Transaction status (Success/Failed/Error)</param>
-    private void AddToSessionHistory(string partId, string operation, string location, 
-                                   int quantity, string itemType, string batchNumber, string status)
-    {
-        var transaction = new SessionTransaction
-        {
-            TransactionTime = DateTime.Now,
-            PartId = partId,
-            Operation = operation,
-            Location = location,
-            Quantity = quantity,
-            ItemType = itemType,
-            BatchNumber = batchNumber,
-            Status = status,
-            Notes = Notes ?? string.Empty,
-            User = _applicationStateService.CurrentUser
-        };
-        
-        // Add to beginning of collection (most recent first)
-        SessionTransactionHistory.Insert(0, transaction);
-        
-        // Auto-expand panel on first transaction for user awareness
-        if (SessionTransactionHistory.Count == 1)
-        {
-            IsHistoryPanelExpanded = true;
-        }
-        
-        Logger.LogDebug("Added transaction to session history: {PartId} - {Operation} ({Quantity} units) - Status: {Status}", 
-            partId, operation, quantity, status);
     }
 
     #endregion
@@ -1008,7 +1014,6 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         if (disposing)
         {
-            SessionTransactionHistory.Clear();
             PartIds.Clear();
             Operations.Clear();
             Locations.Clear();

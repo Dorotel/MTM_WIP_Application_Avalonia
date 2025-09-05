@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -192,10 +193,10 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 var overlayView = new SuggestionOverlayView
                 {
                     DataContext = viewModel,
-                    Width = 500,
-                    Height = 400,
-                    MinWidth = 400,
-                    MinHeight = 300
+                    Width = 600,
+                    Height = 500,
+                    MinWidth = 500,
+                    MinHeight = 400
                 };
 
                 // Find the main window or top-level control for better positioning
@@ -209,8 +210,8 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                     PlacementTarget = placementTarget,
                     Placement = PlacementMode.Center,
                     IsLightDismissEnabled = true,
-                    Width = 500,
-                    Height = 400,
+                    Width = 600,
+                    Height = 500,
                     HorizontalOffset = 0,
                     VerticalOffset = 0
                 };
@@ -264,27 +265,104 @@ public class SuggestionOverlayService : ISuggestionOverlayService
 
     /// <summary>
     /// Filters suggestions based on user input using case-insensitive substring matching.
+    /// Supports wildcard matching using % symbol (e.g., "R-%-0%" matches "R-ABC-01", "R-XYZ-02").
     /// </summary>
     /// <param name="suggestions">All available suggestions</param>
-    /// <param name="userInput">The user's current input</param>
+    /// <param name="userInput">The user's current input (may contain % wildcards)</param>
     /// <returns>Filtered list of suggestions that match the input</returns>
     private List<string> FilterSuggestions(List<string> suggestions, string userInput)
     {
         if (string.IsNullOrEmpty(userInput))
         {
-            return suggestions.Take(10).ToList(); // Limit to 10 suggestions
+            return suggestions.Take(100).ToList(); // Allow up to 100 suggestions when no input
         }
 
-        var filtered = suggestions
-            .Where(s => !string.IsNullOrEmpty(s) && 
-                       s.Contains(userInput, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(s => s.StartsWith(userInput, StringComparison.OrdinalIgnoreCase) ? 0 : 1) // Prefer starts-with matches
-            .ThenBy(s => s.Length) // Prefer shorter matches
-            .ThenBy(s => s) // Alphabetical order as final tie-breaker
-            .Take(10) // Limit to 10 suggestions for performance
-            .ToList();
+        // Check if the input contains wildcards (% symbols)
+        bool hasWildcards = userInput.Contains('%');
+
+        List<string> filtered;
+
+        if (hasWildcards)
+        {
+            // Convert wildcard pattern to regex for matching
+            var regexPattern = ConvertWildcardToRegex(userInput);
+            _logger.LogDebug("Wildcard pattern '{Input}' converted to regex: '{Regex}'", userInput, regexPattern);
+            
+            try
+            {
+                var regex = new Regex(regexPattern, RegexOptions.IgnoreCase);
+
+                filtered = suggestions
+                    .Where(s => !string.IsNullOrEmpty(s) && regex.IsMatch(s))
+                    .OrderBy(s => s.Length) // Prefer shorter matches
+                    .ThenBy(s => s) // Alphabetical order as tie-breaker
+                    .Take(50) // Allow up to 50 filtered suggestions with scrolling support
+                    .ToList();
+
+                _logger.LogDebug("Wildcard search '{Input}' found {Count} matches", userInput, filtered.Count);
+                if (filtered.Count <= 5) // Log first few matches for debugging
+                {
+                    _logger.LogDebug("First matches: {Matches}", string.Join(", ", filtered));
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                // If regex fails, fall back to simple contains matching
+                _logger.LogWarning("Invalid wildcard pattern '{Pattern}': {Error}. Using simple matching.", userInput, ex.Message);
+                
+                filtered = suggestions
+                    .Where(s => !string.IsNullOrEmpty(s) && 
+                               s.Contains(userInput.Replace("%", ""), StringComparison.OrdinalIgnoreCase))
+                    .Take(50)
+                    .ToList();
+            }
+        }
+        else
+        {
+            // Standard substring matching (no wildcards)
+            filtered = suggestions
+                .Where(s => !string.IsNullOrEmpty(s) && 
+                           s.Contains(userInput, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(s => s.StartsWith(userInput, StringComparison.OrdinalIgnoreCase) ? 0 : 1) // Prefer starts-with matches
+                .ThenBy(s => s.Length) // Prefer shorter matches
+                .ThenBy(s => s) // Alphabetical order as final tie-breaker
+                .Take(50) // Allow up to 50 filtered suggestions with scrolling support
+                .ToList();
+        }
 
         return filtered;
+    }
+
+    /// <summary>
+    /// Converts a wildcard pattern (using % symbols) to a regex pattern.
+    /// Examples: "R-%-0%" becomes "^R\-.*\-0.*$"
+    /// </summary>
+    /// <param name="wildcardPattern">Pattern with % wildcards</param>
+    /// <returns>Equivalent regex pattern</returns>
+    private string ConvertWildcardToRegex(string wildcardPattern)
+    {
+        if (string.IsNullOrEmpty(wildcardPattern))
+            return string.Empty;
+
+        _logger.LogDebug("Converting wildcard pattern: '{Pattern}'", wildcardPattern);
+
+        // First replace % with a placeholder that won't be escaped
+        var withPlaceholder = wildcardPattern.Replace("%", "<!WILDCARD!>");
+        _logger.LogDebug("With placeholder: '{Pattern}'", withPlaceholder);
+        
+        // Escape special regex characters (% is now safe as placeholder)
+        var escaped = Regex.Escape(withPlaceholder);
+        _logger.LogDebug("After escaping: '{Escaped}'", escaped);
+        
+        // Replace placeholder with .* (match any characters)
+        var regexPattern = escaped.Replace("<!WILDCARD!>", ".*");
+        _logger.LogDebug("After replacing wildcards: '{Pattern}'", regexPattern);
+        
+        // Anchor the pattern to match the entire string
+        regexPattern = "^" + regexPattern + "$";
+        _logger.LogDebug("Final regex pattern: '{FinalPattern}'", regexPattern);
+        
+        return regexPattern;
     }
 }
 

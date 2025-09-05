@@ -190,12 +190,62 @@ public interface IMasterDataService
     ObservableCollection<string> PartIds { get; }
     ObservableCollection<string> Operations { get; }
     ObservableCollection<string> Locations { get; }
+    ObservableCollection<string> Users { get; }
     bool IsLoading { get; }
     Task LoadAllMasterDataAsync();
     Task RefreshPartIdsAsync();
     Task RefreshOperationsAsync();
     Task RefreshLocationsAsync();
+    Task RefreshUsersAsync();
     event EventHandler MasterDataLoaded;
+}
+
+// CRITICAL: No Fallback Data Pattern Implementation
+public class MasterDataService : IMasterDataService
+{
+    // Collections remain empty when database unavailable
+    public ObservableCollection<string> PartIds { get; } = new();
+    public ObservableCollection<string> Operations { get; } = new();
+    public ObservableCollection<string> Locations { get; } = new();
+    public ObservableCollection<string> Users { get; } = new();
+
+    // Load data methods - return empty on failure (NO FALLBACK DATA)
+    public async Task LoadAllDataAsync()
+    {
+        try
+        {
+            var partIds = await GetAllPartIdsAsync();
+            var operations = await GetAllOperationsAsync();
+            var locations = await GetAllLocationsAsync();
+            var users = await GetAllUsersAsync();
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                PartIds.Clear();
+                Operations.Clear();
+                Locations.Clear();
+                Users.Clear();
+
+                foreach (var partId in partIds) PartIds.Add(partId);
+                foreach (var operation in operations) Operations.Add(operation);
+                foreach (var location in locations) Locations.Add(location);
+                foreach (var user in users) Users.Add(user);
+            });
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandling.HandleErrorAsync(ex, "Failed to load master data");
+            
+            // Collections remain empty - UI shows server connectivity warnings
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                PartIds.Clear();
+                Operations.Clear(); 
+                Locations.Clear();
+                Users.Clear();
+            });
+        }
+    }
 }
 ```
 
@@ -299,15 +349,15 @@ private bool ValidateLocation(string location, string building)
 }
 ```
 
-### F5: Real-Time Data Synchronization
-**User Story**: As a production operator, I want master data changes to be immediately available in my inventory forms so I can use the most current reference data without restarting the application.
+### F5: Real-Time Data Synchronization with Server Connectivity Awareness
+**User Story**: As a production operator, I want master data changes to be immediately available in my inventory forms, and I want clear warnings when server connectivity issues prevent data validation.
 
 **Acceptance Criteria**:
 - ✅ Automatic refresh of ObservableCollections when master data changes
 - ✅ Event-driven notifications to all consuming ViewModels
 - ✅ Background data loading without UI blocking or performance degradation
-- ✅ Graceful handling of database connectivity issues with cached data
-- ✅ Real-time validation updates in auto-complete controls
+- ✅ Server connectivity awareness with orange border warnings for empty collections
+- ✅ Clear distinction between invalid entries (red) and server connectivity issues (orange)
 
 **Technical Implementation**:
 ```csharp
@@ -315,23 +365,70 @@ public event EventHandler MasterDataLoaded;
 
 private async Task LoadPartIdsFromDatabaseAsync()
 {
-    // Load data from stored procedure
-    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-        connectionString, "md_part_ids_Get_All", new Dictionary<string, object>());
-
-    if (result.IsSuccess)
+    try
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            connectionString, "md_part_ids_Get_All", Array.Empty<MySqlParameter>());
+
+        if (result.Status == 1)
         {
-            PartIds.Clear();
-            foreach (DataRow row in result.Data.Rows)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                PartIds.Add(row["PartID"]?.ToString());
-            }
-        });
-        
-        // Notify all subscribers
-        MasterDataLoaded?.Invoke(this, EventArgs.Empty);
+                PartIds.Clear();
+                foreach (DataRow row in result.Data.Rows)
+                {
+                    PartIds.Add(row["PartID"].ToString() ?? string.Empty);
+                }
+            });
+            
+            MasterDataLoaded?.Invoke(this, EventArgs.Empty);
+        }
+        else
+        {
+            // Database operation failed - collections remain empty
+            await ErrorHandling.HandleErrorAsync(
+                new InvalidOperationException($"Database operation failed with status: {result.Status}"),
+                "Failed to load Part IDs from database"
+            );
+        }
+    }
+    catch (Exception ex)
+    {
+        // Database connection failed - collections remain empty  
+        await ErrorHandling.HandleErrorAsync(ex, "Failed to connect to database for Part IDs");
+    }
+}
+
+// UI Validation with Server Connectivity Awareness
+private async void OnPartLostFocus(object? sender, RoutedEventArgs e)
+{
+    if (sender is not TextBox textBox || DataContext is not InventoryViewModel viewModel)
+        return;
+
+    var inputValue = textBox.Text?.Trim() ?? string.Empty;
+    
+    if (string.IsNullOrEmpty(inputValue))
+        return;
+
+    // Check if master data is available (server connectivity)
+    if (!viewModel.MasterData.PartIds.Any())
+    {
+        // Show server connectivity warning - don't clear textbox
+        textBox.BorderBrush = new SolidColorBrush(Colors.Orange);
+        MessageBox.Show("No Part IDs available - check server connection.", "Server Connection Warning");
+        return;
+    }
+
+    // Validate against available data
+    if (!viewModel.MasterData.PartIds.Contains(inputValue))
+    {
+        textBox.Text = string.Empty; // Clear invalid entry
+        textBox.BorderBrush = new SolidColorBrush(Colors.Red);
+        MessageBox.Show($"Part ID '{inputValue}' not found. TextBox cleared.", "Invalid Part ID");
+    }
+    else
+    {
+        textBox.BorderBrush = new SolidColorBrush(Colors.Green);
     }
 }
 ```
@@ -461,6 +558,36 @@ public class MasterDataValidationRules
                Regex.IsMatch(location, @"^[A-Za-z0-9\-_]+$");
     }
 }
+
+// CRITICAL: Database Column Validation Pattern
+public async Task<List<string>> LoadUsersFromDatabaseAsync()
+{
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        connectionString,
+        "usr_users_Get_All",
+        Array.Empty<MySqlParameter>()
+    );
+
+    if (result.Status == 1)
+    {
+        var users = new List<string>();
+        foreach (DataRow row in result.Data.Rows)
+        {
+            // ✅ CORRECT: Use "User" column (as documented in User model)
+            // User model shows: "Column is 'User' but property is User_Name to avoid conflicts"
+            users.Add(row["User"].ToString() ?? string.Empty);
+        }
+        return users;
+    }
+
+    return new List<string>(); // Return empty on failure - NO FALLBACK DATA
+}
+
+// Database Model Column Mapping Reference:
+// User Table: Column = "User", Property = "User_Name" (to avoid conflicts)
+// Part Table: Column = "PartID", Property = "PartId"
+// Operation Table: Column = "OperationNumber", Property = "OperationNumber"
+// Location Table: Column = "Location", Property = "Location"
 ```
 
 ---

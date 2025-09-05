@@ -29,6 +29,11 @@ public partial class QuickButtonsViewModel : BaseViewModel
 
     // Observable collections
     public ObservableCollection<QuickButtonItemViewModel> QuickButtons { get; } = new();
+    public ObservableCollection<SessionTransaction> SessionTransactionHistory { get; } = new();
+
+    // Toggle state for panel view
+    [ObservableProperty]
+    private bool _isShowingHistory = false;
 
     // Event to notify the parent about quick action execution
     public event EventHandler<QuickActionExecutedEventArgs>? QuickActionExecuted;
@@ -53,6 +58,11 @@ public partial class QuickButtonsViewModel : BaseViewModel
     /// Gets whether any button can move down
     /// </summary>
     public bool CanAnyButtonMoveDown => QuickButtons.Any(CanMoveButtonDown);
+
+    /// <summary>
+    /// Count of transactions in current session
+    /// </summary>
+    public int SessionTransactionCount => SessionTransactionHistory.Count;
 
     public QuickButtonsViewModel(
         IQuickButtonsService quickButtonsService,
@@ -221,6 +231,30 @@ public partial class QuickButtonsViewModel : BaseViewModel
         Logger.LogInformation("ManageButtonsCommand executed - Open quick button management interface");
         // Open a management interface for quick buttons
         // This could navigate to a dedicated management view
+    }
+
+    /// <summary>
+    /// Command to show the quick actions panel
+    /// </summary>
+    [RelayCommand]
+    private void ShowQuickActions()
+    {
+        IsShowingHistory = false;
+        Logger.LogInformation("Switching to Quick Actions view");
+        OnPropertyChanged(nameof(SessionTransactionCount));
+        OnPropertyChanged(nameof(NonEmptyQuickButtonsCount));
+    }
+
+    /// <summary>
+    /// Command to show the transaction history panel
+    /// </summary>
+    [RelayCommand]
+    private void ShowHistory()
+    {
+        IsShowingHistory = true;
+        Logger.LogInformation("Switching to Transaction History view");
+        OnPropertyChanged(nameof(SessionTransactionCount));
+        OnPropertyChanged(nameof(NonEmptyQuickButtonsCount));
     }
 
     #endregion
