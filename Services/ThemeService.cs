@@ -458,17 +458,29 @@ public class ThemeService : IThemeService
     {
         try
         {
+            // Wait for Application.Current to be available with timeout
+            var maxWaitTime = TimeSpan.FromSeconds(10);
+            var startTime = DateTime.UtcNow;
+            
+            while (Application.Current == null && DateTime.UtcNow - startTime < maxWaitTime)
+            {
+                _logger.LogDebug("Waiting for Application.Current to be available...");
+                await Task.Delay(100);
+            }
+            
             if (Application.Current == null) 
             {
-                _logger.LogWarning("Application.Current is null, cannot apply theme");
+                _logger.LogWarning("Application.Current is still null after {MaxWaitSeconds}s, cannot apply theme", maxWaitTime.TotalSeconds);
                 return;
             }
 
-            await Task.CompletedTask; // Make this actually async for future enhancements
-
             // Set the theme variant based on theme
             var themeVariant = theme.IsDark ? ThemeVariant.Dark : ThemeVariant.Light;
-            Application.Current.RequestedThemeVariant = themeVariant;
+            
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Application.Current.RequestedThemeVariant = themeVariant;
+            });
 
             // Apply theme-specific resource file
             await LoadThemeResourcesAsync(theme.Id);
