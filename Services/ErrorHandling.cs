@@ -97,16 +97,18 @@ public static class ErrorHandling
     /// <summary>
     /// File-based logging fallback when database logging fails.
     /// </summary>
-    public static async Task LogToFileAsync(Exception ex, string operation, string userId, Dictionary<string, object> context)
+    public static Task LogToFileAsync(Exception ex, string operation, string userId, Dictionary<string, object> context)
     {
         try
         {
             var errorEntry = CreateErrorEntry(ex, operation, userId, context);
             LogToFileServer(errorEntry);
+            return Task.CompletedTask;
         }
         catch (Exception fileEx)
         {
             Console.WriteLine($"Critical: All logging failed. Error: {ex.Message}, Logging Error: {fileEx.Message}");
+            return Task.CompletedTask;
         }
     }
 

@@ -222,9 +222,9 @@ public partial class TransactionExpandableButton : UserControl
         if (_partIdText == null) return; // Not initialized yet
         
         // Update header content
-        _partIdText.Text = PartId;
-        _operationText.Text = string.IsNullOrEmpty(Operation) ? "Unknown" : $"Operation {Operation}";
-        _quantityText.Text = Quantity.ToString();
+        if (_partIdText != null) _partIdText.Text = PartId;
+        if (_operationText != null) _operationText.Text = string.IsNullOrEmpty(Operation) ? "Unknown" : $"Operation {Operation}";
+        if (_quantityText != null) _quantityText.Text = Quantity.ToString();
         
         // Update content details
         if (_locationText != null) _locationText.Text = Location;

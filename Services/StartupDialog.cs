@@ -100,7 +100,8 @@ public static class StartupDialog
     {
         try
         {
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && 
+                desktop.MainWindow != null)
             {
                 var messageWindow = new StartupInfoWindow(title, message);
                 await messageWindow.ShowDialog(desktop.MainWindow);

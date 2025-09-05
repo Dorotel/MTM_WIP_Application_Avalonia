@@ -71,7 +71,7 @@ public partial class QuickButtonsView : UserControl
             _selectedButtonControl.Classes.Remove("dragging");
             
             // If we were dragging, try to find drop target
-            if (_isDragging && DataContext is QuickButtonsViewModel viewModel)
+            if (_isDragging && DataContext is QuickButtonsViewModel viewModel && viewModel != null && _selectedButton != null)
             {
                 var dropTarget = FindDropTarget(e.GetPosition(this));
                 if (dropTarget != null && dropTarget != _selectedButton)
