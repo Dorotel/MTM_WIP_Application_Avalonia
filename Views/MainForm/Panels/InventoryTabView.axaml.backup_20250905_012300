@@ -358,7 +358,7 @@
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <TextBox x:Name="PartTextBox"
-                   Text="{Binding SelectedPart, Mode=TwoWay}"
+                   Text="{Binding PartText, Mode=TwoWay}"
                    Classes="input-field"
                    HorizontalAlignment="Stretch"
                    ToolTip.Tip="Select or enter a part number"
@@ -394,7 +394,7 @@
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <TextBox x:Name="OperationTextBox"
-                   Text="{Binding SelectedOperation, Mode=TwoWay}"
+                   Text="{Binding OperationText, Mode=TwoWay}"
                    Classes="input-field"
                    HorizontalAlignment="Stretch"
                    ToolTip.Tip="Select or enter an operation number"
@@ -429,7 +429,7 @@
                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
           </Grid>
           <TextBox x:Name="LocationTextBox"
-                   Text="{Binding SelectedLocation, Mode=TwoWay}"
+                   Text="{Binding LocationText, Mode=TwoWay}"
                    Classes="input-field"
                    HorizontalAlignment="Stretch"
                    ToolTip.Tip="Select or enter a location"
