@@ -78,7 +78,10 @@ public partial class QuickButtonsView : UserControl
                 {
                     try
                     {
-                        await viewModel.ReorderButtonAsync(_selectedButton.Position, dropTarget.Position);
+                        if (_selectedButton != null)
+                        {
+                            await viewModel.ReorderButtonAsync(_selectedButton.Position, dropTarget.Position);
+                        }
                     }
                     catch (Exception ex)
                     {

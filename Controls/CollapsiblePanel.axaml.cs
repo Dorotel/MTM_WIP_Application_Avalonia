@@ -183,11 +183,19 @@ public partial class CollapsiblePanel : UserControl
         _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(40)));
         _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
         
-        Grid.SetColumn(_headerArea, 0);
-        Grid.SetColumn(_contentArea, 1);
+        if (_headerArea != null)
+        {
+            Grid.SetColumn(_headerArea, 0);
+        }
+        if (_contentArea != null)
+        {
+            Grid.SetColumn(_contentArea, 1);
+        }
         
-        _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 1, 0);
-        _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 0, 0, 8); // Left side rounded corners
+        if (_headerArea != null)
+        {
+            _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 1, 0);
+            _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 0, 0, 8); // Left side rounded corners
         _headerArea.Width = 40;
         _headerArea.Height = double.NaN;
     }
@@ -198,13 +206,19 @@ public partial class CollapsiblePanel : UserControl
         _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
         _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(40)));
         
-        Grid.SetColumn(_contentArea, 0);
-        Grid.SetColumn(_headerArea, 1);
-        
-        _headerArea.BorderThickness = new Avalonia.Thickness(1, 0, 0, 0);
-        _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 8, 8, 0); // Right side rounded corners
-        _headerArea.Width = 40;
-        _headerArea.Height = double.NaN;
+        if (_contentArea != null)
+        {
+            Grid.SetColumn(_contentArea, 0);
+        }
+        if (_headerArea != null)
+        {
+            Grid.SetColumn(_headerArea, 1);
+            
+            _headerArea.BorderThickness = new Avalonia.Thickness(1, 0, 0, 0);
+            _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 8, 8, 0); // Right side rounded corners
+            _headerArea.Width = 40;
+            _headerArea.Height = double.NaN;
+        }
     }
 
     private void SetupTopHeader()
@@ -213,13 +227,18 @@ public partial class CollapsiblePanel : UserControl
         _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40)));
         _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
         
-        Grid.SetRow(_headerArea, 0);
-        Grid.SetRow(_contentArea, 1);
-        
-        _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 0, 1);
-        _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 8, 0, 0); // Top rounded corners
-        _headerArea.Width = double.NaN;
-        _headerArea.Height = 40;
+        if (_headerArea != null)
+        {
+            Grid.SetRow(_headerArea, 0);
+            _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 0, 1);
+            _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 8, 0, 0); // Top rounded corners
+            _headerArea.Width = double.NaN;
+            _headerArea.Height = 40;
+        }
+        if (_contentArea != null)
+        {
+            Grid.SetRow(_contentArea, 1);
+        }
     }
 
     private void SetupBottomHeader()
@@ -228,13 +247,19 @@ public partial class CollapsiblePanel : UserControl
         _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
         _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40)));
         
-        Grid.SetRow(_contentArea, 0);
-        Grid.SetRow(_headerArea, 1);
-        
-        _headerArea.BorderThickness = new Avalonia.Thickness(0, 1, 0, 0);
-        _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 0, 8, 8); // Bottom rounded corners
-        _headerArea.Width = double.NaN;
-        _headerArea.Height = 40;
+        if (_contentArea != null)
+        {
+            Grid.SetRow(_contentArea, 0);
+        }
+        if (_headerArea != null)
+        {
+            Grid.SetRow(_headerArea, 1);
+            
+            _headerArea.BorderThickness = new Avalonia.Thickness(0, 1, 0, 0);
+            _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 0, 8, 8); // Bottom rounded corners
+            _headerArea.Width = double.NaN;
+            _headerArea.Height = 40;
+        }
     }
 
     private void UpdateButtonPositioning()
