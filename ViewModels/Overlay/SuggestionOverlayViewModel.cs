@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
@@ -12,24 +13,16 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 /// <summary>
 /// ViewModel for managing suggestion overlay functionality with selection and cancellation capabilities.
 /// Provides a clean interface for displaying and interacting with suggestion lists.
-/// Uses manual property implementation following established MTM patterns.
+/// Uses MVVM Community Toolkit patterns through BaseViewModel for architecture compliance.
 /// </summary>
 public partial class SuggestionOverlayViewModel : BaseViewModel
 {
     private static int _debugInstanceIdCounter = 0;
     private readonly int _debugInstanceId;
 
-    #region Private Fields
+    #region Properties - Using BaseViewModel's SetProperty Pattern
 
     private ObservableCollection<string> _suggestions = new();
-    private string? _selectedSuggestion;
-    private bool _isSuggestionSelected;
-    private bool _isVisible;
-
-    #endregion
-
-    #region Public Properties
-
     /// <summary>
     /// Gets or sets the collection of available suggestions for selection.
     /// </summary>
@@ -39,8 +32,30 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
         set => SetPropertyWithLogging(ref _suggestions, value);
     }
 
+    private bool _isSuggestionSelected;
+    /// <summary>
+    /// Gets or sets a value indicating whether a suggestion is currently selected.
+    /// </summary>
+    public bool IsSuggestionSelected
+    {
+        get => _isSuggestionSelected;
+        set => SetPropertyWithLogging(ref _isSuggestionSelected, value);
+    }
+
+    private bool _isVisible;
+    /// <summary>
+    /// Gets or sets a value indicating whether the overlay is visible.
+    /// </summary>
+    public bool IsVisible
+    {
+        get => _isVisible;
+        set => SetPropertyWithLogging(ref _isVisible, value);
+    }
+
+    private string? _selectedSuggestion;
     /// <summary>
     /// Gets or sets the currently selected suggestion from the list.
+    /// Uses manual implementation for custom change handling.
     /// </summary>
     public string? SelectedSuggestion
     {
@@ -53,24 +68,6 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
                 SelectCommand.NotifyCanExecuteChanged();
             }
         }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether a suggestion is currently selected.
-    /// </summary>
-    public bool IsSuggestionSelected
-    {
-        get => _isSuggestionSelected;
-        set => SetPropertyWithLogging(ref _isSuggestionSelected, value);
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the overlay is visible.
-    /// </summary>
-    public bool IsVisible
-    {
-        get => _isVisible;
-        set => SetPropertyWithLogging(ref _isVisible, value);
     }
 
     #endregion

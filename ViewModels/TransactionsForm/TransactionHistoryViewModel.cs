@@ -20,8 +20,9 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// Transaction History ViewModel - Complex transaction reporting with filtering, pagination, and export functionality
 /// Provides comprehensive transaction management with advanced search capabilities, user filtering,
 /// date range filtering, pagination, and detailed transaction viewing with data export features
+/// Uses MVVM Community Toolkit patterns exclusively for architecture compliance.
 /// </summary>
-public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropertyChanged
+public partial class TransactionHistoryViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
