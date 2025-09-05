@@ -45,7 +45,7 @@ public partial class ThemeQuickSwitcher : UserControl
             
             _logger?.LogDebug("ThemeQuickSwitcher OnLoaded event started");
             
-            await InitializeThemeDropdownAsync();
+            InitializeThemeDropdown();
             InitializeEventHandlers();
             
             _logger?.LogInformation("ThemeQuickSwitcher initialized successfully with {ThemeCount} themes", 
@@ -61,7 +61,7 @@ public partial class ThemeQuickSwitcher : UserControl
     /// <summary>
     /// Initialize the theme dropdown with available themes and set current selection.
     /// </summary>
-    private async System.Threading.Tasks.Task InitializeThemeDropdownAsync()
+    private void InitializeThemeDropdown()
     {
         try
         {

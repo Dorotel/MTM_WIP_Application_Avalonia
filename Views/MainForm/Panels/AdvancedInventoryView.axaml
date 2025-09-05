@@ -14,33 +14,25 @@
              x:DataType="vm:AdvancedInventoryViewModel">
 
   <UserControl.Resources>
-    <!-- Black, White, Gold Color Scheme -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="#FFD700"/>           <!-- Gold -->
-    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#DAA520"/>       <!-- Dark Gold -->
-    <SolidColorBrush x:Key="SecondaryBrush" Color="#F5F5DC"/>         <!-- Beige -->
-    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>    <!-- White -->
-    <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>            <!-- Light Gray -->
-    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#000000"/>       <!-- Black Text -->
-    <SolidColorBrush x:Key="AccentBrush" Color="#4169E1"/>            <!-- Royal Blue for icons -->
-    <SolidColorBrush x:Key="SuccessBrush" Color="#228B22"/>           <!-- Forest Green -->
-    <SolidColorBrush x:Key="WarningBrush" Color="#DAA520"/>           <!-- Gold for warning -->
+    <!-- Theme resources will be provided by DynamicResource bindings -->
+    <!-- Remove hardcoded colors and use theme resources from App.axaml -->
   </UserControl.Resources>
 
   <UserControl.Styles>
     <!-- Compact Input Styles -->
     <Style Selector="TextBox.input-field">
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="Padding" Value="6,3"/>
-      <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="MinHeight" Value="24"/>
       <Setter Property="Margin" Value="2"/>
     </Style>
 
     <Style Selector="AutoCompleteBox.input-field">
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="Padding" Value="6,3"/>
@@ -118,23 +110,25 @@
     </Style>
   </UserControl.Styles>
 
-  <!-- Main container with proper spacing -->
-  <Grid RowDefinitions="*,Auto" 
-        HorizontalAlignment="Stretch" 
-        VerticalAlignment="Stretch"
-        Margin="0"
-        Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}">
+  <!-- Main Layout Container - ScrollViewer for overflow handling -->
+  <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto"
+                Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+    
+    <Grid x:Name="MainContainer" 
+          RowDefinitions="*,Auto"
+          MinWidth="600"
+          MinHeight="400"
+          Margin="8">
 
-    <!-- Main Panel -->
-    <Border Grid.Row="0"
-            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-            BorderThickness="1"
-            CornerRadius="4"
-            Padding="4"
-            Margin="4"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
+      <!-- Main Entry Panel -->
+      <Border Grid.Row="0"
+              Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+              BorderThickness="1"
+              CornerRadius="8"
+              Padding="16"
+              Margin="0,0,0,8">
       <Grid ColumnSpacing="6">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="{Binding FilterPanelWidth}"/>
@@ -391,14 +385,14 @@
       </Grid>
     </Border>
 
-    <!-- Compact Bottom Action Panel -->
+    <!-- Action Buttons Panel -->
     <Border Grid.Row="1"
-            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
             BorderThickness="1"
-            CornerRadius="4"
-            Padding="6"
-            Margin="4,0,4,4">
+            CornerRadius="6"
+            Padding="12"
+            Margin="0,0,0,8">
       <Grid ColumnDefinitions="*,Auto">
         <!-- Left side buttons -->
         <StackPanel Grid.Column="0" 
@@ -457,5 +451,7 @@
         </Button>
       </Grid>
     </Border>
-  </Grid>
+
+    </Grid>
+  </ScrollViewer>
 </UserControl>
