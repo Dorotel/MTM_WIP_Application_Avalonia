@@ -100,7 +100,7 @@
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="MinHeight" Value="28"/>
-      <Setter Property="Cursor" Value="Hand"/>
+      <!-- <Setter Property="Cursor" Value="Hand"/> Commented out to prevent ICursorFactory issues during startup -->
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="BorderThickness" Value="1"/>
