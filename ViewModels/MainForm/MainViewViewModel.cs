@@ -190,7 +190,7 @@ public partial class MainViewViewModel : BaseViewModel
         // Wire up events for inter-component communication (TODO: Implement events in ViewModels)
         // InventoryTabViewModel.InventoryItemSaved += OnInventoryItemSaved;
         // InventoryTabViewModel.PanelToggleRequested += OnPanelToggleRequested;
-        // InventoryTabViewModel.AdvancedEntryRequested += (sender, e) => OnAdvancedEntryRequested();
+        InventoryTabViewModel.AdvancedEntryRequested += (sender, e) => OnAdvancedEntryRequested();
         QuickButtonsViewModel.QuickActionExecuted += OnQuickActionExecuted;
         
         // Wire up RemoveTab events (TODO: Implement events in ViewModels)

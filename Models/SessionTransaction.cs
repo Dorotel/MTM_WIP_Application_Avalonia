@@ -57,4 +57,9 @@ public class SessionTransaction
     /// The user who performed the transaction
     /// </summary>
     public string User { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The type of transaction (IN, OUT, TRANSFER)
+    /// </summary>
+    public string TransactionType { get; set; } = "IN";
 }

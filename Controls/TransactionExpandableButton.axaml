@@ -1,0 +1,200 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+             mc:Ignorable="d"
+             d:DesignWidth="300"
+             d:DesignHeight="60"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.TransactionExpandableButton">
+
+  <UserControl.Styles>
+    <!-- Transaction Type Colors -->
+    <Style Selector="Border.transaction-in">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionInBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TransactionInBrush}"/>
+    </Style>
+    
+    <Style Selector="Border.transaction-out">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionOutBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TransactionOutBrush}"/>
+    </Style>
+    
+    <Style Selector="Border.transaction-transfer">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionTransferBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TransactionTransferBrush}"/>
+    </Style>
+
+    <!-- Light background variants for content area -->
+    <Style Selector="Border.transaction-in-light">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionInLightBrush}"/>
+    </Style>
+    
+    <Style Selector="Border.transaction-out-light">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionOutLightBrush}"/>
+    </Style>
+    
+    <Style Selector="Border.transaction-transfer-light">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionTransferLightBrush}"/>
+    </Style>
+
+    <!-- Header text style -->
+    <Style Selector="TextBlock.header-text">
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- Content text styles -->
+    <Style Selector="TextBlock.content-label">
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+    </Style>
+    
+    <Style Selector="TextBlock.content-value">
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+    </Style>
+  </UserControl.Styles>
+
+  <!-- Main collapsible container with 4 rounded corners -->
+  <Border CornerRadius="8"
+          BorderThickness="1"
+          Margin="2">
+    
+    <Grid RowDefinitions="Auto,*">
+      
+      <!-- Header Area - Clickable to expand/collapse -->
+      <Border Grid.Row="0"
+              x:Name="HeaderBorder"
+              CornerRadius="8,8,0,0"
+              BorderThickness="0"
+              Padding="12,8"
+              Cursor="Hand"
+              PointerPressed="OnHeaderPressed">
+        
+        <Grid ColumnDefinitions="Auto,8,*,Auto,8,Auto">
+          
+          <!-- Transaction Type Icon -->
+          <Border Grid.Column="0"
+                  Background="White"
+                  CornerRadius="12"
+                  Width="24"
+                  Height="24"
+                  VerticalAlignment="Center">
+            <material:MaterialIcon x:Name="TransactionIcon"
+                                   Kind="ArrowUp"
+                                   Width="14"
+                                   Height="14"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+          </Border>
+          
+          <!-- Part ID and Operation -->
+          <StackPanel Grid.Column="2" 
+                      Orientation="Vertical"
+                      VerticalAlignment="Center">
+            <TextBlock x:Name="PartIdText"
+                       Text="PART001"
+                       Classes="header-text"/>
+            <TextBlock x:Name="OperationText"
+                       Text="Operation 100"
+                       FontSize="10"
+                       Foreground="White"
+                       Opacity="0.9"/>
+          </StackPanel>
+          
+          <!-- Quantity -->
+          <StackPanel Grid.Column="3"
+                      Orientation="Vertical"
+                      VerticalAlignment="Center">
+            <TextBlock x:Name="QuantityText"
+                       Text="5"
+                       Classes="header-text"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="qty"
+                       FontSize="9"
+                       Foreground="White"
+                       Opacity="0.8"
+                       HorizontalAlignment="Center"/>
+          </StackPanel>
+          
+          <!-- Expand/Collapse Icon -->
+          <material:MaterialIcon Grid.Column="5"
+                                 x:Name="ExpandIcon"
+                                 Kind="ChevronRight"
+                                 Width="16"
+                                 Height="16"
+                                 Foreground="White"
+                                 VerticalAlignment="Center"/>
+        </Grid>
+      </Border>
+      
+      <!-- Content Area - Shows when expanded -->
+      <Border Grid.Row="1"
+              x:Name="ContentBorder"
+              CornerRadius="0,0,8,8"
+              BorderThickness="0"
+              Padding="16,12"
+              IsVisible="False">
+        
+        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+          
+          <!-- Location -->
+          <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="8">
+            <material:MaterialIcon Kind="MapMarker" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Text="Location:" Classes="content-label"/>
+            <TextBlock x:Name="LocationText" Text="WC01" Classes="content-value"/>
+          </StackPanel>
+          
+          <!-- User -->
+          <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+            <material:MaterialIcon Kind="Account" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Text="User:" Classes="content-label"/>
+            <TextBlock x:Name="UserText" Text="admin" Classes="content-value"/>
+          </StackPanel>
+          
+          <!-- Transaction Time -->
+          <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="8">
+            <material:MaterialIcon Kind="Clock" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Text="Time:" Classes="content-label"/>
+            <TextBlock x:Name="TransactionTimeText" Text="14:30:22" Classes="content-value"/>
+          </StackPanel>
+          
+          <!-- Status -->
+          <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+            <material:MaterialIcon Kind="CheckCircle" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
+            <TextBlock Text="Status:" Classes="content-label"/>
+            <TextBlock x:Name="StatusText" Text="Completed" Classes="content-value"/>
+          </StackPanel>
+          
+          <!-- Item Type -->
+          <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Spacing="8">
+            <material:MaterialIcon Kind="Package" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Text="Type:" Classes="content-label"/>
+            <TextBlock x:Name="ItemTypeText" Text="WIP" Classes="content-value"/>
+          </StackPanel>
+          
+          <!-- Transaction ID -->
+          <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+            <material:MaterialIcon Kind="Identifier" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Text="ID:" Classes="content-label"/>
+            <TextBlock x:Name="TransactionIdText" Text="12345" Classes="content-value"/>
+          </StackPanel>
+          
+          <!-- Notes (spanning both columns if present) -->
+          <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8" 
+                      x:Name="NotesPanel" IsVisible="False">
+            <material:MaterialIcon Kind="NoteText" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Text="Notes:" Classes="content-label"/>
+            <TextBlock x:Name="NotesText" Text="" Classes="content-value" TextWrapping="Wrap"/>
+          </StackPanel>
+          
+        </Grid>
+      </Border>
+      
+    </Grid>
+  </Border>
+</UserControl>

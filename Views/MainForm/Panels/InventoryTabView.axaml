@@ -280,7 +280,7 @@
               </StackPanel>
               <TextBox Grid.Column="1"
                        x:Name="QuantityTextBox"
-                       Text="{Binding Quantity, Mode=TwoWay}"
+                       Text="{Binding QuantityText, Mode=TwoWay}"
                        Watermark="{Binding QuantityWatermark}"
                        Classes="input-field"
                        Classes.error="{Binding !IsQuantityValid}"
