@@ -69,7 +69,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// Quantity of items for the inventory transaction
     /// </summary>
     [ObservableProperty]
-    private int _quantity = 1;
+    private int _quantity = 0;  // Changed from 1 to 0 (blank/empty equivalent)
 
     /// <summary>
     /// Optional notes for the inventory transaction
@@ -137,6 +137,12 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     [ObservableProperty]
     private string _locationText = string.Empty;
 
+    /// <summary>
+    /// Text content for Quantity input field (two-way binding support)
+    /// </summary>
+    [ObservableProperty]
+    private string _quantityText = string.Empty;
+
     #endregion
 
     #region Property Change Notifications for Watermarks
@@ -148,6 +154,8 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(PartWatermark));
         OnPropertyChanged(nameof(IsPartValid));
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>
@@ -157,6 +165,8 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(OperationWatermark));
         OnPropertyChanged(nameof(IsOperationValid));
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>
@@ -166,6 +176,8 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(LocationWatermark));
         OnPropertyChanged(nameof(IsLocationValid));
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>
@@ -175,6 +187,8 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(QuantityWatermark));
         OnPropertyChanged(nameof(IsQuantityValid));
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>
@@ -184,6 +198,35 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(NotesWatermark));
         OnPropertyChanged(nameof(IsNotesValid));
+    }
+
+    /// <summary>
+    /// Called when IsLoading property changes - triggers CanSave validation updates
+    /// </summary>
+    partial void OnIsLoadingChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>
+    /// Called when QuantityText property changes - handles text validation and conversion
+    /// </summary>
+    partial void OnQuantityTextChanged(string value)
+    {
+        // Convert text to integer, handling empty/invalid inputs
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            Quantity = 0; // 0 represents empty/invalid state
+        }
+        else if (int.TryParse(value, out int quantity) && quantity > 0)
+        {
+            Quantity = quantity;
+        }
+        else
+        {
+            Quantity = 0; // Invalid input - set to 0 to trigger validation error
+        }
     }
 
     #endregion
@@ -256,7 +299,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Dynamic watermark for Quantity field - shows error or placeholder
     /// </summary>
-    public string QuantityWatermark => IsQuantityValid ? "Enter quantity..." : "Quantity must be greater than 0";
+    public string QuantityWatermark => IsQuantityValid ? "Enter quantity..." : "Quantity is required and must be greater than 0";
 
     /// <summary>
     /// Validation state for Notes field
@@ -276,6 +319,11 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// Event fired when inventory save operation completes successfully
     /// </summary>
     public event EventHandler<InventorySavedEventArgs>? SaveCompleted;
+
+    /// <summary>
+    /// Event fired when advanced entry is requested
+    /// </summary>
+    public event EventHandler? AdvancedEntryRequested;
 
     #endregion
 
@@ -468,7 +516,8 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             PartText = string.Empty;
             OperationText = string.Empty;
             LocationText = string.Empty;
-            Quantity = 1;
+            Quantity = 0;  // Changed from 1 to 0 for blank state
+            QuantityText = string.Empty;  // Clear the text representation
             Notes = string.Empty;
             HasError = false;
             ErrorMessage = string.Empty;
@@ -484,15 +533,15 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
 
     /// <summary>
     /// Command to open advanced entry dialog
-    /// Future implementation for complex inventory operations
+    /// Fires event to communicate with parent MainViewViewModel
     /// </summary>
     [RelayCommand]
     private void AdvancedEntry()
     {
         try
         {
-            Logger.LogInformation("Opening advanced entry dialog");
-            // TODO: Implement advanced entry dialog navigation
+            Logger.LogInformation("Advanced entry requested");
+            AdvancedEntryRequested?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
         {
