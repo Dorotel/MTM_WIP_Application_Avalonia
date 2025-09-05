@@ -189,13 +189,16 @@ public partial class InventoryTabView : UserControl
                 _logger?.LogInformation($"Overlay result for {field}: '{selected}'");
                 if (!string.IsNullOrEmpty(selected))
                 {
+                    // ✅ NEW: Extract actual value from "Add new:" prefix if present
+                    var actualValue = ExtractValueFromSuggestion(selected);
+                    
                     switch (field)
                     {
-                        case "Part": _viewModel.SelectedPart = selected; break;
-                        case "Operation": _viewModel.SelectedOperation = selected; break;
-                        case "Location": _viewModel.SelectedLocation = selected; break;
+                        case "Part": _viewModel.SelectedPart = actualValue; break;
+                        case "Operation": _viewModel.SelectedOperation = actualValue; break;
+                        case "Location": _viewModel.SelectedLocation = actualValue; break;
                     }
-                    textBox.Text = selected;
+                    textBox.Text = actualValue;
                     UpdateValidationStates();
                     ValidateAndUpdateSaveButton();
                 }
@@ -734,10 +737,13 @@ public partial class InventoryTabView : UserControl
                 
                 if (!string.IsNullOrEmpty(selected))
                 {
-                    _logger?.LogInformation($"Part overlay - User selected: '{selected}'");
-                    System.Diagnostics.Debug.WriteLine($"Part overlay - User selected: '{selected}'");
-                    _viewModel.SelectedPart = selected;
-                    textBox.Text = selected;
+                    // ✅ NEW: Extract actual value from "Add new:" prefix if present
+                    var actualValue = ExtractValueFromSuggestion(selected);
+                    
+                    _logger?.LogInformation($"Part overlay - User selected: '{selected}', actual value: '{actualValue}'");
+                    System.Diagnostics.Debug.WriteLine($"Part overlay - User selected: '{selected}', actual value: '{actualValue}'");
+                    _viewModel.SelectedPart = actualValue;
+                    textBox.Text = actualValue;
                 }
                 else
                 {
@@ -843,8 +849,11 @@ public partial class InventoryTabView : UserControl
                     var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, value);
                     if (!string.IsNullOrEmpty(selected))
                     {
-                        _viewModel.SelectedOperation = selected;
-                        textBox.Text = selected;
+                        // ✅ NEW: Extract actual value from "Add new:" prefix if present
+                        var actualValue = ExtractValueFromSuggestion(selected);
+                        
+                        _viewModel.SelectedOperation = actualValue;
+                        textBox.Text = actualValue;
                     }
                     else
                     {
@@ -924,8 +933,11 @@ public partial class InventoryTabView : UserControl
                     var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, value);
                     if (!string.IsNullOrEmpty(selected))
                     {
-                        _viewModel.SelectedLocation = selected;
-                        textBox.Text = selected;
+                        // ✅ NEW: Extract actual value from "Add new:" prefix if present
+                        var actualValue = ExtractValueFromSuggestion(selected);
+                        
+                        _viewModel.SelectedLocation = actualValue;
+                        textBox.Text = actualValue;
                     }
                     else
                     {
@@ -1607,6 +1619,30 @@ public partial class InventoryTabView : UserControl
         {
             base.OnDetachedFromVisualTree(e);
         }
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    /// <summary>
+    /// Extracts the actual value from a suggestion, handling "Add new:" prefix.
+    /// </summary>
+    /// <param name="suggestion">The selected suggestion value</param>
+    /// <returns>The actual value without the "Add new:" prefix</returns>
+    private string ExtractValueFromSuggestion(string suggestion)
+    {
+        if (string.IsNullOrEmpty(suggestion))
+            return suggestion;
+
+        // Remove "Add new: " prefix if present
+        const string addNewPrefix = "Add new: ";
+        if (suggestion.StartsWith(addNewPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return suggestion.Substring(addNewPrefix.Length);
+        }
+
+        return suggestion;
     }
 
     #endregion

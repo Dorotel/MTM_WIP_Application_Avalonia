@@ -74,12 +74,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
             // Filter suggestions based on user input
             var filteredSuggestions = FilterSuggestions(suggestionList, userInput);
             
-            if (!filteredSuggestions.Any())
-            {
-                _logger.LogDebug("No matching suggestions found for input: '{UserInput}'", userInput);
-                return null;
-            }
-
+            // ✅ FIXED: Always proceed to show overlay - FilterSuggestions now ensures we have at least one option
             _logger.LogDebug("Showing {Count} suggestions for input: '{UserInput}'", filteredSuggestions.Count, userInput);
 
             // Create and show the actual overlay
@@ -283,6 +278,12 @@ public class SuggestionOverlayService : ISuggestionOverlayService
             .ThenBy(s => s) // Alphabetical order as final tie-breaker
             .Take(10) // Limit to 10 suggestions for performance
             .ToList();
+
+        // ✅ NEW: Always include user input as option when no matches found
+        if (!filtered.Any())
+        {
+            filtered.Add($"Add new: {userInput}");
+        }
 
         return filtered;
     }
