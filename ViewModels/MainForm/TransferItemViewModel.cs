@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
+using MTM_WIP_Application_Avalonia.Models.Database;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
@@ -354,15 +355,18 @@ public partial class TransferItemViewModel : BaseViewModel
                 _logger.LogInformation("Executing partial transfer: {TransferQuantity} of {TotalQuantity} units", 
                     TransferQuantity, SelectedInventoryItem.Quantity);
                 
-                transferResult = await _databaseService.TransferQuantityAsync(
-                    SelectedInventoryItem.BatchNumber ?? string.Empty,
-                    partId,
-                    operation,
-                    TransferQuantity,
-                    SelectedInventoryItem.Quantity,
-                    SelectedToLocation,
-                    _applicationState.CurrentUser
-                );
+                var request = new TransferQuantityRequest
+                {
+                    BatchNumber = SelectedInventoryItem.BatchNumber ?? string.Empty,
+                    PartId = partId,
+                    Operation = operation,
+                    TransferQuantity = TransferQuantity,
+                    OriginalQuantity = SelectedInventoryItem.Quantity,
+                    NewLocation = SelectedToLocation,
+                    User = _applicationState.CurrentUser
+                };
+                
+                transferResult = await _databaseService.TransferQuantityAsync(request);
             }
             else
             {

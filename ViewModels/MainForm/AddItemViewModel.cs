@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
+using MTM_WIP_Application_Avalonia.Models.Database;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
@@ -166,8 +167,18 @@ public partial class AddItemViewModel : BaseViewModel
 
             var currentUser = _applicationState.CurrentUser ?? "System";
             
-            var result = await _databaseService.AddInventoryItemAsync(
-                PartId, Location, Operation, Quantity, ItemType, currentUser, Notes).ConfigureAwait(false);
+            var request = new AddInventoryRequest
+            {
+                PartId = PartId,
+                Location = Location,
+                Operation = Operation,
+                Quantity = Quantity,
+                ItemType = ItemType,
+                User = currentUser,
+                Notes = Notes
+            };
+            
+            var result = await _databaseService.AddInventoryItemAsync(request).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
+using MTM_WIP_Application_Avalonia.Models.Database;
 
 namespace MTM_WIP_Application_Avalonia.Services;
 
@@ -22,17 +23,17 @@ public interface IDatabaseService
     string GetConnectionString();
     
     // Inventory Operations - using Helper_Database_StoredProcedure pattern
-    Task<StoredProcedureResult> AddInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string notes);
+    Task<StoredProcedureResult> AddInventoryItemAsync(AddInventoryRequest request);
     Task<DataTable> GetInventoryByPartIdAsync(string partId);
     Task<DataTable> GetInventoryByPartAndOperationAsync(string partId, string operation);
     Task<DataTable> GetInventoryByUserAsync(string user);
-    Task<StoredProcedureResult> RemoveInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string batchNumber, string notes);
+    Task<StoredProcedureResult> RemoveInventoryItemAsync(RemoveInventoryRequest request);
     Task<bool> TransferPartAsync(string batchNumber, string partId, string operation, string newLocation);
-    Task<bool> TransferQuantityAsync(string batchNumber, string partId, string operation, int transferQuantity, int originalQuantity, string newLocation, string user);
+    Task<bool> TransferQuantityAsync(TransferQuantityRequest request);
     
     // Master Data Operations - Parts
     Task<StoredProcedureResult> AddPartAsync(string partId, string customer, string description, string issuedBy, string itemType);
-    Task<StoredProcedureResult> UpdatePartAsync(int id, string partId, string customer, string description, string issuedBy, string itemType);
+    Task<StoredProcedureResult> UpdatePartAsync(UpdatePartRequest request);
     Task<bool> DeletePartAsync(string partId);
     Task<DataTable> GetPartByIdAsync(string partId);
     
@@ -67,8 +68,8 @@ public interface IDatabaseService
     Task<bool> DeleteUserAsync(string username);
     
     // Additional User Management overloads for ViewModels
-    Task<StoredProcedureResult> AddUserAsync(string username, string firstName, string lastName, string email, string role, string issuedBy);
-    Task<StoredProcedureResult> UpdateUserAsync(int id, string username, string firstName, string lastName, string email, string role, bool isActive, string issuedBy);
+    Task<StoredProcedureResult> AddUserAsync(AddUserRequest request);
+    Task<StoredProcedureResult> UpdateUserAsync(UpdateUserRequest request);
     Task<bool> DeleteUserAsync(int id);
     
     // System Configuration
@@ -325,17 +326,19 @@ public class DatabaseService : IDatabaseService
     /// <summary>
     /// Adds inventory item using inv_inventory_Add_Item stored procedure.
     /// </summary>
-    public async Task<StoredProcedureResult> AddInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string notes)
+    public async Task<StoredProcedureResult> AddInventoryItemAsync(AddInventoryRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        
         var parameters = new Dictionary<string, object>
         {
-            ["p_PartID"] = partId,
-            ["p_Location"] = location,
-            ["p_Operation"] = operation,
-            ["p_Quantity"] = quantity,
-            ["p_ItemType"] = itemType,
-            ["p_User"] = user,
-            ["p_Notes"] = !string.IsNullOrWhiteSpace(notes) ? notes : DBNull.Value
+            ["p_PartID"] = request.PartId,
+            ["p_Location"] = request.Location,
+            ["p_Operation"] = request.Operation,
+            ["p_Quantity"] = request.Quantity,
+            ["p_ItemType"] = request.ItemType,
+            ["p_User"] = request.User,
+            ["p_Notes"] = !string.IsNullOrWhiteSpace(request.Notes) ? request.Notes : DBNull.Value
         };
 
         return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -406,18 +409,20 @@ public class DatabaseService : IDatabaseService
     /// <summary>
     /// Removes inventory item using inv_inventory_Remove_Item stored procedure.
     /// </summary>
-    public async Task<StoredProcedureResult> RemoveInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string batchNumber, string notes)
+    public async Task<StoredProcedureResult> RemoveInventoryItemAsync(RemoveInventoryRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        
         var parameters = new Dictionary<string, object>
         {
-            ["p_PartID"] = partId,
-            ["p_Location"] = location,
-            ["p_Operation"] = operation,
-            ["p_Quantity"] = quantity,
-            ["p_ItemType"] = itemType,
-            ["p_User"] = user,
-            ["p_BatchNumber"] = !string.IsNullOrWhiteSpace(batchNumber) ? batchNumber : DBNull.Value,
-            ["p_Notes"] = !string.IsNullOrWhiteSpace(notes) ? notes : DBNull.Value
+            ["p_PartID"] = request.PartId,
+            ["p_Location"] = request.Location,
+            ["p_Operation"] = request.Operation,
+            ["p_Quantity"] = request.Quantity,
+            ["p_ItemType"] = request.ItemType,
+            ["p_User"] = request.User,
+            ["p_BatchNumber"] = !string.IsNullOrWhiteSpace(request.BatchNumber) ? request.BatchNumber : DBNull.Value,
+            ["p_Notes"] = !string.IsNullOrWhiteSpace(request.Notes) ? request.Notes : DBNull.Value
         };
 
         return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -452,17 +457,19 @@ public class DatabaseService : IDatabaseService
     /// <summary>
     /// Transfers partial quantity to new location using inv_inventory_Transfer_Quantity stored procedure.
     /// </summary>
-    public async Task<bool> TransferQuantityAsync(string batchNumber, string partId, string operation, int transferQuantity, int originalQuantity, string newLocation, string user)
+    public async Task<bool> TransferQuantityAsync(TransferQuantityRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        
         var parameters = new Dictionary<string, object>
         {
-            ["p_BatchNumber"] = batchNumber,
-            ["p_PartID"] = partId,
-            ["p_Operation"] = operation,
-            ["p_TransferQuantity"] = transferQuantity,
-            ["p_OriginalQuantity"] = originalQuantity,
-            ["p_NewLocation"] = newLocation,
-            ["p_User"] = user
+            ["p_BatchNumber"] = request.BatchNumber,
+            ["p_PartID"] = request.PartId,
+            ["p_Operation"] = request.Operation,
+            ["p_TransferQuantity"] = request.TransferQuantity,
+            ["p_OriginalQuantity"] = request.OriginalQuantity,
+            ["p_NewLocation"] = request.NewLocation,
+            ["p_User"] = request.User
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -502,16 +509,18 @@ public class DatabaseService : IDatabaseService
     /// <summary>
     /// Updates a part using md_part_ids_Update_Part stored procedure.
     /// </summary>
-    public async Task<StoredProcedureResult> UpdatePartAsync(int id, string partId, string customer, string description, string issuedBy, string itemType)
+    public async Task<StoredProcedureResult> UpdatePartAsync(UpdatePartRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        
         var parameters = new Dictionary<string, object>
         {
-            ["p_ID"] = id,
-            ["p_PartID"] = partId,
-            ["p_Customer"] = customer,
-            ["p_Description"] = description,
-            ["p_IssuedBy"] = issuedBy,
-            ["p_ItemType"] = itemType
+            ["p_ID"] = request.Id,
+            ["p_PartID"] = request.PartId,
+            ["p_Customer"] = request.Customer,
+            ["p_Description"] = request.Description,
+            ["p_IssuedBy"] = request.IssuedBy,
+            ["p_ItemType"] = request.ItemType
         };
 
         return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -956,16 +965,18 @@ public class DatabaseService : IDatabaseService
     /// Adds a new user using usr_users_Add stored procedure.
     /// Simplified overload for ViewModels.
     /// </summary>
-    public async Task<StoredProcedureResult> AddUserAsync(string username, string firstName, string lastName, string email, string role, string issuedBy)
+    public async Task<StoredProcedureResult> AddUserAsync(AddUserRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        
         var parameters = new Dictionary<string, object>
         {
-            ["p_Username"] = username,
-            ["p_FirstName"] = firstName,
-            ["p_LastName"] = lastName,
-            ["p_Email"] = email,
-            ["p_Role"] = role,
-            ["p_IssuedBy"] = issuedBy
+            ["p_Username"] = request.Username,
+            ["p_FirstName"] = request.FirstName,
+            ["p_LastName"] = request.LastName,
+            ["p_Email"] = request.Email,
+            ["p_Role"] = request.Role,
+            ["p_IssuedBy"] = request.IssuedBy
         };
 
         return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -979,18 +990,20 @@ public class DatabaseService : IDatabaseService
     /// Updates an existing user using usr_users_Update stored procedure.
     /// Simplified overload for ViewModels.
     /// </summary>
-    public async Task<StoredProcedureResult> UpdateUserAsync(int id, string username, string firstName, string lastName, string email, string role, bool isActive, string issuedBy)
+    public async Task<StoredProcedureResult> UpdateUserAsync(UpdateUserRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        
         var parameters = new Dictionary<string, object>
         {
-            ["p_ID"] = id,
-            ["p_Username"] = username,
-            ["p_FirstName"] = firstName,
-            ["p_LastName"] = lastName,
-            ["p_Email"] = email,
-            ["p_Role"] = role,
-            ["p_IsActive"] = isActive,
-            ["p_IssuedBy"] = issuedBy
+            ["p_ID"] = request.Id,
+            ["p_Username"] = request.Username,
+            ["p_FirstName"] = request.FirstName,
+            ["p_LastName"] = request.LastName,
+            ["p_Email"] = request.Email,
+            ["p_Role"] = request.Role,
+            ["p_IsActive"] = request.IsActive,
+            ["p_IssuedBy"] = request.IssuedBy
         };
 
         return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(

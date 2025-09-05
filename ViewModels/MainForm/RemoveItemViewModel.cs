@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
+using MTM_WIP_Application_Avalonia.Models.Database;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
@@ -382,16 +383,19 @@ public partial class RemoveItemViewModel : BaseViewModel
                 itemToRemove.PartID, itemToRemove.Operation, itemToRemove.Quantity);
 
             // Remove item using database service with proper async handling
-            var removeResult = await _databaseService.RemoveInventoryItemAsync(
-                itemToRemove.PartID,
-                itemToRemove.Location,
-                itemToRemove.Operation ?? string.Empty,
-                itemToRemove.Quantity,
-                itemToRemove.ItemType,
-                _applicationState.CurrentUser,
-                itemToRemove.BatchNumber ?? string.Empty,
-                "Removed via Remove Item interface"
-            ).ConfigureAwait(false);
+            var request = new RemoveInventoryRequest
+            {
+                PartId = itemToRemove.PartID,
+                Location = itemToRemove.Location,
+                Operation = itemToRemove.Operation ?? string.Empty,
+                Quantity = itemToRemove.Quantity,
+                ItemType = itemToRemove.ItemType,
+                User = _applicationState.CurrentUser,
+                BatchNumber = itemToRemove.BatchNumber ?? string.Empty,
+                Notes = "Removed via Remove Item interface"
+            };
+            
+            var removeResult = await _databaseService.RemoveInventoryItemAsync(request).ConfigureAwait(false);
 
             if (removeResult.IsSuccess)
             {
