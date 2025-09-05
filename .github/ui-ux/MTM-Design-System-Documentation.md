@@ -500,6 +500,57 @@ Visual Feedback:
 
 ## 📐 **Layout and Grid Systems**
 
+### **🚨 MANDATORY Tab View Layout Pattern**
+
+**CRITICAL IMPLEMENTATION**: All tab views connected to MainView.axaml must implement the InventoryTabView standard layout pattern to ensure proper input field containment and professional UI consistency.
+
+#### **Required Structure Pattern**
+```xml
+<!-- REQUIRED: ScrollViewer root container -->
+<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+              Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+  
+  <!-- REQUIRED: Main container with proper row separation -->
+  <Grid x:Name="MainContainer" RowDefinitions="*,Auto" 
+        MinWidth="600" MinHeight="400" Margin="8">
+
+    <!-- REQUIRED: Content panel with theme integration -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+      
+      <!-- REQUIRED: Form structure with proper containment -->
+      <Grid x:Name="FormFieldsGrid" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="12">
+        <!-- Individual field grids with ColumnDefinitions="90,*" -->
+      </Grid>
+    </Border>
+    
+    <!-- REQUIRED: Action buttons panel -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+            BorderThickness="1" CornerRadius="6" Padding="12">
+      <!-- Action buttons -->
+    </Border>
+  </Grid>
+</ScrollViewer>
+```
+
+#### **Implementation Status**
+- ✅ **InventoryTabView**: Reference implementation (complete)
+- ❌ **RemoveTabView**: Requires update to this pattern  
+- ❌ **TransferTabView**: Requires update to this pattern
+
+#### **Non-Negotiable Requirements**
+1. **ScrollViewer as root container** - Prevents content overflow
+2. **Grid with RowDefinitions="*,Auto"** - Separates content from actions
+3. **All input fields contained within grid boundaries** - Professional appearance
+4. **DynamicResource bindings for ALL colors** - Theme consistency
+5. **Consistent spacing: 8px, 16px, 24px** - Visual hierarchy
+
+---
+
 ### **Responsive Grid Framework**
 
 #### **Breakpoint System**

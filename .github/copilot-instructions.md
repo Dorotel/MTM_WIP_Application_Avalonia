@@ -98,6 +98,32 @@
 - **Consistent Spacing**: 8px, 16px, 24px margins and padding
 - **Typography**: Use TextBlock with consistent FontSize and FontWeight patterns
 
+### **MANDATORY Layout Pattern for Tab Views**
+**ALL tab views connected to MainView.axaml MUST implement the InventoryTabView grid pattern:**
+
+```xml
+<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+  <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8">
+    <!-- Content Border with proper containment -->
+    <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" 
+            BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+      <!-- Form fields grid with structured layout -->
+    </Border>
+    <!-- Action buttons panel -->
+    <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}">
+      <!-- Action buttons -->
+    </Border>
+  </Grid>
+</ScrollViewer>
+```
+
+**Critical Requirements:**
+- ScrollViewer as root (prevents overflow)
+- Grid with RowDefinitions="*,Auto" (content/actions separation)
+- All input fields contained within grid boundaries
+- DynamicResource bindings for ALL colors (theme consistency)
+
 </details>
 
 <details>

@@ -183,6 +183,103 @@ MTM_Shared_Logic.ErrorBrush: #F44336 (Red)
 
 ## 📏 Layout and Spacing Standards
 
+### 🚨 MANDATORY: InventoryTabView Grid Pattern for ALL Tab Views
+
+**CRITICAL IMPLEMENTATION REQUIREMENT**: All tab views in MainView must implement this exact pattern to ensure proper input field containment and theme consistency. This pattern prevents UI overflow issues and maintains professional appearance.
+
+```xml
+<!-- ROOT: ScrollViewer for overflow handling - REQUIRED -->
+<ScrollViewer HorizontalScrollBarVisibility="Auto" 
+              VerticalScrollBarVisibility="Auto"
+              Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+    
+  <!-- MAIN: Container Grid with proper row definitions - REQUIRED -->
+  <Grid x:Name="MainContainer" 
+        RowDefinitions="*,Auto"
+        MinWidth="600"
+        MinHeight="400"
+        Margin="8">
+
+    <!-- CONTENT: Entry Panel with card styling - REQUIRED -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="16"
+            Margin="0,0,0,8">
+      
+      <!-- FORM: Structured grid for input fields - REQUIRED -->
+      <Grid x:Name="EntryFormGrid" RowDefinitions="Auto,Auto,*">
+        
+        <!-- Header Section with theme consistency -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
+                CornerRadius="6"
+                Padding="12,8"
+                Margin="0,0,0,16">
+          <!-- Header content -->
+        </Border>
+
+        <!-- Error Display Section (when needed) -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"
+                BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                BorderThickness="2"
+                CornerRadius="4"
+                Padding="12,8"
+                Margin="0,0,0,16"
+                IsVisible="{Binding HasError}">
+          <!-- Error content -->
+        </Border>
+
+        <!-- Form Fields Grid with proper containment -->
+        <Grid x:Name="FormFieldsGrid" 
+              Grid.Row="2"
+              RowDefinitions="Auto,Auto,Auto,Auto,*"
+              RowSpacing="12">
+          
+          <!-- Individual field grids with ColumnDefinitions="90,*" pattern -->
+          <Grid x:Name="FieldGrid" 
+                Grid.Row="0" 
+                ColumnDefinitions="90,*" 
+                ColumnSpacing="12">
+            <StackPanel Grid.Column="0"><!-- Label --></StackPanel>
+            <Control Grid.Column="1" Classes="input-field"><!-- Input --></Control>
+          </Grid>
+          
+        </Grid>
+      </Grid>
+    </Border>
+    
+    <!-- ACTIONS: Button panel with theme consistency - REQUIRED -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+            BorderThickness="1"
+            CornerRadius="6"
+            Padding="12"
+            Margin="0,0,0,8">
+      <!-- Action buttons with proper spacing -->
+    </Border>
+  </Grid>
+</ScrollViewer>
+```
+
+**NON-NEGOTIABLE REQUIREMENTS:**
+1. **ScrollViewer** as root container - prevents content overflow
+2. **Grid with RowDefinitions="*,Auto"** - separates content from actions
+3. **All input fields contained within grid boundaries** - prevents UI overflow
+4. **DynamicResource theme bindings for ALL colors** - ensures theme consistency
+5. **Consistent spacing: 8px, 16px, 24px** - maintains professional appearance
+
+**AFFECTED VIEWS (MUST IMPLEMENT THIS PATTERN):**
+- ✅ InventoryTabView (reference implementation)
+- ❌ RemoveTabView (requires update to this pattern)  
+- ❌ TransferTabView (requires update to this pattern)
+
+---
+
 ### MTM Spacing System
 ```xml
 <!-- Consistent spacing using 8px base unit -->
