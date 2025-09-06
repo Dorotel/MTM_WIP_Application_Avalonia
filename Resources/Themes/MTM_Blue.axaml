@@ -9,7 +9,7 @@
 	<!-- Core MTM Blue Brand Colors (WCAG 2.1 AA Compliant) -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#0056B3"/>      <!-- 4.5:1 contrast on white -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#004085"/>    <!-- 7:1 contrast on white -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#E67E00"/>           <!-- 4.5:1 contrast on white -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#B85500"/>           <!-- 4.5:1 contrast on white -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#0056B3"/>            <!-- 4.5:1 contrast on white -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#B71C1C"/>          <!-- 7:1 contrast on white -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#003D6B"/>         <!-- 10:1 contrast on white -->
@@ -24,7 +24,7 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.OverlayTextBrush" Color="#FFFFFF"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryHoverBrush" Color="#004085"/>   <!-- Darker blue for hover -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryHoverBrush" Color="#003D6B"/> <!-- Even darker for secondary -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.MagentaHoverBrush" Color="#E67E00"/>   <!-- Warning hover -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.MagentaHoverBrush" Color="#B85500"/>   <!-- Warning hover -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryPressedBrush" Color="#003D6B"/> <!-- Pressed state -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryPressedBrush" Color="#0056B3"/><!-- Secondary pressed -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.MagentaPressedBrush" Color="#B71C1C"/> <!-- Critical pressed -->
@@ -97,7 +97,7 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SuccessBrush" Color="#198754"/>         <!-- 4.5:1 contrast -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SuccessLightBrush" Color="#D1E7DD"/>    <!-- Light success -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SuccessDarkBrush" Color="#146C43"/>     <!-- Dark success -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.WarningBrush" Color="#E67E00"/>         <!-- 4.5:1 contrast -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.WarningBrush" Color="#B85500"/>         <!-- 4.5:1 contrast -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.WarningLightBrush" Color="#FFF3CD"/>    <!-- Light warning -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.WarningDarkBrush" Color="#B85C00"/>     <!-- Dark warning -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.ErrorBrush" Color="#DC3545"/>           <!-- 4.5:1 contrast -->
@@ -110,7 +110,7 @@
 	<!-- Transaction Type Colors for History Panel (WCAG 2.1 AA Compliant) -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionInBrush" Color="#198754"/>      <!-- Green for IN - 4.5:1 contrast -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionOutBrush" Color="#DC3545"/>     <!-- Red for OUT - 4.5:1 contrast -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferBrush" Color="#E67E00"/> <!-- Orange for Transfer - 4.5:1 contrast -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferBrush" Color="#B85500"/> <!-- Orange for Transfer - 4.5:1 contrast -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionInLightBrush" Color="#D1E7DD"/>  <!-- Light Green -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionOutLightBrush" Color="#F8D7DA"/> <!-- Light Red -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferLightBrush" Color="#FFF3CD"/> <!-- Light Orange -->

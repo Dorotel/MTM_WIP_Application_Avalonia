@@ -1,796 +1,796 @@
 {
-  "TestResults": [
+  "ThemeSwitchingResults": [
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Amber.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 7.98,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Amber",
-      "ComplexityScore": 118.175,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue_Dark.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 7.99,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Blue_Dark",
-      "ComplexityScore": 118.181,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 10.04,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 7.02,
-      "LoadingEfficiency": 10.68,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Blue",
-      "ComplexityScore": 120.281,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.42,
+      "TotalSwitchTimeMs": 10.94
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Dark.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.28,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.75,
-      "LoadingEfficiency": 11.11,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Dark",
-      "ComplexityScore": 118.474,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.1,
+      "TotalSwitchTimeMs": 10.62
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Emerald.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 7.98,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Emerald",
-      "ComplexityScore": 118.176,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green_Dark.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.0,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Green_Dark",
-      "ComplexityScore": 118.189,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 7.91,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.7,
-      "LoadingEfficiency": 11.19,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Green",
-      "ComplexityScore": 118.095,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.04,
+      "TotalSwitchTimeMs": 10.559999999999999
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_HighContrast.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.0,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_HighContrast",
-      "ComplexityScore": 118.188,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo_Dark.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.0,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Indigo_Dark",
-      "ComplexityScore": 118.19,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 7.99,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Indigo",
-      "ComplexityScore": 118.181,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light_Dark.axaml",
-      "EstimatedMemoryKB": 52.2,
-      "IsOptimized": true,
-      "FileSizeKB": 8.33,
-      "ResourceCount": 76,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.83,
-      "LoadingEfficiency": 11.13,
-      "BrushCount": 71,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Light_Dark",
-      "ComplexityScore": 120.03,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.2,
+      "TotalSwitchTimeMs": 10.719999999999999
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.25,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.75,
-      "LoadingEfficiency": 11.11,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Light",
-      "ComplexityScore": 118.453,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.1,
+      "TotalSwitchTimeMs": 10.62
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Orange.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 7.98,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Orange",
-      "ComplexityScore": 118.172,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red_Dark.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.0,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Red_Dark",
-      "ComplexityScore": 118.193,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 7.92,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.7,
-      "LoadingEfficiency": 11.19,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Red",
-      "ComplexityScore": 118.113,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.04,
+      "TotalSwitchTimeMs": 10.559999999999999
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose_Dark.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.0,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Rose_Dark",
-      "ComplexityScore": 118.196,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.0,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Rose",
-      "ComplexityScore": 118.193,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal_Dark.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.01,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Teal_Dark",
-      "ComplexityScore": 118.19800000000001,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal.axaml",
-      "EstimatedMemoryKB": 51.5,
-      "IsOptimized": true,
-      "FileSizeKB": 8.0,
-      "ResourceCount": 75,
-      "MemoryEfficiency": 1.46,
-      "EstimatedLoadTimeMs": 6.71,
-      "LoadingEfficiency": 11.18,
-      "BrushCount": 70,
+      "SwitchingGrade": [
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTM_Teal",
-      "ComplexityScore": 118.195,
-      "PerformanceGrade": [
-        "A",
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.52,
+      "SwitchingTimeMs": 10.05,
+      "TotalSwitchTimeMs": 10.57
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml",
-      "EstimatedMemoryKB": 0.0,
-      "IsOptimized": false,
-      "FileSizeKB": 20.83,
-      "ResourceCount": 0,
-      "MemoryEfficiency": 0,
-      "EstimatedLoadTimeMs": 3.15,
-      "LoadingEfficiency": 0.0,
-      "BrushCount": 0,
+      "SwitchingGrade": [
+        "Excellent",
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTMComponents",
-      "ComplexityScore": 21.325,
-      "PerformanceGrade": [
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.0,
+      "SwitchingTimeMs": 5.78,
+      "TotalSwitchTimeMs": 5.78
     },
     {
-      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponentsPreview.axaml",
-      "EstimatedMemoryKB": 0.0,
-      "IsOptimized": true,
-      "FileSizeKB": 15.35,
-      "ResourceCount": 0,
-      "MemoryEfficiency": 0,
-      "EstimatedLoadTimeMs": 2.32,
-      "LoadingEfficiency": 0.0,
-      "BrushCount": 0,
+      "SwitchingGrade": [
+        "Excellent",
+        "Good",
+        "Fair"
+      ],
       "ThemeName": "MTMComponentsPreview",
-      "ComplexityScore": 15.704,
-      "PerformanceGrade": [
-        "B+",
-        "B",
-        "C"
-      ]
+      "MemoryCleanupMs": 0.0,
+      "SwitchingTimeMs": 4.78,
+      "TotalSwitchTimeMs": 4.78
     }
   ],
   "Summary": {
-    "AverageFileSize": 9.09,
-    "SmallestTheme": "MTM_Green",
-    "TotalThemes": 21,
     "FastestLoadingTheme": "MTMComponentsPreview",
-    "SlowestLoadingTheme": "MTM_Blue",
     "PerformanceGrade": "C - Fair",
-    "TotalFileSize": 190.83999999999995,
     "LargestTheme": "MTMComponents",
-    "MemoryEfficientTheme": "MTM_Green"
+    "MemoryEfficientTheme": "MTM_Green",
+    "TotalThemes": 21,
+    "SlowestLoadingTheme": "MTM_Blue",
+    "TotalFileSize": 190.83999999999995,
+    "AverageFileSize": 9.09,
+    "SmallestTheme": "MTM_Green"
   },
-  "ThemeSwitchingResults": [
+  "TestResults": [
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 7.98,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Amber.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Amber",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.175
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 7.99,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue_Dark.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Blue_Dark",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.181
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.42,
-      "TotalSwitchTimeMs": 10.94,
+      "ResourceCount": 75,
+      "FileSizeKB": 10.04,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 10.68,
+      "EstimatedLoadTimeMs": 7.02,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Blue",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 120.281
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.1,
-      "TotalSwitchTimeMs": 10.62,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.28,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Dark.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.11,
+      "EstimatedLoadTimeMs": 6.75,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Dark",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.474
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 7.98,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Emerald.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Emerald",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.176
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.0,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green_Dark.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Green_Dark",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.189
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.04,
-      "TotalSwitchTimeMs": 10.559999999999999,
+      "ResourceCount": 75,
+      "FileSizeKB": 7.91,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.19,
+      "EstimatedLoadTimeMs": 6.7,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Green",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.095
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.0,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_HighContrast.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_HighContrast",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.188
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.0,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo_Dark.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Indigo_Dark",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.19
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 7.99,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Indigo",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.181
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.2,
-      "TotalSwitchTimeMs": 10.719999999999999,
+      "ResourceCount": 76,
+      "FileSizeKB": 8.33,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light_Dark.axaml",
+      "BrushCount": 71,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.13,
+      "EstimatedLoadTimeMs": 6.83,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 52.2,
       "ThemeName": "MTM_Light_Dark",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 120.03
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.1,
-      "TotalSwitchTimeMs": 10.62,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.25,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.11,
+      "EstimatedLoadTimeMs": 6.75,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Light",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.453
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 7.98,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Orange.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Orange",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.172
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.0,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red_Dark.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Red_Dark",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.193
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.04,
-      "TotalSwitchTimeMs": 10.559999999999999,
+      "ResourceCount": 75,
+      "FileSizeKB": 7.92,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.19,
+      "EstimatedLoadTimeMs": 6.7,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Red",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.113
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.0,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose_Dark.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Rose_Dark",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.196
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.0,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Rose",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.193
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.01,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal_Dark.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Teal_Dark",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.19800000000001
     },
     {
-      "MemoryCleanupMs": 0.52,
-      "SwitchingTimeMs": 10.05,
-      "TotalSwitchTimeMs": 10.57,
+      "ResourceCount": 75,
+      "FileSizeKB": 8.0,
+      "PerformanceGrade": [
+        "A",
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal.axaml",
+      "BrushCount": 70,
+      "IsOptimized": true,
+      "LoadingEfficiency": 11.18,
+      "EstimatedLoadTimeMs": 6.71,
+      "MemoryEfficiency": 1.46,
+      "EstimatedMemoryKB": 51.5,
       "ThemeName": "MTM_Teal",
-      "SwitchingGrade": [
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 118.195
     },
     {
-      "MemoryCleanupMs": 0.0,
-      "SwitchingTimeMs": 5.78,
-      "TotalSwitchTimeMs": 5.78,
+      "ResourceCount": 0,
+      "FileSizeKB": 20.83,
+      "PerformanceGrade": [
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml",
+      "BrushCount": 0,
+      "IsOptimized": false,
+      "LoadingEfficiency": 0.0,
+      "EstimatedLoadTimeMs": 3.15,
+      "MemoryEfficiency": 0,
+      "EstimatedMemoryKB": 0.0,
       "ThemeName": "MTMComponents",
-      "SwitchingGrade": [
-        "Excellent",
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 21.325
     },
     {
-      "MemoryCleanupMs": 0.0,
-      "SwitchingTimeMs": 4.78,
-      "TotalSwitchTimeMs": 4.78,
+      "ResourceCount": 0,
+      "FileSizeKB": 15.35,
+      "PerformanceGrade": [
+        "B+",
+        "B",
+        "C"
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponentsPreview.axaml",
+      "BrushCount": 0,
+      "IsOptimized": true,
+      "LoadingEfficiency": 0.0,
+      "EstimatedLoadTimeMs": 2.32,
+      "MemoryEfficiency": 0,
+      "EstimatedMemoryKB": 0.0,
       "ThemeName": "MTMComponentsPreview",
-      "SwitchingGrade": [
-        "Excellent",
-        "Good",
-        "Fair"
-      ]
+      "ComplexityScore": 15.704
     }
   ],
-  "TestDate": "2025-09-06 19:04:30",
   "PerformanceRegressions": [
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Amber",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Amber"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Blue_Dark",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Blue_Dark"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (10.68 < 20)"
       ],
-      "ThemeName": "MTM_Blue",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Blue"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.11 < 20)"
       ],
-      "ThemeName": "MTM_Dark",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Dark"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Emerald",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Emerald"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Green_Dark",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Green_Dark"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.19 < 20)"
       ],
-      "ThemeName": "MTM_Green",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Green"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_HighContrast",
-      "Severity": "Medium"
+      "ThemeName": "MTM_HighContrast"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Indigo_Dark",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Indigo_Dark"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Indigo",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Indigo"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (52.2 KB > 20 KB)",
         "Loading efficiency below baseline (11.13 < 20)"
       ],
-      "ThemeName": "MTM_Light_Dark",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Light_Dark"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.11 < 20)"
       ],
-      "ThemeName": "MTM_Light",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Light"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Orange",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Orange"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Red_Dark",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Red_Dark"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.19 < 20)"
       ],
-      "ThemeName": "MTM_Red",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Red"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Rose_Dark",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Rose_Dark"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Rose",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Rose"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Teal_Dark",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Teal_Dark"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "Memory usage exceeds baseline (51.5 KB > 20 KB)",
         "Loading efficiency below baseline (11.18 < 20)"
       ],
-      "ThemeName": "MTM_Teal",
-      "Severity": "Medium"
+      "ThemeName": "MTM_Teal"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "File size exceeds baseline (20.83 KB > 15 KB)",
         "Loading efficiency below baseline (0 < 20)"
       ],
-      "ThemeName": "MTMComponents",
-      "Severity": "Medium"
+      "ThemeName": "MTMComponents"
     },
     {
+      "Severity": "Medium",
       "Issues": [
         "File size exceeds baseline (15.35 KB > 15 KB)",
         "Loading efficiency below baseline (0 < 20)"
       ],
-      "ThemeName": "MTMComponentsPreview",
-      "Severity": "Medium"
+      "ThemeName": "MTMComponentsPreview"
     }
-  ]
+  ],
+  "TestDate": "2025-09-06 19:33:55"
 }
