@@ -7,11 +7,11 @@
 	<!-- ================================================================== -->
 
 	<!-- Core MTM Light Teal Default Brand Colors -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#00796B"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#00695C"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#0078D4"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#00695C"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#004D40"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#00695C"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#C62828"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#4DB6AC"/>
 
 	<!-- Extended Palette for Enhanced Visual Effects -->
@@ -85,7 +85,7 @@
 	<!-- Comprehensive Text Color System -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.HeadingText" Color="#004D40"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.BodyText" Color="#424242"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#757575"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#666666"/>
 	
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#00796B"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#0078D4"/>
@@ -109,7 +109,7 @@
 	<!-- Transaction Type Colors for History Panel (WCAG 2.1 AA Compliant) -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionInBrush" Color="#198754"/>      <!-- Green for IN - 4.5:1 contrast -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionOutBrush" Color="#DC3545"/>     <!-- Red for OUT - 4.5:1 contrast -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferBrush" Color="#B85500"/> <!-- Orange for Transfer - 4.5:1 contrast -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferBrush" Color="#E65100"/> <!-- Orange for Transfer - 4.5:1 contrast -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionInLightBrush" Color="#D1E7DD"/>  <!-- Light Green -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionOutLightBrush" Color="#F8D7DA"/> <!-- Light Red -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferLightBrush" Color="#FFF3CD"/> <!-- Light Orange -->

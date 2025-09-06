@@ -85,7 +85,7 @@
 	<!-- Comprehensive Text Color System -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.HeadingText" Color="#E0E0E0"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.BodyText" Color="#E0E0E0"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#C0C0C0"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#666666"/>
 	
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#2E7D32"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#1B5E20"/>
@@ -108,8 +108,8 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InfoDarkBrush" Color="#1976D2"/>
 	<!-- Transaction Type Colors for History Panel (WCAG 2.1 AA Compliant) -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionInBrush" Color="#198754"/>      <!-- Green for IN - 4.5:1 contrast -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionOutBrush" Color="#DC3545"/>     <!-- Red for OUT - 4.5:1 contrast -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferBrush" Color="#B85500"/> <!-- Orange for Transfer - 4.5:1 contrast -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionOutBrush" Color="#F44336"/>     <!-- Red for OUT - 4.5:1 contrast -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferBrush" Color="#FF7043"/> <!-- Orange for Transfer - 4.5:1 contrast -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionInLightBrush" Color="#D1E7DD"/>  <!-- Light Green -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionOutLightBrush" Color="#F8D7DA"/> <!-- Light Red -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferLightBrush" Color="#FFF3CD"/> <!-- Light Orange -->

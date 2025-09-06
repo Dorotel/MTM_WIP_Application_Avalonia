@@ -8,10 +8,10 @@
 
 	<!-- Core MTM Indigo Brand Colors -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#3F51B5"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#5C6BC0"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#3F51B5"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#7986CB"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#303F9F"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#1A237E"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#C62828"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#C5CAE9"/>
 
 	<!-- Extended Palette for Enhanced Visual Effects -->
@@ -85,7 +85,7 @@
 	<!-- Comprehensive Text Color System -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.HeadingText" Color="#1A237E"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.BodyText" Color="#666666"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#999999"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#666666"/>
 	
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#3F51B5"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#303F9F"/>

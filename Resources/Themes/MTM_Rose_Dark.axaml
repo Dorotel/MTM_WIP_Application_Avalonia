@@ -9,7 +9,7 @@
 	<!-- Core MTM Dark Rose Default Brand Colors -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#C2185B"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#0078D4"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#EC407A"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#FFB74D"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#C2185B"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#880E4F"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#F8BBD9"/>
@@ -85,7 +85,7 @@
 	<!-- Comprehensive Text Color System -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.HeadingText" Color="#E0E0E0"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.BodyText" Color="#E0E0E0"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#C0C0C0"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#666666"/>
 	
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#F8BBD9"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#EC407A"/>

@@ -1,0 +1,36 @@
+[
+  {
+    "ThemeName": "MTM_Blue",
+    "OriginalSize": 10241,
+    "NewSize": 10126,
+    "SizeReduction": 1.12,
+    "OriginalLines": 132,
+    "NewLines": 130,
+    "LineReduction": 2,
+    "EmptyLines": 17,
+    "Optimizations": [
+      "Aggressive empty line reduction (target: max 10)",
+      "Simplified gradient: MTM_Shared_Logic.HeroGradientBrush (4 → 2 stops)"
+    ],
+    "PerformanceScore": 61.0,
+    "Grade": "D - Poor",
+    "BackupPath": "./Resources/Themes/MTM_Blue.axaml.manual-perf-backup.20250906-200147"
+  },
+  {
+    "ThemeName": "MTMTheme",
+    "OriginalSize": 10315,
+    "NewSize": 10184,
+    "SizeReduction": 1.27,
+    "OriginalLines": 134,
+    "NewLines": 132,
+    "LineReduction": 2,
+    "EmptyLines": 18,
+    "Optimizations": [
+      "Aggressive empty line reduction (target: max 10)",
+      "Simplified gradient: MTM_Shared_Logic.HeroGradientBrush (4 → 2 stops)"
+    ],
+    "PerformanceScore": 59.7,
+    "Grade": "F - Fail",
+    "BackupPath": "./Resources/Themes/MTMTheme.axaml.manual-perf-backup.20250906-200203"
+  }
+]

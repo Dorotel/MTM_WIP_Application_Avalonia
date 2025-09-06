@@ -7,15 +7,15 @@
 	<!-- ================================================================== -->
 
 	<!-- Core MTM Gold Brand Colors -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#1976D2"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#B8860B"/>
 	<!-- Dark Goldenrod -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#1976D2"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#DAA520"/>
 	<!-- Goldenrod -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#BFA100"/>
 	<!-- Gold adjusted to match palette -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#C2B280"/>
 	<!-- Pale Gold/Khaki -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#C62828"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#8C7300"/>
 	<!-- Deep Gold -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#FFF7CC"/>
 	<!-- Soft Gold Highlight -->
@@ -94,7 +94,7 @@
 	<!-- Comprehensive Text Color System -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.HeadingText" Color="#8C7300"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.BodyText" Color="#666666"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#666666"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#999999"/>
 	
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#B8860B"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#C2B280"/>

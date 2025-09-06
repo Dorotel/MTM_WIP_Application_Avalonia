@@ -7,11 +7,11 @@
 	<!-- ================================================================== -->
 	
 	<!-- Core MTM Amber Brand Colors -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#E65100"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#FB8C00"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#F57C00"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#C62828"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#FFCC80"/>
 	
 	<!-- Extended Palette for Enhanced Visual Effects -->
@@ -85,7 +85,7 @@
 	<!-- Comprehensive Text Color System -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.HeadingText" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.BodyText" Color="#666666"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#666666"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#999999"/>
 	
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#FB8C00"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#F57C00"/>

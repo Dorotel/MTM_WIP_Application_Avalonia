@@ -7,11 +7,11 @@
 	<!-- ================================================================== -->
 	
 	<!-- Core MTM Emerald Brand Colors -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#00695C"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#00695C"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#2E7D32"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#2E7D32"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#4DB6AC"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#00796B"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#004D40"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#C62828"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#80CBC4"/>
 	
 	<!-- Extended Palette for Enhanced Visual Effects -->

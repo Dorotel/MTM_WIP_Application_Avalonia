@@ -7,11 +7,11 @@
 	<!-- ================================================================== -->
 	
 	<!-- Core MTM Green Brand Colors -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#2E7D32"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#2E7D32"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#43A047"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#66BB6A"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#7CB342"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#388E3C"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#C62828"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#2E7D32"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#2E7D32"/>
 	
 	<!-- Extended Palette for Enhanced Visual Effects -->
@@ -85,7 +85,7 @@
 	<!-- Comprehensive Text Color System -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.HeadingText" Color="#1B5E20"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.BodyText" Color="#666666"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#666666"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#999999"/>
 	
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#43A047"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#388E3C"/>
