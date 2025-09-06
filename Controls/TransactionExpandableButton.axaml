@@ -140,57 +140,66 @@
               Padding="16,12"
               IsVisible="False">
         
-        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12">
           
-          <!-- Location -->
-          <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="8">
-            <material:MaterialIcon Kind="MapMarker" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-            <TextBlock Text="Location:" Classes="content-label"/>
-            <TextBlock x:Name="LocationText" Text="WC01" Classes="content-value"/>
-          </StackPanel>
+          <!-- Left Column - Location and Time -->
+          <Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="MapMarker" Width="16" Height="16" 
+                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Grid.Column="2" Text="Location:" Classes="content-label" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="4" x:Name="LocationText" Text="WC01" Classes="content-value" VerticalAlignment="Center"/>
+          </Grid>
           
-          <!-- User -->
-          <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8">
-            <material:MaterialIcon Kind="Account" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-            <TextBlock Text="User:" Classes="content-label"/>
-            <TextBlock x:Name="UserText" Text="admin" Classes="content-value"/>
-          </StackPanel>
+          <!-- Right Column - User -->
+          <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="Account" Width="16" Height="16" 
+                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Grid.Column="2" Text="User:" Classes="content-label" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="4" x:Name="UserText" Text="admin" Classes="content-value" VerticalAlignment="Center"/>
+          </Grid>
           
-          <!-- Transaction Time -->
-          <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="8">
-            <material:MaterialIcon Kind="Clock" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-            <TextBlock Text="Time:" Classes="content-label"/>
-            <TextBlock x:Name="TransactionTimeText" Text="14:30:22" Classes="content-value"/>
-          </StackPanel>
+          <!-- Left Column - Transaction Time -->
+          <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="Clock" Width="16" Height="16" 
+                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Grid.Column="2" Text="Time:" Classes="content-label" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="4" x:Name="TransactionTimeText" Text="14:30:22" Classes="content-value" VerticalAlignment="Center"/>
+          </Grid>
           
-          <!-- Status -->
-          <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8">
-            <material:MaterialIcon Kind="CheckCircle" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
-            <TextBlock Text="Status:" Classes="content-label"/>
-            <TextBlock x:Name="StatusText" Text="Completed" Classes="content-value"/>
-          </StackPanel>
+          <!-- Right Column - Status -->
+          <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="CheckCircle" Width="16" Height="16" 
+                                   Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
+            <TextBlock Grid.Column="2" Text="Status:" Classes="content-label" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="4" x:Name="StatusText" Text="Completed" Classes="content-value" VerticalAlignment="Center"/>
+          </Grid>
           
-          <!-- Item Type -->
-          <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Spacing="8">
-            <material:MaterialIcon Kind="Package" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-            <TextBlock Text="Type:" Classes="content-label"/>
-            <TextBlock x:Name="ItemTypeText" Text="WIP" Classes="content-value"/>
-          </StackPanel>
+          <!-- Left Column - Item Type -->
+          <Grid Grid.Row="2" Grid.Column="0" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="Package" Width="16" Height="16" 
+                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Grid.Column="2" Text="Type:" Classes="content-label" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="4" x:Name="ItemTypeText" Text="WIP" Classes="content-value" VerticalAlignment="Center"/>
+          </Grid>
           
-          <!-- Transaction ID -->
-          <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="8">
-            <material:MaterialIcon Kind="Identifier" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-            <TextBlock Text="ID:" Classes="content-label"/>
-            <TextBlock x:Name="TransactionIdText" Text="12345" Classes="content-value"/>
-          </StackPanel>
+          <!-- Right Column - Transaction ID -->
+          <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="Identifier" Width="16" Height="16" 
+                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+            <TextBlock Grid.Column="2" Text="ID:" Classes="content-label" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="4" x:Name="TransactionIdText" Text="12345" Classes="content-value" VerticalAlignment="Center"/>
+          </Grid>
           
           <!-- Notes (spanning both columns if present) -->
-          <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8" 
-                      x:Name="NotesPanel" IsVisible="False">
-            <material:MaterialIcon Kind="NoteText" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-            <TextBlock Text="Notes:" Classes="content-label"/>
-            <TextBlock x:Name="NotesText" Text="" Classes="content-value" TextWrapping="Wrap"/>
-          </StackPanel>
+          <Grid Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="Auto,8,Auto,4,*" 
+                x:Name="NotesPanel" IsVisible="False" VerticalAlignment="Top">
+            <material:MaterialIcon Grid.Column="0" Kind="NoteText" Width="16" Height="16" 
+                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" 
+                                   VerticalAlignment="Top" Margin="0,2,0,0"/>
+            <TextBlock Grid.Column="2" Text="Notes:" Classes="content-label" VerticalAlignment="Top"/>
+            <TextBlock Grid.Column="4" x:Name="NotesText" Text="" Classes="content-value" 
+                       TextWrapping="Wrap" VerticalAlignment="Top"/>
+          </Grid>
           
         </Grid>
       </Border>

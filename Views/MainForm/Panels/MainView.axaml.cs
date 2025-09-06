@@ -1,20 +1,29 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
+using Avalonia.Threading;
+using Avalonia.Interactivity;
+using Avalonia.VisualTree;
+using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.Models;
 
 namespace MTM_WIP_Application_Avalonia.Views
 {
     public partial class MainView : UserControl
     {
         private bool _isInitialized = false;
+        private MainViewViewModel? _viewModel;
         
         public MainView()
         {
             InitializeComponent();
             Loaded += OnMainViewLoaded;
             SizeChanged += OnMainViewSizeChanged;
+            DataContextChanged += OnDataContextChanged;
             
             // DEBUG: Add theme diagnostic when view loads
             Loaded += OnMainViewLoadedThemeDebug;
@@ -436,6 +445,13 @@ namespace MTM_WIP_Application_Avalonia.Views
                 // Clean up event handlers
                 Loaded -= OnMainViewLoaded;
                 SizeChanged -= OnMainViewSizeChanged;
+                DataContextChanged -= OnDataContextChanged;
+                
+                // Unsubscribe from ViewModel events
+                if (_viewModel != null)
+                {
+                    _viewModel.TriggerLostFocusRequested -= OnTriggerLostFocusRequested;
+                }
             }
             catch (Exception ex)
             {
@@ -444,6 +460,393 @@ namespace MTM_WIP_Application_Avalonia.Views
             finally
             {
                 base.OnDetachedFromVisualTree(e);
+            }
+        }
+
+        private void OnDataContextChanged(object? sender, EventArgs e)
+        {
+            try
+            {
+                // Unsubscribe from previous ViewModel
+                if (_viewModel != null)
+                {
+                    _viewModel.TriggerLostFocusRequested -= OnTriggerLostFocusRequested;
+                }
+
+                // Subscribe to new ViewModel
+                _viewModel = DataContext as MainViewViewModel;
+                if (_viewModel != null)
+                {
+                    _viewModel.TriggerLostFocusRequested += OnTriggerLostFocusRequested;
+                    System.Diagnostics.Debug.WriteLine("MainView subscribed to TriggerLostFocusRequested event");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling DataContext change: {ex.Message}");
+            }
+        }
+
+        private async void OnTriggerLostFocusRequested(object? sender, TriggerLostFocusEventArgs e)
+        {
+            try
+            {
+                if (e.FocusOnly)
+                {
+                    System.Diagnostics.Debug.WriteLine($"MainView received request to focus {e.FieldNames.Count} fields on tab {e.TabIndex}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"MainView received request to trigger LostFocus on {e.FieldNames.Count} fields on tab {e.TabIndex}");
+                }
+                
+                // Use Dispatcher to ensure UI operations happen on the correct thread
+                await Dispatcher.UIThread.InvokeAsync(async () =>
+                {
+                    if (e.FocusOnly)
+                    {
+                        await FocusOnFieldsAsync(e.FieldNames, e.TabIndex, e.DelayBetweenFields);
+                    }
+                    else
+                    {
+                        await TriggerLostFocusOnFieldsAsync(e.FieldNames, e.TabIndex, e.DelayBetweenFields);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling TriggerLostFocusRequested: {ex.Message}");
+            }
+        }
+
+        private async Task TriggerLostFocusOnFieldsAsync(List<string> fieldNames, int tabIndex, int delayBetweenFields)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"Triggering LostFocus events for fields: {string.Join(", ", fieldNames)} on tab {tabIndex}");
+                
+                // First, ensure we're on the correct tab if needed
+                var tabControl = this.FindControl<TabControl>("MainForm_TabControl");
+                if (tabControl != null && tabControl.SelectedIndex != tabIndex)
+                {
+                    tabControl.SelectedIndex = tabIndex;
+                    System.Diagnostics.Debug.WriteLine($"Switched to tab {tabIndex}");
+                    
+                    // Small delay to allow tab switch to complete
+                    await Task.Delay(100);
+                }
+
+                // Trigger LostFocus event on each field with delays
+                foreach (var fieldName in fieldNames)
+                {
+                    await TriggerLostFocusOnField(fieldName);
+                    
+                    // Add delay between fields if specified
+                    if (delayBetweenFields > 0)
+                    {
+                        await Task.Delay(delayBetweenFields);
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine("Completed triggering LostFocus events on all fields");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error triggering LostFocus events: {ex.Message}");
+            }
+        }
+
+        private async Task FocusOnFieldsAsync(List<string> fieldNames, int tabIndex, int delayBetweenFields)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"Focusing on fields: {string.Join(", ", fieldNames)} on tab {tabIndex}");
+                
+                // First, ensure we're on the correct tab if needed
+                var tabControl = this.FindControl<TabControl>("MainForm_TabControl");
+                if (tabControl != null && tabControl.SelectedIndex != tabIndex)
+                {
+                    tabControl.SelectedIndex = tabIndex;
+                    System.Diagnostics.Debug.WriteLine($"Switched to tab {tabIndex}");
+                    
+                    // Small delay to allow tab switch to complete
+                    await Task.Delay(100);
+                }
+
+                // Focus on each field with delays
+                foreach (var fieldName in fieldNames)
+                {
+                    await FocusOnField(fieldName);
+                    
+                    // Add delay between fields if specified
+                    if (delayBetweenFields > 0)
+                    {
+                        await Task.Delay(delayBetweenFields);
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine("Completed focusing on all fields");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error focusing on fields: {ex.Message}");
+            }
+        }
+
+        private async Task TriggerLostFocusOnField(string fieldName)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"Attempting to trigger LostFocus for field: {fieldName}");
+                
+                Control? targetControl = null;
+
+                // The TextBox controls are inside the InventoryTabView, so we need to find them differently
+                // First get the tab control and the current tab content
+                var tabControl = this.FindControl<TabControl>("MainForm_TabControl");
+                if (tabControl?.SelectedIndex == 0) // Inventory tab
+                {
+                    // Find the InventoryTabView content within the tab
+                    var inventoryContent = FindControlInVisualTree<UserControl>(this, "InventoryTabView") ?? 
+                                          FindControlByType<UserControl>(this, "InventoryTabView");
+                    
+                    if (inventoryContent != null)
+                    {
+                        // Look for controls within the InventoryTabView
+                        switch (fieldName.ToLowerInvariant())
+                        {
+                            case "partid":
+                            case "part":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "PartTextBox");
+                                break;
+                            case "operation":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "OperationTextBox");
+                                break;
+                            case "quantity":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "QuantityTextBox");
+                                break;
+                            case "location":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "LocationTextBox");
+                                break;
+                            case "notes":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "NotesTextBox");
+                                break;
+                        }
+                    }
+                }
+
+                if (targetControl == null)
+                {
+                    // Fallback: try to find control directly in the main view (might work for some cases)
+                    switch (fieldName.ToLowerInvariant())
+                    {
+                        case "partid":
+                        case "part":
+                            targetControl = this.FindControl<TextBox>("PartTextBox");
+                            break;
+                        case "operation":
+                            targetControl = this.FindControl<TextBox>("OperationTextBox");
+                            break;
+                        case "quantity":
+                            targetControl = this.FindControl<TextBox>("QuantityTextBox");
+                            break;
+                        case "location":
+                            targetControl = this.FindControl<TextBox>("LocationTextBox");
+                            break;
+                        case "notes":
+                            targetControl = this.FindControl<TextBox>("NotesTextBox");
+                            break;
+                    }
+                }
+
+                if (targetControl != null)
+                {
+                    // Trigger the LostFocus event by first focusing the control, then moving focus away
+                    targetControl.Focus();
+                    await Task.Delay(50); // Brief delay to ensure focus is established
+                    
+                    // Move focus away to trigger LostFocus - focus on another control or the parent
+                    var parentContainer = targetControl.Parent;
+                    if (parentContainer is Control parentControl && parentControl.Focusable)
+                    {
+                        parentControl.Focus();
+                    }
+                    else
+                    {
+                        // Fallback: try to focus the tab control or main container
+                        var tabContainer = this.FindControl<TabControl>("MainForm_TabControl");
+                        if (tabContainer != null && tabContainer.Focusable)
+                        {
+                            tabContainer.Focus();
+                        }
+                    }
+                    
+                    System.Diagnostics.Debug.WriteLine($"Successfully triggered LostFocus for field: {fieldName}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Could not find control for field: {fieldName}");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error triggering LostFocus for field {fieldName}: {ex.Message}");
+            }
+        }
+
+        private async Task FocusOnField(string fieldName)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"Attempting to focus field: {fieldName}");
+                
+                Control? targetControl = null;
+
+                // The TextBox controls are inside the InventoryTabView, so we need to find them differently
+                // First get the tab control and the current tab content
+                var tabControl = this.FindControl<TabControl>("MainForm_TabControl");
+                if (tabControl?.SelectedIndex == 0) // Inventory tab
+                {
+                    // Find the InventoryTabView content within the tab
+                    var inventoryContent = FindControlInVisualTree<UserControl>(this, "InventoryTabView") ?? 
+                                          FindControlByType<UserControl>(this, "InventoryTabView");
+                    
+                    if (inventoryContent != null)
+                    {
+                        // Look for controls within the InventoryTabView
+                        switch (fieldName.ToLowerInvariant())
+                        {
+                            case "partid":
+                            case "part":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "PartTextBox");
+                                break;
+                            case "operation":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "OperationTextBox");
+                                break;
+                            case "quantity":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "QuantityTextBox");
+                                break;
+                            case "location":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "LocationTextBox");
+                                break;
+                            case "notes":
+                                targetControl = FindControlInVisualTree<TextBox>(inventoryContent, "NotesTextBox");
+                                break;
+                        }
+                    }
+                }
+
+                if (targetControl == null)
+                {
+                    // Fallback: try to find control directly in the main view (might work for some cases)
+                    switch (fieldName.ToLowerInvariant())
+                    {
+                        case "partid":
+                        case "part":
+                            targetControl = this.FindControl<TextBox>("PartTextBox");
+                            break;
+                        case "operation":
+                            targetControl = this.FindControl<TextBox>("OperationTextBox");
+                            break;
+                        case "quantity":
+                            targetControl = this.FindControl<TextBox>("QuantityTextBox");
+                            break;
+                        case "location":
+                            targetControl = this.FindControl<TextBox>("LocationTextBox");
+                            break;
+                        case "notes":
+                            targetControl = this.FindControl<TextBox>("NotesTextBox");
+                            break;
+                    }
+                }
+
+                if (targetControl != null)
+                {
+                    // Simply focus the control without triggering LostFocus
+                    targetControl.Focus();
+                    await Task.Delay(50); // Brief delay to ensure focus is established
+                    
+                    System.Diagnostics.Debug.WriteLine($"Successfully focused field: {fieldName}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Could not find control for field: {fieldName}");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error focusing field {fieldName}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Helper method to find a control in the visual tree by name and type
+        /// </summary>
+        private T? FindControlInVisualTree<T>(Control parent, string name) where T : Control
+        {
+            try
+            {
+                if (parent.Name == name && parent is T typedControl)
+                    return typedControl;
+
+                var children = parent.GetVisualChildren().OfType<Control>();
+                foreach (var child in children)
+                {
+                    var result = FindControlInVisualTree<T>(child, name);
+                    if (result != null)
+                        return result;
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Helper method to find a UserControl by class name
+        /// </summary>
+        private T? FindControlByType<T>(Control parent, string className) where T : Control
+        {
+            try
+            {
+                if (parent.GetType().Name.Contains(className, StringComparison.OrdinalIgnoreCase) && parent is T typedControl)
+                    return typedControl;
+
+                var children = parent.GetVisualChildren().OfType<Control>();
+                foreach (var child in children)
+                {
+                    var result = FindControlByType<T>(child, className);
+                    if (result != null)
+                        return result;
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        
+        /// <summary>
+        /// Handles clicking on the connection status to manually refresh the connection
+        /// </summary>
+        private async void OnConnectionStatusClicked(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            try
+            {
+                if (_viewModel != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("Connection status clicked - refreshing connection");
+                    await _viewModel.RefreshConnectionStatusCommand.ExecuteAsync(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling connection status click: {ex.Message}");
             }
         }
     }

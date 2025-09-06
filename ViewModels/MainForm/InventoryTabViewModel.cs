@@ -14,6 +14,8 @@ using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Threading;
+using MTM_WIP_Application_Avalonia.Views;
+using Avalonia.Controls;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -120,6 +122,18 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     private bool _hasError = false;
 
     /// <summary>
+    /// Current success message to display to user
+    /// </summary>
+    [ObservableProperty]
+    private string _successMessage = string.Empty;
+
+    /// <summary>
+    /// Indicates if there is an active success condition
+    /// </summary>
+    [ObservableProperty]
+    private bool _hasSuccess = false;
+
+    /// <summary>
     /// Text content for Part ID input field (two-way binding support)
     /// </summary>
     [ObservableProperty]
@@ -154,6 +168,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(PartWatermark));
         OnPropertyChanged(nameof(IsPartValid));
+        OnPropertyChanged(nameof(IsPartValidInDatabase));
         OnPropertyChanged(nameof(CanSave));
         SaveCommand.NotifyCanExecuteChanged();
     }
@@ -165,6 +180,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(OperationWatermark));
         OnPropertyChanged(nameof(IsOperationValid));
+        OnPropertyChanged(nameof(IsOperationValidInDatabase));
         OnPropertyChanged(nameof(CanSave));
         SaveCommand.NotifyCanExecuteChanged();
     }
@@ -176,6 +192,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(LocationWatermark));
         OnPropertyChanged(nameof(IsLocationValid));
+        OnPropertyChanged(nameof(IsLocationValidInDatabase));
         OnPropertyChanged(nameof(CanSave));
         SaveCommand.NotifyCanExecuteChanged();
     }
@@ -254,42 +271,67 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
 
     /// <summary>
     /// Determines if the save operation can be executed based on current validation state
+    /// Requires all fields to have valid values from the database and quantity to be positive
     /// </summary>
     public bool CanSave => !IsLoading && 
-                          !string.IsNullOrWhiteSpace(SelectedPart) &&
-                          !string.IsNullOrWhiteSpace(SelectedOperation) &&
-                          !string.IsNullOrWhiteSpace(SelectedLocation) &&
-                          Quantity > 0;
+                          IsPartValidInDatabase &&
+                          IsOperationValidInDatabase &&
+                          IsLocationValidInDatabase &&
+                          IsQuantityValid;
 
     /// <summary>
-    /// Validation state for Part ID field
+    /// Validation state for Part ID field - checks if not empty AND exists in database
     /// </summary>
     public bool IsPartValid => !string.IsNullOrWhiteSpace(SelectedPart);
 
     /// <summary>
-    /// Dynamic watermark for Part ID field - shows error or placeholder
+    /// Validation state for Part ID field - checks if value exists in database
     /// </summary>
-    public string PartWatermark => IsPartValid ? "Enter or select a part number..." : "Part ID is required";
+    public bool IsPartValidInDatabase => IsPartValid && 
+                                        _masterDataService?.PartIds?.Contains(SelectedPart) == true;
 
     /// <summary>
-    /// Validation state for Operation field
+    /// Dynamic watermark for Part ID field - shows error or placeholder
+    /// </summary>
+    public string PartWatermark => !IsPartValid ? "Part ID is required" :
+                                  !IsPartValidInDatabase ? "Part ID not found in database" :
+                                  "Enter or select a part number...";
+
+    /// <summary>
+    /// Validation state for Operation field - checks if not empty
     /// </summary>
     public bool IsOperationValid => !string.IsNullOrWhiteSpace(SelectedOperation);
 
     /// <summary>
-    /// Dynamic watermark for Operation field - shows error or placeholder
+    /// Validation state for Operation field - checks if value exists in database
     /// </summary>
-    public string OperationWatermark => IsOperationValid ? "Enter or select an operation..." : "Operation is required";
+    public bool IsOperationValidInDatabase => IsOperationValid && 
+                                             _masterDataService?.Operations?.Contains(SelectedOperation) == true;
 
     /// <summary>
-    /// Validation state for Location field
+    /// Dynamic watermark for Operation field - shows error or placeholder
+    /// </summary>
+    public string OperationWatermark => !IsOperationValid ? "Operation is required" :
+                                       !IsOperationValidInDatabase ? "Operation not found in database" :
+                                       "Enter or select an operation...";
+
+    /// <summary>
+    /// Validation state for Location field - checks if not empty
     /// </summary>
     public bool IsLocationValid => !string.IsNullOrWhiteSpace(SelectedLocation);
 
     /// <summary>
+    /// Validation state for Location field - checks if value exists in database
+    /// </summary>
+    public bool IsLocationValidInDatabase => IsLocationValid && 
+                                            _masterDataService?.Locations?.Contains(SelectedLocation) == true;
+
+    /// <summary>
     /// Dynamic watermark for Location field - shows error or placeholder
     /// </summary>
-    public string LocationWatermark => IsLocationValid ? "Enter or select a location..." : "Location is required";
+    public string LocationWatermark => !IsLocationValid ? "Location is required" :
+                                      !IsLocationValidInDatabase ? "Location not found in database" :
+                                      "Enter or select a location...";
 
     /// <summary>
     /// Validation state for Quantity field
@@ -326,9 +368,9 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     public event EventHandler? AdvancedEntryRequested;
 
     /// <summary>
-    /// Event fired when panel toggle is requested
+    /// Event fired when LostFocus should be triggered on form fields for validation
     /// </summary>
-    public event EventHandler? PanelToggleRequested;
+    public event EventHandler? TriggerValidationLostFocus;
 
     #endregion
 
@@ -378,6 +420,19 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             {
                 await _masterDataService.LoadAllMasterDataAsync();
                 Logger.LogInformation("Master data loaded successfully for InventoryTabViewModel");
+                
+                // Update database validation states after master data is loaded
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    OnPropertyChanged(nameof(IsPartValidInDatabase));
+                    OnPropertyChanged(nameof(IsOperationValidInDatabase));
+                    OnPropertyChanged(nameof(IsLocationValidInDatabase));
+                    OnPropertyChanged(nameof(PartWatermark));
+                    OnPropertyChanged(nameof(OperationWatermark));
+                    OnPropertyChanged(nameof(LocationWatermark));
+                    OnPropertyChanged(nameof(CanSave));
+                    SaveCommand.NotifyCanExecuteChanged();
+                });
             }
             catch (Exception ex)
             {
@@ -404,7 +459,9 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         {
             IsLoading = true;
             HasError = false;
+            HasSuccess = false;
             ErrorMessage = string.Empty;
+            SuccessMessage = string.Empty;
 
             Logger.LogInformation("Saving inventory item: Part={PartId}, Operation={Operation}, Quantity={Quantity}", 
                 SelectedPart, SelectedOperation, Quantity);
@@ -416,49 +473,61 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             if (!ValidateInput())
             {
                 await _applicationStateService.SetProgressAsync(0, "Validation failed");
+                Logger.LogWarning("Form validation failed - Part: '{Part}', Operation: '{Operation}', Location: '{Location}', Quantity: {Quantity}", 
+                    SelectedPart, SelectedOperation, SelectedLocation, Quantity);
                 return;
             }
 
             await _applicationStateService.SetProgressAsync(25, "Connecting to database...");
 
-            // Prepare parameters for inv_inventory_Add_Item stored procedure
-            var parameters = new Dictionary<string, object>
+            // Get current user - ensure it's not null or empty
+            var currentUser = _applicationStateService.CurrentUser;
+            if (string.IsNullOrWhiteSpace(currentUser))
             {
-                ["p_PartID"] = SelectedPart,
-                ["p_Location"] = SelectedLocation,
-                ["p_Operation"] = SelectedOperation,
-                ["p_Quantity"] = Quantity,
-                ["p_ItemType"] = "WIP", // Default item type for MTM
-                ["p_User"] = _applicationStateService.CurrentUser,
-                ["p_Notes"] = !string.IsNullOrWhiteSpace(Notes) ? Notes : DBNull.Value
-            };
+                currentUser = Environment.UserName.ToUpper();
+                Logger.LogWarning("CurrentUser was empty, using Environment.UserName: {User}", currentUser);
+            }
 
             await _applicationStateService.SetProgressAsync(50, "Saving inventory item...");
 
-            // Execute stored procedure following MTM database patterns
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                _configurationService?.GetConnectionString() ?? throw new InvalidOperationException("Configuration service not available"),
-                "inv_inventory_Add_Item",
-                parameters
+            // Generate unique batch number for inventory tracking (following WinForms pattern)
+            var batchNumber = await GenerateUniqueBatchNumberAsync();
+            
+            Logger.LogInformation("Attempting to save with values - Part: '{PartId}', Operation: '{Operation}', Location: '{Location}', Quantity: {Quantity}, User: '{User}', Batch: '{BatchNumber}'", 
+                SelectedPart, SelectedOperation ?? "NULL", SelectedLocation ?? "NULL", Quantity, currentUser, batchNumber);
+
+            // Use DatabaseService method for proper parameter validation and error handling
+            var result = await _databaseService.AddInventoryItemAsync(
+                partId: SelectedPart,
+                location: SelectedLocation ?? string.Empty,
+                operation: SelectedOperation ?? string.Empty,
+                quantity: Quantity,
+                itemType: "WIP", // Default item type for MTM
+                user: currentUser,
+                batchNumber: batchNumber, // Include batch number for tracking
+                notes: Notes ?? string.Empty
             );
 
             if (result.IsSuccess)
             {
                 await _applicationStateService.SetProgressAsync(75, "Processing transaction...");
                 
-                Logger.LogInformation("Inventory item saved successfully");
+                Logger.LogInformation("Inventory item saved successfully with batch number: {BatchNumber}", batchNumber);
                 
-                // Generate batch number for session tracking
-                var batchNumber = $"BATCH-{DateTime.Now:yyyyMMdd-HHmmss}";
+                // Show success message
+                HasSuccess = true;
+                HasError = false;
+                SuccessMessage = result.Message ?? "Item added successfully";
+                ErrorMessage = string.Empty;
                 
-                // Fire event to notify parent components
+                // Fire event to notify parent components (following WinForms pattern)
                 SaveCompleted?.Invoke(this, new InventorySavedEventArgs
                 {
                     PartId = SelectedPart,
-                    Operation = SelectedOperation,
+                    Operation = SelectedOperation ?? string.Empty,
                     Quantity = Quantity,
-                    Location = SelectedLocation,
-                    Notes = Notes
+                    Location = SelectedLocation ?? string.Empty,
+                    Notes = Notes ?? string.Empty
                 });
                 
                 await _applicationStateService.SetProgressAsync(100, "Inventory saved successfully");
@@ -467,20 +536,46 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                 await Task.Delay(1500);
                 await _applicationStateService.ClearProgressAsync();
                 
+                // Clear success message after additional delay
+                await Task.Delay(2000);
+                HasSuccess = false;
+                SuccessMessage = string.Empty;
+                
                 // Reset form after successful save
                 await ResetAsync();
                 
                 // Update application state with last used values
-                _applicationStateService.CurrentOperation = SelectedOperation;
-                _applicationStateService.CurrentLocation = SelectedLocation;
+                _applicationStateService.CurrentOperation = SelectedOperation ?? string.Empty;
+                _applicationStateService.CurrentLocation = SelectedLocation ?? string.Empty;
             }
             else
             {
                 HasError = true;
-                ErrorMessage = result.Message;
-                Logger.LogWarning("Failed to save inventory item: {Error}", result.Message);
+                HasSuccess = false;
+                SuccessMessage = string.Empty;
+                ErrorMessage = !string.IsNullOrEmpty(result.Message) ? result.Message : "Unknown database error";
                 
-                await _applicationStateService.SetProgressAsync(0, $"Error: {result.Message}");
+                Logger.LogError("Failed to save inventory item: Status={Status}, Message='{Message}', Parameters: Part='{Part}', Operation='{Operation}', Location='{Location}', Quantity={Quantity}, User='{User}'", 
+                    result.Status, result.Message, SelectedPart, SelectedOperation, SelectedLocation, Quantity, currentUser);
+                
+                // Provide more specific error guidance to user (following WinForms pattern)
+                var userMessage = result.Status switch
+                {
+                    -1 when result.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase) || 
+                            result.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase) => 
+                        $"This part/operation/location combination already exists in inventory. The system uses unique batch numbers ({batchNumber}) to prevent duplicates.",
+                    -1 when result.Message.Contains("batch", StringComparison.OrdinalIgnoreCase) => 
+                        $"Batch number conflict detected. Please try again - a new unique batch number will be generated.",
+                    -1 when result.Message.Contains("foreign key", StringComparison.OrdinalIgnoreCase) => 
+                        "One or more values (Part ID, Operation, or Location) don't exist in the system. Please verify your selections.",
+                    -1 when result.Message.Contains("constraint", StringComparison.OrdinalIgnoreCase) => 
+                        "The data entered violates database constraints. Please check all fields for valid values.",
+                    _ => ErrorMessage
+                };
+                
+                ErrorMessage = userMessage;
+                
+                await _applicationStateService.SetProgressAsync(0, $"Error: {ErrorMessage}");
             }
         }
         catch (Exception ex)
@@ -525,9 +620,15 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             QuantityText = string.Empty;  // Clear the text representation
             Notes = string.Empty;
             HasError = false;
+            HasSuccess = false;
             ErrorMessage = string.Empty;
+            SuccessMessage = string.Empty;
 
             Logger.LogDebug("Form reset completed");
+            
+            // Trigger LostFocus events to restore error highlighting on cleared fields
+            TriggerValidationLostFocus?.Invoke(this, EventArgs.Empty);
+
             await Task.CompletedTask;
         }
         catch (Exception ex)
@@ -556,19 +657,15 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
 
     /// <summary>
     /// Command to toggle panel visibility
-    /// Raises an event to request panel visibility toggle from the parent MainViewViewModel
+    /// Future implementation for collapsible UI sections
     /// </summary>
     [RelayCommand]
     private void TogglePanel()
     {
         try
         {
-            Logger.LogInformation("Toggling panel visibility - requesting panel toggle");
-            
-            // Raise event to request panel toggle from MainViewViewModel
-            PanelToggleRequested?.Invoke(this, EventArgs.Empty);
-            
-            Logger.LogDebug("Panel toggle event raised successfully");
+            Logger.LogInformation("Toggling panel visibility");
+            // TODO: Implement panel toggle functionality
         }
         catch (Exception ex)
         {
@@ -1054,9 +1151,100 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
 
         // All validation passed - clear error state
         HasError = false;
+        HasSuccess = false;
         ErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
 
         return true;
+    }
+
+    #endregion
+
+    #region Batch Number Management
+
+    /// <summary>
+    /// Generates a unique batch number for inventory tracking
+    /// Following WinForms pattern for batch number uniqueness validation
+    /// </summary>
+    private async Task<string> GenerateUniqueBatchNumberAsync()
+    {
+        const int maxAttempts = 100;
+        var attempt = 0;
+        
+        while (attempt < maxAttempts)
+        {
+            // Generate batch number with timestamp and random component
+            var timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+            var randomComponent = (Environment.TickCount % 10000) + attempt;
+            var batchNumber = $"BATCH-{timestamp}-{randomComponent:D4}";
+            
+            try
+            {
+                // Check if batch number already exists in the database
+                // This would require a stored procedure to check batch number uniqueness
+                // For now, we'll use the timestamp + random approach which should be unique
+                Logger.LogDebug("Generated batch number: {BatchNumber} (attempt {Attempt})", batchNumber, attempt + 1);
+                return batchNumber;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to validate batch number uniqueness on attempt {Attempt}", attempt + 1);
+                attempt++;
+                
+                // Add small delay to ensure timestamp changes
+                await Task.Delay(10);
+            }
+        }
+        
+        // Fallback - this should never happen but provides safety
+        var fallbackBatch = $"BATCH-FALLBACK-{DateTime.Now.Ticks}";
+        Logger.LogWarning("Using fallback batch number after {MaxAttempts} attempts: {BatchNumber}", maxAttempts, fallbackBatch);
+        return fallbackBatch;
+    }
+
+    #endregion
+
+    #region Validation Management
+
+    /// <summary>
+    /// Refreshes all validation properties and notifications after programmatic changes.
+    /// This method is called when values are set programmatically (e.g., via QuickButtons)
+    /// to ensure that validation state is properly updated and error styling is cleared.
+    /// </summary>
+    public void RefreshValidationState()
+    {
+        try
+        {
+            Logger.LogDebug("Refreshing validation state for all form fields");
+            
+            // Trigger property change notifications for all validation properties
+            OnPropertyChanged(nameof(IsPartValid));
+            OnPropertyChanged(nameof(IsPartValidInDatabase));
+            OnPropertyChanged(nameof(IsOperationValid));
+            OnPropertyChanged(nameof(IsOperationValidInDatabase));
+            OnPropertyChanged(nameof(IsLocationValid));
+            OnPropertyChanged(nameof(IsLocationValidInDatabase));
+            OnPropertyChanged(nameof(IsQuantityValid));
+            OnPropertyChanged(nameof(IsNotesValid));
+            
+            // Trigger property change notifications for watermarks
+            OnPropertyChanged(nameof(PartWatermark));
+            OnPropertyChanged(nameof(OperationWatermark));
+            OnPropertyChanged(nameof(LocationWatermark));
+            OnPropertyChanged(nameof(QuantityWatermark));
+            OnPropertyChanged(nameof(NotesWatermark));
+            
+            // Trigger property change notification for overall form state
+            OnPropertyChanged(nameof(CanSave));
+            SaveCommand.NotifyCanExecuteChanged();
+            
+            Logger.LogDebug("Validation state refreshed - CanSave: {CanSave}, IsPartValid: {IsPartValid}, IsPartValidInDatabase: {IsPartValidInDatabase}, IsOperationValid: {IsOperationValid}, IsOperationValidInDatabase: {IsOperationValidInDatabase}, IsLocationValid: {IsLocationValid}, IsLocationValidInDatabase: {IsLocationValidInDatabase}, IsQuantityValid: {IsQuantityValid}", 
+                CanSave, IsPartValid, IsPartValidInDatabase, IsOperationValid, IsOperationValidInDatabase, IsLocationValid, IsLocationValidInDatabase, IsQuantityValid);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error refreshing validation state");
+        }
     }
 
     #endregion

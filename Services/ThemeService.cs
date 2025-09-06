@@ -28,6 +28,7 @@ public interface IThemeService : INotifyPropertyChanged
     Task<ServiceResult<string>> GetUserPreferredThemeAsync();
     Task<ServiceResult> SaveUserPreferredThemeAsync(string themeId);
     Task<ServiceResult> ApplyCustomColorsAsync(Dictionary<string, string> colorOverrides);
+    Task<ServiceResult> InitializeThemeSystemAsync();
     
     event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
 }
@@ -105,41 +106,63 @@ public class ThemeService : IThemeService
         _logger.LogInformation("ThemeService initialized with {ThemeCount} available themes, default theme: {DefaultTheme}", 
             _availableThemes.Count, _currentTheme.DisplayName);
             
-        // Initialize with user's preferred theme asynchronously
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                var preferredThemeResult = await GetUserPreferredThemeAsync();
-                if (preferredThemeResult.IsSuccess && !string.IsNullOrEmpty(preferredThemeResult.Value))
-                {
-                    await SetThemeAsync(preferredThemeResult.Value);
-                }
-                else
-                {
-                    // Apply the default theme to ensure resources are loaded
-                    await ApplyThemeToApplicationAsync(_currentTheme);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error applying initial theme");
-                // Fallback to applying default theme
-                try
-                {
-                    await ApplyThemeToApplicationAsync(_currentTheme);
-                }
-                catch (Exception fallbackEx)
-                {
-                    _logger.LogError(fallbackEx, "Error applying fallback theme");
-                }
-            }
-        });
+        // CRITICAL FIX: Don't initialize themes immediately during service registration
+        // Theme initialization will be handled by the Application.Initialize() method
+        // This prevents "Call from invalid thread" errors during startup
+        
+        _logger.LogDebug("ThemeService created successfully - theme application deferred until UI thread is ready");
     }
 
     public string CurrentTheme => _currentTheme.Id;
     public IReadOnlyList<ThemeInfo> AvailableThemes => _availableThemes.AsReadOnly();
     public bool IsDarkTheme => _currentTheme.IsDark;
+
+    /// <summary>
+    /// Initializes the theme system after UI thread is established.
+    /// This method should be called from App.axaml.cs after Avalonia initialization.
+    /// </summary>
+    public async Task<ServiceResult> InitializeThemeSystemAsync()
+    {
+        try
+        {
+            _logger.LogInformation("Initializing theme system after UI thread establishment");
+            
+            // Load user's preferred theme or apply default
+            var preferredThemeResult = await GetUserPreferredThemeAsync();
+            if (preferredThemeResult.IsSuccess && !string.IsNullOrEmpty(preferredThemeResult.Value))
+            {
+                var setThemeResult = await SetThemeAsync(preferredThemeResult.Value);
+                if (setThemeResult.IsSuccess)
+                {
+                    _logger.LogInformation("Applied user preferred theme: {Theme}", preferredThemeResult.Value);
+                    return ServiceResult.Success($"Theme system initialized with preferred theme: {preferredThemeResult.Value}");
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to apply preferred theme {Theme}, falling back to default: {Error}", 
+                        preferredThemeResult.Value, setThemeResult.Message);
+                }
+            }
+            
+            // Fallback: apply default theme
+            try
+            {
+                await ApplyThemeToApplicationAsync(_currentTheme);
+                _logger.LogInformation("Theme system initialized successfully with default theme: {Theme}", _currentTheme.DisplayName);
+                return ServiceResult.Success($"Theme system initialized with default theme: {_currentTheme.DisplayName}");
+            }
+            catch (Exception applyEx)
+            {
+                _logger.LogError(applyEx, "Failed to apply default theme during initialization");
+                return ServiceResult.Failure($"Failed to apply default theme: {applyEx.Message}", applyEx);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Critical error initializing theme system");
+            return ServiceResult.Failure($"Critical error initializing theme system: {ex.Message}", ex);
+        }
+    }
 
     /// <summary>
     /// Sets the application theme by ID.
@@ -458,34 +481,42 @@ public class ThemeService : IThemeService
     {
         try
         {
-            // Wait for Application.Current to be available with timeout
-            var maxWaitTime = TimeSpan.FromSeconds(10);
-            var startTime = DateTime.UtcNow;
-            
-            while (Application.Current == null && DateTime.UtcNow - startTime < maxWaitTime)
+            // Ensure we're on the UI thread for all theme operations
+            await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                _logger.LogDebug("Waiting for Application.Current to be available...");
-                await Task.Delay(100);
-            }
-            
-            if (Application.Current == null) 
-            {
-                _logger.LogWarning("Application.Current is still null after {MaxWaitSeconds}s, cannot apply theme", maxWaitTime.TotalSeconds);
-                return;
-            }
+                try
+                {
+                    // Wait for Application.Current to be available with timeout
+                    var maxWaitTime = TimeSpan.FromSeconds(10);
+                    var startTime = DateTime.UtcNow;
+                    
+                    while (Application.Current == null && DateTime.UtcNow - startTime < maxWaitTime)
+                    {
+                        _logger.LogDebug("Waiting for Application.Current to be available...");
+                        await Task.Delay(100);
+                    }
+                    
+                    if (Application.Current == null) 
+                    {
+                        _logger.LogWarning("Application.Current is still null after {MaxWaitSeconds}s, cannot apply theme", maxWaitTime.TotalSeconds);
+                        return;
+                    }
 
-            // Set the theme variant based on theme
-            var themeVariant = theme.IsDark ? ThemeVariant.Dark : ThemeVariant.Light;
-            
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                Application.Current.RequestedThemeVariant = themeVariant;
+                    // Set the theme variant based on theme
+                    var themeVariant = theme.IsDark ? ThemeVariant.Dark : ThemeVariant.Light;
+                    Application.Current.RequestedThemeVariant = themeVariant;
+
+                    // Apply theme-specific resource file
+                    await LoadThemeResourcesAsync(theme.Id);
+                    
+                    _logger.LogDebug("Applied theme variant: {Variant} for theme: {Theme}", themeVariant, theme.DisplayName);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error in UI thread theme application");
+                    throw;
+                }
             });
-
-            // Apply theme-specific resource file
-            await LoadThemeResourcesAsync(theme.Id);
-            
-            _logger.LogDebug("Applied theme variant: {Variant} for theme: {Theme}", themeVariant, theme.DisplayName);
         }
         catch (Exception ex)
         {

@@ -203,20 +203,7 @@
                                            IsVisible="{Binding IsShowingHistory}"/>
               </Grid>
             </Border>
-            <Grid>
-              <TextBlock Text="Quick Actions"
-                         FontSize="14"
-                         FontWeight="Bold"
-                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                         VerticalAlignment="Center"
-                         IsVisible="{Binding !IsShowingHistory}"/>
-              <TextBlock Text="Transaction History"
-                         FontSize="14"
-                         FontWeight="Bold"
-                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                         VerticalAlignment="Center"
-                         IsVisible="{Binding IsShowingHistory}"/>
-            </Grid>
+
           </StackPanel>
 
           <!-- Center: Count/Status -->
@@ -239,14 +226,14 @@
                          Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                          VerticalAlignment="Center"
                          IsVisible="{Binding !IsShowingHistory}"/>
-              <TextBlock Text="transactions"
-                         FontSize="10"
+              <TextBlock Text="Session Transactions"
+                         FontSize="9"
                          FontWeight="Medium"
                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                          VerticalAlignment="Center"
                          IsVisible="{Binding IsShowingHistory}"/>
-              <TextBlock Text="actions"
-                         FontSize="10"
+              <TextBlock Text="Quick Actions"
+                         FontSize="9"
                          FontWeight="Medium"
                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                          VerticalAlignment="Center"
@@ -255,7 +242,7 @@
           </Border>
 
           <!-- Right: Toggle Buttons -->
-          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="2">
+          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="1">
             <Button Classes="toggle-button"
                     Classes.active="{Binding !IsShowingHistory}"
                     Command="{Binding ShowQuickActionsCommand}"

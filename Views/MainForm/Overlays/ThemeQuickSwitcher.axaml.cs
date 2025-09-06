@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
@@ -103,9 +104,22 @@ public partial class ThemeQuickSwitcher : UserControl
     {
         try
         {
-            // Update dropdown selection when theme changes externally
-            SetSelectedTheme(e.NewTheme.Id);
-            _logger?.LogDebug("Updated dropdown selection due to external theme change: {ThemeId}", e.NewTheme.Id);
+            // THREADING FIX: Ensure UI updates happen on the UI thread
+            if (Dispatcher.UIThread.CheckAccess())
+            {
+                // Already on UI thread, update directly
+                SetSelectedTheme(e.NewTheme.Id);
+                _logger?.LogDebug("Updated dropdown selection due to external theme change: {ThemeId}", e.NewTheme.Id);
+            }
+            else
+            {
+                // Not on UI thread, dispatch to UI thread
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    SetSelectedTheme(e.NewTheme.Id);
+                    _logger?.LogDebug("Updated dropdown selection due to external theme change (dispatched): {ThemeId}", e.NewTheme.Id);
+                });
+            }
         }
         catch (Exception ex)
         {

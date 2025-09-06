@@ -93,6 +93,13 @@
       <Setter Property="FontWeight" Value="Medium"/>
       <Setter Property="FontSize" Value="11"/>
     </Style>
+
+    <!-- Success message styling -->
+    <Style Selector="TextBlock.success-message">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessDarkBrush}"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="FontSize" Value="11"/>
+    </Style>
   </UserControl.Styles>
 
   <!-- Main Layout Container - ScrollViewer for overflow handling -->
@@ -136,6 +143,31 @@
                          FontSize="14"
                          FontWeight="Bold"
                          Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                         VerticalAlignment="Center"/>
+            </Grid>
+          </Border>
+
+          <!-- Success Display Section -->
+          <Border Grid.Row="1"
+                  Background="{DynamicResource MTM_Shared_Logic.SuccessLightBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                  BorderThickness="2"
+                  CornerRadius="4"
+                  Padding="12,8"
+                  Margin="0,0,0,16"
+                  IsVisible="{Binding HasSuccess}">
+            <Grid x:Name="SuccessGrid" ColumnDefinitions="Auto,*">
+              <materialIcons:MaterialIcon Grid.Column="0"
+                                          Kind="CheckCircle"
+                                          Width="16"
+                                          Height="16"
+                                          Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                                          VerticalAlignment="Top"
+                                          Margin="0,2,8,0"/>
+              <TextBlock Grid.Column="1"
+                         Text="{Binding SuccessMessage}"
+                         Classes="success-message"
+                         TextWrapping="Wrap"
                          VerticalAlignment="Center"/>
             </Grid>
           </Border>

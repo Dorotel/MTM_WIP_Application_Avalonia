@@ -166,8 +166,19 @@ public partial class AddItemViewModel : BaseViewModel
 
             var currentUser = _applicationState.CurrentUser ?? "System";
             
+            // Generate unique batch number for inventory tracking
+            var batchNumber = $"BATCH-{DateTime.Now:yyyyMMdd-HHmmss}-{Environment.TickCount % 10000:D4}";
+            
             var result = await _databaseService.AddInventoryItemAsync(
-                PartId, Location, Operation, Quantity, ItemType, currentUser, Notes).ConfigureAwait(false);
+                partId: PartId, 
+                location: Location, 
+                operation: Operation, 
+                quantity: Quantity, 
+                itemType: ItemType, 
+                user: currentUser, 
+                batchNumber: batchNumber,
+                notes: Notes ?? string.Empty
+            ).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {

@@ -27,6 +27,7 @@
                       ToolTip.Tip="Select application theme">
                 
                 <!-- Core MTM Themes -->
+                <ComboBoxItem Content="MTM Default (Base)" Tag="MTMTheme"/>
                 <ComboBoxItem Content="MTM Light" Tag="MTM_Light"/>
                 <ComboBoxItem Content="MTM Dark" Tag="MTM_Dark"/>
                 <ComboBoxItem Content="MTM High Contrast" Tag="MTM_HighContrast"/>

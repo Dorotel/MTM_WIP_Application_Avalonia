@@ -147,7 +147,7 @@ public partial class TransactionExpandableButton : UserControl
     private TextBlock? _itemTypeText;
     private TextBlock? _transactionIdText;
     private TextBlock? _notesText;
-    private StackPanel? _notesPanel;
+    private Grid? _notesPanel;
 
     #endregion
 
@@ -186,7 +186,7 @@ public partial class TransactionExpandableButton : UserControl
         _itemTypeText = this.FindControl<TextBlock>("ItemTypeText");
         _transactionIdText = this.FindControl<TextBlock>("TransactionIdText");
         _notesText = this.FindControl<TextBlock>("NotesText");
-        _notesPanel = this.FindControl<StackPanel>("NotesPanel");
+        _notesPanel = this.FindControl<Grid>("NotesPanel");
         
         // Update the display with current values
         UpdateDisplay();

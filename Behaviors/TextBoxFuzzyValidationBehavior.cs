@@ -15,35 +15,126 @@ using System.Reflection;
 
 namespace MTM_WIP_Application_Avalonia.Behaviors
 {
+    /// <summary>
+    /// Advanced Avalonia attached behavior that provides intelligent fuzzy validation and suggestion functionality
+    /// for TextBox controls in manufacturing data entry scenarios. This behavior is essential for maintaining
+    /// data integrity in the MTM WIP Application by validating user input against master data sources
+    /// and providing helpful suggestions when partial matches are found.
+    /// 
+    /// Core functionality includes:
+    /// - Real-time validation of manufacturing data (part IDs, operation numbers, locations)
+    /// - Fuzzy matching with intelligent suggestion overlays for partial matches
+    /// - Automatic input clearing when invalid data is entered to maintain data integrity
+    /// - Server connectivity awareness with appropriate error handling
+    /// - Integration with manufacturing suggestion overlay system for enhanced user experience
+    /// 
+    /// Manufacturing validation scenarios:
+    /// - Part ID validation against master part database
+    /// - Operation number validation (90, 100, 110, 120, etc.) for workflow routing
+    /// - Location validation for inventory management and tracking
+    /// - User input standardization and data quality enforcement
+    /// 
+    /// Data integrity features:
+    /// - No fallback data pattern - clears invalid input to prevent data corruption
+    /// - Server connectivity validation with user feedback
+    /// - Comprehensive error handling and user notification
+    /// - Audit trail integration for manufacturing compliance
+    /// 
+    /// Performance considerations:
+    /// - Efficient fuzzy matching algorithms for large manufacturing datasets
+    /// - Suggestion limiting (20 items max) for responsive user experience
+    /// - Debounced validation to minimize server requests and improve performance
+    /// </summary>
     public static class TextBoxFuzzyValidationBehavior
     {
-    public static event Action<TextBox, List<object>>? SuggestionOverlayRequested;
+        /// <summary>
+        /// Event raised when fuzzy matches are found and suggestion overlay should be displayed.
+        /// This event integrates with the MTM suggestion overlay system to provide users
+        /// with helpful suggestions when their input partially matches available manufacturing data.
+        /// Used by the SuggestionOverlayService to display context-appropriate suggestions.
+        /// </summary>
+        public static event Action<TextBox, List<object>>? SuggestionOverlayRequested;
+        
+        /// <summary>
+        /// Attached property that specifies the data source for validation.
+        /// This should be bound to collections of manufacturing master data such as:
+        /// - Part IDs from the manufacturing part master
+        /// - Operation numbers from workflow definitions  
+        /// - Location codes from manufacturing facility layouts
+        /// - User lists for audit and assignment purposes
+        /// </summary>
         public static readonly AttachedProperty<IEnumerable> ValidationSourceProperty =
             AvaloniaProperty.RegisterAttached<TextBox, IEnumerable>(
                 "ValidationSource",
                 typeof(TextBoxFuzzyValidationBehavior));
 
+        /// <summary>
+        /// Attached property that enables fuzzy validation behavior on TextBox controls.
+        /// When set to true, the behavior monitors focus loss events and validates input
+        /// against the specified ValidationSource, providing manufacturing users with
+        /// immediate feedback on data entry accuracy and suggestions for corrections.
+        /// </summary>
         public static readonly AttachedProperty<bool> EnableFuzzyValidationProperty =
             AvaloniaProperty.RegisterAttached<TextBox, bool>(
                 "EnableFuzzyValidation",
                 typeof(TextBoxFuzzyValidationBehavior),
                 false);
 
+        /// <summary>
+        /// Static constructor that initializes the behavior system by registering for property change events.
+        /// This ensures that fuzzy validation is automatically enabled when the EnableFuzzyValidation
+        /// property is set to true on TextBox controls in manufacturing forms.
+        /// </summary>
         static TextBoxFuzzyValidationBehavior()
         {
             EnableFuzzyValidationProperty.Changed.AddClassHandler<TextBox>(OnEnableFuzzyValidationChanged);
         }
 
+        /// <summary>
+        /// Gets the validation source data collection for the specified TextBox.
+        /// Used by the validation system to access manufacturing master data for input validation.
+        /// </summary>
+        /// <param name="element">The TextBox element to query</param>
+        /// <returns>The validation data source, typically manufacturing master data collections</returns>
         public static IEnumerable? GetValidationSource(TextBox element) =>
             element.GetValue(ValidationSourceProperty);
+            
+        /// <summary>
+        /// Sets the validation source data collection for the specified TextBox.
+        /// This should be bound to appropriate manufacturing master data collections
+        /// such as parts, operations, locations, or users depending on the field's purpose.
+        /// </summary>
+        /// <param name="element">The TextBox element to configure</param>
+        /// <param name="value">The validation data source collection</param>
         public static void SetValidationSource(TextBox element, IEnumerable? value) =>
             element.SetValue((AvaloniaProperty)ValidationSourceProperty, value);
 
+        /// <summary>
+        /// Gets the current fuzzy validation enable state for the specified TextBox.
+        /// Used by the Avalonia property system for data binding and validation control.
+        /// </summary>
+        /// <param name="element">The TextBox element to query</param>
+        /// <returns>True if fuzzy validation is enabled, false otherwise</returns>
         public static bool GetEnableFuzzyValidation(TextBox element) =>
             element.GetValue(EnableFuzzyValidationProperty);
+            
+        /// <summary>
+        /// Enables or disables fuzzy validation for the specified TextBox.
+        /// When enabled, the behavior validates input against manufacturing master data
+        /// and provides suggestions or clears invalid input to maintain data integrity.
+        /// </summary>
+        /// <param name="element">The TextBox element to configure</param>
+        /// <param name="value">True to enable fuzzy validation, false to disable</param>
         public static void SetEnableFuzzyValidation(TextBox element, bool value) =>
             element.SetValue(EnableFuzzyValidationProperty, value);
 
+        /// <summary>
+        /// Event handler called when the EnableFuzzyValidation property changes on a TextBox.
+        /// Attaches or detaches the focus loss event handler that triggers validation
+        /// based on the property value, enabling manufacturing data integrity enforcement.
+        /// </summary>
+        /// <param name="sender">The TextBox whose validation property changed</param>
+        /// <param name="args">Event arguments containing the old and new property values</param>
         private static void OnEnableFuzzyValidationChanged(TextBox sender, AvaloniaPropertyChangedEventArgs args)
         {
             if (args is AvaloniaPropertyChangedEventArgs<bool> e && sender is TextBox box)
@@ -59,6 +150,27 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
             }
         }
 
+        /// <summary>
+        /// Core validation logic executed when a TextBox loses focus in manufacturing data entry scenarios.
+        /// This method implements the MTM data integrity pattern of validating user input against
+        /// manufacturing master data and providing appropriate feedback or suggestions.
+        /// 
+        /// Validation process:
+        /// 1. Check server connectivity by verifying validation source has data
+        /// 2. Perform exact match validation for manufacturing data accuracy
+        /// 3. If no exact match, perform fuzzy matching for user assistance
+        /// 4. Clear invalid input to maintain data integrity (no fallback data pattern)
+        /// 5. Display suggestions for partial matches to improve user experience
+        /// 6. Integrate with error handling system for audit trails
+        /// 
+        /// Manufacturing data integrity enforcement:
+        /// - Prevents invalid part IDs from entering manufacturing transactions
+        /// - Ensures operation numbers are valid for workflow routing
+        /// - Validates location codes for inventory management accuracy
+        /// - Maintains audit trail compliance through comprehensive error handling
+        /// </summary>
+        /// <param name="sender">The TextBox that lost focus and triggered validation</param>
+        /// <param name="e">Focus event arguments (not used in current implementation)</param>
         private static void OnLostFocus(object? sender, RoutedEventArgs e)
         {
             if (sender is not TextBox box)
@@ -293,6 +405,6 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
             }
         }
 
-    // REMOVED: ShowSuggestionFlyout. Overlay is now handled by parent.
+        // REMOVED: ShowSuggestionFlyout. Overlay is now handled by parent.
     }
 }

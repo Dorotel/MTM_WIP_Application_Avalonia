@@ -8,9 +8,11 @@ namespace MTM_WIP_Application_Avalonia.Views;
 
 /// <summary>
 /// Code-behind for RemoveTabView.
-/// Provides the remove inventory interface within the MTM WIP Application.
-/// Handles ViewModel event wiring, error handling, and UI lifecycle management.
-/// Contains more complex logic than typical MVVM pattern due to legacy requirements.
+/// Implements the inventory removal interface for subtracting inventory from operations within the MTM WIP Application.
+/// Features comprehensive error handling, ViewModel event management, and dependency injection support.
+/// Business logic and database operations are handled by the RemoveItemViewModel.
+/// Follows MTM patterns with proper resource cleanup and exception handling.
+/// Used for removing inventory quantities from manufacturing operations.
 /// </summary>
 public partial class RemoveTabView : UserControl
 {
@@ -18,7 +20,8 @@ public partial class RemoveTabView : UserControl
     private RemoveItemViewModel? _viewModel;
 
     /// <summary>
-    /// Initializes a new instance of the RemoveTabView class.
+    /// Initializes a new instance of the RemoveTabView with minimal dependency injection support.
+    /// Sets up component initialization and event handlers for ViewModel interaction.
     /// </summary>
     public RemoveTabView()
     {
@@ -35,15 +38,20 @@ public partial class RemoveTabView : UserControl
     }
 
     /// <summary>
-    /// Initializes a new instance of the RemoveTabView class with dependency injection.
+    /// Initializes a new instance of the RemoveTabView with dependency injection logging support.
+    /// Provides enhanced logging capabilities for debugging and monitoring.
     /// </summary>
-    /// <param name="logger">Logger instance for diagnostics and error tracking</param>
+    /// <param name="logger">Logger instance for this view</param>
     public RemoveTabView(ILogger<RemoveTabView> logger) : this()
     {
         _logger = logger;
         _logger?.LogInformation("RemoveTabView initialized with dependency injection");
     }
 
+    /// <summary>
+    /// Sets up event handlers for ViewModel data context changes and UI interactions.
+    /// Provides error handling for event handler setup failures.
+    /// </summary>
     private void SetupEventHandlers()
     {
         try
@@ -56,6 +64,12 @@ public partial class RemoveTabView : UserControl
         }
     }
 
+    /// <summary>
+    /// Handles data context changes to wire/unwire ViewModel events properly.
+    /// Ensures proper cleanup of previous ViewModels and setup of new ones.
+    /// </summary>
+    /// <param name="sender">The event sender</param>
+    /// <param name="e">Event arguments</param>
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
         try

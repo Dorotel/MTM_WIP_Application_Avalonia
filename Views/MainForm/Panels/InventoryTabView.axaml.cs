@@ -1343,6 +1343,13 @@ public partial class InventoryTabView : UserControl
                 _viewModel.SelectedPart = partId;
                 _viewModel.SelectedOperation = operation;
                 _viewModel.Quantity = quantity;
+                
+                // Also set QuantityText property for UI binding (if it exists)
+                var quantityTextProperty = _viewModel.GetType().GetProperty("QuantityText");
+                if (quantityTextProperty?.CanWrite == true)
+                {
+                    quantityTextProperty.SetValue(_viewModel, quantity.ToString());
+                }
 
                 // Clear previous error state if ViewModel has error properties
                 var hasErrorProperty = _viewModel.GetType().GetProperty("HasError");
@@ -1361,6 +1368,9 @@ public partial class InventoryTabView : UserControl
                 // Update UI control states and save button
                 UpdateControlStates();
                 ValidateAndUpdateSaveButton();
+                
+                // Clear TextBox error classes that may persist from TextBoxFuzzyValidationBehavior
+                ClearTextBoxErrorClasses();
 
                 // Focus the location field (likely next field to fill)
                 _locationTextBox?.Focus();
@@ -1370,6 +1380,59 @@ public partial class InventoryTabView : UserControl
         {
             _logger?.LogError(ex, "Error handling quick action");
             System.Diagnostics.Debug.WriteLine($"Error handling quick action: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Clears error CSS classes from TextBox controls that may persist after programmatic updates.
+    /// This addresses the issue where TextBoxFuzzyValidationBehavior error classes remain
+    /// after valid data is populated via QuickButtons.
+    /// </summary>
+    private void ClearTextBoxErrorClasses()
+    {
+        try
+        {
+            _logger?.LogDebug("Clearing TextBox error classes after QuickButton population");
+
+            // Clear error class from Part ID TextBox if it has valid data
+            if (_partTextBox != null && !string.IsNullOrEmpty(_partTextBox.Text))
+            {
+                if (_partTextBox.Classes.Contains("error"))
+                {
+                    _partTextBox.Classes.Remove("error");
+                    System.Diagnostics.Debug.WriteLine($"Removed 'error' class from PartTextBox - valid value: '{_partTextBox.Text}'");
+                }
+            }
+
+            // Clear error class from Operation TextBox if it has valid data
+            if (_operationTextBox != null && !string.IsNullOrEmpty(_operationTextBox.Text))
+            {
+                if (_operationTextBox.Classes.Contains("error"))
+                {
+                    _operationTextBox.Classes.Remove("error");
+                    System.Diagnostics.Debug.WriteLine($"Removed 'error' class from OperationTextBox - valid value: '{_operationTextBox.Text}'");
+                }
+            }
+
+            // Clear error class from Quantity TextBox if it has valid data
+            if (_quantityTextBox != null && !string.IsNullOrEmpty(_quantityTextBox.Text))
+            {
+                if (int.TryParse(_quantityTextBox.Text, out int quantity) && quantity > 0)
+                {
+                    if (_quantityTextBox.Classes.Contains("error"))
+                    {
+                        _quantityTextBox.Classes.Remove("error");
+                        System.Diagnostics.Debug.WriteLine($"Removed 'error' class from QuantityTextBox - valid value: '{_quantityTextBox.Text}'");
+                    }
+                }
+            }
+
+            _logger?.LogDebug("TextBox error classes cleared successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error clearing TextBox error classes");
+            System.Diagnostics.Debug.WriteLine($"Error clearing TextBox error classes: {ex.Message}");
         }
     }
 
