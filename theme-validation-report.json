@@ -1,0 +1,526 @@
+{
+  "MasterTemplate": "MTMTheme.axaml",
+  "Summary": {
+    "CompleteThemes": 19,
+    "TotalThemes": 19,
+    "IncompleteThemes": 0,
+    "TotalMissingBrushes": 0
+  },
+  "ThemesValidated": [
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Amber.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8037,
+        "LineCount": 136,
+        "SizeKB": 7.85
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Amber",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.85
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue_Dark.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8043,
+        "LineCount": 136,
+        "SizeKB": 7.85
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Blue_Dark",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.85
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 10281,
+        "LineCount": 132,
+        "SizeKB": 10.04
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Blue",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 10.04
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Dark.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8328,
+        "LineCount": 144,
+        "SizeKB": 8.13
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Dark",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 8.13
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Emerald.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8038,
+        "LineCount": 136,
+        "SizeKB": 7.85
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Emerald",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.85
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green_Dark.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8050,
+        "LineCount": 137,
+        "SizeKB": 7.86
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Green_Dark",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.86
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 7959,
+        "LineCount": 134,
+        "SizeKB": 7.77
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Green",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.77
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_HighContrast.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8050,
+        "LineCount": 136,
+        "SizeKB": 7.86
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_HighContrast",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.86
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo_Dark.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8051,
+        "LineCount": 137,
+        "SizeKB": 7.86
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Indigo_Dark",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.86
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8043,
+        "LineCount": 136,
+        "SizeKB": 7.85
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Indigo",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.85
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light_Dark.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8384,
+        "LineCount": 144,
+        "SizeKB": 8.19
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Light_Dark",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 8.19
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8306,
+        "LineCount": 145,
+        "SizeKB": 8.11
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Light",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 8.11
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Orange.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8034,
+        "LineCount": 136,
+        "SizeKB": 7.85
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Orange",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.85
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red_Dark.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8055,
+        "LineCount": 136,
+        "SizeKB": 7.87
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Red_Dark",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.87
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 7977,
+        "LineCount": 134,
+        "SizeKB": 7.79
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Red",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.79
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose_Dark.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8057,
+        "LineCount": 137,
+        "SizeKB": 7.87
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Rose_Dark",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.87
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8055,
+        "LineCount": 136,
+        "SizeKB": 7.87
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Rose",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.87
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal_Dark.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8058,
+        "LineCount": 138,
+        "SizeKB": 7.87
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Teal_Dark",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.87
+      }
+    },
+    {
+      "MissingBrushes": null,
+      "HasPreviewSections": false,
+      "IsComplete": true,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal.axaml",
+      "ExtraBrushes": null,
+      "FileStats": {
+        "HasPreviewSections": false,
+        "SizeBytes": 8056,
+        "LineCount": 137,
+        "SizeKB": 7.87
+      },
+      "WCAGCompliant": "Unknown",
+      "TotalBrushes": 75,
+      "CompletionPercentage": 100.0,
+      "ThemeName": "MTM_Teal",
+      "RequiredBrushes": 75,
+      "SizeReduction": {
+        "TargetSizeKB": 5.0,
+        "MeetsTarget": false,
+        "CurrentSizeKB": 7.87
+      }
+    }
+  ],
+  "ValidationDate": "2025-09-06 18:28:37",
+  "RequiredBrushes": [
+    "MTM_Shared_Logic.AccentRadialBrush",
+    "MTM_Shared_Logic.ActiveBrush",
+    "MTM_Shared_Logic.BodyText",
+    "MTM_Shared_Logic.BorderAccentBrush",
+    "MTM_Shared_Logic.BorderBrush",
+    "MTM_Shared_Logic.BorderDarkBrush",
+    "MTM_Shared_Logic.BorderLightBrush",
+    "MTM_Shared_Logic.CardBackground",
+    "MTM_Shared_Logic.CardBackgroundBrush",
+    "MTM_Shared_Logic.CardHoverGradientBrush",
+    "MTM_Shared_Logic.ContentAreas",
+    "MTM_Shared_Logic.Critical",
+    "MTM_Shared_Logic.DarkNavigation",
+    "MTM_Shared_Logic.DropShadowBrush",
+    "MTM_Shared_Logic.ErrorBrush",
+    "MTM_Shared_Logic.ErrorDarkBrush",
+    "MTM_Shared_Logic.ErrorLightBrush",
+    "MTM_Shared_Logic.FocusBrush",
+    "MTM_Shared_Logic.FooterBackgroundBrush",
+    "MTM_Shared_Logic.GlowBrush",
+    "MTM_Shared_Logic.HeadingText",
+    "MTM_Shared_Logic.HeroGradientBrush",
+    "MTM_Shared_Logic.Highlight",
+    "MTM_Shared_Logic.HighlightTextBrush",
+    "MTM_Shared_Logic.HoverBackground",
+    "MTM_Shared_Logic.InactiveBrush",
+    "MTM_Shared_Logic.InfoBrush",
+    "MTM_Shared_Logic.InfoDarkBrush",
+    "MTM_Shared_Logic.InfoLightBrush",
+    "MTM_Shared_Logic.InteractiveText",
+    "MTM_Shared_Logic.LinkTextBrush",
+    "MTM_Shared_Logic.LoadingBrush",
+    "MTM_Shared_Logic.MagentaHoverBrush",
+    "MTM_Shared_Logic.MagentaPressedBrush",
+    "MTM_Shared_Logic.MainBackground",
+    "MTM_Shared_Logic.MutedTextBrush",
+    "MTM_Shared_Logic.OverlayTextBrush",
+    "MTM_Shared_Logic.PageHeaders",
+    "MTM_Shared_Logic.PanelBackgroundBrush",
+    "MTM_Shared_Logic.PlaceholderTextBrush",
+    "MTM_Shared_Logic.PrimaryAction",
+    "MTM_Shared_Logic.PrimaryDisabledBrush",
+    "MTM_Shared_Logic.PrimaryGradientBrush",
+    "MTM_Shared_Logic.PrimaryHoverBrush",
+    "MTM_Shared_Logic.PrimaryPressedBrush",
+    "MTM_Shared_Logic.ProcessingBrush",
+    "MTM_Shared_Logic.SecondaryAction",
+    "MTM_Shared_Logic.SecondaryDisabledBrush",
+    "MTM_Shared_Logic.SecondaryHoverBrush",
+    "MTM_Shared_Logic.SecondaryPressedBrush",
+    "MTM_Shared_Logic.SelectionBrush",
+    "MTM_Shared_Logic.ShadowBrush",
+    "MTM_Shared_Logic.SidebarDark",
+    "MTM_Shared_Logic.SidebarGradientBrush",
+    "MTM_Shared_Logic.Specialized1",
+    "MTM_Shared_Logic.Specialized2",
+    "MTM_Shared_Logic.Specialized3",
+    "MTM_Shared_Logic.Specialized4",
+    "MTM_Shared_Logic.Specialized5",
+    "MTM_Shared_Logic.Status",
+    "MTM_Shared_Logic.StatusBarBackgroundBrush",
+    "MTM_Shared_Logic.SuccessBrush",
+    "MTM_Shared_Logic.SuccessDarkBrush",
+    "MTM_Shared_Logic.SuccessLightBrush",
+    "MTM_Shared_Logic.TertiaryTextBrush",
+    "MTM_Shared_Logic.TransactionInBrush",
+    "MTM_Shared_Logic.TransactionInLightBrush",
+    "MTM_Shared_Logic.TransactionOutBrush",
+    "MTM_Shared_Logic.TransactionOutLightBrush",
+    "MTM_Shared_Logic.TransactionTransferBrush",
+    "MTM_Shared_Logic.TransactionTransferLightBrush",
+    "MTM_Shared_Logic.Warning",
+    "MTM_Shared_Logic.WarningBrush",
+    "MTM_Shared_Logic.WarningDarkBrush",
+    "MTM_Shared_Logic.WarningLightBrush"
+  ]
+}

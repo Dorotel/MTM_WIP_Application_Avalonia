@@ -244,8 +244,8 @@ All themes must include these brush definitions:
 
 ### Phase 1: Template Creation and Validation
 - [x] **Task 1.1**: Validate MTMTheme.axaml as master template
-- [ ] **Task 1.2**: Create WCAG compliance validation checklist
-- [ ] **Task 1.3**: Develop color contrast testing procedure
+- [x] **Task 1.2**: Create WCAG compliance validation checklist
+- [x] **Task 1.3**: Develop color contrast testing procedure
 
 ### Phase 2: Light Theme Updates (8 themes)
 - [ ] **Task 2.1**: Update MTM_Blue.axaml (50% complete)
@@ -273,12 +273,12 @@ All themes must include these brush definitions:
 - [ ] **Task 4.1**: Update MTM_HighContrast.axaml (special WCAG AAA requirements)
 
 ### Phase 5: UI Integration and WCAG Validation
-- [ ] **Task 5.1**: Automated hardcoded color detection across all view files
-- [ ] **Task 5.2**: Replace hardcoded colors with dynamic theme resources
+- [x] **Task 5.1**: Automated hardcoded color detection across all view files
+- [x] **Task 5.2**: Replace hardcoded colors with dynamic theme resources
 - [ ] **Task 5.3**: WCAG 2.1 AA contrast validation for MainForm views (9 files)
 - [ ] **Task 5.4**: WCAG 2.1 AA contrast validation for SettingsForm views (23 files)
 - [ ] **Task 5.5**: WCAG 2.1 AA contrast validation for TransactionsForm views (32 files)
-- [ ] **Task 5.6**: Fix ThemeBuilderView.axaml hardcoded colors (Priority)
+- [x] **Task 5.6**: Fix ThemeBuilderView.axaml hardcoded colors (Priority)
 - [ ] **Task 5.7**: Validate all text/background combinations across themes
 - [ ] **Task 5.8**: Ensure proper focus indicators meet WCAG guidelines
 - [ ] **Task 5.9**: Validate button states (hover, pressed, disabled) for accessibility

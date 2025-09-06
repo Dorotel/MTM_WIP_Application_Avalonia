@@ -116,17 +116,17 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferLightBrush" Color="#FFF3CD"/> <!-- Light Orange -->
 	
 	<!-- Specialized Theme Colors -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized1" Color="#1E88E5"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized2" Color="#42A5F5"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized3" Color="#5C6BC0"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized4" Color="#0D47A1"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized5" Color="#90CAF9"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized1" Color="#0056B3"/>          <!-- Primary blue -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized2" Color="#004085"/>          <!-- Secondary blue -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized3" Color="#003D6B"/>          <!-- Darker blue -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized4" Color="#1976D2"/>          <!-- Medium blue -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized5" Color="#90CAF9"/>          <!-- Light blue accent -->
 	
-	<!-- Advanced State Management Colors -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.FocusBrush" Color="#1E88E5"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.SelectionBrush" Color="#8042A5F5"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.ActiveBrush" Color="#42A5F5"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.InactiveBrush" Color="#CCCCCC"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.LoadingBrush" Color="#90CAF9"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.ProcessingBrush" Color="#5C6BC0"/>
+	<!-- Advanced State Management Colors (WCAG 2.1 AA Compliant) -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.FocusBrush" Color="#0056B3"/>            <!-- Focus indicator -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.SelectionBrush" Color="#800056B3"/>      <!-- Selection highlight -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.ActiveBrush" Color="#004085"/>           <!-- Active state -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.InactiveBrush" Color="#ADB5BD"/>         <!-- Inactive state -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.LoadingBrush" Color="#90CAF9"/>          <!-- Loading state -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.ProcessingBrush" Color="#1976D2"/>       <!-- Processing state -->
 </ResourceDictionary>

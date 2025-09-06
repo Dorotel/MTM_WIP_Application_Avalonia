@@ -136,7 +136,7 @@
                                  Text="#1E88E5"
                                  Margin="0,0,8,0"/>
                         <Border Grid.Row="0" Grid.Column="2"
-                                Background="#1E88E5"
+                                Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                                 BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="4"
@@ -157,7 +157,7 @@
                                  Text="#FFA726"
                                  Margin="0,8,8,0"/>
                         <Border Grid.Row="1" Grid.Column="2"
-                                Background="#FFA726"
+                                Background="{DynamicResource MTM_Shared_Logic.Warning}"
                                 BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="4"
@@ -179,7 +179,7 @@
                                  Text="#4CAF50"
                                  Margin="0,8,8,0"/>
                         <Border Grid.Row="2" Grid.Column="2"
-                                Background="#4CAF50"
+                                Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
                                 BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="4"
@@ -201,7 +201,7 @@
                                  Text="#F44336"
                                  Margin="0,8,8,0"/>
                         <Border Grid.Row="3" Grid.Column="2"
-                                Background="#F44336"
+                                Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
                                 BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="4"
