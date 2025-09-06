@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -228,53 +229,141 @@ public class ThemeService : IThemeService
     }
 
     /// <summary>
-    /// Gets user's preferred theme from configuration.
+    /// Gets user's preferred theme from database usr_ui_settings table.
     /// </summary>
     public async Task<ServiceResult<string>> GetUserPreferredThemeAsync()
     {
         try
         {
-            await Task.CompletedTask; // Placeholder for async configuration access
+            // Get current user - ensure uppercase for database consistency
+            var currentUser = Environment.UserName.ToUpper();
             
-            var preferredTheme = _configurationService.GetValue("User:PreferredTheme", DEFAULT_THEME_ID);
+            _logger.LogDebug("Retrieving user preferred theme from database for user: {UserId}", currentUser);
+
+            // Get database service to retrieve user settings
+            var databaseService = Program.GetOptionalService<IDatabaseService>();
+            if (databaseService == null)
+            {
+                _logger.LogWarning("DatabaseService not available, falling back to default theme");
+                return ServiceResult<string>.Success(DEFAULT_THEME_ID);
+            }
+
+            // Get user settings JSON from database
+            var settingsJson = await databaseService.GetUserSettingsAsync(currentUser);
             
+            if (string.IsNullOrEmpty(settingsJson))
+            {
+                _logger.LogInformation("No settings found for user {UserId}, using default theme {DefaultTheme}", 
+                    currentUser, DEFAULT_THEME_ID);
+                return ServiceResult<string>.Success(DEFAULT_THEME_ID);
+            }
+
+            // Parse JSON to get Theme_Name
+            string preferredTheme = DEFAULT_THEME_ID;
+            
+            try
+            {
+                var jsonDoc = System.Text.Json.JsonDocument.Parse(settingsJson);
+                if (jsonDoc.RootElement.TryGetProperty("Theme_Name", out var themeProperty))
+                {
+                    var themeValue = themeProperty.GetString();
+                    if (!string.IsNullOrEmpty(themeValue) && themeValue != "Default")
+                    {
+                        preferredTheme = themeValue;
+                    }
+                }
+                else
+                {
+                    _logger.LogDebug("Theme_Name property not found in settings JSON for user {UserId}", currentUser);
+                }
+            }
+            catch (System.Text.Json.JsonException jsonEx)
+            {
+                _logger.LogWarning(jsonEx, "Failed to parse user settings JSON for user {UserId}: {SettingsJson}", 
+                    currentUser, settingsJson);
+            }
+
             // Validate that the preferred theme exists
             if (!_availableThemes.Any(t => t.Id == preferredTheme))
             {
                 _logger.LogWarning("User preferred theme '{PreferredTheme}' not found, using default '{DefaultTheme}'", 
                     preferredTheme, DEFAULT_THEME_ID);
+                    
+                // Update database with default theme
+                await UpdateUserThemeInDatabaseAsync(currentUser, DEFAULT_THEME_ID);
                 preferredTheme = DEFAULT_THEME_ID;
             }
             
-            _logger.LogDebug("Retrieved user preferred theme: {Theme}", preferredTheme);
+            _logger.LogInformation("Retrieved user preferred theme: {Theme} for user {UserId}", preferredTheme, currentUser);
             return ServiceResult<string>.Success(preferredTheme);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving user preferred theme");
-            return ServiceResult<string>.Failure($"Failed to get preferred theme: {ex.Message}", ex);
+            _logger.LogError(ex, "Error retrieving user preferred theme from database");
+            return ServiceResult<string>.Success(DEFAULT_THEME_ID);
         }
     }
 
     /// <summary>
-    /// Saves user's preferred theme to configuration.
+    /// Saves user's preferred theme to database usr_ui_settings table.
     /// </summary>
     public async Task<ServiceResult> SaveUserPreferredThemeAsync(string themeId)
     {
         try
         {
-            await Task.CompletedTask; // Placeholder for async configuration save
+            // Get current user - ensure uppercase for database consistency
+            var currentUser = Environment.UserName.ToUpper();
             
-            // Note: Current IConfigurationService doesn't have save method
-            // This would need to be implemented when configuration persistence is added
+            _logger.LogInformation("Saving user preferred theme: {Theme} for user {UserId}", themeId, currentUser);
+
+            await UpdateUserThemeInDatabaseAsync(currentUser, themeId);
             
-            _logger.LogInformation("User preferred theme saved: {Theme}", themeId);
-            return ServiceResult.Success("Theme preference saved");
+            _logger.LogInformation("User preferred theme saved successfully: {Theme} for user {UserId}", themeId, currentUser);
+            return ServiceResult.Success("Theme preference saved to database");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving user preferred theme {ThemeId}", themeId);
             return ServiceResult.Failure($"Failed to save theme preference: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Updates user theme in database using usr_ui_settings_SetThemeJson stored procedure.
+    /// </summary>
+    private async Task UpdateUserThemeInDatabaseAsync(string userId, string themeId)
+    {
+        try
+        {
+            // Get database service
+            var databaseService = Program.GetOptionalService<IDatabaseService>();
+            if (databaseService == null)
+            {
+                _logger.LogWarning("DatabaseService not available, cannot save theme preference");
+                return;
+            }
+
+            // Create theme JSON - this matches the format shown in the database image
+            var themeJson = System.Text.Json.JsonSerializer.Serialize(new { Theme_Name = themeId });
+            
+            _logger.LogDebug("Updating theme for user {UserId} with JSON: {ThemeJson}", userId, themeJson);
+
+            // Use the existing SaveThemeSettingsAsync method which calls usr_ui_settings_SetThemeJson
+            var success = await databaseService.SaveThemeSettingsAsync(userId, themeJson);
+            
+            if (success)
+            {
+                _logger.LogInformation("Successfully updated theme in database for user {UserId}: {ThemeId}", userId, themeId);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to update theme in database for user {UserId}: {ThemeId}", userId, themeId);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating user theme in database for user {UserId}: {ThemeId}", userId, themeId);
+            throw;
         }
     }
 

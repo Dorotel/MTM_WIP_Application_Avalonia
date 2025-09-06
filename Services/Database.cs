@@ -1160,27 +1160,41 @@ public class DatabaseService : IDatabaseService
     #region System Configuration
 
     /// <summary>
-    /// Gets user UI settings using usr_ui_settings_Get stored procedure.
+    /// Gets user UI settings from usr_ui_settings table by UserID.
     /// </summary>
     public async Task<string> GetUserSettingsAsync(string userId)
     {
-        var parameters = new Dictionary<string, object>
+        try
         {
-            ["p_UserId"] = userId
-        };
+            _logger.LogDebug("Getting user settings for user: {UserId}", userId);
 
-        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            _connectionString,
-            "usr_ui_settings_Get",
-            parameters
-        );
+            // Query the usr_ui_settings table directly for the user
+            var query = "SELECT SettingsJson FROM usr_ui_settings WHERE UserID = @userId";
+            var parameters = new Dictionary<string, object>
+            {
+                ["userId"] = userId
+            };
 
-        if (result.IsSuccess && result.Data.Rows.Count > 0)
-        {
-            return result.Data.Rows[0]["Settings"]?.ToString() ?? string.Empty;
+            var result = await ExecuteScalarAsync(query, parameters);
+            
+            var settingsJson = result?.ToString() ?? string.Empty;
+            
+            if (string.IsNullOrEmpty(settingsJson))
+            {
+                _logger.LogDebug("No settings found for user {UserId}", userId);
+            }
+            else
+            {
+                _logger.LogDebug("Retrieved settings for user {UserId}: {SettingsJson}", userId, settingsJson);
+            }
+
+            return settingsJson;
         }
-
-        return string.Empty;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting user settings for user {UserId}", userId);
+            return string.Empty;
+        }
     }
 
     /// <summary>
@@ -1208,19 +1222,40 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public async Task<bool> SaveThemeSettingsAsync(string userId, string themeJson)
     {
-        var parameters = new Dictionary<string, object>
+        try
         {
-            ["p_UserId"] = userId,
-            ["p_ThemeJson"] = themeJson
-        };
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_UserID"] = userId,
+                ["p_ThemeJson"] = themeJson
+            };
 
-        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            _connectionString,
-            "usr_ui_settings_SetThemeJson",
-            parameters
-        );
+            _logger.LogDebug("Calling usr_ui_settings_SetThemeJson for user {UserId} with theme JSON: {ThemeJson}", 
+                userId, themeJson);
 
-        return result.IsSuccess;
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "usr_ui_settings_SetThemeJson",
+                parameters
+            );
+
+            if (result.IsSuccess)
+            {
+                _logger.LogInformation("Successfully saved theme settings for user {UserId}", userId);
+                return true;
+            }
+            else
+            {
+                _logger.LogWarning("Failed to save theme settings for user {UserId}: Status={Status}, Message={Message}", 
+                    userId, result.Status, result.Message);
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error saving theme settings for user {UserId}: {ThemeJson}", userId, themeJson);
+            return false;
+        }
     }
 
     /// <summary>
