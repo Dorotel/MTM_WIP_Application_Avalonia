@@ -5,6 +5,7 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="700"
@@ -16,6 +17,7 @@
 
   <UserControl.Resources>
     <!-- Resources are now provided by DynamicResource bindings from MTM themes -->
+    <converters:ColorToBoxShadowConverter x:Key="ColorToBoxShadowConverter"/>
   </UserControl.Resources>
 
   <UserControl.Styles>
@@ -74,7 +76,7 @@
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
             Padding="24,8"
-            BoxShadow="0 2 8 0 {DynamicResource MTM_Shared_Logic.ShadowBrush}"
+            BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.ShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,2,8,0'}"
             HorizontalAlignment="Stretch">
       <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
         <!-- Left side: Menu -->
@@ -239,7 +241,7 @@
                 BorderThickness="2"
                 CornerRadius="8"
                 Margin="8"
-                BoxShadow="0 4 12 0 {DynamicResource MTM_Shared_Logic.DropShadowBrush}"
+                BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,4,12,0'}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
           <TabControl x:Name="MainForm_TabControl"
@@ -353,7 +355,7 @@
                   BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
                   BorderThickness="2"
                   CornerRadius="12"
-                  BoxShadow="0 8 32 0 {DynamicResource MTM_Shared_Logic.ModalOverlay}">
+                  BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,32,0'}">
             <!-- Overlay content will be dynamically set -->
             <ContentControl x:Name="SuggestionOverlayContent"
                             HorizontalAlignment="Stretch"

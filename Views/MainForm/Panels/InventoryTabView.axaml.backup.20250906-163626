@@ -135,14 +135,14 @@
                                           Kind="Package"
                                           Width="16"
                                           Height="16"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                                          Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                           VerticalAlignment="Center"
                                           Margin="0,0,8,0"/>
               <TextBlock Grid.Column="1"
                          Text="MTM Inventory Entry"
                          FontSize="14"
                          FontWeight="Bold"
-                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                          VerticalAlignment="Center"/>
             </Grid>
           </Border>
@@ -392,11 +392,11 @@
                 <materialIcons:MaterialIcon Kind="ContentSave" 
                                             Width="14" 
                                             Height="14" 
-                                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                                            Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                 <TextBlock Text="Save" 
                            FontSize="11" 
                            FontWeight="SemiBold"
-                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
               </StackPanel>
             </Button>
             
@@ -429,4 +429,3 @@
     </Grid>
   </ScrollViewer>
 </UserControl>
-
