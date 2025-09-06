@@ -343,9 +343,9 @@ All themes must include these brush definitions:
 - [x] **Task 7.2**: Update `.github/` folder with new UI development standards ✅
   - CI/CD integration guides for Azure DevOps, GitHub Actions, Jenkins
 - [x] **Task 7.3**: Create WCAG compliance documentation for developers ✅
-  - `docs/wcag-validation-guide.md` (10.7KB)
+  - `docs/accessibility/accessibility/wcag-validation-guide.md` (10.7KB)
 - [x] **Task 7.4**: Update theme switching documentation and best practices ✅
-  - `docs/theme-development-guidelines.md` (15.1KB)
+  - `docs/theme-development/guidelines.md` (15.1KB)
 - [x] **Task 7.5**: Document hardcoded color detection pipeline for future PRs ✅
   - Comprehensive automation suite documentation
 - [x] **Task 7.6**: Add theme integration checklist to PR templates ✅

@@ -35,7 +35,7 @@ The validation framework tests 14 critical manufacturing UI scenarios:
 
 ### 1. Automated WCAG Validation Script
 
-**File:** `scripts/validate-wcag-compliance.ps1`
+**File:** `scripts/accessibility/validate-wcag-compliance.ps1`
 
 #### Basic Usage
 ```powershell
