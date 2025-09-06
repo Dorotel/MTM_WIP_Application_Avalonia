@@ -1,0 +1,89 @@
+{
+  "TargetCompliance": 100.0,
+  "Summary": {
+    "FullyCompliantThemes": null,
+    "TotalIssuesFound": 33,
+    "RemainingIssues": [],
+    "ImprovementAchieved": 0.20000000000000284,
+    "TotalIssuesResolved": 0,
+    "ThemesProcessed": 8,
+    "ThemesOptimized": 8,
+    "NewCompliancePercentage": 95
+  },
+  "ThemeOptimizations": [
+    {
+      "ThemeName": "MTM_Blue_Dark",
+      "Success": false,
+      "OptimizationsApplied": [],
+      "IssuesResolved": 0,
+      "TotalIssues": 3,
+      "Message": "No automatic optimizations possible",
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue_Dark.axaml.wcag-backup.20250906-195246"
+    },
+    {
+      "ThemeName": "MTM_Emerald",
+      "Success": false,
+      "OptimizationsApplied": [],
+      "IssuesResolved": 0,
+      "TotalIssues": 6,
+      "Message": "No automatic optimizations possible",
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Emerald.axaml.wcag-backup.20250906-195302"
+    },
+    {
+      "ThemeName": "MTM_Green_Dark",
+      "Success": false,
+      "OptimizationsApplied": [],
+      "IssuesResolved": 0,
+      "TotalIssues": 3,
+      "Message": "No automatic optimizations possible",
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green_Dark.axaml.wcag-backup.20250906-195302"
+    },
+    {
+      "ThemeName": "MTM_Green",
+      "Success": false,
+      "OptimizationsApplied": [],
+      "IssuesResolved": 0,
+      "TotalIssues": 6,
+      "Message": "No automatic optimizations possible",
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml.wcag-backup.20250906-195302"
+    },
+    {
+      "ThemeName": "MTM_HighContrast",
+      "Success": false,
+      "OptimizationsApplied": [],
+      "IssuesResolved": 0,
+      "TotalIssues": 4,
+      "Message": "No automatic optimizations possible",
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_HighContrast.axaml.wcag-backup.20250906-195302"
+    },
+    {
+      "ThemeName": "MTM_Light",
+      "Success": false,
+      "OptimizationsApplied": [],
+      "IssuesResolved": 0,
+      "TotalIssues": 6,
+      "Message": "No automatic optimizations possible",
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml.wcag-backup.20250906-195302"
+    },
+    {
+      "ThemeName": "MTM_Red_Dark",
+      "Success": false,
+      "OptimizationsApplied": [],
+      "IssuesResolved": 0,
+      "TotalIssues": 3,
+      "Message": "No automatic optimizations possible",
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red_Dark.axaml.wcag-backup.20250906-195302"
+    },
+    {
+      "ThemeName": "MTM_Teal_Dark",
+      "Success": false,
+      "OptimizationsApplied": [],
+      "IssuesResolved": 0,
+      "TotalIssues": 2,
+      "Message": "No automatic optimizations possible",
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal_Dark.axaml.wcag-backup.20250906-195302"
+    }
+  ],
+  "AnalysisDate": "2025-09-06 19:52:46",
+  "OriginalCompliance": 94.8
+}

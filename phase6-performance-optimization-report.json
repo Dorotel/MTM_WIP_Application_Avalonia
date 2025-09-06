@@ -1,0 +1,954 @@
+{
+  "ExecuteOptimizations": true,
+  "OptimizationResults": [
+    {
+      "OptimizationResult": {
+        "OriginalSize": 10281,
+        "Optimizations": [
+          "Created backup: MTM_Blue.axaml.backup.20250906-195222",
+          "Reduced excessive empty lines",
+          "Size reduction: 40 bytes (0.4%)"
+        ],
+        "NewSize": 10241,
+        "ReductionPercent": 0.39,
+        "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml.backup.20250906-195222",
+        "Reduction": 40
+      },
+      "ThemeName": "MTM_Blue"
+    },
+    {
+      "OptimizationResult": {
+        "OriginalSize": 10371,
+        "Optimizations": [
+          "Created backup: MTMTheme.axaml.backup.20250906-195237",
+          "Reduced excessive empty lines",
+          "Size reduction: 56 bytes (0.5%)"
+        ],
+        "NewSize": 10315,
+        "ReductionPercent": 0.54,
+        "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTMTheme.axaml.backup.20250906-195237",
+        "Reduction": 56
+      },
+      "ThemeName": "MTMTheme"
+    }
+  ],
+  "Summary": {
+    "ThemesNeedingOptimization": 0,
+    "TopPerformingThemes": "MTMComponents",
+    "AverageOptimizationScore": 79.3,
+    "ThemesNeedingAttention": null,
+    "EstimatedTotalMemoryKB": 1386.1,
+    "TotalThemes": 21,
+    "EstimatedAverageLoadTimeMs": 7.76,
+    "OverallGrade": "C - Fair",
+    "TotalSizeKB": 185.61
+  },
+  "ThemeResults": [
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.45,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.65,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 137,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8175,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (22)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 22,
+        "FileName": "MTM_Amber.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Amber.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Amber"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.45,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.65,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 137,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8181,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (22)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 22,
+        "FileName": "MTM_Blue_Dark.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue_Dark.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Blue_Dark"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 3.08,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 8.28,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 70,
+        "TotalLines": 132,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 10281,
+        "Issues": [
+          "Large file size (10.0KB)",
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (17)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 17,
+        "FileName": "MTM_Blue.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Blue"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.54,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.74,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 145,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8474,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (20)"
+        ],
+        "Comments": 26,
+        "BrushDefinitions": 70,
+        "EmptyLines": 20,
+        "FileName": "MTM_Dark.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Dark.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Dark"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.45,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.65,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 137,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8176,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (22)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 22,
+        "FileName": "MTM_Emerald.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Emerald.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Emerald"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.46,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.66,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 138,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8189,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (23)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 23,
+        "FileName": "MTM_Green_Dark.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green_Dark.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Green_Dark"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.43,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.63,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 135,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8095,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (20)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 20,
+        "FileName": "MTM_Green.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Green"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.46,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.66,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 137,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8188,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (22)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 22,
+        "FileName": "MTM_HighContrast.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_HighContrast.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_HighContrast"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.46,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.66,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 138,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8190,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (23)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 23,
+        "FileName": "MTM_Indigo_Dark.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo_Dark.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Indigo_Dark"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.45,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.65,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 137,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8181,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (22)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 22,
+        "FileName": "MTM_Indigo.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Indigo"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.1,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.9
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.56,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.78,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.42,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 145,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8530,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (20)"
+        ],
+        "Comments": 25,
+        "BrushDefinitions": 71,
+        "EmptyLines": 20,
+        "FileName": "MTM_Light_Dark.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light_Dark.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Light_Dark"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.54,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.74,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 146,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8453,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (22)"
+        ],
+        "Comments": 25,
+        "BrushDefinitions": 70,
+        "EmptyLines": 22,
+        "FileName": "MTM_Light.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Light"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.45,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.65,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 137,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8172,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (22)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 22,
+        "FileName": "MTM_Orange.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Orange.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Orange"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.46,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.66,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 137,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8193,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (22)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 22,
+        "FileName": "MTM_Red_Dark.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red_Dark.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Red_Dark"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.43,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.63,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 135,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8113,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (20)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 20,
+        "FileName": "MTM_Red.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Red"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.46,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.66,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 138,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8196,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (23)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 23,
+        "FileName": "MTM_Rose_Dark.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose_Dark.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Rose_Dark"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.46,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.66,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 137,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8193,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (22)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 22,
+        "FileName": "MTM_Rose.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Rose"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.46,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.66,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 139,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8198,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (24)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 24,
+        "FileName": "MTM_Teal_Dark.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal_Dark.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Teal_Dark"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 2.46,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 7.66,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 80,
+        "TotalLines": 138,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 8195,
+        "Issues": [
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (23)"
+        ],
+        "Comments": 16,
+        "BrushDefinitions": 70,
+        "EmptyLines": 23,
+        "FileName": "MTM_Teal.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTM_Teal"
+    },
+    {
+      "OverallGrade": "B - Good",
+      "MemoryUsage": {
+        "BrushMemoryKB": 0.0,
+        "ComplexMemoryKB": 0.0,
+        "MemoryGrade": "A - Excellent",
+        "GradientMemoryKB": 0.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 50.0
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 6.4,
+        "ComplexFactorMs": 0.0,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 8.4,
+        "GradientFactorMs": 0.0,
+        "BrushFactorMs": 0.0,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Low",
+      "Analysis": {
+        "OptimizationScore": 85,
+        "TotalLines": 460,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Verify all required MTM_Shared_Logic brushes are present"
+        ],
+        "ResourceReferences": 80,
+        "FileSize": 21325,
+        "Issues": [
+          "Large file size (20.8KB)",
+          "Excessive empty lines (64)"
+        ],
+        "Comments": 67,
+        "BrushDefinitions": 0,
+        "EmptyLines": 64,
+        "FileName": "MTMComponents.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml",
+        "ComplexBrushes": 0,
+        "GradientDefinitions": 0
+      },
+      "ThemeName": "MTMComponents"
+    },
+    {
+      "OverallGrade": "C - Fair",
+      "MemoryUsage": {
+        "BrushMemoryKB": 7.0,
+        "ComplexMemoryKB": 4.8,
+        "MemoryGrade": "B - Good",
+        "GradientMemoryKB": 5.0,
+        "BaseMemoryKB": 50,
+        "EstimatedMemoryKB": 66.8
+      },
+      "LoadTime": {
+        "FileSizeFactorMs": 3.11,
+        "ComplexFactorMs": 0.8,
+        "LoadGrade": "C - Fair",
+        "EstimatedLoadTimeMs": 8.31,
+        "GradientFactorMs": 1.0,
+        "BrushFactorMs": 1.4,
+        "BaseLoadMs": 2.0
+      },
+      "Priority": "Medium",
+      "Analysis": {
+        "OptimizationScore": 70,
+        "TotalLines": 134,
+        "Recommendations": [
+          "Consider removing non-essential brushes or comments",
+          "Simplify gradient brushes for better performance"
+        ],
+        "ResourceReferences": 0,
+        "FileSize": 10371,
+        "Issues": [
+          "Large file size (10.1KB)",
+          "16 complex brushes may impact performance",
+          "Excessive empty lines (18)"
+        ],
+        "Comments": 17,
+        "BrushDefinitions": 70,
+        "EmptyLines": 18,
+        "FileName": "MTMTheme.axaml",
+        "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTMTheme.axaml",
+        "ComplexBrushes": 16,
+        "GradientDefinitions": 10
+      },
+      "ThemeName": "MTMTheme"
+    }
+  ],
+  "AnalysisDate": "2025-09-06 19:52:22"
+}
