@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
@@ -446,16 +448,15 @@ public partial class SearchInventoryViewModel : BaseViewModel
         {
             StatusMessage = "Exporting results...";
 
-            // TODO: Implement export functionality
-            // This would typically involve:
-            // 1. Opening file save dialog
-            // 2. Converting results to desired format (CSV, Excel, etc.)
-            // 3. Writing to file
+            // Implemented export functionality
+            var csvContent = GenerateCSVContent();
+            var fileName = $"Inventory_Search_Results_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.csv";
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
             
-            await Task.Delay(1000); // Simulate export operation
+            await File.WriteAllTextAsync(filePath, csvContent);
 
-            StatusMessage = $"Exported {SearchResults.Count} results";
-            Logger.LogInformation("Exported {Count} search results", SearchResults.Count);
+            StatusMessage = $"Exported {SearchResults.Count} results to {fileName}";
+            Logger.LogInformation("Exported {Count} search results to {FilePath}", SearchResults.Count, filePath);
         }
         catch (Exception ex)
         {
@@ -521,6 +522,55 @@ public partial class SearchInventoryViewModel : BaseViewModel
     {
         // Re-execute search to get current page data
         await ExecuteSearchAsync();
+    }
+
+    #endregion
+
+    #region Export Functionality
+
+    /// <summary>
+    /// Generates CSV content from current search results.
+    /// </summary>
+    private string GenerateCSVContent()
+    {
+        var csv = new StringBuilder();
+        
+        // Add CSV header
+        csv.AppendLine("PartID,Operation,Location,Quantity,Item Type,User,Timestamp,Notes");
+        
+        // Add data rows
+        foreach (var result in SearchResults)
+        {
+            var line = $"{EscapeCsvField(result.PartID ?? string.Empty)}," +
+                      $"{EscapeCsvField(result.Operation ?? string.Empty)}," +
+                      $"{EscapeCsvField(result.Location ?? string.Empty)}," +
+                      $"{result.Quantity}," +
+                      $"{EscapeCsvField(result.ItemType ?? string.Empty)}," +
+                      $"{EscapeCsvField(result.User ?? string.Empty)}," +
+                      $"{result.LastUpdated:yyyy-MM-dd HH:mm:ss}," +
+                      $"{EscapeCsvField(result.Notes ?? string.Empty)}";
+            
+            csv.AppendLine(line);
+        }
+        
+        return csv.ToString();
+    }
+    
+    /// <summary>
+    /// Escapes CSV field content to handle commas, quotes, and newlines.
+    /// </summary>
+    private string EscapeCsvField(string field)
+    {
+        if (string.IsNullOrEmpty(field))
+            return string.Empty;
+            
+        // If field contains comma, quote, or newline, wrap in quotes and escape internal quotes
+        if (field.Contains(',') || field.Contains('"') || field.Contains('\n') || field.Contains('\r'))
+        {
+            return '"' + field.Replace("\"", "\"\"") + '"';
+        }
+        
+        return field;
     }
 
     #endregion

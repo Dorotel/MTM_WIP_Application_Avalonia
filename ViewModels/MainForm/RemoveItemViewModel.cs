@@ -688,14 +688,32 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Handles exceptions from command operations
     /// </summary>
+    /// <summary>
+    /// Handles exceptions with user-friendly error presentation
+    /// </summary>
     private void HandleException(Exception ex)
     {
         Logger.LogError(ex, "Error in RemoveItemViewModel operation");
         
-        // TODO: Present user-friendly error message
-        // await _errorService.LogErrorAsync(ex);
-        // Show user notification with appropriate message
+        // Present user-friendly error message via centralized error service
+        _ = Services.ErrorHandling.HandleErrorAsync(ex, "Remove Operation", _applicationState.CurrentUser);
+        
+        // Update UI state to reflect error
+        // Note: StatusMessage property may need to be added to this ViewModel for UI feedback
+        Logger.LogInformation("User-friendly error message: {Message}", GetUserFriendlyErrorMessage(ex));
     }
+    
+    /// <summary>
+    /// Gets a user-friendly error message based on the exception type
+    /// </summary>
+    private string GetUserFriendlyErrorMessage(Exception ex) => ex switch
+    {
+        InvalidOperationException => "The removal operation could not be completed. Please verify the item details and try again.",
+        TimeoutException => "The removal operation timed out. Please check your connection and try again.",
+        UnauthorizedAccessException => "You do not have permission to perform this removal operation.",
+        ArgumentException => "Invalid removal details provided. Please check your input and try again.",
+        _ => "An unexpected error occurred during the removal operation. Please contact support if this continues."
+    };
 
     #endregion
 
