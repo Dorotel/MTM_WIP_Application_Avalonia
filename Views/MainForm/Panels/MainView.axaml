@@ -74,7 +74,7 @@
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
             Padding="24,8"
-            BoxShadow="0 2 8 0 #40000000"
+            BoxShadow="0 2 8 0 {DynamicResource MTM_Shared_Logic.ShadowBrush}"
             HorizontalAlignment="Stretch">
       <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
         <!-- Left side: Menu -->
@@ -239,7 +239,7 @@
                 BorderThickness="2"
                 CornerRadius="8"
                 Margin="8"
-                BoxShadow="0 4 12 0 #30000000"
+                BoxShadow="0 4 12 0 {DynamicResource MTM_Shared_Logic.DropShadowBrush}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
           <TabControl x:Name="MainForm_TabControl"
@@ -353,7 +353,7 @@
                   BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
                   BorderThickness="2"
                   CornerRadius="12"
-                  BoxShadow="0 8 32 0 #40000000">
+                  BoxShadow="0 8 32 0 {DynamicResource MTM_Shared_Logic.ModalOverlay}">
             <!-- Overlay content will be dynamically set -->
             <ContentControl x:Name="SuggestionOverlayContent"
                             HorizontalAlignment="Stretch"
