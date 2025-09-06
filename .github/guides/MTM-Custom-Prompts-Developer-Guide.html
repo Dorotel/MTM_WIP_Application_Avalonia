@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Custom Prompts - Developer Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+        
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .nav-tab {
+            padding: 12px 24px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .nav-tab.active {
+            background: #0078d4;
+            color: white;
+        }
+        
+        .nav-tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            border-left: 4px solid #0078d4;
+            padding-left: 15px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .section h3 {
+            color: #34495e;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+        
+        .prompt-card {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .prompt-card:hover {
+            border-color: #0078d4;
+            box-shadow: 0 5px 15px rgba(0, 120, 212, 0.1);
+        }
+        
+        .prompt-title {
+            color: #0078d4;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .prompt-description {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .prompt-example {
+            background: #e8f4fd;
+            border-left: 4px solid #0078d4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+        
+        .scenario-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .scenario-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .scenario-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .files-list {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .files-list h4 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .files-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .files-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .files-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .file-path {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+        
+        .checklist {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .checklist h4 {
+            color: #155724;
+            margin-bottom: 15px;
+        }
+        
+        .checklist ul {
+            list-style: none;
+        }
+        
+        .checklist li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .checklist li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .warning h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .info h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        .copy-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+        }
+        
+        .copy-button:hover {
+            background: #218838;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #0078d4;
+        }
+        
+        .highlight {
+            background-color: yellow;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .nav-tab {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 MTM Custom Prompts Guide</h1>
+            <p>Complete guide for new developers on using GitHub Copilot custom prompts effectively</p>
+        </div>
+        
+        <div class="content">
+            <input type="text" class="search-box" placeholder="🔍 Search for prompts, scenarios, or files..." id="searchBox">
+            
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="overview">📋 Overview</button>
+                <button class="nav-tab" data-tab="prompts">🎯 Available Prompts</button>
+                <button class="nav-tab" data-tab="scenarios">🔧 Common Scenarios</button>
+                <button class="nav-tab" data-tab="files">📁 File Reference</button>
+                <button class="nav-tab" data-tab="tips">💡 Pro Tips</button>
+            </div>
+            
+            <!-- Overview Tab -->
+            <div class="tab-content active" id="overview">
+                <div class="section">
+                    <h2>🎯 What Are Custom Prompts?</h2>
+                    <p>Custom prompts are specialized instructions that tell GitHub Copilot exactly how to help you with specific tasks in the MTM WIP Application. Think of them as expert templates that guide the AI to give you better, more accurate assistance.</p>
+                    
+                    <div class="info">
+                        <h4>🎓 New Developer Friendly</h4>
+                        <p>This guide assumes you're new to programming and will explain everything step-by-step. Don't worry about complex terminology - we'll cover it all!</p>
+                    </div>
+                    
+                    <h3>🏗️ MTM Application Structure</h3>
+                    <p>The MTM WIP Application is a manufacturing inventory management system built with:</p>
+                    <ul style="margin: 15px 0; padding-left: 30px;">
+                        <li><strong>.NET 8</strong> - The programming framework</li>
+                        <li><strong>Avalonia UI</strong> - Creates the user interface (what users see)</li>
+                        <li><strong>MVVM Pattern</strong> - Organizes code in a specific way</li>
+                        <li><strong>MySQL Database</strong> - Stores all the data</li>
+                    </ul>
+                    
+                    <h3>📚 How This Guide Works</h3>
+                    <ol style="margin: 15px 0; padding-left: 30px;">
+                        <li><strong>Available Prompts</strong> - See all the custom prompts and what they do</li>
+                        <li><strong>Common Scenarios</strong> - Learn what to use for bug fixes, features, etc.</li>
+                        <li><strong>File Reference</strong> - Understand which files to include</li>
+                        <li><strong>Pro Tips</strong> - Advanced techniques for better results</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- Prompts Tab -->
+            <div class="tab-content" id="prompts">
+                <div class="section">
+                    <h2>🎯 Available Custom Prompts</h2>
+                    <p>Here are all the custom prompts available in your <span class="file-path">.github/prompts/</span> folder:</p>
+                    
+                    <div class="prompt-card">
+                        <div class="prompt-title">📝 Documentation Writer</div>
+                        <div class="prompt-description">Expert technical writer following Diátaxis Framework principles for creating high-quality documentation.</div>
+                        <div class="prompt-example">
+                            <strong>How to use:</strong><br>
+                            #file:.github/prompts/documentation-writer.prompt.md<br><br>
+                            <strong>Example:</strong><br>
+                            "Follow documentation-writer instructions. Create a tutorial for new developers on how to add a new inventory view."
+                        </div>
+                        <button class="copy-button" onclick="copyToClipboard('#file:.github/prompts/documentation-writer.prompt.md')">Copy Reference</button>
+                    </div>
+                    
+                    <div class="prompt-card">
+                        <div class="prompt-title">🔍 MTM UI Documentation Audit</div>
+                        <div class="prompt-description">Specialized auditor that analyzes documentation conflicts and creates UI standards questionnaires.</div>
+                        <div class="prompt-example">
+                            <strong>How to use:</strong><br>
+                            #file:.github/prompts/mtm-ui-documentation-audit.prompt.md<br><br>
+                            <strong>Example:</strong><br>
+                            "Follow MTM UI Documentation Audit Expert instructions. Analyze all documentation for conflicts and create the reference document."
+                        </div>
+                        <button class="copy-button" onclick="copyToClipboard('#file:.github/prompts/mtm-ui-documentation-audit.prompt.md')">Copy Reference</button>
+                    </div>
+                    
+                    <div class="prompt-card">
+                        <div class="prompt-title">🔧 Review and Refactor</div>
+                        <div class="prompt-description">Code review expert that analyzes code quality and suggests improvements.</div>
+                        <div class="prompt-example">
+                            <strong>How to use:</strong><br>
+                            #file:.github/prompts/review-and-refactor.prompt.md<br><br>
+                            <strong>Example:</strong><br>
+                            "Follow review-and-refactor instructions. Review the InventoryViewModel for MVVM Community Toolkit compliance."
+                        </div>
+                        <button class="copy-button" onclick="copyToClipboard('#file:.github/prompts/review-and-refactor.prompt.md')">Copy Reference</button>
+                    </div>
+                    
+                    <div class="prompt-card">
+                        <div class="prompt-title">📋 Feature Implementation Breakdown</div>
+                        <div class="prompt-description">Breaks down complex features into manageable development tasks with detailed specifications.</div>
+                        <div class="prompt-example">
+                            <strong>How to use:</strong><br>
+                            #file:.github/prompts/breakdown-feature-implementation.prompt.md<br><br>
+                            <strong>Example:</strong><br>
+                            "Follow breakdown-feature-implementation instructions. Break down the Quick Actions Panel feature into development tasks."
+                        </div>
+                        <button class="copy-button" onclick="copyToClipboard('#file:.github/prompts/breakdown-feature-implementation.prompt.md')">Copy Reference</button>
+                    </div>
+                    
+                    <div class="prompt-card">
+                        <div class="prompt-title">📄 Feature PRD Breakdown</div>
+                        <div class="prompt-description">Creates Product Requirements Documents (PRDs) for features with business context and technical specifications.</div>
+                        <div class="prompt-example">
+                            <strong>How to use:</strong><br>
+                            #file:.github/prompts/breakdown-feature-prd.prompt.md<br><br>
+                            <strong>Example:</strong><br>
+                            "Follow breakdown-feature-prd instructions. Create a PRD for the inventory transaction history feature."
+                        </div>
+                        <button class="copy-button" onclick="copyToClipboard('#file:.github/prompts/breakdown-feature-prd.prompt.md')">Copy Reference</button>
+                    </div>
+                    
+                    <div class="prompt-card">
+                        <div class="prompt-title">🎫 GitHub Issue Creation</div>
+                        <div class="prompt-description">Creates properly formatted GitHub issues from feature specifications with labels and templates.</div>
+                        <div class="prompt-example">
+                            <strong>How to use:</strong><br>
+                            #file:.github/prompts/create-github-issue-feature-from-specification.prompt.md<br><br>
+                            <strong>Example:</strong><br>
+                            "Follow create-github-issue instructions. Create issues for the Theme Customization feature based on the PRD."
+                        </div>
+                        <button class="copy-button" onclick="copyToClipboard('#file:.github/prompts/create-github-issue-feature-from-specification.prompt.md')">Copy Reference</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scenarios Tab -->
+            <div class="tab-content" id="scenarios">
+                <div class="section">
+                    <h2>🔧 Common Development Scenarios</h2>
+                    <p>Here's what to use for different types of work:</p>
+                    
+                    <div class="scenario-card">
+                        <div class="scenario-title">
+                            <div class="scenario-icon">🐛</div>
+                            Bug Fixes & Code Issues
+                        </div>
+                        <p><strong>Best Prompt:</strong> Review and Refactor</p>
+                        <div class="files-list">
+                            <h4>📁 Files to Include:</h4>
+                            <ul>
+                                <li><span class="file-path">#file:.github/copilot-instructions.md</span> - Core patterns and standards</li>
+                                <li><span class="file-path">#file:.github/development-guides/MTM-MVVM-Patterns-Guide.md</span> - MVVM best practices</li>
+                                <li><span class="file-path">#file:Views/[YourView].axaml</span> - The UI file with the bug</li>
+                                <li><span class="file-path">#file:ViewModels/[YourViewModel].cs</span> - The code behind file</li>
+                                <li><span class="file-path">#file:Services/ErrorHandling.cs</span> - For error handling patterns</li>
+                            </ul>
+                        </div>
+                        <div class="prompt-example">
+                            <strong>Example Command:</strong><br>
+                            "Follow review-and-refactor instructions. I have a bug where the InventoryView crashes when clicking Save. #file:.github/copilot-instructions.md #file:Views/MainForm/InventoryView.axaml #file:ViewModels/MainForm/InventoryViewModel.cs"
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-card">
+                        <div class="scenario-title">
+                            <div class="scenario-icon">🎨</div>
+                            UI Changes & Visual Updates
+                        </div>
+                        <p><strong>Best Prompts:</strong> MTM UI Documentation Audit + Documentation Writer</p>
+                        <div class="files-list">
+                            <h4>📁 Files to Include:</h4>
+                            <ul>
+                                <li><span class="file-path">#file:.github/ui-ux/MTM-Design-System-Documentation.md</span> - Design standards</li>
+                                <li><span class="file-path">#file:.github/ui-ux/MTM-Avalonia-Style-Guide.md</span> - Avalonia-specific UI rules</li>
+                                <li><span class="file-path">#file:Resources/Themes/MTM_Blue.axaml</span> - Theme colors and styles</li>
+                                <li><span class="file-path">#file:Views/[YourView].axaml</span> - The view you're updating</li>
+                                <li><span class="file-path">#file:.github/copilot-instructions.md</span> - Layout patterns</li>
+                            </ul>
+                        </div>
+                        <div class="prompt-example">
+                            <strong>Example Command:</strong><br>
+                            "Follow MTM UI Documentation Audit instructions. I need to update the RemoveTabView to match the new design system. #file:.github/ui-ux/MTM-Design-System-Documentation.md #file:Views/MainForm/RemoveTabView.axaml"
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-card">
+                        <div class="scenario-title">
+                            <div class="scenario-icon">⭐</div>
+                            New Features & Functionality
+                        </div>
+                        <p><strong>Best Prompts:</strong> Feature PRD Breakdown → Feature Implementation Breakdown → GitHub Issue Creation</p>
+                        <div class="files-list">
+                            <h4>📁 Files to Include:</h4>
+                            <ul>
+                                <li><span class="file-path">#file:docs/ways-of-work/plan/mtm-inventory-management/epic.md</span> - Overall project context</li>
+                                <li><span class="file-path">#file:.github/copilot-instructions.md</span> - Architecture patterns</li>
+                                <li><span class="file-path">#file:.github/development-guides/MTM-MVVM-Patterns-Guide.md</span> - MVVM implementation</li>
+                                <li><span class="file-path">#file:.github/database-documentation/MTM-Database-Procedures-Reference.md</span> - Database operations</li>
+                                <li><span class="file-path">#file:Services/[RelatedService].cs</span> - Existing similar functionality</li>
+                            </ul>
+                        </div>
+                        <div class="prompt-example">
+                            <strong>Step 1 - Create PRD:</strong><br>
+                            "Follow breakdown-feature-prd instructions. Create a PRD for adding barcode scanning to inventory management."<br><br>
+                            <strong>Step 2 - Break down implementation:</strong><br>
+                            "Follow breakdown-feature-implementation instructions. Break down the barcode scanning PRD into development tasks."<br><br>
+                            <strong>Step 3 - Create GitHub issues:</strong><br>
+                            "Follow create-github-issue instructions. Create GitHub issues for the barcode scanning tasks."
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-card">
+                        <div class="scenario-title">
+                            <div class="scenario-icon">📚</div>
+                            Documentation Updates
+                        </div>
+                        <p><strong>Best Prompt:</strong> Documentation Writer</p>
+                        <div class="files-list">
+                            <h4>📁 Files to Include:</h4>
+                            <ul>
+                                <li><span class="file-path">#file:.github/copilot-instructions.md</span> - For technical context</li>
+                                <li><span class="file-path">#file:docs/README.md</span> - Existing documentation structure</li>
+                                <li><span class="file-path">#file:[RelatedSourceFiles]</span> - The code you're documenting</li>
+                            </ul>
+                        </div>
+                        <div class="prompt-example">
+                            <strong>Example Command:</strong><br>
+                            "Follow documentation-writer instructions. Create a how-to guide for adding new themes to the MTM application. #file:Services/ThemeService.cs #file:Resources/Themes/MTM_Blue.axaml"
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-card">
+                        <div class="scenario-title">
+                            <div class="scenario-icon">🔄</div>
+                            Database Changes & Stored Procedures
+                        </div>
+                        <p><strong>Best Prompt:</strong> Review and Refactor (for code) + Documentation Writer (for docs)</p>
+                        <div class="files-list">
+                            <h4>📁 Files to Include:</h4>
+                            <ul>
+                                <li><span class="file-path">#file:.github/database-documentation/MTM-Database-Procedures-Reference.md</span> - Existing procedures</li>
+                                <li><span class="file-path">#file:.github/copilot-instructions.md</span> - Database patterns</li>
+                                <li><span class="file-path">#file:Services/Database.cs</span> - Database service implementation</li>
+                                <li><span class="file-path">#file:Services/[BusinessService].cs</span> - Service that uses the database</li>
+                            </ul>
+                        </div>
+                        <div class="prompt-example">
+                            <strong>Example Command:</strong><br>
+                            "Follow review-and-refactor instructions. I need to add a new stored procedure for tracking inventory movements. #file:.github/database-documentation/MTM-Database-Procedures-Reference.md #file:Services/Database.cs"
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Files Tab -->
+            <div class="tab-content" id="files">
+                <div class="section">
+                    <h2>📁 File Reference Guide</h2>
+                    <p>Understanding which files to include with your prompts:</p>
+                    
+                    <h3>🎯 Always Include These Core Files</h3>
+                    <div class="checklist">
+                        <h4>Essential References</h4>
+                        <ul>
+                            <li><span class="file-path">#file:.github/copilot-instructions.md</span> - Contains all the core patterns, architecture rules, and coding standards</li>
+                            <li><span class="file-path">#file:.github/TOOLSETS.md</span> - Lists all the technologies and tools used in the project</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>📋 File Categories & When to Use</h3>
+                    
+                    <div class="info">
+                        <h4>🏗️ Architecture & Patterns</h4>
+                        <ul style="margin-top: 10px;">
+                            <li><span class="file-path">#file:.github/development-guides/MTM-MVVM-Patterns-Guide.md</span> - When working with ViewModels</li>
+                            <li><span class="file-path">#file:.github/development-guides/MTM-Architectural-Decision-Records.md</span> - For understanding why things are built a certain way</li>
+                            <li><span class="file-path">#file:.github/architecture/C4-Architecture-Model.md</span> - For high-level system understanding</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info">
+                        <h4>🎨 UI & Design</h4>
+                        <ul style="margin-top: 10px;">
+                            <li><span class="file-path">#file:.github/ui-ux/MTM-Design-System-Documentation.md</span> - For any UI work</li>
+                            <li><span class="file-path">#file:.github/ui-ux/MTM-Avalonia-Style-Guide.md</span> - For Avalonia-specific UI rules</li>
+                            <li><span class="file-path">#file:.github/ui-ux/MTM-Component-Library-Documentation.md</span> - For reusable components</li>
+                            <li><span class="file-path">#file:Resources/Themes/MTM_Blue.axaml</span> - For theme and color information</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info">
+                        <h4>🗄️ Database & Data</h4>
+                        <ul style="margin-top: 10px;">
+                            <li><span class="file-path">#file:.github/database-documentation/MTM-Database-Procedures-Reference.md</span> - For database operations</li>
+                            <li><span class="file-path">#file:.github/database-documentation/MTM-Database-ERD.md</span> - For understanding data relationships</li>
+                            <li><span class="file-path">#file:Services/Database.cs</span> - For database connection patterns</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info">
+                        <h4>🧪 Testing & Quality</h4>
+                        <ul style="margin-top: 10px;">
+                            <li><span class="file-path">#file:.github/qa-framework/MTM-Testing-Strategy.md</span> - For testing guidance</li>
+                            <li><span class="file-path">#file:.github/project-management/code-review-guidelines.md</span> - For code quality</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>💡 Smart File Selection Tips</h3>
+                    <div class="warning">
+                        <h4>⚠️ Don't Include Too Many Files</h4>
+                        <p>Including 10+ files can overwhelm the AI. Focus on the 3-5 most relevant files for your specific task.</p>
+                    </div>
+                    
+                    <div class="checklist">
+                        <h4>File Selection Strategy</h4>
+                        <ul>
+                            <li><strong>Start with core files</strong> - Always include copilot-instructions.md</li>
+                            <li><strong>Add category-specific files</strong> - UI files for UI work, database files for data work</li>
+                            <li><strong>Include the actual code</strong> - The specific files you're working with</li>
+                            <li><strong>Add related examples</strong> - Similar working code as reference</li>
+                            <li><strong>Skip unrelated files</strong> - Don't include testing files when working on UI</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tips Tab -->
+            <div class="tab-content" id="tips">
+                <div class="section">
+                    <h2>💡 Pro Tips for Better Results</h2>
+                    
+                    <h3>🎯 Writing Effective Prompts</h3>
+                    <div class="checklist">
+                        <h4>Structure Your Requests</h4>
+                        <ul>
+                            <li><strong>Start with the prompt reference</strong> - Always begin with "Follow [prompt-name] instructions"</li>
+                            <li><strong>Be specific about what you want</strong> - "Fix the bug" vs "Fix the crash when clicking Save button"</li>
+                            <li><strong>Provide context</strong> - Explain what you were trying to do when the problem occurred</li>
+                            <li><strong>Include error messages</strong> - Copy the exact error text if there is one</li>
+                            <li><strong>Mention your skill level</strong> - "I'm new to C#" helps the AI adjust its explanations</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>📝 Template for Perfect Prompts</h3>
+                    <div class="prompt-example">
+                        Follow [prompt-name] instructions.
+
+                        **What I'm trying to do:**
+                        [Describe your goal]
+
+                        **What's happening:**
+                        [Describe the current behavior or problem]
+
+                        **Error message (if any):**
+                        [Copy exact error text]
+
+                        **My experience level:**
+                        [New to programming / Familiar with C# / Expert, etc.]
+
+                        **Files:**
+                        #file:.github/copilot-instructions.md
+                        #file:[other relevant files]
+                    </div>
+                    <button class="copy-button" onclick="copyToClipboard(`Follow [prompt-name] instructions.
+
+**What I'm trying to do:**
+[Describe your goal]
+
+**What's happening:**
+[Describe the current behavior or problem]
+
+**Error message (if any):**
+[Copy exact error text]
+
+**My experience level:**
+[New to programming / Familiar with C# / Expert, etc.]
+
+**Files:**
+#file:.github/copilot-instructions.md
+#file:[other relevant files]`)">Copy Template</button>
+                    
+                    <h3>🚀 Advanced Techniques</h3>
+                    
+                    <div class="info">
+                        <h4>🔄 Iterative Refinement</h4>
+                        <p>Don't expect perfect results on the first try. Use follow-up prompts like:</p>
+                        <ul style="margin-top: 10px;">
+                            <li>"Make it simpler for a new developer"</li>
+                            <li>"Add more comments to explain the code"</li>
+                            <li>"Focus on the error handling part"</li>
+                            <li>"Show me a working example"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info">
+                        <h4>🎨 Context is King</h4>
+                        <p>The more context you provide, the better the results:</p>
+                        <ul style="margin-top: 10px;">
+                            <li><strong>Business context:</strong> "This is for tracking manufacturing inventory"</li>
+                            <li><strong>User context:</strong> "Factory workers will use this on touch screens"</li>
+                            <li><strong>Technical context:</strong> "This connects to our MySQL database"</li>
+                            <li><strong>Timeline context:</strong> "This needs to be done by end of sprint"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="warning">
+                        <h4>🚨 Common Mistakes to Avoid</h4>
+                        <ul style="margin-top: 10px;">
+                            <li><strong>Vague requests:</strong> "Fix my code" instead of describing the specific problem</li>
+                            <li><strong>No file references:</strong> Missing the #file: references means the AI lacks context</li>
+                            <li><strong>Wrong prompt choice:</strong> Using documentation-writer for code fixes</li>
+                            <li><strong>Information overload:</strong> Including every file in the project</li>
+                            <li><strong>Assuming knowledge:</strong> Not explaining your experience level</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>📚 Learning Resources</h3>
+                    <div class="info">
+                        <h4>📖 Study These Files First</h4>
+                        <p>As a new developer, start by reading these in order:</p>
+                        <ol style="margin-top: 10px; padding-left: 30px;">
+                            <li><span class="file-path">#file:.github/copilot-instructions.md</span> - The foundation</li>
+                            <li><span class="file-path">#file:.github/TOOLSETS.md</span> - What technologies we use</li>
+                            <li><span class="file-path">#file:.github/development-guides/MTM-MVVM-Patterns-Guide.md</span> - How to structure code</li>
+                            <li><span class="file-path">#file:.github/ui-ux/MTM-Design-System-Documentation.md</span> - How to make good UI</li>
+                        </ol>
+                    </div>
+                    
+                    <h3>🎯 Success Metrics</h3>
+                    <div class="checklist">
+                        <h4>You'll know you're doing it right when:</h4>
+                        <ul>
+                            <li>The AI gives you specific, actionable answers</li>
+                            <li>Code suggestions follow the MTM patterns</li>
+                            <li>You get explanations at your skill level</li>
+                            <li>Solutions work on the first try most of the time</li>
+                            <li>You're learning new concepts with each interaction</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.getAttribute('data-tab');
+                
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+        
+        // Search functionality
+        const searchBox = document.getElementById('searchBox');
+        let searchTimeout;
+        
+        searchBox.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchTerm = e.target.value.toLowerCase();
+                const allContent = document.querySelectorAll('.tab-content');
+                
+                // Remove previous highlights
+                document.querySelectorAll('.highlight').forEach(el => {
+                    el.outerHTML = el.innerHTML;
+                });
+                
+                if (searchTerm.length > 2) {
+                    allContent.forEach(content => {
+                        const walker = document.createTreeWalker(
+                            content,
+                            NodeFilter.SHOW_TEXT,
+                            null,
+                            false
+                        );
+                        
+                        const textNodes = [];
+                        let node;
+                        while (node = walker.nextNode()) {
+                            textNodes.push(node);
+                        }
+                        
+                        textNodes.forEach(textNode => {
+                            if (textNode.textContent.toLowerCase().includes(searchTerm)) {
+                                const parent = textNode.parentNode;
+                                const regex = new RegExp(`(${searchTerm})`, 'gi');
+                                const highlightedText = textNode.textContent.replace(regex, '<span class="highlight">$1</span>');
+                                
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = highlightedText;
+                                
+                                while (tempDiv.firstChild) {
+                                    parent.insertBefore(tempDiv.firstChild, textNode);
+                                }
+                                parent.removeChild(textNode);
+                            }
+                        });
+                    });
+                }
+            }, 300);
+        });
+        
+        // Copy to clipboard functionality
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show temporary success message
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#20c997';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#28a745';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+        
+        // Smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
