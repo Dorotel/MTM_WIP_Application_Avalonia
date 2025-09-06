@@ -101,6 +101,7 @@ public partial class App : Application
 
             // Initialize theme system before creating UI components
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Initializing theme system...");
+            // Use synchronous initialization to avoid theme loading conflicts
             InitializeDefaultTheme();
 
             // Configure desktop application lifetime with dependency injection
@@ -144,6 +145,28 @@ public partial class App : Application
                     _logger?.LogDebug("Startup dialog task started");
                     // Wait for main window initialization
                     await Task.Delay(1000);
+
+                    // Initialize theme service after UI is ready
+                    try
+                    {
+                        var themeService = Program.GetService<IThemeService>();
+                        var themeInitResult = await themeService.InitializeThemeSystemAsync();
+                        if (themeInitResult.IsSuccess)
+                        {
+                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization successful: {themeInitResult.Message}");
+                            _logger?.LogInformation("Deferred theme initialization successful: {Message}", themeInitResult.Message);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization failed: {themeInitResult.Message}");
+                            _logger?.LogWarning("Deferred theme initialization failed: {Message}", themeInitResult.Message);
+                        }
+                    }
+                    catch (Exception themeEx)
+                    {
+                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization error: {themeEx.Message}");
+                        _logger?.LogWarning(themeEx, "Deferred theme initialization error");
+                    }
 
                     // Initialize master data service early for all ViewModels
                     try

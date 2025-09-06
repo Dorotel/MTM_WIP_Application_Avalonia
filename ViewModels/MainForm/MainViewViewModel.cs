@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -24,6 +25,8 @@ public partial class MainViewViewModel : BaseViewModel
     private readonly INavigationService _navigationService;
     private readonly IApplicationStateService _applicationState;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IDatabaseService _databaseService;
+    private readonly System.Timers.Timer _connectionCheckTimer;
 
     /// <summary>
     /// Gets or sets the currently selected tab index (0-based)
@@ -92,6 +95,18 @@ public partial class MainViewViewModel : BaseViewModel
     private int _connectionStrength = 0;
 
     /// <summary>
+    /// Gets or sets the signal bar width based on connection quality
+    /// </summary>
+    [ObservableProperty]
+    private double _connectionSignalBarWidth = 60;
+
+    /// <summary>
+    /// Gets or sets the connection status brush for styling
+    /// </summary>
+    [ObservableProperty]
+    private string _connectionStatusBrush = "MTM_Shared_Logic.ErrorBrush";
+
+    /// <summary>
     /// Gets or sets the progress value percentage (0-100)
     /// </summary>
     [ObservableProperty]
@@ -122,6 +137,13 @@ public partial class MainViewViewModel : BaseViewModel
     public AdvancedRemoveViewModel AdvancedRemoveViewModel { get; }
     public TransferItemViewModel TransferItemViewModel { get; }
 
+    #region Events
+    /// <summary>
+    /// Event fired when LostFocus should be triggered on specific TextBoxes
+    /// </summary>
+    public event EventHandler<TriggerLostFocusEventArgs>? TriggerLostFocusRequested;
+    #endregion
+
     /// <summary>
     /// Handles tab selection changes and triggers mode resets
     /// </summary>
@@ -142,6 +164,7 @@ public partial class MainViewViewModel : BaseViewModel
     public MainViewViewModel(
         INavigationService navigationService,
         IApplicationStateService applicationState,
+        IDatabaseService databaseService,
         InventoryTabViewModel inventoryTabViewModel,
         RemoveItemViewModel removeItemViewModel,
         TransferItemViewModel transferItemViewModel,
@@ -154,9 +177,19 @@ public partial class MainViewViewModel : BaseViewModel
     {
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
         Logger.LogInformation("MainViewViewModel initialized with dependency injection");
+
+        // Initialize connection status monitoring
+        _connectionCheckTimer = new System.Timers.Timer(5000); // Check every 5 seconds
+        _connectionCheckTimer.Elapsed += OnConnectionCheckTimerElapsed;
+        _connectionCheckTimer.AutoReset = true;
+        _connectionCheckTimer.Enabled = true;
+        
+        // Perform initial connection check
+        _ = Task.Run(async () => await CheckConnectionStatusAsync());
 
         // Bind progress properties to ApplicationStateService for centralized progress system
         _applicationState.PropertyChanged += OnApplicationStateChanged;
@@ -187,10 +220,11 @@ public partial class MainViewViewModel : BaseViewModel
 
 
 
-        // Wire up events for inter-component communication (TODO: Implement events in ViewModels)
-        // InventoryTabViewModel.InventoryItemSaved += OnInventoryItemSaved;
+        // Wire up events for inter-component communication
+        InventoryTabViewModel.SaveCompleted += OnInventoryItemSaved;
         // InventoryTabViewModel.PanelToggleRequested += OnPanelToggleRequested;
         InventoryTabViewModel.AdvancedEntryRequested += (sender, e) => OnAdvancedEntryRequested();
+        InventoryTabViewModel.TriggerValidationLostFocus += OnInventoryValidationLostFocusRequested;
         QuickButtonsViewModel.QuickActionExecuted += OnQuickActionExecuted;
         
         // Wire up RemoveTab events (TODO: Implement events in ViewModels)
@@ -420,11 +454,51 @@ public partial class MainViewViewModel : BaseViewModel
         }
     }
 
-    private void OnInventoryItemSaved(object? sender, EventArgs e)
+    private void OnInventoryItemSaved(object? sender, InventorySavedEventArgs e)
     {
-        // TODO: Update QuickButtons with new inventory item
-        // This could automatically add/update the most recent action in QuickButtons
-        StatusText = "Item saved successfully";
+        // Update status
+        StatusText = $"Item saved: {e.PartId} ({e.Quantity} units)";
+        
+        // Update QuickButtons and Session Transaction History
+        Task.Run(async () =>
+        {
+            try
+            {
+                // Add a small delay to ensure database transaction is fully committed
+                await Task.Delay(500);
+                
+                // Refresh QuickButtons to show the latest transaction
+                await QuickButtonsViewModel.LoadLast10TransactionsAsync();
+                
+                // Add to session transaction history (in-memory, current session only)
+                QuickButtonsViewModel.AddSessionTransaction(
+                    partId: e.PartId,
+                    operation: e.Operation ?? "Unknown",
+                    location: e.Location ?? "Unknown",
+                    quantity: e.Quantity,
+                    transactionType: DetermineTransactionType(e),
+                    user: _applicationState.CurrentUser ?? Environment.UserName,
+                    notes: e.Notes ?? ""
+                );
+                
+                Logger.LogInformation("Updated QuickButtons and added session transaction: Part={PartId}, Quantity={Quantity}, Operation={Operation}", 
+                    e.PartId, e.Quantity, e.Operation);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to update QuickButtons and session history after inventory save");
+            }
+        });
+    }
+
+    /// <summary>
+    /// Determines the transaction type based on the inventory event arguments
+    /// </summary>
+    private string DetermineTransactionType(InventorySavedEventArgs e)
+    {
+        // For now, assume all inventory saves are "IN" transactions
+        // This can be enhanced later based on business logic or event properties
+        return "IN";
     }
 
     private void OnPanelToggleRequested(object? sender, EventArgs e)
@@ -450,6 +524,10 @@ public partial class MainViewViewModel : BaseViewModel
                     InventoryTabViewModel.SelectedPart = e.PartId;
                     InventoryTabViewModel.SelectedOperation = e.Operation;
                     InventoryTabViewModel.Quantity = e.Quantity;
+                    InventoryTabViewModel.QuantityText = e.Quantity.ToString(); // Set the text binding property
+                    
+                    // Force validation update after programmatically setting values
+                    TriggerInventoryValidationUpdate();
                     break;
                 case 1: // Remove Tab
                     Logger.LogDebug("Populating Remove tab with quick action data - Advanced mode: {IsAdvanced}", IsAdvancedRemoveMode);
@@ -484,6 +562,76 @@ public partial class MainViewViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error processing quick action: {Operation} - {PartId} ({Quantity} units)", e.Operation, e.PartId, e.Quantity);
             StatusText = "Error processing quick action";
+        }
+    }
+
+    /// <summary>
+    /// Triggers validation updates for the inventory form after programmatically setting values.
+    /// This ensures that error highlighting is cleared and LostFocus events are triggered.
+    /// After QuickButton data is populated, focuses on Location field for user to complete entry.
+    /// </summary>
+    private void TriggerInventoryValidationUpdate()
+    {
+        try
+        {
+            Logger.LogDebug("Triggering inventory validation update after QuickButton population");
+            
+            // Call the InventoryTabViewModel's validation refresh method
+            // This will update all validation properties and clear error states
+            InventoryTabViewModel.RefreshValidationState();
+            
+            // Trigger LostFocus events on the TextBoxes to ensure proper validation
+            // and SuggestionOverlay behavior is triggered (without cursor placement)
+            var fieldsToTrigger = new List<string> { "PartId", "Operation", "Quantity" };
+            var lostFocusArgs = new TriggerLostFocusEventArgs(fieldsToTrigger, 0, 50); // 50ms delay between fields
+            
+            TriggerLostFocusRequested?.Invoke(this, lostFocusArgs);
+            
+            // Add delay before focusing Location to ensure LostFocus events complete
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(300); // Wait for LostFocus events to complete
+                
+                // After validation triggers, focus on Location field for user to complete entry
+                var focusArgs = new TriggerLostFocusEventArgs(new List<string> { "Location" }, 0, 0, focusOnly: true);
+                TriggerLostFocusRequested?.Invoke(this, focusArgs);
+            });
+            
+            Logger.LogDebug("Inventory validation update, LostFocus triggers, and Location focus completed");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error triggering inventory validation update");
+        }
+    }
+
+    private void OnInventoryValidationLostFocusRequested(object? sender, EventArgs e)
+    {
+        try
+        {
+            Logger.LogDebug("OnInventoryValidationLostFocusRequested event handler triggered - triggering LostFocus for validation");
+            
+            // Trigger LostFocus events on all relevant fields to restore error highlighting
+            var fieldsToTrigger = new List<string> { "PartId", "Operation", "Quantity", "Location" };
+            var lostFocusArgs = new TriggerLostFocusEventArgs(fieldsToTrigger, 0, 50); // 50ms delay between fields
+            
+            TriggerLostFocusRequested?.Invoke(this, lostFocusArgs);
+            
+            // Add delay before focusing PartID to ensure all LostFocus events complete
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(450); // Wait for all LostFocus events to complete (4 fields * 50ms + buffer)
+                
+                // After validation triggers, focus on PartID field for user to start fresh entry
+                var focusArgs = new TriggerLostFocusEventArgs("PartId", 0, focusOnly: true);
+                TriggerLostFocusRequested?.Invoke(this, focusArgs);
+            });
+            
+            Logger.LogDebug("Validation LostFocus triggers and PartID focus completed for Reset operation");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in OnInventoryValidationLostFocusRequested");
         }
     }
 
@@ -688,6 +836,71 @@ public partial class MainViewViewModel : BaseViewModel
         SwitchToAdvancedInventoryCommand.Execute(null);
     }
 
+    #region Connection Status Management
+
+    /// <summary>
+    /// Timer event handler for periodic connection status checks
+    /// </summary>
+    private async void OnConnectionCheckTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        await CheckConnectionStatusAsync();
+    }
+
+    /// <summary>
+    /// Checks the database connection status and updates the UI properties
+    /// </summary>
+    private async Task CheckConnectionStatusAsync()
+    {
+        try
+        {
+            var isConnected = await _databaseService.TestConnectionAsync();
+            
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (isConnected)
+                {
+                    ConnectionStatus = "Connected";
+                    ConnectionStrength = 100; // Full strength when connected
+                    ConnectionSignalBarWidth = 80; // Wide bar for good connection
+                    ConnectionStatusBrush = "MTM_Shared_Logic.SuccessBrush"; // Green for connected
+                    Logger.LogDebug("Database connection status: Connected");
+                }
+                else
+                {
+                    ConnectionStatus = "Disconnected";
+                    ConnectionStrength = 0; // No strength when disconnected
+                    ConnectionSignalBarWidth = 30; // Narrow bar for no connection
+                    ConnectionStatusBrush = "MTM_Shared_Logic.ErrorBrush"; // Red for disconnected
+                    Logger.LogDebug("Database connection status: Disconnected");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error checking database connection status");
+            
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                ConnectionStatus = "Error";
+                ConnectionStrength = 25; // Low strength for error state
+                ConnectionSignalBarWidth = 50; // Medium bar for error state
+                ConnectionStatusBrush = "MTM_Shared_Logic.WarningBrush"; // Orange for error
+            });
+        }
+    }
+
+    /// <summary>
+    /// Manual refresh of connection status (can be called from UI)
+    /// </summary>
+    [RelayCommand]
+    private async Task RefreshConnectionStatus()
+    {
+        await CheckConnectionStatusAsync();
+        StatusText = $"Connection status refreshed: {ConnectionStatus}";
+    }
+
+    #endregion
+
     #region Resource Management
 
     /// <summary>
@@ -700,6 +913,14 @@ public partial class MainViewViewModel : BaseViewModel
         {
             try
             {
+                // Dispose connection check timer
+                if (_connectionCheckTimer != null)
+                {
+                    _connectionCheckTimer.Stop();
+                    _connectionCheckTimer.Elapsed -= OnConnectionCheckTimerElapsed;
+                    _connectionCheckTimer.Dispose();
+                }
+
                 // Unsubscribe from events to prevent memory leaks
                 if (_applicationState != null)
                 {
@@ -725,6 +946,13 @@ public partial class MainViewViewModel : BaseViewModel
                 {
                     RemoveItemViewModel.PanelToggleRequested -= OnPanelToggleRequested;
                     RemoveItemViewModel.AdvancedRemovalRequested -= OnAdvancedRemovalRequested;
+                }
+
+                if (InventoryTabViewModel != null)
+                {
+                    InventoryTabViewModel.SaveCompleted -= OnInventoryItemSaved;
+                    InventoryTabViewModel.AdvancedEntryRequested -= (sender, e) => OnAdvancedEntryRequested();
+                    InventoryTabViewModel.TriggerValidationLostFocus -= OnInventoryValidationLostFocusRequested;
                 }
 
                 if (TransferItemViewModel != null)

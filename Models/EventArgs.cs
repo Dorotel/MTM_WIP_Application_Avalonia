@@ -81,6 +81,65 @@ public class QuickActionExecutedEventArgs : EventArgs
 }
 
 /// <summary>
+/// Event arguments for triggering LostFocus events on specific TextBoxes.
+/// </summary>
+public class TriggerLostFocusEventArgs : EventArgs
+{
+    /// <summary>
+    /// List of field names that should have their LostFocus events triggered.
+    /// </summary>
+    public List<string> FieldNames { get; set; } = new();
+
+    /// <summary>
+    /// Tab index where the fields are located (0=Inventory, 1=Remove, 2=Transfer).
+    /// </summary>
+    public int TabIndex { get; set; }
+
+    /// <summary>
+    /// Delay in milliseconds between triggering each field's LostFocus event.
+    /// </summary>
+    public int DelayBetweenFields { get; set; } = 100;
+
+    /// <summary>
+    /// If true, only focus the fields without triggering LostFocus events.
+    /// If false, trigger LostFocus events as normal.
+    /// </summary>
+    public bool FocusOnly { get; set; } = false;
+
+    /// <summary>
+    /// Initializes a new instance of TriggerLostFocusEventArgs.
+    /// </summary>
+    public TriggerLostFocusEventArgs()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance with specific field names and tab index.
+    /// </summary>
+    /// <param name="fieldNames">Names of the fields to trigger LostFocus on</param>
+    /// <param name="tabIndex">Tab containing the fields</param>
+    /// <param name="delay">Delay between field events</param>
+    /// <param name="focusOnly">If true, only focus without triggering LostFocus</param>
+    public TriggerLostFocusEventArgs(List<string> fieldNames, int tabIndex, int delay = 100, bool focusOnly = false)
+    {
+        FieldNames = fieldNames ?? new List<string>();
+        TabIndex = tabIndex;
+        DelayBetweenFields = delay;
+        FocusOnly = focusOnly;
+    }
+
+    /// <summary>
+    /// Convenience constructor for a single field.
+    /// </summary>
+    /// <param name="fieldName">Name of the field to trigger LostFocus on</param>
+    /// <param name="tabIndex">Tab containing the field</param>
+    /// <param name="focusOnly">If true, only focus without triggering LostFocus</param>
+    public TriggerLostFocusEventArgs(string fieldName, int tabIndex, bool focusOnly = false) : this(new List<string> { fieldName }, tabIndex, 100, focusOnly)
+    {
+    }
+}
+
+/// <summary>
 /// Event arguments for items removed events.
 /// </summary>
 public class ItemsRemovedEventArgs : EventArgs

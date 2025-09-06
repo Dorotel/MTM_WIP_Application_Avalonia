@@ -20,6 +20,36 @@
 
   <UserControl.Styles>
     <!-- TabControl styling is now handled globally by MTMComponents.axaml -->
+    
+    <!-- Connection Status Styles -->
+    <Style Selector="Border.connection-status">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+    </Style>
+    
+    <Style Selector="Border.connection-status[Tag=Connected]">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
+    </Style>
+    
+    <Style Selector="Border.connection-status[Tag=Disconnected]">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+    </Style>
+    
+    <Style Selector="Border.connection-status[Tag=Error]">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}"/>
+    </Style>
+
+    <!-- Signal strength progress bar styles -->
+    <Style Selector="ProgressBar.signal-bar[Tag=Connected]">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
+    </Style>
+    
+    <Style Selector="ProgressBar.signal-bar[Tag=Disconnected]">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+    </Style>
+    
+    <Style Selector="ProgressBar.signal-bar[Tag=Error]">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}"/>
+    </Style>
   </UserControl.Styles>
 
   <!-- Keyboard shortcuts -->
@@ -88,10 +118,13 @@
         
         <!-- Enhanced Connection Status with integrated signal bar -->
         <Border Grid.Column="0" 
-                Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                Classes="connection-status"
+                Tag="{Binding ConnectionStatus}"
                 Padding="12,8"
                 CornerRadius="20"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left"
+                Cursor="Hand"
+                PointerPressed="OnConnectionStatusClicked">
           <StackPanel Orientation="Vertical" Spacing="4">
             <!-- Top: Connection info -->
             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -111,16 +144,20 @@
                          FontSize="11"/>
             </StackPanel>
             
-            <!-- Bottom: Integrated signal bar -->
+            <!-- Bottom: Dynamic signal bar with quality-based length and color -->
             <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
               <TextBlock Text="Signal:" 
                          Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                          FontSize="9"
                          FontWeight="Medium"/>
-              <ProgressBar Minimum="0" Maximum="100" 
-                           Width="60" Height="6" 
+              <ProgressBar Classes="signal-bar"
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                          BorderThickness="1"
+                           Tag="{Binding ConnectionStatus}"
+                           Minimum="0" Maximum="100" 
+                           Width="{Binding ConnectionSignalBarWidth, FallbackValue=60}"
+                           Height="8" 
                            Value="{Binding ConnectionStrength, FallbackValue=100}"
-                           Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
                            Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                            CornerRadius="3"/>
             </StackPanel>

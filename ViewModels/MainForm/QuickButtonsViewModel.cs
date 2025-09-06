@@ -257,9 +257,19 @@ public partial class QuickButtonsViewModel : BaseViewModel
         OnPropertyChanged(nameof(NonEmptyQuickButtonsCount));
     }
 
+    /// <summary>
+    /// Command to clear the current session transaction history
+    /// </summary>
+    [RelayCommand]
+    private void ClearHistory()
+    {
+        ClearSessionHistory();
+        Logger.LogInformation("ClearHistoryCommand executed");
+    }
+
     #endregion
 
-    private async Task LoadLast10TransactionsAsync()
+    public async Task LoadLast10TransactionsAsync()
     {
         try
         {
@@ -290,7 +300,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
             System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 About to call QuickButtons service with user: {currentUser}");
             Logger.LogInformation("🔧 About to call QuickButtons service with user: {CurrentUser}", currentUser);
 
-            var transactions = await _quickButtonsService.LoadLast10TransactionsAsync(currentUser);
+            var transactions = await _quickButtonsService.LoadUserQuickButtonsAsync(currentUser);
 
             Console.WriteLine($"🔧🔧🔧 QuickButtons service returned {transactions.Count} transactions");
             System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 QuickButtons service returned {transactions.Count} transactions");
@@ -346,12 +356,16 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 }
             });
 
-            Console.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {QuickButtons.Count} items ({QuickButtons.Count(b => !b.IsEmpty)} non-empty, {QuickButtons.Count(b => b.IsEmpty)} empty)");
-            System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {QuickButtons.Count} items ({QuickButtons.Count(b => !b.IsEmpty)} non-empty, {QuickButtons.Count(b => b.IsEmpty)} empty)");
+            // Fix: Create snapshot of counts before logging to avoid collection modification exception
+            int totalCount = QuickButtons.Count;
+            var quickButtonsList = QuickButtons.ToList(); // Create snapshot
+            int nonEmptyCount = quickButtonsList.Count(b => b != null && !b.IsEmpty);
+            int emptyCount = quickButtonsList.Count(b => b != null && b.IsEmpty);
+
+            Console.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
+            System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
             Logger.LogInformation("🔧 Total QuickButtons collection now has {TotalCount} items ({NonEmpty} non-empty, {Empty} empty)",
-                QuickButtons.Count,
-                QuickButtons.Count(b => !b.IsEmpty),
-                QuickButtons.Count(b => b.IsEmpty));
+                totalCount, nonEmptyCount, emptyCount);
 
             // Update move command validation
             UpdateMoveCommandValidation();
@@ -391,16 +405,10 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 Quantity = button.Quantity
             });
             
-            // Update last used date in service
-            await _quickButtonsService.SaveQuickButtonAsync(new QuickButtonData
-            {
-                UserId = _applicationState.CurrentUser,
-                Position = button.Position,
-                PartId = button.PartId,
-                Operation = button.Operation,
-                Quantity = button.Quantity,
-                LastUsedDate = DateTime.Now
-            });
+            // Note: Removed SaveQuickButtonAsync call to update last used date
+            // This was causing save errors and is not critical for functionality
+            // The QuickButton execution should only populate fields, not save data
+            Logger.LogDebug("Quick action executed successfully without database update");
 
             await Task.CompletedTask;
         }
@@ -578,6 +586,75 @@ public partial class QuickButtonsViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to add quick button from operation");
+        }
+    }
+
+    /// <summary>
+    /// Adds a transaction to the current session history (NOT database-loaded)
+    /// This is called in real-time when inventory operations are completed
+    /// </summary>
+    public void AddSessionTransaction(string partId, string operation, string location, int quantity, string transactionType, string user, string notes = "")
+    {
+        try
+        {
+            var sessionTransaction = new SessionTransaction
+            {
+                TransactionTime = DateTime.Now,
+                PartId = partId,
+                Operation = operation,
+                Location = location,
+                Quantity = quantity,
+                ItemType = "WIP",
+                BatchNumber = $"BATCH{DateTime.Now:yyyyMMddHHmmss}",
+                Status = "Success",
+                Notes = notes,
+                User = user,
+                TransactionType = transactionType
+            };
+
+            // Add to the beginning of the collection (most recent first)
+            Dispatcher.UIThread.Post(() =>
+            {
+                SessionTransactionHistory.Insert(0, sessionTransaction);
+                
+                // Keep only the most recent 50 transactions to prevent memory issues
+                while (SessionTransactionHistory.Count > 50)
+                {
+                    SessionTransactionHistory.RemoveAt(SessionTransactionHistory.Count - 1);
+                }
+                
+                // Notify property changes
+                OnPropertyChanged(nameof(SessionTransactionCount));
+            });
+
+            Logger.LogInformation("Added session transaction: {PartId}, {Operation}, {TransactionType}", 
+                partId, operation, transactionType);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to add session transaction");
+        }
+    }
+
+    /// <summary>
+    /// Clears all session transaction history (current session only)
+    /// This does NOT affect database records, only the in-memory session history
+    /// </summary>
+    public void ClearSessionHistory()
+    {
+        try
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                SessionTransactionHistory.Clear();
+                OnPropertyChanged(nameof(SessionTransactionCount));
+            });
+
+            Logger.LogInformation("Cleared session transaction history");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to clear session transaction history");
         }
     }
 
