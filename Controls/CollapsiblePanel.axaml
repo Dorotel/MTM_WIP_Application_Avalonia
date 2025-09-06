@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:material="using:Material.Icons.Avalonia"
+             xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d"
              d:DesignWidth="400"
              d:DesignHeight="600"
@@ -11,6 +12,7 @@
   <UserControl.Resources>
     <!-- Use theme colors instead of hardcoded MTM colors -->
     <!-- All colors now reference theme resources -->
+    <converters:ColorToBoxShadowConverter x:Key="ColorToBoxShadowConverter"/>
   </UserControl.Resources>
 
   <!-- Use explicit template to ensure proper initialization -->
@@ -21,7 +23,7 @@
               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
               BorderThickness="2"
               CornerRadius="8"
-              BoxShadow="0 4 12 0 #22000000">
+              BoxShadow="0 4 12 0 {DynamicResource MTM_Shared_Logic.ShadowBrush}">
         
         <!-- Empty grid that gets configured dynamically by code -->
         <Grid x:Name="RootGrid">

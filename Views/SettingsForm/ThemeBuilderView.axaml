@@ -133,7 +133,7 @@
                                    VerticalAlignment="Center"
                                    FontWeight="SemiBold"/>
                         <TextBox Grid.Row="0" Grid.Column="1"
-                                 Text="#1E88E5"
+                                 Watermark="Primary Color (e.g., #1E88E5)"
                                  Margin="0,0,8,0"/>
                         <Border Grid.Row="0" Grid.Column="2"
                                 Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
@@ -154,7 +154,7 @@
                                    FontWeight="SemiBold"
                                    Margin="0,8,0,0"/>
                         <TextBox Grid.Row="1" Grid.Column="1"
-                                 Text="#FFA726"
+                                 Watermark="Accent Color (e.g., #FFA726)"
                                  Margin="0,8,8,0"/>
                         <Border Grid.Row="1" Grid.Column="2"
                                 Background="{DynamicResource MTM_Shared_Logic.Warning}"
@@ -176,7 +176,7 @@
                                    FontWeight="SemiBold"
                                    Margin="0,8,0,0"/>
                         <TextBox Grid.Row="2" Grid.Column="1"
-                                 Text="#4CAF50"
+                                 Watermark="Success Color (e.g., #4CAF50)"
                                  Margin="0,8,8,0"/>
                         <Border Grid.Row="2" Grid.Column="2"
                                 Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
@@ -198,7 +198,7 @@
                                    FontWeight="SemiBold"
                                    Margin="0,8,0,0"/>
                         <TextBox Grid.Row="3" Grid.Column="1"
-                                 Text="#F44336"
+                                 Watermark="Error Color (e.g., #F44336)"
                                  Margin="0,8,8,0"/>
                         <Border Grid.Row="3" Grid.Column="2"
                                 Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
