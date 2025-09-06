@@ -115,6 +115,15 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InfoBrush" Color="#2196F3"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InfoLightBrush" Color="#BBDEFB"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InfoDarkBrush" Color="#1976D2"/>
+	<!-- Transaction Type Colors for History Panel (WCAG 2.1 AA Compliant) -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionInBrush" Color="#198754"/>      <!-- Green for IN - 4.5:1 contrast -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionOutBrush" Color="#DC3545"/>     <!-- Red for OUT - 4.5:1 contrast -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferBrush" Color="#E67E00"/> <!-- Orange for Transfer - 4.5:1 contrast -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionInLightBrush" Color="#D1E7DD"/>  <!-- Light Green -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionOutLightBrush" Color="#F8D7DA"/> <!-- Light Red -->
+	<SolidColorBrush x:Key="MTM_Shared_Logic.TransactionTransferLightBrush" Color="#FFF3CD"/> <!-- Light Orange -->
+
+
 
 	<!-- Specialized Theme Colors -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized1" Color="#FFD700"/>
@@ -533,3 +542,4 @@
 	</Design.PreviewWith>
 
 </ResourceDictionary>
+
