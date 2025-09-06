@@ -129,3 +129,4 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InactiveBrush" Color="#CCCCCC"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LoadingBrush" Color="#90CAF9"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.ProcessingBrush" Color="#5C6BC0"/>
+</ResourceDictionary>
