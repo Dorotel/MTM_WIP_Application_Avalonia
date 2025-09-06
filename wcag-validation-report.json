@@ -1,0 +1,5000 @@
+{
+  "WcagStandard": "2.1 AA",
+  "Summary": {
+    "PartiallyCompliantThemes": 14,
+    "TotalThemes": 19,
+    "TotalCriticalFailures": 26,
+    "NonCompliantThemes": 1,
+    "CompliantThemes": 4,
+    "AverageCompliancePercentage": 90.2
+  },
+  "ValidationDate": "2025-09-06 18:53:58",
+  "TestedScenarios": 14,
+  "ThemeResults": [
+    {
+      "OverallCompliance": {
+        "FailedTests": 2,
+        "CompliancePercentage": 85.7,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 12
+      },
+      "ThemeName": "MTM_Amber",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E65100",
+          "BackgroundColor": "#FFFDF7",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.7255126975185204,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FF8F00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.180984271711742,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FFB300",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 11.70003983771795,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FF6F00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.525775784710833,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E65100",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.541570685079214,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.634942458389603,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.6383042000331915,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.348940632852082,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#FF8F00",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.2873364530973834,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#999999",
+          "BackgroundColor": "#FFFDF7",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8008916610921566,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E65100",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.7895393189773623,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Interactive Links",
+          "BackgroundColor": "#FFFFFF",
+          "ForegroundColor": "#FF8F00",
+          "ContrastRatio": 2.29
+        },
+        {
+          "Required": 4.5,
+          "Context": "Secondary Text",
+          "BackgroundColor": "#FFFDF7",
+          "ForegroundColor": "#999999",
+          "ContrastRatio": 2.8
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Amber.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 2,
+        "CompliancePercentage": 85.7,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 12
+      },
+      "ThemeName": "MTM_Blue_Dark",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#90CAF9",
+          "BackgroundColor": "#121212",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.706717964102706,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#BBBBBB",
+          "BackgroundColor": "#1E1E1E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.683814905727361,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#1976D2",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.601895875436464,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#1565C0",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74632080646379,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#1976D2",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.601895875436464,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#7986CB",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.4508893394361975,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.530800584587276,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.527516759217673,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8575547210333117,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#1565C0",
+          "BackgroundColor": "#1E1E1E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.901187948915986,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#888888",
+          "BackgroundColor": "#121212",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.284701049655088,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#90CAF9",
+          "BackgroundColor": "#2A2A2A",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.203300527985594,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#BBBBBB",
+          "BackgroundColor": "#2A2A2A",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.476525328024187,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Transfer Operations",
+          "BackgroundColor": "#E67E00",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 2.86
+        },
+        {
+          "Required": 4.5,
+          "Context": "Interactive Links",
+          "BackgroundColor": "#1E1E1E",
+          "ForegroundColor": "#1565C0",
+          "ContrastRatio": 2.9
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue_Dark.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 2,
+        "CompliancePercentage": 85.7,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 12
+      },
+      "ThemeName": "MTM_Blue",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#212529",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 15.426285095510265,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#495057",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.17635452073249,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFF",
+          "BackgroundColor": "#0056B3",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.042135266678601,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFF",
+          "BackgroundColor": "#004085",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.134893633030185,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFF",
+          "BackgroundColor": "#B71C1C",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.570044137951514,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFF",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8575547210333117,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFF",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.530800584587276,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFF",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.530800584587276,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFF",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.527516759217673,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFF",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8575547210333117,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#0056B3",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.042135266678601,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#6C757D",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.689301797380369,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#212529",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 15.426285095510265,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#495057",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.17635452073249,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Warning Messages",
+          "BackgroundColor": "#E67E00",
+          "ForegroundColor": "#FFFFFF",
+          "ContrastRatio": 2.86
+        },
+        {
+          "Required": 4.5,
+          "Context": "Transfer Operations",
+          "BackgroundColor": "#E67E00",
+          "ForegroundColor": "#FFFFFF",
+          "ContrastRatio": 2.86
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 0,
+        "CompliancePercentage": 100.0,
+        "TotalTests": 14,
+        "MinimumCompliance": true,
+        "PassedTests": 14
+      },
+      "ThemeName": "MTM_Dark",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#161616",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 13.708383986050812,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#1C1C1E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.889135248517675,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2D2D30",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 13.728970154334474,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#3E3E42",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.646140153894551,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#0D1117",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 18.924630543800298,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#404040",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.368377760269818,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#F44336",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.6824341707473893,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#E65100",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.7895393189773623,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#CCCCCC",
+          "BackgroundColor": "#1C1C1E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.59495147071753,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#C0C0C0",
+          "BackgroundColor": "#161616",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.946283477560053,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#1C1C1E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.889135248517675,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#1C1C1E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.889135248517675,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Dark.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 2,
+        "CompliancePercentage": 85.7,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 12
+      },
+      "ThemeName": "MTM_Emerald",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#004D40",
+          "BackgroundColor": "#F1F8E9",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.05782854846693,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#00695C",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.1751714771710637,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#00695C",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.1751714771710637,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#004D40",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.1355839800017784,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#4DB6AC",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.602447046211473,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.634942458389603,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.6383042000331915,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.348940632852082,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#00695C",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.6138160256812535,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#999999",
+          "BackgroundColor": "#F1F8E9",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.624328130083815,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#004D40",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.83337588062564,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Critical Alerts",
+          "BackgroundColor": "#004D40",
+          "ForegroundColor": "#000000",
+          "ContrastRatio": 2.14
+        },
+        {
+          "Required": 4.5,
+          "Context": "Secondary Text",
+          "BackgroundColor": "#F1F8E9",
+          "ForegroundColor": "#999999",
+          "ContrastRatio": 2.62
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Emerald.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 2,
+        "CompliancePercentage": 85.7,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 12
+      },
+      "ThemeName": "MTM_Green_Dark",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#263238",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.968974016613977,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#43A047",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.3029425352224924,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#1B5E20",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.869469697765064,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.530800584587276,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.527516759217673,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8575547210333117,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#2E7D32",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.648490247274954,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#C0C0C0",
+          "BackgroundColor": "#263238",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.2331094351142395,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Transfer Operations",
+          "BackgroundColor": "#E67E00",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 2.86
+        },
+        {
+          "Required": 4.5,
+          "Context": "Interactive Links",
+          "BackgroundColor": "#2E2E2E",
+          "ForegroundColor": "#2E7D32",
+          "ContrastRatio": 2.65
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green_Dark.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 1,
+        "CompliancePercentage": 92.9,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 13
+      },
+      "ThemeName": "MTM_Green",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#1B5E20",
+          "BackgroundColor": "#F1F8E9",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.248813444643455,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#43A047",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.357967108436357,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#66BB6A",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.881207176516558,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#7CB342",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.38372654803461,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#F44336",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.7027496015598365,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E65100",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.541570685079214,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#43A047",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.3029425352224924,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#999999",
+          "BackgroundColor": "#F1F8E9",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.624328130083815,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#1B5E20",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.869469697765064,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Secondary Text",
+          "BackgroundColor": "#F1F8E9",
+          "ForegroundColor": "#999999",
+          "ContrastRatio": 2.62
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 1,
+        "CompliancePercentage": 92.9,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 13
+      },
+      "ThemeName": "MTM_HighContrast",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#F0F0F0",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 18.427342383975944,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 21.0,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#000000",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 1.0,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 21.0,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FF0000",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.252,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FFFF00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 19.555999999999997,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.634942458389603,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.6383042000331915,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.348940632852082,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 21.0,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#F0F0F0",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 18.427342383975944,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 21.0,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 21.0,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Primary Buttons",
+          "BackgroundColor": "#000000",
+          "ForegroundColor": "#000000",
+          "ContrastRatio": 1.0
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_HighContrast.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 1,
+        "CompliancePercentage": 92.9,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 13
+      },
+      "ThemeName": "MTM_Indigo_Dark",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.197858156708772,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#3F51B5",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.872709743655375,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#5C6BC0",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.861905114952897,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#1A237E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 13.244141392344606,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#7986CB",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.4508893394361975,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.530800584587276,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.527516759217673,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8575547210333117,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#9FA8DA",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.876567968023996,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#C0C0C0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.850303228239603,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Transfer Operations",
+          "BackgroundColor": "#E67E00",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 2.86
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo_Dark.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 2,
+        "CompliancePercentage": 85.7,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 12
+      },
+      "ThemeName": "MTM_Indigo",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#1A237E",
+          "BackgroundColor": "#F3F4F6",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.034494000548097,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#3F51B5",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.055563348850343,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#5C6BC0",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.319294495364386,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#1A237E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 1.585606750781024,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#7986CB",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.085387833221843,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.634942458389603,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.6383042000331915,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.348940632852082,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#3F51B5",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.872709743655375,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#999999",
+          "BackgroundColor": "#F3F4F6",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.5888131523735654,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#1A237E",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 13.244141392344606,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Critical Alerts",
+          "BackgroundColor": "#1A237E",
+          "ForegroundColor": "#000000",
+          "ContrastRatio": 1.59
+        },
+        {
+          "Required": 4.5,
+          "Context": "Secondary Text",
+          "BackgroundColor": "#F3F4F6",
+          "ForegroundColor": "#999999",
+          "ContrastRatio": 2.59
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 3,
+        "CompliancePercentage": 78.6,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 11
+      },
+      "ThemeName": "MTM_Light_Dark",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.197858156708772,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#FFD700",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 1.4026017808936917,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#DAA520",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.2378527207782963,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#B8860B",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.2543302251255595,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#E65100",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.7895393189773623,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.530800584587276,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.527516759217673,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8575547210333117,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#FFF59D",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.15701667224578,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#C0C0C0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.850303228239603,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Primary Buttons",
+          "BackgroundColor": "#FFD700",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 1.4
+        },
+        {
+          "Required": 4.5,
+          "Context": "Secondary Buttons",
+          "BackgroundColor": "#DAA520",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 2.24
+        },
+        {
+          "Required": 4.5,
+          "Context": "Transfer Operations",
+          "BackgroundColor": "#E67E00",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 2.86
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light_Dark.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 1,
+        "CompliancePercentage": 92.9,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 13
+      },
+      "ThemeName": "MTM_Light",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#8C7300",
+          "BackgroundColor": "#FFF9D1",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.318219271078591,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#B8860B",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.45294071199851,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#DAA520",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.383995561913686,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#8C7300",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.567383300698562,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#BFA100",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.313220839128489,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.634942458389603,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.6383042000331915,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.348940632852082,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#B8860B",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.2543302251255595,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#999999",
+          "BackgroundColor": "#FFF9D1",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.6757746584864623,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#8C7300",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.597818623365405,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Secondary Text",
+          "BackgroundColor": "#FFF9D1",
+          "ForegroundColor": "#999999",
+          "ContrastRatio": 2.68
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 2,
+        "CompliancePercentage": 85.7,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 12
+      },
+      "ThemeName": "MTM_Orange",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E65100",
+          "BackgroundColor": "#FFFDF7",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.7255126975185204,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#FB8C00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.853079331352038,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E65100",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.541570685079214,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E65100",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.541570685079214,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E65100",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.541570685079214,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.634942458389603,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.6383042000331915,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.348940632852082,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#FB8C00",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.372056006053307,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#999999",
+          "BackgroundColor": "#FFFDF7",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8008916610921566,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E65100",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.7895393189773623,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#666666",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.74183648145415,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Interactive Links",
+          "BackgroundColor": "#FFFFFF",
+          "ForegroundColor": "#FB8C00",
+          "ContrastRatio": 2.37
+        },
+        {
+          "Required": 4.5,
+          "Context": "Secondary Text",
+          "BackgroundColor": "#FFFDF7",
+          "ForegroundColor": "#999999",
+          "ContrastRatio": 2.8
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Orange.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 2,
+        "CompliancePercentage": 85.7,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 12
+      },
+      "ThemeName": "MTM_Red_Dark",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.197858156708772,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#C62828",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.622022891421645,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#0078D4",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.528515190218159,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#B71C1C",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.570044137951514,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#EF5350",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.486469881361895,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.530800584587276,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.527516759217673,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8575547210333117,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#C62828",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.4154599219410615,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#C0C0C0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.850303228239603,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Transfer Operations",
+          "BackgroundColor": "#E67E00",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 2.86
+        },
+        {
+          "Required": 4.5,
+          "Context": "Interactive Links",
+          "BackgroundColor": "#2E2E2E",
+          "ForegroundColor": "#C62828",
+          "ContrastRatio": 2.42
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red_Dark.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 0,
+        "CompliancePercentage": 100.0,
+        "TotalTests": 14,
+        "MinimumCompliance": true,
+        "PassedTests": 14
+      },
+      "ThemeName": "MTM_Red",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#B71C1C",
+          "BackgroundColor": "#FAFAFA",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.294561269000858,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#424242",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.049743700462349,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#D32F2F",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.217430040424711,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#0078D4",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.637281563140419,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#C62828",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.7353102976586627,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#F44336",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.7027496015598365,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#F44336",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.7027496015598365,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E65100",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.541570685079214,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#D32F2F",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.979335708882375,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#757575",
+          "BackgroundColor": "#FAFAFA",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.414324216117912,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#B71C1C",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.570044137951514,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#424242",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.049743700462349,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 1,
+        "CompliancePercentage": 92.9,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 13
+      },
+      "ThemeName": "MTM_Rose_Dark",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.197858156708772,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#C2185B",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.8731622385495665,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#0078D4",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.528515190218159,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#880E4F",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.448538884389073,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#EC407A",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.7627935803758197,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.530800584587276,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.527516759217673,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8575547210333117,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#F8BBD9",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.472077742723773,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#C0C0C0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.850303228239603,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Transfer Operations",
+          "BackgroundColor": "#E67E00",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 2.86
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose_Dark.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 0,
+        "CompliancePercentage": 100.0,
+        "TotalTests": 14,
+        "MinimumCompliance": true,
+        "PassedTests": 14
+      },
+      "ThemeName": "MTM_Rose",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#880E4F",
+          "BackgroundColor": "#FAFAFA",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.052360328414425,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#424242",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.049743700462349,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#AD1457",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.014533650380038,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#0078D4",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.637281563140419,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#C2185B",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.5755865659836004,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#C2185B",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.5755865659836004,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.634942458389603,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.6383042000331915,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.348940632852082,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#AD1457",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.9662516447121305,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#757575",
+          "BackgroundColor": "#FAFAFA",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.414324216117912,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#880E4F",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.448538884389073,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#424242",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.049743700462349,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 2,
+        "CompliancePercentage": 85.7,
+        "TotalTests": 14,
+        "MinimumCompliance": false,
+        "PassedTests": 12
+      },
+      "ThemeName": "MTM_Teal_Dark",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 12.197858156708772,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#00695C",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 6.6138160256812535,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#0078D4",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.528515190218159,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#004D40",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.83337588062564,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#4DB6AC",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.4411658551561115,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.127363028214465,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.530800584587276,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.527516759217673,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#FFFFFFFF",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Non-Compliant",
+            "AALarge": false,
+            "Score": "FAIL",
+            "NonText": false,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 2.8575547210333117,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#80CBC4",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.27960933480357,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#C0C0C0",
+          "BackgroundColor": "#212121",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 8.850303228239603,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#E0E0E0",
+          "BackgroundColor": "#2E2E2E",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.287054283507794,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [
+        {
+          "Required": 4.5,
+          "Context": "Warning Messages",
+          "BackgroundColor": "#4DB6AC",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 2.44
+        },
+        {
+          "Required": 4.5,
+          "Context": "Transfer Operations",
+          "BackgroundColor": "#E67E00",
+          "ForegroundColor": "#FFFFFFFF",
+          "ContrastRatio": 2.86
+        }
+      ],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal_Dark.axaml"
+    },
+    {
+      "OverallCompliance": {
+        "FailedTests": 0,
+        "CompliancePercentage": 100.0,
+        "TotalTests": 14,
+        "MinimumCompliance": true,
+        "PassedTests": 14
+      },
+      "ThemeName": "MTM_Teal",
+      "TestResults": [
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#004D40",
+          "BackgroundColor": "#FAFAFA",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.421061055612979,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Page Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#424242",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.049743700462349,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Content Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#00796B",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.947256242746807,
+          "BackgroundBrush": "MTM_Shared_Logic.PrimaryAction",
+          "Context": "Primary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#0078D4",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.637281563140419,
+          "BackgroundBrush": "MTM_Shared_Logic.SecondaryAction",
+          "Context": "Secondary Buttons"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#00695C",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.1751714771710637,
+          "BackgroundBrush": "MTM_Shared_Logic.Critical",
+          "Context": "Critical Alerts"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#00695C",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 3.1751714771710637,
+          "BackgroundBrush": "MTM_Shared_Logic.Warning",
+          "Context": "Warning Messages"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#2E7D32",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.0956725483338685,
+          "BackgroundBrush": "MTM_Shared_Logic.SuccessBrush",
+          "Context": "Success Indicators"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#198754",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.634942458389603,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionInBrush",
+          "Context": "IN Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#DC3545",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 4.6383042000331915,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionOutBrush",
+          "Context": "OUT Transactions"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.OverlayTextBrush",
+          "ForegroundColor": "#000000",
+          "BackgroundColor": "#E67E00",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 7.348940632852082,
+          "BackgroundBrush": "MTM_Shared_Logic.TransactionTransferBrush",
+          "Context": "Transfer Operations"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.InteractiveText",
+          "ForegroundColor": "#00796B",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Standard",
+            "AALarge": true,
+            "Score": "AA",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": true
+          },
+          "ContrastRatio": 5.320151190738652,
+          "BackgroundBrush": "MTM_Shared_Logic.ContentAreas",
+          "Context": "Interactive Links"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.TertiaryTextBrush",
+          "ForegroundColor": "#757575",
+          "BackgroundColor": "#FAFAFA",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Limited",
+            "AALarge": true,
+            "Score": "AA Large/Non-Text",
+            "NonText": true,
+            "AAANormal": false,
+            "AANormal": false
+          },
+          "ContrastRatio": 4.414324216117912,
+          "BackgroundBrush": "MTM_Shared_Logic.MainBackground",
+          "Context": "Secondary Text"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.HeadingText",
+          "ForegroundColor": "#004D40",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 9.83337588062564,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Headers"
+        },
+        {
+          "ForegroundBrush": "MTM_Shared_Logic.BodyText",
+          "ForegroundColor": "#424242",
+          "BackgroundColor": "#FFFFFF",
+          "Issues": [],
+          "Compliance": {
+            "Level": "Enhanced",
+            "AALarge": true,
+            "Score": "AAA",
+            "NonText": true,
+            "AAANormal": true,
+            "AANormal": true
+          },
+          "ContrastRatio": 10.049743700462349,
+          "BackgroundBrush": "MTM_Shared_Logic.CardBackgroundBrush",
+          "Context": "Card Content"
+        }
+      ],
+      "CriticalFailures": [],
+      "ThemeFile": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal.axaml"
+    }
+  ]
+}

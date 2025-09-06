@@ -5,7 +5,7 @@
 # =============================================================================
 
 param(
-    [string]$ThemePath = "../Resources/Themes",
+    [string]$ThemePath = "./Resources/Themes",
     [string]$OutputPath = "wcag-validation-report.json",
     [switch]$VerboseOutput,
     [switch]$InteractiveMode,
@@ -67,6 +67,9 @@ function Convert-HexToRgb($HexColor) {
     if ($hex.Length -eq 3) {
         # Convert shorthand hex (e.g., #F0F) to full hex
         $hex = $hex[0] + $hex[0] + $hex[1] + $hex[1] + $hex[2] + $hex[2]
+    } elseif ($hex.Length -eq 8) {
+        # 8-character hex with alpha channel - take RGB portion only
+        $hex = $hex.Substring(0, 6)
     }
     
     if ($hex.Length -ne 6) {

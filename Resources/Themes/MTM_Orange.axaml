@@ -8,10 +8,10 @@
 	
 	<!-- Core MTM Amber Brand Colors -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#FB8C00"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#FFB74D"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#FFCC02"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#E65100"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#F57C00"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#FF9800"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#FFCC80"/>
 	
 	<!-- Extended Palette for Enhanced Visual Effects -->
@@ -22,32 +22,32 @@
 	<!-- Advanced Interactive State Colors -->
 	<!-- Overlay Text Brush for Universal Contrast -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.OverlayTextBrush" Color="#000000"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryHoverBrush" Color="#FFB74D"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryHoverBrush" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryHoverBrush" Color="#FFCC80"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.MagentaHoverBrush" Color="#FFCC02"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.MagentaHoverBrush" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryPressedBrush" Color="#F57C00"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryPressedBrush" Color="#FB8C00"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.MagentaPressedBrush" Color="#FF9800"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.MagentaPressedBrush" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryDisabledBrush" Color="#FFCC80"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryDisabledBrush" Color="#FFF8E1"/>
 	
 	<!-- Premium Gradient Brushes for Visual Excellence -->
 	<LinearGradientBrush x:Key="MTM_Shared_Logic.PrimaryGradientBrush" StartPoint="0,0" EndPoint="1,0">
 		<GradientStop Color="#FB8C00" Offset="0"/>
-		<GradientStop Color="#FFB74D" Offset="0.5"/>
-		<GradientStop Color="#FFCC02" Offset="1"/>
+		<GradientStop Color="#E65100" Offset="0.5"/>
+		<GradientStop Color="#E65100" Offset="1"/>
 	</LinearGradientBrush>
 	
 	<LinearGradientBrush x:Key="MTM_Shared_Logic.HeroGradientBrush" StartPoint="0,0" EndPoint="1,1">
 		<GradientStop Color="#E65100" Offset="0"/>
 		<GradientStop Color="#FB8C00" Offset="0.3"/>
-		<GradientStop Color="#FFB74D" Offset="0.7"/>
-		<GradientStop Color="#FFCC02" Offset="1"/>
+		<GradientStop Color="#E65100" Offset="0.7"/>
+		<GradientStop Color="#E65100" Offset="1"/>
 	</LinearGradientBrush>
 	
 	<LinearGradientBrush x:Key="MTM_Shared_Logic.SidebarGradientBrush" StartPoint="0,0" EndPoint="0,1">
 		<GradientStop Color="#E65100" Offset="0"/>
-		<GradientStop Color="#FF9800" Offset="0.6"/>
+		<GradientStop Color="#E65100" Offset="0.6"/>
 		<GradientStop Color="#FB8C00" Offset="1"/>
 	</LinearGradientBrush>
 	
@@ -58,7 +58,7 @@
 	</LinearGradientBrush>
 	
 	<RadialGradientBrush x:Key="MTM_Shared_Logic.AccentRadialBrush" Center="0.5,0.5" RadiusX="100%" RadiusY="100%">
-		<GradientStop Color="#FFCC02" Offset="0"/>
+		<GradientStop Color="#E65100" Offset="0"/>
 		<GradientStop Color="#FB8C00" Offset="0.7"/>
 		<GradientStop Color="#E65100" Offset="1"/>
 	</RadialGradientBrush>
@@ -90,18 +90,18 @@
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#FB8C00"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#F57C00"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.MutedTextBrush" Color="#CCCCCC"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.HighlightTextBrush" Color="#FF9800"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.HighlightTextBrush" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.PlaceholderTextBrush" Color="#AAAAAA"/>
 	
 	<!-- Enhanced Semantic Colors with Variants -->
-	<SolidColorBrush x:Key="MTM_Shared_Logic.SuccessBrush" Color="#4CAF50"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.SuccessBrush" Color="#2E7D32"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SuccessLightBrush" Color="#C8E6C9"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SuccessDarkBrush" Color="#2E7D32"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.WarningBrush" Color="#FF9800"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.WarningBrush" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.WarningLightBrush" Color="#FFE0B2"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.WarningDarkBrush" Color="#F57C00"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.ErrorBrush" Color="#F44336"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.ErrorLightBrush" Color="#FFCDD2"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.ErrorLightBrush" Color="#C62828"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.ErrorDarkBrush" Color="#D32F2F"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InfoBrush" Color="#2196F3"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InfoLightBrush" Color="#BBDEFB"/>
@@ -118,19 +118,20 @@
 	
 	<!-- Specialized Theme Colors -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized1" Color="#FB8C00"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized2" Color="#FFB74D"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized3" Color="#FFCC02"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized2" Color="#E65100"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized3" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized4" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.Specialized5" Color="#FFCC80"/>
 	
 	<!-- Advanced State Management Colors -->
 	<SolidColorBrush x:Key="MTM_Shared_Logic.FocusBrush" Color="#FB8C00"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.SelectionBrush" Color="#80FFC107"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.ActiveBrush" Color="#FFB74D"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.ActiveBrush" Color="#E65100"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.InactiveBrush" Color="#CCCCCC"/>
 	<SolidColorBrush x:Key="MTM_Shared_Logic.LoadingBrush" Color="#FFCC80"/>
-	<SolidColorBrush x:Key="MTM_Shared_Logic.ProcessingBrush" Color="#FFCC02"/>
+	<SolidColorBrush x:Key="MTM_Shared_Logic.ProcessingBrush" Color="#E65100"/>
 
 
 </ResourceDictionary>
+
 
