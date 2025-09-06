@@ -15,17 +15,17 @@ Implement the **MTM Theme Standardization EPIC** - a comprehensive theme system 
 
 **Load these instruction and context files immediately upon session start:**
 
-1. **Master EPIC Specification**: `#file:EPIC_Theme_Standardization.md`
+1. **Master EPIC Specification**: Load the file `EPIC_Theme_Standardization.md` from repository root
    - Contains complete project requirements, 7-phase implementation strategy
    - Includes session continuation protocol and progress tracking templates
    - 86+ files affected with specific completion criteria
 
-2. **Implementation Manual**: `#file:docs/development/MTM-Theme-Standardization-Implementation-Guide.md`
+2. **Implementation Manual**: Load `MTM-Theme-Standardization-Implementation-Guide.md` from `docs/development/` folder
    - Comprehensive How-to Guide following Diátaxis framework
    - Phase-by-phase procedures with specific refactoring examples
    - MTM_Shared_Logic integration patterns and WCAG compliance requirements
 
-3. **GitHub Copilot Instructions**: `#file:.github/copilot-instructions.md`
+3. **GitHub Copilot Instructions**: Load `copilot-instructions.md` from `.github/` folder
    - Complete development patterns for .NET 8 Avalonia MVVM application
    - AXAML syntax rules, database patterns, UI generation guidelines
    - Auto-includes all specialized instruction files
