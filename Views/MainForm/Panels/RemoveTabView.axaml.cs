@@ -6,11 +6,20 @@ using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
+/// <summary>
+/// Code-behind for RemoveTabView.
+/// Provides the remove inventory interface within the MTM WIP Application.
+/// Handles ViewModel event wiring, error handling, and UI lifecycle management.
+/// Contains more complex logic than typical MVVM pattern due to legacy requirements.
+/// </summary>
 public partial class RemoveTabView : UserControl
 {
     private readonly ILogger<RemoveTabView>? _logger;
     private RemoveItemViewModel? _viewModel;
 
+    /// <summary>
+    /// Initializes a new instance of the RemoveTabView class.
+    /// </summary>
     public RemoveTabView()
     {
         try
@@ -25,6 +34,10 @@ public partial class RemoveTabView : UserControl
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the RemoveTabView class with dependency injection.
+    /// </summary>
+    /// <param name="logger">Logger instance for diagnostics and error tracking</param>
     public RemoveTabView(ILogger<RemoveTabView> logger) : this()
     {
         _logger = logger;
