@@ -325,6 +325,11 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// </summary>
     public event EventHandler? AdvancedEntryRequested;
 
+    /// <summary>
+    /// Event fired when panel toggle is requested
+    /// </summary>
+    public event EventHandler? PanelToggleRequested;
+
     #endregion
 
     #region Constructors
@@ -551,15 +556,19 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
 
     /// <summary>
     /// Command to toggle panel visibility
-    /// Future implementation for collapsible UI sections
+    /// Raises an event to request panel visibility toggle from the parent MainViewViewModel
     /// </summary>
     [RelayCommand]
     private void TogglePanel()
     {
         try
         {
-            Logger.LogInformation("Toggling panel visibility");
-            // TODO: Implement panel toggle functionality
+            Logger.LogInformation("Toggling panel visibility - requesting panel toggle");
+            
+            // Raise event to request panel toggle from MainViewViewModel
+            PanelToggleRequested?.Invoke(this, EventArgs.Empty);
+            
+            Logger.LogDebug("Panel toggle event raised successfully");
         }
         catch (Exception ex)
         {

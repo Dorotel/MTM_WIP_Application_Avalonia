@@ -194,6 +194,7 @@ public partial class MainViewViewModel : BaseViewModel
         // Wire up events for inter-component communication
         InventoryTabViewModel.SaveCompleted += OnInventoryItemSaved;
         InventoryTabViewModel.AdvancedEntryRequested += (sender, e) => OnAdvancedEntryRequested();
+        InventoryTabViewModel.PanelToggleRequested += OnPanelToggleRequested;
         QuickButtonsViewModel.QuickActionExecuted += OnQuickActionExecuted;
         
         // Wire up RemoveTab events
@@ -823,6 +824,12 @@ public partial class MainViewViewModel : BaseViewModel
                 if (QuickButtonsViewModel != null)
                 {
                     QuickButtonsViewModel.QuickActionExecuted -= OnQuickActionExecuted;
+                }
+
+                if (InventoryTabViewModel != null)
+                {
+                    InventoryTabViewModel.SaveCompleted -= OnInventoryItemSaved;
+                    InventoryTabViewModel.PanelToggleRequested -= OnPanelToggleRequested;
                 }
 
                 if (RemoveItemViewModel != null)
