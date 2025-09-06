@@ -1,13 +1,13 @@
 {
-  "ScanDate": "2025-09-06 18:01:48",
-  "FileResults": [],
   "FilesWithIssues": 0,
   "TotalIssues": 0,
+  "FileResults": [],
   "Summary": {
-    "MediumPriorityFiles": [],
+    "LowPriorityFiles": [],
     "HighPriorityFiles": [],
-    "LowPriorityFiles": []
+    "MediumPriorityFiles": []
   },
+  "ScanDate": "2025-09-06 18:29:31",
   "ScanPath": "Views",
   "FilesScanned": 32
 }
