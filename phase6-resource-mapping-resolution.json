@@ -1,0 +1,448 @@
+{
+  "ViewIssues": [
+    {
+      "ViewName": "MainView",
+      "HardcodedColors": 3,
+      "StaticResources": 0,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Views/MainForm/Panels/MainView.axaml"
+    },
+    {
+      "ViewName": "ThemeBuilderView",
+      "HardcodedColors": 4,
+      "StaticResources": 0,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Views/SettingsForm/ThemeBuilderView.axaml"
+    }
+  ],
+  "Summary": {
+    "TotalIssuesFound": 79,
+    "ViewsWithIssues": 2,
+    "ViewsFixed": 2,
+    "TotalResourcesAdded": 77.0,
+    "ThemesWithIssues": 19,
+    "ThemesFixed": 19
+  },
+  "ThemeIssues": [
+    {
+      "ThemeName": "MTM_Amber",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Amber.axaml"
+    },
+    {
+      "ThemeName": "MTM_Blue_Dark",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue_Dark.axaml"
+    },
+    {
+      "ThemeName": "MTM_Dark",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Dark.axaml"
+    },
+    {
+      "ThemeName": "MTM_Emerald",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Emerald.axaml"
+    },
+    {
+      "ThemeName": "MTM_Green_Dark",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green_Dark.axaml"
+    },
+    {
+      "ThemeName": "MTM_Green",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml"
+    },
+    {
+      "ThemeName": "MTM_HighContrast",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_HighContrast.axaml"
+    },
+    {
+      "ThemeName": "MTM_Indigo_Dark",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo_Dark.axaml"
+    },
+    {
+      "ThemeName": "MTM_Indigo",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo.axaml"
+    },
+    {
+      "ThemeName": "MTM_Light_Dark",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light_Dark.axaml"
+    },
+    {
+      "ThemeName": "MTM_Light",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml"
+    },
+    {
+      "ThemeName": "MTM_Orange",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Orange.axaml"
+    },
+    {
+      "ThemeName": "MTM_Red_Dark",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red_Dark.axaml"
+    },
+    {
+      "ThemeName": "MTM_Red",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red.axaml"
+    },
+    {
+      "ThemeName": "MTM_Rose_Dark",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose_Dark.axaml"
+    },
+    {
+      "ThemeName": "MTM_Rose",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose.axaml"
+    },
+    {
+      "ThemeName": "MTM_Teal_Dark",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal_Dark.axaml"
+    },
+    {
+      "ThemeName": "MTM_Teal",
+      "MissingResources": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 3,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal.axaml"
+    },
+    {
+      "ThemeName": "MTMComponents",
+      "MissingResources": [
+        "SecondaryAction",
+        "Warning",
+        "Critical",
+        "Status",
+        "Highlight",
+        "MainBackground",
+        "ContentAreas",
+        "BorderBrush",
+        "TertiaryTextBrush",
+        "InteractiveText",
+        "TransactionInBrush",
+        "TransactionOutBrush",
+        "TransactionTransferBrush",
+        "SuccessBrush",
+        "WarningBrush",
+        "ErrorBrush",
+        "InfoBrush",
+        "PrimaryHoverBrush",
+        "SecondaryHoverBrush",
+        "PrimaryPressedBrush",
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "MissingCount": 23,
+      "FilePath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml"
+    }
+  ],
+  "FixResults": [
+    {
+      "ThemeName": "MTM_Amber",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Amber.axaml.resource-fix-backup.20250906-201440"
+    },
+    {
+      "ThemeName": "MTM_Blue_Dark",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue_Dark.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Dark",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Dark.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Emerald",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Emerald.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Green_Dark",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green_Dark.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Green",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_HighContrast",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_HighContrast.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Indigo_Dark",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo_Dark.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Indigo",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Indigo.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Light_Dark",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light_Dark.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Light",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Light.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Orange",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Orange.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Red_Dark",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red_Dark.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Red",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Rose_Dark",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose_Dark.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Rose",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Rose.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Teal_Dark",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal_Dark.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTM_Teal",
+      "ResourcesAdded": [
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 3,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Teal.axaml.resource-fix-backup.20250906-201456"
+    },
+    {
+      "ThemeName": "MTMComponents",
+      "ResourcesAdded": [
+        "SecondaryAction",
+        "Warning",
+        "Critical",
+        "Status",
+        "Highlight",
+        "MainBackground",
+        "ContentAreas",
+        "BorderBrush",
+        "TertiaryTextBrush",
+        "InteractiveText",
+        "TransactionInBrush",
+        "TransactionOutBrush",
+        "TransactionTransferBrush",
+        "SuccessBrush",
+        "WarningBrush",
+        "ErrorBrush",
+        "InfoBrush",
+        "PrimaryHoverBrush",
+        "SecondaryHoverBrush",
+        "PrimaryPressedBrush",
+        "InputBackground",
+        "InputBorder",
+        "InputFocusBorder"
+      ],
+      "FixCount": 23,
+      "BackupPath": "/home/runner/work/MTM_WIP_Application_Avalonia/MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml.resource-fix-backup.20250906-201456"
+    }
+  ]
+}
