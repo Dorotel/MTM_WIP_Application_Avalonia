@@ -417,7 +417,7 @@
                   <DataGridTextColumn Header="Operation" Binding="{Binding Operation}" Width="80" />
                   <DataGridTextColumn Header="Available Qty" Binding="{Binding Quantity}" Width="100" />
                   <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*" />
-                  <DataGridTextColumn Header="Last Updated" Binding="{Binding LastUpdated, StringFormat='{0:MM/dd/yy HH:mm}'}" Width="120" />
+                  <DataGridTextColumn Header="Last Updated" Binding="{Binding LastUpdated, StringFormat='MM/dd/yy HH:mm'}" Width="120" />
                 </DataGrid.Columns>
               </DataGrid>
               
