@@ -1445,6 +1445,67 @@ public partial class ThemeEditorViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
+    private async Task ApplyOptimizedManufacturingThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Applying optimized manufacturing theme...";
+            Logger.LogDebug("Applying high-contrast manufacturing theme optimized for industrial displays");
+
+            // Take snapshot for undo functionality
+            SaveColorSnapshot("Before Manufacturing Theme");
+
+            // High-contrast colors specifically designed for manufacturing environments
+            // These colors provide maximum readability in harsh lighting conditions
+            PrimaryActionColor = Color.Parse("#0066CC");     // Strong blue for reliability
+            SecondaryActionColor = Color.Parse("#004499");   // Darker blue for secondary actions
+            AccentColor = Color.Parse("#FF6600");            // Safety orange for attention
+            HighlightColor = Color.Parse("#FFCC00");         // Warning yellow for alerts
+
+            // High contrast text colors for industrial displays
+            HeadingTextColor = Color.Parse("#000000");       // Pure black for maximum contrast
+            BodyTextColor = Color.Parse("#2C2C2C");          // Very dark gray
+            InteractiveTextColor = Color.Parse("#0066CC");   // Matching primary blue
+            OverlayTextColor = Color.Parse("#FFFFFF");       // Pure white
+            TertiaryTextColor = Color.Parse("#666666");      // Medium gray
+
+            // Industrial-grade background colors
+            MainBackgroundColor = Color.Parse("#F5F5F5");    // Light gray background
+            CardBackgroundColor = Color.Parse("#FFFFFF");    // Pure white cards
+            HoverBackgroundColor = Color.Parse("#E6E6E6");   // Light hover state
+            PanelBackgroundColor = Color.Parse("#F0F0F0");   // Panel background
+            SidebarBackgroundColor = Color.Parse("#E8E8E8"); // Sidebar background
+
+            // Manufacturing status colors (safety-oriented)
+            SuccessColor = Color.Parse("#00AA00");           // Green for success/safe
+            WarningColor = Color.Parse("#FF9900");           // Orange for warnings
+            ErrorColor = Color.Parse("#CC0000");             // Red for errors/danger
+            InfoColor = Color.Parse("#0077CC");              // Blue for information
+
+            // High contrast borders
+            BorderColor = Color.Parse("#CCCCCC");            // Light gray borders
+            BorderAccentColor = Color.Parse("#666666");      // Darker accent borders
+
+            HasUnsavedChanges = true;
+            StatusMessage = "✅ Manufacturing theme applied - optimized for industrial displays";
+            Logger.LogInformation("Successfully applied manufacturing-optimized theme");
+
+            await Task.Delay(100); // Brief pause for user feedback
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying optimized manufacturing theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply manufacturing theme", Environment.UserName);
+            StatusMessage = "❌ Failed to apply manufacturing theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
     /// <summary>
     /// Validates contrast ratios between text and background colors
     /// </summary>
@@ -2156,58 +2217,6 @@ public partial class ThemeEditorViewModel : BaseViewModel
         }
         
         return palette;
-    }
-
-    /// <summary>
-    /// Creates an optimized theme for manufacturing environments
-    /// </summary>
-    private async Task ApplyOptimizedManufacturingThemeAsync()
-    {
-        try
-        {
-            Logger.LogDebug("Applying optimized manufacturing theme");
-            
-            // High-contrast colors for industrial environments
-            PrimaryActionColor = Color.Parse("#0066CC");    // Strong blue for reliability
-            SecondaryActionColor = Color.Parse("#004499");  // Darker blue for depth
-            AccentColor = Color.Parse("#FF6600");           // Safety orange for attention
-            HighlightColor = Color.Parse("#FFCC00");        // Warning yellow for alerts
-            
-            // Text optimized for industrial displays
-            HeadingTextColor = Color.Parse("#1A1A1A");      // Near-black for readability
-            BodyTextColor = Color.Parse("#333333");         // Dark gray for body text
-            InteractiveTextColor = Color.Parse("#0066CC");  // Matching primary for links
-            OverlayTextColor = Color.Parse("#FFFFFF");      // Pure white for overlays
-            TertiaryTextColor = Color.Parse("#666666");     // Medium gray for secondary info
-            
-            // Backgrounds suitable for long working sessions
-            MainBackgroundColor = Color.Parse("#F5F5F5");   // Light neutral background
-            CardBackgroundColor = Color.Parse("#FFFFFF");   // Pure white for content cards
-            HoverBackgroundColor = Color.Parse("#E6F2FF");  // Light blue hover state
-            PanelBackgroundColor = Color.Parse("#FAFAFA");  // Very light gray for panels
-            SidebarBackgroundColor = Color.Parse("#F0F0F0"); // Slightly darker sidebar
-            
-            // Clear status indicators
-            SuccessColor = Color.Parse("#00AA00");          // Strong green for success
-            WarningColor = Color.Parse("#FF8800");          // Orange for warnings  
-            ErrorColor = Color.Parse("#CC0000");            // Strong red for errors
-            InfoColor = Color.Parse("#0088CC");             // Information blue
-            
-            // Professional borders
-            BorderColor = Color.Parse("#CCCCCC");           // Light gray borders
-            BorderAccentColor = Color.Parse("#0066CC");     // Blue accent borders
-            
-            CurrentThemeName = "Optimized Manufacturing Theme";
-            HasUnsavedChanges = true;
-            StatusMessage = "Manufacturing-optimized theme applied - designed for industrial displays";
-            
-            await Task.Delay(100); // Brief pause for visual feedback
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error applying optimized manufacturing theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply manufacturing theme", Environment.UserName);
-        }
     }
 
     #region Advanced Feature Helper Methods

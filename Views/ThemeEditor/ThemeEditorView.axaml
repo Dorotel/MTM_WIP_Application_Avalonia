@@ -3,12 +3,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="800"
              x:Class="MTM_WIP_Application_Avalonia.Views.ThemeEditorView"
              x:Name="ThemeEditorViewRoot"
              x:DataType="vm:ThemeEditorViewModel">
+
+    <UserControl.Resources>
+        <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
+    </UserControl.Resources>
 
     <!-- Comprehensive Theme Editor with Color Palette Management -->
     <Grid RowDefinitions="Auto,*,Auto">
@@ -238,7 +243,7 @@
                                                 Text="{Binding PrimaryActionColor, FallbackValue='#0078D4'}" 
                                                 Watermark="Enter hex color (e.g., #0078D4)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding PrimaryActionColor, FallbackValue=#0078D4}" 
+                                               Background="{Binding PrimaryActionColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -255,7 +260,7 @@
                                                 Text="{Binding SecondaryActionColor, FallbackValue='#106EBE'}" 
                                                 Watermark="Enter hex color (e.g., #106EBE)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding SecondaryActionColor, FallbackValue=#106EBE}" 
+                                               Background="{Binding SecondaryActionColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -272,7 +277,7 @@
                                                 Text="{Binding AccentColor, FallbackValue='#40A2E8'}" 
                                                 Watermark="Enter hex color (e.g., #40A2E8)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding AccentColor, FallbackValue=#40A2E8}" 
+                                               Background="{Binding AccentColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -289,7 +294,7 @@
                                                 Text="{Binding HighlightColor, FallbackValue='#005A9E'}" 
                                                 Watermark="Enter hex color (e.g., #005A9E)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding HighlightColor, FallbackValue=#005A9E}" 
+                                               Background="{Binding HighlightColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -320,7 +325,7 @@
                                                 Text="{Binding MainBackgroundColor, FallbackValue='#FFFFFF'}" 
                                                 Watermark="Enter hex color (e.g., #FFFFFF)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding MainBackgroundColor, FallbackValue=#FFFFFF}" 
+                                               Background="{Binding MainBackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -337,7 +342,7 @@
                                                 Text="{Binding CardBackgroundColor, FallbackValue='#FAFAFA'}" 
                                                 Watermark="Enter hex color (e.g., #FAFAFA)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding CardBackgroundColor, FallbackValue=#FAFAFA}" 
+                                               Background="{Binding CardBackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -354,7 +359,7 @@
                                                 Text="{Binding HoverBackgroundColor, FallbackValue='#F0F0F0'}" 
                                                 Watermark="Enter hex color (e.g., #F0F0F0)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding HoverBackgroundColor, FallbackValue=#F0F0F0}" 
+                                               Background="{Binding HoverBackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -396,7 +401,7 @@
                                                 Text="{Binding HeadingTextColor, FallbackValue='#1F2937'}" 
                                                 Watermark="Enter hex color (e.g., #1F2937)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding HeadingTextColor, FallbackValue=#1F2937}" 
+                                               Background="{Binding HeadingTextColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -413,7 +418,7 @@
                                                 Text="{Binding BodyTextColor, FallbackValue='#4B5563'}" 
                                                 Watermark="Enter hex color (e.g., #4B5563)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding BodyTextColor, FallbackValue=#4B5563}" 
+                                               Background="{Binding BodyTextColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -430,7 +435,7 @@
                                                 Text="{Binding OverlayTextColor, FallbackValue='#FFFFFF'}" 
                                                 Watermark="Enter hex color (e.g., #FFFFFF)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding OverlayTextColor, FallbackValue=#FFFFFF}" 
+                                               Background="{Binding OverlayTextColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -461,7 +466,7 @@
                                                 Text="{Binding BorderColor, FallbackValue='#E5E7EB'}" 
                                                 Watermark="Enter hex color (e.g., #E5E7EB)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding BorderColor, FallbackValue=#E5E7EB}" 
+                                               Background="{Binding BorderColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -478,7 +483,7 @@
                                                 Text="{Binding BorderAccentColor, FallbackValue='#D1D5DB'}" 
                                                 Watermark="Enter hex color (e.g., #D1D5DB)" />
                                         <Border Grid.Column="2" 
-                                               Background="{Binding BorderAccentColor, FallbackValue=#D1D5DB}" 
+                                               Background="{Binding BorderAccentColor, Converter={StaticResource ColorToBrushConverter}}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -782,7 +787,7 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Border Background="{Binding .}" 
+                                                    <Border Background="{Binding ., Converter={StaticResource ColorToBrushConverter}}" 
                                                            Width="24" 
                                                            Height="24" 
                                                            CornerRadius="3"
