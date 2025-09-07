@@ -123,10 +123,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     #region Border Colors
 
     [ObservableProperty]
-    private Color borderLightColor = Color.Parse("#E9ECEF");
-
-    [ObservableProperty]
-    private Color borderStandardColor = Color.Parse("#DEE2E6");
+    private Color borderColor = Color.Parse("#E5E7EB");
 
     [ObservableProperty]
     private Color borderAccentColor = Color.Parse("#CED4DA");
@@ -302,8 +299,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogDebug("Auto-filling border colors");
 
             // Generate subtle border variations
-            var baseColor = BlendColor(BorderStandardColor, MainBackgroundColor, 0.5f);
-            BorderLightColor = LightenColor(baseColor, 0.1f);
+            var baseColor = BlendColor(BorderColor, MainBackgroundColor, 0.5f);
             BorderAccentColor = DarkenColor(baseColor, 0.1f);
 
             HasUnsavedChanges = true;
@@ -372,7 +368,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task CloseEditorAsync()
+    private async Task CloseAsync()
     {
         try
         {
@@ -452,8 +448,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         ErrorColor = Color.Parse("#F44336");
         InfoColor = Color.Parse("#2196F3");
 
-        BorderLightColor = Color.Parse("#E9ECEF");
-        BorderStandardColor = Color.Parse("#DEE2E6");
+        BorderColor = Color.Parse("#E5E7EB");
         BorderAccentColor = Color.Parse("#CED4DA");
     }
 
