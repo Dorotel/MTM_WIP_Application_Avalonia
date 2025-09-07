@@ -487,6 +487,141 @@
                                 </StackPanel>
                             </Border>
 
+                            <!-- Advanced Features Section -->
+                            <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" 
+                                    BorderThickness="1" 
+                                    CornerRadius="8" 
+                                    Padding="16">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="🚀 Advanced Features" 
+                                              FontSize="16" 
+                                              FontWeight="Bold" 
+                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                    
+                                    <!-- Auto-Fill Algorithms -->
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="🎨 Advanced Auto-Fill Algorithms" 
+                                                  FontWeight="SemiBold" 
+                                                  FontSize="14"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                        
+                                        <WrapPanel Orientation="Horizontal">
+                                            <Button Content="🎯 Monochromatic" 
+                                                   Classes="mtm-tertiary" 
+                                                   Command="{Binding AutoFillMonochromaticCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="8,4"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="Generate tints and shades of primary color" />
+                                            
+                                            <Button Content="🔄 Complementary" 
+                                                   Classes="mtm-tertiary" 
+                                                   Command="{Binding AutoFillComplementaryCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="8,4"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="Use opposite colors for high contrast" />
+                                            
+                                            <Button Content="🌈 Analogous" 
+                                                   Classes="mtm-tertiary" 
+                                                   Command="{Binding AutoFillAnalogousCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="8,4"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="Adjacent colors for harmony" />
+                                            
+                                            <Button Content="🔺 Triadic" 
+                                                   Classes="mtm-tertiary" 
+                                                   Command="{Binding AutoFillTriadicCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="8,4"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="Three evenly-spaced colors" />
+                                            
+                                            <Button Content="♿ Accessibility-First" 
+                                                   Classes="mtm-tertiary" 
+                                                   Command="{Binding AutoFillAccessibilityFirstCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="8,4"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="WCAG AAA compliant palette" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                    
+                                    <!-- Industry Templates -->
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="🏭 Industry Theme Templates" 
+                                                  FontWeight="SemiBold" 
+                                                  FontSize="14"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                        
+                                        <WrapPanel Orientation="Horizontal">
+                                            <Button Content="🏭 Manufacturing" 
+                                                   Classes="mtm-tertiary" 
+                                                   Command="{Binding LoadIndustryTemplateCommand}" 
+                                                   CommandParameter="Manufacturing"
+                                                   FontSize="11" 
+                                                   Padding="8,4"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="Industrial blue color scheme" />
+                                            
+                                            <Button Content="🏥 Healthcare" 
+                                                   Classes="mtm-tertiary" 
+                                                   Command="{Binding LoadIndustryTemplateCommand}" 
+                                                   CommandParameter="Healthcare"
+                                                   FontSize="11" 
+                                                   Padding="8,4"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="Calming teal color scheme" />
+                                            
+                                            <Button Content="🏢 Office" 
+                                                   Classes="mtm-tertiary" 
+                                                   Command="{Binding LoadIndustryTemplateCommand}" 
+                                                   CommandParameter="Office"
+                                                   FontSize="11" 
+                                                   Padding="8,4"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="Professional business colors" />
+                                            
+                                            <Button Content="🔳 High Contrast" 
+                                                   Classes="mtm-tertiary" 
+                                                   Command="{Binding LoadIndustryTemplateCommand}" 
+                                                   CommandParameter="HighContrast"
+                                                   FontSize="11" 
+                                                   Padding="8,4"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="Maximum accessibility contrast" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                    
+                                    <!-- Import/Export -->
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="💾 Theme Management" 
+                                                  FontWeight="SemiBold" 
+                                                  FontSize="14"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                        
+                                        <WrapPanel Orientation="Horizontal">
+                                            <Button Content="📁 Export Theme" 
+                                                   Classes="mtm-secondary" 
+                                                   Command="{Binding ExportThemeCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="12,6"
+                                                   Margin="0,0,8,0"
+                                                   ToolTip.Tip="Save theme to file for sharing" />
+                                            
+                                            <Button Content="📂 Import Theme" 
+                                                   Classes="mtm-secondary" 
+                                                   Command="{Binding ImportThemeCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="12,6"
+                                                   ToolTip.Tip="Load theme from file" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
@@ -526,6 +661,20 @@
                 
                 <!-- Action Buttons -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                    
+                    <Button Content="📁 Export" 
+                           Classes="mtm-secondary" 
+                           Command="{Binding ExportThemeCommand}" 
+                           MinWidth="80" 
+                           Height="32" 
+                           ToolTip.Tip="Export theme to file" />
+                    
+                    <Button Content="📂 Import" 
+                           Classes="mtm-secondary" 
+                           Command="{Binding ImportThemeCommand}" 
+                           MinWidth="80" 
+                           Height="32" 
+                           ToolTip.Tip="Import theme from file" />
                     
                     <Button Content="👀 Preview" 
                            Classes="mtm-secondary" 

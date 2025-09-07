@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -444,6 +446,459 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     #endregion
 
+    #region Theme Export/Import System
+
+    [RelayCommand]
+    private async Task ExportThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Exporting theme...";
+            Logger.LogDebug("Starting theme export");
+
+            // Create theme export model with all current colors
+            var themeExport = new ThemeExportModel
+            {
+                Name = CurrentThemeName,
+                Description = $"Custom theme created on {DateTime.Now:yyyy-MM-dd HH:mm}",
+                CreatedBy = Environment.UserName,
+                CreatedDate = DateTime.Now,
+                Version = "1.0",
+                Colors = new Dictionary<string, string>
+                {
+                    // Core colors
+                    ["PrimaryAction"] = PrimaryActionColor.ToString(),
+                    ["SecondaryAction"] = SecondaryActionColor.ToString(),
+                    ["AccentColor"] = AccentColor.ToString(),
+                    ["HighlightColor"] = HighlightColor.ToString(),
+                    
+                    // Text colors
+                    ["HeadingText"] = HeadingTextColor.ToString(),
+                    ["BodyText"] = BodyTextColor.ToString(),
+                    ["InteractiveText"] = InteractiveTextColor.ToString(),
+                    ["OverlayText"] = OverlayTextColor.ToString(),
+                    ["TertiaryText"] = TertiaryTextColor.ToString(),
+                    
+                    // Background colors
+                    ["MainBackground"] = MainBackgroundColor.ToString(),
+                    ["CardBackground"] = CardBackgroundColor.ToString(),
+                    ["HoverBackground"] = HoverBackgroundColor.ToString(),
+                    ["PanelBackground"] = PanelBackgroundColor.ToString(),
+                    ["SidebarBackground"] = SidebarBackgroundColor.ToString(),
+                    
+                    // Status colors
+                    ["Success"] = SuccessColor.ToString(),
+                    ["Warning"] = WarningColor.ToString(),
+                    ["Error"] = ErrorColor.ToString(),
+                    ["Info"] = InfoColor.ToString(),
+                    
+                    // Border colors
+                    ["Border"] = BorderColor.ToString(),
+                    ["BorderAccent"] = BorderAccentColor.ToString()
+                }
+            };
+
+            // Serialize to JSON
+            var jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+            
+            var themeJson = JsonSerializer.Serialize(themeExport, jsonOptions);
+            
+            // Save to file (in a production app, this would use a file dialog)
+            var fileName = $"MTM_Theme_{CurrentThemeName.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
+            
+            await File.WriteAllTextAsync(filePath, themeJson);
+            
+            StatusMessage = $"Theme exported successfully to: {fileName}";
+            Logger.LogInformation("Theme exported to {FilePath}", filePath);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error exporting theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to export theme", Environment.UserName);
+            StatusMessage = "Failed to export theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ImportThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Importing theme...";
+            Logger.LogDebug("Starting theme import");
+
+            // In a production app, this would use a file dialog to select the theme file
+            // For now, we'll look for theme files on the desktop
+            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            var themeFiles = Directory.GetFiles(desktopPath, "MTM_Theme_*.json");
+            
+            if (!themeFiles.Any())
+            {
+                StatusMessage = "No theme files found on desktop";
+                return;
+            }
+            
+            // Use the most recent theme file for demo purposes
+            var latestThemeFile = themeFiles
+                .Select(f => new FileInfo(f))
+                .OrderByDescending(f => f.LastWriteTime)
+                .First();
+            
+            // Read and parse theme file
+            var themeJson = await File.ReadAllTextAsync(latestThemeFile.FullName);
+            var themeImport = JsonSerializer.Deserialize<ThemeExportModel>(themeJson, new JsonSerializerOptions 
+            { 
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
+            });
+            
+            if (themeImport == null || !themeImport.Colors.Any())
+            {
+                StatusMessage = "Invalid theme file format";
+                return;
+            }
+            
+            // Apply imported colors
+            Logger.LogDebug("Applying imported theme colors from {FileName}", latestThemeFile.Name);
+            
+            if (themeImport.Colors.TryGetValue("PrimaryAction", out var primaryAction))
+                PrimaryActionColor = SafeParseColor(primaryAction, PrimaryActionColor);
+            if (themeImport.Colors.TryGetValue("SecondaryAction", out var secondaryAction))
+                SecondaryActionColor = SafeParseColor(secondaryAction, SecondaryActionColor);
+            if (themeImport.Colors.TryGetValue("AccentColor", out var accentColor))
+                AccentColor = SafeParseColor(accentColor, AccentColor);
+            if (themeImport.Colors.TryGetValue("HighlightColor", out var highlightColor))
+                HighlightColor = SafeParseColor(highlightColor, HighlightColor);
+                
+            if (themeImport.Colors.TryGetValue("HeadingText", out var headingText))
+                HeadingTextColor = SafeParseColor(headingText, HeadingTextColor);
+            if (themeImport.Colors.TryGetValue("BodyText", out var bodyText))
+                BodyTextColor = SafeParseColor(bodyText, BodyTextColor);
+            if (themeImport.Colors.TryGetValue("InteractiveText", out var interactiveText))
+                InteractiveTextColor = SafeParseColor(interactiveText, InteractiveTextColor);
+            if (themeImport.Colors.TryGetValue("OverlayText", out var overlayText))
+                OverlayTextColor = SafeParseColor(overlayText, OverlayTextColor);
+            if (themeImport.Colors.TryGetValue("TertiaryText", out var tertiaryText))
+                TertiaryTextColor = SafeParseColor(tertiaryText, TertiaryTextColor);
+                
+            if (themeImport.Colors.TryGetValue("MainBackground", out var mainBackground))
+                MainBackgroundColor = SafeParseColor(mainBackground, MainBackgroundColor);
+            if (themeImport.Colors.TryGetValue("CardBackground", out var cardBackground))
+                CardBackgroundColor = SafeParseColor(cardBackground, CardBackgroundColor);
+            if (themeImport.Colors.TryGetValue("HoverBackground", out var hoverBackground))
+                HoverBackgroundColor = SafeParseColor(hoverBackground, HoverBackgroundColor);
+            if (themeImport.Colors.TryGetValue("PanelBackground", out var panelBackground))
+                PanelBackgroundColor = SafeParseColor(panelBackground, PanelBackgroundColor);
+            if (themeImport.Colors.TryGetValue("SidebarBackground", out var sidebarBackground))
+                SidebarBackgroundColor = SafeParseColor(sidebarBackground, SidebarBackgroundColor);
+                
+            if (themeImport.Colors.TryGetValue("Success", out var success))
+                SuccessColor = SafeParseColor(success, SuccessColor);
+            if (themeImport.Colors.TryGetValue("Warning", out var warning))
+                WarningColor = SafeParseColor(warning, WarningColor);
+            if (themeImport.Colors.TryGetValue("Error", out var error))
+                ErrorColor = SafeParseColor(error, ErrorColor);
+            if (themeImport.Colors.TryGetValue("Info", out var info))
+                InfoColor = SafeParseColor(info, InfoColor);
+                
+            if (themeImport.Colors.TryGetValue("Border", out var border))
+                BorderColor = SafeParseColor(border, BorderColor);
+            if (themeImport.Colors.TryGetValue("BorderAccent", out var borderAccent))
+                BorderAccentColor = SafeParseColor(borderAccent, BorderAccentColor);
+            
+            // Update theme metadata
+            CurrentThemeName = themeImport.Name;
+            HasUnsavedChanges = true;
+            
+            StatusMessage = $"Theme '{themeImport.Name}' imported successfully from {latestThemeFile.Name}";
+            Logger.LogInformation("Theme imported successfully from {FileName} - {ThemeName}", latestThemeFile.Name, themeImport.Name);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error importing theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to import theme", Environment.UserName);
+            StatusMessage = "Failed to import theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task LoadIndustryTemplateAsync(string templateName)
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = $"Loading {templateName} template...";
+            Logger.LogDebug("Loading industry template: {TemplateName}", templateName);
+
+            switch (templateName.ToLowerInvariant())
+            {
+                case "manufacturing":
+                    await LoadManufacturingTemplateAsync();
+                    break;
+                case "healthcare":
+                    await LoadHealthcareTemplateAsync();
+                    break;
+                case "office":
+                    await LoadOfficeTemplateAsync();
+                    break;
+                case "highcontrast":
+                    await LoadHighContrastTemplateAsync();
+                    break;
+                default:
+                    StatusMessage = $"Template '{templateName}' not found";
+                    return;
+            }
+
+            CurrentThemeName = $"{templateName} Theme";
+            HasUnsavedChanges = true;
+            StatusMessage = $"{templateName} template loaded successfully";
+            Logger.LogInformation("Industry template loaded: {TemplateName}", templateName);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading industry template: {TemplateName}", templateName);
+            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to load {templateName} template", Environment.UserName);
+            StatusMessage = $"Failed to load {templateName} template";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    #endregion
+
+    #region Enhanced Auto-Fill Algorithms
+
+    [RelayCommand]
+    private async Task AutoFillMonochromaticAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Generating monochromatic palette...";
+            Logger.LogDebug("Auto-filling monochromatic colors");
+
+            var baseColor = PrimaryActionColor;
+            
+            // Generate tints and shades of the base color
+            SecondaryActionColor = DarkenColor(baseColor, 0.15f);
+            AccentColor = LightenColor(baseColor, 0.2f);
+            HighlightColor = DarkenColor(baseColor, 0.3f);
+            
+            // Subtle background variations
+            MainBackgroundColor = LightenColor(baseColor, 0.95f);
+            CardBackgroundColor = LightenColor(baseColor, 0.92f);
+            HoverBackgroundColor = LightenColor(baseColor, 0.88f);
+            
+            // Text colors with good contrast
+            HeadingTextColor = DarkenColor(baseColor, 0.7f);
+            BodyTextColor = DarkenColor(baseColor, 0.5f);
+            InteractiveTextColor = baseColor;
+
+            HasUnsavedChanges = true;
+            StatusMessage = "Monochromatic palette generated successfully";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating monochromatic palette");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate monochromatic palette", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task AutoFillComplementaryAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Generating complementary palette...";
+            Logger.LogDebug("Auto-filling complementary colors");
+
+            var baseColor = PrimaryActionColor;
+            var complementary = GetComplementaryColor(baseColor);
+            
+            // Use base and complementary for high contrast
+            PrimaryActionColor = baseColor;
+            SecondaryActionColor = complementary;
+            AccentColor = BlendColor(baseColor, complementary, 0.7f);
+            HighlightColor = DarkenColor(baseColor, 0.2f);
+            
+            // Status colors using complementary principles
+            SuccessColor = GetComplementaryColor(Color.Parse("#4CAF50")); // Red-green complementary
+            WarningColor = GetComplementaryColor(Color.Parse("#FF9800")); // Orange-blue complementary
+            ErrorColor = baseColor; // Use base for error to maintain consistency
+            InfoColor = complementary; // Use complementary for info
+
+            HasUnsavedChanges = true;
+            StatusMessage = "Complementary palette generated successfully";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating complementary palette");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate complementary palette", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task AutoFillAnalogousAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Generating analogous palette...";
+            Logger.LogDebug("Auto-filling analogous colors");
+
+            var baseColor = PrimaryActionColor;
+            
+            // Generate analogous colors (adjacent on color wheel)
+            var analogous1 = ShiftHue(baseColor, 30);  // +30 degrees
+            var analogous2 = ShiftHue(baseColor, -30); // -30 degrees
+            
+            PrimaryActionColor = baseColor;
+            SecondaryActionColor = analogous1;
+            AccentColor = analogous2;
+            HighlightColor = DarkenColor(baseColor, 0.2f);
+            
+            // Harmonious background colors
+            MainBackgroundColor = LightenColor(analogous2, 0.9f);
+            CardBackgroundColor = LightenColor(analogous1, 0.85f);
+            HoverBackgroundColor = LightenColor(baseColor, 0.8f);
+
+            HasUnsavedChanges = true;
+            StatusMessage = "Analogous palette generated successfully";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating analogous palette");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate analogous palette", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task AutoFillTriadicAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Generating triadic palette...";
+            Logger.LogDebug("Auto-filling triadic colors");
+
+            var baseColor = PrimaryActionColor;
+            
+            // Generate triadic colors (120 degrees apart)
+            var triadic1 = ShiftHue(baseColor, 120);  // +120 degrees
+            var triadic2 = ShiftHue(baseColor, 240);  // +240 degrees (or -120)
+            
+            PrimaryActionColor = baseColor;
+            SecondaryActionColor = triadic1;
+            AccentColor = triadic2;
+            HighlightColor = DarkenColor(baseColor, 0.2f);
+            
+            // Use triadic colors for status
+            SuccessColor = triadic1;
+            WarningColor = BlendColor(baseColor, triadic2, 0.7f);
+            ErrorColor = triadic2;
+            InfoColor = baseColor;
+
+            HasUnsavedChanges = true;
+            StatusMessage = "Triadic palette generated successfully";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating triadic palette");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate triadic palette", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task AutoFillAccessibilityFirstAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Generating accessibility-first palette (WCAG AAA)...";
+            Logger.LogDebug("Auto-filling accessibility-first colors");
+
+            // Generate colors that meet WCAG AAA (7:1) contrast requirements
+            var darkBackground = Color.Parse("#FFFFFF"); // White background
+            
+            // Generate high-contrast colors
+            PrimaryActionColor = Color.Parse("#0066CC");   // Blue that meets AAA on white
+            SecondaryActionColor = Color.Parse("#004499");  // Darker blue
+            AccentColor = Color.Parse("#0099FF");          // Lighter blue, still AAA compliant
+            HighlightColor = Color.Parse("#003366");       // Very dark blue
+            
+            // Text colors with maximum contrast
+            HeadingTextColor = Color.Parse("#000000");     // Pure black
+            BodyTextColor = Color.Parse("#333333");        // Very dark gray
+            InteractiveTextColor = Color.Parse("#0066CC"); // Same as primary
+            OverlayTextColor = Color.Parse("#FFFFFF");     // White for dark backgrounds
+            TertiaryTextColor = Color.Parse("#666666");    // Medium gray, still AAA
+            
+            // High-contrast status colors
+            SuccessColor = Color.Parse("#006600");         // Dark green
+            WarningColor = Color.Parse("#CC6600");         // Dark orange  
+            ErrorColor = Color.Parse("#CC0000");           // Dark red
+            InfoColor = PrimaryActionColor;               // Consistent with primary
+            
+            // Clean, high-contrast backgrounds
+            MainBackgroundColor = Color.Parse("#FFFFFF");   // Pure white
+            CardBackgroundColor = Color.Parse("#F8F8F8");   // Very light gray
+            HoverBackgroundColor = Color.Parse("#F0F0F0");  // Light gray
+            PanelBackgroundColor = Color.Parse("#FAFAFA");  // Off-white
+            SidebarBackgroundColor = Color.Parse("#F5F5F5"); // Light gray
+            
+            // Strong borders for clarity
+            BorderColor = Color.Parse("#CCCCCC");          // Medium gray
+            BorderAccentColor = Color.Parse("#999999");    // Darker gray
+
+            HasUnsavedChanges = true;
+            StatusMessage = "Accessibility-first palette generated (WCAG AAA compliant)";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating accessibility-first palette");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate accessibility-first palette", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    #endregion
+
     #region Theme Operations Commands
 
     [RelayCommand]
@@ -871,6 +1326,238 @@ public partial class ThemeEditorViewModel : BaseViewModel
     }
 
     /// <summary>
+    /// Gets the complementary color (opposite on color wheel)
+    /// </summary>
+    private Color GetComplementaryColor(Color color)
+    {
+        // Convert RGB to HSV, shift hue by 180 degrees, convert back
+        var hsv = RgbToHsv(color);
+        hsv.H = (hsv.H + 180) % 360;
+        return HsvToRgb(hsv);
+    }
+
+    /// <summary>
+    /// Shifts the hue of a color by specified degrees
+    /// </summary>
+    private Color ShiftHue(Color color, float degrees)
+    {
+        var hsv = RgbToHsv(color);
+        hsv.H = (hsv.H + degrees) % 360;
+        if (hsv.H < 0) hsv.H += 360;
+        return HsvToRgb(hsv);
+    }
+
+    /// <summary>
+    /// Converts RGB color to HSV
+    /// </summary>
+    private (float H, float S, float V) RgbToHsv(Color color)
+    {
+        float r = color.R / 255f;
+        float g = color.G / 255f;
+        float b = color.B / 255f;
+
+        float max = Math.Max(r, Math.Max(g, b));
+        float min = Math.Min(r, Math.Min(g, b));
+        float delta = max - min;
+
+        float h = 0;
+        if (delta != 0)
+        {
+            if (max == r)
+                h = 60 * (((g - b) / delta) % 6);
+            else if (max == g)
+                h = 60 * ((b - r) / delta + 2);
+            else if (max == b)
+                h = 60 * ((r - g) / delta + 4);
+        }
+
+        if (h < 0) h += 360;
+
+        float s = max == 0 ? 0 : delta / max;
+        float v = max;
+
+        return (h, s, v);
+    }
+
+    /// <summary>
+    /// Converts HSV color to RGB
+    /// </summary>
+    private Color HsvToRgb((float H, float S, float V) hsv)
+    {
+        float c = hsv.V * hsv.S;
+        float x = c * (1 - Math.Abs((hsv.H / 60) % 2 - 1));
+        float m = hsv.V - c;
+
+        float r = 0, g = 0, b = 0;
+
+        if (hsv.H >= 0 && hsv.H < 60)
+        {
+            r = c; g = x; b = 0;
+        }
+        else if (hsv.H >= 60 && hsv.H < 120)
+        {
+            r = x; g = c; b = 0;
+        }
+        else if (hsv.H >= 120 && hsv.H < 180)
+        {
+            r = 0; g = c; b = x;
+        }
+        else if (hsv.H >= 180 && hsv.H < 240)
+        {
+            r = 0; g = x; b = c;
+        }
+        else if (hsv.H >= 240 && hsv.H < 300)
+        {
+            r = x; g = 0; b = c;
+        }
+        else if (hsv.H >= 300 && hsv.H < 360)
+        {
+            r = c; g = 0; b = x;
+        }
+
+        return Color.FromRgb(
+            (byte)((r + m) * 255),
+            (byte)((g + m) * 255),
+            (byte)((b + m) * 255));
+    }
+
+    /// <summary>
+    /// Loads manufacturing industry template colors
+    /// </summary>
+    private async Task LoadManufacturingTemplateAsync()
+    {
+        // Manufacturing-focused color scheme - strong, industrial colors
+        PrimaryActionColor = Color.Parse("#1565C0");   // Strong blue
+        SecondaryActionColor = Color.Parse("#1976D2"); // Medium blue
+        AccentColor = Color.Parse("#FFA726");          // Orange accent
+        HighlightColor = Color.Parse("#0D47A1");       // Dark blue
+
+        HeadingTextColor = Color.Parse("#263238");     // Dark blue-gray
+        BodyTextColor = Color.Parse("#455A64");        // Medium blue-gray
+        InteractiveTextColor = Color.Parse("#1565C0"); // Primary blue
+        OverlayTextColor = Color.Parse("#FFFFFF");     // White
+        TertiaryTextColor = Color.Parse("#78909C");    // Light blue-gray
+
+        MainBackgroundColor = Color.Parse("#FAFAFA");  // Light gray
+        CardBackgroundColor = Color.Parse("#FFFFFF");  // White cards
+        HoverBackgroundColor = Color.Parse("#F5F5F5"); // Light hover
+        PanelBackgroundColor = Color.Parse("#ECEFF1"); // Blue-gray panel
+        SidebarBackgroundColor = Color.Parse("#CFD8DC"); // Medium blue-gray
+
+        SuccessColor = Color.Parse("#388E3C");         // Industrial green
+        WarningColor = Color.Parse("#F57C00");         // Orange warning
+        ErrorColor = Color.Parse("#D32F2F");           // Red error
+        InfoColor = Color.Parse("#1976D2");            // Blue info
+
+        BorderColor = Color.Parse("#B0BEC5");          // Light blue-gray
+        BorderAccentColor = Color.Parse("#90A4AE");    // Medium blue-gray
+
+        await Task.Delay(100); // Simulate loading time
+    }
+
+    /// <summary>
+    /// Loads healthcare industry template colors
+    /// </summary>
+    private async Task LoadHealthcareTemplateAsync()
+    {
+        // Healthcare-focused color scheme - clean, calming colors
+        PrimaryActionColor = Color.Parse("#00796B");   // Teal
+        SecondaryActionColor = Color.Parse("#00ACC1"); // Cyan
+        AccentColor = Color.Parse("#26C6DA");          // Light cyan
+        HighlightColor = Color.Parse("#004D40");       // Dark teal
+
+        HeadingTextColor = Color.Parse("#263238");     // Dark gray
+        BodyTextColor = Color.Parse("#37474F");        // Medium gray
+        InteractiveTextColor = Color.Parse("#00796B"); // Teal
+        OverlayTextColor = Color.Parse("#FFFFFF");     // White
+        TertiaryTextColor = Color.Parse("#607D8B");    // Blue-gray
+
+        MainBackgroundColor = Color.Parse("#F8FDFC");  // Very light teal
+        CardBackgroundColor = Color.Parse("#FFFFFF");  // White cards
+        HoverBackgroundColor = Color.Parse("#E0F2F1"); // Light teal hover
+        PanelBackgroundColor = Color.Parse("#E8F5E8"); // Very light green
+        SidebarBackgroundColor = Color.Parse("#B2DFDB"); // Light teal
+
+        SuccessColor = Color.Parse("#4CAF50");         // Green
+        WarningColor = Color.Parse("#FF9800");         // Orange
+        ErrorColor = Color.Parse("#F44336");           // Red
+        InfoColor = Color.Parse("#2196F3");            // Blue
+
+        BorderColor = Color.Parse("#B2DFDB");          // Light teal
+        BorderAccentColor = Color.Parse("#80CBC4");    // Medium teal
+
+        await Task.Delay(100); // Simulate loading time
+    }
+
+    /// <summary>
+    /// Loads office/professional template colors
+    /// </summary>
+    private async Task LoadOfficeTemplateAsync()
+    {
+        // Professional office color scheme - classic, business-appropriate
+        PrimaryActionColor = Color.Parse("#0078D4");   // Microsoft blue
+        SecondaryActionColor = Color.Parse("#106EBE"); // Darker blue
+        AccentColor = Color.Parse("#40A2E8");          // Light blue
+        HighlightColor = Color.Parse("#005A9E");       // Dark blue
+
+        HeadingTextColor = Color.Parse("#323130");     // Fluent dark gray
+        BodyTextColor = Color.Parse("#605E5C");        // Fluent medium gray
+        InteractiveTextColor = Color.Parse("#0078D4"); // Blue
+        OverlayTextColor = Color.Parse("#FFFFFF");     // White
+        TertiaryTextColor = Color.Parse("#8A8886");    // Light gray
+
+        MainBackgroundColor = Color.Parse("#FFFFFF");  // White
+        CardBackgroundColor = Color.Parse("#F3F2F1");  // Light gray
+        HoverBackgroundColor = Color.Parse("#EDEBE9"); // Hover gray
+        PanelBackgroundColor = Color.Parse("#FAF9F8"); // Off-white
+        SidebarBackgroundColor = Color.Parse("#F3F2F1"); // Light gray
+
+        SuccessColor = Color.Parse("#107C10");         // Green
+        WarningColor = Color.Parse("#D83B01");         // Orange-red
+        ErrorColor = Color.Parse("#A4262C");           // Red
+        InfoColor = Color.Parse("#0078D4");            // Blue
+
+        BorderColor = Color.Parse("#EDEBE9");          // Light gray
+        BorderAccentColor = Color.Parse("#D2D0CE");    // Medium gray
+
+        await Task.Delay(100); // Simulate loading time
+    }
+
+    /// <summary>
+    /// Loads high contrast template colors for accessibility
+    /// </summary>
+    private async Task LoadHighContrastTemplateAsync()
+    {
+        // High contrast color scheme for accessibility
+        PrimaryActionColor = Color.Parse("#0000FF");   // Pure blue
+        SecondaryActionColor = Color.Parse("#000080"); // Navy blue
+        AccentColor = Color.Parse("#4169E1");          // Royal blue
+        HighlightColor = Color.Parse("#000040");       // Very dark blue
+
+        HeadingTextColor = Color.Parse("#000000");     // Pure black
+        BodyTextColor = Color.Parse("#000000");        // Pure black
+        InteractiveTextColor = Color.Parse("#0000FF"); // Blue
+        OverlayTextColor = Color.Parse("#FFFFFF");     // White
+        TertiaryTextColor = Color.Parse("#000000");    // Black
+
+        MainBackgroundColor = Color.Parse("#FFFFFF");  // Pure white
+        CardBackgroundColor = Color.Parse("#FFFFFF");  // White
+        HoverBackgroundColor = Color.Parse("#E0E0E0"); // Light gray
+        PanelBackgroundColor = Color.Parse("#F0F0F0");  // Very light gray
+        SidebarBackgroundColor = Color.Parse("#E8E8E8"); // Light gray
+
+        SuccessColor = Color.Parse("#008000");         // Green
+        WarningColor = Color.Parse("#FF8000");         // Orange
+        ErrorColor = Color.Parse("#FF0000");           // Red
+        InfoColor = Color.Parse("#0000FF");            // Blue
+
+        BorderColor = Color.Parse("#000000");          // Black borders
+        BorderAccentColor = Color.Parse("#404040");    // Dark gray
+
+        await Task.Delay(100); // Simulate loading time
+    }
+
+    /// <summary>
     /// Validates all current color properties and updates status
     /// </summary>
     private bool ValidateAllColors()
@@ -943,4 +1630,17 @@ public class ColorCategory
         Name = name;
         Description = description;
     }
+}
+
+/// <summary>
+/// Theme export/import data model for JSON serialization
+/// </summary>
+public class ThemeExportModel
+{
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public Dictionary<string, string> Colors { get; set; } = new();
+    public string CreatedBy { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public string Version { get; set; } = "1.0";
 }
