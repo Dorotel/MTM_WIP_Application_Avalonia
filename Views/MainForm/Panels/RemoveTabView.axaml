@@ -270,6 +270,7 @@
                                    FilterMode="Contains"
                                    MaxDropDownHeight="200"
                                    IsTextCompletionEnabled="False"
+                                   TabIndex="1"
                                    behaviors:ComboBoxBehavior.EnableComboBoxBehavior="True" />
                 </StackPanel>
 
@@ -301,6 +302,7 @@
                                    FilterMode="StartsWith"
                                    MaxDropDownHeight="200"
                                    IsTextCompletionEnabled="False"
+                                   TabIndex="2"
                                    behaviors:ComboBoxBehavior.EnableComboBoxBehavior="True" />
                 </StackPanel>
 

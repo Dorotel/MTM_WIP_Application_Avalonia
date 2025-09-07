@@ -232,7 +232,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                     new("p_ErrorMessage", exception.Message),
                     new("p_StackTrace", exception.StackTrace ?? string.Empty),
                     new("p_Context", context),
-                    new("p_UserID", Environment.UserName),
+                    new("p_User", Environment.UserName),
                     new("p_Timestamp", DateTime.Now),
                     new("p_MachineName", Environment.MachineName)
                 };
@@ -427,7 +427,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             var parameters = new MySqlParameter[]
             {
                 new("p_PartID", partId),
-                new("p_UserID", Environment.UserName),
+                new("p_User", Environment.UserName),
                 new("p_Timestamp", DateTime.Now)
             };
 

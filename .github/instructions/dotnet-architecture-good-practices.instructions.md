@@ -235,7 +235,7 @@ public static class ErrorHandling
                 new("p_ErrorMessage", exception.Message),
                 new("p_StackTrace", exception.StackTrace ?? string.Empty),
                 new("p_Context", context),
-                new("p_UserId", Environment.UserName),
+                new("p_User", Environment.UserName),
                 new("p_Timestamp", DateTime.Now)
             };
 
@@ -751,7 +751,7 @@ public class DatabaseIntegrationTests : IClassFixture<DatabaseFixture>
             new("p_Operation", "100"),
             new("p_Quantity", 10),
             new("p_Location", "TEST_LOC"),
-            new("p_UserId", "TestUser"),
+            new("p_User", "TestUser"),
             new("p_TransactionType", "IN")
         };
 

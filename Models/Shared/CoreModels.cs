@@ -248,7 +248,7 @@ namespace MTM_Shared_Logic.Models
 
     /// <summary>
     /// Represents a quick transaction button for user convenience.
-    /// Maps to sys_last_10_transactions table.
+    /// Maps to qb_quickbuttons table.
     /// Position uses 1-based indexing for UI display.
     /// </summary>
     public class QuickTransactionButton

@@ -70,7 +70,7 @@ public async Task LoadLast10Transactions(string currentUser)
 ```csharp
 var dataResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
     Model_AppVariables.ConnectionString,
-    "sys_last_10_transactions_Get_ByUser",
+    "qb_quickbuttons_Get_ByUser",
     new Dictionary<string, object> { ["User"] = currentUser }
 );
 ```

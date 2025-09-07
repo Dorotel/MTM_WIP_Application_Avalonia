@@ -29,6 +29,18 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IApplicationStateService, ApplicationStateService>();
         services.TryAddSingleton<INavigationService, NavigationService>();
         
+        // Logging services
+        services.TryAddSingleton<IFileLoggingService, FileLoggingService>();
+        services.AddLogging(builder =>
+        {
+            // Add custom file logging provider
+            builder.Services.AddSingleton<ILoggerProvider>(serviceProvider =>
+            {
+                var fileLoggingService = serviceProvider.GetRequiredService<IFileLoggingService>();
+                return new MTMFileLoggerProvider(fileLoggingService);
+            });
+        });
+        
         // Theme and Settings services
         services.TryAddSingleton<IThemeService, ThemeService>();
         services.TryAddSingleton<ISettingsService, SettingsService>();
@@ -47,8 +59,14 @@ public static class ServiceCollectionExtensions
         // Register SuggestionOverlay service - change to singleton for validation
         services.TryAddSingleton<ISuggestionOverlayService, SuggestionOverlayService>();
         
+        // Register SuccessOverlay service - singleton for shared access across ViewModels
+        services.TryAddSingleton<ISuccessOverlayService, SuccessOverlayService>();
+        
         // Register Master Data service - singleton for shared access across ViewModels
         services.TryAddSingleton<IMasterDataService, MasterDataService>();
+        
+        // Register Focus Management service - singleton for application-wide focus management
+        services.TryAddSingleton<IFocusManagementService, FocusManagementService>();
         
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
@@ -61,6 +79,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<AdvancedInventoryViewModel>();
         services.TryAddTransient<QuickButtonsViewModel>();
         services.TryAddTransient<SettingsViewModel>();
+        services.TryAddTransient<ThemeEditorViewModel>();
         
         // SettingsForm ViewModels
         services.TryAddTransient<SettingsViewModel>();
@@ -146,7 +165,9 @@ public static class ServiceCollectionExtensions
             typeof(IQuickButtonsService),
             typeof(IProgressService),
             typeof(ISuggestionOverlayService),
-            typeof(IMasterDataService)
+            typeof(IMasterDataService),
+            typeof(IFileLoggingService),
+            typeof(IFocusManagementService)
         };
 
         var missingServices = requiredServices
@@ -180,7 +201,9 @@ public static class ServiceCollectionExtensions
             typeof(IQuickButtonsService),
             typeof(IProgressService),
             typeof(ISuggestionOverlayService),
-            typeof(IMasterDataService)
+            typeof(IMasterDataService),
+            typeof(IFileLoggingService),
+            typeof(IFocusManagementService)
         };
 
         var failedServices = new List<string>();

@@ -90,7 +90,7 @@ public async Task<bool> AddInventoryAsync(string partId, string operation, int q
         new("p_Operation", operation),
         new("p_Quantity", quantity),
         new("p_Location", location),
-        new("p_UserID", currentUserId)
+        new("p_User", currentUserId)
     };
 
     var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -148,7 +148,7 @@ public async Task<bool> RecordTransactionAsync(string partId, string operation, 
         new("p_Quantity", quantity),
         new("p_TransactionType", transactionType), // "IN", "OUT", "TRANSFER" - user intent
         new("p_Location", location),
-        new("p_UserID", currentUserId),
+        new("p_User", currentUserId),
         new("p_Timestamp", DateTime.Now)
     };
 
@@ -342,7 +342,7 @@ public static async Task LogErrorToDatabaseAsync(Exception ex, string context, s
             new("p_ErrorMessage", ex.Message),
             new("p_StackTrace", ex.StackTrace ?? string.Empty),
             new("p_Context", context),
-            new("p_UserID", userId),
+            new("p_User", userId),
             new("p_Timestamp", DateTime.Now),
             new("p_MachineName", Environment.MachineName),
             new("p_ApplicationVersion", Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown")
@@ -383,7 +383,7 @@ public async Task<List<QuickActionModel>> GetQuickActionsForUserAsync(string use
 {
     var parameters = new MySqlParameter[]
     {
-        new("p_UserID", userId),
+        new("p_User", userId),
         new("p_IsActive", true)
     };
 
@@ -475,7 +475,7 @@ public MySqlParameter[] CreateInventoryParameters(string partId, string operatio
         new("p_Operation", operation ?? string.Empty),
         new("p_Quantity", quantity),
         new("p_Location", location ?? string.Empty),
-        new("p_UserID", CurrentUser?.UserId ?? "SYSTEM"),
+        new("p_User", CurrentUser?.UserId ?? "SYSTEM"),
         new("p_Timestamp", DateTime.Now)
     };
 }
@@ -535,7 +535,7 @@ public async Task<bool> MovePartThroughWorkflowAsync(string partId, string fromO
         new("p_ToOperation", toOperation),
         new("p_Quantity", quantity),
         new("p_TransactionType", "TRANSFER"),  // Always TRANSFER for workflow moves
-        new("p_UserID", currentUserId)
+        new("p_User", currentUserId)
     };
 
     var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -563,7 +563,7 @@ public async Task<bool> ProcessInventoryTransactionAsync(string partId, string o
         new("p_Operation", operation),       // Still track which workflow step
         new("p_Quantity", quantity),
         new("p_TransactionType", transactionType), // Based on what user is actually doing
-        new("p_UserID", currentUserId)
+        new("p_User", currentUserId)
     };
 
     // Choose appropriate stored procedure based on transaction type
@@ -1009,7 +1009,7 @@ public async Task<bool> ProcessBatchInventoryUpdatesAsync(List<InventoryUpdateRe
     var parameters = new MySqlParameter[]
     {
         new("p_UpdatesJson", JsonSerializer.Serialize(updates)),
-        new("p_UserID", currentUserId),
+        new("p_User", currentUserId),
         new("p_BatchTimestamp", DateTime.Now)
     };
 

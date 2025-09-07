@@ -19,6 +19,9 @@ public partial class ThemeQuickSwitcher : UserControl
     private IThemeService? _themeService;
     private ILogger<ThemeQuickSwitcher>? _logger;
 
+    // Event to signal when the theme editor should open
+    public event EventHandler? ThemeEditorRequested;
+
     public ThemeQuickSwitcher()
     {
         InitializeComponent();
@@ -140,6 +143,29 @@ public partial class ThemeQuickSwitcher : UserControl
         if (ThemeComboBox != null)
         {
             ThemeComboBox.SelectionChanged += OnThemeSelectionChanged;
+        }
+        
+        // Wire up the edit theme button
+        var editButton = this.FindControl<Button>("EditThemeButton");
+        if (editButton != null)
+        {
+            editButton.Click += OnEditThemeButtonClicked;
+        }
+    }
+
+    /// <summary>
+    /// Handle edit theme button click.
+    /// </summary>
+    private void OnEditThemeButtonClicked(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            _logger?.LogDebug("Edit theme button clicked, raising ThemeEditorRequested event");
+            ThemeEditorRequested?.Invoke(this, EventArgs.Empty);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling edit theme button click");
         }
     }
 

@@ -2,9 +2,14 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.LogicalTree;
+using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Core.Startup;
+using Avalonia.Controls.ApplicationLifetimes;
+using ZstdSharp.Unsafe;
 
 namespace MTM_WIP_Application_Avalonia;
 
@@ -21,13 +26,13 @@ public static class Program
     /// Main application entry point with enhanced error handling and logging.
     /// </summary>
     /// <param name="args">Command line arguments</param>
-    public static async Task Main(string[] args) 
+    public static async Task Main(string[] args)
     {
         var mainStopwatch = Stopwatch.StartNew();
         Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MTM WIP Application Program.Main() starting...");
         Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Command line args: [{string.Join(", ", args)}]");
         Debug.WriteLine($"[PROGRAM] Application main entry point started with {args.Length} arguments");
-        
+
         try
         {
 
@@ -47,15 +52,16 @@ public static class Program
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Runtime: {Environment.Version}");
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Is Interactive: {Environment.UserInteractive}");
             _logger?.LogInformation("Starting Avalonia application with {ArgCount} arguments", args.Length);
-            
+
             var appStopwatch = Stopwatch.StartNew();
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             appStopwatch.Stop();
-            
+
             mainStopwatch.Stop();
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Application completed successfully in {mainStopwatch.ElapsedMilliseconds}ms (Avalonia: {appStopwatch.ElapsedMilliseconds}ms)");
-            _logger?.LogInformation("MTM WIP Application completed successfully - Total: {TotalMs}ms, Avalonia: {AvaloniaMs}ms", 
+            _logger?.LogInformation("MTM WIP Application completed successfully - Total: {TotalMs}ms, Avalonia: {AvaloniaMs}ms",
                 mainStopwatch.ElapsedMilliseconds, appStopwatch.ElapsedMilliseconds);
+
         }
         catch (Exception ex)
         {
@@ -73,7 +79,7 @@ public static class Program
     {
         Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Building Avalonia app...");
         Debug.WriteLine($"[PROGRAM] Building Avalonia application");
-        
+
         try
         {
             return AppBuilder.Configure<App>()
@@ -100,7 +106,7 @@ public static class Program
         var configureStopwatch = Stopwatch.StartNew();
         Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] ConfigureServicesAsync() started");
         Debug.WriteLine($"[PROGRAM] Starting service configuration using ApplicationStartup");
-        
+
         try
         {
             // Check if application is already initialized from startup tests
@@ -108,7 +114,7 @@ public static class Program
             {
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Application already initialized, using existing service provider");
                 _serviceProvider = ApplicationStartup.GetServiceProvider();
-                
+
                 if (_serviceProvider == null)
                 {
                     Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Service provider is null despite initialization flag");
@@ -123,7 +129,7 @@ public static class Program
 
                 // Use ApplicationStartup to initialize the application
                 _serviceProvider = ApplicationStartup.InitializeApplication(services, Environment.GetCommandLineArgs());
-                
+
                 if (_serviceProvider == null)
                 {
                     Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Service provider is null after startup");
@@ -134,14 +140,14 @@ public static class Program
 
             // Get logger after service provider is available
             _logger = _serviceProvider.GetService<ILogger<object>>();
-            
+
             configureStopwatch.Stop();
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Service configuration completed in {configureStopwatch.ElapsedMilliseconds}ms");
-            _logger?.LogInformation("Service configuration completed successfully in {ConfigureMs}ms", 
+            _logger?.LogInformation("Service configuration completed successfully in {ConfigureMs}ms",
                 configureStopwatch.ElapsedMilliseconds);
-            
+
             Debug.WriteLine($"[PROGRAM] Service configuration completed successfully in {configureStopwatch.ElapsedMilliseconds}ms");
-            
+
             await Task.Delay(1); // Yield control for async method
             return true;
         }
@@ -163,19 +169,19 @@ public static class Program
     {
         var errorMessage = $"CRITICAL APPLICATION FAILURE after {elapsedMs}ms: {ex.Message}";
         var innerMessage = ex.InnerException?.Message;
-        
+
         Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {errorMessage}");
         if (!string.IsNullOrEmpty(innerMessage))
         {
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Inner exception: {innerMessage}");
         }
         Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Stack trace: {ex.StackTrace}");
-        
+
         Debug.WriteLine($"[PROGRAM] CRITICAL FAILURE: {ex}");
-        
+
         // Log through service if available
         _logger?.LogCritical(ex, "Critical application startup failure after {ElapsedMs}ms", elapsedMs);
-        
+
         // Try to get health information if health service is available
         try
         {

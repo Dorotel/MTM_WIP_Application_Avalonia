@@ -34,6 +34,7 @@ public partial class InventoryTabView : UserControl
     private readonly IServiceProvider? _serviceProvider;
     private readonly ILogger<InventoryTabView>? _logger;
     private ISuggestionOverlayService? _suggestionOverlayService;
+    private ISuccessOverlayService? _successOverlayService;
 
     // Flag to prevent cascading suggestion overlays
     private bool _isShowingSuggestionOverlay = false;
@@ -73,13 +74,12 @@ public partial class InventoryTabView : UserControl
         try
         {
             _suggestionOverlayService = _serviceProvider?.GetService<ISuggestionOverlayService>();
-            _logger?.LogDebug("SuggestionOverlayService resolved in constructor: {ServiceResolved}", _suggestionOverlayService != null);
-            System.Diagnostics.Debug.WriteLine($"SuggestionOverlayService resolved in constructor: {_suggestionOverlayService != null}");
+            _successOverlayService = _serviceProvider?.GetService<ISuccessOverlayService>();
+            _logger?.LogInformation("SuccessOverlayService resolved in constructor: {ServiceResolved}", _successOverlayService != null);
         }
         catch (Exception ex)
         {
-            _logger?.LogWarning(ex, "Failed to resolve SuggestionOverlayService in constructor");
-            System.Diagnostics.Debug.WriteLine($"Failed to resolve SuggestionOverlayService in constructor: {ex.Message}");
+            _logger?.LogWarning(ex, "Failed to resolve overlay services in constructor");
         }
     }
 
@@ -238,7 +238,7 @@ public partial class InventoryTabView : UserControl
         {
 
             // Try to resolve services if not already resolved
-            if (_suggestionOverlayService == null)
+            if (_suggestionOverlayService == null || _successOverlayService == null)
             {
                 TryResolveServices(); // Remove await since method is no longer async
             }
@@ -250,6 +250,9 @@ public partial class InventoryTabView : UserControl
 
                 // Subscribe to ViewModel events
                 _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+                
+                // Subscribe to success overlay event
+                _viewModel.ShowSuccessOverlay += OnShowSuccessOverlay;
 
                 // Initialize form state and focus
                 InitializeFormState();
@@ -283,25 +286,40 @@ public partial class InventoryTabView : UserControl
             {
                 try
                 {
-                    _suggestionOverlayService = _serviceProvider.GetService<ISuggestionOverlayService>();
-                    _logger?.LogDebug("Method 1 - Service provider resolution: {ServiceResolved}", _suggestionOverlayService != null);
-                    System.Diagnostics.Debug.WriteLine($"Method 1 - Service provider resolution: {_suggestionOverlayService != null}");
+                    if (_suggestionOverlayService == null)
+                    {
+                        _suggestionOverlayService = _serviceProvider.GetService<ISuggestionOverlayService>();
+                        _logger?.LogDebug("Method 1 - SuggestionOverlayService resolution: {ServiceResolved}", _suggestionOverlayService != null);
+                        System.Diagnostics.Debug.WriteLine($"Method 1 - SuggestionOverlayService resolution: {_suggestionOverlayService != null}");
+                    }
                     
-                    // Additional debugging - check if service is registered
-                    var allServices = _serviceProvider.GetServices<ISuggestionOverlayService>();
-                    var serviceCount = allServices?.Count() ?? 0;
-                    _logger?.LogDebug("ISuggestionOverlayService instances in container: {ServiceCount}", serviceCount);
-                    System.Diagnostics.Debug.WriteLine($"ISuggestionOverlayService instances in container: {serviceCount}");
+                    if (_successOverlayService == null)
+                    {
+                        _successOverlayService = _serviceProvider.GetService<ISuccessOverlayService>();
+                        // Method 1 - SuccessOverlayService resolution successful
+                        System.Diagnostics.Debug.WriteLine($"Method 1 - SuccessOverlayService resolution: {_successOverlayService != null}");
+                    }
+                    
+                    // Additional debugging - check if services are registered
+                    var suggestionServices = _serviceProvider.GetServices<ISuggestionOverlayService>();
+                    var suggestionServiceCount = suggestionServices?.Count() ?? 0;
+                    _logger?.LogDebug("ISuggestionOverlayService instances in container: {ServiceCount}", suggestionServiceCount);
+                    System.Diagnostics.Debug.WriteLine($"ISuggestionOverlayService instances in container: {suggestionServiceCount}");
+                    
+                    var successServices = _serviceProvider.GetServices<ISuccessOverlayService>();
+                    var successServiceCount = successServices?.Count() ?? 0;
+                    // Success overlay service instances count check
+                    System.Diagnostics.Debug.WriteLine($"ISuccessOverlayService instances in container: {successServiceCount}");
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError(ex, "Failed to resolve ISuggestionOverlayService from service provider");
-                    System.Diagnostics.Debug.WriteLine($"Failed to resolve ISuggestionOverlayService: {ex.Message}");
+                    _logger?.LogError(ex, "Failed to resolve overlay services from service provider");
+                    System.Diagnostics.Debug.WriteLine($"Failed to resolve overlay services: {ex.Message}");
                 }
             }
 
             // Method 2: Try to get from MainWindow if it has a service provider
-            if (_suggestionOverlayService == null)
+            if (_suggestionOverlayService == null || _successOverlayService == null)
             {
                 try
                 {
@@ -311,50 +329,75 @@ public partial class InventoryTabView : UserControl
                         var serviceProviderProperty = mainWindow.DataContext.GetType().GetProperty("ServiceProvider");
                         if (serviceProviderProperty?.GetValue(mainWindow.DataContext) is IServiceProvider windowServiceProvider)
                         {
-                            _suggestionOverlayService = windowServiceProvider.GetService<ISuggestionOverlayService>();
-                            _logger?.LogDebug("Method 2 - MainWindow resolution: {ServiceResolved}", _suggestionOverlayService != null);
-                            System.Diagnostics.Debug.WriteLine($"Method 2 - MainWindow resolution: {_suggestionOverlayService != null}");
+                            if (_suggestionOverlayService == null)
+                            {
+                                _suggestionOverlayService = windowServiceProvider.GetService<ISuggestionOverlayService>();
+                                _logger?.LogDebug("Method 2 - MainWindow SuggestionOverlay resolution: {ServiceResolved}", _suggestionOverlayService != null);
+                                System.Diagnostics.Debug.WriteLine($"Method 2 - MainWindow SuggestionOverlay resolution: {_suggestionOverlayService != null}");
+                            }
+                            
+                            if (_successOverlayService == null)
+                            {
+                                _successOverlayService = windowServiceProvider.GetService<ISuccessOverlayService>();
+                                // Method 2 - MainWindow SuccessOverlay resolution successful
+                                System.Diagnostics.Debug.WriteLine($"Method 2 - MainWindow SuccessOverlay resolution: {_successOverlayService != null}");
+                            }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogWarning(ex, "Failed to resolve ISuggestionOverlayService from MainWindow");
-                    System.Diagnostics.Debug.WriteLine($"Failed to resolve from MainWindow: {ex.Message}");
+                    _logger?.LogWarning(ex, "Failed to resolve overlay services from MainWindow");
+                    System.Diagnostics.Debug.WriteLine($"Failed to resolve overlay services from MainWindow: {ex.Message}");
                 }
             }
 
             // Method 3: Try to create instance manually as fallback
-            if (_suggestionOverlayService == null)
+            if (_suggestionOverlayService == null || _successOverlayService == null)
             {
                 try
                 {
                     var loggerFactory = _serviceProvider?.GetService<ILoggerFactory>();
                     if (loggerFactory != null)
                     {
-                        var serviceLogger = loggerFactory.CreateLogger<SuggestionOverlayService>();
-                        _suggestionOverlayService = new SuggestionOverlayService(serviceLogger);
-                        _logger?.LogWarning("Method 3 - Manual creation successful as fallback");
-                        System.Diagnostics.Debug.WriteLine("Method 3 - Manual creation successful as fallback");
+                        if (_suggestionOverlayService == null)
+                        {
+                            var suggestionServiceLogger = loggerFactory.CreateLogger<SuggestionOverlayService>();
+                            _suggestionOverlayService = new SuggestionOverlayService(suggestionServiceLogger);
+                            _logger?.LogWarning("Method 3 - Manual SuggestionOverlayService creation successful as fallback");
+                            System.Diagnostics.Debug.WriteLine("Method 3 - Manual SuggestionOverlayService creation successful as fallback");
+                        }
+                        
+                        if (_successOverlayService == null)
+                        {
+                            var successServiceLogger = loggerFactory.CreateLogger<SuccessOverlayService>();
+                            var focusManagementLogger = loggerFactory.CreateLogger<FocusManagementService>();
+                            var focusService = _serviceProvider?.GetService<IFocusManagementService>() ?? new FocusManagementService(focusManagementLogger);
+                            _successOverlayService = new SuccessOverlayService(successServiceLogger, focusService);
+                            _logger?.LogWarning("Method 3 - Manual SuccessOverlayService creation successful as fallback");
+                            System.Diagnostics.Debug.WriteLine("Method 3 - Manual SuccessOverlayService creation successful as fallback");
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError(ex, "Failed to create SuggestionOverlayService manually");
-                    System.Diagnostics.Debug.WriteLine($"Failed to create SuggestionOverlayService manually: {ex.Message}");
+                    _logger?.LogError(ex, "Failed to create overlay services manually");
+                    System.Diagnostics.Debug.WriteLine($"Failed to create overlay services manually: {ex.Message}");
                 }
             }
 
             // Log final result with detailed information
-            if (_suggestionOverlayService != null)
+            if (_suggestionOverlayService != null && _successOverlayService != null)
             {
-                _logger?.LogInformation("SuggestionOverlayService successfully resolved - Type: {ServiceType}", _suggestionOverlayService.GetType().Name);
-                System.Diagnostics.Debug.WriteLine($"SuggestionOverlayService successfully resolved - Type: {_suggestionOverlayService.GetType().Name}");
+                _logger?.LogInformation("Both overlay services successfully resolved - SuggestionType: {SuggestionType}, SuccessType: {SuccessType}", 
+                    _suggestionOverlayService.GetType().Name, _successOverlayService.GetType().Name);
+                System.Diagnostics.Debug.WriteLine($"Both overlay services successfully resolved - SuggestionType: {_suggestionOverlayService.GetType().Name}, SuccessType: {_successOverlayService.GetType().Name}");
             }
             else
             {
-                _logger?.LogError("SuggestionOverlayService could not be resolved through any method - suggestion overlays will be disabled. Check if ISuggestionOverlayService is registered in DI container.");
-                System.Diagnostics.Debug.WriteLine("SuggestionOverlayService could not be resolved through any method - suggestion overlays will be disabled. Check service registration.");
+                _logger?.LogError("One or more overlay services could not be resolved - Suggestion: {SuggestionResolved}, Success: {SuccessResolved}", 
+                    _suggestionOverlayService != null, _successOverlayService != null);
+                System.Diagnostics.Debug.WriteLine($"One or more overlay services could not be resolved - Suggestion: {_suggestionOverlayService != null}, Success: {_successOverlayService != null}");
                 
                 // Additional diagnostic information
                 if (_serviceProvider != null)
@@ -365,11 +408,16 @@ public partial class InventoryTabView : UserControl
                         _logger?.LogDebug("Service provider contains {ServiceCount} registered services", registeredServices);
                         System.Diagnostics.Debug.WriteLine($"Service provider contains {registeredServices} registered services");
                         
-                        // Check if the specific service type is registered
+                        // Check if the specific services are registered
                         var suggestionsServices = _serviceProvider.GetServices<ISuggestionOverlayService>();
                         var suggestionServiceCount = suggestionsServices?.Count() ?? 0;
                         _logger?.LogDebug("ISuggestionOverlayService registrations found: {Count}", suggestionServiceCount);
                         System.Diagnostics.Debug.WriteLine($"ISuggestionOverlayService registrations found: {suggestionServiceCount}");
+                        
+                        var successServices = _serviceProvider.GetServices<ISuccessOverlayService>();
+                        var successServiceCount = successServices?.Count() ?? 0;
+                        // ISuccessOverlayService registrations found
+                        System.Diagnostics.Debug.WriteLine($"ISuccessOverlayService registrations found: {successServiceCount}");
                     }
                     catch (Exception ex)
                     {
@@ -592,6 +640,7 @@ MoveFocusToFirstControl();
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling part text change");
+            _ = Services.ErrorHandling.HandleErrorAsync(ex, "InventoryTabView_OnPartTextChanged", "System");
             System.Diagnostics.Debug.WriteLine($"Error handling part text change: {ex.Message}");
         }
     }
@@ -623,8 +672,6 @@ MoveFocusToFirstControl();
             // Clear the textbox and show error message about data unavailability
             textBox.Text = string.Empty;
             _viewModel.SelectedPart = string.Empty;
-            _viewModel.HasError = true;
-            _viewModel.ErrorMessage = "No Part IDs available due to server connectivity issues. Please check server connection.";
             
             UpdateValidationStates();
             ValidateAndUpdateSaveButton();
@@ -804,8 +851,6 @@ MoveFocusToFirstControl();
                 // Clear the textbox and show error message about data unavailability
                 textBox.Text = string.Empty;
                 _viewModel.SelectedOperation = string.Empty;
-                _viewModel.HasError = true;
-                _viewModel.ErrorMessage = "No Operations available due to server connectivity issues. Please check server connection.";
                 
                 UpdateValidationStates();
                 ValidateAndUpdateSaveButton();
@@ -933,8 +978,6 @@ MoveFocusToFirstControl();
                 // Clear the textbox and show error message about data unavailability
                 textBox.Text = string.Empty;
                 _viewModel.SelectedLocation = string.Empty;
-                _viewModel.HasError = true;
-                _viewModel.ErrorMessage = "No Locations available due to server connectivity issues. Please check server connection.";
                 
                 UpdateValidationStates();
                 ValidateAndUpdateSaveButton();
@@ -1303,6 +1346,37 @@ MoveFocusToFirstControl();
         {
             _logger?.LogError(ex, "Error clearing TextBox error classes");
             System.Diagnostics.Debug.WriteLine($"Error clearing TextBox error classes: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles the ShowSuccessOverlay event from the ViewModel
+    /// </summary>
+    private async void OnShowSuccessOverlay(object? sender, SuccessEventArgs e)
+    {
+        try
+        {
+            if (_successOverlayService == null)
+            {
+                _logger?.LogWarning("Success overlay service not available - cannot display overlay");
+                return;
+            }
+
+            // Show the success overlay using the service
+            await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                null, // Auto-resolve MainView
+                e.Message,
+                e.Details,
+                e.IconKind,
+                e.Duration
+            );
+
+            _logger?.LogInformation("Success overlay displayed via View event handler");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error displaying success overlay via View event handler");
+            _ = Services.ErrorHandling.HandleErrorAsync(ex, "OnShowSuccessOverlay", "System");
         }
     }
 
@@ -1715,6 +1789,7 @@ MoveFocusToFirstControl();
             if (_viewModel != null)
             {
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+                _viewModel.ShowSuccessOverlay -= OnShowSuccessOverlay;
             }
 
             // QuickButtons event handlers would be unsubscribed here using reflection if needed

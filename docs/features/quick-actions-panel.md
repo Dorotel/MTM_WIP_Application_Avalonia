@@ -397,11 +397,11 @@ await AnalyticsService.TrackEventAsync("QuickActionUsed", new {
 ### A. Database Procedures Reference
 ```sql
 -- Core procedures used by Quick Actions Panel
-qb_quickbuttons_Get_ByUser(p_UserID)
+qb_quickbuttons_Get_ByUser(p_User)
 qb_quickbuttons_Save(p_User, p_Position, p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType)
 qb_quickbuttons_Remove(p_User, p_Position)  
 qb_quickbuttons_Clear_ByUser(p_User)
-sys_last_10_transactions_Get_ByUser(p_UserID, p_Limit)
+sys_last_10_transactions_Get_ByUser(p_User, p_Limit)
 sys_last_10_transactions_Add_Transaction(p_TransactionType, p_BatchNumber, p_PartID, ...)
 ```
 

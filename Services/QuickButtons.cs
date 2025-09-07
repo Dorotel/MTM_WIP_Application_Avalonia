@@ -88,14 +88,15 @@ public class QuickButtonsService : IQuickButtonsService
 
             _logger.LogDebug("Loading quick buttons for user: {UserId}", userId);
 
+            // Use the correct parameter format for the updated stored procedure
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = userId
+                ["p_User"] = userId
             };
 
             try
             {
-                // qb_quickbuttons_Get_ByUser uses MTM status pattern with OUT parameters
+                // qb_quickbuttons_Get_ByUser now uses proper MTM status pattern with OUT parameters
                 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     _databaseService.GetConnectionString(),
                     "qb_quickbuttons_Get_ByUser",
@@ -104,7 +105,8 @@ public class QuickButtonsService : IQuickButtonsService
 
                 var quickButtons = new List<QuickButtonData>();
 
-                if (result != null && result.Data != null && result.Data.Rows.Count > 0)
+                // Check if the stored procedure executed successfully
+                if (result.Status == 0 && result.Data != null && result.Data.Rows.Count > 0)
                 {
                     // Log available columns for debugging
                     if (result.Data.Columns.Count > 0)
@@ -124,11 +126,16 @@ public class QuickButtonsService : IQuickButtonsService
                             PartId = SafeGetString(row, "PartID"),
                             Operation = SafeGetString(row, "Operation"),
                             Quantity = SafeGetInt32(row, "Quantity", 0),
-                            Notes = SafeGetString(row, "Notes"),
-                            CreatedDate = SafeGetDateTime(row, "CreatedDate") ?? DateTime.Now,
-                            LastUsedDate = SafeGetDateTime(row, "LastUsedDate") ?? DateTime.Now
+                            Notes = SafeGetString(row, "Location"), // Map Location to Notes for compatibility
+                            CreatedDate = SafeGetDateTime(row, "DateCreated") ?? DateTime.Now,
+                            LastUsedDate = SafeGetDateTime(row, "DateModified") ?? DateTime.Now
                         });
                     }
+                }
+                else if (result.Status != 0)
+                {
+                    _logger.LogWarning("qb_quickbuttons_Get_ByUser returned error status {Status}: {Message}", 
+                        result.Status, result.Message);
                 }
                 
                 _logger.LogInformation("Loaded {Count} quick buttons for user {UserId}", quickButtons.Count, userId);
@@ -136,9 +143,9 @@ public class QuickButtonsService : IQuickButtonsService
             }
             catch (Exception dbEx)
             {
-                _logger.LogWarning(dbEx, "Database call failed, using sample data for development");
-                // Return sample data as fallback
-                return GenerateSampleQuickButtons();
+                _logger.LogError(dbEx, "Database call failed for qb_quickbuttons_Get_ByUser");
+                // Return empty list instead of sample data for production
+                return new List<QuickButtonData>();
             }
         }
         catch (Exception ex)
@@ -146,8 +153,8 @@ public class QuickButtonsService : IQuickButtonsService
             _logger.LogError(ex, "Failed to load quick buttons for user: {UserId}", userId);
             await ErrorHandling.HandleErrorAsync(ex, nameof(LoadUserQuickButtonsAsync), userId);
             
-            // Return sample data as fallback
-            return GenerateSampleQuickButtons();
+            // Return empty list instead of sample data for production
+            return new List<QuickButtonData>();
         }
     }
 
@@ -167,7 +174,7 @@ public class QuickButtonsService : IQuickButtonsService
             // Use the stored procedure that reads from sys_last_10_transactions table
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = userId,
+                ["p_User"] = userId,
                 ["p_Limit"] = 10
             };
 
@@ -346,48 +353,42 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = quickButton.UserId,
+                ["p_User"] = quickButton.UserId,
                 ["p_Position"] = quickButton.Position,
                 ["p_PartID"] = quickButton.PartId,
-                ["p_Location"] = quickButton.Notes ?? string.Empty, // Use Notes field as Location for now
-                ["p_Operation"] = quickButton.Operation ?? string.Empty, // Ensure not null
+                ["p_Operation"] = quickButton.Operation ?? string.Empty,
                 ["p_Quantity"] = quickButton.Quantity,
-                ["p_ItemType"] = "Standard" // Default item type since we don't have this in QuickButtonData
+                ["p_Location"] = quickButton.Notes ?? string.Empty, // Use Notes field as Location
+                ["p_ItemType"] = "WIP" // Standard item type for MTM operations
             };
 
-            // Use the proper stored procedure execution method that handles OUT parameters
+            // Use ExecuteWithStatus which handles MySQL status codes correctly
             var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
                 _databaseService.GetConnectionString(),
                 "qb_quickbuttons_Save",
                 parameters
             );
 
-            if (result.IsSuccess)
+            // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
+            if (result.Status == 0)
             {
                 _logger.LogInformation("Quick button saved successfully: {PartId} at position {Position}", 
                     quickButton.PartId, quickButton.Position);
-
-                // Notify subscribers of changes
-                QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs 
-                { 
-                    UserId = quickButton.UserId, 
-                    ChangeType = QuickButtonChangeType.Updated,
-                    AffectedButton = quickButton
-                });
 
                 return true;
             }
             else
             {
-                _logger.LogError("Failed to save quick button: {PartId}, Error: {Error}", quickButton.PartId, result.Message);
+                _logger.LogError("Failed to save quick button: {PartId}, Status: {Status}, Error: {Error}", 
+                    quickButton.PartId, result.Status, result.Message);
                 return false;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to save quick button: {PartId}", quickButton.PartId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(SaveQuickButtonAsync), quickButton.UserId, 
-                new Dictionary<string, object> { ["QuickButton"] = quickButton });
+            _logger.LogError(ex, "Failed to save quick button: {PartId}", quickButton?.PartId);
+            await ErrorHandling.HandleErrorAsync(ex, nameof(SaveQuickButtonAsync), quickButton?.UserId ?? "unknown", 
+                new Dictionary<string, object> { ["QuickButton"] = quickButton ?? new object() });
             return false;
         }
     }
@@ -407,7 +408,7 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = userId,
+                ["p_User"] = userId,
                 ["p_Position"] = buttonId // buttonId is actually the position in this context
             };
 
@@ -418,7 +419,8 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            if (result.IsSuccess)
+            // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
+            if (result.Status == 0)
             {
                 _logger.LogInformation("Quick button removed successfully: ID {ButtonId}", buttonId);
 
@@ -460,7 +462,7 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = userId
+                ["p_User"] = userId
             };
 
             // Use the proper stored procedure execution method that handles OUT parameters
@@ -470,7 +472,8 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            if (result.IsSuccess)
+            // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
+            if (result.Status == 0)
             {
                 _logger.LogInformation("All quick buttons cleared for user: {UserId}", userId);
 
@@ -511,7 +514,7 @@ public class QuickButtonsService : IQuickButtonsService
             {
                 var parameters = new Dictionary<string, object>
                 {
-                    ["p_UserID"] = userId,
+                    ["p_User"] = userId,
                     ["p_Position"] = button.Position,
                     ["p_PartID"] = button.PartId,
                     ["p_Location"] = button.Notes ?? string.Empty, // Use Notes field as Location for now
@@ -527,7 +530,8 @@ public class QuickButtonsService : IQuickButtonsService
                     parameters
                 );
 
-                if (!result.IsSuccess)
+                // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
+                if (result.Status != 0)
                 {
                     allSuccessful = false;
                     _logger.LogError("Failed to reorder button at position {Position}: {Error}", button.Position, result.Message);
@@ -577,7 +581,7 @@ public class QuickButtonsService : IQuickButtonsService
                 ["p_Operation"] = operation,
                 ["p_Quantity"] = quantity,
                 ["p_Notes"] = DBNull.Value,
-                ["p_UserID"] = userId,
+                ["p_User"] = userId,
                 ["p_ItemType"] = "Standard", // Default item type
                 ["p_ReceiveDate"] = DateTime.Now
             };
@@ -588,10 +592,14 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            if (result.IsSuccess)
+            // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
+            if (result.Status == 0)
             {
                 _logger.LogInformation("Successfully added transaction to last 10 for user {UserId}: {PartId}/{Operation}/{Quantity}", 
                     userId, partId, operation, quantity);
+                
+                // Now add this as a quick button at position 1, shifting others down
+                await AddQuickButtonFromOperationAsync(userId, partId, operation, quantity);
                 
                 // Raise event to notify UI that quick buttons need to be refreshed
                 QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs
@@ -630,23 +638,80 @@ public class QuickButtonsService : IQuickButtonsService
             _logger.LogDebug("Adding quick button from operation: {PartId}, {Operation}, {Quantity}", 
                 partId, operation, quantity);
 
-            // Find next available position or shift existing buttons
+            // Load current quick buttons for the user
             var existingButtons = await LoadUserQuickButtonsAsync(userId);
-            var nextPosition = existingButtons.Count + 1;
-
+            
+            // Check if this exact part+operation combo already exists
+            var duplicateButton = existingButtons.FirstOrDefault(b => 
+                string.Equals(b.PartId, partId, StringComparison.OrdinalIgnoreCase) && 
+                string.Equals(b.Operation, operation, StringComparison.OrdinalIgnoreCase));
+            
+            if (duplicateButton != null)
+            {
+                // Remove the duplicate first
+                _logger.LogDebug("Removing duplicate button for {PartId}/{Operation} at position {Position}", 
+                    partId, operation, duplicateButton.Position);
+                await RemoveQuickButtonAsync(duplicateButton.Position, userId);
+                
+                // Reload buttons after removal
+                existingButtons = await LoadUserQuickButtonsAsync(userId);
+            }
+            
+            // Clear all existing buttons for this user to rebuild properly
+            await ClearAllQuickButtonsAsync(userId);
+            
+            // Create new button for position 1
             var newButton = new QuickButtonData
             {
                 UserId = userId,
-                Position = nextPosition,
+                Position = 1,
                 PartId = partId,
                 Operation = operation,
                 Quantity = quantity,
-                Notes = notes,
+                Notes = notes ?? string.Empty,
                 CreatedDate = DateTime.Now,
                 LastUsedDate = DateTime.Now
             };
-
-            return await SaveQuickButtonAsync(newButton);
+            
+            // Save the new button at position 1
+            var saveResult = await SaveQuickButtonAsync(newButton);
+            if (!saveResult)
+            {
+                _logger.LogError("Failed to save new quick button at position 1: {PartId}/{Operation}", partId, operation);
+                return false;
+            }
+            
+            // Add existing buttons shifted down, keeping only the most recent 9
+            var recentButtons = existingButtons
+                .OrderBy(b => b.Position)
+                .Take(9)
+                .ToList();
+                
+            for (int i = 0; i < recentButtons.Count; i++)
+            {
+                var button = recentButtons[i];
+                button.Position = i + 2; // Start from position 2
+                
+                var shiftResult = await SaveQuickButtonAsync(button);
+                if (!shiftResult)
+                {
+                    _logger.LogError("Failed to save shifted button at position {Position}: {PartId}", 
+                        button.Position, button.PartId);
+                }
+            }
+            
+            _logger.LogInformation("Successfully added quick button at position 1: {PartId}/{Operation}/{Quantity}", 
+                partId, operation, quantity);
+                
+            // Raise event to notify UI (this will be called again but it's important for immediate UI update)
+            QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs
+            {
+                UserId = userId,
+                ChangeType = QuickButtonChangeType.Added,
+                AffectedButton = newButton
+            });
+            
+            return true;
         }
         catch (Exception ex)
         {

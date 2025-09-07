@@ -177,6 +177,7 @@ public partial class App : Application
                             await masterDataService.LoadAllMasterDataAsync();
                             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Master data loaded successfully at startup");
                             _logger?.LogInformation("Master data loaded successfully at application startup");
+
                         }
                     }
                     catch (Exception masterDataEx)

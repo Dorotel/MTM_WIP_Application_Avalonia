@@ -1,0 +1,527 @@
+name: "Comprehensive Theme Editor Feature Request"
+description: "Advanced Theme Editor System with Detailed Configuration Options"
+title: "[EPIC-FEATURE] Advanced Theme Editor System with Real-Time Color Management"
+labels: ["epic", "feature", "enhancement", "ui", "theme-system", "user-customization"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 🎨 Advanced Theme Editor System
+        
+        **Current Development Status:** ⚠️ **IN PROGRESS - COMPILATION ERRORS**
+        
+        ## 📊 Progress Summary
+        
+        ### ✅ **Completed Components:**
+        - ThemeQuickSwitcher.axaml/.cs: Edit icon with navigation integration
+        - MainView.axaml.cs: Theme editor navigation setup
+        - GitHub Epic and Feature templates created
+        - Basic ThemeEditorView.axaml structure
+        - Navigation service integration established
+        
+        ### ⚠️ **Current Issues (CRITICAL):**
+        - **ThemeEditorViewModel.cs**: 81+ compilation errors including:
+          - Duplicate ColorCategory class definitions
+          - Missing partial modifier on ColorCategory
+          - Wrong constructor syntax (missing return type)
+          - Ambiguous method calls and property definitions
+          - File contains corrupted/duplicated content at end
+        
+        ### 🔄 **Next Steps Required:**
+        1. Fix ThemeEditorViewModel.cs compilation errors
+        2. Implement ColorPicker controls in ThemeEditorView.axaml
+        3. Add auto-fill functionality with color generation algorithms
+        4. Integrate real-time theme preview system
+        
+        ---
+
+  - type: input
+    id: epic_title
+    attributes:
+      label: "Feature Title"
+      value: "Advanced Theme Editor System with Real-Time Color Management"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_priority
+    attributes:
+      label: "Feature Priority Level"
+      description: "How critical is this feature for your users?"
+      options:
+        - "🔴 Critical - Blocks user productivity"
+        - "🟡 High - Significantly improves user experience"
+        - "🟢 Medium - Nice to have enhancement"
+        - "🔵 Low - Future consideration"
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: core_functionality
+    attributes:
+      label: "🎯 Core Theme Editor Features"
+      description: "Select which primary features you want included:"
+      options:
+        - label: "**Professional Color Picker Controls** - Replace TextBoxes with visual color selectors (RGB, HSL, Hex support)"
+        - label: "**Navigable Sidebar Categories** - Left panel with Core Colors, Text Colors, Background Colors, etc."
+        - label: "**Auto-Fill Color Generation** - Generate harmonious palettes from single reference colors"
+        - label: "**Real-Time Theme Preview** - See changes immediately without restarting application"
+        - label: "**Theme Save/Load System** - Persist custom themes to local storage"
+        - label: "**Theme Export/Import** - Share themes between installations via files"
+        - label: "**WCAG Compliance Validation** - Automatic contrast ratio checking (4.5:1 minimum)"
+        - label: "**Undo/Redo Functionality** - Allow users to reverse color changes"
+
+  - type: dropdown
+    id: ui_layout_preference
+    attributes:
+      label: "🖼️ UI Layout Structure"
+      description: "How should the theme editor be presented to users?"
+      options:
+        - "Full-window replacement (like Settings) - Takes over entire MainWindow"
+        - "Modal dialog overlay - Opens on top of current view"
+        - "Side panel - Slides in from right side of MainWindow"
+        - "Tabbed interface - New tab in existing tab system"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: color_categories
+    attributes:
+      label: "🎨 Color Categories to Include"
+      description: "Which color groups should be editable? (Real-world: These are the different types of colors users see in the interface)"
+      options:
+        - label: "**Core Action Colors** - Primary buttons, links, highlights (What users click on)"
+        - label: "**Text Colors** - Headings, body text, labels (What users read)"
+        - label: "**Background Colors** - Main backgrounds, cards, panels (What's behind content)"
+        - label: "**Status Colors** - Success, warning, error, info messages (System feedback colors)"
+        - label: "**Border Colors** - Lines, dividers, outlines (Visual separators)"
+        - label: "**Interactive States** - Hover, pressed, disabled colors (Button state changes)"
+        - label: "**Data Visualization** - Chart colors, progress bars (Manufacturing data colors)"
+        - label: "**Accessibility Colors** - High contrast alternatives (For users with visual needs)"
+
+  - type: dropdown
+    id: color_picker_type
+    attributes:
+      label: "🎛️ Color Picker Control Type"
+      description: "What type of color selection interface do you prefer? (Real-world: How users will actually pick colors)"
+      options:
+        - "Professional color wheel + sliders (Most precise, like Photoshop)"
+        - "Simple color grid + RGB sliders (Balanced usability)"
+        - "Basic color swatches + text input (Fastest for power users)"
+        - "Adaptive - Simple by default, advanced on demand (Best of both worlds)"
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: auto_fill_options
+    attributes:
+      label: "🤖 Auto-Fill Color Generation"
+      description: "How should automatic color palette generation work? (Real-world: Like Instagram filters but for your app colors)"
+      options:
+        - label: "**Monochromatic** - Variations of same color (Safe, professional look)"
+        - label: "**Complementary** - Opposite colors on color wheel (High contrast, bold)"
+        - label: "**Analogous** - Adjacent colors on wheel (Harmonious, calming)"
+        - label: "**Triadic** - Three evenly-spaced colors (Vibrant, balanced)"
+        - label: "**Material Design** - Google's color algorithm (Modern, systematic)"
+        - label: "**Accessibility-First** - Prioritizes contrast ratios (WCAG compliant always)"
+        - label: "**Industry Themes** - Manufacturing, healthcare, office presets"
+        - label: "**Custom Algorithm** - Let users define their own color relationships"
+
+  - type: dropdown
+    id: theme_persistence
+    attributes:
+      label: "💾 Theme Storage Method"
+      description: "Where should custom themes be saved? (Real-world: Where your themes live when you restart the app)"
+      options:
+        - "Local JSON files - Easy to backup and share manually"
+        - "Application settings - Integrated with existing config system"
+        - "Windows Registry - System-level persistence"
+        - "Both local files AND settings - Maximum flexibility"
+      default: 3
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: advanced_features
+    attributes:
+      label: "⚡ Advanced Functionality"
+      description: "Additional features that enhance the editing experience:"
+      options:
+        - label: "**Color History** - Remember recently used colors"
+        - label: "**Eyedropper Tool** - Pick colors from anywhere in the application"
+        - label: "**Color Blindness Simulation** - Preview how themes look to colorblind users"
+        - label: "**Print Preview** - See how themes look when printed"
+        - label: "**Lighting Condition Simulation** - Preview under different lighting (important for manufacturing)"
+        - label: "**Multi-Monitor Preview** - See themes on different displays"
+        - label: "**Theme Templates** - Pre-made themes for different industries"
+        - label: "**Bulk Color Operations** - Change multiple colors at once"
+
+  - type: dropdown
+    id: performance_priority
+    attributes:
+      label: "⚡ Performance vs Features Balance"
+      description: "What's more important for your users? (Real-world: Fast loading vs more features)"
+      options:
+        - "Maximum performance - Keep it simple and fast"
+        - "Balanced - Good performance with useful features"
+        - "Feature-rich - All capabilities even if slightly slower"
+        - "User-configurable - Let users choose their preference"
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: validation_requirements
+    attributes:
+      label: "✅ Color Validation Rules"
+      description: "How strict should color validation be? (Real-world: Preventing users from making unusable themes)"
+      options:
+        - label: "**WCAG 2.1 AA Compliance** - 4.5:1 contrast ratio minimum (Legal compliance)"
+        - label: "**WCAG 2.1 AAA Compliance** - 7:1 contrast ratio (Higher accessibility)"
+        - label: "**Manufacturing Safety Colors** - Avoid dangerous color combinations"
+        - label: "**Brand Color Constraints** - Maintain company brand guidelines"
+        - label: "**Readability Optimization** - Prevent eyestrain colors"
+        - label: "**Print-Safe Colors** - Ensure themes work on printed documents"
+        - label: "**Warning System Only** - Show warnings but allow override"
+        - label: "**No Validation** - Complete user freedom"
+
+  - type: textarea
+    id: user_story_details
+    attributes:
+      label: "👤 Detailed User Story"
+      description: "Describe exactly how you envision users interacting with this feature:"
+      value: |
+        **Primary User:** Manufacturing operator or system administrator
+        
+        **User Journey:**
+        1. User notices current theme doesn't work well in their lighting conditions
+        2. Clicks edit icon (⚙️) next to ThemeQuickSwitcher
+        3. Theme Editor opens with professional interface
+        4. User navigates between color categories using sidebar
+        5. Modifies colors using professional color pickers
+        6. Uses auto-fill to generate harmonious palette variations
+        7. Previews changes in real-time across the application
+        8. Saves custom theme and returns to work
+        
+        **Success Criteria:**
+        - User can complete theme customization in under 5 minutes
+        - No training required - interface is intuitive
+        - Changes persist after application restart
+        - Themes can be shared with team members
+    validations:
+      required: true
+
+  - type: dropdown
+    id: error_handling_approach
+    attributes:
+      label: "🚨 Error Handling Strategy"
+      description: "How should the system handle problems? (Real-world: What happens when something goes wrong)"
+      options:
+        - "Graceful degradation - Continue working with limited features"
+        - "Fail-safe mode - Revert to default theme on errors"
+        - "User notification - Show errors but let user decide"
+        - "Silent recovery - Fix problems automatically without user input"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: integration_requirements
+    attributes:
+      label: "🔗 Integration Points"
+      description: "What existing systems should this work with?"
+      options:
+        - label: "**Existing 19+ Theme System** - Must work with current MTM themes"
+        - label: "**NavigationService** - Seamless transitions between views"
+        - label: "**ThemeService** - Real-time resource dictionary updates"
+        - label: "**Settings System** - Store preferences with other app settings"
+        - label: "**Logging System** - Track theme changes for debugging"
+        - label: "**Error Handling Service** - Centralized error management"
+        - label: "**Accessibility Services** - Screen reader compatibility"
+        - label: "**Multi-language Support** - Localized color names and descriptions"
+
+  - type: textarea
+    id: technical_constraints
+    attributes:
+      label: "⚙️ Technical Requirements & Constraints"
+      value: |
+        **Required Technology Stack:**
+        - .NET 8.0 with nullable reference types
+        - Avalonia UI 11.3.4 (NOT WPF)
+        - MVVM Community Toolkit 8.3.2 (NO ReactiveUI)
+        - MySQL 9.4.0 database integration
+        - Microsoft Extensions 9.0.8 (DI, Logging, Configuration)
+        
+        **Architecture Constraints:**
+        - Must use MVVM Community Toolkit patterns ([ObservableProperty], [RelayCommand])
+        - All AXAML must follow Avalonia syntax (x:Name, not Name)
+        - Must use MTM mandatory grid pattern (ScrollViewer > Grid[*,Auto] > Border)
+        - Service-oriented design with comprehensive dependency injection
+        - Centralized error handling via Services.ErrorHandling
+        
+        **Performance Requirements:**
+        - Theme editor opens in <500ms
+        - Color changes reflect in <100ms
+        - Memory usage increase <50MB during editing
+        - UI remains responsive with all color pickers active
+    validations:
+      required: true
+
+  - type: dropdown
+    id: testing_scope
+    attributes:
+      label: "🧪 Testing Requirements"
+      description: "What level of testing do you need? (Real-world: How much verification before release)"
+      options:
+        - "Basic - Unit tests for core functionality only"
+        - "Standard - Unit + Integration tests"
+        - "Comprehensive - Unit + Integration + UI tests"
+        - "Enterprise - All tests + Performance + Accessibility validation"
+      default: 2
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: accessibility_requirements
+    attributes:
+      label: "♿ Accessibility Features"
+      description: "What accessibility support is needed? (Real-world: Making sure all users can use the feature)"
+      options:
+        - label: "**Keyboard Navigation** - Full keyboard access to all controls"
+        - label: "**Screen Reader Support** - NVDA, JAWS compatibility"
+        - label: "**High Contrast Mode** - Works with Windows high contrast themes"
+        - label: "**Touch-Friendly** - Tablet and touch screen support for manufacturing"
+        - label: "**Color Blind Support** - Alternative indicators beyond color"
+        - label: "**Text Scaling** - Respects Windows text size settings"
+        - label: "**Focus Indicators** - Clear visual focus for all controls"
+        - label: "**Voice Control** - Windows Speech Recognition compatibility"
+
+  - type: textarea
+    id: current_implementation_status
+    attributes:
+      label: "📋 Current Implementation Status & Issues"
+      description: "DO NOT MODIFY - This tracks current development progress"
+      value: |
+        **🔄 DEVELOPMENT STATUS: BLOCKED - COMPILATION ERRORS**
+        
+        ## ✅ Completed Work:
+        
+        ### Navigation Integration (100% Complete)
+        - ✅ ThemeQuickSwitcher.axaml: Edit icon added with proper styling
+        - ✅ ThemeQuickSwitcher.axaml.cs: Event handling and navigation integration
+        - ✅ MainView.axaml.cs: Theme editor navigation setup completed
+        - ✅ NavigationService: Integration tested and working
+        
+        ### GitHub Project Management (100% Complete)
+        - ✅ Epic template: comprehensive-theme-editor-system.yml
+        - ✅ Feature template: feature-theme-editor-ui.yml  
+        - ✅ Requirements documentation with acceptance criteria
+        - ✅ Timeline estimation (3-4 weeks) and resource planning
+        
+        ### Basic Structure (75% Complete)
+        - ✅ ThemeEditorView.axaml: Basic AXAML structure created
+        - ✅ Service registration: ThemeEditorViewModel in ServiceCollectionExtensions
+        - ⚠️ ThemeEditorViewModel.cs: MAJOR COMPILATION ERRORS (see below)
+        
+        ## 🚨 CRITICAL BLOCKERS:
+        
+        ### ThemeEditorViewModel.cs - 81+ Compilation Errors:
+        ```
+        Line 516-533: Duplicate ColorCategory class definitions
+        Line 535-537: Ambiguous property definitions (Id, Name, Description)  
+        Line 539: Duplicate constructor with same parameters
+        Line 564: Method missing return type error
+        Lines 417-421: Ambiguous method calls in InitializeColorCategories()
+        Line 463: Ambiguous property access in GetCategoryName()
+        Lines 522-526: Non-nullable property errors in constructor
+        ```
+        
+        ### Root Cause Analysis:
+        - File corruption during comprehensive rewrite attempt
+        - Multiple ColorCategory class definitions in same file
+        - Malformed constructor syntax
+        - Inconsistent MVVM Community Toolkit pattern implementation
+        
+        ### File Structure Issues:
+        - ThemeEditorViewModel.cs: Contains duplicate/corrupted content at end
+        - Old property definitions mixed with new implementation
+        - Missing proper namespace references (System.Linq missing)
+        - Incorrect Services.ErrorHandling call patterns
+        
+        ## 📝 Implementation Architecture (Designed):
+        
+        ### Color Management System:
+        - 20+ Color properties using Avalonia.Media.Color
+        - 5 major categories: Core, Text, Background, Status, Border
+        - Auto-fill algorithms for palette generation
+        - WCAG compliance validation during editing
+        
+        ### Navigation System:
+        - ObservableCollection<ColorCategory> for sidebar
+        - SelectedCategory property for current section
+        - NavigateToSectionAsync command for smooth scrolling
+        - Category-based organization with icons and descriptions
+        
+        ### Command Structure:
+        - [RelayCommand] AutoFillCoreColorsAsync()
+        - [RelayCommand] AutoFillTextColorsAsync()  
+        - [RelayCommand] AutoFillBackgroundColorsAsync()
+        - [RelayCommand] ApplyThemeCommand()
+        - [RelayCommand] ResetThemeCommand()
+        - [RelayCommand] CloseEditorCommand()
+        
+        ## 🔧 Required Fixes (Priority Order):
+        
+        ### 1. ThemeEditorViewModel.cs Reconstruction (CRITICAL)
+        - Remove duplicate ColorCategory class definition
+        - Fix constructor syntax and missing return types
+        - Add missing using directives (System.Linq)
+        - Correct Services.ErrorHandling call patterns
+        - Add [ObservableObject] and partial modifiers correctly
+        
+        ### 2. UI Implementation (HIGH)
+        - Replace TextBoxes with ColorPicker controls in ThemeEditorView.axaml
+        - Implement MTM mandatory grid pattern correctly
+        - Add sidebar navigation with proper containment
+        - Integrate auto-fill buttons next to category headers
+        
+        ### 3. Real-Time Updates (MEDIUM)
+        - IThemeService integration for live preview
+        - Resource dictionary manipulation
+        - Property change event handling for unsaved changes
+        
+        ### 4. Testing & Validation (LOW)
+        - Unit tests for color generation algorithms
+        - WCAG compliance validation implementation
+        - Performance testing with all color pickers active
+        
+        ## 💻 Next Development Actions:
+        1. **IMMEDIATE**: Fix ThemeEditorViewModel.cs compilation errors
+        2. **NEXT**: Implement ColorPicker controls in AXAML
+        3. **THEN**: Add auto-fill functionality with color generation
+        4. **FINALLY**: Real-time theme preview and persistence
+        
+        **Estimated Completion**: 2-3 days for core functionality, +1 week for polish and testing
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: missing_requirements_check
+    attributes:
+      label: "❓ Missing Requirements Analysis"
+      description: "Are there any requirements or considerations we might have missed?"
+      options:
+        - label: "**Theme Versioning** - Track theme file versions for updates"
+        - label: "**Theme Rollback** - Ability to revert to previous theme versions"
+        - label: "**Color Naming System** - Custom names for colors (e.g., 'Safety Orange', 'Machine Blue')"
+        - label: "**Theme Inheritance** - Base themes with overrides"
+        - label: "**Conditional Theming** - Different themes for different conditions (shift, department)"
+        - label: "**Theme Analytics** - Track which colors are most/least used"
+        - label: "**Integration with Windows Themes** - Respect system dark/light mode"
+        - label: "**Color Palette Sharing** - Send themes to other MTM installations"
+        - label: "**Theme Documentation** - Add notes/comments to custom themes"
+        - label: "**Preview Mode** - Temporarily apply theme without saving"
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "✅ Acceptance Criteria"
+      value: |
+        ## Primary Success Criteria:
+        
+        ### Navigation & UI:
+        - [ ] Theme Editor opens from ThemeQuickSwitcher edit button in <500ms
+        - [ ] Sidebar displays all selected color categories with proper navigation
+        - [ ] Selected category is visually highlighted and content scrolls to section
+        - [ ] All content contained within theme editor boundaries (no overflow)
+        - [ ] Close button returns to MainView seamlessly
+        
+        ### Color Management:
+        - [ ] All TextBox inputs replaced with professional ColorPicker controls
+        - [ ] ColorPickers support RGB, HSL, and Hex input formats
+        - [ ] Color changes trigger immediate visual feedback
+        - [ ] Invalid colors prevented with user-friendly validation messages
+        - [ ] Auto-fill buttons generate harmonious color palettes per selected algorithm
+        
+        ### Real-Time Functionality:
+        - [ ] Color changes preview in real-time across application
+        - [ ] Theme changes persist after application restart
+        - [ ] Save/Load operations complete in <200ms
+        - [ ] Export/Import functionality maintains 100% fidelity
+        
+        ### Technical Compliance:
+        - [ ] Uses MVVM Community Toolkit patterns exclusively
+        - [ ] Follows Avalonia AXAML syntax rules (no AVLN2000 errors)
+        - [ ] Integrates with existing NavigationService and ThemeService
+        - [ ] Maintains theme resource binding system
+        - [ ] All selected WCAG compliance levels enforced
+        
+        ### Performance & Accessibility:
+        - [ ] UI remains responsive with all color pickers active
+        - [ ] Memory usage increase stays below specified limit
+        - [ ] All selected accessibility requirements implemented
+        - [ ] Comprehensive error handling with graceful degradation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: implementation_timeline
+    attributes:
+      label: "⏱️ Preferred Implementation Timeline"
+      description: "How quickly do you need this feature completed?"
+      options:
+        - "🔥 Rush - 1 week (minimal features, basic functionality)"
+        - "⚡ Fast - 2 weeks (core features, limited polish)"
+        - "📅 Standard - 3-4 weeks (full features, proper testing)"
+        - "🎯 Thorough - 5-6 weeks (all features, comprehensive testing)"
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_considerations
+    attributes:
+      label: "💭 Additional Notes & Considerations"
+      value: |
+        **Development Environment:**
+        - Windows development with PowerShell
+        - Visual Studio Code with Avalonia extensions
+        - MySQL 9.4.0 database server
+        - Git repository with active pull request #56
+        
+        **Current MTM Theme System:**
+        - 19+ existing themes in Resources/Themes/ folder
+        - ThemeService handles runtime theme switching
+        - DynamicResource bindings throughout application
+        - Theme resources follow structured naming conventions
+        
+        **Integration Points:**
+        - Must work with existing NavigationService
+        - Leverages current Services/ErrorHandling.cs
+        - Uses established dependency injection patterns
+        - Integrates with MTM design system and color guidelines
+        
+        **Risks & Mitigation:**
+        - ColorPicker control compatibility - Test early with Avalonia Community Toolkit
+        - Real-time updates performance - Implement debounced updates
+        - Color generation complexity - Start with simple algorithms, expand later
+        - WCAG compliance validation - Use established contrast calculation libraries
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: final_confirmation
+    attributes:
+      label: "🎯 Final Implementation Confirmation"
+      description: "Confirm your choices before creating the feature:"
+      options:
+        - label: "I have reviewed all selected features and requirements"
+        - label: "I understand the current implementation status and blockers"
+        - label: "I accept the estimated timeline based on selected complexity"
+        - label: "I have considered accessibility and performance implications"
+        - label: "I am ready to proceed with development based on these specifications"

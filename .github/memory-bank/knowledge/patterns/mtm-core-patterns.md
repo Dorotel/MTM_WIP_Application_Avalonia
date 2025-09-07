@@ -286,7 +286,7 @@ public class InventoryService : IInventoryService
                 new("p_Quantity", request.Quantity),
                 new("p_Location", request.Location ?? string.Empty),
                 new("p_TransactionType", request.TransactionType ?? string.Empty),
-                new("p_UserId", request.UserId ?? Environment.UserName),
+                new("p_User", request.UserId ?? Environment.UserName),
                 new("p_Notes", request.Notes ?? string.Empty)
             };
 
@@ -506,7 +506,7 @@ public class InventoryTransactionService : IInventoryTransactionService
                 new("p_Quantity", request.Quantity),
                 new("p_Location", request.Location),
                 new("p_TransactionType", transactionType), // IN/OUT/TRANSFER based on user intent
-                new("p_UserId", request.UserId ?? Environment.UserName),
+                new("p_User", request.UserId ?? Environment.UserName),
                 new("p_Notes", request.Notes ?? string.Empty),
                 new("p_WorkOrder", request.WorkOrder ?? string.Empty)
             };
@@ -694,7 +694,7 @@ public static class ErrorHandling
                 new("p_ErrorMessage", exception.Message),
                 new("p_StackTrace", exception.StackTrace ?? string.Empty),
                 new("p_Context", context),
-                new("p_UserId", Environment.UserName),
+                new("p_User", Environment.UserName),
                 new("p_MachineName", Environment.MachineName),
                 new("p_Timestamp", DateTime.Now)
             };

@@ -74,19 +74,7 @@
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
     </Style>
 
-    <!-- Error message styling -->
-    <Style Selector="TextBlock.error-message">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorDarkBrush}" />
-      <Setter Property="FontWeight" Value="Medium" />
-      <Setter Property="FontSize" Value="11" />
-    </Style>
-
-    <!-- Success message styling -->
-    <Style Selector="TextBlock.success-message">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessDarkBrush}" />
-      <Setter Property="FontWeight" Value="Medium" />
-      <Setter Property="FontSize" Value="11" />
-    </Style>
+    <!-- Note: Error and success message styling removed - handled by SuccessOverlayView -->
   </UserControl.Styles>
 
   <!-- Main Layout Container - ScrollViewer for overflow handling -->
@@ -97,7 +85,7 @@
       <!-- Main Entry Panel -->
       <Border Grid.Row="0"  Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,8">
         
-        <Grid x:Name="EntryFormGrid" RowDefinitions="Auto,Auto,*">
+        <Grid x:Name="EntryFormGrid" RowDefinitions="Auto,*">
           
           <!-- Header Section -->
           <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}" CornerRadius="6" Padding="12,8" Margin="0,0,0,16">
@@ -107,24 +95,8 @@
             </Grid>
           </Border>
 
-          <!-- Success Display Section -->
-          <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.SuccessLightBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.SuccessBrush}" BorderThickness="2" CornerRadius="4" Padding="12,8" Margin="0,0,0,16" IsVisible="{Binding HasSuccess}">
-            <Grid x:Name="SuccessGrid" ColumnDefinitions="Auto,*">
-              <materialIcons:MaterialIcon Grid.Column="0" Kind="CheckCircle" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}" VerticalAlignment="Top" Margin="0,2,8,0" />
-              <TextBlock Grid.Column="1" Text="{Binding SuccessMessage}" Classes="success-message" TextWrapping="Wrap" VerticalAlignment="Center" />
-            </Grid>
-          </Border>
-
-          <!-- Error Display Section -->
-          <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}" BorderThickness="2" CornerRadius="4" Padding="12,8" Margin="0,0,0,16" IsVisible="{Binding HasError}">
-            <Grid x:Name="ErrorGrid" ColumnDefinitions="Auto,*">
-              <materialIcons:MaterialIcon Grid.Column="0" Kind="AlertCircle" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" VerticalAlignment="Top" Margin="0,2,8,0" />
-              <TextBlock Grid.Column="1" Text="{Binding ErrorMessage}" Classes="error-message" TextWrapping="Wrap" VerticalAlignment="Center" />
-            </Grid>
-          </Border>
-
           <!-- Form Fields Section -->
-          <Grid x:Name="FormFieldsGrid" Grid.Row="2" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="12">
+          <Grid x:Name="FormFieldsGrid" Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="12">
 
             <!-- Part ID Field -->
             <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">

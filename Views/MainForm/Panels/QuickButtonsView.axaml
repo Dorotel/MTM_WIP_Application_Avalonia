@@ -80,33 +80,6 @@
       <Setter Property="Margin" Value="4,0,0,0"/>
     </Style>
 
-    <!-- MTM Drag and drop styling -->
-    <Style Selector="Button.draggable-button">
-      <Setter Property="Cursor" Value="Hand"/>
-    </Style>
-    
-    <Style Selector="Button.draggable-button:pointerover Border.drag-handle">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
-    </Style>
-    
-    <Style Selector="Button.selected-for-drag">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}"/>
-      <Setter Property="BorderThickness" Value="2"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SelectionBrush}"/>
-    </Style>
-    
-    <Style Selector="Button.dragging">
-      <Setter Property="Opacity" Value="0.8"/>
-      <Setter Property="RenderTransform" Value="scale(1.02)"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ProcessingBrush}"/>
-    </Style>
-    
-    <Style Selector="Button.drop-target">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"/>
-      <Setter Property="BorderThickness" Value="2"/>
-    </Style>
-
     <!-- Header panel styling -->
     <Style Selector="Border.header-panel">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"/>
@@ -279,13 +252,10 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate DataType="vm:QuickButtonItemViewModel">
-                <Button Classes="quick-button draggable-button"
+                <Button Classes="quick-button"
                         Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
                         CommandParameter="{Binding}"
-                        ToolTip.Tip="{Binding ToolTipText}"
-                        PointerPressed="OnButtonPointerPressed"
-                        PointerMoved="OnButtonPointerMoved"
-                        PointerReleased="OnButtonPointerReleased">
+                        ToolTip.Tip="{Binding ToolTipText}">
                   <Button.ContextMenu>
                     <ContextMenu>
                       <MenuItem Header="🗑️ Remove Button"
@@ -313,40 +283,14 @@
                     </ContextMenu>
                   </Button.ContextMenu>
                   <Grid ColumnDefinitions="Auto,8,*,Auto">
-                    <!-- MTM Industrial position indicator with drag handle -->
-                    <Border Grid.Column="0" Classes="position-indicator drag-handle">
-                      <Grid>
-                        <!-- Position number with MTM styling -->
-                        <TextBlock Text="{Binding Position}"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                                   FontSize="11"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   ToolTip.Tip="Drag to reorder"/>
-                        <!-- Industrial drag dots overlay -->
-                        <Canvas HorizontalAlignment="Right" VerticalAlignment="Bottom" 
-                                Width="8" Height="8" Margin="0,0,2,2">
-                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                   Canvas.Left="0" Canvas.Top="0" Opacity="0.8"/>
-                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                   Canvas.Left="3" Canvas.Top="0" Opacity="0.8"/>
-                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                   Canvas.Left="6" Canvas.Top="0" Opacity="0.8"/>
-                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                   Canvas.Left="0" Canvas.Top="3" Opacity="0.8"/>
-                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                   Canvas.Left="3" Canvas.Top="3" Opacity="0.8"/>
-                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                   Canvas.Left="6" Canvas.Top="3" Opacity="0.8"/>
-                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                   Canvas.Left="0" Canvas.Top="6" Opacity="0.8"/>
-                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                   Canvas.Left="3" Canvas.Top="6" Opacity="0.8"/>
-                          <Ellipse Width="1.5" Height="1.5" Fill="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                                   Canvas.Left="6" Canvas.Top="6" Opacity="0.8"/>
-                        </Canvas>
-                      </Grid>
+                    <!-- MTM Industrial position indicator -->
+                    <Border Grid.Column="0" Classes="position-indicator">
+                      <TextBlock Text="{Binding Position}"
+                                 Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                                 FontSize="11"
+                                 FontWeight="Bold"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
                     </Border>
                     
                     <!-- Button content with MTM typography -->

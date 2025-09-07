@@ -70,6 +70,10 @@ public class MainWindowViewModel : BaseViewModel
             };
             
             Logger.LogInformation("MainView manually initialized and set as CurrentView");
+            
+            // Request startup focus after MainView is fully initialized
+            Logger.LogDebug("Requesting startup focus after MainView initialization");
+            mainViewViewModel.RequestStartupFocus();
         }
         catch (Exception ex)
         {
