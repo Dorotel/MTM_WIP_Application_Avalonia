@@ -648,6 +648,155 @@
                                 </StackPanel>
                             </Border>
 
+                            <!-- Enhanced Advanced Tools Section -->
+                            <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" 
+                                    BorderThickness="1" 
+                                    CornerRadius="8" 
+                                    Padding="16">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="🔧 Professional Tools" 
+                                              FontSize="16" 
+                                              FontWeight="Bold" 
+                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                    
+                                    <!-- Color History and Undo/Redo -->
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="⏳ Color History" 
+                                                  FontWeight="SemiBold" 
+                                                  FontSize="14"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                        
+                                        <WrapPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                            <Button Content="↶ Undo" 
+                                                   Classes="mtm-secondary" 
+                                                   Command="{Binding UndoCommand}" 
+                                                   IsEnabled="{Binding CanUndo}"
+                                                   FontSize="11" 
+                                                   Padding="12,6"
+                                                   Margin="0,0,8,0"
+                                                   ToolTip.Tip="Undo last color change" />
+                                            
+                                            <Button Content="↷ Redo" 
+                                                   Classes="mtm-secondary" 
+                                                   Command="{Binding RedoCommand}" 
+                                                   IsEnabled="{Binding CanRedo}"
+                                                   FontSize="11" 
+                                                   Padding="12,6"
+                                                   ToolTip.Tip="Redo last undone change" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                    
+                                    <!-- Color Blindness Preview -->
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="♿ Accessibility Preview" 
+                                                  FontWeight="SemiBold" 
+                                                  FontSize="14"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                        
+                                        <Grid ColumnDefinitions="200,*,Auto" ColumnSpacing="8">
+                                            <ComboBox Grid.Column="0"
+                                                     ItemsSource="{Binding ColorBlindnessTypes}"
+                                                     SelectedItem="{Binding ColorBlindnessType}"
+                                                     FontSize="11" />
+                                            
+                                            <TextBlock Grid.Column="1" 
+                                                      Text="Preview how colors appear with color vision deficiency" 
+                                                      FontSize="10" 
+                                                      VerticalAlignment="Center"
+                                                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                                            
+                                            <Button Grid.Column="2" 
+                                                   Content="🔍 Toggle Preview"
+                                                   Classes="mtm-secondary"
+                                                   Command="{Binding ToggleColorBlindPreviewCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="12,6" />
+                                        </Grid>
+                                    </StackPanel>
+                                    
+                                    <!-- Bulk Color Operations -->
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="🎛️ Bulk Operations" 
+                                                  FontWeight="SemiBold" 
+                                                  FontSize="14"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                        
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                            <StackPanel Grid.Column="0" Spacing="4">
+                                                <TextBlock Text="Brightness Adjustment" 
+                                                          FontSize="11" 
+                                                          FontWeight="Medium" />
+                                                <WrapPanel Orientation="Horizontal">
+                                                    <Button Content="🔅 -20%" 
+                                                           Classes="mtm-secondary" 
+                                                           Command="{Binding BulkAdjustBrightnessCommand}"
+                                                           CommandParameter="-0.2"
+                                                           FontSize="10" 
+                                                           Padding="8,4"
+                                                           Margin="0,0,4,0" />
+                                                    <Button Content="🔆 +20%" 
+                                                           Classes="mtm-secondary" 
+                                                           Command="{Binding BulkAdjustBrightnessCommand}"
+                                                           CommandParameter="0.2"
+                                                           FontSize="10" 
+                                                           Padding="8,4" />
+                                                </WrapPanel>
+                                            </StackPanel>
+                                            
+                                            <StackPanel Grid.Column="1" Spacing="4">
+                                                <TextBlock Text="Saturation Adjustment" 
+                                                          FontSize="11" 
+                                                          FontWeight="Medium" />
+                                                <WrapPanel Orientation="Horizontal">
+                                                    <Button Content="🎨 -30%" 
+                                                           Classes="mtm-secondary" 
+                                                           Command="{Binding BulkAdjustSaturationCommand}"
+                                                           CommandParameter="-0.3"
+                                                           FontSize="10" 
+                                                           Padding="8,4"
+                                                           Margin="0,0,4,0" />
+                                                    <Button Content="🎨 +30%" 
+                                                           Classes="mtm-secondary" 
+                                                           Command="{Binding BulkAdjustSaturationCommand}"
+                                                           CommandParameter="0.3"
+                                                           FontSize="10" 
+                                                           Padding="8,4" />
+                                                </WrapPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                    
+                                    <!-- Recent Colors Palette -->
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="🎯 Recent Colors" 
+                                                  FontWeight="SemiBold" 
+                                                  FontSize="14"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                        
+                                        <ItemsControl ItemsSource="{Binding RecentColors}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel Orientation="Horizontal" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="{Binding .}" 
+                                                           Width="24" 
+                                                           Height="24" 
+                                                           CornerRadius="3"
+                                                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                                                           BorderThickness="1"
+                                                           Margin="2"
+                                                           ToolTip.Tip="{Binding ., StringFormat='Color: {0}'}" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>

@@ -53,6 +53,63 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     #endregion
 
+    #region Advanced Features - Color History and Undo/Redo
+
+    [ObservableProperty]
+    private ObservableCollection<ColorSnapshot> colorHistory = new();
+
+    [ObservableProperty]
+    private int currentHistoryIndex = -1;
+
+    [ObservableProperty]
+    private bool canUndo = false;
+
+    [ObservableProperty]
+    private bool canRedo = false;
+
+    [ObservableProperty]
+    private ObservableCollection<Color> recentColors = new();
+
+    /// <summary>
+    /// Represents a snapshot of all theme colors at a point in time
+    /// </summary>
+    public class ColorSnapshot
+    {
+        public string Name { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; } = DateTime.Now;
+        public Dictionary<string, Color> Colors { get; set; } = new();
+        
+        public ColorSnapshot(string name = "Color Change")
+        {
+            Name = name;
+        }
+    }
+
+    #endregion
+
+    #region Color Blindness Simulation Properties
+
+    [ObservableProperty]
+    private bool isColorBlindPreviewEnabled = false;
+
+    [ObservableProperty]
+    private string colorBlindnessType = "None";
+
+    [ObservableProperty]
+    private ObservableCollection<string> colorBlindnessTypes = new()
+    {
+        "None",
+        "Protanopia (Red-blind)",
+        "Deuteranopia (Green-blind)", 
+        "Tritanopia (Blue-blind)",
+        "Protanomaly (Red-weak)",
+        "Deuteranomaly (Green-weak)",
+        "Tritanomaly (Blue-weak)",
+        "Monochromacy (Total color blindness)"
+    };
+
+    #endregion
+
     #region Core Colors
 
     [ObservableProperty]
@@ -72,24 +129,28 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
     }
 
     partial void OnSecondaryActionColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
     }
 
     partial void OnAccentColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
     }
 
     partial void OnHighlightColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
     }
 
     #endregion
@@ -258,6 +319,201 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     #endregion
 
+    #region Advanced Color Features Commands
+
+    [RelayCommand]
+    private async Task UndoAsync()
+    {
+        if (!CanUndo || CurrentHistoryIndex <= 0) return;
+
+        try
+        {
+            CurrentHistoryIndex--;
+            var snapshot = ColorHistory[CurrentHistoryIndex];
+            await RestoreFromSnapshotAsync(snapshot, false);
+            
+            CanUndo = CurrentHistoryIndex > 0;
+            CanRedo = true;
+            
+            StatusMessage = $"Undone: {snapshot.Name}";
+            Logger.LogDebug("Undo applied: {SnapshotName}", snapshot.Name);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during undo operation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Undo operation failed", Environment.UserName);
+        }
+    }
+
+    [RelayCommand]
+    private async Task RedoAsync()
+    {
+        if (!CanRedo || CurrentHistoryIndex >= ColorHistory.Count - 1) return;
+
+        try
+        {
+            CurrentHistoryIndex++;
+            var snapshot = ColorHistory[CurrentHistoryIndex];
+            await RestoreFromSnapshotAsync(snapshot, false);
+            
+            CanRedo = CurrentHistoryIndex < ColorHistory.Count - 1;
+            CanUndo = true;
+            
+            StatusMessage = $"Redone: {snapshot.Name}";
+            Logger.LogDebug("Redo applied: {SnapshotName}", snapshot.Name);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during redo operation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Redo operation failed", Environment.UserName);
+        }
+    }
+
+    [RelayCommand]
+    private async Task ToggleColorBlindPreviewAsync()
+    {
+        try
+        {
+            IsColorBlindPreviewEnabled = !IsColorBlindPreviewEnabled;
+            
+            if (IsColorBlindPreviewEnabled)
+            {
+                StatusMessage = $"Color blindness preview enabled: {ColorBlindnessType}";
+                await ApplyColorBlindnessFilterAsync();
+            }
+            else
+            {
+                StatusMessage = "Color blindness preview disabled";
+                await RestoreOriginalColorsAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error toggling color blind preview");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Color blindness preview failed", Environment.UserName);
+        }
+    }
+
+    [RelayCommand]
+    private async Task BulkAdjustBrightnessAsync(double adjustment)
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = $"Adjusting all colors brightness by {adjustment:P0}...";
+            
+            SaveColorSnapshot("Bulk Brightness Adjustment");
+            
+            // Adjust all color categories
+            PrimaryActionColor = AdjustBrightness(PrimaryActionColor, adjustment);
+            SecondaryActionColor = AdjustBrightness(SecondaryActionColor, adjustment);
+            AccentColor = AdjustBrightness(AccentColor, adjustment);
+            HighlightColor = AdjustBrightness(HighlightColor, adjustment);
+            
+            HeadingTextColor = AdjustBrightness(HeadingTextColor, adjustment);
+            BodyTextColor = AdjustBrightness(BodyTextColor, adjustment);
+            InteractiveTextColor = AdjustBrightness(InteractiveTextColor, adjustment);
+            TertiaryTextColor = AdjustBrightness(TertiaryTextColor, adjustment);
+            
+            MainBackgroundColor = AdjustBrightness(MainBackgroundColor, adjustment);
+            CardBackgroundColor = AdjustBrightness(CardBackgroundColor, adjustment);
+            HoverBackgroundColor = AdjustBrightness(HoverBackgroundColor, adjustment);
+            PanelBackgroundColor = AdjustBrightness(PanelBackgroundColor, adjustment);
+            SidebarBackgroundColor = AdjustBrightness(SidebarBackgroundColor, adjustment);
+            
+            SuccessColor = AdjustBrightness(SuccessColor, adjustment);
+            WarningColor = AdjustBrightness(WarningColor, adjustment);
+            ErrorColor = AdjustBrightness(ErrorColor, adjustment);
+            InfoColor = AdjustBrightness(InfoColor, adjustment);
+            
+            BorderColor = AdjustBrightness(BorderColor, adjustment);
+            BorderAccentColor = AdjustBrightness(BorderAccentColor, adjustment);
+            
+            HasUnsavedChanges = true;
+            StatusMessage = $"Brightness adjusted by {adjustment:P0} for all colors";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during bulk brightness adjustment");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Bulk brightness adjustment failed", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task BulkAdjustSaturationAsync(double adjustment)
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = $"Adjusting all colors saturation by {adjustment:P0}...";
+            
+            SaveColorSnapshot("Bulk Saturation Adjustment");
+            
+            // Adjust saturation for all colors
+            PrimaryActionColor = AdjustSaturation(PrimaryActionColor, adjustment);
+            SecondaryActionColor = AdjustSaturation(SecondaryActionColor, adjustment);
+            AccentColor = AdjustSaturation(AccentColor, adjustment);
+            HighlightColor = AdjustSaturation(HighlightColor, adjustment);
+            
+            HeadingTextColor = AdjustSaturation(HeadingTextColor, adjustment);
+            BodyTextColor = AdjustSaturation(BodyTextColor, adjustment);
+            InteractiveTextColor = AdjustSaturation(InteractiveTextColor, adjustment);
+            TertiaryTextColor = AdjustSaturation(TertiaryTextColor, adjustment);
+            
+            // Skip backgrounds for saturation to maintain neutrality
+            
+            SuccessColor = AdjustSaturation(SuccessColor, adjustment);
+            WarningColor = AdjustSaturation(WarningColor, adjustment);
+            ErrorColor = AdjustSaturation(ErrorColor, adjustment);
+            InfoColor = AdjustSaturation(InfoColor, adjustment);
+            
+            HasUnsavedChanges = true;
+            StatusMessage = $"Saturation adjusted by {adjustment:P0} for all colors";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during bulk saturation adjustment");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Bulk saturation adjustment failed", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand] 
+    private void AddToRecentColors(Color color)
+    {
+        try
+        {
+            // Add to recent colors, maintaining a maximum of 16 colors
+            if (RecentColors.Contains(color))
+            {
+                RecentColors.Remove(color);
+            }
+            
+            RecentColors.Insert(0, color);
+            
+            // Keep only the 16 most recent colors
+            while (RecentColors.Count > 16)
+            {
+                RecentColors.RemoveAt(RecentColors.Count - 1);
+            }
+            
+            Logger.LogDebug("Added color {Color} to recent colors", color.ToString());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error adding color to recent colors");
+        }
+    }
+
+    #endregion
+
     public ThemeEditorViewModel(
         ILogger<ThemeEditorViewModel> logger,
         IThemeService? themeService = null,
@@ -269,6 +525,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
         Logger.LogDebug("ThemeEditorViewModel initialized");
         InitializeColorCategories();
         LoadCurrentThemeColors();
+        
+        // Initialize with current colors as first snapshot
+        SaveColorSnapshot("Initial Theme State");
     }
 
     #region Navigation Commands
@@ -1950,6 +2209,486 @@ public partial class ThemeEditorViewModel : BaseViewModel
             await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply manufacturing theme", Environment.UserName);
         }
     }
+
+    #region Advanced Feature Helper Methods
+
+    /// <summary>
+    /// Saves current color state as a snapshot for undo/redo functionality
+    /// </summary>
+    private void SaveColorSnapshot(string name)
+    {
+        try
+        {
+            var snapshot = new ColorSnapshot(name);
+            
+            // Capture all current colors
+            snapshot.Colors["PrimaryAction"] = PrimaryActionColor;
+            snapshot.Colors["SecondaryAction"] = SecondaryActionColor;
+            snapshot.Colors["Accent"] = AccentColor;
+            snapshot.Colors["Highlight"] = HighlightColor;
+            
+            snapshot.Colors["HeadingText"] = HeadingTextColor;
+            snapshot.Colors["BodyText"] = BodyTextColor;
+            snapshot.Colors["InteractiveText"] = InteractiveTextColor;
+            snapshot.Colors["OverlayText"] = OverlayTextColor;
+            snapshot.Colors["TertiaryText"] = TertiaryTextColor;
+            
+            snapshot.Colors["MainBackground"] = MainBackgroundColor;
+            snapshot.Colors["CardBackground"] = CardBackgroundColor;
+            snapshot.Colors["HoverBackground"] = HoverBackgroundColor;
+            snapshot.Colors["PanelBackground"] = PanelBackgroundColor;
+            snapshot.Colors["SidebarBackground"] = SidebarBackgroundColor;
+            
+            snapshot.Colors["Success"] = SuccessColor;
+            snapshot.Colors["Warning"] = WarningColor;
+            snapshot.Colors["Error"] = ErrorColor;
+            snapshot.Colors["Info"] = InfoColor;
+            
+            snapshot.Colors["Border"] = BorderColor;
+            snapshot.Colors["BorderAccent"] = BorderAccentColor;
+            
+            // Remove any snapshots after current index (for redo chain)
+            while (ColorHistory.Count > CurrentHistoryIndex + 1)
+            {
+                ColorHistory.RemoveAt(ColorHistory.Count - 1);
+            }
+            
+            ColorHistory.Add(snapshot);
+            CurrentHistoryIndex = ColorHistory.Count - 1;
+            
+            // Limit history to 20 entries
+            while (ColorHistory.Count > 20)
+            {
+                ColorHistory.RemoveAt(0);
+                CurrentHistoryIndex--;
+            }
+            
+            CanUndo = CurrentHistoryIndex > 0;
+            CanRedo = false;
+            
+            Logger.LogDebug("Color snapshot saved: {SnapshotName}", name);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving color snapshot");
+        }
+    }
+
+    /// <summary>
+    /// Restores colors from a snapshot
+    /// </summary>
+    private async Task RestoreFromSnapshotAsync(ColorSnapshot snapshot, bool saveSnapshot = true)
+    {
+        try
+        {
+            if (saveSnapshot)
+            {
+                SaveColorSnapshot($"Before restore: {snapshot.Name}");
+            }
+            
+            // Restore all colors from snapshot
+            if (snapshot.Colors.TryGetValue("PrimaryAction", out var primaryAction))
+                PrimaryActionColor = primaryAction;
+            if (snapshot.Colors.TryGetValue("SecondaryAction", out var secondaryAction))
+                SecondaryActionColor = secondaryAction;
+            if (snapshot.Colors.TryGetValue("Accent", out var accent))
+                AccentColor = accent;
+            if (snapshot.Colors.TryGetValue("Highlight", out var highlight))
+                HighlightColor = highlight;
+                
+            if (snapshot.Colors.TryGetValue("HeadingText", out var headingText))
+                HeadingTextColor = headingText;
+            if (snapshot.Colors.TryGetValue("BodyText", out var bodyText))
+                BodyTextColor = bodyText;
+            if (snapshot.Colors.TryGetValue("InteractiveText", out var interactiveText))
+                InteractiveTextColor = interactiveText;
+            if (snapshot.Colors.TryGetValue("OverlayText", out var overlayText))
+                OverlayTextColor = overlayText;
+            if (snapshot.Colors.TryGetValue("TertiaryText", out var tertiaryText))
+                TertiaryTextColor = tertiaryText;
+                
+            if (snapshot.Colors.TryGetValue("MainBackground", out var mainBg))
+                MainBackgroundColor = mainBg;
+            if (snapshot.Colors.TryGetValue("CardBackground", out var cardBg))
+                CardBackgroundColor = cardBg;
+            if (snapshot.Colors.TryGetValue("HoverBackground", out var hoverBg))
+                HoverBackgroundColor = hoverBg;
+            if (snapshot.Colors.TryGetValue("PanelBackground", out var panelBg))
+                PanelBackgroundColor = panelBg;
+            if (snapshot.Colors.TryGetValue("SidebarBackground", out var sidebarBg))
+                SidebarBackgroundColor = sidebarBg;
+                
+            if (snapshot.Colors.TryGetValue("Success", out var success))
+                SuccessColor = success;
+            if (snapshot.Colors.TryGetValue("Warning", out var warning))
+                WarningColor = warning;
+            if (snapshot.Colors.TryGetValue("Error", out var error))
+                ErrorColor = error;
+            if (snapshot.Colors.TryGetValue("Info", out var info))
+                InfoColor = info;
+                
+            if (snapshot.Colors.TryGetValue("Border", out var border))
+                BorderColor = border;
+            if (snapshot.Colors.TryGetValue("BorderAccent", out var borderAccent))
+                BorderAccentColor = borderAccent;
+            
+            HasUnsavedChanges = true;
+            await Task.Delay(50); // Brief delay for UI update
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error restoring from snapshot");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Applies color blindness simulation filter to preview colors
+    /// </summary>
+    private async Task ApplyColorBlindnessFilterAsync()
+    {
+        try
+        {
+            Logger.LogDebug("Applying color blindness filter: {Type}", ColorBlindnessType);
+            
+            // Save original colors for restoration
+            SaveColorSnapshot($"Before {ColorBlindnessType} simulation");
+            
+            // Apply filter based on type
+            switch (ColorBlindnessType)
+            {
+                case "Protanopia (Red-blind)":
+                    ApplyProtanopiaFilter();
+                    break;
+                case "Deuteranopia (Green-blind)":
+                    ApplyDeuteranopiaFilter();
+                    break;
+                case "Tritanopia (Blue-blind)":
+                    ApplyTritanopiaFilter();
+                    break;
+                case "Protanomaly (Red-weak)":
+                    ApplyProtanomalyFilter();
+                    break;
+                case "Deuteranomaly (Green-weak)":
+                    ApplyDeuteranomalyFilter();
+                    break;
+                case "Tritanomaly (Blue-weak)":
+                    ApplyTritanomalyFilter();
+                    break;
+                case "Monochromacy (Total color blindness)":
+                    ApplyMonochromacyFilter();
+                    break;
+            }
+            
+            await Task.Delay(100); // Allow UI to update
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying color blindness filter");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Restores original colors from color blindness simulation
+    /// </summary>
+    private async Task RestoreOriginalColorsAsync()
+    {
+        try
+        {
+            if (ColorHistory.Any())
+            {
+                var lastSnapshot = ColorHistory.LastOrDefault();
+                if (lastSnapshot != null && lastSnapshot.Name.Contains("Before") && lastSnapshot.Name.Contains("simulation"))
+                {
+                    await RestoreFromSnapshotAsync(lastSnapshot, false);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error restoring original colors");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Adjusts brightness of a color by the specified amount
+    /// </summary>
+    private Color AdjustBrightness(Color color, double adjustment)
+    {
+        var (h, s, v) = ColorToHsv(color);
+        v = Math.Max(0, Math.Min(1, v + adjustment));
+        return HsvToColor(h, s, v, color.A);
+    }
+
+    /// <summary>
+    /// Adjusts saturation of a color by the specified amount
+    /// </summary>
+    private Color AdjustSaturation(Color color, double adjustment)
+    {
+        var (h, s, v) = ColorToHsv(color);
+        s = Math.Max(0, Math.Min(1, s + adjustment));
+        return HsvToColor(h, s, v, color.A);
+    }
+
+    /// <summary>
+    /// Applies Protanopia (red-blindness) filter to all colors
+    /// </summary>
+    private void ApplyProtanopiaFilter()
+    {
+        // Simplified protanopia simulation - removes red component
+        PrimaryActionColor = SimulateProtanopia(PrimaryActionColor);
+        SecondaryActionColor = SimulateProtanopia(SecondaryActionColor);
+        AccentColor = SimulateProtanopia(AccentColor);
+        HighlightColor = SimulateProtanopia(HighlightColor);
+        SuccessColor = SimulateProtanopia(SuccessColor);
+        WarningColor = SimulateProtanopia(WarningColor);
+        ErrorColor = SimulateProtanopia(ErrorColor);
+        InfoColor = SimulateProtanopia(InfoColor);
+    }
+
+    /// <summary>
+    /// Applies Deuteranopia (green-blindness) filter to all colors
+    /// </summary>
+    private void ApplyDeuteranopiaFilter()
+    {
+        PrimaryActionColor = SimulateDeuteranopia(PrimaryActionColor);
+        SecondaryActionColor = SimulateDeuteranopia(SecondaryActionColor);
+        AccentColor = SimulateDeuteranopia(AccentColor);
+        HighlightColor = SimulateDeuteranopia(HighlightColor);
+        SuccessColor = SimulateDeuteranopia(SuccessColor);
+        WarningColor = SimulateDeuteranopia(WarningColor);
+        ErrorColor = SimulateDeuteranopia(ErrorColor);
+        InfoColor = SimulateDeuteranopia(InfoColor);
+    }
+
+    /// <summary>
+    /// Applies Tritanopia (blue-blindness) filter to all colors
+    /// </summary>
+    private void ApplyTritanopiaFilter()
+    {
+        PrimaryActionColor = SimulateTritanopia(PrimaryActionColor);
+        SecondaryActionColor = SimulateTritanopia(SecondaryActionColor);
+        AccentColor = SimulateTritanopia(AccentColor);
+        HighlightColor = SimulateTritanopia(HighlightColor);
+        SuccessColor = SimulateTritanopia(SuccessColor);
+        WarningColor = SimulateTritanopia(WarningColor);
+        ErrorColor = SimulateTritanopia(ErrorColor);
+        InfoColor = SimulateTritanopia(InfoColor);
+    }
+
+    /// <summary>
+    /// Applies Protanomaly (red-weakness) filter
+    /// </summary>
+    private void ApplyProtanomalyFilter()
+    {
+        // Mild red deficiency - reduce red component by 50%
+        PrimaryActionColor = ReduceRedComponent(PrimaryActionColor, 0.5);
+        SecondaryActionColor = ReduceRedComponent(SecondaryActionColor, 0.5);
+        AccentColor = ReduceRedComponent(AccentColor, 0.5);
+        HighlightColor = ReduceRedComponent(HighlightColor, 0.5);
+        SuccessColor = ReduceRedComponent(SuccessColor, 0.5);
+        WarningColor = ReduceRedComponent(WarningColor, 0.5);
+        ErrorColor = ReduceRedComponent(ErrorColor, 0.5);
+        InfoColor = ReduceRedComponent(InfoColor, 0.5);
+    }
+
+    /// <summary>
+    /// Applies Deuteranomaly (green-weakness) filter
+    /// </summary>
+    private void ApplyDeuteranomalyFilter()
+    {
+        PrimaryActionColor = ReduceGreenComponent(PrimaryActionColor, 0.5);
+        SecondaryActionColor = ReduceGreenComponent(SecondaryActionColor, 0.5);
+        AccentColor = ReduceGreenComponent(AccentColor, 0.5);
+        HighlightColor = ReduceGreenComponent(HighlightColor, 0.5);
+        SuccessColor = ReduceGreenComponent(SuccessColor, 0.5);
+        WarningColor = ReduceGreenComponent(WarningColor, 0.5);
+        ErrorColor = ReduceGreenComponent(ErrorColor, 0.5);
+        InfoColor = ReduceGreenComponent(InfoColor, 0.5);
+    }
+
+    /// <summary>
+    /// Applies Tritanomaly (blue-weakness) filter
+    /// </summary>
+    private void ApplyTritanomalyFilter()
+    {
+        PrimaryActionColor = ReduceBlueComponent(PrimaryActionColor, 0.5);
+        SecondaryActionColor = ReduceBlueComponent(SecondaryActionColor, 0.5);
+        AccentColor = ReduceBlueComponent(AccentColor, 0.5);
+        HighlightColor = ReduceBlueComponent(HighlightColor, 0.5);
+        SuccessColor = ReduceBlueComponent(SuccessColor, 0.5);
+        WarningColor = ReduceBlueComponent(WarningColor, 0.5);
+        ErrorColor = ReduceBlueComponent(ErrorColor, 0.5);
+        InfoColor = ReduceBlueComponent(InfoColor, 0.5);
+    }
+
+    /// <summary>
+    /// Applies Monochromacy (total color blindness) filter
+    /// </summary>
+    private void ApplyMonochromacyFilter()
+    {
+        PrimaryActionColor = ToGrayscale(PrimaryActionColor);
+        SecondaryActionColor = ToGrayscale(SecondaryActionColor);
+        AccentColor = ToGrayscale(AccentColor);
+        HighlightColor = ToGrayscale(HighlightColor);
+        HeadingTextColor = ToGrayscale(HeadingTextColor);
+        BodyTextColor = ToGrayscale(BodyTextColor);
+        InteractiveTextColor = ToGrayscale(InteractiveTextColor);
+        TertiaryTextColor = ToGrayscale(TertiaryTextColor);
+        SuccessColor = ToGrayscale(SuccessColor);
+        WarningColor = ToGrayscale(WarningColor);
+        ErrorColor = ToGrayscale(ErrorColor);
+        InfoColor = ToGrayscale(InfoColor);
+    }
+
+    /// <summary>
+    /// Simplified protanopia simulation
+    /// </summary>
+    private Color SimulateProtanopia(Color color)
+    {
+        // Matrix transformation for protanopia simulation
+        var r = 0.567 * color.R + 0.433 * color.G;
+        var g = 0.558 * color.R + 0.442 * color.G;
+        var b = 0.242 * color.B;
+        
+        return Color.FromArgb(color.A, 
+            (byte)Math.Min(255, Math.Max(0, r)),
+            (byte)Math.Min(255, Math.Max(0, g)),
+            (byte)Math.Min(255, Math.Max(0, b)));
+    }
+
+    /// <summary>
+    /// Simplified deuteranopia simulation
+    /// </summary>
+    private Color SimulateDeuteranopia(Color color)
+    {
+        var r = 0.625 * color.R + 0.375 * color.G;
+        var g = 0.70 * color.R + 0.30 * color.G;
+        var b = 0.30 * color.B;
+        
+        return Color.FromArgb(color.A,
+            (byte)Math.Min(255, Math.Max(0, r)),
+            (byte)Math.Min(255, Math.Max(0, g)),
+            (byte)Math.Min(255, Math.Max(0, b)));
+    }
+
+    /// <summary>
+    /// Simplified tritanopia simulation
+    /// </summary>
+    private Color SimulateTritanopia(Color color)
+    {
+        var r = 0.95 * color.R + 0.05 * color.B;
+        var g = 0.433 * color.G + 0.567 * color.B;
+        var b = 0.475 * color.B;
+        
+        return Color.FromArgb(color.A,
+            (byte)Math.Min(255, Math.Max(0, r)),
+            (byte)Math.Min(255, Math.Max(0, g)),
+            (byte)Math.Min(255, Math.Max(0, b)));
+    }
+
+    /// <summary>
+    /// Reduces red component by specified factor
+    /// </summary>
+    private Color ReduceRedComponent(Color color, double factor)
+    {
+        return Color.FromArgb(color.A, 
+            (byte)(color.R * factor), 
+            color.G, 
+            color.B);
+    }
+
+    /// <summary>
+    /// Reduces green component by specified factor
+    /// </summary>
+    private Color ReduceGreenComponent(Color color, double factor)
+    {
+        return Color.FromArgb(color.A, 
+            color.R, 
+            (byte)(color.G * factor), 
+            color.B);
+    }
+
+    /// <summary>
+    /// Reduces blue component by specified factor
+    /// </summary>
+    private Color ReduceBlueComponent(Color color, double factor)
+    {
+        return Color.FromArgb(color.A, 
+            color.R, 
+            color.G, 
+            (byte)(color.B * factor));
+    }
+
+    /// <summary>
+    /// Converts color to grayscale using luminance formula
+    /// </summary>
+    private Color ToGrayscale(Color color)
+    {
+        var gray = (byte)(0.299 * color.R + 0.587 * color.G + 0.114 * color.B);
+        return Color.FromArgb(color.A, gray, gray, gray);
+    }
+
+    /// <summary>
+    /// Converts RGB color to HSV color space
+    /// </summary>
+    private (double hue, double saturation, double value) ColorToHsv(Color color)
+    {
+        double r = color.R / 255.0;
+        double g = color.G / 255.0; 
+        double b = color.B / 255.0;
+
+        double max = Math.Max(r, Math.Max(g, b));
+        double min = Math.Min(r, Math.Min(g, b));
+        double delta = max - min;
+
+        double h = 0;
+        if (delta != 0)
+        {
+            if (max == r) h = 60 * (((g - b) / delta) % 6);
+            else if (max == g) h = 60 * (((b - r) / delta) + 2);
+            else if (max == b) h = 60 * (((r - g) / delta) + 4);
+        }
+        if (h < 0) h += 360;
+
+        double s = max == 0 ? 0 : delta / max;
+        double v = max;
+
+        return (h, s, v);
+    }
+
+    /// <summary>
+    /// Converts HSV color space to RGB color
+    /// </summary>
+    private Color HsvToColor(double hue, double saturation, double value, byte alpha = 255)
+    {
+        int hi = (int)(hue / 60) % 6;
+        double f = (hue / 60) - hi;
+        double p = value * (1 - saturation);
+        double q = value * (1 - f * saturation);
+        double t = value * (1 - (1 - f) * saturation);
+
+        double r, g, b;
+        switch (hi)
+        {
+            case 0: r = value; g = t; b = p; break;
+            case 1: r = q; g = value; b = p; break;
+            case 2: r = p; g = value; b = t; break;
+            case 3: r = p; g = q; b = value; break;
+            case 4: r = t; g = p; b = value; break;
+            case 5: r = value; g = p; b = q; break;
+            default: r = g = b = 0; break;
+        }
+
+        return Color.FromArgb(alpha,
+            (byte)Math.Min(255, Math.Max(0, r * 255)),
+            (byte)Math.Min(255, Math.Max(0, g * 255)),
+            (byte)Math.Min(255, Math.Max(0, b * 255)));
+    }
+
+    #endregion
 
     #endregion
 }
