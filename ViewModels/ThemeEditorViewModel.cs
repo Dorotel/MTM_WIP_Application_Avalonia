@@ -16,7 +16,6 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// Features navigation, color pickers, auto-fill generation, and real-time preview.
 /// Uses MVVM Community Toolkit for property and command management.
 /// </summary>
-[ObservableObject]
 public partial class ThemeEditorViewModel : BaseViewModel
 {
     private readonly IThemeService? _themeService;
@@ -164,7 +163,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error navigating to section {CategoryId}", categoryId);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to navigate to {categoryId} section", "ThemeEditor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to navigate to {categoryId} section", Environment.UserName);
         }
     }
 
@@ -194,7 +193,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling core colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate core color palette", "ThemeEditor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate core color palette", Environment.UserName);
         }
         finally
         {
@@ -225,7 +224,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling text colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate text color palette", "ThemeEditor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate text color palette", Environment.UserName);
         }
         finally
         {
@@ -256,7 +255,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling background colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate background color palette", "ThemeEditor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate background color palette", Environment.UserName);
         }
         finally
         {
@@ -285,7 +284,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling status colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate status color palette", "ThemeEditor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate status color palette", Environment.UserName);
         }
         finally
         {
@@ -313,7 +312,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling border colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate border color palette", "ThemeEditor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate border color palette", Environment.UserName);
         }
         finally
         {
@@ -326,7 +325,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     #region Theme Operations Commands
 
     [RelayCommand]
-    private async Task ApplyThemeCommand()
+    private async Task ApplyThemeAsync()
     {
         try
         {
@@ -340,7 +339,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error applying theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply theme changes", "ThemeEditor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply theme changes", Environment.UserName);
         }
         finally
         {
@@ -349,7 +348,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task ResetThemeCommand()
+    private async Task ResetThemeAsync()
     {
         try
         {
@@ -364,7 +363,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error resetting theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to reset theme", "ThemeEditor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to reset theme", Environment.UserName);
         }
         finally
         {
@@ -373,7 +372,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task CloseEditorCommand()
+    private async Task CloseEditorAsync()
     {
         try
         {
@@ -403,7 +402,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error closing theme editor");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to close theme editor", "ThemeEditor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to close theme editor", Environment.UserName);
         }
     }
 
@@ -524,167 +523,5 @@ public class ColorCategory
         Id = id;
         Name = name;
         Description = description;
-    }
-}
-
-/// <summary>
-/// Color category model for sidebar navigation
-/// </summary>
-public class ColorCategory
-{
-    public string Id { get; }
-    public string Name { get; }
-    public string Description { get; }
-
-    public ColorCategory(string id, string name, string description)
-    {
-        Id = id;
-        Name = name;
-        Description = description;
-    }
-}
-    private string _headingTextColor = "#1F2937";
-
-    [ObservableProperty]
-    private string _bodyTextColor = "#4B5563";
-
-    [ObservableProperty]
-    private string _overlayTextColor = "#FFFFFF";
-
-    // Border Colors
-    [ObservableProperty]
-    private string _borderColor = "#E5E7EB";
-
-    [ObservableProperty]
-    private string _borderAccentColor = "#D1D5DB";
-
-    // Event to notify about closing
-    public event EventHandler? CloseRequested;
-
-    public ThemeEditorViewModel(ILogger<ThemeEditorViewModel> logger) : base(logger)
-    {
-        Logger.LogInformation("ThemeEditorViewModel initialized");
-        
-        // Subscribe to property changes to track unsaved changes
-        PropertyChanged += OnPropertyChanged;
-    }
-
-    private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        // Check if any color property changed
-        if (e.PropertyName?.EndsWith("Color") == true)
-        {
-            HasUnsavedChanges = true;
-            StatusMessage = "Theme colors modified - click Apply to update";
-        }
-    }
-
-    /// <summary>
-    /// Command to apply the current theme changes
-    /// </summary>
-    [RelayCommand]
-    private async Task ApplyTheme()
-    {
-        try
-        {
-            IsLoading = true;
-            StatusMessage = "Applying theme changes...";
-
-            // TODO: Implement actual theme application logic
-            await Task.Delay(1000); // Simulate processing
-
-            HasUnsavedChanges = false;
-            StatusMessage = "Theme applied successfully";
-            
-            Logger.LogInformation("Theme applied successfully");
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Failed to apply theme: {ex.Message}";
-            Logger.LogError(ex, "Failed to apply theme");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    /// <summary>
-    /// Command to reset theme changes
-    /// </summary>
-    [RelayCommand]
-    private void ResetTheme()
-    {
-        try
-        {
-            // Reset to default values
-            PrimaryActionColor = "#0078D4";
-            SecondaryActionColor = "#106EBE";
-            MainBackgroundColor = "#FFFFFF";
-            CardBackgroundColor = "#FAFAFA";
-            HoverBackgroundColor = "#F0F0F0";
-            HeadingTextColor = "#1F2937";
-            BodyTextColor = "#4B5563";
-            OverlayTextColor = "#FFFFFF";
-            BorderColor = "#E5E7EB";
-            BorderAccentColor = "#D1D5DB";
-
-            HasUnsavedChanges = false;
-            StatusMessage = "Theme reset to defaults";
-            
-            Logger.LogInformation("Theme reset to defaults");
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Failed to reset theme: {ex.Message}";
-            Logger.LogError(ex, "Failed to reset theme");
-        }
-    }
-
-    /// <summary>
-    /// Command to close the theme editor
-    /// </summary>
-    [RelayCommand]
-    private void Close()
-    {
-        try
-        {
-            Logger.LogInformation("Closing theme editor");
-            CloseRequested?.Invoke(this, EventArgs.Empty);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error closing theme editor");
-        }
-    }
-
-    /// <summary>
-    /// Loads the current theme colors for editing
-    /// </summary>
-    public async Task LoadCurrentThemeAsync(string themeName = "MTM Theme")
-    {
-        try
-        {
-            IsLoading = true;
-            StatusMessage = $"Loading {themeName} theme...";
-            CurrentThemeName = themeName;
-
-            // TODO: Implement actual theme loading logic
-            await Task.Delay(500); // Simulate loading
-
-            StatusMessage = $"{themeName} theme loaded";
-            HasUnsavedChanges = false;
-            
-            Logger.LogInformation("Theme loaded: {ThemeName}", themeName);
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Failed to load theme: {ex.Message}";
-            Logger.LogError(ex, "Failed to load theme: {ThemeName}", themeName);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
     }
 }
