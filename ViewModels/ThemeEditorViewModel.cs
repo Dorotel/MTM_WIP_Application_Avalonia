@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,6 +65,31 @@ public partial class ThemeEditorViewModel : BaseViewModel
     [ObservableProperty]
     private Color highlightColor = Color.Parse("#005A9E");
 
+    // Color change handlers for validation and unsaved changes tracking
+    partial void OnPrimaryActionColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnSecondaryActionColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnAccentColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnHighlightColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
     #endregion
 
     #region Text Colors
@@ -82,6 +108,37 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     [ObservableProperty]
     private Color tertiaryTextColor = Color.Parse("#8A8886");
+
+    // Text color change handlers
+    partial void OnHeadingTextColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnBodyTextColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnInteractiveTextColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnOverlayTextColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnTertiaryTextColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
 
     #endregion
 
@@ -102,6 +159,37 @@ public partial class ThemeEditorViewModel : BaseViewModel
     [ObservableProperty]
     private Color sidebarBackgroundColor = Color.Parse("#F8F9FA");
 
+    // Background color change handlers
+    partial void OnMainBackgroundColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnCardBackgroundColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnHoverBackgroundColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnPanelBackgroundColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnSidebarBackgroundColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
     #endregion
 
     #region Status Colors
@@ -118,6 +206,31 @@ public partial class ThemeEditorViewModel : BaseViewModel
     [ObservableProperty]
     private Color infoColor = Color.Parse("#2196F3");
 
+    // Status color change handlers
+    partial void OnSuccessColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnWarningColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnErrorColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnInfoColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
     #endregion
 
     #region Border Colors
@@ -127,6 +240,19 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     [ObservableProperty]
     private Color borderAccentColor = Color.Parse("#CED4DA");
+
+    // Border color change handlers
+    partial void OnBorderColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
+
+    partial void OnBorderAccentColorChanged(Color value)
+    {
+        HasUnsavedChanges = true;
+        ValidateAllColors();
+    }
 
     #endregion
 
@@ -329,13 +455,67 @@ public partial class ThemeEditorViewModel : BaseViewModel
             StatusMessage = "Applying theme changes...";
             Logger.LogInformation("Applying theme changes");
 
-            HasUnsavedChanges = false;
-            StatusMessage = "Theme applied successfully";
+            // Create color dictionary with all current color values
+            var colorOverrides = new Dictionary<string, string>
+            {
+                // Core colors
+                ["MTM_Shared_Logic.PrimaryAction"] = PrimaryActionColor.ToString(),
+                ["MTM_Shared_Logic.SecondaryAction"] = SecondaryActionColor.ToString(),
+                ["MTM_Shared_Logic.AccentColor"] = AccentColor.ToString(),
+                ["MTM_Shared_Logic.HighlightColor"] = HighlightColor.ToString(),
+                
+                // Text colors
+                ["MTM_Shared_Logic.HeadingText"] = HeadingTextColor.ToString(),
+                ["MTM_Shared_Logic.BodyText"] = BodyTextColor.ToString(),
+                ["MTM_Shared_Logic.InteractiveText"] = InteractiveTextColor.ToString(),
+                ["MTM_Shared_Logic.OverlayTextBrush"] = OverlayTextColor.ToString(),
+                ["MTM_Shared_Logic.TertiaryTextBrush"] = TertiaryTextColor.ToString(),
+                
+                // Background colors
+                ["MTM_Shared_Logic.MainBackground"] = MainBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.CardBackgroundBrush"] = CardBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.HoverBrush"] = HoverBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.PanelBackgroundBrush"] = PanelBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.SidebarBackground"] = SidebarBackgroundColor.ToString(),
+                
+                // Status colors
+                ["MTM_Shared_Logic.SuccessBrush"] = SuccessColor.ToString(),
+                ["MTM_Shared_Logic.WarningBrush"] = WarningColor.ToString(),
+                ["MTM_Shared_Logic.ErrorBrush"] = ErrorColor.ToString(),
+                ["MTM_Shared_Logic.InfoBrush"] = InfoColor.ToString(),
+                
+                // Border colors
+                ["MTM_Shared_Logic.BorderBrush"] = BorderColor.ToString(),
+                ["MTM_Shared_Logic.BorderAccentBrush"] = BorderAccentColor.ToString()
+            };
+
+            // Apply colors via ThemeService if available
+            if (_themeService != null)
+            {
+                var result = await _themeService.ApplyCustomColorsAsync(colorOverrides);
+                if (result.IsSuccess)
+                {
+                    HasUnsavedChanges = false;
+                    StatusMessage = "Theme colors applied successfully";
+                    Logger.LogInformation("Successfully applied {ColorCount} theme color overrides", colorOverrides.Count);
+                }
+                else
+                {
+                    StatusMessage = $"Failed to apply theme: {result.Message}";
+                    Logger.LogWarning("Failed to apply theme colors: {Error}", result.Message);
+                }
+            }
+            else
+            {
+                Logger.LogWarning("ThemeService not available - cannot apply theme colors");
+                StatusMessage = "Theme service unavailable - colors not applied";
+            }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error applying theme");
             await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply theme changes", Environment.UserName);
+            StatusMessage = "Error applying theme changes";
         }
         finally
         {
@@ -360,6 +540,59 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error resetting theme");
             await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to reset theme", Environment.UserName);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task PreviewThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Previewing theme changes...";
+            Logger.LogDebug("Generating theme preview");
+
+            // Create a temporary color dictionary for preview
+            var previewColors = new Dictionary<string, string>
+            {
+                ["MTM_Shared_Logic.PrimaryAction"] = PrimaryActionColor.ToString(),
+                ["MTM_Shared_Logic.SecondaryAction"] = SecondaryActionColor.ToString(),
+                ["MTM_Shared_Logic.AccentColor"] = AccentColor.ToString(),
+                ["MTM_Shared_Logic.HighlightColor"] = HighlightColor.ToString(),
+                ["MTM_Shared_Logic.HeadingText"] = HeadingTextColor.ToString(),
+                ["MTM_Shared_Logic.BodyText"] = BodyTextColor.ToString(),
+                ["MTM_Shared_Logic.MainBackground"] = MainBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.CardBackgroundBrush"] = CardBackgroundColor.ToString(),
+            };
+
+            // Apply temporary preview without saving
+            if (_themeService != null)
+            {
+                var result = await _themeService.ApplyCustomColorsAsync(previewColors);
+                if (result.IsSuccess)
+                {
+                    StatusMessage = "Preview applied - use Apply to save changes";
+                }
+                else
+                {
+                    StatusMessage = $"Preview failed: {result.Message}";
+                }
+            }
+            else
+            {
+                StatusMessage = "Preview unavailable - theme service not found";
+            }
+
+            await Task.Delay(100); // Small delay for user feedback
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating theme preview");
+            StatusMessage = "Error generating preview";
         }
         finally
         {
@@ -418,9 +651,106 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     private void LoadCurrentThemeColors()
     {
-        // Load colors from current theme if ThemeService is available
-        Logger.LogDebug("Loading current theme colors");
-        // Implementation would load from _themeService if available
+        try
+        {
+            Logger.LogDebug("Loading current theme colors from ThemeService");
+            
+            if (_themeService != null)
+            {
+                // Get current theme name
+                CurrentThemeName = _themeService.CurrentTheme ?? "MTM Theme";
+                
+                // Load current theme colors from application resources
+                LoadColorsFromApplicationResources();
+            }
+            else
+            {
+                Logger.LogWarning("ThemeService not available, using default colors");
+                LoadDefaultColors();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading current theme colors");
+            LoadDefaultColors(); // Fallback to defaults
+        }
+    }
+    
+    private void LoadColorsFromApplicationResources()
+    {
+        try
+        {
+            if (Avalonia.Application.Current?.Resources == null)
+            {
+                Logger.LogWarning("Application resources not available, using defaults");
+                LoadDefaultColors();
+                return;
+            }
+
+            // Load colors from current application resources
+            PrimaryActionColor = GetColorFromResource("MTM_Shared_Logic.PrimaryAction", "#0078D4");
+            SecondaryActionColor = GetColorFromResource("MTM_Shared_Logic.SecondaryAction", "#106EBE");
+            AccentColor = GetColorFromResource("MTM_Shared_Logic.AccentColor", "#40A2E8");
+            HighlightColor = GetColorFromResource("MTM_Shared_Logic.HighlightColor", "#005A9E");
+
+            HeadingTextColor = GetColorFromResource("MTM_Shared_Logic.HeadingText", "#323130");
+            BodyTextColor = GetColorFromResource("MTM_Shared_Logic.BodyText", "#605E5C");
+            InteractiveTextColor = GetColorFromResource("MTM_Shared_Logic.InteractiveText", "#0078D4");
+            OverlayTextColor = GetColorFromResource("MTM_Shared_Logic.OverlayTextBrush", "#FFFFFF");
+            TertiaryTextColor = GetColorFromResource("MTM_Shared_Logic.TertiaryTextBrush", "#8A8886");
+
+            MainBackgroundColor = GetColorFromResource("MTM_Shared_Logic.MainBackground", "#FFFFFF");
+            CardBackgroundColor = GetColorFromResource("MTM_Shared_Logic.CardBackgroundBrush", "#F3F2F1");
+            HoverBackgroundColor = GetColorFromResource("MTM_Shared_Logic.HoverBrush", "#F0F0F0");
+            PanelBackgroundColor = GetColorFromResource("MTM_Shared_Logic.PanelBackgroundBrush", "#FAFAFA");
+            SidebarBackgroundColor = GetColorFromResource("MTM_Shared_Logic.SidebarBackground", "#F8F9FA");
+
+            SuccessColor = GetColorFromResource("MTM_Shared_Logic.SuccessBrush", "#4CAF50");
+            WarningColor = GetColorFromResource("MTM_Shared_Logic.WarningBrush", "#FF9800");
+            ErrorColor = GetColorFromResource("MTM_Shared_Logic.ErrorBrush", "#F44336");
+            InfoColor = GetColorFromResource("MTM_Shared_Logic.InfoBrush", "#2196F3");
+
+            BorderColor = GetColorFromResource("MTM_Shared_Logic.BorderBrush", "#E5E7EB");
+            BorderAccentColor = GetColorFromResource("MTM_Shared_Logic.BorderAccentBrush", "#CED4DA");
+
+            Logger.LogDebug("Successfully loaded colors from application resources");
+            StatusMessage = $"Loaded colors from {CurrentThemeName}";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading colors from application resources");
+            LoadDefaultColors();
+        }
+    }
+    
+    private Color GetColorFromResource(string resourceKey, string fallbackHex)
+    {
+        try
+        {
+            if (Avalonia.Application.Current?.Resources?.TryGetResource(resourceKey, null, out var resource) == true)
+            {
+                if (resource is IBrush brush && brush is ISolidColorBrush solidBrush)
+                {
+                    return solidBrush.Color;
+                }
+                if (resource is Color color)
+                {
+                    return color;
+                }
+                if (resource is string colorString && Color.TryParse(colorString, out var parsedColor))
+                {
+                    return parsedColor;
+                }
+            }
+            
+            // Fallback to provided hex color
+            return Color.Parse(fallbackHex);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to get color from resource {ResourceKey}, using fallback {FallbackColor}", resourceKey, fallbackHex);
+            return Color.Parse(fallbackHex);
+        }
     }
 
     private void LoadDefaultColors()
@@ -499,6 +829,100 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         // Simplified luminance calculation
         return (color.R * 0.299f + color.G * 0.587f + color.B * 0.114f) / 255f;
+    }
+
+    /// <summary>
+    /// Validates that a color string is a valid hex color format
+    /// </summary>
+    private bool IsValidHexColor(string colorString)
+    {
+        if (string.IsNullOrWhiteSpace(colorString))
+            return false;
+            
+        try
+        {
+            Color.Parse(colorString);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Safely parses a hex color string, returning fallback if invalid
+    /// </summary>
+    private Color SafeParseColor(string colorString, Color fallback)
+    {
+        if (IsValidHexColor(colorString))
+        {
+            try
+            {
+                return Color.Parse(colorString);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to parse color '{Color}', using fallback", colorString);
+            }
+        }
+        
+        return fallback;
+    }
+
+    /// <summary>
+    /// Validates all current color properties and updates status
+    /// </summary>
+    private bool ValidateAllColors()
+    {
+        try
+        {
+            var invalidColors = new List<string>();
+            
+            // Check each color property
+            if (PrimaryActionColor == default) invalidColors.Add("Primary Action");
+            if (SecondaryActionColor == default) invalidColors.Add("Secondary Action");
+            if (AccentColor == default) invalidColors.Add("Accent");
+            if (HighlightColor == default) invalidColors.Add("Highlight");
+            
+            if (HeadingTextColor == default) invalidColors.Add("Heading Text");
+            if (BodyTextColor == default) invalidColors.Add("Body Text");
+            if (InteractiveTextColor == default) invalidColors.Add("Interactive Text");
+            if (OverlayTextColor == default) invalidColors.Add("Overlay Text");
+            if (TertiaryTextColor == default) invalidColors.Add("Tertiary Text");
+            
+            if (MainBackgroundColor == default) invalidColors.Add("Main Background");
+            if (CardBackgroundColor == default) invalidColors.Add("Card Background");
+            if (HoverBackgroundColor == default) invalidColors.Add("Hover Background");
+            if (PanelBackgroundColor == default) invalidColors.Add("Panel Background");
+            if (SidebarBackgroundColor == default) invalidColors.Add("Sidebar Background");
+            
+            if (SuccessColor == default) invalidColors.Add("Success");
+            if (WarningColor == default) invalidColors.Add("Warning");
+            if (ErrorColor == default) invalidColors.Add("Error");
+            if (InfoColor == default) invalidColors.Add("Info");
+            
+            if (BorderColor == default) invalidColors.Add("Border");
+            if (BorderAccentColor == default) invalidColors.Add("Border Accent");
+
+            if (invalidColors.Any())
+            {
+                StatusMessage = $"Invalid colors: {string.Join(", ", invalidColors)}";
+                CanApplyTheme = false;
+                return false;
+            }
+            
+            StatusMessage = "All colors are valid";
+            CanApplyTheme = true;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error validating colors");
+            StatusMessage = "Error validating colors";
+            CanApplyTheme = false;
+            return false;
+        }
     }
 
     #endregion

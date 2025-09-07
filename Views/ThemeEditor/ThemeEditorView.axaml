@@ -212,10 +212,21 @@
                                     CornerRadius="8" 
                                     Padding="16">
                                 <StackPanel Spacing="12">
-                                    <TextBlock Text="🎯 Primary Colors" 
-                                              FontSize="16" 
-                                              FontWeight="Bold" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0"
+                                                  Text="🎯 Primary Colors" 
+                                                  FontSize="16" 
+                                                  FontWeight="Bold" 
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                                                  VerticalAlignment="Center" />
+                                        <Button Grid.Column="1"
+                                               Content="✨ Auto-Fill" 
+                                               Classes="mtm-tertiary" 
+                                               Command="{Binding AutoFillCoreColorsCommand}" 
+                                               FontSize="11" 
+                                               Padding="8,4" 
+                                               ToolTip.Tip="Generate harmonious core color palette" />
+                                    </Grid>
                                     
                                     <!-- Primary Action Color -->
                                     <Grid ColumnDefinitions="200,*,80" ColumnSpacing="12">
@@ -245,6 +256,40 @@
                                                 Watermark="Enter hex color (e.g., #106EBE)" />
                                         <Border Grid.Column="2" 
                                                Background="{Binding SecondaryActionColor, FallbackValue=#106EBE}" 
+                                               CornerRadius="4" 
+                                               Height="32" 
+                                               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                                               BorderThickness="1" />
+                                    </Grid>
+
+                                    <!-- Accent Color -->
+                                    <Grid ColumnDefinitions="200,*,80" ColumnSpacing="12">
+                                        <TextBlock Grid.Column="0" 
+                                                  Text="Accent Color" 
+                                                  VerticalAlignment="Center" 
+                                                  FontWeight="Medium" />
+                                        <TextBox Grid.Column="1" 
+                                                Text="{Binding AccentColor, FallbackValue='#40A2E8'}" 
+                                                Watermark="Enter hex color (e.g., #40A2E8)" />
+                                        <Border Grid.Column="2" 
+                                               Background="{Binding AccentColor, FallbackValue=#40A2E8}" 
+                                               CornerRadius="4" 
+                                               Height="32" 
+                                               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                                               BorderThickness="1" />
+                                    </Grid>
+
+                                    <!-- Highlight Color -->
+                                    <Grid ColumnDefinitions="200,*,80" ColumnSpacing="12">
+                                        <TextBlock Grid.Column="0" 
+                                                  Text="Highlight Color" 
+                                                  VerticalAlignment="Center" 
+                                                  FontWeight="Medium" />
+                                        <TextBox Grid.Column="1" 
+                                                Text="{Binding HighlightColor, FallbackValue='#005A9E'}" 
+                                                Watermark="Enter hex color (e.g., #005A9E)" />
+                                        <Border Grid.Column="2" 
+                                               Background="{Binding HighlightColor, FallbackValue=#005A9E}" 
                                                CornerRadius="4" 
                                                Height="32" 
                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
@@ -325,10 +370,21 @@
                                     CornerRadius="8" 
                                     Padding="16">
                                 <StackPanel Spacing="12">
-                                    <TextBlock Text="📝 Text Colors" 
-                                              FontSize="16" 
-                                              FontWeight="Bold" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0"
+                                                  Text="📝 Text Colors" 
+                                                  FontSize="16" 
+                                                  FontWeight="Bold" 
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                                                  VerticalAlignment="Center" />
+                                        <Button Grid.Column="1"
+                                               Content="✨ Auto-Fill" 
+                                               Classes="mtm-tertiary" 
+                                               Command="{Binding AutoFillTextColorsCommand}" 
+                                               FontSize="11" 
+                                               Padding="8,4" 
+                                               ToolTip.Tip="Generate WCAG-compliant text color palette" />
+                                    </Grid>
                                     
                                     <!-- Heading Text -->
                                     <Grid ColumnDefinitions="200,*,80" ColumnSpacing="12">
@@ -471,25 +527,36 @@
                 <!-- Action Buttons -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
                     
+                    <Button Content="👀 Preview" 
+                           Classes="mtm-secondary" 
+                           Command="{Binding PreviewThemeCommand}" 
+                           IsEnabled="{Binding HasUnsavedChanges, FallbackValue=False}" 
+                           MinWidth="90" 
+                           Height="32" 
+                           ToolTip.Tip="Preview changes without saving" />
+                    
                     <Button Content="🎨 Apply Theme" 
                            Classes="mtm-primary" 
                            Command="{Binding ApplyThemeCommand}" 
                            IsEnabled="{Binding CanApplyTheme, FallbackValue=True}" 
                            MinWidth="110" 
-                           Height="32" />
+                           Height="32" 
+                           ToolTip.Tip="Apply and save theme changes" />
                     
                     <Button Content="🔄 Reset" 
                            Classes="mtm-secondary" 
                            Command="{Binding ResetThemeCommand}" 
                            IsEnabled="{Binding HasUnsavedChanges, FallbackValue=False}" 
                            MinWidth="80" 
-                           Height="32" />
+                           Height="32" 
+                           ToolTip.Tip="Reset to default colors" />
                     
                     <Button Content="❌ Close" 
                            Classes="mtm-secondary" 
                            Command="{Binding CloseCommand}" 
                            MinWidth="70" 
-                           Height="32" />
+                           Height="32" 
+                           ToolTip.Tip="Close theme editor" />
                 </StackPanel>
             </Grid>
         </Border>
