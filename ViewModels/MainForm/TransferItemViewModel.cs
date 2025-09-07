@@ -15,7 +15,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace MTM_WIP_Application_Avalonia.ViewModels;
+namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 /// <summary>
 /// ViewModel for the inventory transfer interface (Control_TransferTab).
