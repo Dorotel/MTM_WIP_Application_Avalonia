@@ -1,0 +1,584 @@
+name: "TransferTabView Complete Implementation"
+description: "Complete TransferTabView.axaml implementation with functional UI, location transfer operations, and quantity management"
+title: "[FEATURE] Complete TransferTabView.axaml Implementation - Inventory Transfer Operations"
+labels: ["feature", "enhancement", "ui", "inventory-management", "transfer-operations", "user-interface"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 🔄 Complete TransferTabView Implementation
+        
+        **Current Development Status:** ⚠️ **NEEDS COMPLETE IMPLEMENTATION**
+        
+        ## 📊 Progress Summary
+        
+        ### ✅ **Completed Components:**
+        - Basic AXAML structure with styling (70% theme compliance)
+        - TransferItemViewModel with comprehensive business logic (908 lines)
+        - Integration with existing MTM database stored procedures
+        - Complete transaction type logic documentation (TRANSFER operations only)
+        
+        ### ⚠️ **Critical Issues:**
+        - **AXAML Structure**: Missing mandatory Tab View pattern (ScrollViewer + Grid)
+        - **UI Implementation**: Incomplete dual-panel layout and form fields
+        - **ViewModel Integration**: Missing proper DataContext binding patterns
+        - **Location Management**: "To Location" selection controls not implemented
+        - **Quantity Controls**: NumericUpDown for transfer quantities not implemented
+        - **DataGrid Integration**: Transfer results grid needs completion
+        
+        ### 🔄 **Reference Implementation:**
+        Using InventoryTabView.axaml as the pattern template:
+        - ScrollViewer > Grid[RowDefinitions="*,Auto"] > Border structure  
+        - Proper MaterialIcons integration with labels
+        - Complete form field implementation with validation
+        - MTM mandatory grid pattern compliance
+        
+        ### 🔥 **CRITICAL Business Logic:**
+        **ALL transfer operations create TRANSFER transactions - Operation numbers ("90", "100", "110") are workflow steps, NOT transaction type indicators!**
+        
+        ---
+
+  - type: input
+    id: feature_title
+    attributes:
+      label: "Feature Title"
+      value: "Complete TransferTabView.axaml Implementation - Inventory Transfer Operations"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: implementation_priority
+    attributes:
+      label: "Implementation Priority Level"
+      description: "How critical is this feature for manufacturing operations?"
+      options:
+        - "🔴 Critical - Required for basic inventory movement between locations"
+        - "🟡 High - Significantly improves manufacturing workflow efficiency" 
+        - "🟢 Medium - Nice to have for advanced inventory management"
+        - "🔵 Low - Future enhancement for optimization"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: core_functionality
+    attributes:
+      label: "🎯 Core TransferTabView Features"
+      description: "Select which primary features you want included (based on Control_TransferTab.instructions.md):"
+      options:
+        - label: "**Search and Filter System** - Part ID and Operation filtering for transfer source selection"
+        - label: "**Location Transfer Management** - To Location ComboBox for destination selection"
+        - label: "**Quantity Control System** - NumericUpDown for precise transfer amount specification"
+        - label: "**DataGrid Results Display** - Professional inventory display with transfer candidate selection"
+        - label: "**Dual Transfer Operations** - Both partial quantity and complete item transfers"
+        - label: "**Transaction Audit Logging** - Complete TRANSFER transaction history for manufacturing compliance"
+        - label: "**Batch Transfer Operations** - Transfer multiple items simultaneously with validation"
+        - label: "**Progress Feedback System** - Real-time operation status during complex transfers"
+
+  - type: dropdown
+    id: ui_layout_approach
+    attributes:
+      label: "🖼️ UI Layout Implementation Strategy"
+      description: "How should the transfer interface be structured? (Real-world: How users will manage location transfers)"
+      options:
+        - "Follow InventoryTabView pattern - Single unified form with all controls (Recommended for consistency)"
+        - "Dual-panel layout - Search criteria left, results right (Matches WinForms documentation)"
+        - "Three-panel layout - Source, transfer controls, destination preview"
+        - "Wizard-style workflow - Step-by-step guided transfer process"
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: transfer_operation_types
+    attributes:
+      label: "🔄 Transfer Operation Capabilities"
+      description: "Which transfer scenarios should be supported? (Real-world: Different ways inventory moves in manufacturing)"
+      options:
+        - label: "**Partial Quantity Transfer** - Move specific quantities while leaving remainder at source"
+        - label: "**Complete Item Transfer** - Move entire inventory item to new location"
+        - label: "**Batch Location Transfer** - Move multiple items to same destination simultaneously"
+        - label: "**Cross-Operation Transfer** - Move items between different manufacturing operations"
+        - label: "**Multi-Destination Transfer** - Split single item across multiple locations"
+        - label: "**Conditional Transfer** - Transfer items meeting specific criteria automatically"
+        - label: "**Emergency Transfer** - Quick transfer operations for urgent manufacturing needs"
+        - label: "**Scheduled Transfer** - Set items for future transfer operations"
+
+  - type: dropdown
+    id: quantity_management_style
+    attributes:
+      label: "🔢 Quantity Management Implementation"
+      description: "How should transfer quantities be handled? (Real-world: How users specify amounts to move)"
+      options:
+        - "Smart NumericUpDown - Automatically limits to available quantity with validation"
+        - "Flexible TextBox - Allow any input with comprehensive validation and error handling"
+        - "Slider with TextBox - Visual quantity selector with precise input capability"
+        - "Percentage-based - Specify transfer as percentage of available quantity"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: location_management_features
+    attributes:
+      label: "📍 Location Management Capabilities"
+      description: "How should location selection and validation work?"
+      options:
+        - label: "**Dynamic Location Loading** - Real-time location list from database"
+        - label: "**Location Validation** - Prevent transfers to invalid or same locations"
+        - label: "**Location Grouping** - Organize locations by area, department, or function"
+        - label: "**Recent Locations** - Quick access to frequently used transfer destinations"
+        - label: "**Location Search** - Find destinations by name, code, or description"
+        - label: "**Location Capacity Checking** - Warn when destination approaching capacity limits"
+        - label: "**Location Permissions** - Respect user access rights for different locations"
+        - label: "**Location History** - Track most common transfer routes for efficiency"
+
+  - type: checkboxes
+    id: search_filtering_options
+    attributes:
+      label: "🔍 Source Inventory Search Capabilities"
+      description: "Which search features should be implemented for finding items to transfer?"
+      options:
+        - label: "**Part ID Filtering** - ComboBox with auto-complete for part selection"
+        - label: "**Operation Number Filtering** - Refine search by manufacturing operation stage"
+        - label: "**Source Location Filtering** - Find items currently at specific locations"
+        - label: "**Quantity Range Filtering** - Find items with sufficient quantities for transfer"
+        - label: "**Batch Number Search** - Find items by production batch for batch transfers"
+        - label: "**Date-Based Filtering** - Search by entry date, age, or last movement"
+        - label: "**Multi-Criteria Search** - Combine multiple filters for precise item location"
+        - label: "**Transfer History Search** - Find items with specific transfer patterns"
+
+  - type: dropdown
+    id: transaction_compliance_level
+    attributes:
+      label: "📋 Transaction Logging and Compliance"
+      description: "How comprehensive should transaction tracking be? (Real-world: Manufacturing audit requirements)"
+      options:
+        - "Full Manufacturing Compliance - Complete audit trail, user attribution, timestamp tracking"
+        - "Standard Operations - Basic transaction logging with essential audit information" 
+        - "Performance Optimized - Minimal logging focused on operational efficiency"
+        - "Custom Compliance - User-configurable logging levels based on requirements"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: transfer_validation_safety
+    attributes:
+      label: "🛡️ Transfer Validation and Safety Features"
+      description: "What safety measures should prevent transfer errors?"
+      options:
+        - label: "**Quantity Validation** - Prevent over-transfer scenarios with real-time checking"
+        - label: "**Location Validation** - Block transfers to invalid, full, or restricted locations"
+        - label: "**Operation Compatibility** - Validate transfers between compatible operations only"
+        - label: "**User Permission Checking** - Ensure user authorized for source and destination locations"
+        - label: "**Inventory Verification** - Confirm source items still exist before transfer"
+        - label: "**Destination Capacity** - Check destination location capacity before transfer"
+        - label: "**Transfer Confirmation** - Require explicit confirmation for large or critical transfers"
+        - label: "**Rollback Capability** - Ability to reverse transfers if issues discovered"
+
+  - type: checkboxes
+    id: integration_requirements
+    attributes:
+      label: "🔗 Integration with Existing MTM Systems"
+      description: "Which MTM systems should this integrate with?"
+      options:
+        - label: "**TransferItemViewModel Integration** - Use existing comprehensive ViewModel (908 lines)"
+        - label: "**Database Stored Procedures** - Use inv_inventory transfer procedures and transaction logging"
+        - label: "**Transaction History System** - Log all transfers as TRANSFER type in inv_transaction table"
+        - label: "**Quick Actions Panel** - Toggle Control_QuickButtons visibility integration"
+        - label: "**Print System Integration** - Generate professional transfer reports"
+        - label: "**Progress Tracking System** - Helper_StoredProcedureProgress for operation feedback"
+        - label: "**Error Handling Service** - Centralized error management and user notifications"
+        - label: "**Master Data Services** - Dynamic loading of parts, operations, and locations"
+
+  - type: textarea
+    id: critical_business_logic
+    attributes:
+      label: "🔥 CRITICAL: Transfer Transaction Type Logic"
+      description: "DO NOT MODIFY - This is the authoritative business rule from Control_TransferTab.instructions.md"
+      value: |
+        **⚠️ MANDATORY BUSINESS RULE - TRANSFER TRANSACTIONS ONLY:**
+        
+        ## ✅ CORRECT Transaction Logic:
+        **ALL transfer operations between locations create TRANSFER transactions, regardless of operation number.**
+        
+        ```csharp
+        // CORRECT: Always TRANSFER when moving between locations
+        await Dao_History.AddTransactionHistoryAsync(new Model_TransactionHistory
+        {
+            TransactionType = "TRANSFER", // Always TRANSFER for location changes
+            PartId = partId,
+            FromLocation = sourceLocation,
+            ToLocation = destinationLocation,
+            Operation = operation, // Just a workflow step identifier ("90", "100", "110")
+            Quantity = transferQuantity,
+            User = user,
+            DateTime = DateTime.Now
+        });
+        ```
+        
+        ## ❌ WRONG - Common Misconceptions:
+        ```csharp
+        // NEVER do this - operation numbers are NOT transaction type indicators
+        string transactionType = operation == "90" ? "IN" : "OUT"; // WRONG!
+        
+        // Operations are workflow steps, not transaction indicators:
+        // "90" = First operation stage
+        // "100" = Second operation stage  
+        // "110" = Third operation stage
+        // etc.
+        ```
+        
+        ## 📋 Transaction Type Usage:
+        - **"IN"**: Adding new inventory to system (InventoryTabView)
+        - **"OUT"**: Removing inventory from system (RemoveTabView)
+        - **"TRANSFER"**: Moving inventory between locations (TransferTabView) ← THIS VIEW
+        
+        ## 🔧 Transfer Operation Implementation:
+        ```csharp
+        // Partial Quantity Transfer
+        if (transferQuantity < originalQuantity)
+        {
+            await Dao_Inventory.TransferInventoryQuantityAsync(
+                batchNumber, partId, operation, 
+                transferQuantity, originalQuantity, 
+                destinationLocation, user
+            );
+        }
+        // Complete Item Transfer  
+        else
+        {
+            await Dao_Inventory.TransferPartSimpleAsync(
+                batchNumber, partId, operation,
+                quantityStr, destinationLocation
+            );
+        }
+        ```
+        
+        **This business logic is MANDATORY and cannot be changed.**
+    validations:
+      required: false
+
+  - type: textarea
+    id: current_implementation_gaps
+    attributes:
+      label: "📋 Current Implementation Analysis"
+      description: "DO NOT MODIFY - Analysis of current TransferTabView state vs required implementation"
+      value: |
+        **🔍 AXAML Structure Analysis:**
+        
+        ## ✅ Required Pattern (Based on InventoryTabView):
+        ```xml
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+          <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8">
+            <!-- Main Transfer Panel -->
+            <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}">
+              <Grid ColumnDefinitions="300,*"> <!-- Dual panel for transfer UI -->
+                <!-- Left Panel: Transfer Criteria -->
+                <Border Grid.Column="0" Classes="transfer-panel">
+                  <!-- Part ID, Operation, To Location, Quantity controls -->
+                </Border>
+                <!-- Right Panel: Transfer Results DataGrid -->
+                <Border Grid.Column="1" Classes="results-panel">
+                  <!-- DataGrid with available items for transfer -->
+                </Border>
+              </Grid>
+            </Border>
+            <!-- Action Buttons Panel -->
+            <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}">
+              <!-- Search, Transfer, Reset, Print buttons -->
+            </Border>
+          </Grid>
+        </ScrollViewer>
+        ```
+        
+        ## ❌ Current TransferTabView.axaml Issues:
+        
+        ### Missing Critical Controls:
+        - ❌ No "To Location" ComboBox implementation (essential for transfers!)
+        - ❌ No NumericUpDown for transfer quantity specification
+        - ❌ Incomplete DataGrid binding for transfer candidates
+        - ❌ Missing dual-panel layout structure
+        - ❌ Empty StackPanel placeholders throughout AXAML
+        - ❌ No proper MaterialIcon + TextBlock label combinations
+        
+        ### Incomplete Control Structure:
+        ```xml
+        <!-- CURRENT (Incomplete): -->
+        <StackPanel>
+          <!-- Empty placeholders -->
+        </StackPanel>
+        
+        <!-- SHOULD BE (Transfer-specific implementation): -->
+        <Grid x:Name="TransferCriteriaGrid" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12">
+          <!-- Part ID Search -->
+          <Grid Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+              <materialIcons:MaterialIcon Kind="Package" Width="14" Height="14" />
+              <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" />
+            </StackPanel>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding PartOptions}" 
+                      SelectedItem="{Binding SelectedPart}" Classes="input-field" />
+          </Grid>
+          
+          <!-- Operation Filter -->
+          <Grid Grid.Row="1" ColumnDefinitions="90,*" ColumnSpacing="12">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+              <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" />
+              <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" />
+            </StackPanel>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding OperationOptions}"
+                      SelectedItem="{Binding SelectedOperation}" Classes="input-field" />
+          </Grid>
+          
+          <!-- To Location (CRITICAL FOR TRANSFERS) -->
+          <Grid Grid.Row="2" ColumnDefinitions="90,*" ColumnSpacing="12">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+              <materialIcons:MaterialIcon Kind="MapMarkerRight" Width="14" Height="14" />
+              <TextBlock Text="To Location:" FontSize="12" FontWeight="Medium" />
+            </StackPanel>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding LocationOptions}"
+                      SelectedItem="{Binding ToLocation}" Classes="input-field" />
+          </Grid>
+          
+          <!-- Transfer Quantity (CRITICAL FOR TRANSFERS) -->
+          <Grid Grid.Row="3" ColumnDefinitions="90,*" ColumnSpacing="12">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+              <materialIcons:MaterialIcon Kind="Counter" Width="14" Height="14" />
+              <TextBlock Text="Quantity:" FontSize="12" FontWeight="Medium" />
+            </StackPanel>
+            <NumericUpDown Grid.Column="1" Value="{Binding TransferQuantity}"
+                           Minimum="1" Classes="input-field" />
+          </Grid>
+        </Grid>
+        ```
+        
+        ### Missing ViewModel Integration:
+        - ❌ No DataContext binding to TransferItemViewModel
+        - ❌ Missing Command bindings (SearchCommand, TransferCommand, ResetCommand)
+        - ❌ Missing property bindings for transfer criteria (ToLocation, TransferQuantity)
+        - ❌ Missing ObservableCollection bindings (InventoryItems, LocationOptions)
+        
+        ### Required TransferItemViewModel Integration:
+        ```csharp
+        // Available Properties for Binding:
+        - ObservableCollection<string> PartOptions
+        - ObservableCollection<string> OperationOptions
+        - ObservableCollection<string> LocationOptions  // For destination selection
+        - ObservableCollection<InventoryItem> InventoryItems  // Transfer candidates
+        - string ToLocation  // Destination location
+        - int TransferQuantity  // Amount to transfer
+        - bool CanTransfer  // Transfer button enable state
+        
+        // Available Commands for Binding:
+        - RelayCommand SearchCommand  // Find items to transfer
+        - RelayCommand TransferCommand  // Execute transfer operation
+        - RelayCommand ResetCommand  // Clear search criteria
+        - RelayCommand PrintCommand  // Generate transfer reports
+        ```
+        
+        ### Implementation Priority Tasks:
+        1. **Dual-Panel Layout** - Left criteria, right results (matches documentation)
+        2. **To Location Controls** - Essential ComboBox for destination selection
+        3. **Transfer Quantity** - NumericUpDown with smart validation
+        4. **DataGrid Integration** - Show available items for transfer
+        5. **Transfer Button Logic** - Execute partial/complete transfers
+        6. **Transaction Logging** - All operations create TRANSFER transactions
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: conflict_resolution_questions
+    attributes:
+      label: "❓ Implementation Conflicts Resolution"
+      description: "Based on documentation analysis, these conflicts need resolution:"
+      options:
+        - label: "**Layout Strategy**: Documentation emphasizes dual-panel (left criteria, right results), but InventoryTabView uses single panel - Use dual-panel for transfers?"
+        - label: "**Control Types**: Should use ComboBox for Part/Operation (like documentation) or TextBox with behaviors (like InventoryTabView)?"
+        - label: "**Quantity Control**: Use NumericUpDown (transfer-specific) or TextBox with validation (InventoryTabView pattern)?"
+        - label: "**DataGrid Focus**: TransferTabView needs DataGrid emphasis (unlike InventoryTabView form focus) - implement DataGrid-centric layout?"
+        - label: "**Location Management**: Transfer needs both source location filtering AND destination selection - implement dual location controls?"
+        - label: "**Button Placement**: Follow InventoryTabView bottom panel pattern or documentation's integrated button approach?"
+        - label: "**Progress Feedback**: Use loading states (Avalonia) instead of ToolStripProgressBar (WinForms documentation)?"
+        - label: "**ViewModel Namespace**: TransferItemViewModel in root namespace vs InventoryTabViewModel in MainForm namespace - standardize?"
+
+  - type: dropdown
+    id: performance_considerations
+    attributes:
+      label: "⚡ Performance and Scalability Requirements"
+      description: "How should the system handle large inventories and complex transfers?"
+      options:
+        - "Optimize for Speed - Fast transfers, minimal validation, basic error handling"
+        - "Balanced Performance - Good speed with essential validation and error prevention"
+        - "Robust Operations - Comprehensive validation, error handling, audit trail (Recommended)"
+        - "Maximum Reliability - All safety features, complete audit trail, extensive validation"
+      default: 2
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: accessibility_requirements
+    attributes:
+      label: "♿ Accessibility and Manufacturing Environment Support"
+      description: "What accessibility features are needed for manufacturing environment?"
+      options:
+        - label: "**Keyboard Navigation** - Full keyboard access for all transfer operations"
+        - label: "**Touch-Friendly Interface** - Support for tablet/touchscreen devices in manufacturing floor"
+        - label: "**High Contrast Support** - Works with Windows high contrast themes for visibility"
+        - label: "**Screen Reader Compatibility** - NVDA/JAWS support for visually impaired operators"
+        - label: "**Focus Management** - Clear visual focus indicators during multi-step transfer operations"
+        - label: "**Error Accessibility** - Screen reader announces validation errors and transfer status"
+        - label: "**Large Target Areas** - Touch-friendly button and control sizes for industrial use"
+        - label: "**Audio Feedback** - Optional sound notifications for transfer completion/errors"
+
+  - type: dropdown
+    id: testing_validation_scope
+    attributes:
+      label: "🧪 Testing and Validation Requirements"
+      description: "What level of testing is needed before deployment?"
+      options:
+        - "Basic Testing - Core transfer functionality and essential error handling"
+        - "Standard Testing - Full functionality + UI responsiveness + business rule validation"
+        - "Comprehensive Testing - All features + accessibility + performance + database integrity"
+        - "Manufacturing Validation - Complete testing + compliance + audit trail + stress testing"
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "✅ Acceptance Criteria"
+      value: |
+        ## Primary Success Criteria:
+        
+        ### UI Implementation:
+        - [ ] TransferTabView follows ScrollViewer + Grid[*,Auto] pattern with dual-panel layout
+        - [ ] Left panel contains transfer criteria (Part ID, Operation, To Location, Quantity) 
+        - [ ] Right panel displays DataGrid with available items for transfer
+        - [ ] All form fields implemented with MaterialIcon + TextBlock labels
+        - [ ] NumericUpDown control properly implemented for transfer quantity specification
+        - [ ] To Location ComboBox populated with available destination locations
+        - [ ] All MTM theme resources used correctly (no hardcoded colors)
+        
+        ### Transfer Functionality:
+        - [ ] Search operations filter inventory by part ID and/or operation correctly
+        - [ ] To Location selection prevents invalid destinations (same location, restricted areas)
+        - [ ] Transfer quantity validation prevents over-transfer scenarios
+        - [ ] Partial quantity transfers reduce source quantity and create destination entry
+        - [ ] Complete item transfers move entire item to new location
+        - [ ] Batch transfer operations handle multiple items efficiently
+        - [ ] Progress feedback shown during all transfer operations
+        
+        ### Transaction Logging (CRITICAL):
+        - [ ] ALL transfer operations create "TRANSFER" type transactions (never IN/OUT)
+        - [ ] Transaction history includes FromLocation, ToLocation, and user attribution
+        - [ ] Operation numbers stored as workflow identifiers, not transaction type determinants
+        - [ ] Batch transfers create individual transaction records for each item
+        - [ ] Transaction timestamps accurate and timezone-aware
+        
+        ### Integration:
+        - [ ] TransferItemViewModel properly bound as DataContext
+        - [ ] All ViewModel commands (Search, Transfer, Reset, Print) properly bound
+        - [ ] ObservableCollections (PartOptions, LocationOptions, InventoryItems) bound correctly
+        - [ ] Database operations use existing stored procedures (TransferInventoryQuantityAsync, etc.)
+        - [ ] Error handling integrates with Services/ErrorHandling.cs
+        - [ ] Print functionality generates professional transfer reports
+        
+        ### Business Logic Compliance:
+        - [ ] User permissions respected for both source and destination locations  
+        - [ ] Inventory quantities validated before transfer execution
+        - [ ] Location capacity checking prevents overflow situations
+        - [ ] Operation compatibility validated for cross-operation transfers
+        - [ ] Audit trail maintains complete transfer history for compliance
+        
+        ### Performance and Reliability:
+        - [ ] UI remains responsive during large dataset operations
+        - [ ] Transfer operations complete within acceptable time limits
+        - [ ] Database transactions handle partial failures with proper rollback
+        - [ ] Memory usage remains stable during extended transfer sessions
+        - [ ] All selected accessibility requirements implemented correctly
+        
+        ### Technical Compliance:
+        - [ ] Uses MVVM Community Toolkit patterns exclusively
+        - [ ] Follows Avalonia AXAML syntax rules (no AVLN2000 errors)
+        - [ ] Maintains theme resource binding system consistency
+        - [ ] NumericUpDown and ComboBox controls integrate properly with validation
+        - [ ] DataGrid selection and multi-row operations work correctly
+    validations:
+      required: true
+
+  - type: dropdown
+    id: implementation_timeline
+    attributes:
+      label: "⏱️ Preferred Implementation Timeline"
+      description: "How quickly do you need this completed?"
+      options:
+        - "🔥 Rush - 2-3 days (basic dual-panel transfer functionality)"
+        - "⚡ Fast - 5-7 days (core features with essential validation)"
+        - "📅 Standard - 1-2 weeks (full features with comprehensive testing)"
+        - "🎯 Thorough - 2-3 weeks (all features, accessibility, performance optimization)"
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_requirements
+    attributes:
+      label: "💭 Additional Requirements & Implementation Notes"
+      value: |
+        **Development Context:**
+        - Base implementation on InventoryTabView.axaml ScrollViewer + Grid pattern for consistency
+        - Implement dual-panel layout as documented (left criteria, right results)
+        - Leverage existing TransferItemViewModel (908 lines) with comprehensive business logic
+        - Use established MTM database stored procedures for all transfer operations
+        
+        **Reference Files for Implementation:**
+        - Views/MainForm/Panels/InventoryTabView.axaml (structural pattern template)
+        - ViewModels/MainForm/TransferItemViewModel.cs (existing comprehensive ViewModel)
+        - Documentation/Development/UI_Documentation/Controls/MainForm/Control_TransferTab.instructions.md
+        - docs/ui-theme-readiness/TransferTabView_theme_readiness_checklist.md
+        
+        **Critical Implementation Requirements:**
+        - Must implement dual-panel layout (differs from InventoryTabView single panel)
+        - NumericUpDown for quantity control is mandatory for transfer precision
+        - To Location ComboBox is essential (differs from InventoryTabView location input)
+        - DataGrid must support single and multi-row selection for batch transfers
+        - ALL transfers must create TRANSFER transactions regardless of operation number
+        
+        **Key Differences from InventoryTabView:**
+        - Dual-panel layout vs single panel (transfer-specific requirement)
+        - Additional location control (To Location) for destination selection
+        - NumericUpDown vs TextBox for quantity (transfer precision requirement)
+        - DataGrid emphasis vs form emphasis (transfer workflow difference)
+        - Batch operation support vs single item focus
+        
+        **Transaction Type Business Rule (IMMUTABLE):**
+        - Operation numbers ("90", "100", "110") are workflow step identifiers ONLY
+        - ALL location transfers create TRANSFER type transactions
+        - Never use operation numbers to determine transaction type
+        - This rule is documented and cannot be changed
+        
+        **Integration Challenges:**
+        - Converting WinForms dual-panel TableLayoutPanel to Avalonia Grid layout
+        - Implementing NumericUpDown validation and integration with ViewModel
+        - Ensuring batch transfer performance with transaction integrity
+        - Managing complex location validation and capacity checking
+        - Maintaining audit trail compliance during high-volume transfer operations
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: final_implementation_confirmation
+    attributes:
+      label: "🎯 Final Implementation Confirmation"
+      description: "Confirm your implementation approach:"
+      options:
+        - label: "I understand this will use dual-panel layout (different from InventoryTabView)"
+        - label: "I accept that ALL transfers create TRANSFER transactions regardless of operation number"
+        - label: "I understand the critical importance of To Location and Quantity controls"
+        - label: "I have reviewed the existing TransferItemViewModel and understand its capabilities"
+        - label: "I am ready to proceed with development based on these specifications"
