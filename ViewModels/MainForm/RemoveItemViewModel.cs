@@ -39,6 +39,16 @@ public partial class RemoveItemViewModel : BaseViewModel
     public ObservableCollection<string> OperationOptions { get; } = new();
     
     /// <summary>
+    /// Available location options for filtering by location
+    /// </summary>
+    public ObservableCollection<string> LocationOptions { get; } = new();
+    
+    /// <summary>
+    /// Available user options for advanced filtering by user
+    /// </summary>
+    public ObservableCollection<string> UserOptions { get; } = new();
+    
+    /// <summary>
     /// Current inventory items displayed in the DataGrid
     /// </summary>
     public ObservableCollection<InventoryItem> InventoryItems { get; } = new();
@@ -89,6 +99,22 @@ public partial class RemoveItemViewModel : BaseViewModel
     [ObservableProperty]
     [StringLength(10, ErrorMessage = "Operation text cannot exceed 10 characters")]
     private string _operationText = string.Empty;
+
+    /// <summary>
+    /// Text content for Location filtering.
+    /// Used for location-based inventory filtering.
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(20, ErrorMessage = "Location text cannot exceed 20 characters")]
+    private string _locationText = string.Empty;
+
+    /// <summary>
+    /// Text content for User filtering (advanced filtering).
+    /// Used for filtering inventory by user who created/modified records.
+    /// </summary>
+    [ObservableProperty]
+    [StringLength(50, ErrorMessage = "User text cannot exceed 50 characters")]
+    private string _userText = string.Empty;
 
     #endregion
 
@@ -202,6 +228,12 @@ public partial class RemoveItemViewModel : BaseViewModel
                 if (!string.IsNullOrEmpty(OperationText) && OperationOptions.Contains(OperationText))
                     SelectedOperation = OperationText;
                 break;
+            case nameof(LocationText):
+                // LocationText is used directly for filtering - no need for SelectedLocation property
+                break;
+            case nameof(UserText):
+                // UserText is used directly for filtering - no need for SelectedUser property
+                break;
         }
     }
 
@@ -239,8 +271,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             InventoryItems.Clear();
 
             using var scope = Logger.BeginScope("InventorySearch");
-            Logger.LogInformation("Executing search for Part: {PartId}, Operation: {Operation}", 
-                SelectedPart, SelectedOperation);
+            Logger.LogInformation("Executing search for Part: {PartId}, Operation: {Operation}, Location: {Location}, User: {User}", 
+                SelectedPart, SelectedOperation, LocationText, UserText);
 
             // Validate search criteria
             if (string.IsNullOrWhiteSpace(SelectedPart))
@@ -271,7 +303,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 return;
             }
 
-            // Convert DataTable to InventoryItem objects
+            // Convert DataTable to InventoryItem objects and apply client-side filtering
             foreach (System.Data.DataRow row in result.Rows)
             {
                 var inventoryItem = new InventoryItem
@@ -289,7 +321,27 @@ public partial class RemoveItemViewModel : BaseViewModel
                     Notes = row["Notes"]?.ToString() ?? string.Empty
                 };
                 
-                InventoryItems.Add(inventoryItem);
+                // Apply client-side filtering for Location and User if specified
+                var includeItem = true;
+                
+                // Filter by Location if specified
+                if (!string.IsNullOrWhiteSpace(LocationText))
+                {
+                    includeItem = includeItem && 
+                        inventoryItem.Location.Contains(LocationText, StringComparison.OrdinalIgnoreCase);
+                }
+                
+                // Filter by User if specified  
+                if (!string.IsNullOrWhiteSpace(UserText))
+                {
+                    includeItem = includeItem && 
+                        inventoryItem.User.Contains(UserText, StringComparison.OrdinalIgnoreCase);
+                }
+                
+                if (includeItem)
+                {
+                    InventoryItems.Add(inventoryItem);
+                }
             }
 
             Logger.LogInformation("Search completed. Found {Count} inventory items", InventoryItems.Count);
@@ -329,6 +381,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             SelectedOperation = null;
             PartText = string.Empty;
             OperationText = string.Empty;
+            LocationText = string.Empty;
+            UserText = string.Empty;
             InventoryItems.Clear();
             SelectedItem = null;
 
@@ -615,8 +669,59 @@ public partial class RemoveItemViewModel : BaseViewModel
                 Logger.LogInformation("Loaded {Count} operations", OperationOptions.Count);
             }
 
-            Logger.LogInformation("ComboBox data loaded successfully - Parts: {PartCount}, Operations: {OperationCount}", 
-                PartOptions.Count, OperationOptions.Count);
+            // Load Locations using md_locations_Get_All stored procedure
+            var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _databaseService.GetConnectionString(),
+                "md_locations_Get_All",
+                new Dictionary<string, object>()
+            ).ConfigureAwait(false);
+
+            if (locationResult.IsSuccess)
+            {
+                // Update collection on UI thread
+                Dispatcher.UIThread.Post(() =>
+                {
+                    LocationOptions.Clear();
+                    foreach (System.Data.DataRow row in locationResult.Data.Rows)
+                    {
+                        var location = row["Location"]?.ToString();
+                        if (!string.IsNullOrEmpty(location))
+                        {
+                            LocationOptions.Add(location);
+                        }
+                    }
+                });
+                Logger.LogInformation("Loaded {Count} locations", LocationOptions.Count);
+            }
+
+            // Load Users using usr_users_Get_All stored procedure  
+            var userResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _databaseService.GetConnectionString(),
+                "usr_users_Get_All",
+                new Dictionary<string, object>()
+            ).ConfigureAwait(false);
+
+            if (userResult.IsSuccess)
+            {
+                // Update collection on UI thread
+                Dispatcher.UIThread.Post(() =>
+                {
+                    UserOptions.Clear();
+                    foreach (System.Data.DataRow row in userResult.Data.Rows)
+                    {
+                        // Note: User table column is "User" but property is User_Name to avoid conflicts
+                        var user = row["User"]?.ToString();
+                        if (!string.IsNullOrEmpty(user))
+                        {
+                            UserOptions.Add(user);
+                        }
+                    }
+                });
+                Logger.LogInformation("Loaded {Count} users", UserOptions.Count);
+            }
+
+            Logger.LogInformation("ComboBox data loaded successfully - Parts: {PartCount}, Operations: {OperationCount}, Locations: {LocationCount}, Users: {UserCount}", 
+                PartOptions.Count, OperationOptions.Count, LocationOptions.Count, UserOptions.Count);
         }
         catch (Exception ex)
         {
@@ -635,6 +740,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             // Clear existing data
             PartOptions.Clear();
             OperationOptions.Clear();
+            LocationOptions.Clear();
+            UserOptions.Clear();
 
             // Sample parts
             var sampleParts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005" };
@@ -648,6 +755,20 @@ public partial class RemoveItemViewModel : BaseViewModel
             foreach (var operation in sampleOperations)
             {
                 OperationOptions.Add(operation);
+            }
+
+            // Sample locations
+            var sampleLocations = new[] { "A01", "A02", "B01", "B02", "WC01", "WC02", "LINE1", "LINE2" };
+            foreach (var location in sampleLocations)
+            {
+                LocationOptions.Add(location);
+            }
+
+            // Sample users
+            var sampleUsers = new[] { "TestUser", "Operator1", "Operator2", "Supervisor", "Admin" };
+            foreach (var user in sampleUsers)
+            {
+                UserOptions.Add(user);
             }
         });
         return Task.CompletedTask;

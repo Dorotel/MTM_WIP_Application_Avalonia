@@ -152,7 +152,7 @@
 
           <!-- Search Input Panel (CollapsiblePanel) -->
           <controls:CollapsiblePanel Grid.Row="1" x:Name="SearchPanel" Header="Search Filters" IsExpanded="True" Margin="0,0,0,16">
-            <Grid x:Name="SearchFieldsGrid" RowDefinitions="Auto,Auto" RowSpacing="12" Margin="8">
+            <Grid x:Name="SearchFieldsGrid" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12" Margin="8">
               
               <!-- Part ID Field -->
               <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
@@ -170,6 +170,24 @@
                   <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
                 <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding OperationText, Mode=TwoWay}" Watermark="Enter operation (optional)..." Classes="input-field" ToolTip.Tip="Enter operation number for refined search" TabIndex="2" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding OperationOptions}" />
+              </Grid>
+
+              <!-- Location Field -->
+              <Grid x:Name="LocationGrid" Grid.Row="2" ColumnDefinitions="90,*" ColumnSpacing="12">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
+                  <materialIcons:MaterialIcon Kind="MapMarker" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
+                  <TextBlock Text="Location:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBox Grid.Column="1" x:Name="LocationTextBox" Text="{Binding LocationText, Mode=TwoWay}" Watermark="Enter location (optional)..." Classes="input-field" ToolTip.Tip="Enter location code to filter by location" TabIndex="3" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding LocationOptions}" />
+              </Grid>
+
+              <!-- User Field (Advanced Filtering) -->
+              <Grid x:Name="UserGrid" Grid.Row="3" ColumnDefinitions="90,*" ColumnSpacing="12">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
+                  <materialIcons:MaterialIcon Kind="Account" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
+                  <TextBlock Text="User:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBox Grid.Column="1" x:Name="UserTextBox" Text="{Binding UserText, Mode=TwoWay}" Watermark="Enter user (advanced filtering)..." Classes="input-field" ToolTip.Tip="Enter username to filter by user who created/modified records" TabIndex="4" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding UserOptions}" />
               </Grid>
 
             </Grid>
