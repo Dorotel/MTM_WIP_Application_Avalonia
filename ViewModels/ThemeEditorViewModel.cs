@@ -1064,8 +1064,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             if (HasUnsavedChanges)
             {
-                // TODO: Show confirmation dialog
-                Logger.LogWarning("Closing with unsaved changes");
+                StatusMessage = "Closing with unsaved changes - changes will be lost";
+                Logger.LogWarning("Closing theme editor with unsaved changes");
+                
+                // Allow a moment for the user to see the status message
+                await Task.Delay(1500);
             }
 
             // Navigate back to MainView
@@ -1079,14 +1082,199 @@ public partial class ThemeEditorViewModel : BaseViewModel
                         DataContext = mainViewModel
                     };
                     _navigationService.NavigateTo(mainView);
-                    Logger.LogDebug("Navigated back to MainView");
+                    Logger.LogDebug("Navigated back to MainView from theme editor");
                 }
+                else
+                {
+                    Logger.LogWarning("MainViewViewModel not found in service provider");
+                    StatusMessage = "Warning: Could not return to main view properly";
+                }
+            }
+            else
+            {
+                Logger.LogError("NavigationService not available for theme editor close");
+                StatusMessage = "Error: Navigation service not available";
             }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error closing theme editor");
             await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to close theme editor", Environment.UserName);
+        }
+    }
+
+    [RelayCommand]
+    private async Task ValidateThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Validating theme colors and accessibility...";
+            Logger.LogDebug("Starting comprehensive theme validation");
+
+            var validationResults = new List<string>();
+            var warnings = new List<string>();
+
+            // Basic color validation
+            if (!ValidateAllColors())
+            {
+                validationResults.Add("❌ Basic color validation failed");
+                return;
+            }
+            validationResults.Add("✅ All color properties are valid");
+
+            // Contrast validation (simplified WCAG check)
+            var contrastIssues = await ValidateContrastRatiosAsync();
+            if (contrastIssues.Any())
+            {
+                warnings.AddRange(contrastIssues.Select(issue => $"⚠️ {issue}"));
+            }
+            else
+            {
+                validationResults.Add("✅ Contrast ratios meet basic accessibility requirements");
+            }
+
+            // Color harmony validation
+            var harmonyCheck = ValidateColorHarmony();
+            if (harmonyCheck.isHarmonious)
+            {
+                validationResults.Add($"✅ Color harmony: {harmonyCheck.harmonyType}");
+            }
+            else
+            {
+                warnings.Add($"⚠️ Colors may not be harmonious - consider using auto-fill algorithms");
+            }
+
+            // Prepare final status message
+            var resultCount = validationResults.Count;
+            var warningCount = warnings.Count;
+            
+            if (warningCount == 0)
+            {
+                StatusMessage = $"✅ Theme validation passed! ({resultCount} checks completed)";
+            }
+            else
+            {
+                StatusMessage = $"⚠️ Theme validation: {resultCount} passed, {warningCount} warnings";
+            }
+
+            // Log detailed results
+            Logger.LogInformation("Theme validation completed: {PassedChecks} passed, {Warnings} warnings", 
+                resultCount, warningCount);
+            
+            foreach (var result in validationResults)
+            {
+                Logger.LogDebug("Validation result: {Result}", result);
+            }
+            
+            foreach (var warning in warnings)
+            {
+                Logger.LogWarning("Validation warning: {Warning}", warning);
+            }
+
+            await Task.Delay(100); // Brief pause for user feedback
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during theme validation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Theme validation failed", Environment.UserName);
+            StatusMessage = "❌ Theme validation encountered an error";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Validates contrast ratios between text and background colors
+    /// </summary>
+    private async Task<List<string>> ValidateContrastRatiosAsync()
+    {
+        await Task.Delay(10); // Async operation simulation
+        
+        var issues = new List<string>();
+        
+        try
+        {
+            // Check primary text on main background
+            var primaryContrast = CalculateContrastRatio(HeadingTextColor, MainBackgroundColor);
+            if (primaryContrast < 4.5)
+            {
+                issues.Add($"Heading text contrast too low: {primaryContrast:F1}:1 (needs 4.5:1)");
+            }
+
+            // Check body text on card background  
+            var bodyContrast = CalculateContrastRatio(BodyTextColor, CardBackgroundColor);
+            if (bodyContrast < 4.5)
+            {
+                issues.Add($"Body text contrast too low: {bodyContrast:F1}:1 (needs 4.5:1)");
+            }
+
+            // Check interactive text visibility
+            var interactiveContrast = CalculateContrastRatio(InteractiveTextColor, MainBackgroundColor);
+            if (interactiveContrast < 4.5)
+            {
+                issues.Add($"Interactive text contrast too low: {interactiveContrast:F1}:1 (needs 4.5:1)");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error calculating contrast ratios");
+            issues.Add("Could not calculate contrast ratios");
+        }
+
+        return issues;
+    }
+
+    /// <summary>
+    /// Validates if the current color scheme follows basic color harmony principles
+    /// </summary>
+    private (bool isHarmonious, string harmonyType) ValidateColorHarmony()
+    {
+        try
+        {
+            // Convert primary colors to HSV for analysis
+            var primaryHsv = RgbToHsv(PrimaryActionColor);
+            var secondaryHsv = RgbToHsv(SecondaryActionColor);
+            var accentHsv = RgbToHsv(AccentColor);
+
+            // Check for monochromatic harmony (similar hues)
+            var primarySecondaryHueDiff = Math.Abs(primaryHsv.H - secondaryHsv.H);
+            if (primarySecondaryHueDiff < 30 || primarySecondaryHueDiff > 330)
+            {
+                return (true, "Monochromatic");
+            }
+
+            // Check for complementary harmony (opposite hues)
+            if (Math.Abs(primarySecondaryHueDiff - 180) < 30)
+            {
+                return (true, "Complementary");
+            }
+
+            // Check for analogous harmony (adjacent hues)
+            if (primarySecondaryHueDiff > 15 && primarySecondaryHueDiff < 90)
+            {
+                return (true, "Analogous");
+            }
+
+            // Check for triadic harmony
+            var primaryAccentHueDiff = Math.Abs(primaryHsv.H - accentHsv.H);
+            var secondaryAccentHueDiff = Math.Abs(secondaryHsv.H - accentHsv.H);
+            
+            if (Math.Abs(primarySecondaryHueDiff - 120) < 30 && 
+                Math.Abs(primaryAccentHueDiff - 120) < 30 && 
+                Math.Abs(secondaryAccentHueDiff - 120) < 30)
+            {
+                return (true, "Triadic");
+            }
+
+            return (false, "Custom");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error validating color harmony");
+            return (false, "Unknown");
         }
     }
 
@@ -1609,6 +1797,157 @@ public partial class ThemeEditorViewModel : BaseViewModel
             StatusMessage = "Error validating colors";
             CanApplyTheme = false;
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Calculates WCAG contrast ratio between two colors
+    /// </summary>
+    private double CalculateContrastRatio(Color foreground, Color background)
+    {
+        try
+        {
+            // Convert colors to relative luminance
+            var foregroundLuminance = CalculateRelativeLuminance(foreground);
+            var backgroundLuminance = CalculateRelativeLuminance(background);
+            
+            // Calculate contrast ratio
+            var lighter = Math.Max(foregroundLuminance, backgroundLuminance);
+            var darker = Math.Min(foregroundLuminance, backgroundLuminance);
+            
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error calculating contrast ratio");
+            return 1.0; // Return minimum contrast ratio on error
+        }
+    }
+
+    /// <summary>
+    /// Calculates relative luminance of a color according to WCAG guidelines
+    /// </summary>
+    private double CalculateRelativeLuminance(Color color)
+    {
+        // Convert RGB to sRGB
+        var r = color.R / 255.0;
+        var g = color.G / 255.0;
+        var b = color.B / 255.0;
+
+        // Apply gamma correction
+        r = (r <= 0.03928) ? r / 12.92 : Math.Pow((r + 0.055) / 1.055, 2.4);
+        g = (g <= 0.03928) ? g / 12.92 : Math.Pow((g + 0.055) / 1.055, 2.4);
+        b = (b <= 0.03928) ? b / 12.92 : Math.Pow((b + 0.055) / 1.055, 2.4);
+
+        // Calculate relative luminance
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    /// <summary>
+    /// Generates a professional color palette based on color theory principles
+    /// </summary>
+    private Dictionary<string, Color> GenerateColorPalette(Color baseColor, string algorithm)
+    {
+        var palette = new Dictionary<string, Color>();
+        
+        try
+        {
+            var baseHsv = RgbToHsv(baseColor);
+            
+            switch (algorithm.ToLowerInvariant())
+            {
+                case "monochromatic":
+                    palette["primary"] = baseColor;
+                    palette["secondary"] = HsvToRgb((baseHsv.H, baseHsv.S, Math.Max(0, baseHsv.V - 0.2f)));
+                    palette["accent"] = HsvToRgb((baseHsv.H, Math.Max(0, baseHsv.S - 0.3f), Math.Min(1, baseHsv.V + 0.1f)));
+                    break;
+                    
+                case "complementary":
+                    palette["primary"] = baseColor;
+                    palette["secondary"] = HsvToRgb(((baseHsv.H + 180) % 360, baseHsv.S, baseHsv.V));
+                    palette["accent"] = HsvToRgb(((baseHsv.H + 30) % 360, baseHsv.S * 0.7f, baseHsv.V));
+                    break;
+                    
+                case "triadic":
+                    palette["primary"] = baseColor;
+                    palette["secondary"] = HsvToRgb(((baseHsv.H + 120) % 360, baseHsv.S, baseHsv.V));
+                    palette["accent"] = HsvToRgb(((baseHsv.H + 240) % 360, baseHsv.S, baseHsv.V));
+                    break;
+                    
+                case "analogous":
+                    palette["primary"] = baseColor;
+                    palette["secondary"] = HsvToRgb(((baseHsv.H + 30) % 360, baseHsv.S, baseHsv.V));
+                    palette["accent"] = HsvToRgb(((baseHsv.H - 30 + 360) % 360, baseHsv.S, baseHsv.V));
+                    break;
+                    
+                default:
+                    palette["primary"] = baseColor;
+                    palette["secondary"] = DarkenColor(baseColor, 0.2f);
+                    palette["accent"] = LightenColor(baseColor, 0.3f);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error generating color palette for algorithm: {Algorithm}", algorithm);
+            // Return fallback palette
+            palette["primary"] = baseColor;
+            palette["secondary"] = DarkenColor(baseColor, 0.2f);
+            palette["accent"] = LightenColor(baseColor, 0.3f);
+        }
+        
+        return palette;
+    }
+
+    /// <summary>
+    /// Creates an optimized theme for manufacturing environments
+    /// </summary>
+    private async Task ApplyOptimizedManufacturingThemeAsync()
+    {
+        try
+        {
+            Logger.LogDebug("Applying optimized manufacturing theme");
+            
+            // High-contrast colors for industrial environments
+            PrimaryActionColor = Color.Parse("#0066CC");    // Strong blue for reliability
+            SecondaryActionColor = Color.Parse("#004499");  // Darker blue for depth
+            AccentColor = Color.Parse("#FF6600");           // Safety orange for attention
+            HighlightColor = Color.Parse("#FFCC00");        // Warning yellow for alerts
+            
+            // Text optimized for industrial displays
+            HeadingTextColor = Color.Parse("#1A1A1A");      // Near-black for readability
+            BodyTextColor = Color.Parse("#333333");         // Dark gray for body text
+            InteractiveTextColor = Color.Parse("#0066CC");  // Matching primary for links
+            OverlayTextColor = Color.Parse("#FFFFFF");      // Pure white for overlays
+            TertiaryTextColor = Color.Parse("#666666");     // Medium gray for secondary info
+            
+            // Backgrounds suitable for long working sessions
+            MainBackgroundColor = Color.Parse("#F5F5F5");   // Light neutral background
+            CardBackgroundColor = Color.Parse("#FFFFFF");   // Pure white for content cards
+            HoverBackgroundColor = Color.Parse("#E6F2FF");  // Light blue hover state
+            PanelBackgroundColor = Color.Parse("#FAFAFA");  // Very light gray for panels
+            SidebarBackgroundColor = Color.Parse("#F0F0F0"); // Slightly darker sidebar
+            
+            // Clear status indicators
+            SuccessColor = Color.Parse("#00AA00");          // Strong green for success
+            WarningColor = Color.Parse("#FF8800");          // Orange for warnings  
+            ErrorColor = Color.Parse("#CC0000");            // Strong red for errors
+            InfoColor = Color.Parse("#0088CC");             // Information blue
+            
+            // Professional borders
+            BorderColor = Color.Parse("#CCCCCC");           // Light gray borders
+            BorderAccentColor = Color.Parse("#0066CC");     // Blue accent borders
+            
+            CurrentThemeName = "Optimized Manufacturing Theme";
+            HasUnsavedChanges = true;
+            StatusMessage = "Manufacturing-optimized theme applied - designed for industrial displays";
+            
+            await Task.Delay(100); // Brief pause for visual feedback
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying optimized manufacturing theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply manufacturing theme", Environment.UserName);
         }
     }
 

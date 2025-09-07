@@ -595,6 +595,32 @@
                                         </WrapPanel>
                                     </StackPanel>
                                     
+                                    <!-- Quality and Validation Tools -->
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="🔍 Quality &amp; Validation" 
+                                                  FontWeight="SemiBold" 
+                                                  FontSize="14"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                        
+                                        <WrapPanel Orientation="Horizontal">
+                                            <Button Content="✅ Validate Theme" 
+                                                   Classes="mtm-primary" 
+                                                   Command="{Binding ValidateThemeCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="12,6"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="Check accessibility and color harmony" />
+                                            
+                                            <Button Content="⚙️ Optimized Manufacturing" 
+                                                   Classes="mtm-accent" 
+                                                   Command="{Binding ApplyOptimizedManufacturingThemeCommand}" 
+                                                   FontSize="11" 
+                                                   Padding="12,6"
+                                                   Margin="0,0,8,4"
+                                                   ToolTip.Tip="High-contrast theme for industrial displays" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                    
                                     <!-- Import/Export -->
                                     <StackPanel Spacing="8">
                                         <TextBlock Text="💾 Theme Management" 
