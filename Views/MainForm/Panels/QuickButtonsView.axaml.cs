@@ -1,131 +1,20 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using MTM_WIP_Application_Avalonia.ViewModels;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
 /// <summary>
-/// QuickButtonsView - Enhanced with manual reordering functionality and server-side persistence
+/// QuickButtonsView - Simple view for quick action buttons
 /// </summary>
 public partial class QuickButtonsView : UserControl
 {
-    private QuickButtonItemViewModel? _selectedButton;
-    private Button? _selectedButtonControl;
-    private bool _isDragging;
-    private Point _startPoint;
-
     public QuickButtonsView()
     {
         InitializeComponent();
-    }
-
-    /// <summary>
-    /// Handle pointer press to select button for potential reordering
-    /// </summary>
-    private void OnButtonPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (sender is Button button && button.DataContext is QuickButtonItemViewModel buttonViewModel)
-        {
-            _startPoint = e.GetPosition(button);
-            _selectedButton = buttonViewModel;
-            _selectedButtonControl = button;
-            _isDragging = false;
-            
-            // Visual feedback that button is selected for dragging
-            button.Classes.Add("selected-for-drag");
-        }
-    }
-
-    /// <summary>
-    /// Handle pointer movement to detect drag intention
-    /// </summary>
-    private void OnButtonPointerMoved(object? sender, PointerEventArgs e)
-    {
-        if (_selectedButton != null && _selectedButtonControl != null)
-        {
-            var currentPoint = e.GetPosition(_selectedButtonControl);
-            var deltaY = Math.Abs(currentPoint.Y - _startPoint.Y);
-            
-            // Start visual dragging feedback if moved beyond threshold
-            if (!_isDragging && deltaY > 15)
-            {
-                _isDragging = true;
-                _selectedButtonControl.Classes.Add("dragging");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Handle pointer release to potentially drop at new position
-    /// </summary>
-    private async void OnButtonPointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        if (_selectedButtonControl != null)
-        {
-            _selectedButtonControl.Classes.Remove("selected-for-drag");
-            _selectedButtonControl.Classes.Remove("dragging");
-            
-            // If we were dragging, try to find drop target
-            if (_isDragging && DataContext is QuickButtonsViewModel viewModel)
-            {
-                var dropTarget = FindDropTarget(e.GetPosition(this));
-                if (dropTarget != null && dropTarget != _selectedButton)
-                {
-                    try
-                    {
-                        if (_selectedButton != null)
-                        {
-                            await viewModel.ReorderButtonAsync(_selectedButton.Position, dropTarget.Position);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log error but don't throw - UI should remain responsive
-                        System.Diagnostics.Debug.WriteLine($"Error reordering buttons: {ex.Message}");
-                    }
-                }
-            }
-        }
-        
-        _selectedButton = null;
-        _selectedButtonControl = null;
-        _isDragging = false;
-    }
-
-    /// <summary>
-    /// Find the drop target button based on pointer position using proper visual tree hit testing
-    /// </summary>
-    private QuickButtonItemViewModel? FindDropTarget(Point position)
-    {
-        try
-        {
-            // Use Avalonia's visual tree hit testing
-            var hitResult = this.InputHitTest(position);
-            if (hitResult is Control control)
-            {
-                // Walk up the visual tree to find a button with QuickButtonItemViewModel
-                var current = control;
-                while (current != null)
-                {
-                    if (current is Button button && button.DataContext is QuickButtonItemViewModel buttonViewModel)
-                    {
-                        return buttonViewModel;
-                    }
-                    current = current.Parent as Control;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error finding drop target: {ex.Message}");
-        }
-        
-        return null;
     }
 
     /// <summary>

@@ -289,7 +289,7 @@ public class DatabaseService : IDatabaseService
         {
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = currentUser,
+                ["p_User"] = currentUser,
                 ["p_Limit"] = limit
             };
 
@@ -391,50 +391,9 @@ public class DatabaseService : IDatabaseService
         _logger?.LogDebug("inv_inventory_Add_Item returned: Status={Status}, Message='{Message}'", 
             result.Status, result.Message);
 
-        // CRITICAL FIX: Add QuickButton entry after successful inventory save
-        if (result.Status == 1) // Success status from inv_inventory_Add_Item
-        {
-            _logger?.LogDebug("Inventory save successful, adding QuickButton entry");
-            
-            // Find next available position for this user's QuickButtons
-            int nextPosition = await GetNextQuickButtonPosition(user);
-            
-            // Call qb_quickbuttons_Save to populate QuickButtons with this transaction
-            var quickButtonParameters = new Dictionary<string, object>
-            {
-                ["p_UserID"] = user,  // Fixed: Use p_UserID to match stored procedure
-                ["p_Position"] = nextPosition,
-                ["p_PartID"] = partId,
-                ["p_Location"] = location ?? string.Empty,
-                ["p_Operation"] = operation ?? string.Empty,
-                ["p_Quantity"] = quantity,
-                ["p_ItemType"] = itemType ?? "WIP"
-            };
-
-            try
-            {
-                var quickButtonResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                    _connectionString,
-                    "qb_quickbuttons_Save",
-                    quickButtonParameters
-                );
-
-                if (quickButtonResult.Status == 0)
-                {
-                    _logger?.LogInformation("QuickButton saved successfully: {Message}", quickButtonResult.Message);
-                }
-                else
-                {
-                    _logger?.LogWarning("Failed to save QuickButton: Status={Status}, Message={Message}", 
-                        quickButtonResult.Status, quickButtonResult.Message);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Error saving QuickButton for PartID: {PartId}, User: {User}", partId, user);
-                // Don't fail the main operation if QuickButton update fails
-            }
-        }
+        // REMOVED: QuickButton logic moved to dedicated QuickButtons service
+        // The QuickButtons service will handle position management with proper shifting logic
+        // This prevents duplicate/conflicting QuickButton saves
 
         return result;
     }
@@ -448,7 +407,7 @@ public class DatabaseService : IDatabaseService
         {
             var parameters = new Dictionary<string, object>
             {
-                ["p_UserID"] = user  // Fixed: Use p_UserID to match stored procedure
+                ["p_User"] = user  // Fixed: Use p_User to match stored procedure
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -1160,27 +1119,41 @@ public class DatabaseService : IDatabaseService
     #region System Configuration
 
     /// <summary>
-    /// Gets user UI settings using usr_ui_settings_Get stored procedure.
+    /// Gets user UI settings from usr_ui_settings table by UserID.
     /// </summary>
     public async Task<string> GetUserSettingsAsync(string userId)
     {
-        var parameters = new Dictionary<string, object>
+        try
         {
-            ["p_UserId"] = userId
-        };
+            _logger.LogDebug("Getting user settings for user: {UserId}", userId);
 
-        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            _connectionString,
-            "usr_ui_settings_Get",
-            parameters
-        );
+            // Query the usr_ui_settings table directly for the user
+            var query = "SELECT SettingsJson FROM usr_ui_settings WHERE UserID = @userId";
+            var parameters = new Dictionary<string, object>
+            {
+                ["userId"] = userId
+            };
 
-        if (result.IsSuccess && result.Data.Rows.Count > 0)
-        {
-            return result.Data.Rows[0]["Settings"]?.ToString() ?? string.Empty;
+            var result = await ExecuteScalarAsync(query, parameters);
+            
+            var settingsJson = result?.ToString() ?? string.Empty;
+            
+            if (string.IsNullOrEmpty(settingsJson))
+            {
+                _logger.LogDebug("No settings found for user {UserId}", userId);
+            }
+            else
+            {
+                _logger.LogDebug("Retrieved settings for user {UserId}: {SettingsJson}", userId, settingsJson);
+            }
+
+            return settingsJson;
         }
-
-        return string.Empty;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting user settings for user {UserId}", userId);
+            return string.Empty;
+        }
     }
 
     /// <summary>
@@ -1190,7 +1163,7 @@ public class DatabaseService : IDatabaseService
     {
         var parameters = new Dictionary<string, object>
         {
-            ["p_UserId"] = userId,
+            ["p_User"] = userId,
             ["p_SettingsJson"] = settingsJson
         };
 
@@ -1208,19 +1181,40 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public async Task<bool> SaveThemeSettingsAsync(string userId, string themeJson)
     {
-        var parameters = new Dictionary<string, object>
+        try
         {
-            ["p_UserId"] = userId,
-            ["p_ThemeJson"] = themeJson
-        };
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_User"] = userId,
+                ["p_ThemeJson"] = themeJson
+            };
 
-        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            _connectionString,
-            "usr_ui_settings_SetThemeJson",
-            parameters
-        );
+            _logger.LogDebug("Calling usr_ui_settings_SetThemeJson for user {UserId} with theme JSON: {ThemeJson}", 
+                userId, themeJson);
 
-        return result.IsSuccess;
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "usr_ui_settings_SetThemeJson",
+                parameters
+            );
+
+            if (result.IsSuccess)
+            {
+                _logger.LogInformation("Successfully saved theme settings for user {UserId}", userId);
+                return true;
+            }
+            else
+            {
+                _logger.LogWarning("Failed to save theme settings for user {UserId}: Status={Status}, Message={Message}", 
+                    userId, result.Status, result.Message);
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error saving theme settings for user {UserId}: {ThemeJson}", userId, themeJson);
+            return false;
+        }
     }
 
     /// <summary>
@@ -1230,7 +1224,7 @@ public class DatabaseService : IDatabaseService
     {
         var parameters = new Dictionary<string, object>
         {
-            ["p_UserId"] = userId
+            ["p_User"] = userId
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -1254,7 +1248,7 @@ public class DatabaseService : IDatabaseService
     {
         var parameters = new Dictionary<string, object>
         {
-            ["p_UserId"] = userId,
+            ["p_User"] = userId,
             ["p_ShortcutsJson"] = shortcutsJson
         };
 
@@ -1737,7 +1731,7 @@ public static class Helper_Database_StoredProcedure
                 
             case "qb_quickbuttons_remove":
                 var buttonId = parameters.GetValueOrDefault("p_ButtonID", "unknown");
-                var userId = parameters.GetValueOrDefault("p_UserID", "unknown");
+                var userId = parameters.GetValueOrDefault("p_User", "unknown");
                 _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Remove operation for ButtonID {ButtonId} by user '{UserId}' - {StatusText}", 
                     buttonId, userId, statusText);
                 break;
@@ -1769,7 +1763,7 @@ public static class Helper_Database_StoredProcedure
         }
 
         // Log parameter context that might be causing the error
-        var criticalParams = new[] { "p_UserID", "p_PartID", "p_Position", "p_ButtonID", "p_Operation", "p_Quantity" };
+        var criticalParams = new[] { "p_User", "p_PartID", "p_Position", "p_ButtonID", "p_Operation", "p_Quantity" };
         foreach (var paramName in criticalParams)
         {
             if (parameters.ContainsKey(paramName))
@@ -1790,7 +1784,7 @@ public static class Helper_Database_StoredProcedure
     // Business context logging methods
     private static void LogQuickButtonSaveContext(Dictionary<string, object> parameters)
     {
-        var userId = parameters.GetValueOrDefault("p_UserID", "");
+        var userId = parameters.GetValueOrDefault("p_User", "");
         var position = parameters.GetValueOrDefault("p_Position", "");
         var partId = parameters.GetValueOrDefault("p_PartID", "");
         var operation = parameters.GetValueOrDefault("p_Operation", "");
@@ -1802,7 +1796,7 @@ public static class Helper_Database_StoredProcedure
 
     private static void LogQuickButtonRemoveContext(Dictionary<string, object> parameters)
     {
-        var userId = parameters.GetValueOrDefault("p_UserID", "");
+        var userId = parameters.GetValueOrDefault("p_User", "");
         var buttonId = parameters.GetValueOrDefault("p_ButtonID", "");
         
         _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: REMOVE CONTEXT - User '{UserId}' removing button at position {ButtonId}", 
@@ -1811,21 +1805,21 @@ public static class Helper_Database_StoredProcedure
 
     private static void LogQuickButtonClearContext(Dictionary<string, object> parameters)
     {
-        var userId = parameters.GetValueOrDefault("p_UserID", "");
+        var userId = parameters.GetValueOrDefault("p_User", "");
         
         _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: CLEAR CONTEXT - User '{UserId}' clearing all quick buttons", userId);
     }
 
     private static void LogQuickButtonGetContext(Dictionary<string, object> parameters)
     {
-        var userId = parameters.GetValueOrDefault("p_UserID", "");
+        var userId = parameters.GetValueOrDefault("p_User", "");
         
         _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: GET CONTEXT - Retrieving quick buttons for user '{UserId}'", userId);
     }
 
     private static void LogTransactionGetContext(Dictionary<string, object> parameters)
     {
-        var userId = parameters.GetValueOrDefault("p_UserID", "");
+        var userId = parameters.GetValueOrDefault("p_User", "");
         var limit = parameters.GetValueOrDefault("p_Limit", "10");
         
         _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: TRANSACTION GET CONTEXT - Retrieving last {Limit} transactions for user '{UserId}'", 
@@ -1834,7 +1828,7 @@ public static class Helper_Database_StoredProcedure
 
     private static void LogTransactionAddContext(Dictionary<string, object> parameters)
     {
-        var userId = parameters.GetValueOrDefault("p_UserID", "");
+        var userId = parameters.GetValueOrDefault("p_User", "");
         var partId = parameters.GetValueOrDefault("p_PartID", "");
         var operation = parameters.GetValueOrDefault("p_Operation", "");
         var quantity = parameters.GetValueOrDefault("p_Quantity", "");

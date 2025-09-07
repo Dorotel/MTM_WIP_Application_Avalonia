@@ -32,23 +32,31 @@ public interface ISuggestionOverlayService
 /// Service that provides suggestion overlay functionality for autocomplete scenarios.
 /// Implements a lightweight popup overlay system for suggesting values to users.
 /// Uses standard .NET patterns without ReactiveUI dependencies.
+/// Enhanced with focus management for better user experience.
 /// </summary>
 public class SuggestionOverlayService : ISuggestionOverlayService
 {
     private readonly ILogger<SuggestionOverlayService> _logger;
+    private readonly IFocusManagementService? _focusManagementService;
 
     /// <summary>
     /// Initializes a new instance of the SuggestionOverlayService.
     /// </summary>
     /// <param name="logger">Logger for debugging and diagnostics</param>
-    public SuggestionOverlayService(ILogger<SuggestionOverlayService> logger)
+    /// <param name="focusManagementService">Optional focus management service for enhanced UX</param>
+    public SuggestionOverlayService(
+        ILogger<SuggestionOverlayService> logger, 
+        IFocusManagementService? focusManagementService = null)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _logger.LogDebug("SuggestionOverlayService created successfully");
+        _focusManagementService = focusManagementService;
+        _logger.LogDebug("SuggestionOverlayService created successfully with focus management: {HasFocusManagement}", 
+            _focusManagementService != null);
     }
 
     /// <summary>
     /// Shows a suggestion overlay with filtered options based on user input.
+    /// Includes focus management: moves to next tab index on selection, stays on current tab index on cancellation.
     /// </summary>
     /// <param name="targetControl">The control to position the overlay relative to</param>
     /// <param name="suggestions">The list of available suggestions</param>
@@ -58,6 +66,13 @@ public class SuggestionOverlayService : ISuggestionOverlayService
     {
         try
         {
+            // CRITICAL: Check if a tab switch is in progress - if so, don't show overlay
+            if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
+            {
+                _logger.LogDebug("Tab switch in progress - skipping suggestion overlay for input: '{UserInput}'", userInput);
+                return null;
+            }
+
             if (targetControl == null)
             {
                 _logger.LogWarning("Target control is null, cannot show suggestions");
@@ -72,12 +87,26 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 return null;
             }
 
+            // Double-check tab switch flag before filtering (extra safety)
+            if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
+            {
+                _logger.LogDebug("Tab switch detected during suggestion processing - aborting overlay");
+                return null;
+            }
+
             // Filter suggestions based on user input
             var filteredSuggestions = FilterSuggestions(suggestionList, userInput);
             
             if (!filteredSuggestions.Any())
             {
                 _logger.LogDebug("No matching suggestions found for input: '{UserInput}'", userInput);
+                return null;
+            }
+
+            // Final check before showing overlay
+            if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
+            {
+                _logger.LogDebug("Tab switch detected before showing overlay - aborting for input: '{UserInput}'", userInput);
                 return null;
             }
 
@@ -106,6 +135,13 @@ public class SuggestionOverlayService : ISuggestionOverlayService
         {
             try
             {
+                // Final safety check - if tab switch is in progress, don't show overlay
+                if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
+                {
+                    _logger.LogDebug("Tab switch detected in ShowOverlayAsync - aborting overlay creation");
+                    return null;
+                }
+
                 _logger.LogDebug("Creating suggestion overlay with {Count} suggestions", filteredSuggestions.Count);
 
                 // Find the MainView instance in the visual tree
@@ -114,6 +150,13 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogWarning("Could not find MainView instance, falling back to popup");
                     return await ShowPopupOverlayAsync(targetControl, filteredSuggestions, userInput);
+                }
+
+                // One more check before creating ViewModel (tab switch could have started)
+                if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
+                {
+                    _logger.LogDebug("Tab switch detected before ViewModel creation - aborting overlay");
+                    return null;
                 }
 
                 // Create the ViewModel with suggestions and logger
@@ -141,6 +184,24 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User selected suggestion: '{Suggestion}'", selectedSuggestion);
                     mainView.HideSuggestionOverlay();
+                    
+                    // Handle focus management - move to next tab index after selection
+                    if (_focusManagementService != null)
+                    {
+                        Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await _focusManagementService.SetNextTabIndexFocusAsync(targetControl);
+                                _logger.LogDebug("Focus moved to next tab index after suggestion selection");
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "Error setting focus to next tab index after suggestion selection");
+                            }
+                        });
+                    }
+                    
                     completionSource.TrySetResult(selectedSuggestion);
                 };
 
@@ -149,6 +210,24 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User cancelled suggestion overlay");
                     mainView.HideSuggestionOverlay();
+                    
+                    // Handle focus management - stay on current tab index after cancellation
+                    if (_focusManagementService != null)
+                    {
+                        Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await _focusManagementService.SetCurrentTabIndexFocusAsync(targetControl);
+                                _logger.LogDebug("Focus maintained on current tab index after overlay cancellation");
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "Error setting focus to current tab index after overlay cancellation");
+                            }
+                        });
+                    }
+                    
                     completionSource.TrySetResult(null);
                 };
 
@@ -183,6 +262,13 @@ public class SuggestionOverlayService : ISuggestionOverlayService
         {
             try
             {
+                // Check if tab switch is in progress before showing popup
+                if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
+                {
+                    _logger.LogDebug("Tab switch detected in ShowPopupOverlayAsync - aborting popup overlay");
+                    return null;
+                }
+
                 _logger.LogDebug("Using fallback popup overlay");
 
                 // Create the ViewModel with suggestions and logger
@@ -224,6 +310,24 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User selected suggestion: '{Suggestion}'", selectedSuggestion);
                     popup.IsOpen = false;
+                    
+                    // Handle focus management - move to next tab index after selection
+                    if (_focusManagementService != null)
+                    {
+                        Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await _focusManagementService.SetNextTabIndexFocusAsync(targetControl);
+                                _logger.LogDebug("Focus moved to next tab index after suggestion selection (popup)");
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "Error setting focus to next tab index after suggestion selection (popup)");
+                            }
+                        });
+                    }
+                    
                     completionSource.TrySetResult(selectedSuggestion);
                 };
 
@@ -232,6 +336,24 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User cancelled suggestion overlay");
                     popup.IsOpen = false;
+                    
+                    // Handle focus management - stay on current tab index after cancellation
+                    if (_focusManagementService != null)
+                    {
+                        Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await _focusManagementService.SetCurrentTabIndexFocusAsync(targetControl);
+                                _logger.LogDebug("Focus maintained on current tab index after overlay cancellation (popup)");
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "Error setting focus to current tab index after overlay cancellation (popup)");
+                            }
+                        });
+                    }
+                    
                     completionSource.TrySetResult(null);
                 };
 
@@ -241,6 +363,23 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                     _logger.LogDebug("Suggestion overlay popup closed");
                     if (!completionSource.Task.IsCompleted)
                     {
+                        // Handle focus management for light dismiss - stay on current tab index
+                        if (_focusManagementService != null)
+                        {
+                            Task.Run(async () =>
+                            {
+                                try
+                                {
+                                    await _focusManagementService.SetCurrentTabIndexFocusAsync(targetControl);
+                                    _logger.LogDebug("Focus maintained on current tab index after light dismiss (popup)");
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogError(ex, "Error setting focus to current tab index after light dismiss (popup)");
+                                }
+                            });
+                        }
+                        
                         completionSource.TrySetResult(null);
                     }
                 };

@@ -229,7 +229,7 @@ public class DatabaseIntegrationTests
             new("p_Operation", "90"),
             new("p_Quantity", 10),
             new("p_Location", "A001"),
-            new("p_UserID", "testuser")
+            new("p_User", "testuser")
         };
 
         // Act

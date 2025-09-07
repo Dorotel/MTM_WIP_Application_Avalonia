@@ -26,6 +26,7 @@ public partial class MainViewViewModel : BaseViewModel
     private readonly IApplicationStateService _applicationState;
     private readonly IServiceProvider _serviceProvider;
     private readonly IDatabaseService _databaseService;
+    private readonly IFocusManagementService _focusManagementService;
     private readonly System.Timers.Timer _connectionCheckTimer;
 
     /// <summary>
@@ -137,6 +138,12 @@ public partial class MainViewViewModel : BaseViewModel
     public AdvancedRemoveViewModel AdvancedRemoveViewModel { get; }
     public TransferItemViewModel TransferItemViewModel { get; }
 
+    // Cached view instances to prevent recreation and state loss
+    private Views.InventoryTabView? _cachedInventoryTabView;
+    private Views.AdvancedInventoryView? _cachedAdvancedInventoryView;
+    private Views.RemoveTabView? _cachedRemoveTabView;
+    private Views.AdvancedRemoveView? _cachedAdvancedRemoveView;
+
     #region Events
     /// <summary>
     /// Event fired when LostFocus should be triggered on specific TextBoxes
@@ -172,13 +179,14 @@ public partial class MainViewViewModel : BaseViewModel
         AdvancedRemoveViewModel advancedRemoveViewModel,
         QuickButtonsViewModel quickButtonsViewModel,
         IServiceProvider serviceProvider,
-    // SuggestionOverlayViewModel removed for overlay ViewModel reset
+        IFocusManagementService focusManagementService,
         ILogger<MainViewViewModel> logger) : base(logger)
     {
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _focusManagementService = focusManagementService ?? throw new ArgumentNullException(nameof(focusManagementService));
 
         Logger.LogInformation("MainViewViewModel initialized with dependency injection");
 
@@ -201,7 +209,6 @@ public partial class MainViewViewModel : BaseViewModel
         TransferItemViewModel = transferItemViewModel ?? throw new ArgumentNullException(nameof(transferItemViewModel));
         AdvancedInventoryViewModel = advancedInventoryViewModel ?? throw new ArgumentNullException(nameof(advancedInventoryViewModel));
         AdvancedRemoveViewModel = advancedRemoveViewModel ?? throw new ArgumentNullException(nameof(advancedRemoveViewModel));
-    // SuggestionOverlayViewModel removed for overlay ViewModel reset
 
         // Wire up Advanced Inventory events
         AdvancedInventoryViewModel.BackToNormalRequested += (sender, e) => SwitchToNormalInventory();
@@ -466,6 +473,13 @@ public partial class MainViewViewModel : BaseViewModel
             {
                 // Add a small delay to ensure database transaction is fully committed
                 await Task.Delay(500);
+                
+                // CRITICAL: Add the new transaction to QuickButtons with proper position logic
+                await QuickButtonsViewModel.AddQuickButtonFromOperationAsync(
+                    e.PartId, 
+                    e.Operation ?? "Unknown", 
+                    e.Quantity
+                );
                 
                 // Refresh QuickButtons to show the latest transaction
                 await QuickButtonsViewModel.LoadLast10TransactionsAsync();
@@ -772,6 +786,10 @@ public partial class MainViewViewModel : BaseViewModel
                     Logger.LogWarning("Unknown tab index selected: {TabIndex}", tabIndex);
                     break;
             }
+
+            // Request focus management for the new tab
+            // This will set focus to the first TabIndex=1 control in the current tab
+            RequestTabSwitchFocus(tabIndex);
             
             Logger.LogInformation("Tab selection change completed successfully for index: {TabIndex}", tabIndex);
         }
@@ -784,47 +802,73 @@ public partial class MainViewViewModel : BaseViewModel
 
     /// <summary>
     /// Updates the inventory tab content based on current mode (normal vs advanced)
+    /// Uses cached view instances to prevent state loss during navigation.
     /// </summary>
     private void UpdateInventoryContent()
     {
         if (IsAdvancedInventoryMode)
         {
-            // Switch to Advanced Inventory View
-            InventoryContent = new Views.AdvancedInventoryView
+            // Switch to Advanced Inventory View - use cached instance
+            if (_cachedAdvancedInventoryView == null)
             {
-                DataContext = AdvancedInventoryViewModel
-            };
+                _cachedAdvancedInventoryView = new Views.AdvancedInventoryView
+                {
+                    DataContext = AdvancedInventoryViewModel
+                };
+                Logger.LogDebug("Created new cached AdvancedInventoryView instance");
+            }
+            
+            InventoryContent = _cachedAdvancedInventoryView;
         }
         else
         {
-            // Switch to Normal Inventory View - pass service provider for proper DI
-            InventoryContent = new Views.InventoryTabView(_serviceProvider)
+            // Switch to Normal Inventory View - use cached instance
+            if (_cachedInventoryTabView == null)
             {
-                DataContext = InventoryTabViewModel
-            };
+                _cachedInventoryTabView = new Views.InventoryTabView(_serviceProvider)
+                {
+                    DataContext = InventoryTabViewModel
+                };
+                Logger.LogDebug("Created new cached InventoryTabView instance");
+            }
+            
+            InventoryContent = _cachedInventoryTabView;
         }
     }
 
     /// <summary>
     /// Updates the remove tab content based on current mode (normal vs advanced)
+    /// Uses cached view instances to prevent state loss during navigation.
     /// </summary>
     private void UpdateRemoveContent()
     {
         if (IsAdvancedRemoveMode)
         {
-            // Switch to Advanced Remove View
-            RemoveContent = new Views.AdvancedRemoveView
+            // Switch to Advanced Remove View - use cached instance
+            if (_cachedAdvancedRemoveView == null)
             {
-                DataContext = AdvancedRemoveViewModel
-            };
+                _cachedAdvancedRemoveView = new Views.AdvancedRemoveView
+                {
+                    DataContext = AdvancedRemoveViewModel
+                };
+                Logger.LogDebug("Created new cached AdvancedRemoveView instance");
+            }
+            
+            RemoveContent = _cachedAdvancedRemoveView;
         }
         else
         {
-            // Switch to Normal Remove View
-            RemoveContent = new Views.RemoveTabView
+            // Switch to Normal Remove View - use cached instance
+            if (_cachedRemoveTabView == null)
             {
-                DataContext = RemoveItemViewModel
-            };
+                _cachedRemoveTabView = new Views.RemoveTabView
+                {
+                    DataContext = RemoveItemViewModel
+                };
+                Logger.LogDebug("Created new cached RemoveTabView instance");
+            }
+            
+            RemoveContent = _cachedRemoveTabView;
         }
     }
 
@@ -901,6 +945,65 @@ public partial class MainViewViewModel : BaseViewModel
 
     #endregion
 
+    #region Focus Management
+
+    /// <summary>
+    /// Event to request focus management from the View layer.
+    /// This event is handled by MainView to perform focus operations on UI controls.
+    /// </summary>
+    public event EventHandler<FocusManagementEventArgs>? FocusManagementRequested;
+
+    /// <summary>
+    /// Requests focus to be set to the first TabIndex=1 control in the specified tab.
+    /// This is called when switching between tabs to improve user experience.
+    /// </summary>
+    /// <param name="tabIndex">The tab index that was switched to</param>
+    private void RequestTabSwitchFocus(int tabIndex)
+    {
+        try
+        {
+            // Fire event to request focus management from the View layer
+            FocusManagementRequested?.Invoke(this, new FocusManagementEventArgs
+            {
+                FocusType = FocusRequestType.TabSwitch,
+                TabIndex = tabIndex,
+                DelayMs = 150
+            });
+
+            Logger.LogDebug("Tab switch focus requested for tab index: {TabIndex}", tabIndex);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error requesting tab switch focus for tab {TabIndex}", tabIndex);
+        }
+    }
+
+    /// <summary>
+    /// Requests focus to be set to the first TabIndex=1 control after application startup completes.
+    /// This provides better accessibility and user experience by automatically focusing the first input.
+    /// </summary>
+    public void RequestStartupFocus()
+    {
+        try
+        {
+            // Fire event to request startup focus from the View layer
+            FocusManagementRequested?.Invoke(this, new FocusManagementEventArgs
+            {
+                FocusType = FocusRequestType.Startup,
+                TabIndex = 0, // Start with Inventory tab
+                DelayMs = 2000 // Wait for full application initialization
+            });
+
+            Logger.LogInformation("Startup focus requested for application initialization");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error requesting startup focus");
+        }
+    }
+
+    #endregion
+
     #region Resource Management
 
     /// <summary>
@@ -960,6 +1063,12 @@ public partial class MainViewViewModel : BaseViewModel
                     TransferItemViewModel.ItemsTransferred -= OnItemsTransferred;
                     TransferItemViewModel.PanelToggleRequested -= OnPanelToggleRequested;
                 }
+
+                // Clear cached view instances references
+                _cachedInventoryTabView = null;
+                _cachedAdvancedInventoryView = null;
+                _cachedRemoveTabView = null;
+                _cachedAdvancedRemoveView = null;
 
                 Logger.LogInformation("MainViewViewModel resources disposed successfully");
             }

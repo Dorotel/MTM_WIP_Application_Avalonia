@@ -10,6 +10,7 @@ using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Models;
+using MTM_WIP_Application_Avalonia.Views;
 
 namespace MTM_WIP_Application_Avalonia.Views
 {
@@ -18,6 +19,21 @@ namespace MTM_WIP_Application_Avalonia.Views
         private bool _isInitialized = false;
         private MainViewViewModel? _viewModel;
         
+        /// <summary>
+        /// Static flag to track if a tab switch is currently in progress
+        /// Used by SuggestionOverlay service to prevent showing overlays during tab transitions
+        /// </summary>
+        public static bool IsTabSwitchInProgress { get; private set; } = false;
+
+        /// <summary>
+        /// Forces clearing of the tab switch flag (for emergency cleanup or testing)
+        /// </summary>
+        public static void ClearTabSwitchFlag()
+        {
+            IsTabSwitchInProgress = false;
+            System.Diagnostics.Debug.WriteLine("MANUAL: Tab switch flag forcibly cleared");
+        }
+        
         public MainView()
         {
             InitializeComponent();
@@ -25,8 +41,182 @@ namespace MTM_WIP_Application_Avalonia.Views
             SizeChanged += OnMainViewSizeChanged;
             DataContextChanged += OnDataContextChanged;
             
+            // CRITICAL: Subscribe to TabControl property changes immediately to catch tab switching early
+            SetupEarlyTabMonitoring();
+            
             // DEBUG: Add theme diagnostic when view loads
             Loaded += OnMainViewLoadedThemeDebug;
+            
+            // Setup theme editor navigation
+            SetupThemeEditorNavigation();
+        }
+
+        /// <summary>
+        /// Sets up theme editor navigation by connecting ThemeQuickSwitcher events
+        /// </summary>
+        private void SetupThemeEditorNavigation()
+        {
+            this.Loaded += (sender, e) =>
+            {
+                try
+                {
+                    // Find the ThemeQuickSwitcher control
+                    var themeQuickSwitcher = this.FindControl<Views.ThemeQuickSwitcher>("ThemeQuickSwitcher") ??
+                                           FindControlInVisualTree<Views.ThemeQuickSwitcher>(this, "ThemeQuickSwitcher");
+                    
+                    if (themeQuickSwitcher != null)
+                    {
+                        // Subscribe to the theme editor request event
+                        themeQuickSwitcher.ThemeEditorRequested += OnThemeEditorRequested;
+                        System.Diagnostics.Debug.WriteLine("Successfully subscribed to ThemeQuickSwitcher.ThemeEditorRequested event");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("WARNING: Could not find ThemeQuickSwitcher control");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error setting up theme editor navigation: {ex.Message}");
+                }
+            };
+        }
+
+        /// <summary>
+        /// Handles theme editor request by navigating to the theme editor
+        /// </summary>
+        private void OnThemeEditorRequested(object? sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Theme editor requested - navigating to theme editor");
+                
+                // Get navigation service and navigate to theme editor
+                var navigationService = Program.GetOptionalService<Services.INavigationService>();
+                if (navigationService != null)
+                {
+                    // Get theme editor view from DI container
+                    var themeEditorViewModel = Program.GetOptionalService<ViewModels.ThemeEditorViewModel>();
+                    if (themeEditorViewModel != null)
+                    {
+                        var themeEditorView = new Views.ThemeEditorView
+                        {
+                            DataContext = themeEditorViewModel
+                        };
+                        
+                        navigationService.NavigateTo(themeEditorView);
+                        System.Diagnostics.Debug.WriteLine("Successfully navigated to theme editor");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("ERROR: ThemeEditorViewModel not found in DI container");
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("ERROR: NavigationService not available");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling theme editor request: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Sets up early monitoring of TabControl changes to clear inputs before focus events
+        /// </summary>
+        private void SetupEarlyTabMonitoring()
+        {
+            try
+            {
+                // Find the TabControl and subscribe to property changes immediately
+                this.Loaded += (sender, e) =>
+                {
+                    var tabControl = this.FindControl<TabControl>("MainForm_TabControl");
+                    if (tabControl != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine("EARLY: TabControl found, setting up property change monitoring");
+                        
+                        // Subscribe to property changes to catch SelectedIndex changes early
+                        tabControl.PropertyChanged += OnTabControlPropertyChanged;
+                        
+                        System.Diagnostics.Debug.WriteLine("EARLY: TabControl property change monitoring setup complete");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("EARLY WARNING: TabControl 'MainForm_TabControl' not found for early monitoring");
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error setting up early tab monitoring: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles TabControl pointer pressed events to clear inputs BEFORE any selection change
+        /// </summary>
+        private void OnTabControlPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("IMMEDIATE: TabControl pointer pressed - setting tab switch flag and clearing inputs");
+                
+                // Set the tab switch flag to prevent SuggestionOverlay from showing
+                IsTabSwitchInProgress = true;
+                
+                // Clear ALL inputs immediately when user starts clicking on tabs
+                // This happens BEFORE any selection change or focus events
+                ClearAllTabInputsImmediate();
+                
+                // Schedule clearing the flag after a brief delay to allow tab switch to complete
+                Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                {
+                    await Task.Delay(500); // Allow tab switch animation and focus events to complete
+                    IsTabSwitchInProgress = false;
+                    System.Diagnostics.Debug.WriteLine("IMMEDIATE: Tab switch flag cleared after delay");
+                });
+            }
+            catch (Exception ex)
+            {
+                IsTabSwitchInProgress = false; // Ensure flag is cleared on error
+                System.Diagnostics.Debug.WriteLine($"Error in tab pointer pressed handler: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles TabControl property changes to clear inputs BEFORE focus events
+        /// </summary>
+        private void OnTabControlPropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
+        {
+            try
+            {
+                if (e.Property.Name == "SelectedIndex" && sender is TabControl tabControl)
+                {
+                    System.Diagnostics.Debug.WriteLine($"EARLY: TabControl SelectedIndex changed to {tabControl.SelectedIndex} - setting tab switch flag and clearing inputs immediately");
+                    
+                    // Set the tab switch flag to prevent SuggestionOverlay from showing
+                    IsTabSwitchInProgress = true;
+                    
+                    // Clear ALL inputs immediately when any tab selection change is detected
+                    ClearAllTabInputsImmediate();
+                    
+                    // Schedule clearing the flag after a brief delay
+                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                    {
+                        await Task.Delay(300); // Shorter delay since this is mid-process
+                        IsTabSwitchInProgress = false;
+                        System.Diagnostics.Debug.WriteLine("EARLY: Tab switch flag cleared after property change delay");
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                IsTabSwitchInProgress = false; // Ensure flag is cleared on error
+                System.Diagnostics.Debug.WriteLine($"Error in early tab property change handler: {ex.Message}");
+            }
         }
 
         private void OnMainViewLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -414,6 +604,61 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
 
         /// <summary>
+        /// Shows the success overlay panel with the specified content.
+        /// </summary>
+        /// <param name="overlayContent">The success overlay content to display</param>
+        public void ShowSuccessOverlay(Control overlayContent)
+        {
+            try
+            {
+                var overlayPanel = this.FindControl<Border>("SuccessOverlayPanel");
+                var contentControl = this.FindControl<ContentControl>("SuccessOverlayContent");
+                
+                if (overlayPanel != null && contentControl != null)
+                {
+                    contentControl.Content = overlayContent;
+                    overlayPanel.IsVisible = true;
+                    System.Diagnostics.Debug.WriteLine("Success overlay panel shown successfully");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Could not find success overlay panel or content control");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error showing success overlay: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Hides the success overlay panel.
+        /// </summary>
+        public void HideSuccessOverlay()
+        {
+            try
+            {
+                var overlayPanel = this.FindControl<Border>("SuccessOverlayPanel");
+                var contentControl = this.FindControl<ContentControl>("SuccessOverlayContent");
+                
+                if (overlayPanel != null && contentControl != null)
+                {
+                    overlayPanel.IsVisible = false;
+                    contentControl.Content = null;
+                    System.Diagnostics.Debug.WriteLine("Success overlay panel hidden successfully");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Could not find success overlay panel or content control");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error hiding success overlay: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Gets the current instance of MainView from the visual tree.
         /// </summary>
         /// <param name="control">Any control to start the search from</param>
@@ -447,10 +692,19 @@ namespace MTM_WIP_Application_Avalonia.Views
                 SizeChanged -= OnMainViewSizeChanged;
                 DataContextChanged -= OnDataContextChanged;
                 
+                // Clean up TabControl property change subscription
+                var tabControl = this.FindControl<TabControl>("MainForm_TabControl");
+                if (tabControl != null)
+                {
+                    tabControl.PropertyChanged -= OnTabControlPropertyChanged;
+                    System.Diagnostics.Debug.WriteLine("CLEANUP: TabControl property change monitoring unsubscribed");
+                }
+                
                 // Unsubscribe from ViewModel events
                 if (_viewModel != null)
                 {
                     _viewModel.TriggerLostFocusRequested -= OnTriggerLostFocusRequested;
+                    _viewModel.FocusManagementRequested -= OnFocusManagementRequested;
                 }
             }
             catch (Exception ex)
@@ -471,6 +725,8 @@ namespace MTM_WIP_Application_Avalonia.Views
                 if (_viewModel != null)
                 {
                     _viewModel.TriggerLostFocusRequested -= OnTriggerLostFocusRequested;
+                    _viewModel.FocusManagementRequested -= OnFocusManagementRequested;
+                    UnsubscribeFromViewModelEvents(_viewModel);
                 }
 
                 // Subscribe to new ViewModel
@@ -478,12 +734,152 @@ namespace MTM_WIP_Application_Avalonia.Views
                 if (_viewModel != null)
                 {
                     _viewModel.TriggerLostFocusRequested += OnTriggerLostFocusRequested;
-                    System.Diagnostics.Debug.WriteLine("MainView subscribed to TriggerLostFocusRequested event");
+                    _viewModel.FocusManagementRequested += OnFocusManagementRequested;
+                    SubscribeToViewModelEvents(_viewModel);
+                    System.Diagnostics.Debug.WriteLine("MainView subscribed to ViewModel events");
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error handling DataContext change: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Subscribes to ViewModel events for input clearing functionality
+        /// </summary>
+        private void SubscribeToViewModelEvents(MainViewViewModel viewModel)
+        {
+            try
+            {
+                // Subscribe to InventoryTabViewModel events for Advanced button
+                if (viewModel.InventoryTabViewModel != null)
+                {
+                    viewModel.InventoryTabViewModel.AdvancedEntryRequested += OnAdvancedEntryRequested;
+                }
+
+                // Subscribe to RemoveItemViewModel events for Advanced button
+                if (viewModel.RemoveItemViewModel != null)
+                {
+                    viewModel.RemoveItemViewModel.AdvancedRemovalRequested += OnAdvancedRemovalRequested;
+                }
+
+                // Subscribe to AdvancedInventoryViewModel events for Back button
+                if (viewModel.AdvancedInventoryViewModel != null)
+                {
+                    // Note: BackToNormalCommand is handled through the ViewModel command pattern
+                    // We'll need to monitor property changes or implement command notifications
+                }
+
+                // Subscribe to AdvancedRemoveViewModel events for Back button  
+                if (viewModel.AdvancedRemoveViewModel != null)
+                {
+                    // Note: BackToNormalCommand is handled through the ViewModel command pattern
+                    // We'll need to monitor property changes or implement command notifications
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error subscribing to ViewModel events: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Unsubscribes from ViewModel events
+        /// </summary>
+        private void UnsubscribeFromViewModelEvents(MainViewViewModel viewModel)
+        {
+            try
+            {
+                if (viewModel.InventoryTabViewModel != null)
+                {
+                    viewModel.InventoryTabViewModel.AdvancedEntryRequested -= OnAdvancedEntryRequested;
+                }
+
+                if (viewModel.RemoveItemViewModel != null)
+                {
+                    viewModel.RemoveItemViewModel.AdvancedRemovalRequested -= OnAdvancedRemovalRequested;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error unsubscribing from ViewModel events: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles Advanced Entry button click - clears inventory tab inputs
+        /// </summary>
+        private void OnAdvancedEntryRequested(object? sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Advanced Entry requested - clearing inventory inputs");
+                ClearInventoryTabInputs();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling Advanced Entry request: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles Advanced Removal button click - clears remove tab inputs
+        /// </summary>
+        private void OnAdvancedRemovalRequested(object? sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Advanced Removal requested - clearing remove inputs");
+                ClearRemoveTabInputs();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling Advanced Removal request: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Clears inputs when returning from advanced views to normal views
+        /// Call this method when BackToNormal commands are executed
+        /// </summary>
+        public void ClearAdvancedViewInputs()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Clearing inputs when returning from advanced views");
+                
+                // Clear advanced inventory inputs
+                if (_viewModel?.AdvancedInventoryViewModel != null)
+                {
+                    _viewModel.AdvancedInventoryViewModel.SelectedPartID = null;
+                    _viewModel.AdvancedInventoryViewModel.SelectedOperation = null;
+                    _viewModel.AdvancedInventoryViewModel.SelectedLocation = null;
+                    _viewModel.AdvancedInventoryViewModel.PartIDText = string.Empty;
+                    _viewModel.AdvancedInventoryViewModel.OperationText = string.Empty;
+                    _viewModel.AdvancedInventoryViewModel.LocationText = string.Empty;
+                    _viewModel.AdvancedInventoryViewModel.Quantity = 1;
+                    _viewModel.AdvancedInventoryViewModel.RepeatTimes = 1;
+                    _viewModel.AdvancedInventoryViewModel.MultiLocationPartID = null;
+                    _viewModel.AdvancedInventoryViewModel.MultiLocationOperation = null;
+                    _viewModel.AdvancedInventoryViewModel.MultiLocationQuantity = 1;
+                    System.Diagnostics.Debug.WriteLine("Cleared Advanced Inventory inputs");
+                }
+
+                // Clear advanced remove inputs  
+                if (_viewModel?.AdvancedRemoveViewModel != null)
+                {
+                    // Clear any advanced remove specific inputs
+                    System.Diagnostics.Debug.WriteLine("Cleared Advanced Remove inputs");
+                }
+
+                // Also clear the corresponding normal tab inputs to prevent SuggestionOverlay triggers
+                ClearInventoryTabInputs();
+                ClearRemoveTabInputs();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error clearing advanced view inputs: {ex.Message}");
             }
         }
 
@@ -832,6 +1228,52 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
         
         /// <summary>
+        /// Handles focus management requests from the ViewModel
+        /// </summary>
+        private async void OnFocusManagementRequested(object? sender, FocusManagementEventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"MainView received focus management request: {e.FocusType} for tab {e.TabIndex} with {e.DelayMs}ms delay");
+                
+                // Get the FocusManagementService from the service provider
+                var focusService = Program.GetService<Services.IFocusManagementService>();
+                if (focusService == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("FocusManagementService not available");
+                    return;
+                }
+
+                // Handle different types of focus requests
+                switch (e.FocusType)
+                {
+                    case FocusRequestType.Startup:
+                        System.Diagnostics.Debug.WriteLine("Processing startup focus request");
+                        await focusService.SetStartupFocusAsync(this);
+                        break;
+                        
+                    case FocusRequestType.TabSwitch:
+                        System.Diagnostics.Debug.WriteLine($"Processing tab switch focus request for tab {e.TabIndex}");
+                        await focusService.SetTabSwitchFocusAsync(this, e.TabIndex);
+                        break;
+                        
+                    case FocusRequestType.ViewSwitch:
+                        System.Diagnostics.Debug.WriteLine("Processing view switch focus request");
+                        await focusService.SetInitialFocusAsync(this, e.DelayMs);
+                        break;
+                        
+                    default:
+                        System.Diagnostics.Debug.WriteLine($"Unknown focus request type: {e.FocusType}");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling focus management request: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
         /// Handles clicking on the connection status to manually refresh the connection
         /// </summary>
         private async void OnConnectionStatusClicked(object? sender, Avalonia.Input.PointerPressedEventArgs e)
@@ -847,6 +1289,172 @@ namespace MTM_WIP_Application_Avalonia.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error handling connection status click: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles tab selection changes to clear input fields and prevent SuggestionOverlay triggers
+        /// </summary>
+        private void OnTabSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                var tabControl = sender as TabControl;
+                if (tabControl == null || _viewModel == null) return;
+
+                var newIndex = tabControl.SelectedIndex;
+                var oldIndex = e.RemovedItems?.Count > 0 ? tabControl.Items.IndexOf(e.RemovedItems[0]!) : -1;
+
+                System.Diagnostics.Debug.WriteLine($"Tab changed from {oldIndex} to {newIndex} - ensuring tab switch flag is set");
+
+                // Ensure the tab switch flag is set (in case earlier events didn't trigger)
+                IsTabSwitchInProgress = true;
+
+                // CRITICAL: Clear inputs from ALL tabs immediately to prevent SuggestionOverlay triggers
+                // This ensures clearing happens before any focus events can trigger SuggestionOverlay
+                ClearAllTabInputsImmediate();
+
+                // Final cleanup of the flag after tab change completes
+                Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                {
+                    await Task.Delay(400); // Allow final focus events to complete
+                    IsTabSwitchInProgress = false;
+                    System.Diagnostics.Debug.WriteLine("FINAL: Tab switch flag cleared after selection change");
+                });
+            }
+            catch (Exception ex)
+            {
+                IsTabSwitchInProgress = false; // Ensure flag is cleared on error
+                System.Diagnostics.Debug.WriteLine($"Error handling tab selection change: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Immediately clears ALL tab inputs to prevent any SuggestionOverlay triggers during tab switching
+        /// This is called before focus events can process and trigger SuggestionOverlay
+        /// </summary>
+        private void ClearAllTabInputsImmediate()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("IMMEDIATE: Clearing all tab inputs to prevent SuggestionOverlay");
+
+                // Clear ALL tab inputs immediately - don't wait to determine which tab
+                ClearInventoryTabInputs();
+                ClearRemoveTabInputs();
+                ClearTransferTabInputs();
+
+                System.Diagnostics.Debug.WriteLine("IMMEDIATE: All tab inputs cleared successfully");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in immediate tab input clearing: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Clears all input fields for the specified tab to prevent SuggestionOverlay triggers
+        /// </summary>
+        /// <param name="tabIndex">The index of the tab whose inputs should be cleared</param>
+        private void ClearTabInputs(int tabIndex)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"Clearing inputs for tab {tabIndex}");
+
+                switch (tabIndex)
+                {
+                    case 0: // Inventory Tab
+                        ClearInventoryTabInputs();
+                        break;
+                    case 1: // Remove Tab  
+                        ClearRemoveTabInputs();
+                        break;
+                    case 2: // Transfer Tab
+                        ClearTransferTabInputs();
+                        break;
+                    default:
+                        System.Diagnostics.Debug.WriteLine($"Unknown tab index: {tabIndex}");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error clearing tab inputs: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Clears all input fields in the Inventory tab
+        /// </summary>
+        private void ClearInventoryTabInputs()
+        {
+            try
+            {
+                if (_viewModel?.InventoryTabViewModel != null)
+                {
+                    _viewModel.InventoryTabViewModel.SelectedPart = string.Empty;
+                    _viewModel.InventoryTabViewModel.SelectedOperation = string.Empty;
+                    _viewModel.InventoryTabViewModel.SelectedLocation = string.Empty;
+                    _viewModel.InventoryTabViewModel.Quantity = 0;
+                    _viewModel.InventoryTabViewModel.Notes = string.Empty;
+                    _viewModel.InventoryTabViewModel.PartText = string.Empty;
+                    _viewModel.InventoryTabViewModel.OperationText = string.Empty;
+                    _viewModel.InventoryTabViewModel.LocationText = string.Empty;
+                    _viewModel.InventoryTabViewModel.QuantityText = string.Empty;
+                    System.Diagnostics.Debug.WriteLine("Cleared Inventory tab inputs");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error clearing Inventory tab inputs: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Clears all input fields in the Remove tab
+        /// </summary>
+        private void ClearRemoveTabInputs()
+        {
+            try
+            {
+                if (_viewModel?.RemoveItemViewModel != null)
+                {
+                    _viewModel.RemoveItemViewModel.SelectedPart = null;
+                    _viewModel.RemoveItemViewModel.SelectedOperation = null;
+                    _viewModel.RemoveItemViewModel.PartText = string.Empty;
+                    _viewModel.RemoveItemViewModel.OperationText = string.Empty;
+                    System.Diagnostics.Debug.WriteLine("Cleared Remove tab inputs");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error clearing Remove tab inputs: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Clears all input fields in the Transfer tab
+        /// </summary>
+        private void ClearTransferTabInputs()
+        {
+            try
+            {
+                if (_viewModel?.TransferItemViewModel != null)
+                {
+                    _viewModel.TransferItemViewModel.SelectedPart = null;
+                    _viewModel.TransferItemViewModel.SelectedOperation = null;
+                    _viewModel.TransferItemViewModel.SelectedToLocation = null;
+                    _viewModel.TransferItemViewModel.PartText = string.Empty;
+                    _viewModel.TransferItemViewModel.OperationText = string.Empty;
+                    _viewModel.TransferItemViewModel.ToLocationText = string.Empty;
+                    _viewModel.TransferItemViewModel.TransferQuantity = 1;
+                    System.Diagnostics.Debug.WriteLine("Cleared Transfer tab inputs");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error clearing Transfer tab inputs: {ex.Message}");
             }
         }
     }

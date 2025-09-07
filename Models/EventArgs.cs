@@ -178,3 +178,34 @@ public class RemovedItem
     public DateTime RemovedDate { get; set; } = DateTime.Now;
     public string Notes { get; set; } = string.Empty;
 }
+
+/// <summary>
+/// Event arguments for success overlay display events.
+/// </summary>
+public class SuccessEventArgs : EventArgs
+{
+    /// <summary>
+    /// The success message to display.
+    /// </summary>
+    public string Message { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional details about the success.
+    /// </summary>
+    public string Details { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Material icon kind to display.
+    /// </summary>
+    public string IconKind { get; set; } = "CheckCircle";
+
+    /// <summary>
+    /// Display duration in milliseconds.
+    /// </summary>
+    public int Duration { get; set; } = 2000;
+
+    /// <summary>
+    /// Time when the success occurred.
+    /// </summary>
+    public DateTime SuccessTime { get; set; } = DateTime.Now;
+}

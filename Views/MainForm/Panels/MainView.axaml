@@ -5,6 +5,7 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="700"
@@ -16,6 +17,7 @@
 
   <UserControl.Resources>
     <!-- Resources are now provided by DynamicResource bindings from MTM themes -->
+    <converters:ColorToBoxShadowConverter x:Key="ColorToBoxShadowConverter"/>
   </UserControl.Resources>
 
   <UserControl.Styles>
@@ -74,7 +76,7 @@
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
             Padding="24,8"
-            BoxShadow="0 2 8 0 #1A000000"
+            BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.ShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,2,8,0'}"
             HorizontalAlignment="Stretch">
       <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
         <!-- Left side: Menu -->
@@ -99,7 +101,8 @@
         </Menu>
         
         <!-- Right side: Theme Quick Switcher -->
-        <views:ThemeQuickSwitcher Grid.Column="1"
+        <views:ThemeQuickSwitcher x:Name="ThemeQuickSwitcher"
+                                 Grid.Column="1"
                                  HorizontalAlignment="Right"
                                  VerticalAlignment="Center"
                                  Margin="16,0,0,0"/>
@@ -239,11 +242,13 @@
                 BorderThickness="2"
                 CornerRadius="8"
                 Margin="8"
-                BoxShadow="0 4 12 0 #22000000"
+                BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,4,12,0'}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
           <TabControl x:Name="MainForm_TabControl"
                       SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay, FallbackValue=0}"
+                      SelectionChanged="OnTabSelectionChanged"
+                      PointerPressed="OnTabControlPointerPressed"
                       Background="Transparent"
                       HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
@@ -339,7 +344,7 @@
         <!-- Suggestion Overlay Panel - Covers entire left panel area when visible -->
         <Border x:Name="SuggestionOverlayPanel"
                 IsVisible="False"
-                Background="#80000000"
+                Background="{DynamicResource MTM_Shared_Logic.ShadowBrush}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Margin="8"
@@ -353,7 +358,7 @@
                   BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
                   BorderThickness="2"
                   CornerRadius="12"
-                  BoxShadow="0 8 32 0 #40000000">
+                  BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,32,0'}">
             <!-- Overlay content will be dynamically set -->
             <ContentControl x:Name="SuggestionOverlayContent"
                             HorizontalAlignment="Stretch"
@@ -361,6 +366,23 @@
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"/>
           </Border>
+        </Border>
+        
+        <!-- Success Overlay Panel - Full screen overlay for success messages -->
+        <Border x:Name="SuccessOverlayPanel"
+                IsVisible="False"
+                Background="rgba(0,0,0,0.3)"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="8"
+                CornerRadius="8"
+                ZIndex="1001">
+          <!-- Success overlay content will be dynamically set -->
+          <ContentControl x:Name="SuccessOverlayContent"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          VerticalContentAlignment="Stretch"/>
         </Border>
       </Grid>
 

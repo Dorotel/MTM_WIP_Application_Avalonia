@@ -177,6 +177,7 @@ public partial class App : Application
                             await masterDataService.LoadAllMasterDataAsync();
                             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Master data loaded successfully at startup");
                             _logger?.LogInformation("Master data loaded successfully at application startup");
+
                         }
                     }
                     catch (Exception masterDataEx)
@@ -231,6 +232,7 @@ public partial class App : Application
 
     /// <summary>
     /// Initialize the default theme to ensure proper startup appearance.
+    /// Now checks database for user's preferred theme instead of forcing MTM_Light.
     /// Follows .NET best practices for resource management and error handling.
     /// </summary>
     private void InitializeDefaultTheme()
@@ -242,18 +244,15 @@ public partial class App : Application
             // Clear any existing theme resource conflicts
             ClearConflictingThemeResources();
 
-            // Apply the default MTM Light theme
+            // Set a basic light theme variant - actual theme will be loaded later by ThemeService
             RequestedThemeVariant = ThemeVariant.Light;
 
-            // Force load MTM Light theme resources
-            ForceLoadMTMLightTheme();
-
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Default theme initialized - MTM Light theme applied");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Basic theme initialization complete - ThemeService will load user's preferred theme");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Error initializing default theme: {ex.Message}");
-            _logger?.LogError(ex, "Error initializing default theme");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Error initializing basic theme: {ex.Message}");
+            _logger?.LogError(ex, "Error initializing basic theme");
         }
     }
 

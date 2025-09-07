@@ -21,9 +21,9 @@ var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
 #### **Core Inventory Operations**
 | Procedure Name | Purpose | Parameters | Returns |
 |----------------|---------|------------|---------|
-| `inv_inventory_Add_Item` | Add new inventory item | `p_PartID`, `p_Operation`, `p_Quantity`, `p_Location`, `p_UserID` | Status + ItemID |
-| `inv_inventory_Remove_Item` | Remove inventory item | `p_PartID`, `p_Operation`, `p_Quantity`, `p_Location`, `p_UserID` | Status + RemovedQty |
-| `inv_inventory_Transfer_Item` | Transfer between locations | `p_PartID`, `p_FromLocation`, `p_ToLocation`, `p_Quantity`, `p_UserID` | Status + TransferID |
+| `inv_inventory_Add_Item` | Add new inventory item | `p_PartID`, `p_Operation`, `p_Quantity`, `p_Location`, `p_User` | Status + ItemID |
+| `inv_inventory_Remove_Item` | Remove inventory item | `p_PartID`, `p_Operation`, `p_Quantity`, `p_Location`, `p_User` | Status + RemovedQty |
+| `inv_inventory_Transfer_Item` | Transfer between locations | `p_PartID`, `p_FromLocation`, `p_ToLocation`, `p_Quantity`, `p_User` | Status + TransferID |
 | `inv_inventory_Get_ByPartID` | Get inventory by part ID | `p_PartID` | DataTable with inventory details |
 | `inv_inventory_Get_ByLocation` | Get inventory by location | `p_Location` | DataTable with location inventory |
 | `inv_inventory_Get_ByPartIDandOperation` | Get specific part/operation | `p_PartID`, `p_Operation` | DataTable with specific inventory |
@@ -42,10 +42,10 @@ var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
 #### **Transaction Operations**
 | Procedure Name | Purpose | Parameters | Returns |
 |----------------|---------|------------|---------|
-| `inv_transaction_Add` | Add new transaction | `p_PartID`, `p_Operation`, `p_TransactionType`, `p_Quantity`, `p_Location`, `p_UserID`, `p_Notes` | Status + TransactionID |
+| `inv_transaction_Add` | Add new transaction | `p_PartID`, `p_Operation`, `p_TransactionType`, `p_Quantity`, `p_Location`, `p_User`, `p_Notes` | Status + TransactionID |
 | `inv_transaction_Get_History` | Get transaction history | `p_PartID`, `p_StartDate`, `p_EndDate` | DataTable with transaction history |
 | `inv_transaction_Get_ByType` | Get transactions by type | `p_TransactionType`, `p_StartDate`, `p_EndDate` | DataTable with filtered transactions |
-| `inv_transaction_Get_ByUser` | Get user transactions | `p_UserID`, `p_StartDate`, `p_EndDate` | DataTable with user transactions |
+| `inv_transaction_Get_ByUser` | Get user transactions | `p_User`, `p_StartDate`, `p_EndDate` | DataTable with user transactions |
 | `inv_transaction_Get_Daily_Summary` | Get daily transaction summary | `p_Date` | DataTable with daily summary |
 
 #### **Transaction Analysis**
@@ -61,25 +61,25 @@ var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
 | Procedure Name | Purpose | Parameters | Returns |
 |----------------|---------|------------|---------|
 | `md_part_ids_Get_All` | Get all valid part IDs | None | DataTable with all part IDs |
-| `md_part_ids_Add` | Add new part ID | `p_PartID`, `p_Description`, `p_UserID` | Status + Success indicator |
+| `md_part_ids_Add` | Add new part ID | `p_PartID`, `p_Description`, `p_User` | Status + Success indicator |
 | `md_part_ids_Validate` | Validate part ID exists | `p_PartID` | Status + ValidationResult |
 | `md_part_ids_Get_Details` | Get part details | `p_PartID` | DataTable with part information |
-| `md_part_ids_Update_Description` | Update part description | `p_PartID`, `p_Description`, `p_UserID` | Status + Success indicator |
+| `md_part_ids_Update_Description` | Update part description | `p_PartID`, `p_Description`, `p_User` | Status + Success indicator |
 
 #### **Location Management**
 | Procedure Name | Purpose | Parameters | Returns |
 |----------------|---------|------------|---------|
 | `md_locations_Get_All` | Get all valid locations | None | DataTable with all locations |
-| `md_locations_Add` | Add new location | `p_Location`, `p_Description`, `p_UserID` | Status + Success indicator |
+| `md_locations_Add` | Add new location | `p_Location`, `p_Description`, `p_User` | Status + Success indicator |
 | `md_locations_Validate` | Validate location exists | `p_Location` | Status + ValidationResult |
 | `md_locations_Get_Details` | Get location details | `p_Location` | DataTable with location information |
-| `md_locations_Update_Description` | Update location description | `p_Location`, `p_Description`, `p_UserID` | Status + Success indicator |
+| `md_locations_Update_Description` | Update location description | `p_Location`, `p_Description`, `p_User` | Status + Success indicator |
 
 #### **Operation Management**
 | Procedure Name | Purpose | Parameters | Returns |
 |----------------|---------|------------|---------|
 | `md_operation_numbers_Get_All` | Get all operation numbers | None | DataTable with all operations |
-| `md_operation_numbers_Add` | Add new operation | `p_Operation`, `p_Description`, `p_UserID` | Status + Success indicator |
+| `md_operation_numbers_Add` | Add new operation | `p_Operation`, `p_Description`, `p_User` | Status + Success indicator |
 | `md_operation_numbers_Validate` | Validate operation exists | `p_Operation` | Status + ValidationResult |
 | `md_operation_numbers_Get_Details` | Get operation details | `p_Operation` | DataTable with operation information |
 
@@ -87,7 +87,7 @@ var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
 
 | Procedure Name | Purpose | Parameters | Returns |
 |----------------|---------|------------|---------|
-| `log_error_Add_Error` | Log application error | `p_ErrorMessage`, `p_StackTrace`, `p_UserID`, `p_Severity` | Status + ErrorID |
+| `log_error_Add_Error` | Log application error | `p_ErrorMessage`, `p_StackTrace`, `p_User`, `p_Severity` | Status + ErrorID |
 | `log_error_Get_All` | Get all error logs | `p_StartDate`, `p_EndDate` | DataTable with error logs |
 | `log_error_Get_By_Severity` | Get errors by severity | `p_Severity`, `p_StartDate`, `p_EndDate` | DataTable with filtered errors |
 | `log_error_Get_Statistics` | Get error statistics | `p_StartDate`, `p_EndDate` | DataTable with error analytics |

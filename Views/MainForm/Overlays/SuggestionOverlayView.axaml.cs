@@ -38,8 +38,8 @@ namespace MTM_WIP_Application_Avalonia.Views
                     vm.Suggestions.FirstOrDefault() ?? "none");
             }
 
-            // Enhanced focus management with delay to ensure proper rendering
-            await Task.Delay(50); // Allow UI to complete rendering
+            // Enhanced focus management with multiple attempts to ensure proper keyboard navigation
+            await Task.Delay(100); // Allow UI to complete rendering
             
             var listBox = this.FindControl<ListBox>("SuggestionListBox");
             if (listBox != null)
@@ -48,15 +48,35 @@ namespace MTM_WIP_Application_Avalonia.Views
                     listBox.ItemsSource != null, 
                     listBox.ItemCount);
 
-                // Focus the ListBox for immediate keyboard navigation
-                listBox.Focus();
-
-                // If there are items, select the first one automatically
+                // If there are items, select the first one first
                 if (listBox.ItemCount > 0)
                 {
                     listBox.SelectedIndex = 0;
-                    _logger?.LogInformation("Automatically selected first item in suggestion list");
+                    _logger?.LogInformation("Selected first item (index 0) in suggestion list");
                 }
+
+                // Force focus with multiple attempts
+                listBox.Focus();
+                
+                // Also ensure the UserControl can receive key events
+                this.Focus();
+                
+                // Additional attempt after a short delay to ensure focus sticks
+                await Task.Delay(50);
+                if (!listBox.IsFocused)
+                {
+                    _logger?.LogInformation("First focus attempt failed, retrying...");
+                    listBox.Focus();
+                    this.Focus();
+                }
+                
+                // Ensure both UserControl and ListBox are keyboard navigable
+                listBox.TabIndex = 0;
+                listBox.IsTabStop = true;
+                this.IsTabStop = true;
+                
+                _logger?.LogInformation("ListBox focus state: IsFocused={IsFocused}, IsTabStop={IsTabStop}, TabIndex={TabIndex}", 
+                    listBox.IsFocused, listBox.IsTabStop, listBox.TabIndex);
             }
             else
             {
@@ -109,16 +129,118 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
 
         /// <summary>
-        /// Handles Enter key on the ListBox to select a suggestion.
+        /// Handles key navigation on the ListBox including Enter, Escape, and arrow keys.
         /// </summary>
         public void OnSuggestionListBoxKeyDown(object? sender, KeyEventArgs e)
         {
-            if (e.Key == Avalonia.Input.Key.Enter && DataContext is SuggestionOverlayViewModel vm && vm.SelectCommand != null)
+            var listBox = sender as ListBox;
+            if (listBox == null || DataContext is not SuggestionOverlayViewModel vm) return;
+
+            _logger?.LogDebug("ListBox KeyDown: {Key}", e.Key);
+
+            switch (e.Key)
             {
-                if (vm.SelectCommand.CanExecute(null))
+                case Avalonia.Input.Key.Enter:
+                    // Select current suggestion
+                    if (vm.SelectCommand != null && vm.SelectCommand.CanExecute(null))
+                    {
+                        vm.SelectCommand.Execute(null);
+                        _logger?.LogInformation("Suggestion selected via Enter key.");
+                        e.Handled = true;
+                    }
+                    break;
+
+                case Avalonia.Input.Key.Escape:
+                    // Cancel the overlay
+                    if (vm.CancelCommand != null && vm.CancelCommand.CanExecute(null))
+                    {
+                        vm.CancelCommand.Execute(null);
+                        _logger?.LogInformation("Overlay cancelled via Escape key at ListBox level.");
+                        e.Handled = true;
+                    }
+                    break;
+
+                case Avalonia.Input.Key.Up:
+                    // Move selection up
+                    if (listBox.SelectedIndex > 0)
+                    {
+                        listBox.SelectedIndex--;
+                        _logger?.LogDebug("Selection moved up to index {Index}", listBox.SelectedIndex);
+                        e.Handled = true;
+                    }
+                    break;
+
+                case Avalonia.Input.Key.Down:
+                    // Move selection down
+                    if (listBox.SelectedIndex < listBox.ItemCount - 1)
+                    {
+                        listBox.SelectedIndex++;
+                        _logger?.LogDebug("Selection moved down to index {Index}", listBox.SelectedIndex);
+                        e.Handled = true;
+                    }
+                    break;
+
+                case Avalonia.Input.Key.Home:
+                    // Move to first item
+                    if (listBox.ItemCount > 0)
+                    {
+                        listBox.SelectedIndex = 0;
+                        _logger?.LogDebug("Selection moved to first item");
+                        e.Handled = true;
+                    }
+                    break;
+
+                case Avalonia.Input.Key.End:
+                    // Move to last item
+                    if (listBox.ItemCount > 0)
+                    {
+                        listBox.SelectedIndex = listBox.ItemCount - 1;
+                        _logger?.LogDebug("Selection moved to last item");
+                        e.Handled = true;
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Handles key events at the UserControl level to ensure keyboard navigation works even if ListBox loses focus.
+        /// </summary>
+        public void OnUserControlKeyDown(object? sender, KeyEventArgs e)
+        {
+            _logger?.LogDebug("UserControl KeyDown: {Key}", e.Key);
+            
+            // Handle Escape at UserControl level first for immediate cancellation
+            if (e.Key == Avalonia.Input.Key.Escape)
+            {
+                if (DataContext is SuggestionOverlayViewModel vm && vm.CancelCommand != null && vm.CancelCommand.CanExecute(null))
                 {
-                    vm.SelectCommand.Execute(null);
-                    _logger?.LogInformation("Suggestion selected via Enter key.");
+                    vm.CancelCommand.Execute(null);
+                    _logger?.LogInformation("Overlay cancelled via Escape key at UserControl level.");
+                    e.Handled = true;
+                    return;
+                }
+            }
+            
+            var listBox = this.FindControl<ListBox>("SuggestionListBox");
+            if (listBox != null && !e.Handled)
+            {
+                // Forward other key events to the ListBox handler
+                OnSuggestionListBoxKeyDown(listBox, e);
+            }
+        }
+
+        /// <summary>
+        /// Handles KeyUp events for additional key event coverage.
+        /// </summary>
+        public void OnUserControlKeyUp(object? sender, KeyEventArgs e)
+        {
+            // Handle Escape on KeyUp as well in case KeyDown doesn't work
+            if (e.Key == Avalonia.Input.Key.Escape && !e.Handled)
+            {
+                if (DataContext is SuggestionOverlayViewModel vm && vm.CancelCommand != null && vm.CancelCommand.CanExecute(null))
+                {
+                    vm.CancelCommand.Execute(null);
+                    _logger?.LogInformation("Overlay cancelled via Escape key on KeyUp.");
                     e.Handled = true;
                 }
             }

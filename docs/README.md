@@ -5,8 +5,8 @@ This directory contains comprehensive documentation for the MTM WIP Application,
 ## 📋 Documentation Sections
 
 ### Architecture and Planning
-- [Project Architecture Blueprint](ways-of-work/plan/mtm-inventory-management/Project_Architecture_Blueprint.md)
-- [Project Structure Blueprint](ways-of-work/plan/mtm-inventory-management/Project_Folders_Structure_Blueprint.md)
+- [Project Architecture Blueprint](architecture/project-blueprint.md)
+- [Project Structure Blueprint](architecture/folder-structure.md)
 - [Epic Architecture Specifications](ways-of-work/plan/mtm-inventory-management/epic-architecture/)
 
 ### GitHub Instructions System

@@ -160,7 +160,7 @@ public async Task<DatabaseResult> UpdateInventoryAsync(InventoryUpdateRequest re
         new("p_Operation", request.Operation ?? string.Empty), 
         new("p_Quantity", request.Quantity),
         new("p_Location", request.Location ?? string.Empty),
-        new("p_UserId", request.UserId ?? Environment.UserName),
+        new("p_User", request.UserId ?? Environment.UserName),
         new("p_TransactionType", request.TransactionType ?? string.Empty)
     };
 

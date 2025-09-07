@@ -324,8 +324,8 @@ body:
         - `.github/instructions/dotnet-architecture-good-practices.instructions.md` (coding standards)
         
         **Architecture Documents:**
-        - `docs/ways-of-work/plan/mtm-inventory-management/Project_Architecture_Blueprint.md`
-        - `docs/ways-of-work/plan/mtm-inventory-management/epic-architecture/specification.md`
+        - `docs/architecture/project-blueprint.md`
+        - `docs/architecture/epic-specification.md`
         
         **External References:**
         - Microsoft MVVM Community Toolkit documentation

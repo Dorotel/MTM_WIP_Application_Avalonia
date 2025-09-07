@@ -18,7 +18,7 @@ public static class ErrorHandling
 {
     private static readonly Dictionary<string, HashSet<string>> _sessionErrorCache = new();
     private static readonly object _lockObject = new();
-    private static string _fileServerBasePath = @"\\mtmanu-fs01\Expo Drive\MH_RESOURCE\Material_Handler\MTM WIP App\Logs";
+    private static string _fileServerBasePath = @"\\\\mtmanu-fs01\\Expo Drive\\MH_RESOURCE\\Material_Handler\\MTM WIP App\\Logs";
 
     /// <summary>
     /// Handles an exception with specified operation context and user information.
@@ -113,7 +113,7 @@ public static class ErrorHandling
     }
 
     /// <summary>
-    /// Logs to file server with CSV format.
+    /// Logs to file server with CSV format to both network and local locations.
     /// </summary>
     public static void LogToFileServer(ErrorEntry errorEntry)
     {
@@ -123,28 +123,69 @@ public static class ErrorHandling
 
             // Ensure UserId is uppercase for consistent folder structure
             var normalizedUserId = errorEntry.UserId.ToUpper();
-            var userLogFolder = Path.Combine(_fileServerBasePath, normalizedUserId);
             var csvFileName = GetCsvFileName(errorEntry.Category);
-            var csvFilePath = Path.Combine(userLogFolder, csvFileName);
             
-            Directory.CreateDirectory(userLogFolder);
-            
-            lock (_lockObject)
+            // Write to both network and local locations simultaneously
+            var tasks = new List<Task>
             {
-                var fileExists = File.Exists(csvFilePath);
-                using var writer = new StreamWriter(csvFilePath, append: true);
-                
-                if (!fileExists)
+                // Network location
+                Task.Run(() =>
                 {
-                    writer.WriteLine(GetCsvHeader());
-                }
+                    try
+                    {
+                        var userLogFolder = Path.Combine(_fileServerBasePath, normalizedUserId);
+                        var csvFilePath = Path.Combine(userLogFolder, csvFileName);
+                        WriteToSingleLocation(csvFilePath, errorEntry);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Network logging failed: {ex.Message}");
+                    }
+                }),
                 
-                writer.WriteLine(FormatErrorEntryAsCsv(errorEntry));
-            }
+                // Local location  
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var userLogFolder = Path.Combine(ErrorConfiguration.FallbackLocalPath, normalizedUserId);
+                        var csvFilePath = Path.Combine(userLogFolder, csvFileName);
+                        WriteToSingleLocation(csvFilePath, errorEntry);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Local logging failed: {ex.Message}");
+                    }
+                })
+            };
+            
+            // Wait for both writes with timeout
+            Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(5));
         }
         catch (Exception ex)
         {
-            LogToFallbackLocation(errorEntry, ex);
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Error handling logging failed: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Writes error entry to a single file location.
+    /// </summary>
+    private static void WriteToSingleLocation(string csvFilePath, ErrorEntry errorEntry)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(csvFilePath)!);
+        
+        lock (_lockObject)
+        {
+            var fileExists = File.Exists(csvFilePath);
+            using var writer = new StreamWriter(csvFilePath, append: true);
+            
+            if (!fileExists)
+            {
+                writer.WriteLine(GetCsvHeader());
+            }
+            
+            writer.WriteLine(FormatErrorEntryAsCsv(errorEntry));
         }
     }
 

@@ -311,30 +311,34 @@ public partial class QuickButtonsViewModel : BaseViewModel
             {
                 QuickButtons.Clear();
 
-                // Convert service data to ViewModel items
-                for (int i = 0; i < Math.Min(transactions.Count, 10); i++)
+            // Convert service data to ViewModel items
+            for (int i = 0; i < Math.Min(transactions.Count, 10); i++)
+            {
+                var transaction = transactions[i];
+                Logger.LogDebug("🔧 Creating button {Index}: PartId={PartId}, Operation={Operation}, Quantity={Quantity}",
+                    i + 1, transaction.PartId, transaction.Operation, transaction.Quantity);
+
+                // CRITICAL: Ensure button data is properly set for non-empty detection
+                var button = new QuickButtonItemViewModel
                 {
-                    var transaction = transactions[i];
-                    Logger.LogDebug("🔧 Creating button {Index}: PartId={PartId}, Operation={Operation}, Quantity={Quantity}",
-                        i + 1, transaction.PartId, transaction.Operation, transaction.Quantity);
+                    Position = i + 1,
+                    PartId = transaction.PartId ?? string.Empty,  // Ensure not null
+                    Operation = transaction.Operation ?? string.Empty, // Ensure not null and not "EMPTY"
+                    Quantity = transaction.Quantity,
+                    DisplayText = string.IsNullOrEmpty(transaction.PartId) ? "Empty Slot" : transaction.PartId,
+                    SubText = string.IsNullOrEmpty(transaction.PartId) ? "Click to assign" : $"{transaction.Operation} - {transaction.Quantity} parts",
+                    ToolTipText = string.IsNullOrEmpty(transaction.PartId) ? 
+                        $"Empty slot {i + 1} - Click to assign a quick action." :
+                        $"Position {i + 1}: Click to populate Part ID: {transaction.PartId}, Operation: {transaction.Operation}, Quantity: {transaction.Quantity} in the active tab. Right-click for move and remove options."
+                };
 
-                    var button = new QuickButtonItemViewModel
-                    {
-                        Position = i + 1,
-                        PartId = transaction.PartId,
-                        Operation = transaction.Operation,
-                        Quantity = transaction.Quantity,
-                        DisplayText = transaction.PartId,
-                        SubText = $"{transaction.Operation} - {transaction.Quantity} parts",
-                        ToolTipText = $"Position {i + 1}: Click to populate Part ID: {transaction.PartId}, Operation: {transaction.Operation}, Quantity: {transaction.Quantity} in the active tab. Right-click for move and remove options."
-                    };
+                Logger.LogDebug("🔧 Button {Index} IsEmpty check: PartId='{PartId}', Operation='{Operation}', IsEmpty={IsEmpty}",
+                    i + 1, button.PartId, button.Operation, button.IsEmpty);
 
-                    // Subscribe to property changes
-                    button.PropertyChanged += OnButtonPropertyChanged;
-                    QuickButtons.Add(button);
-                }
-
-                Logger.LogInformation("🔧 Added {ActualButtonCount} transaction buttons to QuickButtons collection",
+                // Subscribe to property changes
+                button.PropertyChanged += OnButtonPropertyChanged;
+                QuickButtons.Add(button);
+            }                Logger.LogInformation("🔧 Added {ActualButtonCount} transaction buttons to QuickButtons collection",
                     QuickButtons.Count(b => !b.IsEmpty));
 
                 // Fill remaining slots with empty buttons
@@ -356,19 +360,29 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 }
             });
 
-            // Fix: Create snapshot of counts before logging to avoid collection modification exception
-            int totalCount = QuickButtons.Count;
-            var quickButtonsList = QuickButtons.ToList(); // Create snapshot
-            int nonEmptyCount = quickButtonsList.Count(b => b != null && !b.IsEmpty);
-            int emptyCount = quickButtonsList.Count(b => b != null && b.IsEmpty);
+            // Wait for UI thread operations to complete and then count properly
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                // Now count the buttons correctly - ALWAYS should total 10
+                int totalCount = QuickButtons.Count;
+                int nonEmptyCount = QuickButtons.Count(b => b != null && !string.IsNullOrEmpty(b.PartId) && b.Operation != "EMPTY");
+                int emptyCount = QuickButtons.Count(b => b != null && (string.IsNullOrEmpty(b.PartId) || b.Operation == "EMPTY"));
 
-            Console.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
-            System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
-            Logger.LogInformation("🔧 Total QuickButtons collection now has {TotalCount} items ({NonEmpty} non-empty, {Empty} empty)",
-                totalCount, nonEmptyCount, emptyCount);
+                // Ensure the math is correct: nonEmpty + empty = total = 10
+                if (nonEmptyCount + emptyCount != totalCount)
+                {
+                    Logger.LogWarning("🔧 Button count mismatch! NonEmpty: {NonEmpty}, Empty: {Empty}, Total: {Total}", 
+                        nonEmptyCount, emptyCount, totalCount);
+                }
 
-            // Update move command validation
-            UpdateMoveCommandValidation();
+                Console.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
+                System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
+                Logger.LogInformation("🔧 Total QuickButtons collection now has {TotalCount} items ({NonEmpty} non-empty, {Empty} empty)",
+                    totalCount, nonEmptyCount, emptyCount);
+
+                // Update move command validation
+                UpdateMoveCommandValidation();
+            });
 
             _progressService.CompleteOperation("Transactions loaded successfully");
         }
@@ -422,19 +436,16 @@ public partial class QuickButtonsViewModel : BaseViewModel
     {
         try
         {
-            _isUpdatingFromService = true; // Prevent reload during our update
             _progressService.StartOperation($"Removing quick button: {button.PartId}...", false);
             
-            // Remove from service first
+            // Remove from service - let the event system handle UI updates
             var success = await _quickButtonsService.RemoveQuickButtonAsync(button.Position, _applicationState.CurrentUser);
             
             if (success)
             {
-                // Remove from local collection
-                QuickButtons.Remove(button);
-                UpdateButtonPositions();
                 _progressService.CompleteOperation("Quick button removed successfully");
                 Logger.LogInformation("Removed quick button: {PartId}", button.PartId);
+                // UI will be updated via QuickButtonsChanged event
             }
             else
             {
@@ -445,10 +456,6 @@ public partial class QuickButtonsViewModel : BaseViewModel
         {
             _progressService.ReportError($"Error removing button: {ex.Message}");
             Logger.LogError(ex, "Failed to remove quick button: {PartId}", button.PartId);
-        }
-        finally
-        {
-            _isUpdatingFromService = false; // Re-enable reload
         }
     }
 
@@ -718,21 +725,18 @@ public partial class QuickButtonsViewModel : BaseViewModel
             {
                 Logger.LogInformation("Quick buttons changed for current user: {ChangeType}", e.ChangeType);
                 
-                // Only refresh for certain change types that require a full reload
+                // Reload for all change types that affect the button list
                 switch (e.ChangeType)
                 {
                     case QuickButtonChangeType.Added:
-                        // Only reload if we didn't trigger this change
-                        await LoadLast10TransactionsAsync();
-                        break;
-                    case QuickButtonChangeType.Cleared:
-                        // Full clear - reload everything
-                        await LoadLast10TransactionsAsync();
-                        break;
-                    // Don't auto-reload for these - they're handled locally
-                    case QuickButtonChangeType.Updated:
                     case QuickButtonChangeType.Removed:
+                    case QuickButtonChangeType.Cleared:
                     case QuickButtonChangeType.Reordered:
+                        // Always reload to ensure UI is in sync with database
+                        Logger.LogDebug("Reloading quick buttons for {ChangeType}", e.ChangeType);
+                        await LoadLast10TransactionsAsync();
+                        break;
+                    case QuickButtonChangeType.Updated:
                         Logger.LogDebug("Skipping reload for {ChangeType} - handled locally", e.ChangeType);
                         break;
                 }
