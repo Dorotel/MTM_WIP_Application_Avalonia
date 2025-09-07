@@ -1,0 +1,437 @@
+name: "RemoveTabView Complete Implementation"
+description: "Complete RemoveTabView.axaml implementation with functional UI, DataGrid integration, and batch removal operations"
+title: "[FEATURE] Complete RemoveTabView.axaml Implementation - Inventory Removal Operations"
+labels: ["feature", "enhancement", "ui", "inventory-management", "data-operations", "user-interface"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 🗑️ Complete RemoveTabView Implementation
+        
+        **Current Development Status:** ⚠️ **NEEDS COMPLETE IMPLEMENTATION**
+        
+        ## 📊 Progress Summary
+        
+        ### ✅ **Completed Components:**
+        - Basic AXAML structure with styling (70% theme compliance)
+        - RemoveItemViewModel with comprehensive business logic
+        - Integration with existing MTM database stored procedures
+        - Existing documentation and UI guidelines
+        
+        ### ⚠️ **Critical Issues:**
+        - **AXAML Structure**: Missing mandatory Tab View pattern (ScrollViewer + Grid)
+        - **UI Implementation**: Incomplete form fields and DataGrid implementation
+        - **ViewModel Integration**: Missing proper DataContext binding patterns
+        - **Button Functionality**: Action buttons not properly implemented
+        - **Search Operations**: Search and filter controls need completion
+        
+        ### 🔄 **Reference Implementation:**
+        Using InventoryTabView.axaml as the pattern template:
+        - ScrollViewer > Grid[RowDefinitions="*,Auto"] > Border structure
+        - Proper MaterialIcons integration with labels
+        - Complete form field implementation with validation
+        - MTM mandatory grid pattern compliance
+        
+        ---
+
+  - type: input
+    id: feature_title
+    attributes:
+      label: "Feature Title"
+      value: "Complete RemoveTabView.axaml Implementation - Inventory Removal Operations"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: implementation_priority
+    attributes:
+      label: "Implementation Priority Level"
+      description: "How critical is this feature for daily operations?"
+      options:
+        - "🔴 Critical - Required for basic inventory operations"
+        - "🟡 High - Significantly improves operational efficiency"
+        - "🟢 Medium - Nice to have for advanced users"
+        - "🔵 Low - Future enhancement"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: core_functionality
+    attributes:
+      label: "🎯 Core RemoveTabView Features"
+      description: "Select which primary features you want included (based on Control_RemoveTab.instructions.md):"
+      options:
+        - label: "**Search and Filter System** - Part ID and Operation filtering for targeted inventory removal"
+        - label: "**DataGrid Implementation** - Professional inventory display with multi-row selection"
+        - label: "**Batch Removal Operations** - Delete multiple inventory items simultaneously"
+        - label: "**Undo Functionality** - Restore accidentally deleted inventory items"
+        - label: "**Transaction Audit Logging** - Complete removal history for manufacturing compliance"
+        - label: "**Advanced Removal Integration** - Connection to Control_AdvancedRemove for complex operations"
+        - label: "**Print Report Generation** - Professional removal reports for documentation"
+        - label: "**Progress Feedback System** - Real-time operation status during batch removals"
+
+  - type: dropdown
+    id: ui_layout_approach
+    attributes:
+      label: "🖼️ UI Layout Implementation"
+      description: "How should the removal interface be structured? (Real-world: How users will interact with the removal system)"
+      options:
+        - "Match InventoryTabView pattern - Single form with action buttons (Recommended)"
+        - "Dual-panel layout - Search criteria left, results right (Like WinForms version)"
+        - "Tabbed interface - Separate tabs for search, results, and history"
+        - "Modal workflow - Step-by-step guided removal process"
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: search_filtering_options
+    attributes:
+      label: "🔍 Search and Filtering Capabilities"
+      description: "Which search features should be implemented? (Real-world: How users find items to remove)"
+      options:
+        - label: "**Part ID Filtering** - ComboBox with auto-complete for part selection"
+        - label: "**Operation Number Filtering** - Refine search by manufacturing operation"
+        - label: "**Location-Based Search** - Filter by inventory location"
+        - label: "**Quantity Range Filtering** - Find items by quantity ranges"
+        - label: "**Date-Based Filtering** - Search by entry date or age"
+        - label: "**Batch Number Search** - Find items by production batch"
+        - label: "**Multi-Criteria Search** - Combine multiple filters simultaneously"
+        - label: "**Fuzzy Search Support** - Find items with partial or approximate matches"
+
+  - type: dropdown
+    id: datagrid_implementation
+    attributes:
+      label: "📊 DataGrid Implementation Style"
+      description: "What type of data display do you prefer? (Real-world: How users will see and select inventory)"
+      options:
+        - "Full-featured DataGrid with sorting, filtering, and selection"
+        - "Simple list view optimized for touch interfaces"
+        - "Card-based display for visual inventory management"
+        - "Tree view for hierarchical part organization"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: removal_operation_types
+    attributes:
+      label: "🗑️ Removal Operation Features"
+      description: "What types of removal operations should be supported?"
+      options:
+        - label: "**Single Item Removal** - Remove individual inventory items"
+        - label: "**Batch Selection Removal** - Multi-select and remove multiple items"
+        - label: "**Complete Part Removal** - Remove all instances of a specific part"
+        - label: "**Location Clear Out** - Remove all inventory from a specific location"
+        - label: "**Operation-Based Removal** - Remove all items from specific manufacturing operations"
+        - label: "**Quantity-Based Removal** - Partial quantity removal (reduce quantity, don't delete)"
+        - label: "**Conditional Removal** - Remove items meeting specific criteria automatically"
+        - label: "**Scheduled Removal** - Set items for future removal or expiration"
+
+  - type: dropdown
+    id: validation_safety_level
+    attributes:
+      label: "🛡️ Removal Safety and Validation"
+      description: "How strict should removal validation be? (Real-world: Preventing accidental deletions)"
+      options:
+        - "Maximum Safety - Confirmation dialogs for all removals with detailed summaries"
+        - "Balanced Safety - Confirmations for batch operations, simple confirmation for single items"
+        - "Minimal Validation - Basic confirmation with easy override for power users"
+        - "Trust Mode - No confirmations for experienced users, full audit trail maintained"
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: undo_recovery_features
+    attributes:
+      label: "⏪ Undo and Recovery System"
+      description: "What recovery capabilities should be available? (Real-world: Fixing mistakes)"
+      options:
+        - label: "**Immediate Undo** - Undo last removal operation within same session"
+        - label: "**Multi-Level Undo** - Multiple undo steps with operation history"
+        - label: "**Session-Based Recovery** - Restore all removals from current session"
+        - label: "**Historical Recovery** - Restore items removed in previous sessions"
+        - label: "**Selective Recovery** - Choose specific items to restore from removal history"
+        - label: "**Batch Recovery** - Restore entire batches of removed items"
+        - label: "**Time-Based Recovery** - Restore items removed within specific time periods"
+        - label: "**Recovery Audit Trail** - Log all recovery operations for compliance"
+
+  - type: checkboxes
+    id: integration_requirements
+    attributes:
+      label: "🔗 Integration with Existing Systems"
+      description: "Which MTM systems should this integrate with?"
+      options:
+        - label: "**RemoveItemViewModel Integration** - Use existing comprehensive ViewModel"
+        - label: "**Database Stored Procedures** - inv_inventory_Remove_Item and related procedures"
+        - label: "**Transaction History Logging** - Complete audit trail via inv_transaction table"
+        - label: "**Quick Actions Panel** - Toggle Control_QuickButtons visibility"
+        - label: "**Advanced Removal Features** - Launch Control_AdvancedRemove for complex operations"
+        - label: "**Print System Integration** - Use Core_DgvPrinter for professional reports"
+        - label: "**Progress Tracking System** - Helper_StoredProcedureProgress integration"
+        - label: "**Error Handling Service** - Centralized error management and logging"
+
+  - type: textarea
+    id: current_implementation_gaps
+    attributes:
+      label: "📋 Current Implementation Analysis"
+      description: "DO NOT MODIFY - Analysis of current RemoveTabView state vs InventoryTabView pattern"
+      value: |
+        **🔍 AXAML Structure Analysis:**
+        
+        ## ✅ InventoryTabView.axaml Pattern (Reference):
+        ```xml
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+          <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8">
+            <!-- Main Entry Panel -->
+            <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}">
+              <Grid x:Name="EntryFormGrid" RowDefinitions="Auto,*">
+                <!-- Header Section -->
+                <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}">
+                  <Grid x:Name="HeaderGrid" ColumnDefinitions="Auto,*">
+                    <materialIcons:MaterialIcon Grid.Column="0" Kind="Package" />
+                    <TextBlock Grid.Column="1" Text="MTM Inventory Entry" />
+                  </Grid>
+                </Border>
+                <!-- Form Fields Section -->
+                <Grid x:Name="FormFieldsGrid" Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,*">
+                  <!-- Individual form fields with icons and labels -->
+                </Grid>
+              </Grid>
+            </Border>
+            <!-- Action Buttons Panel -->
+            <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}">
+              <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="Auto,*">
+                <!-- Action buttons with proper styling -->
+              </Grid>
+            </Border>
+          </Grid>
+        </ScrollViewer>
+        ```
+        
+        ## ❌ Current RemoveTabView.axaml Issues:
+        
+        ### Missing Core Structure:
+        - ❌ No proper ScrollViewer > Grid[*,Auto] pattern
+        - ❌ Incomplete form field implementations (empty StackPanels)
+        - ❌ Missing MaterialIcons + TextBlock label combinations
+        - ❌ Incomplete DataGrid implementation in right panel
+        - ❌ Missing proper header section with gradient background
+        - ❌ Action buttons panel not properly implemented
+        
+        ### Incomplete Control Implementations:
+        ```xml
+        <!-- CURRENT (Incomplete): -->
+        <StackPanel>
+          <!-- Empty StackPanel placeholders -->
+        </StackPanel>
+        
+        <!-- SHOULD BE (Following InventoryTabView pattern): -->
+        <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
+          <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+            <materialIcons:MaterialIcon Kind="Package" Width="14" Height="14" />
+            <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" />
+          </StackPanel>
+          <TextBox Grid.Column="1" Text="{Binding SelectedPart, Mode=TwoWay}" Classes="input-field" />
+        </Grid>
+        ```
+        
+        ### Missing ViewModel Integration:
+        - ❌ No DataContext binding to RemoveItemViewModel
+        - ❌ Missing Command bindings (SearchCommand, DeleteCommand, UndoCommand)
+        - ❌ Missing property bindings for search criteria
+        - ❌ Missing ObservableCollection bindings for DataGrid
+        
+        ### Required Implementation Tasks:
+        1. **Complete AXAML Structure** - Implement full ScrollViewer + Grid pattern
+        2. **Form Fields Implementation** - Part ID, Operation ComboBoxes with icons
+        3. **DataGrid Integration** - Bind to InventoryItems ObservableCollection
+        4. **Action Buttons Implementation** - Search, Delete, Undo, Print, Advanced
+        5. **Progress Integration** - Loading states and progress feedback
+        6. **Validation States** - Error styling and validation feedback
+        
+        ### RemoveItemViewModel Integration Points:
+        ```csharp
+        // Available Properties for Binding:
+        - ObservableCollection<string> PartOptions
+        - ObservableCollection<string> OperationOptions  
+        - ObservableCollection<InventoryItem> InventoryItems
+        - ObservableCollection<InventoryItem> SelectedItems
+        
+        // Available Commands for Binding:
+        - RelayCommand SearchCommand
+        - RelayCommand DeleteCommand
+        - RelayCommand UndoCommand
+        - RelayCommand ResetCommand
+        - RelayCommand PrintCommand
+        - RelayCommand AdvancedRemovalCommand
+        ```
+    validations:
+      required: false
+
+  - type: dropdown
+    id: business_logic_compliance
+    attributes:
+      label: "📋 MTM Business Rules Compliance"
+      description: "How should manufacturing business rules be enforced?"
+      options:
+        - "Full Manufacturing Compliance - All removals logged, audit trail required"
+        - "Standard Operations - Basic logging with essential audit trail"
+        - "Development Mode - Minimal logging for testing purposes"
+        - "Custom Configuration - User-defined compliance levels"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: conflict_resolution_questions
+    attributes:
+      label: "❓ Implementation Conflicts Resolution"
+      description: "Based on documentation analysis, these conflicts need resolution:"
+      options:
+        - label: "**Documentation vs InventoryTabView**: Documentation shows WinForms TableLayoutPanel, but InventoryTabView uses Avalonia Grid - Use Avalonia Grid pattern?"
+        - label: "**DataGrid vs Simple Form**: Documentation emphasizes DataGrid-heavy interface, but InventoryTabView is form-focused - Implement DataGrid-focused layout?"
+        - label: "**Dual Panel vs Single Panel**: Documentation shows left search/right results, InventoryTabView is single panel - Which layout to follow?"
+        - label: "**Button Placement**: Documentation shows action buttons in bottom row, InventoryTabView has action buttons in separate bottom panel - Follow InventoryTabView pattern?"
+        - label: "**Progress Integration**: Documentation mentions ToolStripProgressBar (WinForms), but Avalonia needs different approach - Use loading states and status messages?"
+        - label: "**ComboBox vs TextBox**: InventoryTabView uses TextBox with validation behaviors, documentation suggests ComboBox - Which control type to use?"
+        - label: "**Theme Resource Names**: Use MTM_Shared_Logic theme resources consistently across all components?"
+        - label: "**ViewModel Namespace**: RemoveItemViewModel is in root ViewModels namespace, should it be in MainForm namespace like InventoryTabViewModel?"
+
+  - type: dropdown
+    id: testing_requirements
+    attributes:
+      label: "🧪 Testing and Validation Scope"
+      description: "What level of testing do you need? (Real-world: How thoroughly to verify before deployment)"
+      options:
+        - "Basic Functionality - Core removal operations only"
+        - "Standard Testing - Functionality + UI responsiveness + basic error handling"
+        - "Comprehensive Testing - Full feature set + accessibility + performance"
+        - "Manufacturing Validation - All testing + compliance verification + audit trail validation"
+      default: 2
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: accessibility_requirements
+    attributes:
+      label: "♿ Accessibility and User Experience"
+      description: "What accessibility features are needed for manufacturing environment?"
+      options:
+        - label: "**Keyboard Navigation** - Full keyboard access for all removal operations"
+        - label: "**Touch-Friendly Interface** - Support for tablet/touchscreen devices in manufacturing"
+        - label: "**High Contrast Support** - Works with Windows high contrast themes"
+        - label: "**Screen Reader Compatibility** - NVDA/JAWS support for visually impaired users"
+        - label: "**Focus Management** - Clear visual focus indicators during multi-step operations"
+        - label: "**Error Accessibility** - Screen reader announces validation errors and status changes"
+        - label: "**Size Scaling** - Respects Windows display scaling for different monitor sizes"
+        - label: "**Color Independence** - Information conveyed beyond color (icons, text, patterns)"
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "✅ Acceptance Criteria"
+      value: |
+        ## Primary Success Criteria:
+        
+        ### UI Implementation:
+        - [ ] RemoveTabView follows InventoryTabView ScrollViewer + Grid[*,Auto] pattern exactly
+        - [ ] All form fields implemented with MaterialIcon + TextBlock labels matching InventoryTabView style
+        - [ ] DataGrid displays inventory items with proper MTM theme styling
+        - [ ] Search criteria controls (Part ID, Operation) properly implemented with validation
+        - [ ] Action buttons panel matches InventoryTabView styling and layout
+        - [ ] All MTM theme resources used correctly (no hardcoded colors)
+        
+        ### Functionality:
+        - [ ] Search operations filter inventory correctly by part ID and/or operation
+        - [ ] Multi-row selection works in DataGrid for batch operations
+        - [ ] Delete operations remove selected items and log transactions
+        - [ ] Undo functionality restores last removed items successfully
+        - [ ] Progress feedback shown during all time-consuming operations
+        - [ ] Print functionality generates professional removal reports
+        
+        ### Integration:
+        - [ ] RemoveItemViewModel properly bound as DataContext
+        - [ ] All ViewModel commands (Search, Delete, Undo, Reset) properly bound
+        - [ ] ObservableCollections (PartOptions, InventoryItems, SelectedItems) properly bound
+        - [ ] Database operations use existing stored procedures (inv_inventory_Remove_Item)
+        - [ ] Transaction history logging works correctly
+        - [ ] Advanced Removal button launches Control_AdvancedRemove equivalent
+        
+        ### Business Logic:
+        - [ ] All removal operations create "OUT" transactions in audit trail
+        - [ ] User permissions respected (read-only users cannot delete)
+        - [ ] Batch operations handle errors gracefully with partial rollback
+        - [ ] Undo operations restore items with proper audit trail
+        - [ ] Empty search results show appropriate "Nothing Found" indicator
+        
+        ### Technical Compliance:
+        - [ ] Uses MVVM Community Toolkit patterns exclusively
+        - [ ] Follows Avalonia AXAML syntax rules (no AVLN2000 errors)
+        - [ ] Maintains theme resource binding system
+        - [ ] All selected accessibility requirements implemented
+        - [ ] Performance remains responsive with large inventory datasets
+    validations:
+      required: true
+
+  - type: dropdown
+    id: implementation_timeline
+    attributes:
+      label: "⏱️ Preferred Implementation Timeline"
+      description: "How quickly do you need this completed?"
+      options:
+        - "🔥 Rush - 1-2 days (basic functionality only)"
+        - "⚡ Fast - 3-5 days (core features with minimal polish)"
+        - "📅 Standard - 1-2 weeks (full features with proper testing)"
+        - "🎯 Thorough - 2-3 weeks (all features, comprehensive testing, documentation)"
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_requirements
+    attributes:
+      label: "💭 Additional Requirements & Notes"
+      value: |
+        **Development Context:**
+        - Base implementation on InventoryTabView.axaml patterns for consistency
+        - Leverage existing RemoveItemViewModel (769 lines) with comprehensive business logic
+        - Use established MTM database stored procedures (inv_inventory_Remove_Item, etc.)
+        - Integrate with existing Services/ErrorHandling.cs for centralized error management
+        
+        **Reference Files for Implementation:**
+        - Views/MainForm/Panels/InventoryTabView.axaml (pattern template)
+        - ViewModels/MainForm/RemoveItemViewModel.cs (existing ViewModel)
+        - Documentation/Development/UI_Documentation/Controls/MainForm/Control_RemoveTab.instructions.md
+        - docs/ui-theme-readiness/RemoveTabView_theme_readiness_checklist.md
+        
+        **Key Implementation Notes:**
+        - Must resolve documentation conflicts using InventoryTabView as authoritative pattern
+        - DataGrid implementation should show Location, PartID, Operation, Quantity columns minimum
+        - Undo functionality should maintain _lastRemovedItems collection as documented
+        - Print functionality should use Core_DgvPrinter equivalent for Avalonia
+        - Advanced Removal button should integrate with future Control_AdvancedRemove implementation
+        
+        **Known Challenges:**
+        - Converting WinForms DataGridView concepts to Avalonia DataGrid
+        - Implementing progress feedback without WinForms ToolStripProgressBar
+        - Ensuring batch operation performance with large datasets
+        - Maintaining transaction integrity during partial operation failures
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: final_implementation_confirmation
+    attributes:
+      label: "🎯 Final Implementation Confirmation"
+      description: "Confirm your implementation approach:"
+      options:
+        - label: "I want to follow InventoryTabView.axaml pattern exactly for consistency"
+        - label: "I understand this resolves documentation conflicts by using working code as reference"
+        - label: "I accept the selected timeline and complexity level"
+        - label: "I have reviewed the current RemoveItemViewModel and understand its capabilities"
+        - label: "I am ready to proceed with development based on these specifications"
