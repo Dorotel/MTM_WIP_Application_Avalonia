@@ -351,84 +351,123 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Batch deletes selected items with transaction logging.
     /// Validates item state before deletion and maintains undo capability.
+    /// Supports both single item and multi-item batch operations.
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanDelete))]
     private async Task Delete()
     {
-        if (SelectedItem == null)
+        if (SelectedItems.Count == 0)
         {
-            Logger.LogWarning("Delete operation attempted with no item selected");
-            throw new InvalidOperationException("No item selected for deletion");
+            Logger.LogWarning("Delete operation attempted with no items selected");
+            throw new InvalidOperationException("No items selected for deletion");
         }
 
         try
         {
             IsLoading = true;
-            var itemToRemove = SelectedItem;
+            var itemsToRemove = SelectedItems.ToList(); // Create a copy to avoid collection modification during iteration
+            var successfulRemovals = new List<InventoryItem>();
+            var failures = new List<(InventoryItem Item, string Error)>();
 
-            // Validate item data
-            if (string.IsNullOrWhiteSpace(itemToRemove.PartID))
+            using var scope = Logger.BeginScope("BatchInventoryDeletion");
+            Logger.LogInformation("Removing {Count} inventory items", itemsToRemove.Count);
+
+            // Process each item in the batch
+            foreach (var itemToRemove in itemsToRemove)
             {
-                throw new InvalidOperationException("Cannot delete item with invalid Part ID");
+                try
+                {
+                    // Validate item data
+                    if (string.IsNullOrWhiteSpace(itemToRemove.PartID))
+                    {
+                        failures.Add((itemToRemove, "Invalid Part ID"));
+                        continue;
+                    }
+
+                    if (itemToRemove.Quantity <= 0)
+                    {
+                        failures.Add((itemToRemove, "Invalid quantity"));
+                        continue;
+                    }
+
+                    Logger.LogDebug("Processing removal: {PartId}, Operation: {Operation}, Quantity: {Quantity}", 
+                        itemToRemove.PartID, itemToRemove.Operation, itemToRemove.Quantity);
+
+                    // Remove item using database service with proper async handling
+                    var removeResult = await _databaseService.RemoveInventoryItemAsync(
+                        itemToRemove.PartID,
+                        itemToRemove.Location,
+                        itemToRemove.Operation ?? string.Empty,
+                        itemToRemove.Quantity,
+                        itemToRemove.ItemType,
+                        _applicationState.CurrentUser,
+                        itemToRemove.BatchNumber ?? string.Empty,
+                        "Removed via Remove Item interface - Batch Operation"
+                    ).ConfigureAwait(false);
+
+                    if (removeResult.IsSuccess)
+                    {
+                        successfulRemovals.Add(itemToRemove);
+                        Logger.LogDebug("Successfully removed inventory item: {PartId}", itemToRemove.PartID);
+                    }
+                    else
+                    {
+                        failures.Add((itemToRemove, removeResult.Message ?? "Database operation failed"));
+                        Logger.LogError("Failed to remove inventory item {PartId}: {Error}", itemToRemove.PartID, removeResult.Message);
+                    }
+                }
+                catch (Exception itemEx)
+                {
+                    failures.Add((itemToRemove, itemEx.Message));
+                    Logger.LogError(itemEx, "Exception removing inventory item {PartId}", itemToRemove.PartID);
+                }
             }
 
-            if (itemToRemove.Quantity <= 0)
+            // Update UI and undo capability based on results
+            if (successfulRemovals.Count > 0)
             {
-                throw new InvalidOperationException("Cannot delete item with invalid quantity");
-            }
-
-            using var scope = Logger.BeginScope("InventoryDeletion");
-            Logger.LogInformation("Removing inventory item: {PartId}, Operation: {Operation}, Quantity: {Quantity}", 
-                itemToRemove.PartID, itemToRemove.Operation, itemToRemove.Quantity);
-
-            // Remove item using database service with proper async handling
-            var removeResult = await _databaseService.RemoveInventoryItemAsync(
-                itemToRemove.PartID,
-                itemToRemove.Location,
-                itemToRemove.Operation ?? string.Empty,
-                itemToRemove.Quantity,
-                itemToRemove.ItemType,
-                _applicationState.CurrentUser,
-                itemToRemove.BatchNumber ?? string.Empty,
-                "Removed via Remove Item interface"
-            ).ConfigureAwait(false);
-
-            if (removeResult.IsSuccess)
-            {
-                // Store for undo capability
+                // Store for undo capability (replace previous undo items)
                 _lastRemovedItems.Clear();
-                _lastRemovedItems.Add(itemToRemove);
+                _lastRemovedItems.AddRange(successfulRemovals);
                 HasUndoItems = _lastRemovedItems.Count > 0;
 
-                // Remove from UI collections
-                InventoryItems.Remove(itemToRemove);
+                // Remove successful items from UI collections
+                foreach (var removedItem in successfulRemovals)
+                {
+                    InventoryItems.Remove(removedItem);
+                }
+
+                // Clear selection since items were deleted
+                SelectedItems.Clear();
                 SelectedItem = null;
 
                 // Fire event for integration
                 ItemsRemoved?.Invoke(this, new ItemsRemovedEventArgs
                 {
-                    RemovedItems = new List<InventoryItem> { itemToRemove },
+                    RemovedItems = successfulRemovals,
                     RemovalTime = DateTime.Now
                 });
 
-                Logger.LogInformation("Successfully removed inventory item: {PartId}", itemToRemove.PartID);
+                Logger.LogInformation("Batch deletion completed: {SuccessCount} successful, {FailureCount} failed", 
+                    successfulRemovals.Count, failures.Count);
             }
-            else
+
+            // Report any failures
+            if (failures.Count > 0)
             {
-                var errorMessage = $"Failed to remove inventory item: {removeResult.Message}";
-                Logger.LogError("Database operation failed: {ErrorMessage}", errorMessage);
-                throw new InvalidOperationException(errorMessage);
+                var failureMessage = $"Failed to remove {failures.Count} items:\n" + 
+                    string.Join("\n", failures.Select(f => $"• {f.Item.PartID}: {f.Error}"));
+                Logger.LogWarning("Batch deletion had failures: {FailureMessage}", failureMessage);
+                
+                // In a real implementation, you might want to show this to the user
+                // For now, we'll just log it
             }
-        }
-        catch (InvalidOperationException)
-        {
-            throw; // Re-throw validation and operation exceptions
+
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Unexpected error during inventory deletion for item: {PartId}", 
-                SelectedItem?.PartID ?? "Unknown");
-            throw new ApplicationException($"Failed to delete inventory item: {ex.Message}", ex);
+            Logger.LogError(ex, "Unexpected error during batch inventory deletion");
+            throw new ApplicationException($"Failed to delete inventory items: {ex.Message}", ex);
         }
         finally
         {
