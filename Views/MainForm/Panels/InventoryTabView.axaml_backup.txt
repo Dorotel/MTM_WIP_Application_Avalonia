@@ -152,6 +152,117 @@ public partial class InventoryTabView : UserControl
         }
     }
 
+    private void AttachSuggestionOverlay(TextBox? textBox, string field)
+    {
+        if (textBox == null)
+        {
+            _logger?.LogWarning($"{field}TextBox not found in XAML. Overlay will not be available for this field.");
+            return;
+        }
+
+        // Handle LostFocus for non-wildcard validation
+        textBox.LostFocus += async (s, e) =>
+        {
+            _logger?.LogInformation($"LostFocus event fired for {field}TextBox");
+            if (_viewModel == null || _suggestionOverlayService == null)
+            {
+                _logger?.LogWarning($"ViewModel or SuggestionOverlayService is null for {field}TextBox");
+                return;
+            }
+            var enteredText = textBox.Text?.Trim() ?? string.Empty;
+            _logger?.LogInformation($"Entered text for {field}: '{enteredText}'");
+            if (string.IsNullOrEmpty(enteredText))
+            {
+                _logger?.LogInformation($"Entered text is empty for {field}TextBox");
+                return;
+            }
+
+            // Skip processing if text contains wildcards (handled by KeyDown event)
+            if (enteredText.Contains('%'))
+            {
+                _logger?.LogInformation($"Text contains wildcards, skipping LostFocus processing for {field}");
+                return;
+            }
+
+            IEnumerable<string> data = field switch
+            {
+                "Part" => _viewModel.PartIds ?? Enumerable.Empty<string>(),
+                "Operation" => _viewModel.Operations ?? Enumerable.Empty<string>(),
+                "Location" => _viewModel.Locations ?? Enumerable.Empty<string>(),
+                _ => Enumerable.Empty<string>()
+            };
+            _logger?.LogInformation($"Data for {field}: [{string.Join(", ", data)}]");
+            if (!data.Contains(enteredText, StringComparer.OrdinalIgnoreCase))
+            {
+                _logger?.LogInformation($"Invoking overlay for {field}: '{enteredText}' (not an exact match)");
+                var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, enteredText);
+                _logger?.LogInformation($"Overlay result for {field}: '{selected}'");
+                if (!string.IsNullOrEmpty(selected))
+                {
+                    switch (field)
+                    {
+                        case "Part": _viewModel.SelectedPart = selected; break;
+                        case "Operation": _viewModel.SelectedOperation = selected; break;
+                        case "Location": _viewModel.SelectedLocation = selected; break;
+                    }
+                    textBox.Text = selected;
+                    UpdateValidationStates();
+                    ValidateAndUpdateSaveButton();
+                }
+            }
+            else
+            {
+                _logger?.LogInformation($"Entered text '{enteredText}' is a valid {field}");
+            }
+        };
+
+        // Handle KeyDown for wildcard functionality
+        textBox.KeyDown += async (s, e) =>
+        {
+            // Only trigger on Enter key when text contains wildcards
+            if (e.Key != Avalonia.Input.Key.Enter) return;
+
+            if (_viewModel == null || _suggestionOverlayService == null) return;
+            
+            var enteredText = textBox.Text?.Trim() ?? string.Empty;
+            if (string.IsNullOrEmpty(enteredText) || !enteredText.Contains('%')) return;
+
+            _logger?.LogInformation($"Wildcard search triggered for {field}: '{enteredText}'");
+
+            IEnumerable<string> data = field switch
+            {
+                "Part" => _viewModel.PartIds ?? Enumerable.Empty<string>(),
+                "Operation" => _viewModel.Operations ?? Enumerable.Empty<string>(),
+                "Location" => _viewModel.Locations ?? Enumerable.Empty<string>(),
+                _ => Enumerable.Empty<string>()
+            };
+
+            if (data.Any())
+            {
+                _logger?.LogInformation($"Showing wildcard suggestions for {field}: '{enteredText}'");
+                var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, data, enteredText);
+                _logger?.LogInformation($"Wildcard overlay result for {field}: '{selected}'");
+                
+                if (!string.IsNullOrEmpty(selected))
+                {
+                    switch (field)
+                    {
+                        case "Part": _viewModel.SelectedPart = selected; break;
+                        case "Operation": _viewModel.SelectedOperation = selected; break;
+                        case "Location": _viewModel.SelectedLocation = selected; break;
+                    }
+                    textBox.Text = selected;
+                    UpdateValidationStates();
+                    ValidateAndUpdateSaveButton();
+                }
+                
+                e.Handled = true;
+            }
+        };
+        
+        _logger?.LogDebug($"Overlay event handler attached to {field}TextBox");
+    }
+
     #endregion
 
     #region Validation and Save Button Management
@@ -236,7 +347,6 @@ public partial class InventoryTabView : UserControl
     {
         try
         {
-
             // Try to resolve services if not already resolved
             if (_suggestionOverlayService == null)
             {
@@ -262,7 +372,6 @@ public partial class InventoryTabView : UserControl
 
             // Initialize QuickButtons integration if available
             await InitializeQuickButtonsIntegrationAsync();
-            
         }
         catch (Exception ex)
         {
@@ -394,14 +503,14 @@ public partial class InventoryTabView : UserControl
         try
         {
             // Set initial focus to Part ID field
-            
+            MoveFocusToFirstControl();
 
             // Apply any saved user preferences
             ApplyUserPreferences();
 
             // Update control states based on ViewModel
             UpdateControlStates();
-MoveFocusToFirstControl();
+
             _logger?.LogDebug("Form state initialized successfully");
         }
         catch (Exception ex)

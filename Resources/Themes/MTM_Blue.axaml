@@ -14,7 +14,7 @@
 <SolidColorBrush x:Key="MTM_Shared_Logic.HoverBackground" Color="#E9ECEF"/>
 
 <!-- Interactive States -->
-<SolidColorBrush x:Key="MTM_Shared_Logic.OverlayTextBrush" Color="#FFFFFF"/>
+<SolidColorBrush x:Key="MTM_Shared_Logic.OverlayTextBrush" Color="#000000"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryHoverBrush" Color="#004085"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryHoverBrush" Color="#003D6B"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.MagentaHoverBrush" Color="#B85500"/>
@@ -62,7 +62,7 @@
 <SolidColorBrush x:Key="MTM_Shared_Logic.HeadingText" Color="#0056B3"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.BodyText" Color="#666666"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.PlaceholderTextBrush" Color="#6C757D"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#666666"/>
+<SolidColorBrush x:Key="MTM_Shared_Logic.TertiaryTextBrush" Color="#ADB5BD"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.DisabledTextBrush" Color="#ADB5BD"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#0056B3"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#0056B3"/>

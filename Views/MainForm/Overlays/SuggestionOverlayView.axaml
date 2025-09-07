@@ -5,7 +5,11 @@
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              x:Class="MTM_WIP_Application_Avalonia.Views.SuggestionOverlayView"
              x:DataType="vm:SuggestionOverlayViewModel"
-             Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}">
+             Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+             Focusable="True"
+             IsTabStop="True"
+             KeyDown="OnUserControlKeyDown"
+             KeyUp="OnUserControlKeyUp">
   
   <UserControl.Resources>
     <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
@@ -198,7 +202,10 @@
                    x:Name="SuggestionListBox"
                    KeyDown="OnSuggestionListBoxKeyDown"
                    DoubleTapped="OnSuggestionListBoxDoubleTapped"
-                   VerticalAlignment="Stretch">
+                   VerticalAlignment="Stretch"
+                   IsTabStop="True"
+                   TabIndex="0"
+                   Focusable="True">
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent">

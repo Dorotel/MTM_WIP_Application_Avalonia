@@ -14,7 +14,7 @@
 <SolidColorBrush x:Key="MTM_Shared_Logic.HoverBackground" Color="#E9ECEF"/>
 
 <!-- Interactive States -->
-<SolidColorBrush x:Key="MTM_Shared_Logic.OverlayTextBrush" Color="#FFFFFF"/>
+<SolidColorBrush x:Key="MTM_Shared_Logic.OverlayTextBrush" Color="#000000"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryHoverBrush" Color="#004085"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryHoverBrush" Color="#003D6B"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.MagentaHoverBrush" Color="#B85500"/>
