@@ -1,0 +1,686 @@
+name: "AdvancedRemoveView Complete Implementation"
+description: "Complete implementation of AdvancedRemoveView.axaml with bulk removal, undo capabilities, and collapsible panels"
+title: "[FEATURE] Complete AdvancedRemoveView Implementation with Bulk Operations and View-Based Undo"
+labels: ["feature", "enhancement", "ui", "inventory-management", "bulk-removal", "priority-low"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🎯 AdvancedRemoveView Implementation Request
+        
+        **Priority Level**: Low (Implementation Order: 4th - Final)
+        **View Type**: Advanced Removal Interface with Bulk Operations and Enhanced Undo
+        **Based on**: WinForms Control_AdvancedRemove with modern Avalonia patterns
+        **ViewModel**: AdvancedRemoveViewModel.cs (needs comprehensive expansion)
+        
+        **Key Requirements**:
+        - Multi-panel layout with CollapsiblePanel + additional right-side panel (as currently implemented)
+        - View-based undo functionality (NOT app-based)
+        - Bulk/batch removal operations with comprehensive validation
+        - NO ComboBoxes - replace with TextBoxes + SuggestionOverlay
+        - Auto-collapse input panel on Search, auto-expand on Reset
+        - Full QuickButtons integration (populate fields + history logging)
+        - SuccessOverlay for all successful removal operations
+        - All removals create "OUT" transactions and log to QuickButtons history (Red)
+        - Advanced removal analytics, history management, and reporting
+        - Enhanced audit trail and removal history tracking
+
+  - type: input
+    id: feature_title
+    attributes:
+      label: "Feature Title"
+      value: "Complete AdvancedRemoveView Implementation with Bulk Operations and View-Based Undo"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: implementation_priority
+    attributes:
+      label: "Implementation Priority Level"
+      description: "Business priority for this feature"
+      options:
+        - "Low - Advanced Enhancement (AdvancedRemoveView - 4th priority)"
+        - "Critical - Foundation Feature"
+        - "High - Core Operations"
+        - "Medium - Enhancement"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: core_ui_structure
+    attributes:
+      label: "🖼️ Core UI Structure Requirements"
+      description: "Essential UI layout and component requirements (preserving existing implementation)"
+      options:
+        - label: "Multi-panel layout: CollapsiblePanel + Main Content + Additional Right Panel"
+          required: true
+        - label: "Preserve existing CollapsiblePanel implementation (currently working)"
+          required: true
+        - label: "Additional right-side panel (not in documentation but currently implemented)"
+          required: true
+        - label: "DataGrid-centric layout for advanced removal operations"
+          required: true
+        - label: "Bulk removal operations area with batch processing capabilities"
+          required: true
+        - label: "Replace ALL ComboBoxes with TextBoxes + SuggestionOverlay"
+          required: true
+        - label: "Follow InventoryTabView styling patterns exactly (no exceptions)"
+          required: true
+        - label: "ScrollViewer > Grid layout foundation with proper overflow handling"
+          required: true
+
+  - type: checkboxes
+    id: collapsible_panel_behavior
+    attributes:
+      label: "📱 CollapsiblePanel Behavior Requirements"
+      description: "Specific requirements for panel collapse/expand behavior"
+      options:
+        - label: "Preserve existing working CollapsiblePanel implementation"
+          required: true
+        - label: "Auto-collapse input panel on Search (expand DataGrid viewing area)"
+          required: true
+        - label: "Auto-expand input panel on Reset (show full search interface)"
+          required: true
+        - label: "Panel collapse preserves user manual expand state"
+          required: true
+        - label: "Smooth animation transitions for panel state changes"
+          required: true
+        - label: "Visual indicators for collapsed/expanded states"
+          required: true
+        - label: "Right-side panel independent collapse/expand behavior"
+          required: true
+
+  - type: dropdown
+    id: layout_structure
+    attributes:
+      label: "📐 Advanced Layout Structure"
+      description: "Layout organization for advanced removal operations"
+      options:
+        - "Triple-panel: CollapsiblePanel(Inputs) + MainContent(DataGrid) + RightPanel(Tools) (Current)"
+        - "Dual-panel with expandable sections"
+        - "Tabbed interface with advanced features"
+        - "Accordion layout with removal categories"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: bulk_removal_requirements
+    attributes:
+      label: "📦 Bulk Removal Requirements"
+      description: "Advanced bulk and batch removal capabilities"
+      options:
+        - label: "Bulk removal: Multiple items with batch processing"
+          required: true
+        - label: "Conditional bulk removal based on criteria (date, quantity, location)"
+          required: true
+        - label: "Scheduled removal capabilities for planned operations"
+          required: true
+        - label: "Batch processing with comprehensive progress tracking"
+          required: true
+        - label: "Bulk validation before database operations"
+          required: true
+        - label: "Atomic bulk operations (all-or-nothing processing)"
+          required: true
+        - label: "Detailed bulk operation results reporting"
+          required: true
+
+  - type: checkboxes
+    id: view_based_undo_system
+    attributes:
+      label: "↩️ View-Based Undo System (CRITICAL)"
+      description: "Enhanced undo capabilities specific to this view"
+      options:
+        - label: "View-based undo functionality (NOT app-based)"
+          required: true
+        - label: "Undo last removal operation with complete state restoration"
+          required: true
+        - label: "Undo multiple removal operations in sequence"
+          required: true
+        - label: "Undo selective items from bulk removal operations"
+          required: true
+        - label: "View-specific undo history management"
+          required: true
+        - label: "Undo operation validation and business rule enforcement"
+          required: true
+        - label: "Complete audit trail for undo operations"
+          required: true
+
+  - type: checkboxes
+    id: advanced_removal_features
+    attributes:
+      label: "⚡ Advanced Removal Features"
+      description: "Enhanced removal capabilities beyond standard operations"
+      options:
+        - label: "Removal history tracking and analytics"
+          required: true
+        - label: "Advanced filtering for removal candidates"
+          required: true
+        - label: "Removal pattern analysis and reporting"
+          required: true
+        - label: "Conditional removal rules and automation"
+          required: false
+        - label: "Removal approval workflows for sensitive operations"
+          required: false
+        - label: "Export removal data and analytics"
+          required: true
+        - label: "Integration with advanced removal reporting system"
+          required: true
+
+  - type: checkboxes
+    id: input_field_requirements
+    attributes:
+      label: "📝 Input Field Implementation"
+      description: "Specific requirements for advanced search/filter and removal inputs"
+      options:
+        - label: "Part ID TextBoxes with SuggestionOverlay (fuzzy matching)"
+          required: true
+        - label: "Operation TextBoxes with SuggestionOverlay (workflow steps)"
+          required: true
+        - label: "Location TextBoxes with SuggestionOverlay (location filtering)"
+          required: true
+        - label: "User TextBoxes with SuggestionOverlay (user-based filtering)"
+          required: true
+        - label: "Date range inputs for time-based removal operations"
+          required: true
+        - label: "All TextBoxes use TextBoxFuzzyValidationBehavior pattern"
+          required: true
+        - label: "Watermark text and guidance for complex removal forms"
+          required: true
+
+  - type: checkboxes
+    id: datagrid_functionality
+    attributes:
+      label: "📊 Advanced DataGrid Requirements"
+      description: "DataGrid capabilities for advanced removal operations"
+      options:
+        - label: "Multi-row selection for bulk removal operations"
+          required: true
+        - label: "Advanced column management (show/hide, reorder)"
+          required: true
+        - label: "In-grid editing capabilities for removal parameters"
+          required: true
+        - label: "Removal history integration with current inventory view"
+          required: true
+        - label: "Context menus for row-level removal operations"
+          required: true
+        - label: "Export capabilities for removal data"
+          required: true
+        - label: "Advanced sorting and filtering within DataGrid"
+          required: true
+
+  - type: checkboxes
+    id: quickbuttons_integration
+    attributes:
+      label: "⚡ QuickButtons Integration"
+      description: "Integration with QuickButtonsView.axaml and QuickButtons.cs"
+      options:
+        - label: "Clicking QuickButton populates search/filter fields"
+          required: true
+        - label: "Toggle QuickButtons panel visibility (same as other views)"
+          required: true
+        - label: "All successful removals logged to QuickButtons history"
+          required: true
+        - label: "History entries show RED color coding (OUT transactions)"
+          required: true
+        - label: "Bulk operations create appropriate QuickButton entries"
+          required: true
+        - label: "Failed operations NOT logged to history"
+          required: true
+        - label: "Undo operations create appropriate history entries"
+          required: true
+
+  - type: checkboxes
+    id: success_overlay_requirements
+    attributes:
+      label: "✅ SuccessOverlay Integration"
+      description: "SuccessOverlayView.axaml integration for removal confirmations"
+      options:
+        - label: "Show success overlay for ALL successful removal operations"
+          required: true
+        - label: "Display removal information: Part ID, Operation, Location"
+          required: true
+        - label: "Bulk removal operation summary (items processed, success count)"
+          required: true
+        - label: "Undo operation confirmations with restored item details"
+          required: true
+        - label: "Auto-dismiss after configurable timeout"
+          required: true
+        - label: "Manual dismiss with detailed results option"
+          required: true
+        - label: "Integration with SuccessOverlayViewModel"
+          required: true
+
+  - type: checkboxes
+    id: progress_reporting
+    attributes:
+      label: "⏳ Progress Reporting Requirements"
+      description: "Progress indication for advanced removal operations"
+      options:
+        - label: "Bulk removal progress with item count tracking"
+          required: true
+        - label: "Real-time status updates during long-running operations"
+          required: true
+        - label: "MainView status bar integration"
+          required: true
+        - label: "Detailed progress messages for bulk processing"
+          required: true
+        - label: "Error state indication with detailed error reporting"
+          required: true
+        - label: "Undo operation progress tracking"
+          required: true
+        - label: "Operation completion notifications with summary"
+          required: true
+
+  - type: textarea
+    id: current_implementation_gaps
+    attributes:
+      label: "📋 Current Implementation Status Analysis"
+      description: "Analysis of current AdvancedRemoveView.axaml state and missing functionality"
+      value: |
+        **Current State Analysis**:
+        
+        **Existing Components** (from AdvancedRemoveView.axaml):
+        - ✅ Basic AXAML structure with UserControl inheritance
+        - ✅ MTM theme styling framework (DynamicResource bindings)
+        - ✅ ScrollViewer > Grid layout foundation
+        - ✅ Material Icons integration (xmlns:materialIcons)
+        - ✅ Behaviors integration (xmlns:behaviors)
+        - ✅ ViewModel binding (x:DataType="vm:AdvancedRemoveViewModel")
+        - ✅ CollapsiblePanel implementation (working according to user)
+        - ✅ Additional right-side panel (not in documentation but implemented)
+        
+        **Missing Critical Components**:
+        - ❌ Complete bulk removal form implementation
+        - ❌ View-based undo system with comprehensive functionality
+        - ❌ DataGrid implementation for advanced removal management
+        - ❌ Advanced filtering panel with multiple criteria
+        - ❌ Bulk removal buttons and processing logic
+        - ❌ Removal history tracking and analytics dashboard
+        - ❌ Advanced removal reporting and export capabilities
+        - ❌ Integration with QuickButtons for history logging
+        - ❌ Progress reporting for bulk removal operations
+        - ❌ Success overlay integration for removal confirmations
+        
+        **ViewModel Status** (AdvancedRemoveViewModel.cs - needs major expansion):
+        - ⚠️ Basic foundation may exist but needs comprehensive expansion
+        - ❌ Bulk removal command implementations needed
+        - ❌ View-based undo system implementation needed
+        - ❌ Advanced filtering logic implementation needed
+        - ❌ Removal history management capabilities needed
+        - ❌ Analytics and reporting capabilities needed
+        - ❌ Integration with existing services needed
+        - ❌ Progress tracking for bulk operations needed
+        
+        **Integration Requirements**:
+        - Expand AdvancedRemoveViewModel with comprehensive bulk removal capabilities
+        - Implement view-based undo system with state management
+        - Add advanced filtering and search capabilities
+        - Integrate removal history tracking and analytics
+        - Connect QuickButtons with removal history logging (Red = OUT)
+        - Preserve existing CollapsiblePanel implementation
+        - Add progress reporting for all long-running operations
+    validations:
+      required: true
+
+  - type: textarea
+    id: winforms_comparison
+    attributes:
+      label: "🖼️ WinForms Reference Implementation"
+      description: "Key features from WinForms Control_AdvancedRemove to preserve in Avalonia version"
+      value: |
+        **From Control_AdvancedRemove.instructions.md**:
+        
+        **Advanced Removal Features**:
+        - Bulk removal operations with comprehensive batch processing
+        - Advanced removal history tracking with detailed audit trails
+        - Enhanced undo capabilities with transaction-based restoration
+        - Removal analytics generation with trend analysis
+        - Professional reporting with formatted removal summaries
+        - Conditional removal rules and automated processing
+        
+        **UI Structure**:
+        - Multi-panel layout supporting complex removal operations
+        - Bulk removal forms with validation and preview capabilities
+        - Advanced filtering controls with real-time results
+        - DataGridView for batch removal management
+        - Removal history dashboard with analytics visualization
+        - Export functionality for advanced removal data management
+        
+        **Undo System**:
+        - Transaction-based undo with complete state restoration
+        - Undo validation with business rule enforcement
+        - Selective undo for bulk removal operations
+        - Comprehensive audit trail for undo activities
+        - User authorization verification for undo operations
+        
+        **Business Logic**:
+        - Bulk validation before database operations
+        - Atomic transaction handling for bulk removals
+        - Complete audit trail for all advanced removal operations
+        - Integration with existing database procedures
+        - Error handling with detailed reporting for bulk operations
+        - Progress reporting with user feedback for long operations
+        
+        **Integration Points**:
+        - Printing integration for professional removal reports
+        - Main form communication for navigation and status
+        - Helper services integration for advanced features
+        - Theme consistency with application standards
+        - Database integration with stored procedure patterns
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: removal_analytics
+    attributes:
+      label: "📊 Removal Analytics & Reporting"
+      description: "Advanced analytics and reporting capabilities for removal operations"
+      options:
+        - label: "Removal trend analysis with time-based charts"
+          required: true
+        - label: "Removal pattern identification and reporting"
+          required: true
+        - label: "User-based removal analytics and statistics"
+          required: true
+        - label: "Location-based removal trend analysis"
+          required: true
+        - label: "Part-based removal frequency analysis"
+          required: true
+        - label: "Export analytics data for external analysis"
+          required: true
+        - label: "Automated removal reports generation"
+          required: false
+
+  - type: checkboxes
+    id: validation_requirements
+    attributes:
+      label: "✅ Advanced Validation Requirements"
+      description: "Complex validation and business rule enforcement for removal operations"
+      options:
+        - label: "Bulk removal validation with detailed error reporting"
+          required: true
+        - label: "Cross-field validation for complex removal business rules"
+          required: true
+        - label: "Real-time validation feedback during bulk removal entry"
+          required: true
+        - label: "Duplicate removal prevention and detection"
+          required: true
+        - label: "Inventory availability validation before removal"
+          required: true
+        - label: "Undo operation validation and business rule enforcement"
+          required: true
+        - label: "Integration with existing validation patterns"
+          required: true
+
+  - type: dropdown
+    id: error_handling_strategy
+    attributes:
+      label: "🚨 Error Handling Strategy"
+      description: "How errors should be handled in advanced removal operations"
+      options:
+        - "Centralized ErrorHandling service with bulk removal support (required)"
+        - "Local error handling with detailed bulk removal error reporting"
+        - "Hybrid approach with centralized service + local bulk handling"
+        - "Custom error handling for advanced removal operations"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: keyboard_shortcuts
+    attributes:
+      label: "⌨️ Keyboard Shortcuts Implementation"
+      description: "Keyboard navigation and shortcut requirements for advanced removal operations"
+      options:
+        - label: "Delete - Execute bulk removal operation"
+          required: true
+        - label: "Ctrl+Z - Undo last removal operation (view-based)"
+          required: true
+        - label: "F5 - Execute search and auto-collapse input panel"
+          required: true
+        - label: "Escape - Reset and auto-expand input panel"
+          required: true
+        - label: "Ctrl+B - Execute bulk removal with confirmation"
+          required: true
+        - label: "Ctrl+H - Show removal history and analytics"
+          required: true
+        - label: "Tab navigation through complex multi-panel interface"
+          required: true
+
+  - type: checkboxes
+    id: accessibility_features
+    attributes:
+      label: "♿ Accessibility Features"
+      description: "Accessibility and usability enhancements for advanced removal interface"
+      options:
+        - label: "ToolTip.Tip attributes on all complex removal controls"
+          required: true
+        - label: "Proper focus management for multi-panel interface"
+          required: true
+        - label: "Screen reader support with detailed removal descriptions"
+          required: true
+        - label: "Keyboard-only navigation for all advanced removal features"
+          required: true
+        - label: "High contrast theme compatibility for complex layouts"
+          required: true
+        - label: "Progressive disclosure for advanced feature sets"
+          required: true
+        - label: "Clear visual indicators for removal operations and undo states"
+          required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "🎯 Detailed Acceptance Criteria"
+      description: "Specific, testable requirements for implementation completion"
+      value: |
+        **UI Implementation**:
+        - [ ] AdvancedRemoveView.axaml fully implemented with multi-panel layout
+        - [ ] CollapsiblePanel implementation preserved and enhanced
+        - [ ] Additional right-side panel maintained (current implementation)
+        - [ ] All ComboBoxes replaced with TextBoxes + SuggestionOverlay integration
+        - [ ] Auto-collapse input panel on Search, auto-expand on Reset
+        - [ ] Consistent styling with InventoryTabView (MTM theme compliance)
+        
+        **Bulk Removal Operations**:
+        - [ ] Bulk removal functionality with multiple item support
+        - [ ] Conditional bulk removal based on criteria
+        - [ ] Batch processing with comprehensive progress tracking
+        - [ ] Bulk validation before database operations
+        - [ ] Atomic transaction handling with rollback capabilities
+        - [ ] Detailed bulk operation results reporting and summary
+        
+        **View-Based Undo System (CRITICAL)**:
+        - [ ] View-based undo functionality (NOT app-based)
+        - [ ] Undo last removal operation with complete state restoration
+        - [ ] Undo multiple removal operations in sequence
+        - [ ] Undo selective items from bulk removal operations
+        - [ ] View-specific undo history management
+        - [ ] Undo operation validation and business rule enforcement
+        - [ ] Complete audit trail for undo operations
+        
+        **Advanced Features**:
+        - [ ] Removal history tracking and analytics dashboard
+        - [ ] Advanced filtering for removal candidates
+        - [ ] Removal pattern analysis and reporting
+        - [ ] Export removal data and analytics capabilities
+        - [ ] Integration with advanced removal reporting system
+        
+        **QuickButtons Integration**:
+        - [ ] All successful removals logged to QuickButtons history
+        - [ ] RED color coding for OUT transactions in history
+        - [ ] Clicking QuickButton populates search/filter fields
+        - [ ] Toggle QuickButtons panel visibility
+        - [ ] Bulk operations create appropriate QuickButton entries
+        - [ ] Undo operations create appropriate history entries
+        
+        **Integration Requirements**:
+        - [ ] SuccessOverlay for all successful removal operations
+        - [ ] Progress reporting in MainView status bar
+        - [ ] ErrorHandling service integration for bulk operations
+        - [ ] SuggestionOverlay integration for all applicable text fields
+        - [ ] CollapsiblePanel behavior preservation and enhancement
+        
+        **Advanced Validation**:
+        - [ ] Bulk removal validation with detailed error reporting
+        - [ ] Cross-field validation for complex removal business rules
+        - [ ] Real-time validation feedback during bulk removal entry
+        - [ ] Inventory availability validation before removal
+        - [ ] Undo operation validation and business rule enforcement
+        
+        **Performance Requirements**:
+        - [ ] Responsive UI during bulk removal operations (async patterns)
+        - [ ] Efficient DataGrid rendering for large removal datasets
+        - [ ] Optimized bulk processing with progress feedback
+        - [ ] Memory management for large bulk removal operations
+        - [ ] Smooth panel animations and state transitions
+    validations:
+      required: true
+
+  - type: dropdown
+    id: testing_requirements
+    attributes:
+      label: "🧪 Testing Requirements"
+      description: "Testing scope and requirements for advanced removal features"
+      options:
+        - "Integration tests + Manual testing (Recommended for bulk operations)"
+        - "Unit tests + Integration tests + UI automation tests"
+        - "Manual testing with bulk removal and undo scenarios"
+        - "Unit tests + Performance testing for bulk operations"
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation_notes
+    attributes:
+      label: "📝 Implementation Notes & Considerations"
+      description: "Additional technical considerations and implementation guidance"
+      value: |
+        **Technical Considerations**:
+        
+        **CollapsiblePanel Preservation**:
+        - Preserve existing working CollapsiblePanel implementation
+        - Enhance auto-collapse/expand behavior for Search/Reset operations
+        - Maintain additional right-side panel (not in documentation but implemented)
+        - Ensure smooth animations and proper state management
+        
+        **View-Based Undo System**:
+        - Design undo system specific to this view (not application-wide)
+        - Implement proper state management for undo operations
+        - Create transaction tracking for undo capabilities
+        - Ensure proper validation and business rule enforcement for undo
+        
+        **Bulk Removal Architecture**:
+        - Design for scalability with large bulk removal operations
+        - Implement efficient batch processing with progress callbacks
+        - Use async patterns to prevent UI blocking during bulk operations
+        - Consider memory management for large removal datasets
+        
+        **ViewModel Expansion**:
+        - Expand AdvancedRemoveViewModel with comprehensive bulk capabilities
+        - Implement view-based undo command patterns
+        - Add removal analytics and reporting functionality
+        - Integrate history management capabilities
+        
+        **Database Integration**:
+        - Use existing stored procedures where possible
+        - Implement bulk database operations efficiently
+        - Ensure proper transaction handling for atomic bulk operations
+        - Add progress reporting for long-running database operations
+        
+        **QuickButtons Integration**:
+        - All successful removals create OUT transactions
+        - All removals appear in QuickButtons history with RED color coding
+        - Bulk operations create multiple QuickButton entries as appropriate
+        - Undo operations may create corresponding history entries
+        
+        **Performance Optimization**:
+        - Implement efficient bulk removal processing algorithms
+        - Use proper data binding patterns to minimize UI updates
+        - Optimize DataGrid rendering for large removal datasets
+        - Cache frequently used data for improved responsiveness
+        
+        **Error Handling**:
+        - Design comprehensive error handling for bulk removal operations
+        - Provide detailed error reporting for failed bulk items
+        - Implement partial success scenarios handling
+        - Ensure proper error logging and user feedback
+        - Handle undo operation failures gracefully
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: dependencies_integration
+    attributes:
+      label: "🔗 Dependencies & Integration Points"
+      description: "Required integrations with existing system components"
+      options:
+        - label: "AdvancedRemoveViewModel (major expansion of existing implementation)"
+          required: true
+        - label: "SuggestionOverlay.cs service integration"
+          required: true
+        - label: "SuccessOverlayView.axaml display integration"
+          required: true
+        - label: "QuickButtonsView.axaml panel and history integration"
+          required: true
+        - label: "MainView.axaml progress bar integration"
+          required: true
+        - label: "CollapsiblePanel.axaml (preserve existing implementation)"
+          required: true
+        - label: "ErrorHandling service for bulk operation error management"
+          required: true
+        - label: "MTM Theme system (19 themes compatibility)"
+          required: true
+
+  - type: dropdown
+    id: implementation_timeline
+    attributes:
+      label: "⏱️ Estimated Implementation Timeline"
+      description: "Expected timeline for complete implementation"
+      options:
+        - "4-6 weeks (Priority: Low - 4th implementation, most complex)"
+        - "3-4 weeks"
+        - "6-8 weeks"
+        - "2+ months"
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_requirements
+    attributes:
+      label: "📋 Additional Requirements or Considerations"
+      description: "Any additional requirements, constraints, or implementation considerations"
+      placeholder: |
+        - Specific advanced removal patterns for your business
+        - Performance requirements for large bulk removal operations
+        - Integration with external audit systems
+        - Advanced analytics requirements for removal operations
+        - Undo operation business rules and constraints
+        - Future enhancement plans for advanced removal features
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: final_confirmation
+    attributes:
+      label: "✅ Implementation Confirmation"
+      description: "Final confirmation of requirements understanding"
+      options:
+        - label: "I confirm this is for AdvancedRemoveView (Priority 4th - Low, Final)"
+          required: true
+        - label: "Multi-panel layout with preserved CollapsiblePanel confirmed"
+          required: true
+        - label: "View-based undo functionality (NOT app-based) confirmed"
+          required: true
+        - label: "Bulk removal operations with comprehensive features confirmed"
+          required: true
+        - label: "NO ComboBoxes - TextBoxes + SuggestionOverlay confirmed"
+          required: true
+        - label: "All integration requirements confirmed"
+          required: true
