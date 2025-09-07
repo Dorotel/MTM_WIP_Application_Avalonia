@@ -687,6 +687,4 @@ public class ColorCategory
             IsLoading = false;
         }
     }
-
-    #endregion
 }
