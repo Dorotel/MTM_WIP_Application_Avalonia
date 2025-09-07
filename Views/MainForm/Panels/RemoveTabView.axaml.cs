@@ -1,8 +1,12 @@
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_Shared_Logic.Models;
 using System;
+using System.Threading.Tasks;
 using Avalonia.Threading;
+using Avalonia.Controls.Primitives;
+using System.Collections.Specialized;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -57,6 +61,7 @@ public partial class RemoveTabView : UserControl
         try
         {
             this.DataContextChanged += OnDataContextChanged;
+            this.Loaded += OnViewLoaded;
         }
         catch (Exception ex)
         {
@@ -102,13 +107,209 @@ public partial class RemoveTabView : UserControl
     {
         try
         {
-            // Command error handling is now managed within the ViewModels themselves
-            // using standard .NET error handling patterns
+            // Subscribe to property changes to detect command execution completion
+            viewModel.PropertyChanged += OnViewModelPropertyChanged;
+            
             _logger?.LogDebug("RemoveTabView ViewModel events wired successfully");
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error wiring ViewModel events in RemoveTabView");
+        }
+    }
+
+    /// <summary>
+    /// Handles ViewModel property changes for auto-behavior triggers
+    /// </summary>
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        try
+        {
+            if (e.PropertyName == nameof(RemoveItemViewModel.IsLoading) && _viewModel != null)
+            {
+                // When loading completes after a search/reset operation, apply auto-behavior
+                if (!_viewModel.IsLoading)
+                {
+                    // We need to track which command was executed to apply appropriate behavior
+                    // This will be handled through button click events instead
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling ViewModel property change");
+        }
+    }
+
+    /// <summary>
+    /// Handles view loaded event to set up CollapsiblePanel and DataGrid multi-selection
+    /// </summary>
+    private void OnViewLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        try
+        {
+            SetupDataGridMultiSelection();
+            SetupCollapsiblePanelBehavior();
+            _logger?.LogDebug("RemoveTabView loaded and configured successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error during RemoveTabView load setup");
+        }
+    }
+
+    /// <summary>
+    /// Sets up DataGrid multi-selection support for batch operations
+    /// </summary>
+    private void SetupDataGridMultiSelection()
+    {
+        try
+        {
+            var dataGrid = this.FindControl<DataGrid>("InventoryDataGrid");
+            if (dataGrid != null)
+            {
+                dataGrid.SelectionChanged += OnDataGridSelectionChanged;
+                _logger?.LogDebug("DataGrid multi-selection configured successfully");
+            }
+            else
+            {
+                _logger?.LogWarning("Could not find InventoryDataGrid for multi-selection setup");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error setting up DataGrid multi-selection");
+        }
+    }
+
+    /// <summary>
+    /// Handles DataGrid selection changes to sync with ViewModel SelectedItems
+    /// </summary>
+    private void OnDataGridSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || sender is not DataGrid dataGrid) return;
+
+            _viewModel.SelectedItems.Clear();
+            foreach (var item in dataGrid.SelectedItems)
+            {
+                if (item is InventoryItem inventoryItem)
+                {
+                    _viewModel.SelectedItems.Add(inventoryItem);
+                }
+            }
+
+            _logger?.LogDebug("DataGrid selection synced: {Count} items selected", _viewModel.SelectedItems.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling DataGrid selection change");
+        }
+    }
+
+    /// <summary>
+    /// Sets up CollapsiblePanel auto-behavior
+    /// </summary>
+    private void SetupCollapsiblePanelBehavior()
+    {
+        try
+        {
+            var searchPanel = this.FindControl<Controls.CollapsiblePanel>("SearchPanel");
+            if (searchPanel != null)
+            {
+                // Store reference for auto-behavior
+                _searchPanel = searchPanel;
+                _logger?.LogDebug("CollapsiblePanel auto-behavior configured successfully");
+            }
+            else
+            {
+                _logger?.LogWarning("Could not find SearchPanel for auto-behavior setup");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error setting up CollapsiblePanel behavior");
+        }
+    }
+
+    private Controls.CollapsiblePanel? _searchPanel;
+
+    /// <summary>
+    /// Executes command with CollapsiblePanel auto-behavior
+    /// </summary>
+    private async Task ExecuteWithPanelBehavior(Func<object?, Task> originalCommand, object? parameter, bool shouldCollapse)
+    {
+        try
+        {
+            // Execute the original command
+            await originalCommand(parameter);
+
+            // Apply auto-behavior after successful execution
+            if (_searchPanel != null)
+            {
+                if (shouldCollapse)
+                {
+                    // Search: auto-collapse panel
+                    _searchPanel.IsExpanded = false;
+                    _logger?.LogDebug("Search completed - panel auto-collapsed");
+                }
+                else
+                {
+                    // Reset: auto-expand panel 
+                    _searchPanel.IsExpanded = true;
+                    _logger?.LogDebug("Reset completed - panel auto-expanded");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error executing command with panel behavior");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Handles Search button click for auto-collapse behavior
+    /// </summary>
+    private async void OnSearchButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        try
+        {
+            // Wait a bit for the command to complete, then auto-collapse
+            await Task.Delay(100);
+            
+            if (_searchPanel != null && !_viewModel?.IsLoading == true)
+            {
+                _searchPanel.IsExpanded = false;
+                _logger?.LogDebug("Search button clicked - panel auto-collapsed");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling Search button click");
+        }
+    }
+
+    /// <summary>
+    /// Handles Reset button click for auto-expand behavior
+    /// </summary>
+    private async void OnResetButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        try
+        {
+            // Wait a bit for the command to complete, then auto-expand
+            await Task.Delay(100);
+            
+            if (_searchPanel != null)
+            {
+                _searchPanel.IsExpanded = true;
+                _logger?.LogDebug("Reset button clicked - panel auto-expanded");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling Reset button click");
         }
     }
 
