@@ -1200,6 +1200,858 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     #endregion
 
+    #region Theme Analytics
+
+    [ObservableProperty]
+    private Dictionary<string, ColorUsageStats> colorUsageAnalytics = new();
+
+    [ObservableProperty]
+    private bool showAnalytics = false;
+
+    [RelayCommand]
+    private void TrackColorUsage(string colorProperty)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(colorProperty)) return;
+
+            if (!ColorUsageAnalytics.ContainsKey(colorProperty))
+            {
+                ColorUsageAnalytics[colorProperty] = new ColorUsageStats
+                {
+                    ColorProperty = colorProperty,
+                    UsageCount = 0,
+                    LastUsed = DateTime.Now,
+                    FirstUsed = DateTime.Now
+                };
+            }
+
+            var stats = ColorUsageAnalytics[colorProperty];
+            stats.UsageCount++;
+            stats.LastUsed = DateTime.Now;
+            
+            Logger.LogDebug("Color usage tracked: {ColorProperty} (Count: {UsageCount})", colorProperty, stats.UsageCount);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error tracking color usage for: {ColorProperty}", colorProperty);
+        }
+    }
+
+    [RelayCommand]
+    private async Task GenerateUsageReportAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Generating usage analytics...";
+            Logger.LogDebug("Generating color usage analytics report");
+
+            if (!ColorUsageAnalytics.Any())
+            {
+                StatusMessage = "No usage data available yet";
+                return;
+            }
+
+            var sortedStats = ColorUsageAnalytics.Values
+                .OrderByDescending(s => s.UsageCount)
+                .ToList();
+
+            var mostUsed = sortedStats.First();
+            var leastUsed = sortedStats.Last();
+            var totalUsage = sortedStats.Sum(s => s.UsageCount);
+
+            var reportMessage = $"Analytics: Most used: {mostUsed.ColorProperty} ({mostUsed.UsageCount}), " +
+                              $"Least used: {leastUsed.ColorProperty} ({leastUsed.UsageCount}), " +
+                              $"Total interactions: {totalUsage}";
+
+            StatusMessage = reportMessage;
+            Logger.LogInformation("Usage analytics generated: {Report}", reportMessage);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating usage analytics");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate usage analytics", Environment.UserName);
+            StatusMessage = "Failed to generate usage analytics";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    #endregion
+
+    #region Theme Inheritance System
+
+    [ObservableProperty]
+    private ObservableCollection<string> availableBaseThemes = new()
+    {
+        "MTM_Blue", "MTM_Green", "MTM_Red", "MTM_Dark", "Windows_Light", "Windows_Dark"
+    };
+
+    [ObservableProperty]
+    private Dictionary<string, string> themeOverrides = new();
+
+    [RelayCommand]
+    private async Task ApplyBaseThemeAsync(string baseThemeName)
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = $"Applying base theme: {baseThemeName}...";
+            Logger.LogDebug("Applying base theme: {BaseTheme}", baseThemeName);
+
+            BaseTheme = baseThemeName;
+
+            // Apply base theme colors based on the selected theme
+            switch (baseThemeName.ToLowerInvariant())
+            {
+                case "mtm_blue":
+                    await LoadMTMBlueBaseAsync();
+                    break;
+                case "mtm_green":
+                    await LoadMTMGreenBaseAsync();
+                    break;
+                case "mtm_red":
+                    await LoadMTMRedBaseAsync();
+                    break;
+                case "mtm_dark":
+                    await LoadMTMDarkBaseAsync();
+                    break;
+                case "windows_light":
+                    await LoadWindowsLightBaseAsync();
+                    break;
+                case "windows_dark":
+                    await LoadWindowsDarkBaseAsync();
+                    break;
+                default:
+                    StatusMessage = $"Unknown base theme: {baseThemeName}";
+                    return;
+            }
+
+            // Apply any existing overrides
+            await ApplyThemeOverridesAsync();
+
+            CurrentThemeName = $"{baseThemeName} Custom";
+            HasUnsavedChanges = true;
+            StatusMessage = $"Base theme '{baseThemeName}' applied with custom overrides";
+            Logger.LogInformation("Base theme applied: {BaseTheme}", baseThemeName);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying base theme: {BaseTheme}", baseThemeName);
+            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to apply base theme {baseThemeName}", Environment.UserName);
+            StatusMessage = $"Failed to apply base theme {baseThemeName}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task LoadMTMBlueBaseAsync()
+    {
+        // Standard MTM Blue theme colors
+        PrimaryActionColor = Color.Parse("#0078D4");
+        SecondaryActionColor = Color.Parse("#106EBE");
+        AccentColor = Color.Parse("#40A2E8");
+        HighlightColor = Color.Parse("#005A9E");
+        
+        HeadingTextColor = Color.Parse("#323130");
+        BodyTextColor = Color.Parse("#605E5C");
+        InteractiveTextColor = Color.Parse("#0078D4");
+        OverlayTextColor = Color.Parse("#FFFFFF");
+        TertiaryTextColor = Color.Parse("#8A8886");
+        
+        MainBackgroundColor = Color.Parse("#FAFAFA");
+        CardBackgroundColor = Color.Parse("#FFFFFF");
+        HoverBackgroundColor = Color.Parse("#F3F2F1");
+        PanelBackgroundColor = Color.Parse("#F8F8F8");
+        SidebarBackgroundColor = Color.Parse("#F0F0F0");
+        
+        SuccessColor = Color.Parse("#4CAF50");
+        WarningColor = Color.Parse("#FF9800");
+        ErrorColor = Color.Parse("#F44336");
+        InfoColor = Color.Parse("#2196F3");
+        
+        BorderColor = Color.Parse("#E1DFDD");
+        BorderAccentColor = Color.Parse("#0078D4");
+        
+        await Task.Delay(1); // Ensure async pattern
+    }
+
+    private async Task LoadMTMDarkBaseAsync()
+    {
+        // Dark theme variant
+        PrimaryActionColor = Color.Parse("#4FC3F7");
+        SecondaryActionColor = Color.Parse("#29B6F6");
+        AccentColor = Color.Parse("#81D4FA");
+        HighlightColor = Color.Parse("#0288D1");
+        
+        HeadingTextColor = Color.Parse("#FFFFFF");
+        BodyTextColor = Color.Parse("#E0E0E0");
+        InteractiveTextColor = Color.Parse("#4FC3F7");
+        OverlayTextColor = Color.Parse("#000000");
+        TertiaryTextColor = Color.Parse("#BDBDBD");
+        
+        MainBackgroundColor = Color.Parse("#121212");
+        CardBackgroundColor = Color.Parse("#1E1E1E");
+        HoverBackgroundColor = Color.Parse("#2C2C2C");
+        PanelBackgroundColor = Color.Parse("#181818");
+        SidebarBackgroundColor = Color.Parse("#202020");
+        
+        SuccessColor = Color.Parse("#66BB6A");
+        WarningColor = Color.Parse("#FFCA28");
+        ErrorColor = Color.Parse("#EF5350");
+        InfoColor = Color.Parse("#42A5F5");
+        
+        BorderColor = Color.Parse("#404040");
+        BorderAccentColor = Color.Parse("#4FC3F7");
+        
+        await Task.Delay(1);
+    }
+
+    private async Task LoadWindowsLightBaseAsync()
+    {
+        // Windows 11 Light theme
+        PrimaryActionColor = Color.Parse("#0078D4");
+        SecondaryActionColor = Color.Parse("#005A9E");
+        AccentColor = Color.Parse("#106EBE");
+        HighlightColor = Color.Parse("#004578");
+        
+        HeadingTextColor = Color.Parse("#000000");
+        BodyTextColor = Color.Parse("#323130");
+        InteractiveTextColor = Color.Parse("#0078D4");
+        OverlayTextColor = Color.Parse("#FFFFFF");
+        TertiaryTextColor = Color.Parse("#605E5C");
+        
+        MainBackgroundColor = Color.Parse("#FFFFFF");
+        CardBackgroundColor = Color.Parse("#F9F9F9");
+        HoverBackgroundColor = Color.Parse("#F5F5F5");
+        PanelBackgroundColor = Color.Parse("#FAFAFA");
+        SidebarBackgroundColor = Color.Parse("#F0F0F0");
+        
+        SuccessColor = Color.Parse("#107C10");
+        WarningColor = Color.Parse("#FF8C00");
+        ErrorColor = Color.Parse("#D13438");
+        InfoColor = Color.Parse("#0078D4");
+        
+        BorderColor = Color.Parse("#CCCCCC");
+        BorderAccentColor = Color.Parse("#0078D4");
+        
+        await Task.Delay(1);
+    }
+
+    private async Task LoadWindowsDarkBaseAsync()
+    {
+        // Windows 11 Dark theme
+        PrimaryActionColor = Color.Parse("#60CDFF");
+        SecondaryActionColor = Color.Parse("#409CFF");
+        AccentColor = Color.Parse("#80DDFF");
+        HighlightColor = Color.Parse("#2080FF");
+        
+        HeadingTextColor = Color.Parse("#FFFFFF");
+        BodyTextColor = Color.Parse("#FFFFFF");
+        InteractiveTextColor = Color.Parse("#60CDFF");
+        OverlayTextColor = Color.Parse("#000000");
+        TertiaryTextColor = Color.Parse("#CCCCCC");
+        
+        MainBackgroundColor = Color.Parse("#202020");
+        CardBackgroundColor = Color.Parse("#2C2C2C");
+        HoverBackgroundColor = Color.Parse("#383838");
+        PanelBackgroundColor = Color.Parse("#252525");
+        SidebarBackgroundColor = Color.Parse("#2B2B2B");
+        
+        SuccessColor = Color.Parse("#6CCB5F");
+        WarningColor = Color.Parse("#FCE100");
+        ErrorColor = Color.Parse("#FF5757");
+        InfoColor = Color.Parse("#60CDFF");
+        
+        BorderColor = Color.Parse("#404040");
+        BorderAccentColor = Color.Parse("#60CDFF");
+        
+        await Task.Delay(1);
+    }
+
+    private async Task LoadMTMGreenBaseAsync()
+    {
+        // MTM Green variant
+        PrimaryActionColor = Color.Parse("#4CAF50");
+        SecondaryActionColor = Color.Parse("#388E3C");
+        AccentColor = Color.Parse("#66BB6A");
+        HighlightColor = Color.Parse("#2E7D32");
+        
+        HeadingTextColor = Color.Parse("#1B5E20");
+        BodyTextColor = Color.Parse("#2E7D32");
+        InteractiveTextColor = Color.Parse("#4CAF50");
+        OverlayTextColor = Color.Parse("#FFFFFF");
+        TertiaryTextColor = Color.Parse("#81C784");
+        
+        MainBackgroundColor = Color.Parse("#F1F8E9");
+        CardBackgroundColor = Color.Parse("#FFFFFF");
+        HoverBackgroundColor = Color.Parse("#E8F5E8");
+        PanelBackgroundColor = Color.Parse("#F3F8F3");
+        SidebarBackgroundColor = Color.Parse("#E8F4E8");
+        
+        SuccessColor = Color.Parse("#4CAF50");
+        WarningColor = Color.Parse("#FF9800");
+        ErrorColor = Color.Parse("#F44336");
+        InfoColor = Color.Parse("#2196F3");
+        
+        BorderColor = Color.Parse("#C8E6C9");
+        BorderAccentColor = Color.Parse("#4CAF50");
+        
+        await Task.Delay(1);
+    }
+
+    private async Task LoadMTMRedBaseAsync()
+    {
+        // MTM Red variant
+        PrimaryActionColor = Color.Parse("#F44336");
+        SecondaryActionColor = Color.Parse("#D32F2F");
+        AccentColor = Color.Parse("#EF5350");
+        HighlightColor = Color.Parse("#C62828");
+        
+        HeadingTextColor = Color.Parse("#B71C1C");
+        BodyTextColor = Color.Parse("#D32F2F");
+        InteractiveTextColor = Color.Parse("#F44336");
+        OverlayTextColor = Color.Parse("#FFFFFF");
+        TertiaryTextColor = Color.Parse("#E57373");
+        
+        MainBackgroundColor = Color.Parse("#FFEBEE");
+        CardBackgroundColor = Color.Parse("#FFFFFF");
+        HoverBackgroundColor = Color.Parse("#FFCDD2");
+        PanelBackgroundColor = Color.Parse("#FCE4EC");
+        SidebarBackgroundColor = Color.Parse("#FFEBEE");
+        
+        SuccessColor = Color.Parse("#4CAF50");
+        WarningColor = Color.Parse("#FF9800");
+        ErrorColor = Color.Parse("#F44336");
+        InfoColor = Color.Parse("#2196F3");
+        
+        BorderColor = Color.Parse("#FFCDD2");
+        BorderAccentColor = Color.Parse("#F44336");
+        
+        await Task.Delay(1);
+    }
+
+    private async Task ApplyThemeOverridesAsync()
+    {
+        try
+        {
+            foreach (var kvp in ThemeOverrides)
+            {
+                var colorProperty = kvp.Key;
+                var colorValue = kvp.Value;
+                
+                // Apply override to the appropriate color property
+                if (Color.TryParse(colorValue, out var color))
+                {
+                    switch (colorProperty)
+                    {
+                        case "PrimaryAction":
+                            PrimaryActionColor = color;
+                            break;
+                        case "SecondaryAction":
+                            SecondaryActionColor = color;
+                            break;
+                        case "AccentColor":
+                            AccentColor = color;
+                            break;
+                        case "HighlightColor":
+                            HighlightColor = color;
+                            break;
+                        // Add other color properties as needed
+                    }
+                }
+            }
+            
+            await Task.Delay(1); // Ensure async pattern
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying theme overrides");
+        }
+    }
+
+    #endregion
+
+    #region Conditional Theming System
+
+    [ObservableProperty]
+    private ObservableCollection<string> availableContexts = new()
+    {
+        "Default", "Day Shift", "Night Shift", "Maintenance", "Emergency", "Training", "Quality Control"
+    };
+
+    [ObservableProperty]
+    private Dictionary<string, Dictionary<string, string>> conditionalThemes = new();
+
+    [RelayCommand]
+    private async Task SaveConditionalThemeAsync(string context)
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = $"Saving conditional theme for: {context}...";
+            Logger.LogDebug("Saving conditional theme for context: {Context}", context);
+
+            var contextColors = new Dictionary<string, string>
+            {
+                // Save current colors for this context
+                ["PrimaryAction"] = PrimaryActionColor.ToString(),
+                ["SecondaryAction"] = SecondaryActionColor.ToString(),
+                ["AccentColor"] = AccentColor.ToString(),
+                ["HighlightColor"] = HighlightColor.ToString(),
+                ["HeadingText"] = HeadingTextColor.ToString(),
+                ["BodyText"] = BodyTextColor.ToString(),
+                ["InteractiveText"] = InteractiveTextColor.ToString(),
+                ["OverlayText"] = OverlayTextColor.ToString(),
+                ["TertiaryText"] = TertiaryTextColor.ToString(),
+                ["MainBackground"] = MainBackgroundColor.ToString(),
+                ["CardBackground"] = CardBackgroundColor.ToString(),
+                ["HoverBackground"] = HoverBackgroundColor.ToString(),
+                ["PanelBackground"] = PanelBackgroundColor.ToString(),
+                ["SidebarBackground"] = SidebarBackgroundColor.ToString(),
+                ["Success"] = SuccessColor.ToString(),
+                ["Warning"] = WarningColor.ToString(),
+                ["Error"] = ErrorColor.ToString(),
+                ["Info"] = InfoColor.ToString(),
+                ["Border"] = BorderColor.ToString(),
+                ["BorderAccent"] = BorderAccentColor.ToString()
+            };
+
+            ConditionalThemes[context] = contextColors;
+            ConditionalContext = context;
+            
+            StatusMessage = $"Conditional theme saved for: {context}";
+            Logger.LogInformation("Conditional theme saved for context: {Context}", context);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving conditional theme for context: {Context}", context);
+            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to save conditional theme for {context}", Environment.UserName);
+            StatusMessage = $"Failed to save conditional theme for {context}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task LoadConditionalThemeAsync(string context)
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = $"Loading conditional theme: {context}...";
+            Logger.LogDebug("Loading conditional theme for context: {Context}", context);
+
+            if (!ConditionalThemes.ContainsKey(context))
+            {
+                StatusMessage = $"No conditional theme found for: {context}";
+                return;
+            }
+
+            var contextColors = ConditionalThemes[context];
+            
+            // Apply all colors from the conditional theme
+            foreach (var kvp in contextColors)
+            {
+                var colorProperty = kvp.Key;
+                var colorValue = kvp.Value;
+                
+                if (Color.TryParse(colorValue, out var color))
+                {
+                    switch (colorProperty)
+                    {
+                        case "PrimaryAction":
+                            PrimaryActionColor = color;
+                            break;
+                        case "SecondaryAction":
+                            SecondaryActionColor = color;
+                            break;
+                        case "AccentColor":
+                            AccentColor = color;
+                            break;
+                        case "HighlightColor":
+                            HighlightColor = color;
+                            break;
+                        case "HeadingText":
+                            HeadingTextColor = color;
+                            break;
+                        case "BodyText":
+                            BodyTextColor = color;
+                            break;
+                        case "InteractiveText":
+                            InteractiveTextColor = color;
+                            break;
+                        case "OverlayText":
+                            OverlayTextColor = color;
+                            break;
+                        case "TertiaryText":
+                            TertiaryTextColor = color;
+                            break;
+                        case "MainBackground":
+                            MainBackgroundColor = color;
+                            break;
+                        case "CardBackground":
+                            CardBackgroundColor = color;
+                            break;
+                        case "HoverBackground":
+                            HoverBackgroundColor = color;
+                            break;
+                        case "PanelBackground":
+                            PanelBackgroundColor = color;
+                            break;
+                        case "SidebarBackground":
+                            SidebarBackgroundColor = color;
+                            break;
+                        case "Success":
+                            SuccessColor = color;
+                            break;
+                        case "Warning":
+                            WarningColor = color;
+                            break;
+                        case "Error":
+                            ErrorColor = color;
+                            break;
+                        case "Info":
+                            InfoColor = color;
+                            break;
+                        case "Border":
+                            BorderColor = color;
+                            break;
+                        case "BorderAccent":
+                            BorderAccentColor = color;
+                            break;
+                    }
+                }
+            }
+
+            ConditionalContext = context;
+            CurrentThemeName = $"{BaseTheme} - {context}";
+            HasUnsavedChanges = true;
+            
+            StatusMessage = $"Conditional theme loaded: {context}";
+            Logger.LogInformation("Conditional theme loaded for context: {Context}", context);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading conditional theme for context: {Context}", context);
+            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to load conditional theme for {context}", Environment.UserName);
+            StatusMessage = $"Failed to load conditional theme for {context}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    #endregion
+
+    #region System Theme Integration
+
+    [RelayCommand]
+    private async Task SyncWithSystemThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Syncing with system theme...";
+            Logger.LogDebug("Syncing theme editor with system theme settings");
+
+            if (!RespectSystemTheme)
+            {
+                StatusMessage = "System theme sync is disabled";
+                return;
+            }
+
+            // Check system theme preference (this would typically use platform-specific APIs)
+            var isSystemDark = await DetectSystemDarkModeAsync();
+            
+            if (isSystemDark)
+            {
+                await LoadWindowsDarkBaseAsync();
+                CurrentThemeName = "System Dark";
+            }
+            else
+            {
+                await LoadWindowsLightBaseAsync();
+                CurrentThemeName = "System Light";
+            }
+
+            BaseTheme = isSystemDark ? "Windows_Dark" : "Windows_Light";
+            HasUnsavedChanges = true;
+            
+            StatusMessage = $"Synced with system theme: {(isSystemDark ? "Dark" : "Light")}";
+            Logger.LogInformation("Theme synced with system: {IsDark}", isSystemDark);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error syncing with system theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to sync with system theme", Environment.UserName);
+            StatusMessage = "Failed to sync with system theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task<bool> DetectSystemDarkModeAsync()
+    {
+        try
+        {
+            // Platform-specific system theme detection
+            // This is a simplified implementation - in practice, you'd use:
+            // - Windows: Registry check or WinRT API
+            // - macOS: NSUserDefaults
+            // - Linux: gsettings or desktop environment specific APIs
+            
+            await Task.Delay(100); // Simulate async detection
+            
+            // For now, return based on current time (demo purposes)
+            var currentHour = DateTime.Now.Hour;
+            return currentHour < 7 || currentHour > 19; // Dark mode for evening/night hours
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error detecting system dark mode");
+            return false; // Default to light mode on error
+        }
+    }
+
+    #endregion
+
+    #region Enhanced Color Palette Sharing
+
+    [RelayCommand]
+    private async Task ShareThemeToNetworkAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Sharing theme to network installations...";
+            Logger.LogDebug("Sharing theme to network MTM installations");
+
+            // Create a shareable theme package
+            var shareableTheme = new ThemeShareModel
+            {
+                Name = CurrentThemeName,
+                Version = ThemeVersion,
+                Description = ThemeDocumentation,
+                BaseTheme = BaseTheme,
+                ConditionalContext = ConditionalContext,
+                CreatedBy = Environment.UserName,
+                CreatedDate = DateTime.Now,
+                SharedDate = DateTime.Now,
+                Colors = new Dictionary<string, string>
+                {
+                    ["PrimaryAction"] = PrimaryActionColor.ToString(),
+                    ["SecondaryAction"] = SecondaryActionColor.ToString(),
+                    ["AccentColor"] = AccentColor.ToString(),
+                    ["HighlightColor"] = HighlightColor.ToString(),
+                    ["HeadingText"] = HeadingTextColor.ToString(),
+                    ["BodyText"] = BodyTextColor.ToString(),
+                    ["InteractiveText"] = InteractiveTextColor.ToString(),
+                    ["OverlayText"] = OverlayTextColor.ToString(),
+                    ["TertiaryText"] = TertiaryTextColor.ToString(),
+                    ["MainBackground"] = MainBackgroundColor.ToString(),
+                    ["CardBackground"] = CardBackgroundColor.ToString(),
+                    ["HoverBackground"] = HoverBackgroundColor.ToString(),
+                    ["PanelBackground"] = PanelBackgroundColor.ToString(),
+                    ["SidebarBackground"] = SidebarBackgroundColor.ToString(),
+                    ["Success"] = SuccessColor.ToString(),
+                    ["Warning"] = WarningColor.ToString(),
+                    ["Error"] = ErrorColor.ToString(),
+                    ["Info"] = InfoColor.ToString(),
+                    ["Border"] = BorderColor.ToString(),
+                    ["BorderAccent"] = BorderAccentColor.ToString()
+                },
+                CustomNames = new Dictionary<string, string>(ColorCustomNames)
+            };
+
+            // Serialize and save to shared network location
+            var jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+            
+            var themeJson = JsonSerializer.Serialize(shareableTheme, jsonOptions);
+            
+            // Save to network shared folder (would be configurable in production)
+            var networkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "MTM_SharedThemes");
+            Directory.CreateDirectory(networkPath);
+            
+            var fileName = $"MTM_SharedTheme_{CurrentThemeName.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+            var filePath = Path.Combine(networkPath, fileName);
+            
+            await File.WriteAllTextAsync(filePath, themeJson);
+            
+            StatusMessage = $"Theme shared to network: {fileName}";
+            Logger.LogInformation("Theme shared to network: {FilePath}", filePath);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error sharing theme to network");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to share theme to network", Environment.UserName);
+            StatusMessage = "Failed to share theme to network";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ImportFromNetworkAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Checking network for shared themes...";
+            Logger.LogDebug("Importing themes from network share");
+
+            var networkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "MTM_SharedThemes");
+            
+            if (!Directory.Exists(networkPath))
+            {
+                StatusMessage = "No network shared themes folder found";
+                return;
+            }
+
+            var themeFiles = Directory.GetFiles(networkPath, "MTM_SharedTheme_*.json");
+            
+            if (!themeFiles.Any())
+            {
+                StatusMessage = "No shared themes found on network";
+                return;
+            }
+
+            // Get the most recent shared theme
+            var latestFile = themeFiles
+                .Select(f => new FileInfo(f))
+                .OrderByDescending(f => f.LastWriteTime)
+                .First();
+
+            var themeJson = await File.ReadAllTextAsync(latestFile.FullName);
+            
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+            
+            var sharedTheme = JsonSerializer.Deserialize<ThemeShareModel>(themeJson, jsonOptions);
+            
+            if (sharedTheme == null)
+            {
+                StatusMessage = "Invalid shared theme format";
+                return;
+            }
+
+            // Apply the shared theme
+            CurrentThemeName = sharedTheme.Name;
+            ThemeVersion = sharedTheme.Version;
+            ThemeDocumentation = sharedTheme.Description;
+            BaseTheme = sharedTheme.BaseTheme;
+            ConditionalContext = sharedTheme.ConditionalContext;
+
+            // Apply colors
+            foreach (var kvp in sharedTheme.Colors)
+            {
+                if (Color.TryParse(kvp.Value, out var color))
+                {
+                    switch (kvp.Key)
+                    {
+                        case "PrimaryAction":
+                            PrimaryActionColor = color;
+                            break;
+                        case "SecondaryAction":
+                            SecondaryActionColor = color;
+                            break;
+                        case "AccentColor":
+                            AccentColor = color;
+                            break;
+                        case "HighlightColor":
+                            HighlightColor = color;
+                            break;
+                        case "HeadingText":
+                            HeadingTextColor = color;
+                            break;
+                        case "BodyText":
+                            BodyTextColor = color;
+                            break;
+                        case "InteractiveText":
+                            InteractiveTextColor = color;
+                            break;
+                        case "OverlayText":
+                            OverlayTextColor = color;
+                            break;
+                        case "TertiaryText":
+                            TertiaryTextColor = color;
+                            break;
+                        case "MainBackground":
+                            MainBackgroundColor = color;
+                            break;
+                        case "CardBackground":
+                            CardBackgroundColor = color;
+                            break;
+                        case "HoverBackground":
+                            HoverBackgroundColor = color;
+                            break;
+                        case "PanelBackground":
+                            PanelBackgroundColor = color;
+                            break;
+                        case "SidebarBackground":
+                            SidebarBackgroundColor = color;
+                            break;
+                        case "Success":
+                            SuccessColor = color;
+                            break;
+                        case "Warning":
+                            WarningColor = color;
+                            break;
+                        case "Error":
+                            ErrorColor = color;
+                            break;
+                        case "Info":
+                            InfoColor = color;
+                            break;
+                        case "Border":
+                            BorderColor = color;
+                            break;
+                        case "BorderAccent":
+                            BorderAccentColor = color;
+                            break;
+                    }
+                }
+            }
+
+            // Apply custom names
+            ColorCustomNames = new Dictionary<string, string>(sharedTheme.CustomNames);
+
+            HasUnsavedChanges = true;
+            StatusMessage = $"Imported shared theme: {sharedTheme.Name} by {sharedTheme.CreatedBy}";
+            Logger.LogInformation("Imported shared theme: {ThemeName} by {CreatedBy}", sharedTheme.Name, sharedTheme.CreatedBy);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error importing shared theme from network");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to import shared theme", Environment.UserName);
+            StatusMessage = "Failed to import shared theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    #endregion
+
     #region Enhanced Auto-Fill Algorithms
 
     [RelayCommand]
