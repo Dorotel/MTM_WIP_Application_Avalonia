@@ -6,6 +6,7 @@
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:i="using:Avalonia.Xaml.Interactivity"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="600"
@@ -135,7 +136,7 @@
       <Setter Property="CanUserResizeColumns" Value="True"/>
       <Setter Property="CanUserSortColumns" Value="True"/>
       <Setter Property="IsReadOnly" Value="True"/>
-      <Setter Property="SelectionMode" Value="Single"/>
+      <Setter Property="SelectionMode" Value="Extended"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
     </Style>
 
@@ -229,7 +230,9 @@
                           Classes="input-field"
                           Watermark="Enter part ID..."
                           ToolTip.Tip="Enter or select part ID for transfer source"
-                          TabIndex="1" />
+                          TabIndex="1"
+                          behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
+                          behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding PartOptions}" />
                 </Grid>
 
                 <!-- Operation Field -->
@@ -246,7 +249,9 @@
                           Classes="input-field"
                           Watermark="Enter operation..."
                           ToolTip.Tip="Enter or select operation number (optional filter)"
-                          TabIndex="2" />
+                          TabIndex="2"
+                          behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
+                          behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding OperationOptions}" />
                 </Grid>
                 
               </StackPanel>
@@ -275,7 +280,9 @@
                           Classes.validation-error="{Binding HasLocationValidationError}"
                           Watermark="Select destination..."
                           ToolTip.Tip="Enter or select destination location"
-                          TabIndex="3" />
+                          TabIndex="3"
+                          behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
+                          behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding LocationOptions}" />
                 </Grid>
 
                 <!-- Transfer Quantity Field -->
