@@ -99,6 +99,12 @@ public partial class TransferItemViewModel : BaseViewModel
     [ObservableProperty]
     private InventoryItem? _selectedInventoryItem;
 
+    /// <summary>
+    /// Collection of selected inventory items for batch transfer operations
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<InventoryItem> _selectedInventoryItems = new();
+
     [ObservableProperty]
     private bool _isLoading;
 
@@ -108,13 +114,34 @@ public partial class TransferItemViewModel : BaseViewModel
     public bool HasInventoryItems => InventoryItems.Count > 0;
 
     /// <summary>
+    /// Indicates if the "Nothing Found" indicator should be shown
+    /// </summary>
+    public bool ShowNothingFoundIndicator => !IsLoading && !HasInventoryItems && _hasSearchBeenExecuted;
+
+    /// <summary>
+    /// Tracks if a search has been executed to determine when to show nothing found indicator
+    /// </summary>
+    private bool _hasSearchBeenExecuted = false;
+
+    /// <summary>
+    /// Indicates if there's a location validation error (same source and destination)
+    /// </summary>
+    public bool HasLocationValidationError => !string.IsNullOrWhiteSpace(SelectedToLocation) && 
+                                              !ValidateTransferDestination();
+
+    /// <summary>
+    /// Indicates if there's a quantity validation error (exceeds available)
+    /// </summary>
+    public bool HasQuantityValidationError => TransferQuantity > MaxTransferQuantity || TransferQuantity <= 0;
+
+    /// <summary>
     /// Indicates if transfer operation can be performed
     /// </summary>
-    public bool CanTransfer => SelectedInventoryItem != null && 
+    public bool CanTransfer => (SelectedInventoryItem != null || SelectedInventoryItems.Count > 0) && 
                               !string.IsNullOrWhiteSpace(SelectedToLocation) && 
                               TransferQuantity > 0 && 
-                              TransferQuantity <= MaxTransferQuantity &&
-                              !IsLoading;
+                              !IsLoading &&
+                              ValidateTransferDestination();
 
     /// <summary>
     /// Indicates if search operations can be performed
@@ -134,6 +161,11 @@ public partial class TransferItemViewModel : BaseViewModel
     /// Event fired when panel toggle is requested
     /// </summary>
     public event EventHandler? PanelToggleRequested;
+
+    /// <summary>
+    /// Event fired when panel expand is requested
+    /// </summary>
+    public event EventHandler? PanelExpandRequested;
 
     #endregion
 
@@ -164,23 +196,35 @@ public partial class TransferItemViewModel : BaseViewModel
         {
             case nameof(InventoryItems):
                 OnPropertyChanged(nameof(HasInventoryItems));
+                OnPropertyChanged(nameof(ShowNothingFoundIndicator));
                 break;
             case nameof(IsLoading):
                 OnPropertyChanged(nameof(CanSearch));
                 OnPropertyChanged(nameof(CanTransfer));
+                OnPropertyChanged(nameof(ShowNothingFoundIndicator));
                 break;
             case nameof(TransferQuantity):
             case nameof(SelectedInventoryItem):
+            case nameof(SelectedInventoryItems):
                 OnPropertyChanged(nameof(CanTransfer));
+                OnPropertyChanged(nameof(HasQuantityValidationError));
+                OnPropertyChanged(nameof(HasLocationValidationError));
                 UpdateMaxTransferQuantity();
                 break;
             case nameof(SelectedToLocation):
                 OnPropertyChanged(nameof(CanTransfer));
+                OnPropertyChanged(nameof(HasLocationValidationError));
                 UpdateMaxTransferQuantity();
                 ToLocationText = SelectedToLocation ?? string.Empty;
                 break;
+            case nameof(ToLocationText):
+                OnPropertyChanged(nameof(HasLocationValidationError));
+                if (!string.IsNullOrEmpty(ToLocationText) && LocationOptions.Contains(ToLocationText))
+                    SelectedToLocation = ToLocationText;
+                break;
             case nameof(MaxTransferQuantity):
                 OnPropertyChanged(nameof(CanTransfer));
+                OnPropertyChanged(nameof(HasQuantityValidationError));
                 UpdateMaxTransferQuantity();
                 // Ensure transfer quantity doesn't exceed maximum
                 if (TransferQuantity > MaxTransferQuantity)
@@ -202,10 +246,6 @@ public partial class TransferItemViewModel : BaseViewModel
                 if (!string.IsNullOrEmpty(OperationText) && OperationOptions.Contains(OperationText))
                     SelectedOperation = OperationText;
                 break;
-            case nameof(ToLocationText):
-                if (!string.IsNullOrEmpty(ToLocationText) && LocationOptions.Contains(ToLocationText))
-                    SelectedToLocation = ToLocationText;
-                break;
         }
     }
 
@@ -224,6 +264,8 @@ public partial class TransferItemViewModel : BaseViewModel
             IsLoading = true;
             InventoryItems.Clear();
             SelectedInventoryItem = null;
+            SelectedInventoryItems.Clear();
+            _hasSearchBeenExecuted = true;
 
             _logger.LogInformation("Executing transfer search for Part: {PartId}, Operation: {Operation}", 
                 SelectedPart, SelectedOperation);
@@ -492,6 +534,24 @@ public partial class TransferItemViewModel : BaseViewModel
             _logger.LogError(ex, "Error toggling panel");
         }
     }
+
+    /// <summary>
+    /// Expands the transfer configuration panel
+    /// </summary>
+    [RelayCommand]
+    private void ExpandPanel()
+    {
+        try
+        {
+            // This will be handled by the code-behind to expand the CollapsiblePanel
+            PanelExpandRequested?.Invoke(this, EventArgs.Empty);
+            _logger.LogDebug("Panel expand requested");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error expanding panel");
+        }
+    }
     #endregion
 
     #region Data Loading and Helper Methods
@@ -730,11 +790,45 @@ public partial class TransferItemViewModel : BaseViewModel
                 TransferQuantity = Math.Max(1, MaxTransferQuantity);
             }
         }
+        else if (SelectedInventoryItems.Count == 1)
+        {
+            MaxTransferQuantity = SelectedInventoryItems[0].Quantity;
+            
+            // Ensure current transfer quantity is within bounds
+            if (TransferQuantity > MaxTransferQuantity)
+            {
+                TransferQuantity = Math.Max(1, MaxTransferQuantity);
+            }
+        }
         else
         {
             MaxTransferQuantity = 0;
             TransferQuantity = 1;
         }
+    }
+
+    /// <summary>
+    /// Validates that the transfer destination is different from source location(s)
+    /// </summary>
+    private bool ValidateTransferDestination()
+    {
+        if (string.IsNullOrWhiteSpace(SelectedToLocation))
+            return false;
+
+        // Check single item selection
+        if (SelectedInventoryItem != null)
+        {
+            return !SelectedInventoryItem.Location.Equals(SelectedToLocation, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // Check multi-item selection - all items must have different location than destination
+        if (SelectedInventoryItems.Count > 0)
+        {
+            return SelectedInventoryItems.All(item => 
+                !item.Location.Equals(SelectedToLocation, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return false;
     }
 
     #endregion

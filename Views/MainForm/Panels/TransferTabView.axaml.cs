@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Controls;
+using MTM_Shared_Logic.Models;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -124,6 +125,12 @@ public partial class TransferTabView : UserControl
             {
                 _transferConfigPanel.ExpandedChanged += OnTransferConfigPanelExpandedChanged;
             }
+
+            // Handle DataGrid selection changes for multi-selection support
+            if (_inventoryDataGrid != null)
+            {
+                _inventoryDataGrid.SelectionChanged += OnInventoryDataGridSelectionChanged;
+            }
             
             _logger?.LogDebug("Event handlers setup completed");
         }
@@ -140,6 +147,12 @@ public partial class TransferTabView : UserControl
     {
         try
         {
+            // Subscribe to ViewModel events
+            if (DataContext is TransferItemViewModel viewModel)
+            {
+                viewModel.PanelExpandRequested += OnPanelExpandRequested;
+            }
+
             // Focus the first input field when view loads
             Dispatcher.UIThread.Post(() =>
             {
@@ -317,12 +330,66 @@ public partial class TransferTabView : UserControl
     }
 
     /// <summary>
+    /// Handle panel expand request from ViewModel
+    /// </summary>
+    private void OnPanelExpandRequested(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (_transferConfigPanel != null && !_transferConfigPanel.IsExpanded)
+            {
+                _transferConfigPanel.SetExpanded(true, true);
+                _logger?.LogDebug("Transfer config panel expanded via ViewModel request");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling panel expand request");
+        }
+    }
+
+    /// <summary>
+    /// Handle DataGrid selection changes to support multi-selection
+    /// </summary>
+    private void OnInventoryDataGridSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (DataContext is TransferItemViewModel viewModel && _inventoryDataGrid != null)
+            {
+                // Update the SelectedInventoryItems collection in the ViewModel
+                viewModel.SelectedInventoryItems.Clear();
+                
+                foreach (var selectedItem in _inventoryDataGrid.SelectedItems)
+                {
+                    if (selectedItem is InventoryItem inventoryItem)
+                    {
+                        viewModel.SelectedInventoryItems.Add(inventoryItem);
+                    }
+                }
+                
+                _logger?.LogDebug("DataGrid selection updated: {Count} items selected", viewModel.SelectedInventoryItems.Count);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling DataGrid selection change");
+        }
+    }
+
+    /// <summary>
     /// Clean up resources when view is detached
     /// </summary>
     protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
     {
         try
         {
+            // Unsubscribe from ViewModel events
+            if (DataContext is TransferItemViewModel viewModel)
+            {
+                viewModel.PanelExpandRequested -= OnPanelExpandRequested;
+            }
+
             // Clean up event subscriptions
             KeyDown -= OnKeyDown;
             
@@ -334,6 +401,9 @@ public partial class TransferTabView : UserControl
                 
             if (_transferConfigPanel != null)
                 _transferConfigPanel.ExpandedChanged -= OnTransferConfigPanelExpandedChanged;
+
+            if (_inventoryDataGrid != null)
+                _inventoryDataGrid.SelectionChanged -= OnInventoryDataGridSelectionChanged;
             
             _logger?.LogDebug("TransferTabView resources cleaned up");
         }
