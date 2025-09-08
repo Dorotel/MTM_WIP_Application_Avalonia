@@ -29,6 +29,7 @@ public partial class TransferItemViewModel : BaseViewModel
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
     private readonly ILogger<TransferItemViewModel> _logger;
+    private readonly ISuccessOverlayService? _successOverlayService;
 
     #region Observable Collections
     
@@ -167,6 +168,11 @@ public partial class TransferItemViewModel : BaseViewModel
     /// </summary>
     public event EventHandler? PanelExpandRequested;
 
+    /// <summary>
+    /// Event fired when SuccessOverlay should be shown
+    /// </summary>
+    public event EventHandler<SuccessOverlayEventArgs>? SuccessOverlayRequested;
+
     #endregion
 
     #region Constructor
@@ -174,11 +180,13 @@ public partial class TransferItemViewModel : BaseViewModel
     public TransferItemViewModel(
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
-        ILogger<TransferItemViewModel> logger) : base(logger)
+        ILogger<TransferItemViewModel> logger,
+        ISuccessOverlayService? successOverlayService = null) : base(logger)
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _successOverlayService = successOverlayService; // Optional service
 
         _logger.LogInformation("TransferItemViewModel initialized with dependency injection");
 
@@ -459,6 +467,9 @@ public partial class TransferItemViewModel : BaseViewModel
             _logger.LogInformation("Successfully transferred {Quantity} units of {PartId} from {FromLocation} to {ToLocation}", 
                 TransferQuantity, partId, fromLocation, SelectedToLocation);
 
+            // Show SuccessOverlay with transfer details
+            ShowTransferSuccessOverlay(partId, operation, fromLocation, SelectedToLocation, TransferQuantity);
+
             // Reset transfer form for next operation
             SelectedInventoryItem = null;
             TransferQuantity = 1;
@@ -552,6 +563,37 @@ public partial class TransferItemViewModel : BaseViewModel
             _logger.LogError(ex, "Error expanding panel");
         }
     }
+    /// <summary>
+    /// Shows success overlay with transfer confirmation details
+    /// </summary>
+    private void ShowTransferSuccessOverlay(string partId, string operation, string fromLocation, string toLocation, int quantity)
+    {
+        try
+        {
+            if (_successOverlayService != null)
+            {
+                var message = "Transfer Complete";
+                var details = $"Part: {partId}\nOperation: {operation}\nFrom: {fromLocation} → To: {toLocation}\nQuantity: {quantity:N0} units";
+                
+                // Use SuccessOverlayRequested event to trigger overlay from the View
+                SuccessOverlayRequested?.Invoke(this, new SuccessOverlayEventArgs
+                {
+                    Message = message,
+                    Details = details,
+                    IconKind = "ArrowRightBold",
+                    Duration = 3000
+                });
+                
+                _logger.LogDebug("SuccessOverlay requested for transfer: {PartId} from {FromLocation} to {ToLocation}", 
+                    partId, fromLocation, toLocation);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error showing transfer success overlay");
+        }
+    }
+
     #endregion
 
     #region Data Loading and Helper Methods
@@ -883,12 +925,51 @@ public partial class TransferItemViewModel : BaseViewModel
     public void SetTransferConfiguration(string partId, string operation, string toLocation, int quantity)
     {
         SelectedPart = partId;
+        PartText = partId;
         SelectedOperation = operation;
+        OperationText = operation;
         SelectedToLocation = toLocation;
+        ToLocationText = toLocation;
         TransferQuantity = quantity;
         
         // Trigger search to populate inventory grid
         TriggerSearch();
+        
+        _logger.LogInformation("Transfer configuration set via external source: Part={PartId}, Operation={Operation}, ToLocation={ToLocation}, Quantity={Quantity}", 
+            partId, operation, toLocation, quantity);
+    }
+
+    /// <summary>
+    /// Sets transfer configuration from QuickButtonData
+    /// </summary>
+    public void SetTransferConfiguration(QuickButtonData quickButton)
+    {
+        if (quickButton == null)
+        {
+            _logger.LogWarning("Cannot set transfer configuration: QuickButtonData is null");
+            return;
+        }
+
+        // For transfer operations, we need to interpret QuickButton data:
+        // - PartId and Operation are source selection criteria
+        // - We don't set destination since that's what user needs to configure
+        // - Quantity becomes default transfer quantity
+        SelectedPart = quickButton.PartId;
+        PartText = quickButton.PartId;
+        SelectedOperation = quickButton.Operation;
+        OperationText = quickButton.Operation;
+        
+        // Don't pre-set destination location for transfers - user must select
+        // SelectedToLocation = null;
+        // ToLocationText = string.Empty;
+        
+        TransferQuantity = Math.Max(1, quickButton.Quantity);
+        
+        // Trigger search to populate inventory grid with source criteria
+        TriggerSearch();
+        
+        _logger.LogInformation("Transfer configuration set from QuickButton: Part={PartId}, Operation={Operation}, Quantity={Quantity}", 
+            quickButton.PartId, quickButton.Operation, quickButton.Quantity);
     }
 
     /// <summary>
@@ -996,6 +1077,17 @@ public class ItemsTransferredEventArgs : EventArgs
     public string ToLocation { get; set; } = string.Empty;
     public int TransferredQuantity { get; set; }
     public DateTime TransferTime { get; set; }
+}
+
+/// <summary>
+/// Event arguments for SuccessOverlay requests
+/// </summary>
+public class SuccessOverlayEventArgs : EventArgs
+{
+    public string Message { get; set; } = string.Empty;
+    public string Details { get; set; } = string.Empty;
+    public string IconKind { get; set; } = "CheckCircle";
+    public int Duration { get; set; } = 3000;
 }
 
 #endregion

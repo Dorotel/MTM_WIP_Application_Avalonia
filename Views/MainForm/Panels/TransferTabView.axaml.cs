@@ -26,6 +26,7 @@ public partial class TransferTabView : UserControl
 {
     private readonly ILogger<TransferTabView>? _logger;
     private readonly ISuggestionOverlayService? _suggestionOverlayService;
+    private readonly ISuccessOverlayService? _successOverlayService;
     private readonly IServiceProvider? _serviceProvider;
     
     // Control references
@@ -72,6 +73,7 @@ public partial class TransferTabView : UserControl
         {
             _logger = serviceProvider.GetService<ILogger<TransferTabView>>();
             _suggestionOverlayService = serviceProvider.GetService<ISuggestionOverlayService>();
+            _successOverlayService = serviceProvider.GetService<ISuccessOverlayService>();
             _logger?.LogDebug("TransferTabView created with dependency injection");
         }
         catch (Exception ex)
@@ -158,6 +160,7 @@ public partial class TransferTabView : UserControl
             if (DataContext is TransferItemViewModel viewModel)
             {
                 viewModel.PanelExpandRequested += OnPanelExpandRequested;
+                viewModel.SuccessOverlayRequested += OnSuccessOverlayRequested;
             }
 
             // Focus the first input field when view loads
@@ -352,6 +355,33 @@ public partial class TransferTabView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling panel expand request");
+        }
+    }
+
+    /// <summary>
+    /// Handle SuccessOverlay request from ViewModel
+    /// </summary>
+    private async void OnSuccessOverlayRequested(object? sender, SuccessOverlayEventArgs e)
+    {
+        try
+        {
+            if (_successOverlayService != null)
+            {
+                // Use the current control as the target for the overlay
+                await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                    this, 
+                    e.Message, 
+                    e.Details, 
+                    e.IconKind, 
+                    e.Duration
+                );
+                
+                _logger?.LogDebug("SuccessOverlay shown: {Message}", e.Message);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error showing SuccessOverlay");
         }
     }
 
@@ -652,6 +682,7 @@ public partial class TransferTabView : UserControl
             if (DataContext is TransferItemViewModel viewModel)
             {
                 viewModel.PanelExpandRequested -= OnPanelExpandRequested;
+                viewModel.SuccessOverlayRequested -= OnSuccessOverlayRequested;
             }
 
             // Clean up event subscriptions
