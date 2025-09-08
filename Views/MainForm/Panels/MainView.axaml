@@ -13,7 +13,8 @@
              x:CompileBindings="True"
              x:DataType="vm:MainViewViewModel"
              HorizontalAlignment="Stretch"
-             VerticalAlignment="Stretch">
+             VerticalAlignment="Stretch"
+             Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
 
   <UserControl.Resources>
     <!-- Resources are now provided by DynamicResource bindings from MTM themes -->

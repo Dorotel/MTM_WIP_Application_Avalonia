@@ -16,7 +16,8 @@
     </UserControl.Resources>
 
     <!-- Comprehensive Theme Editor with Color Palette Management -->
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,*,Auto"
+          Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
         
         <!-- Header Section -->
         <Border Grid.Row="0" 
