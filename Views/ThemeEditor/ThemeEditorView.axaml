@@ -6,11 +6,12 @@
              xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d"
-             d:DesignWidth="1200"
-             d:DesignHeight="800"
+             d:DesignWidth="800"
+             d:DesignHeight="600"
              x:Class="MTM_WIP_Application_Avalonia.Views.ThemeEditorView"
              x:CompileBindings="True"
-             x:DataType="vm:ThemeEditorViewModel">
+             x:DataType="vm:ThemeEditorViewModel"
+             Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
 
   <UserControl.Resources>
     <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
@@ -81,26 +82,6 @@
       <Setter Property="MinHeight" Value="28" />
       <Setter Property="Padding" Value="8,4" />
     </Style>
-
-    <!-- Navigation Item styling -->
-    <Style Selector="Button.nav-item">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="Padding" Value="12,8" />
-      <Setter Property="HorizontalAlignment" Value="Stretch" />
-      <Setter Property="HorizontalContentAlignment" Value="Left" />
-    </Style>
-
-    <Style Selector="Button.nav-item:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
-    </Style>
-
-    <Style Selector="Button.nav-item.selected">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-    </Style>
   </UserControl.Styles>
 
   <!-- Main Layout Container - ScrollViewer for overflow handling -->
@@ -110,228 +91,81 @@
     
     <Grid x:Name="MainContainer" 
           RowDefinitions="*,Auto" 
-          MinWidth="1100" 
-          MinHeight="600" 
+          MinWidth="600" 
+          MinHeight="400" 
           Margin="8">
 
-      <!-- Main Content Panel -->
+      <!-- Main Theme Editor Panel -->
       <Border Grid.Row="0"  
               Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" 
               BorderThickness="1" 
               CornerRadius="6" 
-              Padding="0" 
+              Padding="16" 
               Margin="0,0,0,8">
         
-        <Grid x:Name="ContentGrid" ColumnDefinitions="280,*">
+        <Grid x:Name="ThemeEditorGrid" RowDefinitions="Auto,*">
           
-          <!-- Left Navigation Panel -->
-          <Border Grid.Column="0" 
+          <!-- Header Section -->
+          <Border Grid.Row="0" 
                   Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}" 
-                  CornerRadius="6,0,0,6" 
-                  Padding="0">
-            
-            <Grid RowDefinitions="Auto,*">
-              
-              <!-- Navigation Header -->
-              <Border Grid.Row="0" 
-                      Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}" 
-                      CornerRadius="6,0,0,0" 
-                      Padding="16,12">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <materialIcons:MaterialIcon Kind="Palette" 
-                                            Width="18" 
-                                            Height="18" 
-                                            Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-                  <TextBlock Text="Theme Editor" 
-                            FontSize="16" 
-                            FontWeight="Bold" 
-                            Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-                </StackPanel>
+                  CornerRadius="6" 
+                  Padding="12,8" 
+                  Margin="0,0,0,16">
+            <Grid x:Name="HeaderGrid" ColumnDefinitions="Auto,*,Auto">
+              <materialIcons:MaterialIcon Grid.Column="0" 
+                                        Kind="Palette" 
+                                        Width="16" 
+                                        Height="16" 
+                                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                        VerticalAlignment="Center" 
+                                        Margin="0,0,8,0" />
+              <TextBlock Grid.Column="1" 
+                        Text="MTM Advanced Theme Editor" 
+                        FontSize="14" 
+                        FontWeight="Bold" 
+                        Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                        VerticalAlignment="Center" />
+              <!-- Unsaved Changes Indicator -->
+              <Border Grid.Column="2" 
+                      Background="{DynamicResource MTM_Shared_Logic.WarningBrush}" 
+                      CornerRadius="12" 
+                      Padding="8,4" 
+                      IsVisible="{Binding HasUnsavedChanges, FallbackValue=False}">
+                <TextBlock Text="● Unsaved Changes" 
+                          FontSize="10" 
+                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                          FontWeight="SemiBold" />
               </Border>
-              
-              <!-- Color Category Navigation -->
-              <ScrollViewer Grid.Row="1" 
-                            VerticalScrollBarVisibility="Auto" 
-                            HorizontalScrollBarVisibility="Disabled" 
-                            Padding="12">
-                <StackPanel Spacing="8">
-                  
-                  <!-- Core Colors Category -->
-                  <Button Classes="nav-item selected" 
-                          Command="{Binding SelectCategoryCommand}" 
-                          CommandParameter="Core">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                      <materialIcons:MaterialIcon Kind="Circle" Width="16" Height="16" />
-                      <StackPanel Spacing="2">
-                        <TextBlock Text="Core Colors" FontWeight="SemiBold" FontSize="13" />
-                        <TextBlock Text="Primary, Secondary, Accent" FontSize="10" Opacity="0.7" />
-                      </StackPanel>
-                    </StackPanel>
-                  </Button>
-
-                  <!-- Text Colors Category -->
-                  <Button Classes="nav-item" 
-                          Command="{Binding SelectCategoryCommand}" 
-                          CommandParameter="Text">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                      <materialIcons:MaterialIcon Kind="FormatText" Width="16" Height="16" />
-                      <StackPanel Spacing="2">
-                        <TextBlock Text="Text Colors" FontWeight="SemiBold" FontSize="13" />
-                        <TextBlock Text="Headings, Body, Interactive" FontSize="10" Opacity="0.7" />
-                      </StackPanel>
-                    </StackPanel>
-                  </Button>
-
-                  <!-- Background Colors Category -->
-                  <Button Classes="nav-item" 
-                          Command="{Binding SelectCategoryCommand}" 
-                          CommandParameter="Background">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                      <materialIcons:MaterialIcon Kind="Image" Width="16" Height="16" />
-                      <StackPanel Spacing="2">
-                        <TextBlock Text="Background Colors" FontWeight="SemiBold" FontSize="13" />
-                        <TextBlock Text="Main, Cards, Panels" FontSize="10" Opacity="0.7" />
-                      </StackPanel>
-                    </StackPanel>
-                  </Button>
-
-                  <!-- Status Colors Category -->
-                  <Button Classes="nav-item" 
-                          Command="{Binding SelectCategoryCommand}" 
-                          CommandParameter="Status">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                      <materialIcons:MaterialIcon Kind="Alert" Width="16" Height="16" />
-                      <StackPanel Spacing="2">
-                        <TextBlock Text="Status Colors" FontWeight="SemiBold" FontSize="13" />
-                        <TextBlock Text="Success, Warning, Error" FontSize="10" Opacity="0.7" />
-                      </StackPanel>
-                    </StackPanel>
-                  </Button>
-
-                  <!-- Border Colors Category -->
-                  <Button Classes="nav-item" 
-                          Command="{Binding SelectCategoryCommand}" 
-                          CommandParameter="Border">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                      <materialIcons:MaterialIcon Kind="BorderOutside" Width="16" Height="16" />
-                      <StackPanel Spacing="2">
-                        <TextBlock Text="Border Colors" FontWeight="SemiBold" FontSize="13" />
-                        <TextBlock Text="Standard, Accent" FontSize="10" Opacity="0.7" />
-                      </StackPanel>
-                    </StackPanel>
-                  </Button>
-
-                  <!-- Separator -->
-                  <Border Height="1" 
-                          Background="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                          Margin="0,8" />
-
-                  <!-- Tools Section Header -->
-                  <TextBlock Text="🛠️ Tools" 
-                            FontSize="12" 
-                            FontWeight="Bold" 
-                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
-                            Margin="8,4" />
-
-                  <!-- Auto-Fill Tools -->
-                  <Button Classes="nav-item" 
-                          Command="{Binding SelectCategoryCommand}" 
-                          CommandParameter="AutoFill">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                      <materialIcons:MaterialIcon Kind="AutoFix" Width="16" Height="16" />
-                      <StackPanel Spacing="2">
-                        <TextBlock Text="Auto-Fill Palettes" FontWeight="SemiBold" FontSize="13" />
-                        <TextBlock Text="Generate color schemes" FontSize="10" Opacity="0.7" />
-                      </StackPanel>
-                    </StackPanel>
-                  </Button>
-
-                  <!-- Advanced Tools -->
-                  <Button Classes="nav-item" 
-                          Command="{Binding SelectCategoryCommand}" 
-                          CommandParameter="Advanced">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                      <materialIcons:MaterialIcon Kind="Cog" Width="16" Height="16" />
-                      <StackPanel Spacing="2">
-                        <TextBlock Text="Advanced Tools" FontWeight="SemiBold" FontSize="13" />
-                        <TextBlock Text="History, Preview, Validation" FontSize="10" Opacity="0.7" />
-                      </StackPanel>
-                    </StackPanel>
-                  </Button>
-
-                </StackPanel>
-              </ScrollViewer>
             </Grid>
           </Border>
 
-          <!-- Right Content Panel -->
-          <Border Grid.Column="1" 
-                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                  CornerRadius="0,6,6,0" 
-                  Padding="0">
-            
-            <Grid RowDefinitions="Auto,*">
-              
-              <!-- Content Header -->
-              <Border Grid.Row="0" 
-                      Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}" 
-                      CornerRadius="0,6,0,0" 
-                      Padding="20,12">
-                <Grid ColumnDefinitions="*,Auto,Auto">
-                  <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
-                    <TextBlock Text="🎨" FontSize="18" VerticalAlignment="Center" />
-                    <TextBlock Text="{Binding SelectedCategoryTitle, FallbackValue='Core Colors'}" 
-                              FontSize="16" 
-                              FontWeight="SemiBold" 
-                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
-                              VerticalAlignment="Center" />
-                  </StackPanel>
-                  
-                  <!-- Current Theme Indicator -->
-                  <Border Grid.Column="1" 
-                          Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}" 
-                          CornerRadius="12" 
-                          Padding="12,4" 
-                          Margin="0,0,8,0">
-                    <TextBlock Text="{Binding CurrentThemeName, FallbackValue='MTM Theme'}" 
-                              FontSize="11" 
-                              Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                              FontWeight="SemiBold" />
-                  </Border>
+          <!-- Theme Colors Section -->
+          <ScrollViewer Grid.Row="1" 
+                       VerticalScrollBarVisibility="Auto" 
+                       HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="20">
 
-                  <!-- Unsaved Changes Indicator -->
-                  <Border Grid.Column="2" 
-                          Background="{DynamicResource MTM_Shared_Logic.WarningBrush}" 
-                          CornerRadius="12" 
-                          Padding="8,4" 
-                          IsVisible="{Binding HasUnsavedChanges, FallbackValue=False}">
-                    <TextBlock Text="● Unsaved" 
-                              FontSize="11" 
-                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
-                              FontWeight="SemiBold" />
-                  </Border>
-                </Grid>
-              </Border>
-              
-              <!-- Dynamic Content Area -->
-              <ScrollViewer Grid.Row="1" 
-                            VerticalScrollBarVisibility="Auto" 
-                            HorizontalScrollBarVisibility="Disabled" 
-                            Padding="20">
-                
-                <Grid>
-                  <!-- Core Colors Content -->
-                  <StackPanel Spacing="16" IsVisible="{Binding IsCoreColorsSelected, FallbackValue=True}">
+              <!-- Core Colors Section -->
+              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                      BorderThickness="1" 
+                      CornerRadius="6" 
+                      Padding="16">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="🎨 Core Colors" 
+                            FontSize="16" 
+                            FontWeight="Bold" 
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                   
                   <!-- Primary Action Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Primary Action" 
+                              Text="Primary Action:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding PrimaryActionColor, FallbackValue='#0078D4'}" 
+                            Text="{Binding PrimaryActionColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #0078D4)" />
                     <Border Grid.Column="2" 
@@ -343,13 +177,13 @@
                   </Grid>
 
                   <!-- Secondary Action Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Secondary Action" 
+                              Text="Secondary Action:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding SecondaryActionColor, FallbackValue='#106EBE'}" 
+                            Text="{Binding SecondaryActionColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #106EBE)" />
                     <Border Grid.Column="2" 
@@ -361,13 +195,13 @@
                   </Grid>
 
                   <!-- Accent Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Accent Color" 
+                              Text="Accent Color:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding AccentColor, FallbackValue='#40A2E8'}" 
+                            Text="{Binding AccentColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #40A2E8)" />
                     <Border Grid.Column="2" 
@@ -379,13 +213,13 @@
                   </Grid>
 
                   <!-- Highlight Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Highlight Color" 
+                              Text="Highlight Color:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding HighlightColor, FallbackValue='#005A9E'}" 
+                            Text="{Binding HighlightColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #005A9E)" />
                     <Border Grid.Column="2" 
@@ -395,53 +229,31 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
-
-                  <!-- Auto-Fill Actions -->
-                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                          BorderThickness="1" 
-                          CornerRadius="4" 
-                          Padding="16" 
-                          Margin="0,16,0,0">
-                    <StackPanel Spacing="12">
-                      <TextBlock Text="🎨 Quick Fill Options" 
-                                FontWeight="SemiBold" 
-                                FontSize="14" />
-                      <WrapPanel Orientation="Horizontal">
-                        <Button Content="Material Design" 
-                               Classes="tertiary" 
-                               Command="{Binding AutoFillCoreColorsCommand}" 
-                               Margin="0,0,8,4"
-                               ToolTip.Tip="Generate harmonious core color palette" />
-                        <Button Content="Monochromatic" 
-                               Classes="tertiary" 
-                               Command="{Binding AutoFillMonochromaticCommand}" 
-                               Margin="0,0,8,4"
-                               ToolTip.Tip="Generate tints and shades of primary color" />
-                        <Button Content="Complementary" 
-                               Classes="tertiary" 
-                               Command="{Binding AutoFillComplementaryCommand}" 
-                               Margin="0,0,8,4"
-                               ToolTip.Tip="Use opposite colors for high contrast" />
-                      </WrapPanel>
-                    </StackPanel>
-                  </Border>
-
                 </StackPanel>
+              </Border>
 
-                <!-- Text Colors Content (initially hidden) -->
-                <StackPanel Spacing="16" IsVisible="{Binding IsTextColorsSelected, FallbackValue=False}">
+              <!-- Text Colors Section -->
+              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                      BorderThickness="1" 
+                      CornerRadius="6" 
+                      Padding="16">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="📝 Text Colors" 
+                            FontSize="16" 
+                            FontWeight="Bold" 
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                   
                   <!-- Heading Text Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Heading Text" 
+                              Text="Heading Text:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding HeadingTextColor, FallbackValue='#1F2937'}" 
+                            Text="{Binding HeadingTextColor, Mode=TwoWay}" 
                             Classes="input-field"
-                            Watermark="Enter hex color (e.g., #1F2937)" />
+                            Watermark="Enter hex color (e.g., #323130)" />
                     <Border Grid.Column="2" 
                            Background="{Binding HeadingTextColor, Converter={StaticResource ColorToBrushConverter}}" 
                            CornerRadius="4" 
@@ -451,15 +263,15 @@
                   </Grid>
 
                   <!-- Body Text Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Body Text" 
+                              Text="Body Text:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding BodyTextColor, FallbackValue='#4B5563'}" 
+                            Text="{Binding BodyTextColor, Mode=TwoWay}" 
                             Classes="input-field"
-                            Watermark="Enter hex color (e.g., #4B5563)" />
+                            Watermark="Enter hex color (e.g., #605E5C)" />
                     <Border Grid.Column="2" 
                            Background="{Binding BodyTextColor, Converter={StaticResource ColorToBrushConverter}}" 
                            CornerRadius="4" 
@@ -469,13 +281,13 @@
                   </Grid>
 
                   <!-- Interactive Text Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Interactive Text" 
+                              Text="Interactive Text:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding InteractiveTextColor, FallbackValue='#0078D4'}" 
+                            Text="{Binding InteractiveTextColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #0078D4)" />
                     <Border Grid.Column="2" 
@@ -487,13 +299,13 @@
                   </Grid>
 
                   <!-- Overlay Text Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Overlay Text" 
+                              Text="Overlay Text:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding OverlayTextColor, FallbackValue='#FFFFFF'}" 
+                            Text="{Binding OverlayTextColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #FFFFFF)" />
                     <Border Grid.Column="2" 
@@ -505,15 +317,15 @@
                   </Grid>
 
                   <!-- Tertiary Text Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Tertiary Text" 
+                              Text="Tertiary Text:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding TertiaryTextColor, FallbackValue='#9CA3AF'}" 
+                            Text="{Binding TertiaryTextColor, Mode=TwoWay}" 
                             Classes="input-field"
-                            Watermark="Enter hex color (e.g., #9CA3AF)" />
+                            Watermark="Enter hex color (e.g., #8A8886)" />
                     <Border Grid.Column="2" 
                            Background="{Binding TertiaryTextColor, Converter={StaticResource ColorToBrushConverter}}" 
                            CornerRadius="4" 
@@ -521,41 +333,29 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
-
-                  <!-- WCAG Validation Info -->
-                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                          BorderThickness="1" 
-                          CornerRadius="4" 
-                          Padding="16" 
-                          Margin="0,16,0,0">
-                    <StackPanel Spacing="8">
-                      <TextBlock Text="♿ Accessibility Validation" 
-                                FontWeight="SemiBold" 
-                                FontSize="14" />
-                      <TextBlock Text="Text colors are automatically validated for WCAG contrast requirements" 
-                                FontSize="12" 
-                                Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
-                      <Button Content="✅ Validate Text Colors" 
-                             Classes="secondary" 
-                             Command="{Binding ValidateThemeCommand}" 
-                             HorizontalAlignment="Left" />
-                    </StackPanel>
-                  </Border>
-
                 </StackPanel>
+              </Border>
 
-                <!-- Background Colors Content -->
-                <StackPanel Spacing="16" IsVisible="{Binding IsBackgroundColorsSelected, FallbackValue=False}">
+              <!-- Background Colors Section -->
+              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                      BorderThickness="1" 
+                      CornerRadius="6" 
+                      Padding="16">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="🖼️ Background Colors" 
+                            FontSize="16" 
+                            FontWeight="Bold" 
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                   
                   <!-- Main Background Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Main Background" 
+                              Text="Main Background:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding MainBackgroundColor, FallbackValue='#FFFFFF'}" 
+                            Text="{Binding MainBackgroundColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #FFFFFF)" />
                     <Border Grid.Column="2" 
@@ -567,15 +367,15 @@
                   </Grid>
 
                   <!-- Card Background Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Card Background" 
+                              Text="Card Background:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding CardBackgroundColor, FallbackValue='#FAFAFA'}" 
+                            Text="{Binding CardBackgroundColor, Mode=TwoWay}" 
                             Classes="input-field"
-                            Watermark="Enter hex color (e.g., #FAFAFA)" />
+                            Watermark="Enter hex color (e.g., #F3F2F1)" />
                     <Border Grid.Column="2" 
                            Background="{Binding CardBackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
                            CornerRadius="4" 
@@ -585,13 +385,13 @@
                   </Grid>
 
                   <!-- Hover Background Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Hover Background" 
+                              Text="Hover Background:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding HoverBackgroundColor, FallbackValue='#F0F0F0'}" 
+                            Text="{Binding HoverBackgroundColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #F0F0F0)" />
                     <Border Grid.Column="2" 
@@ -603,15 +403,15 @@
                   </Grid>
 
                   <!-- Panel Background Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Panel Background" 
+                              Text="Panel Background:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding PanelBackgroundColor, FallbackValue='#F8F9FA'}" 
+                            Text="{Binding PanelBackgroundColor, Mode=TwoWay}" 
                             Classes="input-field"
-                            Watermark="Enter hex color (e.g., #F8F9FA)" />
+                            Watermark="Enter hex color (e.g., #FAFAFA)" />
                     <Border Grid.Column="2" 
                            Background="{Binding PanelBackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
                            CornerRadius="4" 
@@ -621,15 +421,15 @@
                   </Grid>
 
                   <!-- Sidebar Background Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Sidebar Background" 
+                              Text="Sidebar Background:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding SidebarBackgroundColor, FallbackValue='#E9ECEF'}" 
+                            Text="{Binding SidebarBackgroundColor, Mode=TwoWay}" 
                             Classes="input-field"
-                            Watermark="Enter hex color (e.g., #E9ECEF)" />
+                            Watermark="Enter hex color (e.g., #F8F9FA)" />
                     <Border Grid.Column="2" 
                            Background="{Binding SidebarBackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
                            CornerRadius="4" 
@@ -637,20 +437,29 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
-
                 </StackPanel>
+              </Border>
 
-                <!-- Status Colors Content -->
-                <StackPanel Spacing="16" IsVisible="{Binding IsStatusColorsSelected, FallbackValue=False}">
+              <!-- Status Colors Section -->
+              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                      BorderThickness="1" 
+                      CornerRadius="6" 
+                      Padding="16">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="🚦 Status Colors" 
+                            FontSize="16" 
+                            FontWeight="Bold" 
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                   
                   <!-- Success Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Success Color" 
+                              Text="Success Color:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding SuccessColor, FallbackValue='#10B981'}" 
+                            Text="{Binding SuccessColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #10B981)" />
                     <Border Grid.Column="2" 
@@ -662,13 +471,13 @@
                   </Grid>
 
                   <!-- Warning Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Warning Color" 
+                              Text="Warning Color:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding WarningColor, FallbackValue='#F59E0B'}" 
+                            Text="{Binding WarningColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #F59E0B)" />
                     <Border Grid.Column="2" 
@@ -680,13 +489,13 @@
                   </Grid>
 
                   <!-- Error Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Error Color" 
+                              Text="Error Color:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding ErrorColor, FallbackValue='#EF4444'}" 
+                            Text="{Binding ErrorColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #EF4444)" />
                     <Border Grid.Column="2" 
@@ -698,13 +507,13 @@
                   </Grid>
 
                   <!-- Info Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Info Color" 
+                              Text="Info Color:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding InfoColor, FallbackValue='#3B82F6'}" 
+                            Text="{Binding InfoColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #3B82F6)" />
                     <Border Grid.Column="2" 
@@ -714,20 +523,29 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
-
                 </StackPanel>
+              </Border>
 
-                <!-- Border Colors Content -->
-                <StackPanel Spacing="16" IsVisible="{Binding IsBorderColorsSelected, FallbackValue=False}">
+              <!-- Border Colors Section -->
+              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                      BorderThickness="1" 
+                      CornerRadius="6" 
+                      Padding="16">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="🔲 Border Colors" 
+                            FontSize="16" 
+                            FontWeight="Bold" 
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                   
                   <!-- Primary Border Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Primary Border" 
+                              Text="Primary Border:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding BorderColor, FallbackValue='#E5E7EB'}" 
+                            Text="{Binding BorderColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #E5E7EB)" />
                     <Border Grid.Column="2" 
@@ -739,13 +557,13 @@
                   </Grid>
 
                   <!-- Accent Border Color -->
-                  <Grid ColumnDefinitions="150,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
-                              Text="Accent Border" 
+                              Text="Accent Border:" 
                               VerticalAlignment="Center" 
                               FontWeight="Medium" />
                     <TextBox Grid.Column="1" 
-                            Text="{Binding BorderAccentColor, FallbackValue='#D1D5DB'}" 
+                            Text="{Binding BorderAccentColor, Mode=TwoWay}" 
                             Classes="input-field"
                             Watermark="Enter hex color (e.g., #D1D5DB)" />
                     <Border Grid.Column="2" 
@@ -755,21 +573,58 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
-
                 </StackPanel>
+              </Border>
 
-                <!-- Placeholder for other categories -->
-                <StackPanel Spacing="16" IsVisible="{Binding IsOtherCategorySelected, FallbackValue=False}">
-                  <TextBlock Text="{Binding SelectedCategoryContent, FallbackValue='Content for selected category will appear here'}" 
-                            FontSize="14" 
-                            Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
-                            TextAlignment="Center" />
+              <!-- Quick Actions Section -->
+              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                      BorderThickness="1" 
+                      CornerRadius="6" 
+                      Padding="16">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="⚡ Quick Actions" 
+                            FontSize="16" 
+                            FontWeight="Bold" 
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                  
+                  <WrapPanel Orientation="Horizontal" ItemWidth="140" ItemHeight="36">
+                    <Button Content="Material Design" 
+                           Classes="tertiary" 
+                           Command="{Binding AutoFillCoreColorsCommand}" 
+                           Margin="0,0,8,8"
+                           ToolTip.Tip="Generate harmonious color palette" />
+                    <Button Content="Monochromatic" 
+                           Classes="tertiary" 
+                           Command="{Binding AutoFillMonochromaticCommand}" 
+                           Margin="0,0,8,8"
+                           ToolTip.Tip="Generate tints and shades" />
+                    <Button Content="Complementary" 
+                           Classes="tertiary" 
+                           Command="{Binding AutoFillComplementaryCommand}" 
+                           Margin="0,0,8,8"
+                           ToolTip.Tip="Use opposite colors" />
+                    <Button Content="Manufacturing" 
+                           Classes="tertiary" 
+                           Command="{Binding ApplyOptimizedManufacturingThemeCommand}" 
+                           Margin="0,0,8,8"
+                           ToolTip.Tip="Industrial color scheme" />
+                    <Button Content="Validate Theme" 
+                           Classes="tertiary" 
+                           Command="{Binding ValidateThemeCommand}" 
+                           Margin="0,0,8,8"
+                           ToolTip.Tip="Check WCAG compliance" />
+                    <Button Content="Export Theme" 
+                           Classes="tertiary" 
+                           Command="{Binding ExportThemeCommand}" 
+                           Margin="0,0,8,8"
+                           ToolTip.Tip="Export to file" />
+                  </WrapPanel>
                 </StackPanel>
+              </Border>
 
-                </Grid>
-              </ScrollViewer>
-            </Grid>
-          </Border>
+            </StackPanel>
+          </ScrollViewer>
         </Grid>
       </Border>
 
@@ -779,7 +634,7 @@
               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" 
               BorderThickness="1" 
               CornerRadius="6" 
-              Padding="16" 
+              Padding="12" 
               Margin="0,0,0,8">
         
         <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="*,Auto">
