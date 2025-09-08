@@ -1,0 +1,61 @@
+---
+name: "RemoveTabView Implementation Gap Report"
+description: "Summary of outstanding and incorrect work for the RemoveTabView feature."
+title: "[GAP-REPORT] RemoveTabView Outstanding Work & Issues"
+labels: ["gap-analysis", "feature-blocker", "inventory-management", "ui", "implementation-status"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 🚧 RemoveTabView Implementation Gap Report
+        
+        This report summarizes all work that is still not done or is not done correctly for the RemoveTabView feature, based on the comprehensive specification and current build status.
+        
+        ## CRITICAL BLOCKERS
+        - DataGrid-centric layout and CollapsiblePanel integration are incomplete
+        - ComboBoxes not replaced with TextBoxes + SuggestionOverlay
+        - Search/Reset button functionality and auto-collapse/expand behavior are missing
+        - QuickButtons, SuccessOverlay, and progress reporting integrations are not implemented
+        - Batch/multi-row deletion, atomic transaction handling, and audit trail logic are incomplete
+        - Validation, error handling, accessibility, and keyboard shortcuts are not fully implemented
+        
+        ## Detailed Outstanding Work
+        
+        1. **UI Implementation**
+           - Complete DataGrid-centric layout and position search/filter inputs above DataGrid
+           - Integrate CollapsiblePanel with auto-collapse/expand behavior
+           - Replace ComboBoxes with TextBoxes + SuggestionOverlay
+           - Apply InventoryTabView styling and grid pattern
+        2. **Input Field Implementation**
+           - Use SuggestionOverlay for Part ID, Operation, Location, and User fields (where applicable)
+           - Apply TextBoxFuzzyValidationBehavior and watermark text
+           - Add consistent styling and real-time validation feedback
+        3. **DataGrid Functionality**
+           - Enable multi-row selection, sortable columns, and row highlighting
+           - Add "Nothing Found" indicator and loading state
+           - Support context menu for row-level operations (optional)
+        4. **Batch Operations**
+           - Implement batch delete button, confirmation dialog, and progress indication
+           - Ensure atomic transaction handling and individual row validation
+           - Provide detailed operation results reporting
+        5. **Panel Behavior & Keyboard Shortcuts**
+           - Implement auto-collapse/expand for Search/Reset
+           - Add smooth animations and visual indicators
+           - Support F5, Delete, Ctrl+Z, Escape, Enter, Tab navigation
+        6. **Overlay & Integration Points**
+           - Integrate QuickButtons, SuccessOverlay, MainView status bar, CollapsiblePanel, ErrorHandling, and MTM Theme system
+        7. **Validation & Error Handling**
+           - Enforce destination, quantity, Part ID, Operation, and User validation
+           - Add real-time feedback and pre-delete validation
+           - Integrate centralized ErrorHandling service
+        8. **Accessibility**
+           - Add ToolTip.Tip, focus management, screen reader support, keyboard navigation, high contrast compatibility, and logical tab order
+        9. **Testing & Performance**
+           - Add integration tests and optimize for large datasets and batch operations
+        
+        ---
+        
+        **Immediate next step:**
+        Complete the DataGrid-centric layout, integrate all overlays and controls, and enforce business logic and validation as described in the specification.
