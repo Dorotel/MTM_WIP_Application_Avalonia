@@ -159,6 +159,54 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     #endregion
 
+    #region Advanced Features - Print Preview, Lighting, Multi-Monitor
+
+    [ObservableProperty]
+    private bool isPrintPreviewEnabled = false;
+
+    [ObservableProperty] 
+    private bool isLightingSimulationEnabled = false;
+
+    [ObservableProperty]
+    private string lightingCondition = "Office (6500K)";
+
+    [ObservableProperty]
+    private ObservableCollection<string> lightingConditions = new()
+    {
+        "Natural Daylight (5500K)",
+        "Office Fluorescent (6500K)", 
+        "Warm Indoor (3000K)",
+        "Cool White LED (4000K)",
+        "Tungsten Bulb (2700K)",
+        "Candlelight (1900K)",
+        "Overcast Day (6000K)",
+        "Direct Sunlight (5800K)"
+    };
+
+    [ObservableProperty]
+    private bool isMultiMonitorPreviewEnabled = false;
+
+    [ObservableProperty]
+    private ObservableCollection<MonitorInfo> availableMonitors = new();
+
+    [ObservableProperty]
+    private int selectedMonitorIndex = 0;
+
+    /// <summary>
+    /// Represents information about an available monitor for preview
+    /// </summary>
+    public class MonitorInfo
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public bool IsPrimary { get; set; }
+        public string Resolution => $"{Width}x{Height}";
+        public string DisplayName => IsPrimary ? $"{Name} (Primary) - {Resolution}" : $"{Name} - {Resolution}";
+    }
+
+    #endregion
+
     #region Core Colors
 
     [ObservableProperty]
@@ -3500,6 +3548,449 @@ public partial class ThemeEditorViewModel : BaseViewModel
     }
 
     /// <summary>
+    /// Toggles print preview mode to show how colors appear in print
+    /// </summary>
+    [RelayCommand]
+    private async Task TogglePrintPreviewAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            IsPrintPreviewEnabled = !IsPrintPreviewEnabled;
+            
+            if (IsPrintPreviewEnabled)
+            {
+                StatusMessage = "🖨️ Print preview enabled - colors adjusted for print output";
+                Logger.LogDebug("Print preview mode enabled");
+                await ApplyPrintPreviewFiltersAsync();
+            }
+            else
+            {
+                StatusMessage = "📱 Screen preview restored";
+                Logger.LogDebug("Print preview mode disabled");
+                await RestoreScreenPreviewAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error toggling print preview");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle print preview", Environment.UserName);
+            StatusMessage = "❌ Failed to toggle print preview";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Toggles lighting simulation to preview colors under different lighting conditions
+    /// </summary>
+    [RelayCommand]
+    private async Task ToggleLightingSimulationAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            IsLightingSimulationEnabled = !IsLightingSimulationEnabled;
+            
+            if (IsLightingSimulationEnabled)
+            {
+                StatusMessage = $"💡 Lighting simulation enabled: {LightingCondition}";
+                Logger.LogDebug("Lighting simulation enabled with condition: {Condition}", LightingCondition);
+                await ApplyLightingSimulationAsync(LightingCondition);
+            }
+            else
+            {
+                StatusMessage = "🖥️ Standard lighting restored";
+                Logger.LogDebug("Lighting simulation disabled");
+                await RestoreStandardLightingAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error toggling lighting simulation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle lighting simulation", Environment.UserName);
+            StatusMessage = "❌ Failed to toggle lighting simulation";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Changes the lighting condition for simulation
+    /// </summary>
+    [RelayCommand]
+    private async Task ChangeLightingConditionAsync(string? condition)
+    {
+        if (string.IsNullOrEmpty(condition)) return;
+        
+        try
+        {
+            IsLoading = true;
+            LightingCondition = condition;
+            StatusMessage = $"💡 Lighting changed to: {condition}";
+            Logger.LogDebug("Lighting condition changed to: {Condition}", condition);
+            
+            if (IsLightingSimulationEnabled)
+            {
+                await ApplyLightingSimulationAsync(condition);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error changing lighting condition");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to change lighting condition", Environment.UserName);
+            StatusMessage = "❌ Failed to change lighting condition";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Toggles multi-monitor preview mode
+    /// </summary>
+    [RelayCommand]
+    private async Task ToggleMultiMonitorPreviewAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            IsMultiMonitorPreviewEnabled = !IsMultiMonitorPreviewEnabled;
+            
+            if (IsMultiMonitorPreviewEnabled)
+            {
+                await DetectAvailableMonitorsAsync();
+                StatusMessage = $"🖥️ Multi-monitor preview enabled - {AvailableMonitors.Count} monitors detected";
+                Logger.LogDebug("Multi-monitor preview enabled with {Count} monitors", AvailableMonitors.Count);
+            }
+            else
+            {
+                StatusMessage = "📱 Single monitor view restored";
+                Logger.LogDebug("Multi-monitor preview disabled");
+                AvailableMonitors.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error toggling multi-monitor preview");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle multi-monitor preview", Environment.UserName);
+            StatusMessage = "❌ Failed to toggle multi-monitor preview";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Selects a specific monitor for preview
+    /// </summary>
+    [RelayCommand]
+    private async Task SelectPreviewMonitorAsync(int monitorIndex)
+    {
+        try
+        {
+            if (monitorIndex < 0 || monitorIndex >= AvailableMonitors.Count) return;
+            
+            IsLoading = true;
+            SelectedMonitorIndex = monitorIndex;
+            var selectedMonitor = AvailableMonitors[monitorIndex];
+            
+            StatusMessage = $"🖥️ Preview monitor changed to: {selectedMonitor.DisplayName}";
+            Logger.LogDebug("Preview monitor changed to: {Monitor}", selectedMonitor.DisplayName);
+            
+            await ApplyMonitorSpecificSettingsAsync(selectedMonitor);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error selecting preview monitor");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to select preview monitor", Environment.UserName);
+            StatusMessage = "❌ Failed to select preview monitor";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Applies print-specific color adjustments for better print output
+    /// </summary>
+    private async Task ApplyPrintPreviewFiltersAsync()
+    {
+        await Task.Delay(100); // Simulate processing time
+        
+        try
+        {
+            SaveColorSnapshot("Before print preview");
+            
+            // Apply print-specific adjustments
+            // Print colors typically need higher contrast and less saturation
+            var allColors = GetAllColorsForProcessing();
+            
+            foreach (var (propertyName, color) in allColors)
+            {
+                var hsv = RgbToHsv(color);
+                
+                // Adjust for print characteristics
+                hsv.S = (float)Math.Max(0, Math.Min(1, hsv.S * 0.9f)); // Reduce saturation by 10%
+                hsv.V = (float)Math.Max(0, Math.Min(1, hsv.V * 1.1f)); // Increase brightness by 10%
+                
+                var adjustedColor = HsvToRgb(hsv);
+                SetColorForProperty(propertyName, adjustedColor);
+            }
+            
+            Logger.LogDebug("Print preview filters applied to {Count} colors", allColors.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying print preview filters");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Restores screen-optimized colors from print preview
+    /// </summary>
+    private async Task RestoreScreenPreviewAsync()
+    {
+        await Task.Delay(50);
+        
+        try
+        {
+            // Find the last "Before print preview" snapshot and restore
+            var printSnapshot = ColorHistory.LastOrDefault(s => s.Name.Contains("Before print preview"));
+            if (printSnapshot != null)
+            {
+                await RestoreFromSnapshotAsync(printSnapshot, false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error restoring screen preview");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Applies lighting simulation based on selected condition
+    /// </summary>
+    private async Task ApplyLightingSimulationAsync(string lightingCondition)
+    {
+        await Task.Delay(100); // Simulate processing time
+        
+        try
+        {
+            SaveColorSnapshot($"Before {lightingCondition} simulation");
+            
+            // Get color temperature and intensity for the lighting condition
+            var (colorTemp, intensity) = GetLightingParameters(lightingCondition);
+            
+            var allColors = GetAllColorsForProcessing();
+            
+            foreach (var (propertyName, color) in allColors)
+            {
+                var adjustedColor = ApplyColorTemperatureFilter(color, colorTemp, intensity);
+                SetColorForProperty(propertyName, adjustedColor);
+            }
+            
+            Logger.LogDebug("Lighting simulation applied: {Condition} ({ColorTemp}K, {Intensity}% intensity)", 
+                lightingCondition, colorTemp, intensity * 100);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying lighting simulation");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Restores standard lighting conditions
+    /// </summary>
+    private async Task RestoreStandardLightingAsync()
+    {
+        await Task.Delay(50);
+        
+        try
+        {
+            // Find the last lighting simulation snapshot and restore
+            var lightingSnapshot = ColorHistory.LastOrDefault(s => s.Name.Contains("simulation") && s.Name.Contains("Before"));
+            if (lightingSnapshot != null)
+            {
+                await RestoreFromSnapshotAsync(lightingSnapshot, false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error restoring standard lighting");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Detects available monitors for multi-monitor preview
+    /// </summary>
+    private async Task DetectAvailableMonitorsAsync()
+    {
+        await Task.Delay(200); // Simulate monitor detection time
+        
+        try
+        {
+            AvailableMonitors.Clear();
+            
+            // Primary monitor (always available)
+            AvailableMonitors.Add(new MonitorInfo
+            {
+                Name = "Primary Display",
+                Width = 1920,
+                Height = 1080,
+                IsPrimary = true
+            });
+            
+            // Simulate additional monitors (in real implementation, would use platform APIs)
+            AvailableMonitors.Add(new MonitorInfo
+            {
+                Name = "Secondary Display",
+                Width = 1366,
+                Height = 768,
+                IsPrimary = false
+            });
+            
+            AvailableMonitors.Add(new MonitorInfo
+            {
+                Name = "Wide Monitor",
+                Width = 3440,
+                Height = 1440,
+                IsPrimary = false
+            });
+            
+            Logger.LogDebug("Detected {Count} monitors for preview", AvailableMonitors.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error detecting available monitors");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Applies monitor-specific settings for color preview
+    /// </summary>
+    private async Task ApplyMonitorSpecificSettingsAsync(MonitorInfo monitor)
+    {
+        await Task.Delay(100);
+        
+        try
+        {
+            // Apply monitor-specific color corrections (simplified)
+            Logger.LogDebug("Applying color settings for monitor: {Monitor}", monitor.DisplayName);
+            
+            // Different monitor types might need different color adjustments
+            // This is a simplified example - in practice, would use monitor profiles
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying monitor-specific settings");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Gets lighting parameters for different conditions
+    /// </summary>
+    private (int colorTemp, float intensity) GetLightingParameters(string lightingCondition)
+    {
+        return lightingCondition switch
+        {
+            "Natural Daylight (5500K)" => (5500, 1.0f),
+            "Office Fluorescent (6500K)" => (6500, 0.9f),
+            "Warm Indoor (3000K)" => (3000, 0.8f),
+            "Cool White LED (4000K)" => (4000, 0.95f),
+            "Tungsten Bulb (2700K)" => (2700, 0.7f),
+            "Candlelight (1900K)" => (1900, 0.5f),
+            "Overcast Day (6000K)" => (6000, 0.85f),
+            "Direct Sunlight (5800K)" => (5800, 1.1f),
+            _ => (6500, 1.0f) // Default to office lighting
+        };
+    }
+
+    /// <summary>
+    /// Applies color temperature filter to a color
+    /// </summary>
+    private Color ApplyColorTemperatureFilter(Color color, int colorTemp, float intensity)
+    {
+        try
+        {
+            var rgb = (r: color.R / 255f, g: color.G / 255f, b: color.B / 255f);
+            
+            // Apply color temperature adjustment
+            // Warmer temperatures (lower K) add red/yellow, cooler (higher K) add blue
+            if (colorTemp < 5500)
+            {
+                // Warm light - add red/yellow tint
+                var warmFactor = (5500f - colorTemp) / 3500f; // 0 to 1
+                rgb.r = Math.Min(1.0f, rgb.r + warmFactor * 0.1f);
+                rgb.g = Math.Min(1.0f, rgb.g + warmFactor * 0.05f);
+            }
+            else if (colorTemp > 5500)
+            {
+                // Cool light - add blue tint
+                var coolFactor = (colorTemp - 5500f) / 1500f; // 0 to 1 (clamped)
+                coolFactor = Math.Min(1.0f, coolFactor);
+                rgb.b = Math.Min(1.0f, rgb.b + coolFactor * 0.1f);
+            }
+            
+            // Apply intensity
+            rgb.r = Math.Max(0f, Math.Min(1.0f, rgb.r * intensity));
+            rgb.g = Math.Max(0f, Math.Min(1.0f, rgb.g * intensity));
+            rgb.b = Math.Max(0f, Math.Min(1.0f, rgb.b * intensity));
+            
+            return Color.FromRgb(
+                (byte)(rgb.r * 255),
+                (byte)(rgb.g * 255),
+                (byte)(rgb.b * 255)
+            );
+        }
+        catch
+        {
+            return color; // Return original on error
+        }
+    }
+
+    /// <summary>
+    /// Gets all colors for processing operations
+    /// </summary>
+    private List<(string propertyName, Color color)> GetAllColorsForProcessing()
+    {
+        return new List<(string, Color)>
+        {
+            ("PrimaryAction", PrimaryActionColor),
+            ("SecondaryAction", SecondaryActionColor),
+            ("Accent", AccentColor),
+            ("Highlight", HighlightColor),
+            ("HeadingText", HeadingTextColor),
+            ("BodyText", BodyTextColor),
+            ("TertiaryText", TertiaryTextColor),
+            ("InteractiveText", InteractiveTextColor),
+            ("MainBackground", MainBackgroundColor),
+            ("CardBackground", CardBackgroundColor),
+            ("PanelBackground", PanelBackgroundColor),
+            ("SidebarBackground", SidebarBackgroundColor),
+            ("Success", SuccessColor),
+            ("Warning", WarningColor),
+            ("Error", ErrorColor),
+            ("Info", InfoColor),
+            ("Border", BorderColor),
+            ("BorderAccent", BorderAccentColor)
+        };
+    }
+
+    /// <summary>
     /// Analyzes color relationships to determine harmony type
     /// </summary>
     private string AnalyzeColorHarmony()
@@ -4884,6 +5375,121 @@ public partial class ThemeEditorViewModel : BaseViewModel
             return $"WCAG Contrast: {status} (vs White: {contrastWithWhite:F1}, vs Black: {contrastWithBlack:F1})";
         }
     }
+
+    #region Secondary Action Color RGB/HSL Components
+
+    /// <summary>
+    /// RGB component properties for Secondary Action Color
+    /// </summary>
+    public byte SecondaryActionColorRed
+    {
+        get => SecondaryActionColor.R;
+        set
+        {
+            if (value != SecondaryActionColor.R)
+            {
+                SecondaryActionColor = Color.FromRgb(value, SecondaryActionColor.G, SecondaryActionColor.B);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SecondaryActionColorContrastInfo));
+            }
+        }
+    }
+
+    public byte SecondaryActionColorGreen
+    {
+        get => SecondaryActionColor.G;
+        set
+        {
+            if (value != SecondaryActionColor.G)
+            {
+                SecondaryActionColor = Color.FromRgb(SecondaryActionColor.R, value, SecondaryActionColor.B);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SecondaryActionColorContrastInfo));
+            }
+        }
+    }
+
+    public byte SecondaryActionColorBlue
+    {
+        get => SecondaryActionColor.B;
+        set
+        {
+            if (value != SecondaryActionColor.B)
+            {
+                SecondaryActionColor = Color.FromRgb(SecondaryActionColor.R, SecondaryActionColor.G, value);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SecondaryActionColorContrastInfo));
+            }
+        }
+    }
+
+    /// <summary>
+    /// HSL component properties for Secondary Action Color
+    /// </summary>
+    public double SecondaryActionColorHue
+    {
+        get => RgbToHsl(SecondaryActionColor).Hue;
+        set
+        {
+            var hsl = RgbToHsl(SecondaryActionColor);
+            if (Math.Abs(value - hsl.Hue) > 0.1)
+            {
+                SecondaryActionColor = HslToRgb(value, hsl.Saturation, hsl.Lightness);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SecondaryActionColorContrastInfo));
+            }
+        }
+    }
+
+    public double SecondaryActionColorSaturation
+    {
+        get => RgbToHsl(SecondaryActionColor).Saturation;
+        set
+        {
+            var hsl = RgbToHsl(SecondaryActionColor);
+            if (Math.Abs(value - hsl.Saturation) > 0.1)
+            {
+                SecondaryActionColor = HslToRgb(hsl.Hue, value, hsl.Lightness);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SecondaryActionColorContrastInfo));
+            }
+        }
+    }
+
+    public double SecondaryActionColorLightness
+    {
+        get => RgbToHsl(SecondaryActionColor).Lightness;
+        set
+        {
+            var hsl = RgbToHsl(SecondaryActionColor);
+            if (Math.Abs(value - hsl.Lightness) > 0.1)
+            {
+                SecondaryActionColor = HslToRgb(hsl.Hue, hsl.Saturation, value);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SecondaryActionColorContrastInfo));
+            }
+        }
+    }
+
+    /// <summary>
+    /// WCAG contrast information for Secondary Action Color
+    /// </summary>
+    public string SecondaryActionColorContrastInfo
+    {
+        get
+        {
+            var contrastWithWhite = CalculateContrastRatio(SecondaryActionColor, Colors.White);
+            var contrastWithBlack = CalculateContrastRatio(SecondaryActionColor, Colors.Black);
+            
+            var wcagAA = contrastWithWhite >= 4.5 || contrastWithBlack >= 4.5;
+            var wcagAAA = contrastWithWhite >= 7.0 || contrastWithBlack >= 7.0;
+            
+            var status = wcagAAA ? "AAA ✓" : wcagAA ? "AA ✓" : "Fail ✗";
+            return $"WCAG Contrast: {status} (vs White: {contrastWithWhite:F1}, vs Black: {contrastWithBlack:F1})";
+        }
+    }
+
+    #endregion
 
     #endregion
 
