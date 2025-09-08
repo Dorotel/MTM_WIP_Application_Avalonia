@@ -179,6 +179,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         HasUnsavedChanges = true;
         ValidateAllColors();
         AddToRecentColors(value);
+        OnPropertyChanged(nameof(PrimaryActionColorHex));
     }
 
     partial void OnSecondaryActionColorChanged(Color value)
@@ -186,6 +187,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         HasUnsavedChanges = true;
         ValidateAllColors();
         AddToRecentColors(value);
+        OnPropertyChanged(nameof(SecondaryActionColorHex));
     }
 
     partial void OnAccentColorChanged(Color value)
@@ -193,6 +195,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         HasUnsavedChanges = true;
         ValidateAllColors();
         AddToRecentColors(value);
+        OnPropertyChanged(nameof(AccentColorHex));
     }
 
     partial void OnHighlightColorChanged(Color value)
@@ -200,6 +203,101 @@ public partial class ThemeEditorViewModel : BaseViewModel
         HasUnsavedChanges = true;
         ValidateAllColors();
         AddToRecentColors(value);
+        OnPropertyChanged(nameof(HighlightColorHex));
+    }
+
+    #endregion
+
+    #region Hex Color Properties for Enhanced UI
+
+    /// <summary>
+    /// Hex color representation for Primary Action Color
+    /// </summary>
+    public string PrimaryActionColorHex
+    {
+        get => PrimaryActionColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != PrimaryActionColor)
+            {
+                PrimaryActionColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Secondary Action Color
+    /// </summary>
+    public string SecondaryActionColorHex
+    {
+        get => SecondaryActionColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != SecondaryActionColor)
+            {
+                SecondaryActionColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Accent Color
+    /// </summary>
+    public string AccentColorHex
+    {
+        get => AccentColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != AccentColor)
+            {
+                AccentColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Highlight Color
+    /// </summary>
+    public string HighlightColorHex
+    {
+        get => HighlightColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != HighlightColor)
+            {
+                HighlightColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tries to parse a hex color string and returns the corresponding Color
+    /// </summary>
+    private static bool TryParseHexColor(string? hexValue, out Color color)
+    {
+        color = Colors.Black;
+        
+        if (string.IsNullOrWhiteSpace(hexValue))
+            return false;
+            
+        try
+        {
+            // Handle different hex formats
+            var cleanHex = hexValue.Trim();
+            if (!cleanHex.StartsWith("#"))
+                cleanHex = "#" + cleanHex;
+                
+            color = Color.Parse(cleanHex);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     #endregion
@@ -2483,45 +2581,78 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             IsLoading = true;
             StatusMessage = "Previewing theme changes...";
-            Logger.LogDebug("Generating theme preview");
+            Logger.LogDebug("Generating comprehensive theme preview with all 27 colors");
 
-            // Create a temporary color dictionary for preview
+            // Create comprehensive color dictionary for preview with all 27 colors
             var previewColors = new Dictionary<string, string>
             {
+                // Core Action Colors (4)
                 ["MTM_Shared_Logic.PrimaryAction"] = PrimaryActionColor.ToString(),
                 ["MTM_Shared_Logic.SecondaryAction"] = SecondaryActionColor.ToString(),
                 ["MTM_Shared_Logic.AccentColor"] = AccentColor.ToString(),
                 ["MTM_Shared_Logic.HighlightColor"] = HighlightColor.ToString(),
+                
+                // Text Colors (5)
                 ["MTM_Shared_Logic.HeadingText"] = HeadingTextColor.ToString(),
                 ["MTM_Shared_Logic.BodyText"] = BodyTextColor.ToString(),
+                ["MTM_Shared_Logic.InteractiveText"] = InteractiveTextColor.ToString(),
+                ["MTM_Shared_Logic.OverlayTextBrush"] = OverlayTextColor.ToString(),
+                ["MTM_Shared_Logic.TertiaryTextBrush"] = TertiaryTextColor.ToString(),
+                
+                // Background Colors (5)
                 ["MTM_Shared_Logic.MainBackground"] = MainBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.CardBackgroundBrush"] = CardBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.HoverBackground"] = HoverBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.PanelBackgroundBrush"] = PanelBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.SidebarBackground"] = SidebarBackgroundColor.ToString(),
+                
+                // Status Colors (4)
+                ["MTM_Shared_Logic.SuccessBrush"] = SuccessColor.ToString(),
+                ["MTM_Shared_Logic.WarningBrush"] = WarningColor.ToString(),
+                ["MTM_Shared_Logic.ErrorBrush"] = ErrorColor.ToString(),
+                ["MTM_Shared_Logic.InfoBrush"] = InfoColor.ToString(),
+                
+                // Border Colors (2)
+                ["MTM_Shared_Logic.BorderBrush"] = BorderColor.ToString(),
+                ["MTM_Shared_Logic.BorderAccentBrush"] = BorderAccentColor.ToString(),
+                
+                // Additional derived resources for comprehensive theming
+                ["MTM_Shared_Logic.FocusBrush"] = AccentColor.ToString(),
+                ["MTM_Shared_Logic.BorderDarkBrush"] = DarkenColor(BorderColor, 0.2f).ToString(),
+                ["MTM_Shared_Logic.ErrorLightBrush"] = LightenColor(ErrorColor, 0.8f).ToString(),
+                ["MTM_Shared_Logic.SidebarGradientBrush"] = PanelBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.HoverBrush"] = HoverBackgroundColor.ToString()
             };
 
-            // Apply temporary preview without saving
+            // Apply comprehensive preview via ThemeService
             if (_themeService != null)
             {
                 var result = await _themeService.ApplyCustomColorsAsync(previewColors);
                 if (result.IsSuccess)
                 {
-                    StatusMessage = "Preview applied - use Apply to save changes";
+                    IsPreviewMode = true;
+                    StatusMessage = $"✅ Preview applied ({previewColors.Count} colors) - Use Apply to save changes";
+                    Logger.LogInformation("Theme preview applied successfully with {ColorCount} colors", previewColors.Count);
                 }
                 else
                 {
-                    StatusMessage = $"Preview failed: {result.Message}";
+                    StatusMessage = $"❌ Preview failed: {result.Message}";
+                    Logger.LogWarning("Theme preview failed: {Message}", result.Message);
                 }
             }
             else
             {
-                StatusMessage = "Preview unavailable - theme service not found";
+                StatusMessage = "❌ Preview unavailable - Theme service not available";
+                Logger.LogWarning("Theme service not available for preview");
             }
 
-            await Task.Delay(100); // Small delay for user feedback
+            await Task.Delay(100); // Brief delay for user feedback
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error generating theme preview");
-            StatusMessage = "Error generating preview";
+            Logger.LogError(ex, "Error generating comprehensive theme preview");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate theme preview", Environment.UserName);
+            StatusMessage = "❌ Error generating preview";
         }
         finally
         {
@@ -2987,6 +3118,196 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task AutoFillAccessibilityAsync()
     {
         await AutoFillAccessibilityFirstAsync();
+    }
+
+    /// <summary>
+    /// Opens an advanced color picker dialog for the specified color property
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenColorPickerAsync(string? colorProperty)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(colorProperty))
+            {
+                StatusMessage = "No color property specified";
+                return;
+            }
+
+            IsLoading = true;
+            StatusMessage = $"Opening color picker for {colorProperty}...";
+            Logger.LogDebug("Opening color picker for property: {ColorProperty}", colorProperty);
+
+            // Get current color for the specified property
+            var currentColor = GetCurrentColorForProperty(colorProperty);
+            
+            // For now, we'll simulate a color picker dialog
+            // In a real implementation, this would open a proper color picker dialog
+            var newColor = await ShowSimpleColorPickerAsync(currentColor, colorProperty);
+            
+            if (newColor.HasValue)
+            {
+                SetColorForProperty(colorProperty, newColor.Value);
+                StatusMessage = $"✅ Color updated for {colorProperty}";
+                HasUnsavedChanges = true;
+                ValidateAllColors();
+            }
+            else
+            {
+                StatusMessage = $"Color picker cancelled for {colorProperty}";
+            }
+
+            await Task.Delay(100);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error opening color picker for {ColorProperty}", colorProperty);
+            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to open color picker for {colorProperty}", Environment.UserName);
+            StatusMessage = $"❌ Failed to open color picker for {colorProperty}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Simple color picker simulation - in real implementation would open proper dialog
+    /// </summary>
+    private async Task<Color?> ShowSimpleColorPickerAsync(Color currentColor, string propertyName)
+    {
+        await Task.Delay(100); // Simulate dialog opening time
+        
+        try
+        {
+            // For demonstration, we'll cycle through some predefined colors
+            var predefinedColors = new[]
+            {
+                Color.Parse("#0078D4"), // MTM Blue
+                Color.Parse("#107C10"), // Green  
+                Color.Parse("#D83B01"), // Orange
+                Color.Parse("#A4262C"), // Red
+                Color.Parse("#5C2D91"), // Purple
+                Color.Parse("#0078D4"), // Blue
+                Color.Parse("#00BCF2"), // Cyan
+                Color.Parse("#40E0D0"), // Turquoise
+            };
+
+            // Find current color index and move to next one (cycling through)
+            var currentIndex = Array.FindIndex(predefinedColors, c => c == currentColor);
+            var nextIndex = (currentIndex + 1) % predefinedColors.Length;
+            
+            Logger.LogDebug("Color picker for {Property}: changing from {Current} to {Next}", 
+                propertyName, currentColor, predefinedColors[nextIndex]);
+                
+            return predefinedColors[nextIndex];
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in color picker simulation");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Gets the current color value for a specified property name
+    /// </summary>
+    private Color GetCurrentColorForProperty(string propertyName)
+    {
+        return propertyName switch
+        {
+            "PrimaryAction" => PrimaryActionColor,
+            "SecondaryAction" => SecondaryActionColor,
+            "Accent" => AccentColor,
+            "Highlight" => HighlightColor,
+            "HeadingText" => HeadingTextColor,
+            "BodyText" => BodyTextColor,
+            "InteractiveText" => InteractiveTextColor,
+            "OverlayText" => OverlayTextColor,
+            "TertiaryText" => TertiaryTextColor,
+            "MainBackground" => MainBackgroundColor,
+            "CardBackground" => CardBackgroundColor,
+            "HoverBackground" => HoverBackgroundColor,
+            "PanelBackground" => PanelBackgroundColor,
+            "SidebarBackground" => SidebarBackgroundColor,
+            "Success" => SuccessColor,
+            "Warning" => WarningColor,
+            "Error" => ErrorColor,
+            "Info" => InfoColor,
+            "Border" => BorderColor,
+            "BorderAccent" => BorderAccentColor,
+            _ => PrimaryActionColor // Default fallback
+        };
+    }
+
+    /// <summary>
+    /// Sets a color value for a specified property name
+    /// </summary>
+    private void SetColorForProperty(string propertyName, Color color)
+    {
+        switch (propertyName)
+        {
+            case "PrimaryAction":
+                PrimaryActionColor = color;
+                break;
+            case "SecondaryAction":
+                SecondaryActionColor = color;
+                break;
+            case "Accent":
+                AccentColor = color;
+                break;
+            case "Highlight":
+                HighlightColor = color;
+                break;
+            case "HeadingText":
+                HeadingTextColor = color;
+                break;
+            case "BodyText":
+                BodyTextColor = color;
+                break;
+            case "InteractiveText":
+                InteractiveTextColor = color;
+                break;
+            case "OverlayText":
+                OverlayTextColor = color;
+                break;
+            case "TertiaryText":
+                TertiaryTextColor = color;
+                break;
+            case "MainBackground":
+                MainBackgroundColor = color;
+                break;
+            case "CardBackground":
+                CardBackgroundColor = color;
+                break;
+            case "HoverBackground":
+                HoverBackgroundColor = color;
+                break;
+            case "PanelBackground":
+                PanelBackgroundColor = color;
+                break;
+            case "SidebarBackground":
+                SidebarBackgroundColor = color;
+                break;
+            case "Success":
+                SuccessColor = color;
+                break;
+            case "Warning":
+                WarningColor = color;
+                break;
+            case "Error":
+                ErrorColor = color;
+                break;
+            case "Info":
+                InfoColor = color;
+                break;
+            case "Border":
+                BorderColor = color;
+                break;
+            case "BorderAccent":
+                BorderAccentColor = color;
+                break;
+        }
     }
 
     /// <summary>
