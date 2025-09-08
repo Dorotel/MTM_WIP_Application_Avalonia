@@ -6,8 +6,8 @@
              xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d"
-             d:DesignWidth="800"
-             d:DesignHeight="600"
+             d:DesignWidth="1000"
+             d:DesignHeight="700"
              x:Class="MTM_WIP_Application_Avalonia.Views.ThemeEditorView"
              x:CompileBindings="True"
              x:DataType="vm:ThemeEditorViewModel"
@@ -15,6 +15,7 @@
 
   <UserControl.Resources>
     <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
+    <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
   </UserControl.Resources>
 
   <UserControl.Styles>
@@ -72,6 +73,30 @@
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
     </Style>
 
+    <!-- Navigation Button styling -->
+    <Style Selector="Button.navigation">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="MinHeight" Value="40" />
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+
+    <Style Selector="Button.navigation:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+    </Style>
+
+    <Style Selector="Button.navigation.selected">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
     <!-- Tertiary Button styling -->
     <Style Selector="Button.tertiary">
       <Setter Property="Background" Value="Transparent" />
@@ -91,75 +116,179 @@
     
     <Grid x:Name="MainContainer" 
           RowDefinitions="*,Auto" 
-          MinWidth="600" 
-          MinHeight="400" 
+          MinWidth="800" 
+          MinHeight="500" 
           Margin="8">
 
-      <!-- Main Theme Editor Panel -->
+      <!-- Main Theme Editor Panel - Left Navigation + Right Content -->
       <Border Grid.Row="0"  
               Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" 
               BorderThickness="1" 
               CornerRadius="6" 
-              Padding="16" 
+              Padding="0" 
               Margin="0,0,0,8">
         
-        <Grid x:Name="ThemeEditorGrid" RowDefinitions="Auto,*">
+        <Grid x:Name="ThemeEditorGrid" ColumnDefinitions="280,*">
           
-          <!-- Header Section -->
-          <Border Grid.Row="0" 
+          <!-- Left Navigation Panel -->
+          <Border Grid.Column="0" 
                   Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}" 
-                  CornerRadius="6" 
-                  Padding="12,8" 
-                  Margin="0,0,0,16">
-            <Grid x:Name="HeaderGrid" ColumnDefinitions="Auto,*,Auto">
-              <materialIcons:MaterialIcon Grid.Column="0" 
-                                        Kind="Palette" 
-                                        Width="16" 
-                                        Height="16" 
-                                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
-                                        VerticalAlignment="Center" 
-                                        Margin="0,0,8,0" />
-              <TextBlock Grid.Column="1" 
-                        Text="MTM Advanced Theme Editor" 
-                        FontSize="14" 
-                        FontWeight="Bold" 
-                        Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                        VerticalAlignment="Center" />
-              <!-- Unsaved Changes Indicator -->
-              <Border Grid.Column="2" 
-                      Background="{DynamicResource MTM_Shared_Logic.WarningBrush}" 
-                      CornerRadius="12" 
-                      Padding="8,4" 
-                      IsVisible="{Binding HasUnsavedChanges, FallbackValue=False}">
-                <TextBlock Text="● Unsaved Changes" 
-                          FontSize="10" 
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
-                          FontWeight="SemiBold" />
+                  CornerRadius="6,0,0,6" 
+                  Padding="16">
+            
+            <Grid RowDefinitions="Auto,*,Auto">
+              
+              <!-- Navigation Header -->
+              <Border Grid.Row="0" 
+                      Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                      CornerRadius="6" 
+                      Padding="12,8" 
+                      Margin="0,0,0,16">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                  <materialIcons:MaterialIcon Grid.Column="0" 
+                                            Kind="Palette" 
+                                            Width="16" 
+                                            Height="16" 
+                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" 
+                                            VerticalAlignment="Center" 
+                                            Margin="0,0,8,0" />
+                  <TextBlock Grid.Column="1" 
+                            Text="Theme Editor" 
+                            FontSize="13" 
+                            FontWeight="Bold" 
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                            VerticalAlignment="Center" />
+                  <!-- Unsaved Changes Indicator -->
+                  <Border Grid.Column="2" 
+                          Background="{DynamicResource MTM_Shared_Logic.WarningBrush}" 
+                          CornerRadius="8" 
+                          Padding="6,2" 
+                          IsVisible="{Binding HasUnsavedChanges, FallbackValue=False}">
+                    <TextBlock Text="●" 
+                              FontSize="10" 
+                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                              FontWeight="Bold" />
+                  </Border>
+                </Grid>
               </Border>
+
+              <!-- Navigation Menu -->
+              <StackPanel Grid.Row="1" Spacing="4">
+                
+                <!-- Core Colors Navigation -->
+                <Button x:Name="CoreColorsNavButton"
+                        Classes="navigation"
+                        Classes.selected="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Core'}"
+                        Command="{Binding SelectCategoryCommand}"
+                        CommandParameter="Core">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <materialIcons:MaterialIcon Kind="CircleMultiple" Width="16" Height="16" />
+                    <TextBlock Text="Core Colors" FontSize="12" />
+                  </StackPanel>
+                </Button>
+
+                <!-- Text Colors Navigation -->
+                <Button x:Name="TextColorsNavButton"
+                        Classes="navigation"
+                        Classes.selected="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Text'}"
+                        Command="{Binding SelectCategoryCommand}"
+                        CommandParameter="Text">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <materialIcons:MaterialIcon Kind="FormatText" Width="16" Height="16" />
+                    <TextBlock Text="Text Colors" FontSize="12" />
+                  </StackPanel>
+                </Button>
+
+                <!-- Background Colors Navigation -->
+                <Button x:Name="BackgroundColorsNavButton"
+                        Classes="navigation"
+                        Classes.selected="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Background'}"
+                        Command="{Binding SelectCategoryCommand}"
+                        CommandParameter="Background">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <materialIcons:MaterialIcon Kind="Image" Width="16" Height="16" />
+                    <TextBlock Text="Background Colors" FontSize="12" />
+                  </StackPanel>
+                </Button>
+
+                <!-- Status Colors Navigation -->
+                <Button x:Name="StatusColorsNavButton"
+                        Classes="navigation"
+                        Classes.selected="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Status'}"
+                        Command="{Binding SelectCategoryCommand}"
+                        CommandParameter="Status">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <materialIcons:MaterialIcon Kind="AlertCircle" Width="16" Height="16" />
+                    <TextBlock Text="Status Colors" FontSize="12" />
+                  </StackPanel>
+                </Button>
+
+                <!-- Border Colors Navigation -->
+                <Button x:Name="BorderColorsNavButton"
+                        Classes="navigation"
+                        Classes.selected="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Border'}"
+                        Command="{Binding SelectCategoryCommand}"
+                        CommandParameter="Border">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <materialIcons:MaterialIcon Kind="BorderAll" Width="16" Height="16" />
+                    <TextBlock Text="Border Colors" FontSize="12" />
+                  </StackPanel>
+                </Button>
+
+                <!-- Advanced Tools Navigation -->
+                <Button x:Name="AdvancedToolsNavButton"
+                        Classes="navigation"
+                        Classes.selected="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Tools'}"
+                        Command="{Binding SelectCategoryCommand}"
+                        CommandParameter="Tools">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <materialIcons:MaterialIcon Kind="Tools" Width="16" Height="16" />
+                    <TextBlock Text="Advanced Tools" FontSize="12" />
+                  </StackPanel>
+                </Button>
+
+              </StackPanel>
+
+              <!-- Status Message in Sidebar -->
+              <Border Grid.Row="2" 
+                      Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                      CornerRadius="6" 
+                      Padding="8" 
+                      Margin="0,16,0,0">
+                <TextBlock Text="{Binding StatusMessage, FallbackValue='Ready to edit theme colors'}" 
+                          FontSize="10" 
+                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                          TextWrapping="Wrap" />
+              </Border>
+
             </Grid>
           </Border>
 
-          <!-- Theme Colors Section -->
-          <ScrollViewer Grid.Row="1" 
-                       VerticalScrollBarVisibility="Auto" 
-                       HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Spacing="20">
-
-              <!-- Core Colors Section -->
-              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                      BorderThickness="1" 
-                      CornerRadius="6" 
-                      Padding="16">
-                <StackPanel Spacing="12">
-                  <TextBlock Text="🎨 Core Colors" 
-                            FontSize="16" 
+          <!-- Right Content Panel -->
+          <Border Grid.Column="1" 
+                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                  CornerRadius="0,6,6,0" 
+                  Padding="24">
+            
+            <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                         HorizontalScrollBarVisibility="Disabled">
+              
+              <!-- Dynamic Content based on Selected Category -->
+              <Grid>
+                
+                <!-- Core Colors Content -->
+                <StackPanel Spacing="16" 
+                           IsVisible="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Core'}">
+                  
+                  <TextBlock Text="Core Action Colors" 
+                            FontSize="18" 
                             FontWeight="Bold" 
-                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                            Margin="0,0,0,8" />
                   
                   <!-- Primary Action Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Primary Action:" 
                               VerticalAlignment="Center" 
@@ -177,7 +306,7 @@
                   </Grid>
 
                   <!-- Secondary Action Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Secondary Action:" 
                               VerticalAlignment="Center" 
@@ -195,7 +324,7 @@
                   </Grid>
 
                   <!-- Accent Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Accent Color:" 
                               VerticalAlignment="Center" 
@@ -213,7 +342,7 @@
                   </Grid>
 
                   <!-- Highlight Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Highlight Color:" 
                               VerticalAlignment="Center" 
@@ -229,23 +358,21 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
+                  
                 </StackPanel>
-              </Border>
 
-              <!-- Text Colors Section -->
-              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                      BorderThickness="1" 
-                      CornerRadius="6" 
-                      Padding="16">
-                <StackPanel Spacing="12">
-                  <TextBlock Text="📝 Text Colors" 
-                            FontSize="16" 
+                <!-- Text Colors Content -->
+                <StackPanel Spacing="16" 
+                           IsVisible="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Text'}">
+                  
+                  <TextBlock Text="Text Colors" 
+                            FontSize="18" 
                             FontWeight="Bold" 
-                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                            Margin="0,0,0,8" />
                   
                   <!-- Heading Text Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Heading Text:" 
                               VerticalAlignment="Center" 
@@ -263,7 +390,7 @@
                   </Grid>
 
                   <!-- Body Text Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Body Text:" 
                               VerticalAlignment="Center" 
@@ -281,7 +408,7 @@
                   </Grid>
 
                   <!-- Interactive Text Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Interactive Text:" 
                               VerticalAlignment="Center" 
@@ -299,7 +426,7 @@
                   </Grid>
 
                   <!-- Overlay Text Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Overlay Text:" 
                               VerticalAlignment="Center" 
@@ -317,7 +444,7 @@
                   </Grid>
 
                   <!-- Tertiary Text Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Tertiary Text:" 
                               VerticalAlignment="Center" 
@@ -333,23 +460,21 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
+                  
                 </StackPanel>
-              </Border>
 
-              <!-- Background Colors Section -->
-              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                      BorderThickness="1" 
-                      CornerRadius="6" 
-                      Padding="16">
-                <StackPanel Spacing="12">
-                  <TextBlock Text="🖼️ Background Colors" 
-                            FontSize="16" 
+                <!-- Background Colors Content -->
+                <StackPanel Spacing="16" 
+                           IsVisible="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Background'}">
+                  
+                  <TextBlock Text="Background Colors" 
+                            FontSize="18" 
                             FontWeight="Bold" 
-                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                            Margin="0,0,0,8" />
                   
                   <!-- Main Background Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Main Background:" 
                               VerticalAlignment="Center" 
@@ -367,7 +492,7 @@
                   </Grid>
 
                   <!-- Card Background Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Card Background:" 
                               VerticalAlignment="Center" 
@@ -385,7 +510,7 @@
                   </Grid>
 
                   <!-- Hover Background Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Hover Background:" 
                               VerticalAlignment="Center" 
@@ -403,7 +528,7 @@
                   </Grid>
 
                   <!-- Panel Background Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Panel Background:" 
                               VerticalAlignment="Center" 
@@ -421,7 +546,7 @@
                   </Grid>
 
                   <!-- Sidebar Background Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Sidebar Background:" 
                               VerticalAlignment="Center" 
@@ -437,23 +562,21 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
+                  
                 </StackPanel>
-              </Border>
 
-              <!-- Status Colors Section -->
-              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                      BorderThickness="1" 
-                      CornerRadius="6" 
-                      Padding="16">
-                <StackPanel Spacing="12">
-                  <TextBlock Text="🚦 Status Colors" 
-                            FontSize="16" 
+                <!-- Status Colors Content -->
+                <StackPanel Spacing="16" 
+                           IsVisible="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Status'}">
+                  
+                  <TextBlock Text="Status Colors" 
+                            FontSize="18" 
                             FontWeight="Bold" 
-                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                            Margin="0,0,0,8" />
                   
                   <!-- Success Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Success Color:" 
                               VerticalAlignment="Center" 
@@ -471,7 +594,7 @@
                   </Grid>
 
                   <!-- Warning Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Warning Color:" 
                               VerticalAlignment="Center" 
@@ -489,7 +612,7 @@
                   </Grid>
 
                   <!-- Error Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Error Color:" 
                               VerticalAlignment="Center" 
@@ -507,7 +630,7 @@
                   </Grid>
 
                   <!-- Info Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Info Color:" 
                               VerticalAlignment="Center" 
@@ -523,23 +646,21 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
+                  
                 </StackPanel>
-              </Border>
 
-              <!-- Border Colors Section -->
-              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                      BorderThickness="1" 
-                      CornerRadius="6" 
-                      Padding="16">
-                <StackPanel Spacing="12">
-                  <TextBlock Text="🔲 Border Colors" 
-                            FontSize="16" 
+                <!-- Border Colors Content -->
+                <StackPanel Spacing="16" 
+                           IsVisible="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Border'}">
+                  
+                  <TextBlock Text="Border Colors" 
+                            FontSize="18" 
                             FontWeight="Bold" 
-                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                            Margin="0,0,0,8" />
                   
                   <!-- Primary Border Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Primary Border:" 
                               VerticalAlignment="Center" 
@@ -557,7 +678,7 @@
                   </Grid>
 
                   <!-- Accent Border Color -->
-                  <Grid ColumnDefinitions="120,*,80" ColumnSpacing="12">
+                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
                     <TextBlock Grid.Column="0" 
                               Text="Accent Border:" 
                               VerticalAlignment="Center" 
@@ -573,58 +694,187 @@
                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                            BorderThickness="1" />
                   </Grid>
-                </StackPanel>
-              </Border>
-
-              <!-- Quick Actions Section -->
-              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                      BorderThickness="1" 
-                      CornerRadius="6" 
-                      Padding="16">
-                <StackPanel Spacing="12">
-                  <TextBlock Text="⚡ Quick Actions" 
-                            FontSize="16" 
-                            FontWeight="Bold" 
-                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                   
-                  <WrapPanel Orientation="Horizontal" ItemWidth="140" ItemHeight="36">
-                    <Button Content="Material Design" 
-                           Classes="tertiary" 
-                           Command="{Binding AutoFillCoreColorsCommand}" 
-                           Margin="0,0,8,8"
-                           ToolTip.Tip="Generate harmonious color palette" />
-                    <Button Content="Monochromatic" 
-                           Classes="tertiary" 
-                           Command="{Binding AutoFillMonochromaticCommand}" 
-                           Margin="0,0,8,8"
-                           ToolTip.Tip="Generate tints and shades" />
-                    <Button Content="Complementary" 
-                           Classes="tertiary" 
-                           Command="{Binding AutoFillComplementaryCommand}" 
-                           Margin="0,0,8,8"
-                           ToolTip.Tip="Use opposite colors" />
-                    <Button Content="Manufacturing" 
-                           Classes="tertiary" 
-                           Command="{Binding ApplyOptimizedManufacturingThemeCommand}" 
-                           Margin="0,0,8,8"
-                           ToolTip.Tip="Industrial color scheme" />
-                    <Button Content="Validate Theme" 
-                           Classes="tertiary" 
-                           Command="{Binding ValidateThemeCommand}" 
-                           Margin="0,0,8,8"
-                           ToolTip.Tip="Check WCAG compliance" />
-                    <Button Content="Export Theme" 
-                           Classes="tertiary" 
-                           Command="{Binding ExportThemeCommand}" 
-                           Margin="0,0,8,8"
-                           ToolTip.Tip="Export to file" />
-                  </WrapPanel>
                 </StackPanel>
-              </Border>
 
-            </StackPanel>
-          </ScrollViewer>
+                <!-- Advanced Tools Content -->
+                <StackPanel Spacing="20" 
+                           IsVisible="{Binding SelectedCategory, Converter={StaticResource StringEqualsConverter}, ConverterParameter='Tools'}">
+                  
+                  <TextBlock Text="Advanced Theme Tools" 
+                            FontSize="18" 
+                            FontWeight="Bold" 
+                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                            Margin="0,0,0,8" />
+                  
+                  <!-- Auto-Fill Algorithms Section -->
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                          BorderThickness="1" 
+                          CornerRadius="6" 
+                          Padding="16">
+                    <StackPanel Spacing="12">
+                      <TextBlock Text="Auto-Fill Algorithms" 
+                                FontSize="14" 
+                                FontWeight="Bold" 
+                                Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                      
+                      <WrapPanel Orientation="Horizontal" ItemWidth="160" ItemHeight="36">
+                        <Button Content="Material Design" 
+                               Classes="tertiary" 
+                               Command="{Binding AutoFillCoreColorsCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Generate harmonious color palette" />
+                        <Button Content="Monochromatic" 
+                               Classes="tertiary" 
+                               Command="{Binding AutoFillMonochromaticCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Generate tints and shades" />
+                        <Button Content="Complementary" 
+                               Classes="tertiary" 
+                               Command="{Binding AutoFillComplementaryCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Use opposite colors" />
+                        <Button Content="Analogous" 
+                               Classes="tertiary" 
+                               Command="{Binding AutoFillAnalogousCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Adjacent color harmony" />
+                        <Button Content="Triadic" 
+                               Classes="tertiary" 
+                               Command="{Binding AutoFillTriadicCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Three-color balance" />
+                        <Button Content="Accessibility" 
+                               Classes="tertiary" 
+                               Command="{Binding AutoFillAccessibilityCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="WCAG AAA compliant" />
+                      </WrapPanel>
+                    </StackPanel>
+                  </Border>
+
+                  <!-- Theme Templates Section -->
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                          BorderThickness="1" 
+                          CornerRadius="6" 
+                          Padding="16">
+                    <StackPanel Spacing="12">
+                      <TextBlock Text="Industry Templates" 
+                                FontSize="14" 
+                                FontWeight="Bold" 
+                                Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                      
+                      <WrapPanel Orientation="Horizontal" ItemWidth="160" ItemHeight="36">
+                        <Button Content="Manufacturing" 
+                               Classes="tertiary" 
+                               Command="{Binding ApplyOptimizedManufacturingThemeCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Industrial color scheme" />
+                        <Button Content="Healthcare" 
+                               Classes="tertiary" 
+                               Command="{Binding ApplyHealthcareThemeCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Calming medical colors" />
+                        <Button Content="Office" 
+                               Classes="tertiary" 
+                               Command="{Binding ApplyOfficeThemeCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Professional business colors" />
+                        <Button Content="High Contrast" 
+                               Classes="tertiary" 
+                               Command="{Binding ApplyHighContrastThemeCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Maximum accessibility" />
+                      </WrapPanel>
+                    </StackPanel>
+                  </Border>
+
+                  <!-- Validation and Export Section -->
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                          BorderThickness="1" 
+                          CornerRadius="6" 
+                          Padding="16">
+                    <StackPanel Spacing="12">
+                      <TextBlock Text="Validation and Export" 
+                                FontSize="14" 
+                                FontWeight="Bold" 
+                                Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                      
+                      <WrapPanel Orientation="Horizontal" ItemWidth="160" ItemHeight="36">
+                        <Button Content="Validate Theme" 
+                               Classes="tertiary" 
+                               Command="{Binding ValidateThemeCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Check WCAG compliance" />
+                        <Button Content="Export Theme" 
+                               Classes="tertiary" 
+                               Command="{Binding ExportThemeCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Export to file" />
+                        <Button Content="Import Theme" 
+                               Classes="tertiary" 
+                               Command="{Binding ImportThemeCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Import from file" />
+                        <Button Content="Generate Report" 
+                               Classes="tertiary" 
+                               Command="{Binding GenerateThemeReportCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Color accessibility report" />
+                      </WrapPanel>
+                    </StackPanel>
+                  </Border>
+
+                  <!-- Color History and Undo Section -->
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                          BorderThickness="1" 
+                          CornerRadius="6" 
+                          Padding="16">
+                    <StackPanel Spacing="12">
+                      <TextBlock Text="History and Tools" 
+                                FontSize="14" 
+                                FontWeight="Bold" 
+                                Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                      
+                      <WrapPanel Orientation="Horizontal" ItemWidth="120" ItemHeight="36">
+                        <Button Content="Undo" 
+                               Classes="tertiary" 
+                               Command="{Binding UndoCommand}" 
+                               IsEnabled="{Binding CanUndo}"
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Undo last change" />
+                        <Button Content="Redo" 
+                               Classes="tertiary" 
+                               Command="{Binding RedoCommand}" 
+                               IsEnabled="{Binding CanRedo}"
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Redo last change" />
+                        <Button Content="Brightness +20%" 
+                               Classes="tertiary" 
+                               Command="{Binding AdjustBrightnessCommand}" 
+                               CommandParameter="20"
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Brighten all colors" />
+                        <Button Content="Brightness -20%" 
+                               Classes="tertiary" 
+                               Command="{Binding AdjustBrightnessCommand}" 
+                               CommandParameter="-20"
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Darken all colors" />
+                      </WrapPanel>
+                    </StackPanel>
+                  </Border>
+                  
+                </StackPanel>
+
+              </Grid>
+            </ScrollViewer>
+          </Border>
+
         </Grid>
       </Border>
 
@@ -637,16 +887,25 @@
               Padding="12" 
               Margin="0,0,0,8">
         
-        <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="*,Auto">
+        <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="Auto,*,Auto">
           
-          <!-- Status Message -->
-          <TextBlock Grid.Column="0" 
-                    Text="{Binding StatusMessage, FallbackValue='Ready to edit theme colors'}" 
-                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
-                    VerticalAlignment="Center" />
+          <!-- Left Info Section -->
+          <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <Border Background="{DynamicResource MTM_Shared_Logic.InfoColor}" 
+                    CornerRadius="12" 
+                    Padding="8,4">
+              <TextBlock Text="{Binding SelectedCategory, StringFormat='Current: {0}', FallbackValue='Current: Core'}" 
+                        FontSize="10" 
+                        Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                        FontWeight="SemiBold" />
+            </Border>
+          </StackPanel>
+          
+          <!-- Center spacing -->
+          <Grid Grid.Column="1" />
           
           <!-- Action buttons -->
-          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
             
             <Button Classes="secondary" 
                     Width="100" 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -2717,6 +2718,427 @@ public partial class ThemeEditorViewModel : BaseViewModel
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Applies healthcare-optimized theme with calming colors
+    /// </summary>
+    [RelayCommand]
+    private async Task ApplyHealthcareThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Applying healthcare theme...";
+            Logger.LogDebug("Applying healthcare-optimized theme with calming colors");
+
+            // Take snapshot for undo functionality
+            SaveColorSnapshot("Before Healthcare Theme");
+
+            // Calming healthcare colors
+            PrimaryActionColor = Color.Parse("#008B8B");     // Teal - calming medical color
+            SecondaryActionColor = Color.Parse("#006666");   // Darker teal
+            AccentColor = Color.Parse("#40E0D0");            // Turquoise accent
+            HighlightColor = Color.Parse("#20B2AA");         // Light sea green
+
+            // Gentle text colors for healthcare
+            HeadingTextColor = Color.Parse("#2F4F4F");       // Dark slate gray
+            BodyTextColor = Color.Parse("#696969");          // Dim gray
+            InteractiveTextColor = Color.Parse("#008B8B");   // Matching teal
+            OverlayTextColor = Color.Parse("#FFFFFF");       // Pure white
+            TertiaryTextColor = Color.Parse("#A0A0A0");      // Light gray
+
+            // Soft, clean background colors
+            MainBackgroundColor = Color.Parse("#F8FFFF");    // Azure white
+            CardBackgroundColor = Color.Parse("#FFFFFF");    // Pure white
+            HoverBackgroundColor = Color.Parse("#F0FFFF");   // Light cyan
+            PanelBackgroundColor = Color.Parse("#F5FFFA");   // Mint cream
+            SidebarBackgroundColor = Color.Parse("#F0F8FF");  // Alice blue
+
+            // Healthcare-appropriate status colors
+            SuccessColor = Color.Parse("#32CD32");           // Lime green
+            WarningColor = Color.Parse("#FFD700");           // Gold
+            ErrorColor = Color.Parse("#DC143C");             // Crimson
+            InfoColor = Color.Parse("#4682B4");              // Steel blue
+
+            // Soft borders
+            BorderColor = Color.Parse("#E0E0E0");            // Light gray
+            BorderAccentColor = Color.Parse("#B0B0B0");      // Silver
+
+            CurrentThemeName = "Healthcare Theme";
+            HasUnsavedChanges = true;
+            StatusMessage = "✅ Healthcare theme applied - calming medical colors";
+            Logger.LogInformation("Successfully applied healthcare theme");
+
+            await Task.Delay(100);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying healthcare theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply healthcare theme", Environment.UserName);
+            StatusMessage = "❌ Failed to apply healthcare theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Applies office-optimized theme with professional business colors
+    /// </summary>
+    [RelayCommand]
+    private async Task ApplyOfficeThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Applying office theme...";
+            Logger.LogDebug("Applying office-optimized professional business theme");
+
+            // Take snapshot for undo functionality
+            SaveColorSnapshot("Before Office Theme");
+
+            // Professional Microsoft Fluent-style colors
+            PrimaryActionColor = Color.Parse("#0078D4");     // Microsoft blue
+            SecondaryActionColor = Color.Parse("#106EBE");   // Darker blue
+            AccentColor = Color.Parse("#0099BC");            // Cyan blue
+            HighlightColor = Color.Parse("#00BCF2");         // Light blue
+
+            // Professional text colors
+            HeadingTextColor = Color.Parse("#323130");       // Neutral gray
+            BodyTextColor = Color.Parse("#605E5C");          // Gray brown
+            InteractiveTextColor = Color.Parse("#0078D4");   // Microsoft blue
+            OverlayTextColor = Color.Parse("#FFFFFF");       // White
+            TertiaryTextColor = Color.Parse("#8A8886");      // Light gray
+
+            // Clean office backgrounds
+            MainBackgroundColor = Color.Parse("#FAFAFA");    // Very light gray
+            CardBackgroundColor = Color.Parse("#FFFFFF");    // White
+            HoverBackgroundColor = Color.Parse("#F3F2F1");   // Light warm gray
+            PanelBackgroundColor = Color.Parse("#F8F7F6");   // Warm white
+            SidebarBackgroundColor = Color.Parse("#F5F5F5");  // Light gray
+
+            // Professional status colors
+            SuccessColor = Color.Parse("#107C10");           // Green
+            WarningColor = Color.Parse("#FFB900");           // Amber
+            ErrorColor = Color.Parse("#D13438");             // Red
+            InfoColor = Color.Parse("#0078D4");              // Blue
+
+            // Subtle borders
+            BorderColor = Color.Parse("#EDEBE9");            // Light neutral
+            BorderAccentColor = Color.Parse("#C8C6C4");      // Medium neutral
+
+            CurrentThemeName = "Office Theme";
+            HasUnsavedChanges = true;
+            StatusMessage = "✅ Office theme applied - professional business colors";
+            Logger.LogInformation("Successfully applied office theme");
+
+            await Task.Delay(100);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying office theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply office theme", Environment.UserName);
+            StatusMessage = "❌ Failed to apply office theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Applies high contrast theme for maximum accessibility
+    /// </summary>
+    [RelayCommand]
+    private async Task ApplyHighContrastThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Applying high contrast theme...";
+            Logger.LogDebug("Applying high contrast theme for maximum accessibility");
+
+            // Take snapshot for undo functionality
+            SaveColorSnapshot("Before High Contrast Theme");
+
+            // Maximum contrast colors
+            PrimaryActionColor = Color.Parse("#0000FF");     // Pure blue
+            SecondaryActionColor = Color.Parse("#000080");   // Navy blue
+            AccentColor = Color.Parse("#8000FF");            // Purple
+            HighlightColor = Color.Parse("#FF00FF");         // Magenta
+
+            // High contrast text
+            HeadingTextColor = Color.Parse("#000000");       // Pure black
+            BodyTextColor = Color.Parse("#000000");          // Pure black
+            InteractiveTextColor = Color.Parse("#0000FF");   // Pure blue
+            OverlayTextColor = Color.Parse("#FFFFFF");       // Pure white
+            TertiaryTextColor = Color.Parse("#808080");      // Gray
+
+            // High contrast backgrounds
+            MainBackgroundColor = Color.Parse("#FFFFFF");    // Pure white
+            CardBackgroundColor = Color.Parse("#FFFFFF");    // Pure white
+            HoverBackgroundColor = Color.Parse("#C0C0C0");   // Silver
+            PanelBackgroundColor = Color.Parse("#F0F0F0");   // Light gray
+            SidebarBackgroundColor = Color.Parse("#E0E0E0");  // Light gray
+
+            // High contrast status colors
+            SuccessColor = Color.Parse("#008000");           // Pure green
+            WarningColor = Color.Parse("#FF8000");           // Orange
+            ErrorColor = Color.Parse("#FF0000");             // Pure red
+            InfoColor = Color.Parse("#0000FF");              // Pure blue
+
+            // Strong borders
+            BorderColor = Color.Parse("#000000");            // Black
+            BorderAccentColor = Color.Parse("#808080");      // Gray
+
+            CurrentThemeName = "High Contrast Theme";
+            HasUnsavedChanges = true;
+            StatusMessage = "✅ High contrast theme applied - maximum accessibility";
+            Logger.LogInformation("Successfully applied high contrast theme");
+
+            await Task.Delay(100);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying high contrast theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply high contrast theme", Environment.UserName);
+            StatusMessage = "❌ Failed to apply high contrast theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Adjusts brightness of all colors by specified percentage
+    /// </summary>
+    [RelayCommand]
+    private async Task AdjustBrightnessAsync(string adjustmentParameter)
+    {
+        try
+        {
+            if (!int.TryParse(adjustmentParameter, out int adjustment))
+            {
+                StatusMessage = "Invalid brightness adjustment value";
+                return;
+            }
+
+            IsLoading = true;
+            StatusMessage = $"Adjusting brightness by {adjustment}%...";
+            Logger.LogDebug("Adjusting all colors brightness by {Adjustment}%", adjustment);
+
+            // Take snapshot for undo functionality
+            SaveColorSnapshot($"Before Brightness {adjustment}%");
+
+            double factor = 1.0 + (adjustment / 100.0);
+
+            // Adjust all colors
+            PrimaryActionColor = AdjustColorBrightness(PrimaryActionColor, factor);
+            SecondaryActionColor = AdjustColorBrightness(SecondaryActionColor, factor);
+            AccentColor = AdjustColorBrightness(AccentColor, factor);
+            HighlightColor = AdjustColorBrightness(HighlightColor, factor);
+
+            HeadingTextColor = AdjustColorBrightness(HeadingTextColor, factor);
+            BodyTextColor = AdjustColorBrightness(BodyTextColor, factor);
+            InteractiveTextColor = AdjustColorBrightness(InteractiveTextColor, factor);
+            OverlayTextColor = AdjustColorBrightness(OverlayTextColor, factor);
+            TertiaryTextColor = AdjustColorBrightness(TertiaryTextColor, factor);
+
+            MainBackgroundColor = AdjustColorBrightness(MainBackgroundColor, factor);
+            CardBackgroundColor = AdjustColorBrightness(CardBackgroundColor, factor);
+            HoverBackgroundColor = AdjustColorBrightness(HoverBackgroundColor, factor);
+            PanelBackgroundColor = AdjustColorBrightness(PanelBackgroundColor, factor);
+            SidebarBackgroundColor = AdjustColorBrightness(SidebarBackgroundColor, factor);
+
+            SuccessColor = AdjustColorBrightness(SuccessColor, factor);
+            WarningColor = AdjustColorBrightness(WarningColor, factor);
+            ErrorColor = AdjustColorBrightness(ErrorColor, factor);
+            InfoColor = AdjustColorBrightness(InfoColor, factor);
+
+            BorderColor = AdjustColorBrightness(BorderColor, factor);
+            BorderAccentColor = AdjustColorBrightness(BorderAccentColor, factor);
+
+            HasUnsavedChanges = true;
+            StatusMessage = $"✅ Brightness adjusted by {adjustment}%";
+            Logger.LogInformation("Successfully adjusted brightness by {Adjustment}%", adjustment);
+
+            await Task.Delay(100);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error adjusting brightness");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to adjust brightness", Environment.UserName);
+            StatusMessage = "❌ Failed to adjust brightness";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Alias for AutoFillAccessibilityFirstAsync to match UI naming
+    /// </summary>
+    [RelayCommand]
+    private async Task AutoFillAccessibilityAsync()
+    {
+        await AutoFillAccessibilityFirstAsync();
+    }
+
+    /// <summary>
+    /// Generates a comprehensive theme report with color analysis
+    /// </summary>
+    [RelayCommand]
+    private async Task GenerateThemeReportAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Generating theme report...";
+            Logger.LogDebug("Generating comprehensive theme analysis report");
+
+            var report = new StringBuilder();
+            report.AppendLine($"# Theme Analysis Report");
+            report.AppendLine($"**Theme Name:** {CurrentThemeName}");
+            report.AppendLine($"**Version:** {ThemeVersion}");
+            report.AppendLine($"**Generated:** {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            report.AppendLine($"**Base Theme:** {BaseTheme}");
+            report.AppendLine();
+
+            // Color accessibility analysis
+            report.AppendLine("## Color Accessibility Analysis");
+            var contrastIssues = await ValidateContrastRatiosAsync();
+            if (!contrastIssues.Any())
+            {
+                report.AppendLine("✅ All color combinations meet WCAG AA standards (4.5:1 contrast ratio)");
+            }
+            else
+            {
+                report.AppendLine("⚠️ The following color combinations have accessibility issues:");
+                foreach (var issue in contrastIssues)
+                {
+                    report.AppendLine($"- {issue}");
+                }
+            }
+            report.AppendLine();
+
+            // Color harmony analysis
+            report.AppendLine("## Color Harmony Analysis");
+            var harmonyType = AnalyzeColorHarmony();
+            report.AppendLine($"**Detected Harmony:** {harmonyType}");
+            report.AppendLine();
+
+            // Color usage statistics
+            report.AppendLine("## Color Categories");
+            report.AppendLine($"**Core Colors:** {PrimaryActionColor}, {SecondaryActionColor}, {AccentColor}, {HighlightColor}");
+            report.AppendLine($"**Text Colors:** {HeadingTextColor}, {BodyTextColor}, {InteractiveTextColor}");
+            report.AppendLine($"**Background Colors:** {MainBackgroundColor}, {CardBackgroundColor}, {HoverBackgroundColor}");
+            report.AppendLine($"**Status Colors:** {SuccessColor}, {WarningColor}, {ErrorColor}, {InfoColor}");
+            report.AppendLine($"**Border Colors:** {BorderColor}, {BorderAccentColor}");
+
+            // Save report to file
+            var reportFileName = $"ThemeReport_{CurrentThemeName.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd_HHmmss}.md";
+            var reportPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), reportFileName);
+            await File.WriteAllTextAsync(reportPath, report.ToString());
+
+            StatusMessage = $"✅ Theme report saved to Desktop: {reportFileName}";
+            Logger.LogInformation("Theme report generated: {ReportPath}", reportPath);
+
+            await Task.Delay(100);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating theme report");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate theme report", Environment.UserName);
+            StatusMessage = "❌ Failed to generate theme report";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Analyzes color relationships to determine harmony type
+    /// </summary>
+    private string AnalyzeColorHarmony()
+    {
+        try
+        {
+            var primaryHsv = RgbToHsv(PrimaryActionColor);
+            var secondaryHsv = RgbToHsv(SecondaryActionColor);
+            var accentHsv = RgbToHsv(AccentColor);
+
+            // Calculate hue differences
+            var hueDiff1 = Math.Abs(primaryHsv.H - secondaryHsv.H);
+            var hueDiff2 = Math.Abs(primaryHsv.H - accentHsv.H);
+            var hueDiff3 = Math.Abs(secondaryHsv.H - accentHsv.H);
+
+            // Normalize to 0-180 range
+            hueDiff1 = Math.Min(hueDiff1, 360 - hueDiff1);
+            hueDiff2 = Math.Min(hueDiff2, 360 - hueDiff2);
+            hueDiff3 = Math.Min(hueDiff3, 360 - hueDiff3);
+
+            // Check for monochromatic (hues within 30 degrees)
+            if (hueDiff1 < 30 && hueDiff2 < 30 && hueDiff3 < 30)
+            {
+                return "Monochromatic";
+            }
+
+            // Check for complementary (hues around 180 degrees apart)
+            if (Math.Abs(hueDiff1 - 180) < 30 || Math.Abs(hueDiff2 - 180) < 30 || Math.Abs(hueDiff3 - 180) < 30)
+            {
+                return "Complementary";
+            }
+
+            // Check for triadic (hues around 120 degrees apart)
+            var triadic = Math.Abs(hueDiff1 - 120) < 30 && Math.Abs(hueDiff2 - 120) < 30;
+            if (triadic)
+            {
+                return "Triadic";
+            }
+
+            // Check for analogous (hues within 60 degrees)
+            if (hueDiff1 < 60 && hueDiff2 < 60 && hueDiff3 < 60)
+            {
+                return "Analogous";
+            }
+
+            // Check for split-complementary
+            if ((Math.Abs(hueDiff1 - 150) < 30 && Math.Abs(hueDiff2 - 150) < 30) ||
+                (Math.Abs(hueDiff1 - 210) < 30 && Math.Abs(hueDiff2 - 210) < 30))
+            {
+                return "Split-Complementary";
+            }
+
+            return "Custom";
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error analyzing color harmony");
+            return "Unknown";
+        }
+    }
+
+    /// <summary>
+    /// Helper method to adjust color brightness
+    /// </summary>
+    private Color AdjustColorBrightness(Color color, double factor)
+    {
+        try
+        {
+            var hsv = RgbToHsv(color);
+            hsv.V = (float)Math.Max(0, Math.Min(1, hsv.V * factor)); // Clamp to valid range
+            var rgb = HsvToRgb(hsv);
+            return rgb;
+        }
+        catch
+        {
+            return color; // Return original color if adjustment fails
         }
     }
 
