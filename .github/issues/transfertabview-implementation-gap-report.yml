@@ -15,6 +15,7 @@ body:
         
         ## CRITICAL BLOCKERS
    - Dual-panel layout, DataGrid-centric display, and CollapsiblePanel integration are not present in TransferTabView.axaml
+   - CollapsiblePanel.axaml: The header is currently positioned on the left side; it must be moved to the top for TransferTabView and all InventoryTabView-based layouts to match the specification and user expectations.
    - ComboBoxes have not been replaced with TextBoxes + SuggestionOverlay (no ComboBoxes found, but TextBoxes/SuggestionOverlay missing)
    - NumericUpDown control for quantity transfer is not implemented
    - InventoryTabView styling and mandatory grid pattern are not applied
@@ -31,6 +32,7 @@ body:
            - Replace all ComboBoxes with TextBoxes + SuggestionOverlay (ComboBoxes not present, but SuggestionOverlay/TextBoxes missing)
            - Add NumericUpDown control for quantity transfer
            - Apply InventoryTabView styling and grid pattern for consistency
+           - Update CollapsiblePanel.axaml so the header is positioned on top, not on the left side, for TransferTabView and all InventoryTabView-based layouts.
         2. **Input Field Implementation**
            - Use SuggestionOverlay for Part ID, Operation, To Location fields
            - Apply TextBoxFuzzyValidationBehavior and watermark text
