@@ -30,6 +30,18 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private string currentThemeName = "MTM Theme";
 
     [ObservableProperty]
+    private string themeVersion = "1.0";
+
+    [ObservableProperty]
+    private string themeDocumentation = string.Empty;
+
+    [ObservableProperty]
+    private string baseTheme = "MTM_Blue";
+
+    [ObservableProperty]
+    private string conditionalContext = "Default";
+
+    [ObservableProperty]
     private string statusMessage = "Ready to edit theme colors";
 
     [ObservableProperty]
@@ -40,6 +52,12 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool canApplyTheme = true;
+
+    [ObservableProperty]
+    private bool isPreviewMode = false;
+
+    [ObservableProperty]
+    private bool respectSystemTheme = true;
 
     #endregion
 
@@ -937,6 +955,247 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             IsLoading = false;
         }
+    }
+
+    #endregion
+
+    #region Theme Version Management and Rollback
+
+    [ObservableProperty]
+    private ObservableCollection<ThemeVersionSnapshot> themeVersionHistory = new();
+
+    [ObservableProperty]
+    private ThemeVersionSnapshot? selectedVersion;
+
+    [ObservableProperty]
+    private bool canRollback = false;
+
+    [RelayCommand]
+    private async Task CreateVersionSnapshotAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Creating version snapshot...";
+            Logger.LogDebug("Creating theme version snapshot");
+
+            var snapshot = new ThemeVersionSnapshot
+            {
+                Version = ThemeVersion,
+                Name = CurrentThemeName,
+                Documentation = ThemeDocumentation,
+                BaseTheme = BaseTheme,
+                ConditionalContext = ConditionalContext,
+                CreatedDate = DateTime.Now,
+                CreatedBy = Environment.UserName,
+                Colors = new Dictionary<string, string>
+                {
+                    // Core colors
+                    ["PrimaryAction"] = PrimaryActionColor.ToString(),
+                    ["SecondaryAction"] = SecondaryActionColor.ToString(),
+                    ["AccentColor"] = AccentColor.ToString(),
+                    ["HighlightColor"] = HighlightColor.ToString(),
+                    
+                    // Text colors
+                    ["HeadingText"] = HeadingTextColor.ToString(),
+                    ["BodyText"] = BodyTextColor.ToString(),
+                    ["InteractiveText"] = InteractiveTextColor.ToString(),
+                    ["OverlayText"] = OverlayTextColor.ToString(),
+                    ["TertiaryText"] = TertiaryTextColor.ToString(),
+                    
+                    // Background colors
+                    ["MainBackground"] = MainBackgroundColor.ToString(),
+                    ["CardBackground"] = CardBackgroundColor.ToString(),
+                    ["HoverBackground"] = HoverBackgroundColor.ToString(),
+                    ["PanelBackground"] = PanelBackgroundColor.ToString(),
+                    ["SidebarBackground"] = SidebarBackgroundColor.ToString(),
+                    
+                    // Status colors
+                    ["Success"] = SuccessColor.ToString(),
+                    ["Warning"] = WarningColor.ToString(),
+                    ["Error"] = ErrorColor.ToString(),
+                    ["Info"] = InfoColor.ToString(),
+                    
+                    // Border colors
+                    ["Border"] = BorderColor.ToString(),
+                    ["BorderAccent"] = BorderAccentColor.ToString()
+                }
+            };
+
+            ThemeVersionHistory.Insert(0, snapshot);
+            
+            // Keep only the last 20 versions
+            while (ThemeVersionHistory.Count > 20)
+            {
+                ThemeVersionHistory.RemoveAt(ThemeVersionHistory.Count - 1);
+            }
+
+            CanRollback = ThemeVersionHistory.Count > 1;
+            
+            // Auto-increment version
+            if (double.TryParse(ThemeVersion, out var currentVersion))
+            {
+                ThemeVersion = (currentVersion + 0.1).ToString("F1");
+            }
+
+            StatusMessage = $"Version snapshot created: v{snapshot.Version}";
+            Logger.LogInformation("Theme version snapshot created: v{Version}", snapshot.Version);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error creating version snapshot");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to create version snapshot", Environment.UserName);
+            StatusMessage = "Failed to create version snapshot";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task RollbackToVersionAsync(ThemeVersionSnapshot? version)
+    {
+        if (version == null) return;
+
+        try
+        {
+            IsLoading = true;
+            StatusMessage = $"Rolling back to version {version.Version}...";
+            Logger.LogDebug("Rolling back to theme version: {Version}", version.Version);
+
+            // Restore all properties from the selected version
+            CurrentThemeName = version.Name;
+            ThemeVersion = version.Version;
+            ThemeDocumentation = version.Documentation;
+            BaseTheme = version.BaseTheme;
+            ConditionalContext = version.ConditionalContext;
+
+            // Restore all colors
+            if (version.Colors.TryGetValue("PrimaryAction", out var primaryAction))
+                PrimaryActionColor = SafeParseColor(primaryAction, PrimaryActionColor);
+            if (version.Colors.TryGetValue("SecondaryAction", out var secondaryAction))
+                SecondaryActionColor = SafeParseColor(secondaryAction, SecondaryActionColor);
+            if (version.Colors.TryGetValue("AccentColor", out var accentColor))
+                AccentColor = SafeParseColor(accentColor, AccentColor);
+            if (version.Colors.TryGetValue("HighlightColor", out var highlightColor))
+                HighlightColor = SafeParseColor(highlightColor, HighlightColor);
+                
+            if (version.Colors.TryGetValue("HeadingText", out var headingText))
+                HeadingTextColor = SafeParseColor(headingText, HeadingTextColor);
+            if (version.Colors.TryGetValue("BodyText", out var bodyText))
+                BodyTextColor = SafeParseColor(bodyText, BodyTextColor);
+            if (version.Colors.TryGetValue("InteractiveText", out var interactiveText))
+                InteractiveTextColor = SafeParseColor(interactiveText, InteractiveTextColor);
+            if (version.Colors.TryGetValue("OverlayText", out var overlayText))
+                OverlayTextColor = SafeParseColor(overlayText, OverlayTextColor);
+            if (version.Colors.TryGetValue("TertiaryText", out var tertiaryText))
+                TertiaryTextColor = SafeParseColor(tertiaryText, TertiaryTextColor);
+                
+            if (version.Colors.TryGetValue("MainBackground", out var mainBackground))
+                MainBackgroundColor = SafeParseColor(mainBackground, MainBackgroundColor);
+            if (version.Colors.TryGetValue("CardBackground", out var cardBackground))
+                CardBackgroundColor = SafeParseColor(cardBackground, CardBackgroundColor);
+            if (version.Colors.TryGetValue("HoverBackground", out var hoverBackground))
+                HoverBackgroundColor = SafeParseColor(hoverBackground, HoverBackgroundColor);
+            if (version.Colors.TryGetValue("PanelBackground", out var panelBackground))
+                PanelBackgroundColor = SafeParseColor(panelBackground, PanelBackgroundColor);
+            if (version.Colors.TryGetValue("SidebarBackground", out var sidebarBackground))
+                SidebarBackgroundColor = SafeParseColor(sidebarBackground, SidebarBackgroundColor);
+                
+            if (version.Colors.TryGetValue("Success", out var success))
+                SuccessColor = SafeParseColor(success, SuccessColor);
+            if (version.Colors.TryGetValue("Warning", out var warning))
+                WarningColor = SafeParseColor(warning, WarningColor);
+            if (version.Colors.TryGetValue("Error", out var error))
+                ErrorColor = SafeParseColor(error, ErrorColor);
+            if (version.Colors.TryGetValue("Info", out var info))
+                InfoColor = SafeParseColor(info, InfoColor);
+                
+            if (version.Colors.TryGetValue("Border", out var border))
+                BorderColor = SafeParseColor(border, BorderColor);
+            if (version.Colors.TryGetValue("BorderAccent", out var borderAccent))
+                BorderAccentColor = SafeParseColor(borderAccent, BorderAccentColor);
+
+            HasUnsavedChanges = true;
+            StatusMessage = $"Rolled back to version {version.Version}";
+            Logger.LogInformation("Theme rolled back to version: {Version}", version.Version);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error rolling back to version: {Version}", version.Version);
+            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to rollback to version {version.Version}", Environment.UserName);
+            StatusMessage = "Failed to rollback to selected version";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    #endregion
+
+    #region Color Naming System
+
+    [ObservableProperty]
+    private Dictionary<string, string> colorCustomNames = new();
+
+    [ObservableProperty]
+    private string selectedColorForNaming = string.Empty;
+
+    [ObservableProperty]
+    private string customColorName = string.Empty;
+
+    [RelayCommand]
+    private void SetCustomColorName(string colorProperty)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(colorProperty) || string.IsNullOrWhiteSpace(CustomColorName))
+                return;
+
+            ColorCustomNames[colorProperty] = CustomColorName;
+            
+            StatusMessage = $"Custom name '{CustomColorName}' set for {colorProperty}";
+            Logger.LogDebug("Custom color name set: {ColorProperty} = {CustomName}", colorProperty, CustomColorName);
+            
+            // Clear the input
+            CustomColorName = string.Empty;
+            SelectedColorForNaming = string.Empty;
+            
+            HasUnsavedChanges = true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error setting custom color name");
+            StatusMessage = "Failed to set custom color name";
+        }
+    }
+
+    [RelayCommand]
+    private void RemoveCustomColorName(string colorProperty)
+    {
+        try
+        {
+            if (ColorCustomNames.ContainsKey(colorProperty))
+            {
+                ColorCustomNames.Remove(colorProperty);
+                StatusMessage = $"Custom name removed for {colorProperty}";
+                HasUnsavedChanges = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error removing custom color name");
+            StatusMessage = "Failed to remove custom color name";
+        }
+    }
+
+    public string GetColorDisplayName(string colorProperty)
+    {
+        return ColorCustomNames.ContainsKey(colorProperty) 
+            ? $"{ColorCustomNames[colorProperty]} ({colorProperty})"
+            : colorProperty;
     }
 
     #endregion
@@ -2730,4 +2989,49 @@ public class ThemeExportModel
     public string CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedDate { get; set; } = DateTime.Now;
     public string Version { get; set; } = "1.0";
+}
+
+/// <summary>
+/// Theme version snapshot for rollback functionality
+/// </summary>
+public class ThemeVersionSnapshot
+{
+    public string Version { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Documentation { get; set; } = string.Empty;
+    public string BaseTheme { get; set; } = string.Empty;
+    public string ConditionalContext { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public string CreatedBy { get; set; } = string.Empty;
+    public Dictionary<string, string> Colors { get; set; } = new();
+}
+
+/// <summary>
+/// Color usage analytics tracking
+/// </summary>
+public class ColorUsageStats
+{
+    public string ColorProperty { get; set; } = string.Empty;
+    public int UsageCount { get; set; }
+    public DateTime FirstUsed { get; set; } = DateTime.Now;
+    public DateTime LastUsed { get; set; } = DateTime.Now;
+}
+
+/// <summary>
+/// Enhanced theme sharing model with additional metadata
+/// </summary>
+public class ThemeShareModel
+{
+    public string Name { get; set; } = string.Empty;
+    public string Version { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string BaseTheme { get; set; } = string.Empty;
+    public string ConditionalContext { get; set; } = string.Empty;
+    public string CreatedBy { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public DateTime SharedDate { get; set; } = DateTime.Now;
+    public Dictionary<string, string> Colors { get; set; } = new();
+    public Dictionary<string, string> CustomNames { get; set; } = new();
+    public List<string> Tags { get; set; } = new();
+    public string Category { get; set; } = string.Empty;
 }
