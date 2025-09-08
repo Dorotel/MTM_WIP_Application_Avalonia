@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -36,6 +37,9 @@ public partial class TransferTabView : UserControl
     private Button? _resetButton;
     private Button? _transferButton;
     private DataGrid? _inventoryDataGrid;
+
+    // SuggestionOverlay state tracking
+    private bool _isShowingSuggestionOverlay = false;
 
     /// <summary>
     /// Initializes a new instance of the TransferTabView class.
@@ -131,6 +135,9 @@ public partial class TransferTabView : UserControl
             {
                 _inventoryDataGrid.SelectionChanged += OnInventoryDataGridSelectionChanged;
             }
+
+            // Setup SuggestionOverlay handlers for TextBoxes
+            SetupSuggestionOverlayHandlers();
             
             _logger?.LogDebug("Event handlers setup completed");
         }
@@ -348,6 +355,8 @@ public partial class TransferTabView : UserControl
         }
     }
 
+    #region Event Handlers
+
     /// <summary>
     /// Handle DataGrid selection changes to support multi-selection
     /// </summary>
@@ -377,6 +386,261 @@ public partial class TransferTabView : UserControl
         }
     }
 
+    #endregion
+
+    #region SuggestionOverlay Implementation
+
+    /// <summary>
+    /// Setup SuggestionOverlay event handlers for TextBoxes
+    /// </summary>
+    private void SetupSuggestionOverlayHandlers()
+    {
+        try
+        {
+            // Part ID TextBox handlers
+            if (_partTextBox != null)
+            {
+                _partTextBox.GotFocus += OnPartTextBoxGotFocus;
+                _partTextBox.TextChanged += OnPartTextBoxTextChanged;
+            }
+
+            // Operation TextBox handlers  
+            if (_operationTextBox != null)
+            {
+                _operationTextBox.GotFocus += OnOperationTextBoxGotFocus;
+                _operationTextBox.TextChanged += OnOperationTextBoxTextChanged;
+            }
+
+            // To Location TextBox handlers
+            if (_toLocationTextBox != null)
+            {
+                _toLocationTextBox.GotFocus += OnToLocationTextBoxGotFocus;
+                _toLocationTextBox.TextChanged += OnToLocationTextBoxTextChanged;
+            }
+
+            _logger?.LogDebug("SuggestionOverlay handlers setup completed");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error setting up SuggestionOverlay handlers");
+        }
+    }
+
+    /// <summary>
+    /// Handle Part ID TextBox focus events
+    /// </summary>
+    private async void OnPartTextBoxGotFocus(object? sender, GotFocusEventArgs e)
+    {
+        if (sender is TextBox textBox && DataContext is TransferItemViewModel viewModel)
+        {
+            await ShowPartSuggestionsAsync(textBox, viewModel.PartText, viewModel);
+        }
+    }
+
+    /// <summary>
+    /// Handle Part ID TextBox text changes
+    /// </summary>
+    private async void OnPartTextBoxTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (sender is TextBox textBox && DataContext is TransferItemViewModel viewModel && !_isShowingSuggestionOverlay)
+        {
+            await ShowPartSuggestionsAsync(textBox, textBox.Text ?? string.Empty, viewModel);
+        }
+    }
+
+    /// <summary>
+    /// Show part suggestions using SuggestionOverlay service
+    /// </summary>
+    private async Task ShowPartSuggestionsAsync(TextBox textBox, string currentValue, TransferItemViewModel viewModel)
+    {
+        if (_suggestionOverlayService == null || _isShowingSuggestionOverlay) return;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(currentValue) || currentValue.Length < 1) return;
+
+            var suggestions = viewModel.PartOptions.Where(p => 
+                p.Contains(currentValue, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (!suggestions.Any()) return;
+
+            _isShowingSuggestionOverlay = true;
+            var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, suggestions, currentValue);
+            
+            if (!string.IsNullOrEmpty(selected))
+            {
+                viewModel.PartText = selected;
+                viewModel.SelectedPart = selected;
+                textBox.Text = selected;
+                _logger?.LogDebug("Part suggestion selected: {SelectedPart}", selected);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error showing part suggestions");
+        }
+        finally
+        {
+            _isShowingSuggestionOverlay = false;
+        }
+    }
+
+    /// <summary>
+    /// Handle Operation TextBox focus events
+    /// </summary>
+    private async void OnOperationTextBoxGotFocus(object? sender, GotFocusEventArgs e)
+    {
+        if (sender is TextBox textBox && DataContext is TransferItemViewModel viewModel)
+        {
+            await ShowOperationSuggestionsAsync(textBox, viewModel.OperationText, viewModel);
+        }
+    }
+
+    /// <summary>
+    /// Handle Operation TextBox text changes
+    /// </summary>
+    private async void OnOperationTextBoxTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (sender is TextBox textBox && DataContext is TransferItemViewModel viewModel && !_isShowingSuggestionOverlay)
+        {
+            await ShowOperationSuggestionsAsync(textBox, textBox.Text ?? string.Empty, viewModel);
+        }
+    }
+
+    /// <summary>
+    /// Show operation suggestions using SuggestionOverlay service
+    /// </summary>
+    private async Task ShowOperationSuggestionsAsync(TextBox textBox, string currentValue, TransferItemViewModel viewModel)
+    {
+        if (_suggestionOverlayService == null || _isShowingSuggestionOverlay) return;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(currentValue)) return;
+
+            var suggestions = viewModel.OperationOptions.Where(o => 
+                o.Contains(currentValue, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (!suggestions.Any()) return;
+
+            _isShowingSuggestionOverlay = true;
+            var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, suggestions, currentValue);
+            
+            if (!string.IsNullOrEmpty(selected))
+            {
+                viewModel.OperationText = selected;
+                viewModel.SelectedOperation = selected;
+                textBox.Text = selected;
+                _logger?.LogDebug("Operation suggestion selected: {SelectedOperation}", selected);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error showing operation suggestions");
+        }
+        finally
+        {
+            _isShowingSuggestionOverlay = false;
+        }
+    }
+
+    /// <summary>
+    /// Handle To Location TextBox focus events
+    /// </summary>
+    private async void OnToLocationTextBoxGotFocus(object? sender, GotFocusEventArgs e)
+    {
+        if (sender is TextBox textBox && DataContext is TransferItemViewModel viewModel)
+        {
+            await ShowLocationSuggestionsAsync(textBox, viewModel.ToLocationText, viewModel);
+        }
+    }
+
+    /// <summary>
+    /// Handle To Location TextBox text changes
+    /// </summary>
+    private async void OnToLocationTextBoxTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (sender is TextBox textBox && DataContext is TransferItemViewModel viewModel && !_isShowingSuggestionOverlay)
+        {
+            await ShowLocationSuggestionsAsync(textBox, textBox.Text ?? string.Empty, viewModel);
+        }
+    }
+
+    /// <summary>
+    /// Show location suggestions using SuggestionOverlay service
+    /// </summary>
+    private async Task ShowLocationSuggestionsAsync(TextBox textBox, string currentValue, TransferItemViewModel viewModel)
+    {
+        if (_suggestionOverlayService == null || _isShowingSuggestionOverlay) return;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(currentValue)) return;
+
+            var suggestions = viewModel.LocationOptions.Where(l => 
+                l.Contains(currentValue, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (!suggestions.Any()) return;
+
+            _isShowingSuggestionOverlay = true;
+            var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, suggestions, currentValue);
+            
+            if (!string.IsNullOrEmpty(selected))
+            {
+                viewModel.ToLocationText = selected;
+                viewModel.SelectedToLocation = selected;
+                textBox.Text = selected;
+                _logger?.LogDebug("Location suggestion selected: {SelectedLocation}", selected);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error showing location suggestions");
+        }
+        finally
+        {
+            _isShowingSuggestionOverlay = false;
+        }
+    }
+
+    /// <summary>
+    /// Cleanup SuggestionOverlay event handlers
+    /// </summary>
+    private void CleanupSuggestionOverlayHandlers()
+    {
+        try
+        {
+            // Part ID TextBox handlers
+            if (_partTextBox != null)
+            {
+                _partTextBox.GotFocus -= OnPartTextBoxGotFocus;
+                _partTextBox.TextChanged -= OnPartTextBoxTextChanged;
+            }
+
+            // Operation TextBox handlers  
+            if (_operationTextBox != null)
+            {
+                _operationTextBox.GotFocus -= OnOperationTextBoxGotFocus;
+                _operationTextBox.TextChanged -= OnOperationTextBoxTextChanged;
+            }
+
+            // To Location TextBox handlers
+            if (_toLocationTextBox != null)
+            {
+                _toLocationTextBox.GotFocus -= OnToLocationTextBoxGotFocus;
+                _toLocationTextBox.TextChanged -= OnToLocationTextBoxTextChanged;
+            }
+
+            _logger?.LogDebug("SuggestionOverlay handlers cleaned up");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error cleaning up SuggestionOverlay handlers");
+        }
+    }
+
+    #endregion
+
     /// <summary>
     /// Clean up resources when view is detached
     /// </summary>
@@ -404,6 +668,9 @@ public partial class TransferTabView : UserControl
 
             if (_inventoryDataGrid != null)
                 _inventoryDataGrid.SelectionChanged -= OnInventoryDataGridSelectionChanged;
+
+            // Clean up SuggestionOverlay handlers
+            CleanupSuggestionOverlayHandlers();
             
             _logger?.LogDebug("TransferTabView resources cleaned up");
         }

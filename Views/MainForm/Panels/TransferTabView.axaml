@@ -5,7 +5,6 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:i="using:Avalonia.Xaml.Interactivity"
-             xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
@@ -230,9 +229,7 @@
                           Classes="input-field"
                           Watermark="Enter part ID..."
                           ToolTip.Tip="Enter or select part ID for transfer source"
-                          TabIndex="1"
-                          behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
-                          behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding PartOptions}" />
+                          TabIndex="1" />
                 </Grid>
 
                 <!-- Operation Field -->
@@ -249,9 +246,7 @@
                           Classes="input-field"
                           Watermark="Enter operation..."
                           ToolTip.Tip="Enter or select operation number (optional filter)"
-                          TabIndex="2"
-                          behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
-                          behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding OperationOptions}" />
+                          TabIndex="2" />
                 </Grid>
                 
               </StackPanel>
@@ -280,9 +275,7 @@
                           Classes.validation-error="{Binding HasLocationValidationError}"
                           Watermark="Select destination..."
                           ToolTip.Tip="Enter or select destination location"
-                          TabIndex="3"
-                          behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
-                          behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding LocationOptions}" />
+                          TabIndex="3" />
                 </Grid>
 
                 <!-- Transfer Quantity Field -->
