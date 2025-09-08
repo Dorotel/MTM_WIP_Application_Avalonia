@@ -11,6 +11,7 @@ using Avalonia.Controls.Primitives;
 using System.Collections.Specialized;
 using Avalonia.Platform.Storage;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -419,20 +420,110 @@ public partial class RemoveTabView : UserControl
     {
         try
         {
-            // Find the parent window to show the dialog
-            var topLevel = TopLevel.GetTopLevel(this);
-            if (topLevel is Window window)
+            var dialog = new Window
             {
-                // Create a simple confirmation dialog using Avalonia's MessageBoxManager equivalent
-                // For now, using a placeholder - in a full implementation, you'd use a custom dialog
-                await Task.Delay(10); // Placeholder for actual dialog implementation
-                
-                // For demonstration, always return true - in real implementation, show actual dialog
-                _logger?.LogWarning("Confirmation dialog not implemented - proceeding with deletion");
-                return true;
-            }
+                Title = title,
+                Width = 450,
+                Height = 180,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                CanResize = false,
+                ShowInTaskbar = false,
+                SystemDecorations = SystemDecorations.BorderOnly
+            };
+
+            // Main container with MTM theme styling
+            var border = new Border
+            {
+                Background = Avalonia.Media.Brushes.White,
+                BorderBrush = Avalonia.Media.Brushes.LightGray,
+                BorderThickness = new Thickness(1),
+                CornerRadius = new Avalonia.CornerRadius(6)
+            };
+
+            var stackPanel = new StackPanel { Margin = new Thickness(24, 20) };
             
-            return false;
+            // Message text with proper styling
+            var messageText = new TextBlock 
+            { 
+                Text = message, 
+                TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                Margin = new Thickness(0, 0, 0, 24),
+                FontSize = 14,
+                LineHeight = 20,
+                Foreground = Avalonia.Media.Brushes.Black
+            };
+
+            // Button panel with proper spacing
+            var buttonPanel = new StackPanel 
+            { 
+                Orientation = Avalonia.Layout.Orientation.Horizontal, 
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+                Spacing = 12
+            };
+            
+            // Yes button with danger styling for delete actions
+            var yesButton = new Button 
+            { 
+                Content = "Delete",
+                Width = 80,
+                Height = 32,
+                IsDefault = true,
+                Background = Avalonia.Media.Brushes.Crimson,
+                Foreground = Avalonia.Media.Brushes.White,
+                BorderBrush = Avalonia.Media.Brushes.DarkRed,
+                BorderThickness = new Thickness(1),
+                CornerRadius = new Avalonia.CornerRadius(4),
+                FontWeight = Avalonia.Media.FontWeight.SemiBold
+            };
+            
+            // No button with secondary styling
+            var noButton = new Button 
+            { 
+                Content = "Cancel",
+                Width = 80,
+                Height = 32,
+                IsCancel = true,
+                Background = Avalonia.Media.Brushes.White,
+                Foreground = Avalonia.Media.Brushes.Black,
+                BorderBrush = Avalonia.Media.Brushes.Gray,
+                BorderThickness = new Thickness(1.5),
+                CornerRadius = new Avalonia.CornerRadius(4)
+            };
+
+            buttonPanel.Children.Add(noButton);  // Cancel first (left)
+            buttonPanel.Children.Add(yesButton); // Delete second (right) 
+            stackPanel.Children.Add(messageText);
+            stackPanel.Children.Add(buttonPanel);
+            border.Child = stackPanel;
+            dialog.Content = border;
+
+            bool result = false;
+
+            yesButton.Click += (s, e) => 
+            { 
+                result = true;
+                dialog.Close();
+                _logger?.LogInformation("User confirmed batch deletion");
+            };
+
+            noButton.Click += (s, e) => 
+            {
+                dialog.Close();
+                _logger?.LogInformation("User cancelled batch deletion");
+            };
+
+            // Show modal dialog
+            if (TopLevel.GetTopLevel(this) is Window parentWindow)
+            {
+                await dialog.ShowDialog(parentWindow);
+            }
+            else
+            {
+                dialog.Show();
+                await Task.Delay(100); // Allow dialog to show
+            }
+
+            return result;
         }
         catch (Exception ex)
         {
