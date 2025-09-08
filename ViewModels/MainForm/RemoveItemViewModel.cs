@@ -10,6 +10,7 @@ using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -25,6 +26,9 @@ public partial class RemoveItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
+    private readonly ISuggestionOverlayService _suggestionOverlayService;
+    private readonly ISuccessOverlayService _successOverlayService;
+    private readonly IQuickButtonsService _quickButtonsService;
 
     #region Observable Collections
     
@@ -179,6 +183,11 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// </summary>
     public event EventHandler? AdvancedRemovalRequested;
 
+    /// <summary>
+    /// Event fired when the success overlay should be shown
+    /// </summary>
+    public event EventHandler<MTM_WIP_Application_Avalonia.Models.SuccessEventArgs>? ShowSuccessOverlay;
+
     #endregion
 
     #region Constructor
@@ -186,12 +195,18 @@ public partial class RemoveItemViewModel : BaseViewModel
     public RemoveItemViewModel(
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
+        ISuggestionOverlayService suggestionOverlayService,
+        ISuccessOverlayService successOverlayService,
+        IQuickButtonsService quickButtonsService,
         ILogger<RemoveItemViewModel> logger) : base(logger)
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
+        _suggestionOverlayService = suggestionOverlayService ?? throw new ArgumentNullException(nameof(suggestionOverlayService));
+        _successOverlayService = successOverlayService ?? throw new ArgumentNullException(nameof(successOverlayService));
+        _quickButtonsService = quickButtonsService ?? throw new ArgumentNullException(nameof(quickButtonsService));
 
-        Logger.LogInformation("RemoveItemViewModel initialized with dependency injection");
+        Logger.LogInformation("RemoveItemViewModel initialized with dependency injection and overlay services");
 
         _ = LoadData(); // Load real data from database
         
@@ -494,6 +509,68 @@ public partial class RemoveItemViewModel : BaseViewModel
                 // Clear selection since items were deleted
                 SelectedItems.Clear();
                 SelectedItem = null;
+
+                // Log successful removals to QuickButtons history (RED color for OUT transactions)
+                foreach (var removedItem in successfulRemovals)
+                {
+                    try
+                    {
+                        await _quickButtonsService.AddTransactionToLast10Async(
+                            _applicationState.CurrentUser,
+                            removedItem.PartID,
+                            removedItem.Operation ?? string.Empty,
+                            removedItem.Quantity
+                        );
+                        Logger.LogDebug("Logged removal to QuickButtons history: {PartId}", removedItem.PartID);
+                    }
+                    catch (Exception logEx)
+                    {
+                        Logger.LogWarning(logEx, "Failed to log removal to QuickButtons history for {PartId}", removedItem.PartID);
+                    }
+                }
+
+                // Show SuccessOverlay for successful operations
+                var successMessage = successfulRemovals.Count == 1
+                    ? $"Successfully removed inventory item"
+                    : $"Successfully removed {successfulRemovals.Count} inventory items";
+
+                var detailsText = successfulRemovals.Count == 1
+                    ? $"Part ID: {successfulRemovals[0].PartID}\nOperation: {successfulRemovals[0].Operation}\nLocation: {successfulRemovals[0].Location}\nQuantity: {successfulRemovals[0].Quantity}"
+                    : $"Batch operation completed\nItems removed: {successfulRemovals.Count}\nTotal quantity removed: {successfulRemovals.Sum(x => x.Quantity)}";
+
+                // Fire SuccessOverlay event for View to handle
+                var successArgs = new MTM_WIP_Application_Avalonia.Models.SuccessEventArgs
+                {
+                    Message = successMessage,
+                    Details = detailsText,
+                    IconKind = "CheckCircle",
+                    Duration = 4000, // 4 seconds for removal confirmation
+                    SuccessTime = DateTime.Now
+                };
+
+                Logger.LogInformation("About to fire ShowSuccessOverlay event for {Count} removed items", successfulRemovals.Count);
+                ShowSuccessOverlay?.Invoke(this, successArgs);
+
+                // Also use SuccessOverlay service directly
+                try
+                {
+                    if (_successOverlayService != null)
+                    {
+                        // Use service to show overlay directly in MainView
+                        _ = _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                            null, // Auto-resolve MainView
+                            successMessage,
+                            detailsText,
+                            "CheckCircle",
+                            4000 // 4 seconds total
+                        );
+                        Logger.LogInformation("Success overlay started for inventory removal operation (4 second duration)");
+                    }
+                }
+                catch (Exception overlayEx)
+                {
+                    Logger.LogWarning(overlayEx, "Failed to show success overlay via service");
+                }
 
                 // Fire event for integration
                 ItemsRemoved?.Invoke(this, new ItemsRemovedEventArgs
@@ -910,6 +987,129 @@ public partial class RemoveItemViewModel : BaseViewModel
         SelectedItem = null;
         SelectedItems.Clear();
     }
+
+    #region SuggestionOverlay Integration Methods
+
+    /// <summary>
+    /// Shows part ID suggestions using the SuggestionOverlay service
+    /// </summary>
+    /// <param name="targetControl">The control to position the overlay relative to</param>
+    /// <param name="userInput">The current user input to filter suggestions</param>
+    /// <returns>The selected suggestion or null if cancelled</returns>
+    public async Task<string?> ShowPartSuggestionsAsync(Control targetControl, string userInput)
+    {
+        try
+        {
+            Logger.LogDebug("Showing part suggestions for input: {Input}", userInput);
+            return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, PartOptions, userInput);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to show part suggestions");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Shows operation suggestions using the SuggestionOverlay service
+    /// </summary>
+    /// <param name="targetControl">The control to position the overlay relative to</param>
+    /// <param name="userInput">The current user input to filter suggestions</param>
+    /// <returns>The selected suggestion or null if cancelled</returns>
+    public async Task<string?> ShowOperationSuggestionsAsync(Control targetControl, string userInput)
+    {
+        try
+        {
+            Logger.LogDebug("Showing operation suggestions for input: {Input}", userInput);
+            return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, OperationOptions, userInput);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to show operation suggestions");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Shows location suggestions using the SuggestionOverlay service
+    /// </summary>
+    /// <param name="targetControl">The control to position the overlay relative to</param>
+    /// <param name="userInput">The current user input to filter suggestions</param>
+    /// <returns>The selected suggestion or null if cancelled</returns>
+    public async Task<string?> ShowLocationSuggestionsAsync(Control targetControl, string userInput)
+    {
+        try
+        {
+            Logger.LogDebug("Showing location suggestions for input: {Input}", userInput);
+            return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, LocationOptions, userInput);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to show location suggestions");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Shows user suggestions using the SuggestionOverlay service
+    /// </summary>
+    /// <param name="targetControl">The control to position the overlay relative to</param>
+    /// <param name="userInput">The current user input to filter suggestions</param>
+    /// <returns>The selected suggestion or null if cancelled</returns>
+    public async Task<string?> ShowUserSuggestionsAsync(Control targetControl, string userInput)
+    {
+        try
+        {
+            Logger.LogDebug("Showing user suggestions for input: {Input}", userInput);
+            return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, UserOptions, userInput);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to show user suggestions");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Handles QuickButton integration for field population
+    /// </summary>
+    /// <param name="partId">Part ID from QuickButton</param>
+    /// <param name="operation">Operation from QuickButton</param>
+    /// <param name="location">Location from QuickButton</param>
+    public void PopulateFromQuickButton(string? partId, string? operation, string? location)
+    {
+        try
+        {
+            Logger.LogInformation("Populating fields from QuickButton: Part={PartId}, Operation={Operation}, Location={Location}", 
+                partId, operation, location);
+
+            if (!string.IsNullOrWhiteSpace(partId))
+            {
+                PartText = partId;
+                SelectedPart = partId;
+            }
+
+            if (!string.IsNullOrWhiteSpace(operation))
+            {
+                OperationText = operation;
+                SelectedOperation = operation;
+            }
+
+            if (!string.IsNullOrWhiteSpace(location))
+            {
+                LocationText = location;
+            }
+
+            // Auto-execute search after populating fields
+            _ = Search();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to populate fields from QuickButton");
+        }
+    }
+
+    #endregion
 
     #endregion
 }

@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
+using MTM_WIP_Application_Avalonia.Views;
 using MTM_Shared_Logic.Models;
 using System;
 using System.Threading.Tasks;
@@ -24,6 +26,7 @@ public partial class RemoveTabView : UserControl
 {
     private readonly ILogger<RemoveTabView>? _logger;
     private RemoveItemViewModel? _viewModel;
+    private QuickButtonsViewModel? _quickButtonsViewModel;
 
     /// <summary>
     /// Initializes a new instance of the RemoveTabView with minimal dependency injection support.
@@ -64,10 +67,60 @@ public partial class RemoveTabView : UserControl
         {
             this.DataContextChanged += OnDataContextChanged;
             this.Loaded += OnViewLoaded;
+            
+            // Setup SuggestionOverlay event handlers for TextBoxes
+            SetupTextBoxSuggestionHandlers();
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to setup event handlers");
+        }
+    }
+
+    /// <summary>
+    /// Sets up SuggestionOverlay event handlers for all TextBox controls
+    /// </summary>
+    private void SetupTextBoxSuggestionHandlers()
+    {
+        try
+        {
+            // Setup Part TextBox
+            var partTextBox = this.FindControl<TextBox>("PartTextBox");
+            if (partTextBox != null)
+            {
+                partTextBox.GotFocus += OnPartTextBoxGotFocus;
+                partTextBox.TextChanged += OnPartTextBoxTextChanged;
+            }
+
+            // Setup Operation TextBox
+            var operationTextBox = this.FindControl<TextBox>("OperationTextBox");
+            if (operationTextBox != null)
+            {
+                operationTextBox.GotFocus += OnOperationTextBoxGotFocus;
+                operationTextBox.TextChanged += OnOperationTextBoxTextChanged;
+            }
+
+            // Setup Location TextBox
+            var locationTextBox = this.FindControl<TextBox>("LocationTextBox");
+            if (locationTextBox != null)
+            {
+                locationTextBox.GotFocus += OnLocationTextBoxGotFocus;
+                locationTextBox.TextChanged += OnLocationTextBoxTextChanged;
+            }
+
+            // Setup User TextBox
+            var userTextBox = this.FindControl<TextBox>("UserTextBox");
+            if (userTextBox != null)
+            {
+                userTextBox.GotFocus += OnUserTextBoxGotFocus;
+                userTextBox.TextChanged += OnUserTextBoxTextChanged;
+            }
+
+            _logger?.LogDebug("TextBox SuggestionOverlay event handlers setup completed");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error setting up TextBox SuggestionOverlay handlers");
         }
     }
 
@@ -92,6 +145,10 @@ public partial class RemoveTabView : UserControl
             {
                 _viewModel = viewModel;
                 WireViewModelEvents(viewModel);
+                
+                // Initialize QuickButtons integration
+                _ = InitializeQuickButtonsIntegrationAsync();
+                
                 _logger?.LogInformation("RemoveItemViewModel connected successfully");
             }
             else if (DataContext != null)
@@ -111,6 +168,9 @@ public partial class RemoveTabView : UserControl
         {
             // Subscribe to property changes to detect command execution completion
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
+            
+            // Subscribe to ShowSuccessOverlay event
+            viewModel.ShowSuccessOverlay += OnShowSuccessOverlay;
             
             _logger?.LogDebug("RemoveTabView ViewModel events wired successfully");
         }
@@ -140,6 +200,28 @@ public partial class RemoveTabView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling ViewModel property change");
+        }
+    }
+
+    /// <summary>
+    /// Handles ShowSuccessOverlay event from ViewModel
+    /// </summary>
+    private void OnShowSuccessOverlay(object? sender, MTM_WIP_Application_Avalonia.Models.SuccessEventArgs e)
+    {
+        try
+        {
+            _logger?.LogInformation("ShowSuccessOverlay event received: {Message}", e.Message);
+            
+            // The SuccessOverlay service integration is handled directly in the ViewModel
+            // This event handler is available for additional UI-specific success handling if needed
+            
+            // For example, we could trigger visual feedback, sounds, or other UI updates here
+            // For now, we just log the success
+            _logger?.LogDebug("Success overlay event handled: {Details}", e.Details);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling ShowSuccessOverlay event");
         }
     }
 
@@ -440,7 +522,12 @@ public partial class RemoveTabView : UserControl
     {
         try
         {
-            // No subscriptions to clear in standard .NET patterns
+            if (_viewModel != null)
+            {
+                _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+                _viewModel.ShowSuccessOverlay -= OnShowSuccessOverlay;
+            }
+            
             _logger?.LogDebug("RemoveTabView ViewModel events unwired successfully");
         }
         catch (Exception ex)
@@ -448,6 +535,368 @@ public partial class RemoveTabView : UserControl
             _logger?.LogError(ex, "Error unwiring ViewModel events in RemoveTabView");
         }
     }
+
+    #region SuggestionOverlay Event Handlers
+
+    /// <summary>
+    /// Handles Part TextBox focus event for SuggestionOverlay
+    /// </summary>
+    private async void OnPartTextBoxGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    {
+        if (_viewModel != null && sender is TextBox textBox)
+        {
+            try
+            {
+                var result = await _viewModel.ShowPartSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
+                if (result != null)
+                {
+                    _viewModel.PartText = result;
+                    _viewModel.SelectedPart = result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error showing part suggestions");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles Part TextBox text changed event for SuggestionOverlay
+    /// </summary>
+    private async void OnPartTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    {
+        if (_viewModel != null && sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
+        {
+            try
+            {
+                // Only show suggestions if text length > 1 to avoid too many suggestions
+                if (textBox.Text.Length > 1)
+                {
+                    var result = await _viewModel.ShowPartSuggestionsAsync(textBox, textBox.Text);
+                    if (result != null && result != textBox.Text)
+                    {
+                        _viewModel.PartText = result;
+                        _viewModel.SelectedPart = result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error showing part suggestions on text change");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles Operation TextBox focus event for SuggestionOverlay
+    /// </summary>
+    private async void OnOperationTextBoxGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    {
+        if (_viewModel != null && sender is TextBox textBox)
+        {
+            try
+            {
+                var result = await _viewModel.ShowOperationSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
+                if (result != null)
+                {
+                    _viewModel.OperationText = result;
+                    _viewModel.SelectedOperation = result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error showing operation suggestions");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles Operation TextBox text changed event for SuggestionOverlay
+    /// </summary>
+    private async void OnOperationTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    {
+        if (_viewModel != null && sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
+        {
+            try
+            {
+                if (textBox.Text.Length > 0) // Operations are often single digit
+                {
+                    var result = await _viewModel.ShowOperationSuggestionsAsync(textBox, textBox.Text);
+                    if (result != null && result != textBox.Text)
+                    {
+                        _viewModel.OperationText = result;
+                        _viewModel.SelectedOperation = result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error showing operation suggestions on text change");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles Location TextBox focus event for SuggestionOverlay
+    /// </summary>
+    private async void OnLocationTextBoxGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    {
+        if (_viewModel != null && sender is TextBox textBox)
+        {
+            try
+            {
+                var result = await _viewModel.ShowLocationSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
+                if (result != null)
+                {
+                    _viewModel.LocationText = result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error showing location suggestions");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles Location TextBox text changed event for SuggestionOverlay
+    /// </summary>
+    private async void OnLocationTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    {
+        if (_viewModel != null && sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
+        {
+            try
+            {
+                if (textBox.Text.Length > 1)
+                {
+                    var result = await _viewModel.ShowLocationSuggestionsAsync(textBox, textBox.Text);
+                    if (result != null && result != textBox.Text)
+                    {
+                        _viewModel.LocationText = result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error showing location suggestions on text change");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles User TextBox focus event for SuggestionOverlay
+    /// </summary>
+    private async void OnUserTextBoxGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    {
+        if (_viewModel != null && sender is TextBox textBox)
+        {
+            try
+            {
+                var result = await _viewModel.ShowUserSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
+                if (result != null)
+                {
+                    _viewModel.UserText = result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error showing user suggestions");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles User TextBox text changed event for SuggestionOverlay
+    /// </summary>
+    private async void OnUserTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    {
+        if (_viewModel != null && sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
+        {
+            try
+            {
+                if (textBox.Text.Length > 1)
+                {
+                    var result = await _viewModel.ShowUserSuggestionsAsync(textBox, textBox.Text);
+                    if (result != null && result != textBox.Text)
+                    {
+                        _viewModel.UserText = result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error showing user suggestions on text change");
+            }
+        }
+    }
+
+    #endregion
+
+    #region QuickButtons Integration
+
+    /// <summary>
+    /// Initializes QuickButtons integration to handle quick action events.
+    /// </summary>
+    private Task InitializeQuickButtonsIntegrationAsync()
+    {
+        try
+        {
+            // Find QuickButtonsView in the visual tree
+            var quickButtonsView = FindQuickButtonsView();
+            if (quickButtonsView?.DataContext is QuickButtonsViewModel quickButtonsViewModel)
+            {
+                _quickButtonsViewModel = quickButtonsViewModel;
+
+                // Subscribe to quick action executed events if they exist
+                var quickActionEvent = _quickButtonsViewModel.GetType().GetEvent("QuickActionExecuted");
+                if (quickActionEvent != null)
+                {
+                    // Use reflection to subscribe to the event
+                    var handler = new EventHandler<object>((sender, args) => OnQuickActionExecuted(sender, args));
+                    quickActionEvent.AddEventHandler(_quickButtonsViewModel, handler);
+                }
+
+                _logger?.LogInformation("QuickButtons integration initialized successfully");
+            }
+            else
+            {
+                _logger?.LogDebug("QuickButtonsView not found in visual tree - integration skipped");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error initializing QuickButtons integration");
+            System.Diagnostics.Debug.WriteLine($"Error initializing QuickButtons integration: {ex.Message}");
+        }
+        
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Handles quick action executed events from QuickButtonsView.
+    /// </summary>
+    private void OnQuickActionExecuted(object? sender, object e)
+    {
+        try
+        {
+            if (_viewModel == null) return;
+
+            // Use reflection to extract event data since we don't have a typed event args
+            var partId = GetPropertyValue<string>(e, "PartId");
+            var operation = GetPropertyValue<string>(e, "Operation");
+            var location = GetPropertyValue<string>(e, "Location");
+            
+            _logger?.LogInformation("QuickButton clicked in RemoveTabView - Part: {PartId}, Operation: {Operation}, Location: {Location}", 
+                partId, operation, location);
+
+            // Populate the search fields using ViewModel method
+            _viewModel.PopulateFromQuickButton(partId, operation, location);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling QuickButton action in RemoveTabView");
+        }
+    }
+
+    /// <summary>
+    /// Finds the QuickButtonsView in the visual tree.
+    /// </summary>
+    private QuickButtonsView? FindQuickButtonsView()
+    {
+        try
+        {
+            // Start from the current control and walk up to find a parent that contains QuickButtonsView
+            var current = this.Parent;
+            while (current != null)
+            {
+                if (current is Panel panel)
+                {
+                    foreach (var child in panel.Children)
+                    {
+                        if (child is QuickButtonsView quickButtonsView)
+                        {
+                            return quickButtonsView;
+                        }
+
+                        var found = FindQuickButtonsViewInChildren(child);
+                        if (found != null)
+                        {
+                            return found;
+                        }
+                    }
+                }
+                current = current.Parent;
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error finding QuickButtonsView: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Recursively searches for QuickButtonsView in child controls.
+    /// </summary>
+    private QuickButtonsView? FindQuickButtonsViewInChildren(Control control)
+    {
+        try
+        {
+            if (control is QuickButtonsView quickButtonsView)
+            {
+                return quickButtonsView;
+            }
+
+            if (control is Panel panel)
+            {
+                foreach (var child in panel.Children)
+                {
+                    var found = FindQuickButtonsViewInChildren(child);
+                    if (found != null)
+                    {
+                        return found;
+                    }
+                }
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in FindQuickButtonsViewInChildren: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Gets a property value using reflection
+    /// </summary>
+    private T? GetPropertyValue<T>(object obj, string propertyName)
+    {
+        try
+        {
+            var property = obj.GetType().GetProperty(propertyName);
+            if (property != null)
+            {
+                var value = property.GetValue(obj);
+                if (value is T typedValue)
+                {
+                    return typedValue;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug("Could not get property {PropertyName}: {Error}", propertyName, ex.Message);
+        }
+
+        return default(T);
+    }
+
+    #endregion
 
     protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
     {

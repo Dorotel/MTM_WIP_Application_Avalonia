@@ -160,7 +160,7 @@
                   <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding PartText, Mode=TwoWay}" Watermark="Enter part ID to search..." Classes="input-field" ToolTip.Tip="Enter part ID to filter inventory" TabIndex="1" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding PartOptions}" />
+                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding PartText, Mode=TwoWay}" Watermark="Enter part ID to search..." Classes="input-field" ToolTip.Tip="Enter part ID to filter inventory (SuggestionOverlay enabled)" TabIndex="1" />
               </Grid>
 
               <!-- Operation Field -->
@@ -169,7 +169,7 @@
                   <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding OperationText, Mode=TwoWay}" Watermark="Enter operation (optional)..." Classes="input-field" ToolTip.Tip="Enter operation number for refined search" TabIndex="2" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding OperationOptions}" />
+                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding OperationText, Mode=TwoWay}" Watermark="Enter operation (optional)..." Classes="input-field" ToolTip.Tip="Enter operation number for refined search (SuggestionOverlay enabled)" TabIndex="2" />
               </Grid>
 
               <!-- Location Field -->
@@ -178,7 +178,7 @@
                   <materialIcons:MaterialIcon Kind="MapMarker" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="Location:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="LocationTextBox" Text="{Binding LocationText, Mode=TwoWay}" Watermark="Enter location (optional)..." Classes="input-field" ToolTip.Tip="Enter location code to filter by location" TabIndex="3" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding LocationOptions}" />
+                <TextBox Grid.Column="1" x:Name="LocationTextBox" Text="{Binding LocationText, Mode=TwoWay}" Watermark="Enter location (optional)..." Classes="input-field" ToolTip.Tip="Enter location code to filter by location (SuggestionOverlay enabled)" TabIndex="3" />
               </Grid>
 
               <!-- User Field (Advanced Filtering) -->
@@ -187,7 +187,7 @@
                   <materialIcons:MaterialIcon Kind="Account" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="User:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="UserTextBox" Text="{Binding UserText, Mode=TwoWay}" Watermark="Enter user (advanced filtering)..." Classes="input-field" ToolTip.Tip="Enter username to filter by user who created/modified records" TabIndex="4" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding UserOptions}" />
+                <TextBox Grid.Column="1" x:Name="UserTextBox" Text="{Binding UserText, Mode=TwoWay}" Watermark="Enter user (advanced filtering)..." Classes="input-field" ToolTip.Tip="Enter username to filter by user who created/modified records (SuggestionOverlay enabled)" TabIndex="4" />
               </Grid>
 
             </Grid>
