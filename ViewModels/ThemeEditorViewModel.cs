@@ -64,7 +64,37 @@ public partial class ThemeEditorViewModel : BaseViewModel
     #region Navigation Properties
 
     [ObservableProperty]
-    private string selectedCategory = "core";
+    private string selectedCategory = "Core";
+
+    [ObservableProperty]
+    private string selectedCategoryTitle = "Core Colors";
+
+    [ObservableProperty]
+    private string selectedCategoryContent = string.Empty;
+
+    [ObservableProperty]
+    private bool isCoreColorsSelected = true;
+
+    [ObservableProperty]
+    private bool isTextColorsSelected = false;
+
+    [ObservableProperty]
+    private bool isBackgroundColorsSelected = false;
+
+    [ObservableProperty]
+    private bool isStatusColorsSelected = false;
+
+    [ObservableProperty]
+    private bool isBorderColorsSelected = false;
+
+    [ObservableProperty]
+    private bool isAutoFillSelected = false;
+
+    [ObservableProperty]
+    private bool isAdvancedSelected = false;
+
+    [ObservableProperty]
+    private bool isOtherCategorySelected = false;
 
     [ObservableProperty]
     private ObservableCollection<ColorCategory> colorCategories = new();
@@ -333,6 +363,79 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+    }
+
+    #endregion
+
+    #region Navigation Commands
+
+    [RelayCommand]
+    private void SelectCategory(string? categoryName)
+    {
+        if (string.IsNullOrEmpty(categoryName)) return;
+
+        SelectedCategory = categoryName;
+        UpdateCategorySelection(categoryName);
+    }
+
+    private void UpdateCategorySelection(string categoryName)
+    {
+        // Reset all selection flags
+        IsCoreColorsSelected = false;
+        IsTextColorsSelected = false;
+        IsBackgroundColorsSelected = false;
+        IsStatusColorsSelected = false;
+        IsBorderColorsSelected = false;
+        IsAutoFillSelected = false;
+        IsAdvancedSelected = false;
+        IsOtherCategorySelected = false;
+
+        // Set the appropriate flag and title
+        switch (categoryName)
+        {
+            case "Core":
+                IsCoreColorsSelected = true;
+                SelectedCategoryTitle = "Core Colors";
+                SelectedCategoryContent = "Primary action colors, secondary elements, and accent colors";
+                break;
+            case "Text":
+                IsTextColorsSelected = true;
+                SelectedCategoryTitle = "Text Colors";
+                SelectedCategoryContent = "Headings, body text, interactive text, and overlay text colors";
+                break;
+            case "Background":
+                IsBackgroundColorsSelected = true;
+                SelectedCategoryTitle = "Background Colors";
+                SelectedCategoryContent = "Main background, cards, panels, and navigation areas";
+                break;
+            case "Status":
+                IsStatusColorsSelected = true;
+                SelectedCategoryTitle = "Status Colors";
+                SelectedCategoryContent = "Success, warning, error, and informational state colors";
+                break;
+            case "Border":
+                IsBorderColorsSelected = true;
+                SelectedCategoryTitle = "Border Colors";
+                SelectedCategoryContent = "Element borders, accent borders, and dividers";
+                break;
+            case "AutoFill":
+                IsAutoFillSelected = true;
+                SelectedCategoryTitle = "Auto-Fill Palettes";
+                SelectedCategoryContent = "Generate harmonious color schemes automatically";
+                break;
+            case "Advanced":
+                IsAdvancedSelected = true;
+                SelectedCategoryTitle = "Advanced Tools";
+                SelectedCategoryContent = "Color history, accessibility preview, and validation tools";
+                break;
+            default:
+                IsOtherCategorySelected = true;
+                SelectedCategoryTitle = categoryName;
+                SelectedCategoryContent = $"Tools and options for {categoryName.ToLower()}";
+                break;
+        }
+
+        Logger.LogDebug("Category selected: {CategoryName}", categoryName);
     }
 
     #endregion
