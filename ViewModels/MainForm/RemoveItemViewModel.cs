@@ -30,7 +30,31 @@ public partial class RemoveItemViewModel : BaseViewModel
     private readonly ISuccessOverlayService _successOverlayService;
     private readonly IQuickButtonsService _quickButtonsService;
 
-    #region Observable Collections
+    #region Observable Collections (InventoryTabView Pattern)
+    
+    /// <summary>
+    /// Available part IDs for filtering (InventoryTabView pattern)
+    /// </summary>
+    public ObservableCollection<string> PartIds { get; } = new();
+    
+    /// <summary>
+    /// Available operations for filtering (InventoryTabView pattern)
+    /// </summary>
+    public ObservableCollection<string> Operations { get; } = new();
+    
+    /// <summary>
+    /// Available locations for filtering (InventoryTabView pattern)
+    /// </summary>
+    public ObservableCollection<string> Locations { get; } = new();
+    
+    /// <summary>
+    /// Available users for filtering (InventoryTabView pattern)
+    /// </summary>
+    public ObservableCollection<string> Users { get; } = new();
+
+    #endregion
+
+    #region Legacy Observable Collections (for backward compatibility)
     
     /// <summary>
     /// Available part options for filtering
@@ -70,6 +94,31 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     #endregion
 
+    #region Watermark Properties (InventoryTabView Pattern)
+
+    /// <summary>
+    /// Dynamic watermark for Part field - shows error or placeholder
+    /// </summary>
+    public string PartWatermark => string.IsNullOrWhiteSpace(SelectedPart) ? "Enter part ID to search..." : 
+                                  "Enter part ID to search...";
+
+    /// <summary>
+    /// Dynamic watermark for Operation field - shows error or placeholder
+    /// </summary>
+    public string OperationWatermark => "Enter operation (optional)...";
+
+    /// <summary>
+    /// Dynamic watermark for Location field - shows error or placeholder
+    /// </summary>
+    public string LocationWatermark => "Enter location (optional)...";
+
+    /// <summary>
+    /// Dynamic watermark for User field - shows error or placeholder
+    /// </summary>
+    public string UserWatermark => "Enter user (advanced filtering)...";
+
+    #endregion
+
     #region Search Criteria Properties
 
     /// <summary>
@@ -86,6 +135,20 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// </summary>
     [ObservableProperty]
     private string? _selectedOperation;
+
+    /// <summary>
+    /// Selected location for filtering (optional).
+    /// Must be a valid location if specified.
+    /// </summary>
+    [ObservableProperty]
+    private string? _selectedLocation;
+
+    /// <summary>
+    /// Selected user for advanced filtering (optional).
+    /// Must be a valid user if specified.
+    /// </summary>
+    [ObservableProperty]
+    private string? _selectedUser;
 
     /// <summary>
     /// Text content for Part AutoCompleteBox.
@@ -231,23 +294,35 @@ public partial class RemoveItemViewModel : BaseViewModel
                 break;
             case nameof(SelectedPart):
                 PartText = SelectedPart ?? string.Empty;
+                OnPropertyChanged(nameof(PartWatermark));
                 break;
             case nameof(SelectedOperation):
                 OperationText = SelectedOperation ?? string.Empty;
+                OnPropertyChanged(nameof(OperationWatermark));
+                break;
+            case nameof(SelectedLocation):
+                LocationText = SelectedLocation ?? string.Empty;
+                OnPropertyChanged(nameof(LocationWatermark));
+                break;
+            case nameof(SelectedUser):
+                UserText = SelectedUser ?? string.Empty;
+                OnPropertyChanged(nameof(UserWatermark));
                 break;
             case nameof(PartText):
-                if (!string.IsNullOrEmpty(PartText) && PartOptions.Contains(PartText))
+                if (!string.IsNullOrEmpty(PartText) && (PartOptions.Contains(PartText) || PartIds.Contains(PartText)))
                     SelectedPart = PartText;
                 break;
             case nameof(OperationText):
-                if (!string.IsNullOrEmpty(OperationText) && OperationOptions.Contains(OperationText))
+                if (!string.IsNullOrEmpty(OperationText) && (OperationOptions.Contains(OperationText) || Operations.Contains(OperationText)))
                     SelectedOperation = OperationText;
                 break;
             case nameof(LocationText):
-                // LocationText is used directly for filtering - no need for SelectedLocation property
+                if (!string.IsNullOrEmpty(LocationText) && (LocationOptions.Contains(LocationText) || Locations.Contains(LocationText)))
+                    SelectedLocation = LocationText;
                 break;
             case nameof(UserText):
-                // UserText is used directly for filtering - no need for SelectedUser property
+                if (!string.IsNullOrEmpty(UserText) && (UserOptions.Contains(UserText) || Users.Contains(UserText)))
+                    SelectedUser = UserText;
                 break;
         }
     }
@@ -339,18 +414,20 @@ public partial class RemoveItemViewModel : BaseViewModel
                 // Apply client-side filtering for Location and User if specified
                 var includeItem = true;
                 
-                // Filter by Location if specified
-                if (!string.IsNullOrWhiteSpace(LocationText))
+                // Filter by Location if specified (use InventoryTabView pattern)
+                if (!string.IsNullOrWhiteSpace(SelectedLocation) || !string.IsNullOrWhiteSpace(LocationText))
                 {
+                    var locationFilter = !string.IsNullOrWhiteSpace(SelectedLocation) ? SelectedLocation : LocationText;
                     includeItem = includeItem && 
-                        inventoryItem.Location.Contains(LocationText, StringComparison.OrdinalIgnoreCase);
+                        inventoryItem.Location.Contains(locationFilter, StringComparison.OrdinalIgnoreCase);
                 }
                 
-                // Filter by User if specified  
-                if (!string.IsNullOrWhiteSpace(UserText))
+                // Filter by User if specified (use InventoryTabView pattern)
+                if (!string.IsNullOrWhiteSpace(SelectedUser) || !string.IsNullOrWhiteSpace(UserText))
                 {
+                    var userFilter = !string.IsNullOrWhiteSpace(SelectedUser) ? SelectedUser : UserText;
                     includeItem = includeItem && 
-                        inventoryItem.User.Contains(UserText, StringComparison.OrdinalIgnoreCase);
+                        inventoryItem.User.Contains(userFilter, StringComparison.OrdinalIgnoreCase);
                 }
                 
                 if (includeItem)
@@ -394,6 +471,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             // Clear search criteria
             SelectedPart = null;
             SelectedOperation = null;
+            SelectedLocation = null; // InventoryTabView pattern
+            SelectedUser = null; // InventoryTabView pattern
             PartText = string.Empty;
             OperationText = string.Empty;
             LocationText = string.Empty;
@@ -709,12 +788,14 @@ public partial class RemoveItemViewModel : BaseViewModel
                 Dispatcher.UIThread.Post(() =>
                 {
                     PartOptions.Clear();
+                    PartIds.Clear(); // InventoryTabView pattern
                     foreach (System.Data.DataRow row in partResult.Data.Rows)
                     {
                         var partId = row["PartID"]?.ToString();
                         if (!string.IsNullOrEmpty(partId))
                         {
                             PartOptions.Add(partId);
+                            PartIds.Add(partId); // InventoryTabView pattern
                         }
                     }
                 });
@@ -734,12 +815,14 @@ public partial class RemoveItemViewModel : BaseViewModel
                 Dispatcher.UIThread.Post(() =>
                 {
                     OperationOptions.Clear();
+                    Operations.Clear(); // InventoryTabView pattern
                     foreach (System.Data.DataRow row in operationResult.Data.Rows)
                     {
                         var operation = row["Operation"]?.ToString();
                         if (!string.IsNullOrEmpty(operation))
                         {
                             OperationOptions.Add(operation);
+                            Operations.Add(operation); // InventoryTabView pattern
                         }
                     }
                 });
@@ -759,12 +842,14 @@ public partial class RemoveItemViewModel : BaseViewModel
                 Dispatcher.UIThread.Post(() =>
                 {
                     LocationOptions.Clear();
+                    Locations.Clear(); // InventoryTabView pattern
                     foreach (System.Data.DataRow row in locationResult.Data.Rows)
                     {
                         var location = row["Location"]?.ToString();
                         if (!string.IsNullOrEmpty(location))
                         {
                             LocationOptions.Add(location);
+                            Locations.Add(location); // InventoryTabView pattern
                         }
                     }
                 });
@@ -784,6 +869,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 Dispatcher.UIThread.Post(() =>
                 {
                     UserOptions.Clear();
+                    Users.Clear(); // InventoryTabView pattern
                     foreach (System.Data.DataRow row in userResult.Data.Rows)
                     {
                         // Note: User table column is "User" but property is User_Name to avoid conflicts
@@ -791,6 +877,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                         if (!string.IsNullOrEmpty(user))
                         {
                             UserOptions.Add(user);
+                            Users.Add(user); // InventoryTabView pattern
                         }
                     }
                 });
@@ -816,15 +903,20 @@ public partial class RemoveItemViewModel : BaseViewModel
         {
             // Clear existing data
             PartOptions.Clear();
+            PartIds.Clear(); // InventoryTabView pattern
             OperationOptions.Clear();
+            Operations.Clear(); // InventoryTabView pattern
             LocationOptions.Clear();
+            Locations.Clear(); // InventoryTabView pattern
             UserOptions.Clear();
+            Users.Clear(); // InventoryTabView pattern
 
             // Sample parts
             var sampleParts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005" };
             foreach (var part in sampleParts)
             {
                 PartOptions.Add(part);
+                PartIds.Add(part); // InventoryTabView pattern
             }
 
             // Sample operations (MTM uses string numbers)
@@ -832,6 +924,7 @@ public partial class RemoveItemViewModel : BaseViewModel
             foreach (var operation in sampleOperations)
             {
                 OperationOptions.Add(operation);
+                Operations.Add(operation); // InventoryTabView pattern
             }
 
             // Sample locations
@@ -839,6 +932,7 @@ public partial class RemoveItemViewModel : BaseViewModel
             foreach (var location in sampleLocations)
             {
                 LocationOptions.Add(location);
+                Locations.Add(location); // InventoryTabView pattern
             }
 
             // Sample users
@@ -846,6 +940,7 @@ public partial class RemoveItemViewModel : BaseViewModel
             foreach (var user in sampleUsers)
             {
                 UserOptions.Add(user);
+                Users.Add(user); // InventoryTabView pattern
             }
         });
         return Task.CompletedTask;
@@ -1085,19 +1180,17 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             if (!string.IsNullOrWhiteSpace(partId))
             {
-                PartText = partId;
-                SelectedPart = partId;
+                SelectedPart = partId; // InventoryTabView pattern
             }
 
             if (!string.IsNullOrWhiteSpace(operation))
             {
-                OperationText = operation;
-                SelectedOperation = operation;
+                SelectedOperation = operation; // InventoryTabView pattern
             }
 
             if (!string.IsNullOrWhiteSpace(location))
             {
-                LocationText = location;
+                SelectedLocation = location; // InventoryTabView pattern
             }
 
             // Auto-execute search after populating fields

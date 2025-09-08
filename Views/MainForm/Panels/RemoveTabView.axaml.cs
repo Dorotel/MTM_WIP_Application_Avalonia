@@ -550,7 +550,6 @@ public partial class RemoveTabView : UserControl
                 var result = await _viewModel.ShowPartSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
                 if (result != null)
                 {
-                    _viewModel.PartText = result;
                     _viewModel.SelectedPart = result;
                 }
             }
@@ -576,7 +575,6 @@ public partial class RemoveTabView : UserControl
                     var result = await _viewModel.ShowPartSuggestionsAsync(textBox, textBox.Text);
                     if (result != null && result != textBox.Text)
                     {
-                        _viewModel.PartText = result;
                         _viewModel.SelectedPart = result;
                     }
                 }
@@ -600,7 +598,6 @@ public partial class RemoveTabView : UserControl
                 var result = await _viewModel.ShowOperationSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
                 if (result != null)
                 {
-                    _viewModel.OperationText = result;
                     _viewModel.SelectedOperation = result;
                 }
             }
@@ -625,7 +622,6 @@ public partial class RemoveTabView : UserControl
                     var result = await _viewModel.ShowOperationSuggestionsAsync(textBox, textBox.Text);
                     if (result != null && result != textBox.Text)
                     {
-                        _viewModel.OperationText = result;
                         _viewModel.SelectedOperation = result;
                     }
                 }
@@ -649,7 +645,7 @@ public partial class RemoveTabView : UserControl
                 var result = await _viewModel.ShowLocationSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
                 if (result != null)
                 {
-                    _viewModel.LocationText = result;
+                    _viewModel.SelectedLocation = result;
                 }
             }
             catch (Exception ex)
@@ -673,7 +669,7 @@ public partial class RemoveTabView : UserControl
                     var result = await _viewModel.ShowLocationSuggestionsAsync(textBox, textBox.Text);
                     if (result != null && result != textBox.Text)
                     {
-                        _viewModel.LocationText = result;
+                        _viewModel.SelectedLocation = result;
                     }
                 }
             }
@@ -696,7 +692,7 @@ public partial class RemoveTabView : UserControl
                 var result = await _viewModel.ShowUserSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
                 if (result != null)
                 {
-                    _viewModel.UserText = result;
+                    _viewModel.SelectedUser = result;
                 }
             }
             catch (Exception ex)
@@ -720,7 +716,7 @@ public partial class RemoveTabView : UserControl
                     var result = await _viewModel.ShowUserSuggestionsAsync(textBox, textBox.Text);
                     if (result != null && result != textBox.Text)
                     {
-                        _viewModel.UserText = result;
+                        _viewModel.SelectedUser = result;
                     }
                 }
             }
