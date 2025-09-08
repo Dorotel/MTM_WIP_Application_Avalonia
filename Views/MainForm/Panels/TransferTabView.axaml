@@ -419,10 +419,12 @@
                       <Button Content="Reset Search" 
                               Classes="action-button secondary"
                               Command="{Binding ResetCommand}"
+                              ToolTip.Tip="Clear search criteria and reset form"
                               Padding="12,6"/>
                       <Button Content="Modify Criteria" 
                               Classes="action-button primary"
                               Command="{Binding ExpandPanelCommand}"
+                              ToolTip.Tip="Expand search panel to modify criteria"
                               Padding="12,6"/>
                     </StackPanel>
                   </StackPanel>
@@ -442,6 +444,7 @@
                           HeadersVisibility="Column"
                           FontSize="11"
                           RowHeight="28"
+                          ToolTip.Tip="Select inventory items for transfer. Use Ctrl+Click for multiple selection"
                           IsVisible="{Binding HasInventoryItems}">
                   <DataGrid.Columns>
                     <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="100" />

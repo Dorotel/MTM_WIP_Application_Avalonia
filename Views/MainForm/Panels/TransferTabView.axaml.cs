@@ -161,6 +161,7 @@ public partial class TransferTabView : UserControl
             {
                 viewModel.PanelExpandRequested += OnPanelExpandRequested;
                 viewModel.SuccessOverlayRequested += OnSuccessOverlayRequested;
+                viewModel.ProgressReported += OnProgressReported;
             }
 
             // Focus the first input field when view loads
@@ -382,6 +383,28 @@ public partial class TransferTabView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error showing SuccessOverlay");
+        }
+    }
+
+    /// <summary>
+    /// Handle progress reporting from ViewModel to MainView status bar
+    /// </summary>
+    private void OnProgressReported(object? sender, ProgressReportEventArgs e)
+    {
+        try
+        {
+            // TODO: Forward progress to MainView status bar
+            // This would typically be done via an event or service call to MainView
+            // For now, just log the progress for debugging
+            _logger?.LogInformation("Transfer progress: {Message} ({Percentage}%) - {Operation}", 
+                e.Message, e.ProgressPercentage ?? 0, e.Operation);
+            
+            // In a full implementation, this would call something like:
+            // mainViewService?.UpdateStatusBar(e.Message, e.ProgressPercentage, e.IsComplete, e.IsError);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling progress report");
         }
     }
 
@@ -683,6 +706,7 @@ public partial class TransferTabView : UserControl
             {
                 viewModel.PanelExpandRequested -= OnPanelExpandRequested;
                 viewModel.SuccessOverlayRequested -= OnSuccessOverlayRequested;
+                viewModel.ProgressReported -= OnProgressReported;
             }
 
             // Clean up event subscriptions
