@@ -5,6 +5,7 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
              xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
+             xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              mc:Ignorable="d"
              d:DesignWidth="1000"
              d:DesignHeight="700"
@@ -282,28 +283,23 @@
                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
                             Margin="0,0,0,8" />
                   
-                  <!-- Primary Action Color with Professional RGB/HSL/Hex Controls -->
-                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                          BorderThickness="1" 
-                          CornerRadius="6" 
-                          Padding="16" 
-                          Margin="0,0,0,12">
-                    <StackPanel Spacing="12">
-                      
-                      <!-- Header Row -->
-                      <Grid ColumnDefinitions="*,80,40" ColumnSpacing="12">
+                  <!-- Primary Action Color with Collapsible Professional Controls -->
+                  <controls:CollapsiblePanel HeaderPosition="Top" 
+                                           IsExpanded="False" 
+                                           Margin="0,0,0,12">
+                    <controls:CollapsiblePanel.Header>
+                      <Grid ColumnDefinitions="*,80,40" ColumnSpacing="12" Margin="8">
                         <TextBlock Grid.Column="0" 
                                   Text="Primary Action Color" 
                                   FontSize="14" 
                                   FontWeight="Bold" 
-                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                   VerticalAlignment="Center" />
                         <!-- Large Color Preview -->
                         <Border Grid.Column="1" 
                                Background="{Binding PrimaryActionColor, Converter={StaticResource ColorToBrushConverter}}" 
-                               CornerRadius="6" 
-                               Height="40" 
+                               CornerRadius="4" 
+                               Height="32" 
                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                                BorderThickness="2"
                                Cursor="Hand"
@@ -312,7 +308,7 @@
                                ToolTip.Tip="Click to open color picker">
                           <Border.Styles>
                             <Style Selector="Border:pointerover">
-                              <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                              <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
                               <Setter Property="BorderThickness" Value="3" />
                             </Style>
                           </Border.Styles>
@@ -320,166 +316,75 @@
                         <!-- Advanced Picker Button -->
                         <Button Grid.Column="2"
                                Classes="tertiary" 
-                               Width="40" 
-                               Height="40"
-                               Padding="8"
+                               Width="32" 
+                               Height="32"
+                               Padding="6"
                                Command="{Binding OpenAdvancedColorPickerCommand}"
                                CommandParameter="PrimaryAction"
                                ToolTip.Tip="Open professional color picker">
-                          <materialIcons:MaterialIcon Kind="Tune" Width="20" Height="20" />
+                          <materialIcons:MaterialIcon Kind="Tune" Width="16" Height="16" />
                         </Button>
                       </Grid>
-
-                      <!-- Professional Color Input Controls -->
-                      <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="8">
-                        
-                        <!-- Hex Input -->
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hex:" FontWeight="Medium" VerticalAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1" 
+                    </controls:CollapsiblePanel.Header>
+                    
+                    <!-- Content: Streamlined Color Controls -->
+                    <StackPanel Spacing="12" Margin="16">
+                      <!-- Hex Input -->
+                      <Grid ColumnDefinitions="60,*" ColumnSpacing="8">
+                        <TextBlock Grid.Column="0" Text="Hex:" FontWeight="Medium" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" 
                                 Text="{Binding PrimaryActionColorHex, Mode=TwoWay}" 
                                 Classes="input-field"
                                 Watermark="#0078D4"
                                 KeyboardNavigation.IsTabStop="True"
                                 ToolTip.Tip="Enter hex color code (e.g., #0078D4)" />
+                      </Grid>
                         
-                        <!-- RGB Sliders -->
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="RGB:" FontWeight="Medium" VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Spacing="4">
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="R:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding PrimaryActionColorRed, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="255" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Red component (0-255)" />
-                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorRed}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="G:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding PrimaryActionColorGreen, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="255" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Green component (0-255)" />
-                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorGreen}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="B:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding PrimaryActionColorBlue, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="255" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Blue component (0-255)" />
-                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorBlue}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                        </StackPanel>
-
-                        <!-- HSL Sliders -->
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="HSL:" FontWeight="Medium" VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical" Spacing="4">
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="H:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding PrimaryActionColorHue, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="360" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Hue (0-360°)" />
-                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorHue, StringFormat='{}{0}°'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="S:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding PrimaryActionColorSaturation, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="100" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Saturation (0-100%)" />
-                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorSaturation, StringFormat='{}{0}%'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="L:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding PrimaryActionColorLightness, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="100" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Lightness (0-100%)" />
-                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorLightness, StringFormat='{}{0}%'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                        </StackPanel>
-
-                        <!-- Color Actions -->
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
-                        <WrapPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                      <!-- Color Actions -->
+                      <Grid ColumnDefinitions="60,*" ColumnSpacing="8">
+                        <TextBlock Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                           <Button Classes="tertiary" 
+                                 Content="Pick"
                                  Margin="0,0,8,4"
                                  Command="{Binding EyeDropperCommand}" 
                                  CommandParameter="PrimaryAction"
-                                 ToolTip.Tip="Pick color from screen">
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                              <materialIcons:MaterialIcon Kind="Eyedropper" Width="12" Height="12" />
-                              <TextBlock Text="Pick" FontSize="10" />
-                            </StackPanel>
-                          </Button>
+                                 ToolTip.Tip="Pick color from screen" />
                           <Button Classes="tertiary" 
+                                 Content="Copy"
                                  Margin="0,0,8,4"
                                  Command="{Binding CopyColorCommand}" 
                                  CommandParameter="PrimaryAction"
-                                 ToolTip.Tip="Copy hex code to clipboard">
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                              <materialIcons:MaterialIcon Kind="ContentCopy" Width="12" Height="12" />
-                              <TextBlock Text="Copy" FontSize="10" />
-                            </StackPanel>
-                          </Button>
+                                 ToolTip.Tip="Copy hex code to clipboard" />
                           <Button Classes="tertiary" 
+                                 Content="Reset"
                                  Margin="0,0,8,4"
                                  Command="{Binding ResetColorCommand}" 
                                  CommandParameter="PrimaryAction"
-                                 ToolTip.Tip="Reset to default color">
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                              <materialIcons:MaterialIcon Kind="Refresh" Width="12" Height="12" />
-                              <TextBlock Text="Reset" FontSize="10" />
-                            </StackPanel>
-                          </Button>
+                                 ToolTip.Tip="Reset to default color" />
                         </WrapPanel>
                       </Grid>
-
-                      <!-- WCAG Contrast Information -->
-                      <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}" 
-                              CornerRadius="4" 
-                              Padding="8">
-                        <StackPanel Spacing="4">
-                          <TextBlock Text="Accessibility Information" FontSize="11" FontWeight="Bold" />
-                          <TextBlock Text="{Binding PrimaryActionColorContrastInfo}" 
-                                    FontSize="10" 
-                                    TextWrapping="Wrap" 
-                                    Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
-                        </StackPanel>
-                      </Border>
                       
                     </StackPanel>
-                  </Border>
+                  </controls:CollapsiblePanel>
 
-                  <!-- Secondary Action Color with Professional RGB/HSL/Hex Controls -->
-                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                          BorderThickness="1" 
-                          CornerRadius="6" 
-                          Padding="16" 
-                          Margin="0,0,0,12">
-                    <StackPanel Spacing="12">
-                      
-                      <!-- Header Row -->
-                      <Grid ColumnDefinitions="*,80,40" ColumnSpacing="12">
+                  <!-- Secondary Action Color with Collapsible Professional Controls -->
+                  <controls:CollapsiblePanel HeaderPosition="Top" 
+                                           IsExpanded="False" 
+                                           Margin="0,0,0,12">
+                    <controls:CollapsiblePanel.Header>
+                      <Grid ColumnDefinitions="*,80,40" ColumnSpacing="12" Margin="8">
                         <TextBlock Grid.Column="0" 
                                   Text="Secondary Action Color" 
                                   FontSize="14" 
                                   FontWeight="Bold" 
-                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                                   VerticalAlignment="Center" />
                         <!-- Large Color Preview -->
                         <Border Grid.Column="1" 
                                Background="{Binding SecondaryActionColor, Converter={StaticResource ColorToBrushConverter}}" 
-                               CornerRadius="6" 
-                               Height="40" 
+                               CornerRadius="4" 
+                               Height="32" 
                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                                BorderThickness="2"
                                Cursor="Hand"
@@ -488,7 +393,7 @@
                                ToolTip.Tip="Click to open color picker">
                           <Border.Styles>
                             <Style Selector="Border:pointerover">
-                              <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                              <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
                               <Setter Property="BorderThickness" Value="3" />
                             </Style>
                           </Border.Styles>
@@ -496,143 +401,57 @@
                         <!-- Advanced Picker Button -->
                         <Button Grid.Column="2"
                                Classes="tertiary" 
-                               Width="40" 
-                               Height="40"
-                               Padding="8"
+                               Width="32" 
+                               Height="32"
+                               Padding="6"
                                Command="{Binding OpenAdvancedColorPickerCommand}"
                                CommandParameter="SecondaryAction"
                                ToolTip.Tip="Open professional color picker">
-                          <materialIcons:MaterialIcon Kind="Tune" Width="20" Height="20" />
+                          <materialIcons:MaterialIcon Kind="Tune" Width="16" Height="16" />
                         </Button>
                       </Grid>
-
-                      <!-- Professional Color Input Controls -->
-                      <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="8">
-                        
-                        <!-- Hex Input -->
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hex:" FontWeight="Medium" VerticalAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1" 
+                    </controls:CollapsiblePanel.Header>
+                    
+                    <!-- Content: Streamlined Color Controls -->
+                    <StackPanel Spacing="12" Margin="16">
+                      <!-- Hex Input -->
+                      <Grid ColumnDefinitions="60,*" ColumnSpacing="8">
+                        <TextBlock Grid.Column="0" Text="Hex:" FontWeight="Medium" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" 
                                 Text="{Binding SecondaryActionColorHex, Mode=TwoWay}" 
                                 Classes="input-field"
                                 Watermark="#106EBE"
                                 KeyboardNavigation.IsTabStop="True"
                                 ToolTip.Tip="Enter hex color code (e.g., #106EBE)" />
+                      </Grid>
                         
-                        <!-- RGB Sliders -->
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="RGB:" FontWeight="Medium" VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Spacing="4">
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="R:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding SecondaryActionColorRed, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="255" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Red component (0-255)" />
-                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorRed}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="G:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding SecondaryActionColorGreen, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="255" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Green component (0-255)" />
-                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorGreen}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="B:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding SecondaryActionColorBlue, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="255" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Blue component (0-255)" />
-                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorBlue}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                        </StackPanel>
-
-                        <!-- HSL Sliders -->
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="HSL:" FontWeight="Medium" VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical" Spacing="4">
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="H:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding SecondaryActionColorHue, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="360" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Hue (0-360°)" />
-                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorHue, StringFormat='{}{0}°'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="S:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding SecondaryActionColorSaturation, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="100" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Saturation (0-100%)" />
-                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorSaturation, StringFormat='{}{0}%'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
-                            <TextBlock Grid.Column="0" Text="L:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Grid.Column="1" 
-                                   Value="{Binding SecondaryActionColorLightness, Mode=TwoWay}" 
-                                   Minimum="0" Maximum="100" 
-                                   KeyboardNavigation.IsTabStop="True"
-                                   ToolTip.Tip="Lightness (0-100%)" />
-                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorLightness, StringFormat='{}{0}%'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                          </Grid>
-                        </StackPanel>
-
-                        <!-- Color Actions -->
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
-                        <WrapPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                      <!-- Color Actions -->
+                      <Grid ColumnDefinitions="60,*" ColumnSpacing="8">
+                        <TextBlock Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                           <Button Classes="tertiary" 
+                                 Content="Pick"
                                  Margin="0,0,8,4"
                                  Command="{Binding EyeDropperCommand}" 
                                  CommandParameter="SecondaryAction"
-                                 ToolTip.Tip="Pick color from screen">
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                              <materialIcons:MaterialIcon Kind="Eyedropper" Width="12" Height="12" />
-                              <TextBlock Text="Pick" FontSize="10" />
-                            </StackPanel>
-                          </Button>
+                                 ToolTip.Tip="Pick color from screen" />
                           <Button Classes="tertiary" 
+                                 Content="Copy"
                                  Margin="0,0,8,4"
                                  Command="{Binding CopyColorCommand}" 
                                  CommandParameter="SecondaryAction"
-                                 ToolTip.Tip="Copy hex code to clipboard">
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                              <materialIcons:MaterialIcon Kind="ContentCopy" Width="12" Height="12" />
-                              <TextBlock Text="Copy" FontSize="10" />
-                            </StackPanel>
-                          </Button>
+                                 ToolTip.Tip="Copy hex code to clipboard" />
                           <Button Classes="tertiary" 
+                                 Content="Reset"
                                  Margin="0,0,8,4"
                                  Command="{Binding ResetColorCommand}" 
                                  CommandParameter="SecondaryAction"
-                                 ToolTip.Tip="Reset to default color">
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                              <materialIcons:MaterialIcon Kind="Refresh" Width="12" Height="12" />
-                              <TextBlock Text="Reset" FontSize="10" />
-                            </StackPanel>
-                          </Button>
+                                 ToolTip.Tip="Reset to default color" />
                         </WrapPanel>
                       </Grid>
-
-                      <!-- WCAG Contrast Information -->
-                      <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}" 
-                              CornerRadius="4" 
-                              Padding="8">
-                        <StackPanel Spacing="4">
-                          <TextBlock Text="Accessibility Information" FontSize="11" FontWeight="Bold" />
-                          <TextBlock Text="{Binding SecondaryActionColorContrastInfo}" 
-                                    FontSize="10" 
-                                    TextWrapping="Wrap" 
-                                    Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
-                        </StackPanel>
-                      </Border>
                       
                     </StackPanel>
-                  </Border>
+                  </controls:CollapsiblePanel>
 
                   <!-- Accent Color - Enhanced Version -->
                   <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
@@ -2348,51 +2167,62 @@
                             Margin="0,0,0,8" />
                   
                   <!-- Auto-Fill Algorithms Section -->
-                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                          BorderThickness="1" 
-                          CornerRadius="6" 
-                          Padding="16">
-                    <StackPanel Spacing="12">
-                      <TextBlock Text="Auto-Fill Algorithms" 
-                                FontSize="14" 
-                                FontWeight="Bold" 
-                                Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-                      
-                      <WrapPanel Orientation="Horizontal" ItemWidth="160" ItemHeight="36">
+                  <controls:CollapsiblePanel HeaderPosition="Top" 
+                                           IsExpanded="False" 
+                                           Margin="0,0,0,16">
+                    <controls:CollapsiblePanel.Header>
+                      <StackPanel Orientation="Horizontal" Spacing="8" Margin="12">
+                        <materialIcons:MaterialIcon Kind="AutoFix" Width="18" Height="18" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
+                        <TextBlock Text="Auto-Fill Algorithms" 
+                                  FontSize="14" 
+                                  FontWeight="Bold" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                  VerticalAlignment="Center" />
+                      </StackPanel>
+                    </controls:CollapsiblePanel.Header>
+                    
+                    <!-- Content: Algorithm Buttons -->
+                    <StackPanel Spacing="12" Margin="16">
+                      <WrapPanel Orientation="Horizontal">
                         <Button Content="Material Design" 
                                Classes="tertiary" 
                                Command="{Binding AutoFillCoreColorsCommand}" 
                                Margin="0,0,8,8"
+                               MinWidth="140"
                                ToolTip.Tip="Generate harmonious color palette" />
                         <Button Content="Monochromatic" 
                                Classes="tertiary" 
                                Command="{Binding AutoFillMonochromaticCommand}" 
                                Margin="0,0,8,8"
+                               MinWidth="140"
                                ToolTip.Tip="Generate tints and shades" />
                         <Button Content="Complementary" 
                                Classes="tertiary" 
                                Command="{Binding AutoFillComplementaryCommand}" 
                                Margin="0,0,8,8"
+                               MinWidth="140"
                                ToolTip.Tip="Use opposite colors" />
                         <Button Content="Analogous" 
                                Classes="tertiary" 
                                Command="{Binding AutoFillAnalogousCommand}" 
                                Margin="0,0,8,8"
+                               MinWidth="140"
                                ToolTip.Tip="Adjacent color harmony" />
                         <Button Content="Triadic" 
                                Classes="tertiary" 
                                Command="{Binding AutoFillTriadicCommand}" 
                                Margin="0,0,8,8"
+                               MinWidth="140"
                                ToolTip.Tip="Three-color balance" />
                         <Button Content="Accessibility" 
                                Classes="tertiary" 
                                Command="{Binding AutoFillAccessibilityCommand}" 
                                Margin="0,0,8,8"
+                               MinWidth="140"
                                ToolTip.Tip="WCAG AAA compliant" />
                       </WrapPanel>
                     </StackPanel>
-                  </Border>
+                  </controls:CollapsiblePanel>
 
                   <!-- Theme Templates Section -->
                   <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
@@ -2686,8 +2516,7 @@
                       <!-- Toggle and Type Selection -->
                       <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" RowSpacing="8">
                         <CheckBox Grid.Row="0" Grid.Column="0"
-                                 IsChecked="{Binding IsColorBlindPreviewEnabled}"
-                                 Command="{Binding ToggleColorBlindPreviewCommand}"
+                                 IsChecked="{Binding IsColorBlindPreviewEnabled, Mode=TwoWay}"
                                  ToolTip.Tip="Enable color blindness simulation preview"
                                  KeyboardNavigation.IsTabStop="True" />
                         <TextBlock Grid.Row="0" Grid.Column="1"

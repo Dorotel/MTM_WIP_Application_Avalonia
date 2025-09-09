@@ -146,6 +146,31 @@ public partial class ThemeEditorViewModel : BaseViewModel
     [ObservableProperty]
     private bool isColorBlindPreviewEnabled = false;
 
+    /// <summary>
+    /// Handles changes to IsColorBlindPreviewEnabled property
+    /// </summary>
+    partial void OnIsColorBlindPreviewEnabledChanged(bool value)
+    {
+        try
+        {
+            if (value)
+            {
+                StatusMessage = $"🎨 Color blindness preview enabled: {ColorBlindnessType}";
+                _ = ApplyColorBlindnessFilterAsync();
+            }
+            else
+            {
+                StatusMessage = "👁️ Color blindness preview disabled";
+                _ = RestoreOriginalColorsAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling color blindness preview toggle");
+            _ = Services.ErrorHandling.HandleErrorAsync(ex, "Color blindness preview toggle", Environment.UserName);
+        }
+    }
+
     [ObservableProperty]
     private string colorBlindnessType = "None";
 
