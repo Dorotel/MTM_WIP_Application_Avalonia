@@ -68,6 +68,9 @@ public static class ServiceCollectionExtensions
         // Register Focus Management service - singleton for application-wide focus management
         services.TryAddSingleton<IFocusManagementService, FocusManagementService>();
         
+        // Register Print service - singleton for shared access across ViewModels
+        services.TryAddSingleton<IPrintService, PrintService>();
+        
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
         services.TryAddTransient<MainViewViewModel>();
@@ -80,6 +83,10 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<QuickButtonsViewModel>();
         services.TryAddTransient<SettingsViewModel>();
         services.TryAddTransient<ThemeEditorViewModel>();
+        
+        // Print ViewModels
+        services.TryAddTransient<PrintViewModel>();
+        services.TryAddTransient<PrintLayoutControlViewModel>();
         
         // SettingsForm ViewModels
         services.TryAddTransient<SettingsViewModel>();
