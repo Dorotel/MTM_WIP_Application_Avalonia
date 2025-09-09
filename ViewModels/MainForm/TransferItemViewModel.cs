@@ -555,7 +555,7 @@ public partial class TransferItemViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Prints current inventory view with transfer details using Print Service
+    /// Tests print functionality with mock data for development and testing purposes
     /// </summary>
     [RelayCommand]
     private async Task ExecutePrintAsync()
@@ -569,10 +569,10 @@ public partial class TransferItemViewModel : BaseViewModel
             }
 
             IsLoading = true;
-            _logger.LogInformation("Initiating print operation for {Count} transfer items", InventoryItems.Count);
+            _logger.LogInformation("Initiating test print operation with mock data");
 
-            // Convert inventory items to DataTable for printing
-            var dataTable = ConvertInventoryToDataTable(InventoryItems);
+            // Create mock inventory data for testing print functionality
+            var mockDataTable = CreateMockInventoryDataTable();
 
             // Get or create PrintViewModel
             var printViewModel = Program.GetOptionalService<PrintViewModel>();
@@ -582,10 +582,10 @@ public partial class TransferItemViewModel : BaseViewModel
                 return;
             }
 
-            // Configure print data
-            printViewModel.PrintData = dataTable;
+            // Configure print data with mock data
+            printViewModel.PrintData = mockDataTable;
             printViewModel.DataSourceType = MTM_WIP_Application_Avalonia.Models.PrintDataSourceType.Transfer;
-            printViewModel.DocumentTitle = "Inventory Transfer Report";
+            printViewModel.DocumentTitle = "Test Transfer Report - Mock Data";
             printViewModel.OriginalViewContext = this; // Store current context for navigation back
 
             // Create and navigate to PrintView
@@ -600,11 +600,11 @@ public partial class TransferItemViewModel : BaseViewModel
             // Navigate to print view using NavigationService
             _navigationService.NavigateTo(printView);
 
-            _logger.LogInformation("Navigated to print view with {Count} transfer items", InventoryItems.Count);
+            _logger.LogInformation("Navigated to print view with mock test data for {Count} items", mockDataTable.Rows.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error initiating print operation");
+            _logger.LogError(ex, "Error initiating test print operation");
             await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
         }
         finally
@@ -1259,6 +1259,57 @@ public partial class TransferItemViewModel : BaseViewModel
         
         _logger.LogDebug("Converted {ItemCount} inventory items to DataTable with {ColumnCount} columns", 
             inventoryItems.Count, dataTable.Columns.Count);
+            
+        return dataTable;
+    }
+
+    /// <summary>
+    /// Creates mock inventory data for testing print functionality
+    /// </summary>
+    private DataTable CreateMockInventoryDataTable()
+    {
+        var dataTable = new DataTable();
+        
+        // Define columns based on InventoryItem properties
+        dataTable.Columns.Add("PartId", typeof(string));
+        dataTable.Columns.Add("Operation", typeof(string));
+        dataTable.Columns.Add("Location", typeof(string));
+        dataTable.Columns.Add("Quantity", typeof(int));
+        dataTable.Columns.Add("Notes", typeof(string));
+        dataTable.Columns.Add("LastUpdated", typeof(DateTime));
+        dataTable.Columns.Add("LastUpdatedBy", typeof(string));
+        
+        // Add mock data rows for testing
+        var mockData = new[]
+        {
+            new { PartId = "TEST-PART-001", Operation = "90", Location = "WC01", Quantity = 25, Notes = "Mock data for testing print functionality" },
+            new { PartId = "TEST-PART-002", Operation = "100", Location = "WC02", Quantity = 50, Notes = "Sample inventory item for print preview" },
+            new { PartId = "TEST-PART-003", Operation = "110", Location = "WC03", Quantity = 15, Notes = "Test data - transfer candidate" },
+            new { PartId = "TEST-PART-004", Operation = "120", Location = "WC01", Quantity = 75, Notes = "Mock inventory for print system validation" },
+            new { PartId = "TEST-PART-005", Operation = "90", Location = "QC01", Quantity = 30, Notes = "Quality control staging area" },
+            new { PartId = "TEST-PART-006", Operation = "100", Location = "SHIP", Quantity = 100, Notes = "Ready for shipment - test data" },
+            new { PartId = "TEST-PART-007", Operation = "110", Location = "WC04", Quantity = 20, Notes = "Manufacturing work center 4" },
+            new { PartId = "TEST-PART-008", Operation = "120", Location = "FG01", Quantity = 60, Notes = "Finished goods inventory mock data" }
+        };
+        
+        var currentUser = Environment.UserName;
+        var baseTime = DateTime.Now.AddDays(-1); // Yesterday as base time
+        
+        for (int i = 0; i < mockData.Length; i++)
+        {
+            var item = mockData[i];
+            var row = dataTable.NewRow();
+            row["PartId"] = item.PartId;
+            row["Operation"] = item.Operation;
+            row["Location"] = item.Location;
+            row["Quantity"] = item.Quantity;
+            row["Notes"] = item.Notes;
+            row["LastUpdated"] = baseTime.AddHours(i); // Stagger the update times
+            row["LastUpdatedBy"] = $"{currentUser}_TEST";
+            dataTable.Rows.Add(row);
+        }
+        
+        _logger.LogDebug("Created mock DataTable with {RowCount} test inventory items for print testing", dataTable.Rows.Count);
             
         return dataTable;
     }
