@@ -8,7 +8,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
-using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Views;
 

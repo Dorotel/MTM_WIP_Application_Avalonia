@@ -31,7 +31,7 @@ public partial class CollapsiblePanel : UserControl
         AvaloniaProperty.Register<CollapsiblePanel, bool>(nameof(IsExpanded), true);
 
     public static readonly StyledProperty<HeaderPosition> HeaderPositionProperty =
-        AvaloniaProperty.Register<CollapsiblePanel, HeaderPosition>(nameof(HeaderPosition), HeaderPosition.Left);
+        AvaloniaProperty.Register<CollapsiblePanel, HeaderPosition>(nameof(HeaderPosition), HeaderPosition.Top);
 
     public static readonly StyledProperty<object?> HeaderProperty =
         AvaloniaProperty.Register<CollapsiblePanel, object?>(nameof(Header));

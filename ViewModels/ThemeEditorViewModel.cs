@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using Avalonia.Media;
 
