@@ -238,13 +238,14 @@
             <!-- Data Grid -->
             <DataGrid Grid.Row="1" ItemsSource="{Binding RemovalHistoryGrid}" SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}" AutoGenerateColumns="False" FontSize="9" RowHeight="20">
               <DataGrid.Columns>
-                <DataGridTextColumn Header="Batch" Binding="{Binding BatchNumber}" Width="35" />
-                <DataGridTextColumn Header="Part" Binding="{Binding PartId}" Width="80" />
+                <DataGridTextColumn Header="Date/Time" Binding="{Binding TransactionTime, StringFormat='yyyy-MM-dd HH:mm'}" Width="120" />
+                <DataGridTextColumn Header="Part ID" Binding="{Binding PartId}" Width="100" />
                 <DataGridTextColumn Header="Op" Binding="{Binding Operation}" Width="35" />
                 <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="60" />
                 <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="40" />
                 <DataGridTextColumn Header="User" Binding="{Binding User}" Width="50" />
-                <DataGridTextColumn Header="Date" Binding="{Binding TransactionTime, StringFormat='{}{0:MM/dd/yy}'}" Width="50" />
+                <DataGridTextColumn Header="Batch" Binding="{Binding BatchNumber}" Width="80" />
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="60" />
               </DataGrid.Columns>
             </DataGrid>
           </Grid>

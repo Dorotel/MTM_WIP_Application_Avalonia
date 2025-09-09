@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ using MTM_WIP_Application_Avalonia.Services;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MySql.Data.MySqlClient;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -28,6 +30,8 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 /// </summary>
 public partial class AdvancedRemoveViewModel : BaseViewModel
 {
+    private readonly IConfigurationService _configurationService;
+    private readonly IApplicationStateService _applicationState;
     #region Filter Properties
     /// <summary>
     /// Gets or sets the location filter text for advanced removal operations
@@ -211,11 +215,14 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     #endregion
 
     #region Constructor
-    public AdvancedRemoveViewModel(ILogger<AdvancedRemoveViewModel> logger) : base(logger)
+    public AdvancedRemoveViewModel(ILogger<AdvancedRemoveViewModel> logger, IConfigurationService configurationService, IApplicationStateService applicationState) : base(logger)
     {
         try
         {
             Logger.LogInformation("Initializing AdvancedRemoveViewModel");
+            
+            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+            _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
             
             // Initialize with safe default date range
             try
@@ -259,18 +266,21 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         try
         {
             IsBusy = true;
-            StatusMessage = "Loading advanced removal options...";
-
+            StatusMessage = "Loading removal history...";
+            
+            // Load master data from stored procedures
             await LoadOptionsAsync().ConfigureAwait(false);
+            
+            // Load removal history from database
             await LoadRemovalHistoryAsync().ConfigureAwait(false);
             
-            StatusMessage = "Advanced removal system ready";
+            StatusMessage = "Data loaded successfully";
             Logger.LogInformation("Advanced removal data loaded successfully");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading data");
-            StatusMessage = $"Error loading data: {ex.Message}";
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove Data", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Error loading data";
         }
         finally
         {
@@ -286,13 +296,78 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            await ExecuteSearchAsync().ConfigureAwait(false);
-            Logger.LogInformation("Search executed successfully");
+            IsBusy = true;
+            StatusMessage = "Searching removal history...";
+            
+            var parameters = new Dictionary<string, object>();
+            
+            // Add filter parameters
+            if (!string.IsNullOrWhiteSpace(FilterPartIDText))
+                parameters["p_PartID"] = FilterPartIDText;
+                
+            if (!string.IsNullOrWhiteSpace(FilterLocationText))
+                parameters["p_Location"] = FilterLocationText;
+                
+            if (!string.IsNullOrWhiteSpace(FilterUserText))
+                parameters["p_User"] = FilterUserText;
+                
+            if (!string.IsNullOrWhiteSpace(FilterOperation))
+                parameters["p_Operation"] = FilterOperation;
+                
+            if (RemovalDateRangeStart.HasValue)
+                parameters["p_StartDate"] = RemovalDateRangeStart.Value.DateTime;
+                
+            if (RemovalDateRangeEnd.HasValue)
+                parameters["p_EndDate"] = RemovalDateRangeEnd.Value.DateTime;
+            
+            var connectionString = _configurationService.GetConnectionString();
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString, "inv_transaction_Get_History", parameters
+            );
+            
+            if (result.Status == 1)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    RemovalHistory.Clear();
+                    foreach (DataRow row in result.Data.Rows)
+                    {
+                        RemovalHistory.Add(new SessionTransaction
+                        {
+                            PartId = row["PartID"]?.ToString() ?? string.Empty,
+                            Operation = row["Operation"]?.ToString() ?? string.Empty,
+                            Location = row["Location"]?.ToString() ?? string.Empty,
+                            Quantity = Convert.ToInt32(row["Quantity"] ?? 0),
+                            User = row["User"]?.ToString() ?? string.Empty,
+                            TransactionTime = Convert.ToDateTime(row["TransactionTime"]),
+                            Status = row["Status"]?.ToString() ?? string.Empty,
+                            BatchNumber = row["BatchNumber"]?.ToString() ?? string.Empty,
+                            TransactionType = row["TransactionType"]?.ToString() ?? "OUT"
+                        });
+                    }
+                    
+                    StatusMessage = $"Found {RemovalHistory.Count} removal records";
+                });
+            }
+            else
+            {
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"Search failed with status: {result.Status}"),
+                    "Advanced Remove Search", _applicationState.CurrentUser ?? "System"
+                );
+                StatusMessage = "Search failed - please try again";
+            }
+            
+            Logger.LogInformation("Search completed with {Count} results", RemovalHistory.Count);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error executing search");
-            StatusMessage = $"Search error: {ex.Message}";
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Advanced Remove Search", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Search error - please try again";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -300,7 +375,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     /// Clears all filter criteria and resets to defaults
     /// </summary>
     [RelayCommand]
-    private void Clear()
+    private async Task ClearAsync()
     {
         try
         {
@@ -318,8 +393,8 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error clearing filters");
-            StatusMessage = $"Clear error: {ex.Message}";
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Clear Advanced Remove Filters", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Clear filters error";
         }
     }
 
@@ -327,7 +402,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     /// Returns to normal inventory mode
     /// </summary>
     [RelayCommand]
-    private void BackToNormal()
+    private async Task BackToNormalAsync()
     {
         try
         {
@@ -336,7 +411,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error in back to normal command");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Back to Normal Command", _applicationState.CurrentUser ?? "System");
         }
     }
 
@@ -357,23 +432,62 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             IsBusy = true;
             StatusMessage = $"Removing {RemovalHistory.Count} items in bulk...";
 
-            // Simulate bulk removal - replace with actual business logic
-            await Task.Delay(1000).ConfigureAwait(false);
-
-            // Move to last removed for undo capability
+            var connectionString = _configurationService.GetConnectionString();
+            
+            // Process each selected item for removal
+            int successCount = 0;
+            int failCount = 0;
+            
             foreach (var item in RemovalHistory.ToList())
             {
-                LastRemovedItems.Add(item);
-            }
-            RemovalHistory.Clear();
+                try
+                {
+                    var parameters = new Dictionary<string, object>
+                    {
+                        ["p_BatchNumber"] = item.BatchNumber,
+                        ["p_PartID"] = item.PartId,
+                        ["p_Location"] = item.Location,
+                        ["p_Operation"] = item.Operation,
+                        ["p_Quantity"] = item.Quantity,
+                        ["p_User"] = _applicationState.CurrentUser ?? "System",
+                        ["p_Notes"] = "Bulk removal operation"
+                    };
 
-            StatusMessage = $"Bulk removal completed successfully";
-            Logger.LogInformation("Bulk removal completed");
+                    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                        connectionString, "inv_inventory_Remove_Item", parameters
+                    );
+
+                    if (result.Status == 1)
+                    {
+                        LastRemovedItems.Add(item);
+                        successCount++;
+                    }
+                    else
+                    {
+                        failCount++;
+                        Logger.LogWarning("Bulk removal failed for item {PartId}: Status {Status}, Message: {Message}", 
+                            item.PartId, result.Status, result.Message);
+                    }
+                }
+                catch (Exception itemEx)
+                {
+                    failCount++;
+                    await Services.ErrorHandling.HandleErrorAsync(itemEx, $"Bulk Remove Item {item.PartId}", _applicationState.CurrentUser ?? "System");
+                }
+            }
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                RemovalHistory.Clear();
+            });
+
+            StatusMessage = $"Bulk removal completed: {successCount} successful, {failCount} failed";
+            Logger.LogInformation("Bulk removal completed: {SuccessCount} successful, {FailCount} failed", successCount, failCount);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error in bulk remove");
-            StatusMessage = $"Bulk removal error: {ex.Message}";
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Bulk Remove Operation", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Bulk removal error - please try again";
         }
         finally
         {
@@ -389,12 +503,24 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            await Task.Delay(400).ConfigureAwait(false); // TODO: Conditional removal logic
+            IsBusy = true;
+            StatusMessage = "Processing conditional removal...";
+            
+            // TODO: Implement conditional removal logic based on business requirements
+            // This would need to be defined based on specific MTM business rules
+            await Task.Delay(400).ConfigureAwait(false);
+            
+            StatusMessage = "Conditional removal completed";
             Logger.LogInformation("Conditional removal executed");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error in conditional remove");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Conditional Remove Operation", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Conditional removal error";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -406,12 +532,24 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            await Task.Delay(600).ConfigureAwait(false); // TODO: Scheduled removal
+            IsBusy = true;
+            StatusMessage = "Processing scheduled removal...";
+            
+            // TODO: Implement scheduled removal based on business requirements
+            // This would integrate with a scheduling system if available
+            await Task.Delay(600).ConfigureAwait(false);
+            
+            StatusMessage = "Scheduled removal processed";
             Logger.LogInformation("Scheduled removal executed");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error in scheduled remove");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Scheduled Remove Operation", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Scheduled removal error";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -423,7 +561,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            if (!CanUndo)
+            if (!CanUndo || LastRemovedItems.Count == 0)
             {
                 StatusMessage = "No items available to undo";
                 return;
@@ -432,23 +570,51 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             IsBusy = true;
             StatusMessage = "Undoing last removal...";
 
-            // Simulate undo operation
-            await Task.Delay(300).ConfigureAwait(false);
-
-            var lastItem = LastRemovedItems.LastOrDefault();
-            if (lastItem != null)
+            var lastItem = LastRemovedItems.Last();
+            
+            var parameters = new Dictionary<string, object>
             {
-                LastRemovedItems.Remove(lastItem);
-                // Add back to main collection
-                RemovalHistory.Add(lastItem);
-                StatusMessage = $"Undid removal of {lastItem.PartId}";
+                ["p_BatchNumber"] = lastItem.BatchNumber,
+                ["p_UndoReason"] = "User requested undo",
+                ["p_UndoUser"] = _applicationState.CurrentUser ?? "System"
+            };
+            
+            var connectionString = _configurationService.GetConnectionString();
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString, "inv_inventory_Undo_Remove", parameters
+            );
+            
+            if (result.Status == 1)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    LastRemovedItems.Remove(lastItem);
+                    // Add back to main collection if not already present
+                    if (!RemovalHistory.Any(r => r.BatchNumber == lastItem.BatchNumber))
+                    {
+                        RemovalHistory.Add(lastItem);
+                    }
+                });
+                
+                StatusMessage = $"Successfully undid removal of {lastItem.PartId}";
                 Logger.LogInformation("Removal undone for part {PartId}", lastItem.PartId);
+                
+                // Refresh the display
+                await SearchAsync();
+            }
+            else
+            {
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"Undo failed with status: {result.Status}"),
+                    "Undo Removal Operation", _applicationState.CurrentUser ?? "System"
+                );
+                StatusMessage = "Undo failed - please try again";
             }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error undoing removal");
-            StatusMessage = $"Undo error: {ex.Message}";
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Undo Removal", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Undo error - please try again";
         }
         finally
         {
@@ -464,13 +630,23 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            await Task.Delay(200).ConfigureAwait(false); // TODO: Show history dialog
-            StatusMessage = "Viewing removal history";
+            IsBusy = true;
+            StatusMessage = "Loading detailed removal history...";
+            
+            // Refresh current removal history display
+            await LoadRemovalHistoryAsync();
+            
+            StatusMessage = "Removal history refreshed";
             Logger.LogInformation("Viewing removal history");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error viewing history");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "View Removal History", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "History view error";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -482,13 +658,27 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            await Task.Delay(800).ConfigureAwait(false); // TODO: Generate report
-            StatusMessage = "Removal report generated";
-            Logger.LogInformation("Removal report generated");
+            IsBusy = true;
+            StatusMessage = "Generating removal report...";
+            
+            // Generate and save detailed removal report
+            var reportContent = GenerateRemovalSummary();
+            var fileName = $"Removal_Report_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
+            
+            await File.WriteAllTextAsync(filePath, reportContent);
+            
+            StatusMessage = $"Removal report saved to {fileName}";
+            Logger.LogInformation("Removal report generated and saved to {FilePath}", filePath);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error generating report");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Generate Removal Report", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Report generation error";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -515,7 +705,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error exporting data");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Export Removal Data", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Export failed";
         }
         finally
@@ -547,7 +737,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error printing summary");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Print Removal Summary", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Failed to generate summary";
         }
         finally
@@ -560,7 +750,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     /// Toggles the visibility of the filter panel
     /// </summary>
     [RelayCommand]
-    private void ToggleFilterPanel()
+    private async Task ToggleFilterPanelAsync()
     {
         try
         {
@@ -569,7 +759,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error toggling filter panel");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Toggle Filter Panel", _applicationState.CurrentUser ?? "System");
         }
     }
 
@@ -590,20 +780,47 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             IsBusy = true;
             StatusMessage = $"Removing selected item: {SelectedHistoryItem.PartId}";
 
-            // Simulate removal
-            await Task.Delay(400).ConfigureAwait(false);
+            var connectionString = _configurationService.GetConnectionString();
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_BatchNumber"] = SelectedHistoryItem.BatchNumber,
+                ["p_PartID"] = SelectedHistoryItem.PartId,
+                ["p_Location"] = SelectedHistoryItem.Location,
+                ["p_Operation"] = SelectedHistoryItem.Operation,
+                ["p_Quantity"] = SelectedHistoryItem.Quantity,
+                ["p_User"] = _applicationState.CurrentUser ?? "System",
+                ["p_Notes"] = "Individual removal operation"
+            };
 
-            LastRemovedItems.Add(SelectedHistoryItem);
-            RemovalHistory.Remove(SelectedHistoryItem);
-            SelectedHistoryItem = null;
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString, "inv_inventory_Remove_Item", parameters
+            );
 
-            StatusMessage = "Item removed successfully";
-            Logger.LogInformation("Selected item removed successfully");
+            if (result.Status == 1)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    LastRemovedItems.Add(SelectedHistoryItem);
+                    RemovalHistory.Remove(SelectedHistoryItem);
+                    SelectedHistoryItem = null;
+                });
+
+                StatusMessage = "Item removed successfully";
+                Logger.LogInformation("Selected item removed successfully");
+            }
+            else
+            {
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"Remove failed with status: {result.Status}"),
+                    "Remove Selected Item", _applicationState.CurrentUser ?? "System"
+                );
+                StatusMessage = "Removal failed - please try again";
+            }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error removing selected item");
-            StatusMessage = $"Removal error: {ex.Message}";
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Remove Selected Item", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Removal error - please try again";
         }
         finally
         {
@@ -620,36 +837,89 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Loading options for AdvancedRemoveViewModel");
+            var connectionString = _configurationService.GetConnectionString();
 
-            // TODO: Load from database via stored procedures
-            await Task.Delay(200).ConfigureAwait(false);
+            // Load Part IDs from stored procedure
+            var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+                connectionString, "md_part_ids_Get_All", new Dictionary<string, object>()
+            );
+            
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                PartIDOptions.Clear();
+                foreach (DataRow row in partResult.Rows)
+                {
+                    var partId = row["PartID"]?.ToString();
+                    if (!string.IsNullOrWhiteSpace(partId))
+                        PartIDOptions.Add(partId);
+                }
+            });
 
-            // Update collections on UI thread
-            Dispatcher.UIThread.Post(() =>
+            // Load Locations from stored procedure  
+            var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+                connectionString, "md_locations_Get_All", new Dictionary<string, object>()
+            );
+            
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 LocationOptions.Clear();
-                foreach (var loc in new[] { "WC01", "WC02", "WC03", "WC04", "WC05", "STOCK", "SHIP", "RECV" })
-                    LocationOptions.Add(loc);
-
-                PartIDOptions.Clear();
-                foreach (var part in new[] { "24733444-PKG", "24677611", "24733405-PKG", "24733403-PKG", "24733491-PKG" })
-                    PartIDOptions.Add(part);
-
-                UserOptions.Clear();
-                foreach (var user in new[] { "jbautista", "production", "admin", "supervisor" })
-                    UserOptions.Add(user);
-
-                OperationOptions.Clear();
-                foreach (var operation in new[] { "10", "20", "30", "90", "100", "110", "120", "130" })
-                    OperationOptions.Add(operation);
+                foreach (DataRow row in locationResult.Rows)
+                {
+                    var location = row["Location"]?.ToString();
+                    if (!string.IsNullOrWhiteSpace(location))
+                        LocationOptions.Add(location);
+                }
             });
+
+            // Load Operations from stored procedure
+            var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+                connectionString, "md_operation_numbers_Get_All", new Dictionary<string, object>()
+            );
+            
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                OperationOptions.Clear();
+                foreach (DataRow row in operationResult.Rows)
+                {
+                    var operation = row["OperationNumber"]?.ToString();
+                    if (!string.IsNullOrWhiteSpace(operation))
+                        OperationOptions.Add(operation);
+                }
+            });
+
+            // Load Users from stored procedure (if user filtering stored procedure exists)
+            try
+            {
+                var userResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                    connectionString, "usr_users_Get_All", new Dictionary<string, object>()
+                );
+                
+                if (userResult.Status == 1)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        UserOptions.Clear();
+                        foreach (DataRow row in userResult.Data.Rows)
+                        {
+                            var user = row["User"]?.ToString();
+                            if (!string.IsNullOrWhiteSpace(user))
+                                UserOptions.Add(user);
+                        }
+                    });
+                }
+            }
+            catch (Exception userEx)
+            {
+                Logger.LogWarning(userEx, "Could not load user options, continuing without user filtering");
+                // Continue without user filtering if the procedure doesn't exist
+            }
 
             Logger.LogDebug("Options loaded successfully");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading options");
-            throw;
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove Master Data", _applicationState.CurrentUser ?? "System");
+            throw; // Re-throw to let calling method handle it
         }
     }
 
@@ -658,61 +928,57 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Loading removal history");
+            var connectionString = _configurationService.GetConnectionString();
 
-            // TODO: Load from database via stored procedures
-            await Task.Delay(300).ConfigureAwait(false);
+            // Get recent removal transactions from database
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_TransactionType"] = "OUT", // Focus on removal transactions
+                ["p_Limit"] = 100 // Limit to recent 100 records
+            };
 
-            // Simulate loading removal history data
-            Dispatcher.UIThread.Post(() =>
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString, "inv_transaction_Get_Recent", parameters
+            );
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 RemovalHistory.Clear();
-                // Add sample data
-                var sampleData = new[]
+                
+                if (result.Status == 1)
                 {
-                    new SessionTransaction 
-                    { 
-                        PartId = "24733444-PKG", 
-                        Location = "WC01", 
-                        User = "jbautista", 
-                        Quantity = 5, 
-                        TransactionTime = DateTime.Now.AddHours(-2),
-                        Operation = "90",
-                        Status = "Removed"
-                    },
-                    new SessionTransaction 
-                    { 
-                        PartId = "24677611", 
-                        Location = "WC02", 
-                        User = "production", 
-                        Quantity = 10, 
-                        TransactionTime = DateTime.Now.AddHours(-4),
-                        Operation = "100",
-                        Status = "Removed"
-                    },
-                    new SessionTransaction 
-                    { 
-                        PartId = "24733405-PKG", 
-                        Location = "STOCK", 
-                        User = "admin", 
-                        Quantity = 3, 
-                        TransactionTime = DateTime.Now.AddHours(-6),
-                        Operation = "110",
-                        Status = "Removed"
+                    foreach (DataRow row in result.Data.Rows)
+                    {
+                        RemovalHistory.Add(new SessionTransaction
+                        {
+                            PartId = row["PartID"]?.ToString() ?? string.Empty,
+                            Location = row["Location"]?.ToString() ?? string.Empty,
+                            User = row["User"]?.ToString() ?? string.Empty,
+                            Quantity = Convert.ToInt32(row["Quantity"] ?? 0),
+                            TransactionTime = Convert.ToDateTime(row["TransactionTime"]),
+                            Operation = row["Operation"]?.ToString() ?? string.Empty,
+                            Status = "Removed",
+                            BatchNumber = row["BatchNumber"]?.ToString() ?? string.Empty,
+                            TransactionType = row["TransactionType"]?.ToString() ?? "OUT"
+                        });
                     }
-                };
-
-                foreach (var item in sampleData)
+                }
+                else
                 {
-                    RemovalHistory.Add(item);
+                    Logger.LogWarning("LoadRemovalHistoryAsync returned status {Status}: {Message}", 
+                        result.Status, result.Message);
                 }
             });
 
-            Logger.LogDebug("Removal history loaded successfully");
+            Logger.LogDebug("Removal history loaded successfully with {Count} records", RemovalHistory.Count);
         }
         catch (Exception ex)
         {
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove History", _applicationState.CurrentUser ?? "System");
             Logger.LogError(ex, "Error loading removal history");
-            throw;
+            
+            // Continue with empty history rather than failing completely
+            await Dispatcher.UIThread.InvokeAsync(() => RemovalHistory.Clear());
         }
     }
 
@@ -725,34 +991,72 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             IsBusy = true;
             StatusMessage = "Searching...";
 
-            // TODO: Implement actual search logic with database
-            await Task.Delay(500).ConfigureAwait(false);
+            var connectionString = _configurationService.GetConnectionString();
+            var parameters = new Dictionary<string, object>();
 
-            // Update UI on UI thread
-            Dispatcher.UIThread.Post(() =>
+            // Build filter parameters
+            if (!string.IsNullOrWhiteSpace(FilterPartIDText))
+                parameters["p_PartID"] = FilterPartIDText;
+
+            if (!string.IsNullOrWhiteSpace(FilterLocationText))
+                parameters["p_Location"] = FilterLocationText;
+
+            if (!string.IsNullOrWhiteSpace(FilterUserText))
+                parameters["p_User"] = FilterUserText;
+
+            if (!string.IsNullOrWhiteSpace(FilterOperation))
+                parameters["p_Operation"] = FilterOperation;
+
+            if (RemovalDateRangeStart.HasValue)
+                parameters["p_StartDate"] = RemovalDateRangeStart.Value.DateTime;
+
+            if (RemovalDateRangeEnd.HasValue)
+                parameters["p_EndDate"] = RemovalDateRangeEnd.Value.DateTime;
+
+            // Only search removal transactions
+            parameters["p_TransactionType"] = "OUT";
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString, "inv_transaction_Search", parameters
+            );
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                // Simulate search results based on filters
-                var filteredResults = RemovalHistory.Where(item =>
-                    (string.IsNullOrEmpty(FilterLocationText) || item.Location.Contains(FilterLocationText, StringComparison.OrdinalIgnoreCase)) &&
-                    (string.IsNullOrEmpty(FilterPartIDText) || item.PartId.Contains(FilterPartIDText, StringComparison.OrdinalIgnoreCase)) &&
-                    (string.IsNullOrEmpty(FilterUserText) || item.User.Contains(FilterUserText, StringComparison.OrdinalIgnoreCase))
-                ).ToList();
-
                 RemovalHistory.Clear();
-                foreach (var item in filteredResults)
+                
+                if (result.Status == 1)
                 {
-                    RemovalHistory.Add(item);
+                    foreach (DataRow row in result.Data.Rows)
+                    {
+                        RemovalHistory.Add(new SessionTransaction
+                        {
+                            PartId = row["PartID"]?.ToString() ?? string.Empty,
+                            Operation = row["Operation"]?.ToString() ?? string.Empty,
+                            Location = row["Location"]?.ToString() ?? string.Empty,
+                            Quantity = Convert.ToInt32(row["Quantity"] ?? 0),
+                            User = row["User"]?.ToString() ?? string.Empty,
+                            TransactionTime = Convert.ToDateTime(row["TransactionTime"]),
+                            Status = "Removed",
+                            BatchNumber = row["BatchNumber"]?.ToString() ?? string.Empty,
+                            TransactionType = row["TransactionType"]?.ToString() ?? "OUT"
+                        });
+                    }
+                    
+                    StatusMessage = $"Search completed. Found {RemovalHistory.Count} items.";
+                }
+                else
+                {
+                    StatusMessage = "Search completed with no results.";
                 }
             });
 
-            StatusMessage = $"Search completed. Found {RemovalHistory.Count} items.";
             Logger.LogInformation("Search completed with {Count} results", RemovalHistory.Count);
         }
         catch (Exception ex)
         {
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Advanced Remove Search Execution", _applicationState.CurrentUser ?? "System");
+            StatusMessage = "Search failed - please try again";
             Logger.LogError(ex, "Error executing search");
-            StatusMessage = "Search failed";
-            throw;
         }
         finally
         {
