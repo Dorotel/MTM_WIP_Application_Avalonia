@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Documentation Implementation Questionnaire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .progress-container {
+            background: #f8fafc;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .section {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h2 {
+            color: #1f2937;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .section h3 {
+            color: #374151;
+            font-size: 1.3em;
+            margin: 25px 0 15px 0;
+        }
+
+        .question-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .question {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        .options {
+            margin-left: 20px;
+        }
+
+        .option {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            margin-top: 4px;
+            transform: scale(1.2);
+            accent-color: #2563eb;
+        }
+
+        .option label {
+            flex: 1;
+            cursor: pointer;
+            line-height: 1.5;
+            color: #4b5563;
+        }
+
+        .option label:hover {
+            color: #2563eb;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+            margin-left: 20px;
+            max-width: 500px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .slider-container {
+            margin-left: 20px;
+            max-width: 500px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #d1d5db;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 40px;
+            background: #f8fafc;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-btn.prev {
+            background: #6b7280;
+            color: white;
+        }
+
+        .nav-btn.next {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+        }
+
+        .nav-btn.submit {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .section-indicator {
+            text-align: center;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .results {
+            display: none;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 4em;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 5px;
+            font-style: italic;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 MTM Documentation Implementation</h1>
+            <p>Help us improve the MTM WIP Application documentation system</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="progress-text">Question 1 of 5</div>
+        </div>
+
+        <!-- Section 1: Missing Documentation Analysis -->
+        <div class="section active" id="section-1">
+            <h2>📋 Section 1: Missing Documentation Analysis</h2>
+            <p>Based on analysis of your MTM project, I found several areas where documentation could be enhanced:</p>
+
+            <div class="question-group">
+                <div class="question">1a. Which missing documentation areas are your highest priority?</div>
+                <div class="help-text">Select all that apply - these were identified as potentially missing or incomplete</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="priority-api-docs" name="priority-areas" value="api-documentation">
+                        <label for="priority-api-docs">API Documentation (Service interfaces and methods)</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="priority-testing" name="priority-areas" value="testing-guides">
+                        <label for="priority-testing">Testing Guides (Unit, Integration, E2E patterns)</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="priority-deployment" name="priority-areas" value="deployment-guides">
+                        <label for="priority-deployment">Deployment & Installation Guides</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="priority-troubleshooting" name="priority-areas" value="troubleshooting">
+                        <label for="priority-troubleshooting">Troubleshooting & FAQ Documentation</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="priority-examples" name="priority-areas" value="code-examples">
+                        <label for="priority-examples">Code Examples & Usage Patterns</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="priority-migration" name="priority-areas" value="migration-guides">
+                        <label for="priority-migration">Migration & Upgrade Guides</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="priority-performance" name="priority-areas" value="performance-guides">
+                        <label for="priority-performance">Performance Optimization Guides</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">1b. What level of technical detail should the documentation target?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="detail-basic" name="technical-detail" value="basic">
+                        <label for="detail-basic">Basic - Simple explanations suitable for beginners</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="detail-intermediate" name="technical-detail" value="intermediate">
+                        <label for="detail-intermediate">Intermediate - Assumes some .NET/Avalonia knowledge</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="detail-advanced" name="technical-detail" value="advanced">
+                        <label for="detail-advanced">Advanced - Detailed technical explanations for experts</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="detail-mixed" name="technical-detail" value="mixed">
+                        <label for="detail-mixed">Mixed - Different levels for different audiences</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">1c. How important is it to document the TODO comments found in the codebase?</div>
+                <div class="help-text">Found 20+ TODO comments across AdvancedRemoveViewModel, TransferItemViewModel, and other files</div>
+                <div class="slider-container">
+                    <input type="range" id="todo-importance" name="todo-importance" min="1" max="10" value="5">
+                    <div class="slider-value">5 - Moderate importance</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Documentation Structure & Organization -->
+        <div class="section" id="section-2">
+            <h2>🗂️ Section 2: Documentation Structure & Organization</h2>
+
+            <div class="question-group">
+                <div class="question">2a. How should the documentation be organized?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="org-feature" name="doc-organization" value="feature-based">
+                        <label for="org-feature">Feature-based (Inventory, Transactions, Settings, etc.)</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="org-technical" name="doc-organization" value="technical-layer">
+                        <label for="org-technical">Technical Layer (ViewModels, Services, Database, UI)</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="org-user-journey" name="doc-organization" value="user-journey">
+                        <label for="org-user-journey">User Journey (Getting Started → Advanced Features)</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="org-hybrid" name="doc-organization" value="hybrid">
+                        <label for="org-hybrid">Hybrid - Combine multiple approaches</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">2b. Where should the new documentation be placed?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="location-docs" name="doc-locations" value="docs-folder">
+                        <label for="location-docs">Expand the existing `/docs` folder structure</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="location-github" name="doc-locations" value="github-folder">
+                        <label for="location-github">Add to `.github` folder for developer-focused docs</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="location-wiki" name="doc-locations" value="github-wiki">
+                        <label for="location-wiki">Create GitHub Wiki pages</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="location-readme" name="doc-locations" value="readme-updates">
+                        <label for="location-readme">Enhance existing README files</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">2c. Should the documentation include auto-generated content?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="auto-yes" name="auto-generation" value="yes">
+                        <label for="auto-yes">Yes - Generate API docs from XML comments</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="auto-partial" name="auto-generation" value="partial">
+                        <label for="auto-partial">Partial - Mix of auto-generated and manual content</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="auto-no" name="auto-generation" value="no">
+                        <label for="auto-no">No - Keep all documentation manually written</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Content & Format Preferences -->
+        <div class="section" id="section-3">
+            <h2>📝 Section 3: Content & Format Preferences</h2>
+
+            <div class="question-group">
+                <div class="question">3a. What documentation formats do you prefer?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="format-markdown" name="doc-formats" value="markdown">
+                        <label for="format-markdown">Markdown (.md) - Standard GitHub format</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="format-interactive" name="doc-formats" value="interactive-html">
+                        <label for="format-interactive">Interactive HTML - Like this questionnaire</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="format-diagrams" name="doc-formats" value="diagrams">
+                        <label for="format-diagrams">Diagrams & Visual Aids (Mermaid, PlantUML)</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="format-video" name="doc-formats" value="video-guides">
+                        <label for="format-video">Video Guides & Screencasts</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="format-pdf" name="doc-formats" value="pdf-guides">
+                        <label for="format-pdf">PDF Guides for offline use</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">3b. How much code examples should be included?</div>
+                <div class="slider-container">
+                    <input type="range" id="code-examples" name="code-examples" min="1" max="10" value="7">
+                    <div class="slider-value">7 - Plenty of examples</div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">3c. Should the documentation include real MTM manufacturing context?</div>
+                <div class="help-text">Your app deals with parts, operations, locations, and manufacturing workflows</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="context-full" name="manufacturing-context" value="full">
+                        <label for="context-full">Full Context - Include real manufacturing examples</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="context-generic" name="manufacturing-context" value="generic">
+                        <label for="context-generic">Generic Examples - Keep it technology-focused</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="context-mixed" name="manufacturing-context" value="mixed">
+                        <label for="context-mixed">Mixed - Both manufacturing and generic examples</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Maintenance & Updates -->
+        <div class="section" id="section-4">
+            <h2>🔄 Section 4: Maintenance & Updates</h2>
+
+            <div class="question-group">
+                <div class="question">4a. How often should documentation be updated?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="update-every-release" name="update-frequency" value="every-release">
+                        <label for="update-every-release">Every Release - Keep perfectly in sync</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="update-major-changes" name="update-frequency" value="major-changes">
+                        <label for="update-major-changes">Major Changes - Update when significant features change</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="update-quarterly" name="update-frequency" value="quarterly">
+                        <label for="update-quarterly">Quarterly - Regular scheduled updates</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="update-as-needed" name="update-frequency" value="as-needed">
+                        <label for="update-as-needed">As Needed - Update when someone reports issues</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">4b. Should documentation updates be automated?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="automation-ci" name="automation-types" value="ci-validation">
+                        <label for="automation-ci">CI/CD validation - Check docs match code changes</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="automation-generation" name="automation-types" value="auto-generation">
+                        <label for="automation-generation">Auto-generate API documentation from code</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="automation-links" name="automation-types" value="link-checking">
+                        <label for="automation-links">Automated link checking and validation</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="automation-none" name="automation-types" value="manual-only">
+                        <label for="automation-none">Keep everything manual for better control</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">4c. Who should be responsible for maintaining the documentation?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="maintainer-developers" name="maintainer" value="developers">
+                        <label for="maintainer-developers">Developers - As part of feature development</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="maintainer-dedicated" name="maintainer" value="dedicated-writer">
+                        <label for="maintainer-dedicated">Dedicated Technical Writer</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="maintainer-team-lead" name="maintainer" value="team-lead">
+                        <label for="maintainer-team-lead">Team Lead or Project Manager</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="maintainer-community" name="maintainer" value="community">
+                        <label for="maintainer-community">Community/User contributions</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: Implementation Preferences -->
+        <div class="section" id="section-5">
+            <h2>⚙️ Section 5: Implementation Preferences</h2>
+
+            <div class="question-group">
+                <div class="question">5a. How should the copilot-instructions.md file be updated?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="update-comprehensive" name="copilot-update" value="comprehensive-rewrite">
+                        <label for="update-comprehensive">Comprehensive Rewrite - Based on actual codebase analysis</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="update-enhance" name="copilot-update" value="enhance-existing">
+                        <label for="update-enhance">Enhance Existing - Add missing sections and improve current content</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="update-minimal" name="copilot-update" value="minimal-updates">
+                        <label for="update-minimal">Minimal Updates - Fix only obvious issues and gaps</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">5b. Should the updated instructions include specific technology versions?</div>
+                <div class="help-text">Based on analysis: .NET 8.0, Avalonia 11.3.4, MVVM Community Toolkit 8.3.2, MySQL 9.4.0</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="versions-exact" name="version-specificity" value="exact-versions">
+                        <label for="versions-exact">Exact Versions - Lock to current versions for consistency</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="versions-ranges" name="version-specificity" value="version-ranges">
+                        <label for="versions-ranges">Version Ranges - Allow compatible version upgrades</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="versions-patterns" name="version-specificity" value="pattern-based">
+                        <label for="versions-patterns">Pattern-based - Focus on patterns that work across versions</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">5c. What level of detail should be included for database patterns?</div>
+                <div class="help-text">Current pattern: Stored procedures ONLY via Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="db-detailed" name="database-detail" value="detailed-examples">
+                        <label for="db-detailed">Detailed Examples - Show actual stored procedure calls and parameters</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="db-patterns" name="database-detail" value="pattern-focused">
+                        <label for="db-patterns">Pattern Focused - Emphasize the architectural pattern</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="db-minimal" name="database-detail" value="minimal-guidance">
+                        <label for="db-minimal">Minimal Guidance - Just the basic rules and restrictions</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question">5d. Any specific areas where the current copilot-instructions.md needs improvement?</div>
+                <textarea id="improvement-areas" name="improvement-areas" placeholder="Describe any specific issues, missing sections, or improvements needed..."></textarea>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results" id="results">
+            <div class="success-icon">✅</div>
+            <h2>Thank you for your feedback!</h2>
+            <p>Your responses have been saved and will be used to improve the MTM documentation system.</p>
+            <div style="margin-top: 30px;">
+                <a href="#" class="download-btn" id="download-results">📄 Download Your Responses</a>
+                <a href="#" class="download-btn" onclick="window.print()">🖨️ Print Results</a>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn prev" id="prev-btn" onclick="prevSection()" disabled>← Previous</button>
+            <div class="section-indicator" id="section-indicator">Section 1 of 5</div>
+            <button class="nav-btn next" id="next-btn" onclick="nextSection()">Next →</button>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 5;
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = (currentSection / totalSections) * 100;
+            document.querySelector('.progress-fill').style.width = progress + '%';
+            document.querySelector('.progress-text').textContent = `Question ${currentSection} of ${totalSections}`;
+            document.getElementById('section-indicator').textContent = `Section ${currentSection} of ${totalSections}`;
+        }
+
+        // Show specific section
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`section-${section}`).classList.add('active');
+
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = section === 1;
+            
+            const nextBtn = document.getElementById('next-btn');
+            if (section === totalSections) {
+                nextBtn.textContent = 'Complete Survey →';
+                nextBtn.className = 'nav-btn submit';
+            } else {
+                nextBtn.textContent = 'Next →';
+                nextBtn.className = 'nav-btn next';
+            }
+
+            updateProgress();
+        }
+
+        // Navigate to next section
+        function nextSection() {
+            if (validateCurrentSection()) {
+                if (currentSection < totalSections) {
+                    currentSection++;
+                    showSection(currentSection);
+                } else {
+                    showResults();
+                }
+            }
+        }
+
+        // Navigate to previous section
+        function prevSection() {
+            if (currentSection > 1) {
+                currentSection--;
+                showSection(currentSection);
+            }
+        }
+
+        // Validate current section
+        function validateCurrentSection() {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.style.display = 'none';
+
+            let isValid = true;
+            let errorMessage = '';
+
+            // Section-specific validation
+            switch(currentSection) {
+                case 1:
+                    const priorityChecked = document.querySelectorAll('input[name="priority-areas"]:checked').length > 0;
+                    const detailSelected = document.querySelector('input[name="technical-detail"]:checked');
+                    
+                    if (!priorityChecked) {
+                        errorMessage += 'Please select at least one priority area. ';
+                        isValid = false;
+                    }
+                    if (!detailSelected) {
+                        errorMessage += 'Please select a technical detail level. ';
+                        isValid = false;
+                    }
+                    break;
+
+                case 2:
+                    const orgSelected = document.querySelector('input[name="doc-organization"]:checked');
+                    const locationsChecked = document.querySelectorAll('input[name="doc-locations"]:checked').length > 0;
+                    const autoSelected = document.querySelector('input[name="auto-generation"]:checked');
+                    
+                    if (!orgSelected) {
+                        errorMessage += 'Please select a documentation organization approach. ';
+                        isValid = false;
+                    }
+                    if (!locationsChecked) {
+                        errorMessage += 'Please select at least one documentation location. ';
+                        isValid = false;
+                    }
+                    if (!autoSelected) {
+                        errorMessage += 'Please select an auto-generation preference. ';
+                        isValid = false;
+                    }
+                    break;
+
+                case 3:
+                    const formatsChecked = document.querySelectorAll('input[name="doc-formats"]:checked').length > 0;
+                    const contextSelected = document.querySelector('input[name="manufacturing-context"]:checked');
+                    
+                    if (!formatsChecked) {
+                        errorMessage += 'Please select at least one documentation format. ';
+                        isValid = false;
+                    }
+                    if (!contextSelected) {
+                        errorMessage += 'Please select a manufacturing context preference. ';
+                        isValid = false;
+                    }
+                    break;
+
+                case 4:
+                    const updateSelected = document.querySelector('input[name="update-frequency"]:checked');
+                    const automationChecked = document.querySelectorAll('input[name="automation-types"]:checked').length > 0;
+                    const maintainerSelected = document.querySelector('input[name="maintainer"]:checked');
+                    
+                    if (!updateSelected) {
+                        errorMessage += 'Please select an update frequency. ';
+                        isValid = false;
+                    }
+                    if (!automationChecked) {
+                        errorMessage += 'Please select at least one automation preference. ';
+                        isValid = false;
+                    }
+                    if (!maintainerSelected) {
+                        errorMessage += 'Please select who should maintain the documentation. ';
+                        isValid = false;
+                    }
+                    break;
+
+                case 5:
+                    const copilotSelected = document.querySelector('input[name="copilot-update"]:checked');
+                    const versionSelected = document.querySelector('input[name="version-specificity"]:checked');
+                    const dbDetailSelected = document.querySelector('input[name="database-detail"]:checked');
+                    
+                    if (!copilotSelected) {
+                        errorMessage += 'Please select how to update the copilot instructions. ';
+                        isValid = false;
+                    }
+                    if (!versionSelected) {
+                        errorMessage += 'Please select a version specificity approach. ';
+                        isValid = false;
+                    }
+                    if (!dbDetailSelected) {
+                        errorMessage += 'Please select a database pattern detail level. ';
+                        isValid = false;
+                    }
+                    break;
+            }
+
+            if (!isValid) {
+                errorDiv.textContent = errorMessage;
+                errorDiv.style.display = 'block';
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            return isValid;
+        }
+
+        // Show results
+        function showResults() {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('results').classList.add('active');
+            document.querySelector('.navigation').style.display = 'none';
+            
+            // Update progress to 100%
+            document.querySelector('.progress-fill').style.width = '100%';
+            document.querySelector('.progress-text').textContent = 'Complete!';
+            
+            // Prepare download
+            prepareDownload();
+        }
+
+        // Prepare download functionality
+        function prepareDownload() {
+            const results = collectAllAnswers();
+            const htmlContent = generateResultsHTML(results);
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const downloadBtn = document.getElementById('download-results');
+            downloadBtn.href = url;
+            downloadBtn.download = 'mtm-documentation-responses.html';
+        }
+
+        // Collect all answers
+        function collectAllAnswers() {
+            const results = {
+                timestamp: new Date().toLocaleString(),
+                responses: {}
+            };
+
+            // Collect all form data
+            const formData = new FormData();
+            
+            // Priority areas (checkboxes)
+            const priorityAreas = [];
+            document.querySelectorAll('input[name="priority-areas"]:checked').forEach(cb => {
+                priorityAreas.push(cb.value);
+            });
+            results.responses['priority-areas'] = priorityAreas;
+
+            // All other inputs
+            const inputSelectors = [
+                'input[name="technical-detail"]:checked',
+                'input[name="doc-organization"]:checked',
+                'input[name="auto-generation"]:checked',
+                'input[name="manufacturing-context"]:checked',
+                'input[name="update-frequency"]:checked',
+                'input[name="maintainer"]:checked',
+                'input[name="copilot-update"]:checked',
+                'input[name="version-specificity"]:checked',
+                'input[name="database-detail"]:checked'
+            ];
+
+            inputSelectors.forEach(selector => {
+                const input = document.querySelector(selector);
+                if (input) {
+                    results.responses[input.name] = input.value;
+                }
+            });
+
+            // Checkboxes for multiple selections
+            ['doc-locations', 'doc-formats', 'automation-types'].forEach(name => {
+                const values = [];
+                document.querySelectorAll(`input[name="${name}"]:checked`).forEach(cb => {
+                    values.push(cb.value);
+                });
+                results.responses[name] = values;
+            });
+
+            // Sliders
+            results.responses['todo-importance'] = document.getElementById('todo-importance').value;
+            results.responses['code-examples'] = document.getElementById('code-examples').value;
+
+            // Textarea
+            results.responses['improvement-areas'] = document.getElementById('improvement-areas').value;
+
+            return results;
+        }
+
+        // Generate results HTML
+        function generateResultsHTML(results) {
+            return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Documentation Implementation - Your Responses</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { background: #2563eb; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .section { margin-bottom: 30px; padding: 20px; border-left: 4px solid #2563eb; background: #f9fafb; }
+        .question { font-weight: bold; color: #374151; margin-bottom: 10px; }
+        .answer { margin-left: 20px; color: #4b5563; }
+        .timestamp { text-align: center; color: #6b7280; font-style: italic; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 MTM Documentation Implementation Responses</h1>
+        <p>Age Level: 14 years old | Completed: ${results.timestamp}</p>
+    </div>
+
+    <div class="section">
+        <div class="question">Priority Documentation Areas:</div>
+        <div class="answer">${results.responses['priority-areas'].join(', ')}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Technical Detail Level:</div>
+        <div class="answer">${results.responses['technical-detail']}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">TODO Comments Importance:</div>
+        <div class="answer">${results.responses['todo-importance']}/10</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Documentation Organization:</div>
+        <div class="answer">${results.responses['doc-organization']}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Documentation Locations:</div>
+        <div class="answer">${results.responses['doc-locations'].join(', ')}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Auto-generation Preference:</div>
+        <div class="answer">${results.responses['auto-generation']}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Documentation Formats:</div>
+        <div class="answer">${results.responses['doc-formats'].join(', ')}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Code Examples Level:</div>
+        <div class="answer">${results.responses['code-examples']}/10</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Manufacturing Context:</div>
+        <div class="answer">${results.responses['manufacturing-context']}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Update Frequency:</div>
+        <div class="answer">${results.responses['update-frequency']}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Automation Types:</div>
+        <div class="answer">${results.responses['automation-types'].join(', ')}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Documentation Maintainer:</div>
+        <div class="answer">${results.responses['maintainer']}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Copilot Instructions Update:</div>
+        <div class="answer">${results.responses['copilot-update']}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Version Specificity:</div>
+        <div class="answer">${results.responses['version-specificity']}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Database Pattern Detail:</div>
+        <div class="answer">${results.responses['database-detail']}</div>
+    </div>
+
+    <div class="section">
+        <div class="question">Improvement Areas:</div>
+        <div class="answer">${results.responses['improvement-areas'] || 'No additional comments provided'}</div>
+    </div>
+
+    <div class="timestamp">
+        Generated on ${results.timestamp}
+    </div>
+</body>
+</html>`;
+        }
+
+        // Update slider values in real-time
+        document.getElementById('todo-importance').addEventListener('input', function() {
+            const value = this.value;
+            const labels = ['1 - Very low', '2 - Low', '3 - Below average', '4 - Slightly below', '5 - Moderate', 
+                          '6 - Slightly above', '7 - Above average', '8 - High', '9 - Very high', '10 - Critical'];
+            this.nextElementSibling.textContent = labels[value - 1];
+        });
+
+        document.getElementById('code-examples').addEventListener('input', function() {
+            const value = this.value;
+            const labels = ['1 - Minimal', '2 - Very few', '3 - Few', '4 - Some', '5 - Moderate', 
+                          '6 - Good amount', '7 - Plenty', '8 - Lots', '9 - Very many', '10 - Extensive'];
+            this.nextElementSibling.textContent = labels[value - 1];
+        });
+
+        // Auto-save functionality
+        function saveProgress() {
+            const progress = {
+                currentSection: currentSection,
+                formData: collectAllAnswers()
+            };
+            localStorage.setItem('mtm-documentation-questionnaire', JSON.stringify(progress));
+        }
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('mtm-documentation-questionnaire');
+            if (saved) {
+                try {
+                    const progress = JSON.parse(saved);
+                    // Could implement restoration logic here if needed
+                    console.log('Saved progress found:', progress);
+                } catch (e) {
+                    console.log('Could not load saved progress');
+                }
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection(1);
+            loadProgress();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveProgress, 30000);
+        });
+
+        // Save on page unload
+        window.addEventListener('beforeunload', saveProgress);
+    </script>
+</body>
+</html>

@@ -48,21 +48,25 @@
 
 **BEFORE generating ANY code, scan the codebase to identify these exact versions:**
 
-### **Core Technologies (FIXED VERSIONS)**
+### **Core Technologies (VERIFIED FROM ACTUAL CODEBASE)**
 - **.NET Version**: 8.0 (`<TargetFramework>net8.0</TargetFramework>`)
-- **C# Language Version**: C# 12 with nullable reference types enabled
+- **C# Language Version**: C# 12 with nullable reference types enabled (`<Nullable>enable</Nullable>`)
 - **Avalonia UI**: 11.3.4 (Primary UI framework - NOT WPF)
 - **MVVM Community Toolkit**: 8.3.2 (Property/Command generation via source generators)
 - **MySQL Database**: 9.4.0 (MySql.Data package)
 - **Microsoft Extensions**: 9.0.8 (DI, Logging, Configuration, Hosting)
+- **Additional Libraries**: Dapper 2.1.66, Material.Icons.Avalonia 2.4.1
 
 ### **Architecture Pattern Detection**
 - **Architecture**: MVVM with service-oriented design and comprehensive dependency injection
 - **Database Pattern**: Stored procedures ONLY via `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()`
 - **ViewModel Pattern**: MVVM Community Toolkit with `[ObservableProperty]` and `[RelayCommand]` attributes
 - **UI Pattern**: Avalonia UserControl inheritance with minimal code-behind
-- **Service Pattern**: Category-based service consolidation in single files
+- **Service Pattern**: Category-based service consolidation in single files (established pattern)
 - **Error Pattern**: Centralized error handling via `Services.ErrorHandling.HandleErrorAsync()`
+- **View Code-Behind**: Clean Avalonia architecture without ReactiveUI dependencies
+- **Dependency Injection**: Microsoft.Extensions.DependencyInjection with TryAdd methods
+- **Service Lifetimes**: Singleton for infrastructure, Transient for ViewModels
 
 </details>
 
@@ -197,10 +201,10 @@ public partial class InventoryViewModel : BaseViewModel
 ### **Standard Database Operation Pattern**
 ```csharp
 // ✅ CORRECT: Stored procedures only (established pattern)
-var parameters = new MySqlParameter[]
+var parameters = new Dictionary<string, object>
 {
-    new("p_PartID", partId),
-    new("p_Operation", operation)
+    ["p_PartID"] = partId,
+    ["p_Operation"] = operation
 };
 
 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -214,6 +218,20 @@ if (result.Status == 1)
 {
     // Success - process DataTable
     var dataTable = result.Data;
+    foreach (DataRow row in dataTable.Rows)
+    {
+        // Use actual column names from database schema
+        var partId = row["PartID"].ToString() ?? string.Empty;
+        var operation = row["Operation"].ToString() ?? string.Empty;
+    }
+}
+else
+{
+    // Handle failure - result.Message contains error details
+    await Services.ErrorHandling.HandleErrorAsync(
+        new InvalidOperationException($"Database operation failed: {result.Message}"),
+        "Database operation context"
+    );
 }
 ```
 
@@ -221,6 +239,8 @@ if (result.Status == 1)
 - **Inventory**: `inv_inventory_Add_Item`, `inv_inventory_Get_ByPartID`, `inv_inventory_Remove_Item`
 - **Transactions**: `inv_transaction_Add`, `inv_transaction_Get_History`
 - **Master Data**: `md_part_ids_Get_All`, `md_locations_Get_All`, `md_operation_numbers_Get_All`
+- **User Management**: `usr_users_Get_All`, `usr_users_Add`, `usr_users_Remove`
+- **Quick Buttons**: `qb_quickbuttons_Get_ByUser`, `qb_quickbuttons_Add`, `qb_quickbuttons_Update`
 - **Error Logging**: `log_error_Add_Error`, `log_error_Get_All`
 
 ### **NEVER Use Direct SQL**
@@ -237,7 +257,7 @@ public async Task<List<string>> LoadUsersFromDatabaseAsync()
     var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
         connectionString,
         "usr_users_Get_All",
-        Array.Empty<MySqlParameter>()
+        new Dictionary<string, object>()
     );
 
     if (result.Status == 1)
@@ -279,7 +299,7 @@ public async Task<List<string>> GetMasterDataAsync(string procedureName, string 
     try
     {
         var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            connectionString, procedureName, Array.Empty<MySqlParameter>()
+            connectionString, procedureName, new Dictionary<string, object>()
         );
 
         if (result.Status == 1)
@@ -386,21 +406,54 @@ namespace MTM_WIP_Application_Avalonia.Services
     public class ConfigurationService : IConfigurationService { /* actual implementation */ }
     public class ApplicationStateService : IApplicationStateService { /* actual implementation */ }
 }
+
+// File: Services/Database.cs
+namespace MTM_WIP_Application_Avalonia.Services
+{
+    public static class Helper_Database_StoredProcedure { /* database operations */ }
+    public class StoredProcedureResult { /* result wrapper */ }
+}
+
+// File: Services/ThemeService.cs
+namespace MTM_WIP_Application_Avalonia.Services
+{
+    public class ThemeService : IThemeService { /* theme management */ }
+}
+
+// File: Services/MasterDataService.cs
+namespace MTM_WIP_Application_Avalonia.Services
+{
+    public class MasterDataService : IMasterDataService { /* master data operations */ }
+}
 ```
 
 ### **Service Registration Pattern (CRITICAL)**  
 ```csharp
-// ✅ CORRECT: Actual service registration pattern
+// ✅ CORRECT: Actual service registration pattern from ServiceCollectionExtensions.cs
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMTMServices(
         this IServiceCollection services, 
         IConfiguration configuration)
     {
-        // Use TryAdd methods as established
+        // Infrastructure services - Singleton lifetime
         services.TryAddSingleton<IConfigurationService, ConfigurationService>();
-        services.TryAddScoped<IInventoryService, InventoryService>();
-        services.TryAddTransient<InventoryViewModel>();
+        services.TryAddSingleton<IThemeService, ThemeService>();
+        services.TryAddSingleton<INavigationService, NavigationService>();
+        services.TryAddSingleton<IFocusManagementService, FocusManagementService>();
+        services.TryAddSingleton<IFileLoggingService, FileLoggingService>();
+        
+        // Business services - Scoped lifetime
+        services.TryAddScoped<IMasterDataService, MasterDataService>();
+        services.TryAddScoped<IQuickButtonsService, QuickButtonsService>();
+        services.TryAddScoped<ISettingsService, SettingsService>();
+        
+        // ViewModels - Transient lifetime
+        services.TryAddTransient<MainViewViewModel>();
+        services.TryAddTransient<InventoryTabViewModel>();
+        services.TryAddTransient<QuickButtonsViewModel>();
+        services.TryAddTransient<TransactionsTabViewModel>();
+        services.TryAddTransient<SettingsFormViewModel>();
         
         return services;
     }
@@ -417,35 +470,48 @@ public static class ServiceCollectionExtensions
 > - ui-styling.instruction.md
 > - mtm-ui-component.md
 
-### **MTM Purple Theme Implementation**
+### **MTM Design System Implementation**
 ```xml
-<!-- Primary MTM Colors -->
+<!-- Primary MTM Colors - Windows 11 Blue Theme -->
 <Button Background="#0078D4"      <!-- Primary Windows 11 blue -->
         Foreground="White"
         Padding="12,8"
-        CornerRadius="4" />
+        CornerRadius="4"
+        FontSize="14" />
 
 <Border Background="#106EBE"      <!-- Secondary blue -->
         BorderBrush="#E0E0E0"
         BorderThickness="1"
         CornerRadius="8" />
+
+<!-- Theme-aware colors using ThemeService -->
+<Button Background="{DynamicResource MTM_Shared_Logic.PrimaryBrush}"
+        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+        Foreground="{DynamicResource MTM_Shared_Logic.ForegroundBrush}" />
 ```
 
 ### **Card-Based Layout System**
 ```xml
-<Border Background="White"
-        BorderBrush="#E0E0E0" 
+<!-- MTM Standard Card Layout with Theme Support -->
+<Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" 
         BorderThickness="1"
         CornerRadius="8"
         Padding="16"
         Margin="8">
     
     <Grid x:Name="CardContent" RowDefinitions="Auto,*">
-        <Border Grid.Row="0" Background="#0078D4" CornerRadius="8,8,0,0" Padding="16,8">
-            <TextBlock Text="Card Title" Foreground="White" FontWeight="Bold" />
+        <Border Grid.Row="0" 
+                Background="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" 
+                CornerRadius="8,8,0,0" 
+                Padding="16,8">
+            <TextBlock Text="Card Title" 
+                       Foreground="White" 
+                       FontWeight="Bold" 
+                       FontSize="16" />
         </Border>
         <StackPanel Grid.Row="1" Margin="16" Spacing="8">
-            <!-- Card content -->
+            <!-- Card content with consistent spacing -->
         </StackPanel>
     </Grid>
 </Border>
@@ -546,18 +612,20 @@ Logger.LogError(ex, "Critical error in {Operation}", operationName);
 All 33 View files follow clean Avalonia architecture without ReactiveUI dependencies:
 
 ```csharp
-// ✅ Standard Avalonia UserControl pattern
+// ✅ Standard Avalonia UserControl pattern (actual implementation)
 public partial class SomeView : UserControl
 {
     public SomeView()
     {
         InitializeComponent();
         // Minimal initialization code only
+        // NO ViewModel instantiation (handled by DI)
+        // NO event subscriptions (use ViewModel commands)
     }
     
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        // Cleanup resources, subscriptions
+        // Cleanup resources, subscriptions if any
         base.OnDetachedFromVisualTree(e);
     }
 }
