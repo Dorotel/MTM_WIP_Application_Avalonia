@@ -1,5 +1,7 @@
 # RemoveTabView Implementation Audit Prompt
 
+## Your Response must be placed in the .github/issues/RemoveTabView/ Folder as a markdown file.
+
 ## 🎯 Comprehensive Implementation Status Analysis
 
 **Context**: Compare current RemoveTabView implementation against #file:removetabview-complete-implementation.yml requirements and generate prioritized work plan.
