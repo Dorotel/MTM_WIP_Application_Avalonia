@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,6 +31,8 @@ public partial class TransferItemViewModel : BaseViewModel
     private readonly IDatabaseService _databaseService;
     private readonly ILogger<TransferItemViewModel> _logger;
     private readonly ISuccessOverlayService? _successOverlayService;
+    private readonly IPrintService? _printService;
+    private readonly INavigationService? _navigationService;
 
     #region Observable Collections
     
@@ -192,12 +195,16 @@ public partial class TransferItemViewModel : BaseViewModel
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
         ILogger<TransferItemViewModel> logger,
-        ISuccessOverlayService? successOverlayService = null) : base(logger)
+        ISuccessOverlayService? successOverlayService = null,
+        IPrintService? printService = null,
+        INavigationService? navigationService = null) : base(logger)
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _successOverlayService = successOverlayService; // Optional service
+        _printService = printService;
+        _navigationService = navigationService;
 
         _logger.LogInformation("TransferItemViewModel initialized with dependency injection");
 
@@ -548,24 +555,57 @@ public partial class TransferItemViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Prints current inventory view with transfer details and formatted output
+    /// Prints current inventory view with transfer details using Print Service
     /// </summary>
     [RelayCommand]
     private async Task ExecutePrintAsync()
     {
         try
         {
-            IsLoading = true;
-            
-            // Implemented print functionality with file-based output
-            var reportContent = GenerateTransferReport();
-            var fileName = $"Transfer_Report_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
-            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
-            
-            await File.WriteAllTextAsync(filePath, reportContent);
+            if (_printService == null || _navigationService == null)
+            {
+                _logger.LogWarning("Print service or navigation service not available");
+                return;
+            }
 
-            _logger.LogInformation("Print operation completed - transfer report saved to {FilePath} with {Count} items", 
-                filePath, InventoryItems.Count);
+            IsLoading = true;
+            _logger.LogInformation("Initiating print operation for {Count} transfer items", InventoryItems.Count);
+
+            // Convert inventory items to DataTable for printing
+            var dataTable = ConvertInventoryToDataTable(InventoryItems);
+
+            // Get or create PrintViewModel
+            var printViewModel = Program.GetOptionalService<PrintViewModel>();
+            if (printViewModel == null)
+            {
+                _logger.LogError("PrintViewModel not available from DI container");
+                return;
+            }
+
+            // Configure print data
+            printViewModel.PrintData = dataTable;
+            printViewModel.DataSourceType = MTM_WIP_Application_Avalonia.Models.PrintDataSourceType.Transfer;
+            printViewModel.DocumentTitle = "Inventory Transfer Report";
+            printViewModel.OriginalViewContext = this; // Store current context for navigation back
+
+            // Create and navigate to PrintView
+            var printView = new Views.PrintView
+            {
+                DataContext = printViewModel
+            };
+
+            // Initialize print view with data
+            await printViewModel.InitializeAsync();
+
+            // Navigate to print view using NavigationService
+            _navigationService.NavigateTo(printView);
+
+            _logger.LogInformation("Navigated to print view with {Count} transfer items", InventoryItems.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error initiating print operation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
         }
         finally
         {
@@ -1185,6 +1225,42 @@ public partial class TransferItemViewModel : BaseViewModel
         report.AppendLine("End of Transfer Report");
         
         return report.ToString();
+    }
+
+    /// <summary>
+    /// Converts inventory items to DataTable for print service
+    /// </summary>
+    private DataTable ConvertInventoryToDataTable(ObservableCollection<InventoryItem> inventoryItems)
+    {
+        var dataTable = new DataTable();
+        
+        // Define columns based on InventoryItem properties
+        dataTable.Columns.Add("PartId", typeof(string));
+        dataTable.Columns.Add("Operation", typeof(string));
+        dataTable.Columns.Add("Location", typeof(string));
+        dataTable.Columns.Add("Quantity", typeof(int));
+        dataTable.Columns.Add("Notes", typeof(string));
+        dataTable.Columns.Add("LastUpdated", typeof(DateTime));
+        dataTable.Columns.Add("LastUpdatedBy", typeof(string));
+        
+        // Add rows
+        foreach (var item in inventoryItems)
+        {
+            var row = dataTable.NewRow();
+            row["PartId"] = item.PartID ?? string.Empty;
+            row["Operation"] = item.Operation ?? string.Empty;
+            row["Location"] = item.Location ?? string.Empty;
+            row["Quantity"] = item.Quantity;
+            row["Notes"] = item.Notes ?? string.Empty;
+            row["LastUpdated"] = item.LastUpdated;
+            row["LastUpdatedBy"] = item.User ?? string.Empty;
+            dataTable.Rows.Add(row);
+        }
+        
+        _logger.LogDebug("Converted {ItemCount} inventory items to DataTable with {ColumnCount} columns", 
+            inventoryItems.Count, dataTable.Columns.Count);
+            
+        return dataTable;
     }
 
     #endregion

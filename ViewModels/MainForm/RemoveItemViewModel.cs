@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,8 @@ public partial class RemoveItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
+    private readonly IPrintService? _printService;
+    private readonly INavigationService? _navigationService;
 
     #region Observable Collections
     
@@ -160,10 +163,14 @@ public partial class RemoveItemViewModel : BaseViewModel
     public RemoveItemViewModel(
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
-        ILogger<RemoveItemViewModel> logger) : base(logger)
+        ILogger<RemoveItemViewModel> logger,
+        IPrintService? printService = null,
+        INavigationService? navigationService = null) : base(logger)
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
+        _printService = printService;
+        _navigationService = navigationService;
 
         Logger.LogInformation("RemoveItemViewModel initialized with dependency injection");
 
@@ -484,25 +491,57 @@ public partial class RemoveItemViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Prints current inventory view with formatted output
+    /// Prints current inventory view with formatted output using Print Service
     /// </summary>
     [RelayCommand(CanExecute = nameof(HasInventoryItems))]
     private async Task Print()
     {
         try
         {
+            if (_printService == null || _navigationService == null)
+            {
+                Logger.LogWarning("Print service or navigation service not available");
+                return;
+            }
+
             IsLoading = true;
+            Logger.LogInformation("Initiating print operation for {Count} inventory items", InventoryItems.Count);
 
-            // TODO: Implement print functionality using Core_DgvPrinter equivalent
-            // var printer = new AvaloniaDataGridPrinter();
-            // await printer.PrintDataGridAsync(InventoryItems, 
-            //     title: "Inventory Removal Report",
-            //     searchCriteria: $"Part: {SelectedPart}, Operation: {SelectedOperation}");
+            // Convert inventory items to DataTable for printing
+            var dataTable = ConvertInventoryToDataTable(InventoryItems);
 
-            Logger.LogInformation("Print operation initiated for {Count} inventory items", 
-                InventoryItems.Count);
+            // Get or create PrintViewModel
+            var printViewModel = Program.GetOptionalService<PrintViewModel>();
+            if (printViewModel == null)
+            {
+                Logger.LogError("PrintViewModel not available from DI container");
+                return;
+            }
 
-            await Task.Delay(1000); // Simulate print operation
+            // Configure print data
+            printViewModel.PrintData = dataTable;
+            printViewModel.DataSourceType = MTM_WIP_Application_Avalonia.Models.PrintDataSourceType.Remove;
+            printViewModel.DocumentTitle = "Inventory Removal Report";
+            printViewModel.OriginalViewContext = this; // Store current context for navigation back
+
+            // Create and navigate to PrintView
+            var printView = new Views.PrintView
+            {
+                DataContext = printViewModel
+            };
+
+            // Initialize print view with data
+            await printViewModel.InitializeAsync();
+
+            // Navigate to print view using NavigationService
+            _navigationService.NavigateTo(printView);
+
+            Logger.LogInformation("Navigated to print view with {Count} inventory items", InventoryItems.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initiating print operation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
         }
         finally
         {
@@ -749,6 +788,42 @@ public partial class RemoveItemViewModel : BaseViewModel
     {
         SelectedItem = null;
         SelectedItems.Clear();
+    }
+
+    /// <summary>
+    /// Converts inventory items to DataTable for print service
+    /// </summary>
+    private DataTable ConvertInventoryToDataTable(ObservableCollection<InventoryItem> inventoryItems)
+    {
+        var dataTable = new DataTable();
+        
+        // Define columns based on InventoryItem properties
+        dataTable.Columns.Add("PartId", typeof(string));
+        dataTable.Columns.Add("Operation", typeof(string));
+        dataTable.Columns.Add("Location", typeof(string));
+        dataTable.Columns.Add("Quantity", typeof(int));
+        dataTable.Columns.Add("Notes", typeof(string));
+        dataTable.Columns.Add("LastUpdated", typeof(DateTime));
+        dataTable.Columns.Add("LastUpdatedBy", typeof(string));
+        
+        // Add rows
+        foreach (var item in inventoryItems)
+        {
+            var row = dataTable.NewRow();
+            row["PartId"] = item.PartID ?? string.Empty;
+            row["Operation"] = item.Operation ?? string.Empty;
+            row["Location"] = item.Location ?? string.Empty;
+            row["Quantity"] = item.Quantity;
+            row["Notes"] = item.Notes ?? string.Empty;
+            row["LastUpdated"] = item.LastUpdated;
+            row["LastUpdatedBy"] = item.User ?? string.Empty;
+            dataTable.Rows.Add(row);
+        }
+        
+        Logger.LogDebug("Converted {ItemCount} inventory items to DataTable with {ColumnCount} columns", 
+            inventoryItems.Count, dataTable.Columns.Count);
+            
+        return dataTable;
     }
 
     #endregion
