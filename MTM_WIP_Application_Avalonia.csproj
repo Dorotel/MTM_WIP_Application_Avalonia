@@ -32,7 +32,6 @@
     <Compile Remove="Documentation\Development\Updates\**" />
     <Compile Remove="Exportable\**" />
     <Compile Remove="Resources\**" />
-    <Compile Remove="ViewModels\ThemeEditorViewModel.cs" />
     <EmbeddedResource Remove="Config\**" />
     <EmbeddedResource Remove="Documentation\Development\Agent_Issues\**" />
     <EmbeddedResource Remove="Documentation\Development\CopilotQuestions\**" />

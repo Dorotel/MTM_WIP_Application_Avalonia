@@ -28,23 +28,21 @@ public partial class RemoveItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
-
-    private readonly IPrintService? _printService;
-    private readonly INavigationService? _navigationService;
-
     private readonly ISuggestionOverlayService _suggestionOverlayService;
     private readonly ISuccessOverlayService _successOverlayService;
     private readonly IQuickButtonsService _quickButtonsService;
     private readonly IRemoveService _removeService;
+    private readonly IPrintService? _printService;
+    private readonly INavigationService? _navigationService;
 
 
     #region Observable Collections (InventoryTabView Pattern)
-    
+
     /// <summary>
     /// Available part IDs for filtering (InventoryTabView pattern)
     /// </summary>
     public ObservableCollection<string> PartIds { get; } = new();
-    
+
     /// <summary>
     /// Available operations for filtering (InventoryTabView pattern)
     /// </summary>
@@ -53,22 +51,22 @@ public partial class RemoveItemViewModel : BaseViewModel
     #endregion
 
     #region Legacy Observable Collections (for backward compatibility)
-    
+
     /// <summary>
     /// Available part options for filtering
     /// </summary>
     public ObservableCollection<string> PartOptions { get; } = new();
-    
+
     /// <summary>
     /// Available operation options for refined filtering
     /// </summary>
     public ObservableCollection<string> OperationOptions { get; } = new();
-    
+
     /// <summary>
     /// Current inventory items displayed in the DataGrid
     /// </summary>
     public ObservableCollection<MTM_Shared_Logic.Models.InventoryItem> InventoryItems { get; } = new();
-    
+
     /// <summary>
     /// Currently selected items in the DataGrid for batch operations
     /// </summary>
@@ -87,7 +85,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Dynamic watermark for Part field - shows error or placeholder
     /// </summary>
-    public string PartWatermark => string.IsNullOrWhiteSpace(SelectedPart) ? "Enter part ID to search..." : 
+    public string PartWatermark => string.IsNullOrWhiteSpace(SelectedPart) ? "Enter part ID to search..." :
                                   "Enter part ID to search...";
 
     /// <summary>
@@ -200,20 +198,14 @@ public partial class RemoveItemViewModel : BaseViewModel
     public RemoveItemViewModel(
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
-        ILogger<RemoveItemViewModel> logger,
-        IPrintService? printService = null,
-        INavigationService? navigationService = null) : base(logger)
-    {
-        _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
-        _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
-        _printService = printService;
-        _navigationService = navigationService;
-
         ISuggestionOverlayService suggestionOverlayService,
         ISuccessOverlayService successOverlayService,
         IQuickButtonsService quickButtonsService,
         IRemoveService removeService,
-        ILogger<RemoveItemViewModel> logger) : base(logger)
+        ILogger<RemoveItemViewModel> logger,
+        IPrintService? printService = null,
+        INavigationService? navigationService = null)
+        : base(logger)
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
@@ -221,9 +213,8 @@ public partial class RemoveItemViewModel : BaseViewModel
         _successOverlayService = successOverlayService ?? throw new ArgumentNullException(nameof(successOverlayService));
         _quickButtonsService = quickButtonsService ?? throw new ArgumentNullException(nameof(quickButtonsService));
         _removeService = removeService ?? throw new ArgumentNullException(nameof(removeService));
-
-        Logger.LogInformation("RemoveItemViewModel initialized with dependency injection, overlay services, and RemoveService");
-
+        _printService = printService;
+        _navigationService = navigationService;
 
         // Subscribe to RemoveService events
         _removeService.ItemsRemoved += OnItemsRemovedFromService;
@@ -231,13 +222,13 @@ public partial class RemoveItemViewModel : BaseViewModel
 
         // Sync InventoryItems with RemoveService collection
         // Note: In a more complex scenario, we could use CollectionChanged events for two-way sync
-        
         _ = LoadData(); // Load real data from database
-        
+
         // Setup property change notifications for computed properties
         PropertyChanged += OnPropertyChanged;
     }
-    
+
+
     /// <summary>
     /// Handles items removed events from the RemoveService
     /// </summary>
@@ -245,14 +236,14 @@ public partial class RemoveItemViewModel : BaseViewModel
     {
         // Propagate the event to the UI
         ItemsRemoved?.Invoke(this, e);
-        
+
         // Update UI state by notifying property changed
         OnPropertyChanged(nameof(HasUndoItems));
         OnPropertyChanged(nameof(CanUndo));
-        
+
         Logger.LogInformation("Items removed event received from RemoveService: {Count} items", e.RemovedItems.Count);
     }
-    
+
     /// <summary>
     /// Handles loading state changes from the RemoveService
     /// </summary>
@@ -261,7 +252,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         IsLoading = isLoading;
         Logger.LogDebug("Loading state changed from RemoveService: {IsLoading}", isLoading);
     }
-    
+
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         // Update computed properties when dependencies change
@@ -326,17 +317,17 @@ public partial class RemoveItemViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogInformation("Executing search via RemoveService for Part: {PartId}, Operation: {Operation}", 
+            Logger.LogInformation("Executing search via RemoveService for Part: {PartId}, Operation: {Operation}",
                 SelectedPart, SelectedOperation);
 
             // Delegate search to RemoveService
             var result = await _removeService.SearchInventoryAsync(
-                SelectedPart, 
-                SelectedOperation, 
-                location: null, 
+                SelectedPart,
+                SelectedOperation,
+                location: null,
                 user: null
             ).ConfigureAwait(false);
-            
+
             if (result.IsSuccess)
             {
                 // RemoveService handles UI thread updates internally
@@ -370,10 +361,10 @@ public partial class RemoveItemViewModel : BaseViewModel
             SelectedOperation = null;
             PartText = string.Empty;
             OperationText = string.Empty;
-            
+
             // Use RemoveService to refresh inventory data
             var result = await _removeService.RefreshInventoryAsync().ConfigureAwait(false);
-            
+
             if (result.IsSuccess)
             {
                 Logger.LogInformation("Reset completed successfully: {Message}", result.Message);
@@ -414,15 +405,15 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             // Delegate to RemoveService for business logic
             var result = await _removeService.RemoveInventoryItemsAsync(
-                SelectedItems.ToList(), 
-                _applicationState.CurrentUser, 
+                SelectedItems.ToList(),
+                _applicationState.CurrentUser,
                 "Removed via RemoveTabView batch operation"
             ).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {
                 var removalResult = result.Value!;
-                
+
                 // Clear selection since items were deleted
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -477,12 +468,12 @@ public partial class RemoveItemViewModel : BaseViewModel
                 // Report any failures
                 if (removalResult.HasFailures)
                 {
-                    var failureMessage = $"Failed to remove {removalResult.FailureCount} items:\n" + 
+                    var failureMessage = $"Failed to remove {removalResult.FailureCount} items:\n" +
                         string.Join("\n", removalResult.Failures.Select(f => $"• {f.Item.PartID}: {f.Error}"));
                     Logger.LogWarning("Batch deletion had failures: {FailureMessage}", failureMessage);
                 }
 
-                Logger.LogInformation("Delete operation completed successfully via RemoveService: {SuccessCount} successful, {FailureCount} failed", 
+                Logger.LogInformation("Delete operation completed successfully via RemoveService: {SuccessCount} successful, {FailureCount} failed",
                     removalResult.SuccessCount, removalResult.FailureCount);
             }
             else
@@ -514,8 +505,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             if (result.IsSuccess)
             {
                 var restoreResult = result.Value!;
-                
-                Logger.LogInformation("Undo operation completed successfully via RemoveService: {SuccessCount} restored, {FailureCount} failed", 
+
+                Logger.LogInformation("Undo operation completed successfully via RemoveService: {SuccessCount} restored, {FailureCount} failed",
                     restoreResult.SuccessCount, restoreResult.FailureCount);
 
                 // Update UI state - RemoveService handles collection updates, notify property changes
@@ -525,7 +516,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 // Report any failures
                 if (restoreResult.HasFailures)
                 {
-                    var failureMessage = $"Failed to restore {restoreResult.FailureCount} items:\n" + 
+                    var failureMessage = $"Failed to restore {restoreResult.FailureCount} items:\n" +
                         string.Join("\n", restoreResult.Failures.Select(f => $"• {f.Item.PartID}: {f.Error}"));
                     Logger.LogWarning("Undo operation had failures: {FailureMessage}", failureMessage);
                 }
@@ -596,11 +587,6 @@ public partial class RemoveItemViewModel : BaseViewModel
             Logger.LogError(ex, "Error initiating print operation");
             await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
         }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to print inventory");
-            throw new ApplicationException("Print operation failed", ex);
-        }
     }
 
     #endregion
@@ -626,7 +612,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 new Dictionary<string, object>()
             ).ConfigureAwait(false);
 
-            Logger.LogDebug("md_part_ids_Get_All result: IsSuccess={IsSuccess}, RowCount={RowCount}", 
+            Logger.LogDebug("md_part_ids_Get_All result: IsSuccess={IsSuccess}, RowCount={RowCount}",
                 partResult.IsSuccess, partResult.Data?.Rows.Count ?? 0);
 
             if (partResult.IsSuccess)
@@ -654,7 +640,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 Logger.LogInformation("Loading sample part data as fallback");
                 await LoadSampleDataAsync().ConfigureAwait(false);
             }
-            
+
             // Load Operations using md_operation_numbers_Get_All stored procedure
             Logger.LogDebug("Calling md_operation_numbers_Get_All stored procedure");
             var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -663,7 +649,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 new Dictionary<string, object>()
             ).ConfigureAwait(false);
 
-            Logger.LogDebug("md_operation_numbers_Get_All result: IsSuccess={IsSuccess}, RowCount={RowCount}", 
+            Logger.LogDebug("md_operation_numbers_Get_All result: IsSuccess={IsSuccess}, RowCount={RowCount}",
                 operationResult.IsSuccess, operationResult.Data?.Rows.Count ?? 0);
 
             if (operationResult.IsSuccess)
@@ -692,7 +678,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 await LoadSampleDataAsync().ConfigureAwait(false);
             }
 
-            Logger.LogInformation("ComboBox data loaded successfully - Parts: {PartCount}, Operations: {OperationCount}", 
+            Logger.LogInformation("ComboBox data loaded successfully - Parts: {PartCount}, Operations: {OperationCount}",
                 PartOptions.Count, OperationOptions.Count);
         }
         catch (Exception ex)
@@ -757,7 +743,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 new MTM_Shared_Logic.Models.InventoryItem
                 {
                     ID = 2,
-                    PartID = "PART001", 
+                    PartID = "PART001",
                     Operation = "110",
                     Location = "WC02",
                     Quantity = 15,
@@ -783,13 +769,13 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             if (!string.IsNullOrWhiteSpace(SelectedPart))
             {
-                filteredItems = filteredItems.Where(item => 
+                filteredItems = filteredItems.Where(item =>
                     item.PartID.Equals(SelectedPart, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(SelectedOperation))
             {
-                filteredItems = filteredItems.Where(item => 
+                filteredItems = filteredItems.Where(item =>
                     item.Operation?.Equals(SelectedOperation, StringComparison.OrdinalIgnoreCase) == true);
             }
 
@@ -814,15 +800,15 @@ public partial class RemoveItemViewModel : BaseViewModel
     private void HandleException(Exception ex)
     {
         Logger.LogError(ex, "Error in RemoveItemViewModel operation");
-        
+
         // Present user-friendly error message via centralized error service
         _ = Services.ErrorHandling.HandleErrorAsync(ex, "Remove Operation", _applicationState.CurrentUser);
-        
+
         // Update UI state to reflect error
         // Note: StatusMessage property may need to be added to this ViewModel for UI feedback
         Logger.LogInformation("User-friendly error message: {Message}", GetUserFriendlyErrorMessage(ex));
     }
-    
+
     /// <summary>
     /// Gets a user-friendly error message based on the exception type
     /// </summary>
@@ -874,10 +860,10 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Converts inventory items to DataTable for print service
     /// </summary>
-    private DataTable ConvertInventoryToDataTable(ObservableCollection<InventoryItem> inventoryItems)
+    private DataTable ConvertInventoryToDataTable(ObservableCollection<MTM_Shared_Logic.Models.InventoryItem> inventoryItems)
     {
         var dataTable = new DataTable();
-        
+
         // Define columns based on InventoryItem properties
         dataTable.Columns.Add("PartId", typeof(string));
         dataTable.Columns.Add("Operation", typeof(string));
@@ -886,7 +872,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         dataTable.Columns.Add("Notes", typeof(string));
         dataTable.Columns.Add("LastUpdated", typeof(DateTime));
         dataTable.Columns.Add("LastUpdatedBy", typeof(string));
-        
+
         // Add rows
         foreach (var item in inventoryItems)
         {
@@ -900,10 +886,10 @@ public partial class RemoveItemViewModel : BaseViewModel
             row["LastUpdatedBy"] = item.User ?? string.Empty;
             dataTable.Rows.Add(row);
         }
-        
-        Logger.LogDebug("Converted {ItemCount} inventory items to DataTable with {ColumnCount} columns", 
+
+        Logger.LogDebug("Converted {ItemCount} inventory items to DataTable with {ColumnCount} columns",
             inventoryItems.Count, dataTable.Columns.Count);
-            
+
         return dataTable;
     }
 
@@ -922,10 +908,10 @@ public partial class RemoveItemViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Showing part suggestions for input: {Input}", userInput);
-            
+
             // Get suggestions from RemoveService
             var suggestions = await _removeService.GetPartSuggestionsAsync(userInput).ConfigureAwait(false);
-            
+
             if (suggestions.Any())
             {
                 Logger.LogDebug("RemoveService provided {Count} part suggestions", suggestions.Count);
@@ -958,10 +944,10 @@ public partial class RemoveItemViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Showing operation suggestions for input: {Input}", userInput);
-            
+
             // Get suggestions from RemoveService
             var suggestions = await _removeService.GetOperationSuggestionsAsync(userInput).ConfigureAwait(false);
-            
+
             if (suggestions.Any())
             {
                 Logger.LogDebug("RemoveService provided {Count} operation suggestions", suggestions.Count);
@@ -991,7 +977,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogInformation("Populating fields from QuickButton: Part={PartId}, Operation={Operation}", 
+            Logger.LogInformation("Populating fields from QuickButton: Part={PartId}, Operation={Operation}",
                 partId, operation);
 
             if (!string.IsNullOrWhiteSpace(partId))
