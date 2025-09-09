@@ -14,6 +14,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia;
 using System.Linq;
 using Avalonia.VisualTree;
+using System.Threading;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -30,6 +31,11 @@ public partial class RemoveTabView : UserControl
     private readonly ILogger<RemoveTabView>? _logger;
     private RemoveItemViewModel? _viewModel;
     private QuickButtonsViewModel? _quickButtonsViewModel;
+
+    // Debouncing timers to prevent SuggestionOverlay spamming
+    private Timer? _partSuggestionTimer;
+    private Timer? _operationSuggestionTimer;
+    private const int SUGGESTION_DEBOUNCE_MS = 500; // 500ms delay
 
     /// <summary>
     /// Initializes a new instance of the RemoveTabView with minimal dependency injection support.
@@ -81,29 +87,28 @@ public partial class RemoveTabView : UserControl
     }
 
     /// <summary>
-    /// Sets up SuggestionOverlay event handlers for all TextBox controls
+    /// Sets up SuggestionOverlay event handlers for all TextBox controls with debouncing to prevent spamming.
+    /// Removes GotFocus handlers to prevent excessive overlay creation and implements proper debouncing.
     /// </summary>
     private void SetupTextBoxSuggestionHandlers()
     {
         try
         {
-            // Setup Part TextBox
+            // Setup Part TextBox - only TextChanged with debouncing
             var partTextBox = this.FindControl<TextBox>("PartTextBox");
             if (partTextBox != null)
             {
-                partTextBox.GotFocus += OnPartTextBoxGotFocus;
                 partTextBox.TextChanged += OnPartTextBoxTextChanged;
             }
 
-            // Setup Operation TextBox
+            // Setup Operation TextBox - only TextChanged with debouncing  
             var operationTextBox = this.FindControl<TextBox>("OperationTextBox");
             if (operationTextBox != null)
             {
-                operationTextBox.GotFocus += OnOperationTextBoxGotFocus;
                 operationTextBox.TextChanged += OnOperationTextBoxTextChanged;
             }
 
-            _logger?.LogDebug("TextBox SuggestionOverlay event handlers setup completed");
+            _logger?.LogDebug("TextBox SuggestionOverlay event handlers setup completed (debounced TextChanged only)");
         }
         catch (Exception ex)
         {
@@ -616,98 +621,79 @@ public partial class RemoveTabView : UserControl
     #region SuggestionOverlay Event Handlers
 
     /// <summary>
-    /// Handles Part TextBox focus event for SuggestionOverlay
+    /// Handles Part TextBox text changed event for SuggestionOverlay with debouncing.
+    /// Uses a timer to prevent excessive overlay creation during rapid typing.
     /// </summary>
-    private async void OnPartTextBoxGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    private void OnPartTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
     {
-        if (_viewModel != null && sender is TextBox textBox)
-        {
-            try
-            {
-                var result = await _viewModel.ShowPartSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
-                if (result != null)
-                {
-                    _viewModel.SelectedPart = result;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogWarning(ex, "Error showing part suggestions");
-            }
-        }
-    }
+        if (_viewModel == null || sender is not TextBox textBox) 
+            return;
 
-    /// <summary>
-    /// Handles Part TextBox text changed event for SuggestionOverlay
-    /// </summary>
-    private async void OnPartTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
-    {
-        if (_viewModel != null && sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
+        // Dispose existing timer
+        _partSuggestionTimer?.Dispose();
+
+        // Only show suggestions for meaningful input
+        var text = textBox.Text?.Trim() ?? string.Empty;
+        if (text.Length < 2)
+            return;
+
+        // Create new debounced timer
+        _partSuggestionTimer = new Timer(async _ =>
         {
             try
             {
-                // Only show suggestions if text length > 1 to avoid too many suggestions
-                if (textBox.Text.Length > 1)
+                await Dispatcher.UIThread.InvokeAsync(async () =>
                 {
-                    var result = await _viewModel.ShowPartSuggestionsAsync(textBox, textBox.Text);
-                    if (result != null && result != textBox.Text)
+                    var result = await _viewModel.ShowPartSuggestionsAsync(textBox, text);
+                    if (result != null && result != text)
                     {
                         _viewModel.SelectedPart = result;
                     }
-                }
+                });
             }
             catch (Exception ex)
             {
-                _logger?.LogWarning(ex, "Error showing part suggestions on text change");
+                _logger?.LogWarning(ex, "Error showing debounced part suggestions");
             }
-        }
+        }, null, SUGGESTION_DEBOUNCE_MS, Timeout.Infinite);
     }
 
     /// <summary>
-    /// Handles Operation TextBox focus event for SuggestionOverlay
+    /// Handles Operation TextBox text changed event for SuggestionOverlay with debouncing.
+    /// Uses a timer to prevent excessive overlay creation during rapid typing.
     /// </summary>
-    private async void OnOperationTextBoxGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    private void OnOperationTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
     {
-        if (_viewModel != null && sender is TextBox textBox)
-        {
-            try
-            {
-                var result = await _viewModel.ShowOperationSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
-                if (result != null)
-                {
-                    _viewModel.SelectedOperation = result;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogWarning(ex, "Error showing operation suggestions");
-            }
-        }
-    }
+        if (_viewModel == null || sender is not TextBox textBox) 
+            return;
 
-    /// <summary>
-    /// Handles Operation TextBox text changed event for SuggestionOverlay
-    /// </summary>
-    private async void OnOperationTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
-    {
-        if (_viewModel != null && sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
+        // Dispose existing timer
+        _operationSuggestionTimer?.Dispose();
+
+        // Operations are often single digit, so show suggestions for any input
+        var text = textBox.Text?.Trim() ?? string.Empty;
+        if (text.Length < 1)
+            return;
+
+        // Create new debounced timer
+        _operationSuggestionTimer = new Timer(async _ =>
         {
             try
             {
-                if (textBox.Text.Length > 0) // Operations are often single digit
+                await Dispatcher.UIThread.InvokeAsync(async () =>
                 {
-                    var result = await _viewModel.ShowOperationSuggestionsAsync(textBox, textBox.Text);
-                    if (result != null && result != textBox.Text)
+                    var result = await _viewModel.ShowOperationSuggestionsAsync(textBox, text);
+                    if (result != null && result != text)
                     {
                         _viewModel.SelectedOperation = result;
                     }
-                }
+                });
             }
             catch (Exception ex)
             {
-                _logger?.LogWarning(ex, "Error showing operation suggestions on text change");
+                _logger?.LogWarning(ex, "Error showing debounced operation suggestions");
             }
-        }
+        }, null, SUGGESTION_DEBOUNCE_MS, Timeout.Infinite);
     }
 
     #endregion
@@ -1043,7 +1029,13 @@ public partial class RemoveTabView : UserControl
 
             this.DataContextChanged -= OnDataContextChanged;
             
-            _logger?.LogInformation("RemoveTabView cleanup completed");
+            // Cleanup debouncing timers to prevent memory leaks
+            _partSuggestionTimer?.Dispose();
+            _partSuggestionTimer = null;
+            _operationSuggestionTimer?.Dispose();
+            _operationSuggestionTimer = null;
+            
+            _logger?.LogInformation("RemoveTabView cleanup completed including timer disposal");
         }
         catch (Exception ex)
         {

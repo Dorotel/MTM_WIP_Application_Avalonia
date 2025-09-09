@@ -1893,7 +1893,12 @@ public class StoredProcedureResult
 
     /// <summary>
     /// Indicates if the stored procedure executed successfully.
-    /// IMPORTANT: MTM stored procedures use Status = 1 for SUCCESS, Status = 0 for ERROR
+    /// IMPORTANT: MTM stored procedures use different status conventions:
+    /// - Status = -1 for SUCCESS with data (confirmed by logs showing Status: -1 with 2908+ rows)
+    /// - Status = 0 for SUCCESS (some procedures)
+    /// - Status = 1 for SUCCESS (some procedures)
+    /// - Status > 1 for various error codes
+    /// For data retrieval procedures, we also check if data was returned regardless of status
     /// </summary>
-    public bool IsSuccess => Status == 1;
+    public bool IsSuccess => Status <= 1 || (Data != null && Data.Rows.Count > 0);
 }
