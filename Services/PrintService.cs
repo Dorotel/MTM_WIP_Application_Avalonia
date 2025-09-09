@@ -9,6 +9,7 @@ using System.IO;
 using System.Text.Json;
 using Avalonia.Controls;
 using System.Drawing.Printing;
+using System.Linq;
 
 namespace MTM_WIP_Application_Avalonia.Services;
 
@@ -506,18 +507,251 @@ public class PrintService : IPrintService
 
     private void GeneratePreviewContent(Canvas canvas, DataTable data, PrintConfiguration configuration)
     {
-        // TODO: Implement sophisticated print preview generation
-        // This would create visual representation of the printed document
-        
-        // For now, add a simple placeholder
-        var textBlock = new Avalonia.Controls.TextBlock
+        try
         {
-            Text = $"Print Preview\n{configuration.DocumentTitle}\n{data.Rows.Count} rows",
-            FontSize = 14,
-            Margin = new Avalonia.Thickness(20)
+            // Clear existing content
+            canvas.Children.Clear();
+
+            // Create a more realistic preview with actual data
+            var mainPanel = new Avalonia.Controls.StackPanel
+            {
+                Margin = new Avalonia.Thickness(20),
+                Spacing = 16
+            };
+
+            // Document header
+            if (configuration.IncludeHeaders)
+            {
+                var headerPanel = new Avalonia.Controls.StackPanel { Spacing = 8 };
+                
+                var titleBlock = new Avalonia.Controls.TextBlock
+                {
+                    Text = configuration.DocumentTitle,
+                    FontSize = 18,
+                    FontWeight = Avalonia.Media.FontWeight.Bold,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
+                };
+                headerPanel.Children.Add(titleBlock);
+
+                if (configuration.IncludeTimestamp)
+                {
+                    var dateBlock = new Avalonia.Controls.TextBlock
+                    {
+                        Text = $"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}",
+                        FontSize = 10,
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                        Foreground = Avalonia.Media.Brushes.Gray
+                    };
+                    headerPanel.Children.Add(dateBlock);
+                }
+
+                if (configuration.IncludeUserInfo)
+                {
+                    var userBlock = new Avalonia.Controls.TextBlock
+                    {
+                        Text = $"User: {Environment.UserName}",
+                        FontSize = 10,
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                        Foreground = Avalonia.Media.Brushes.Gray
+                    };
+                    headerPanel.Children.Add(userBlock);
+                }
+
+                mainPanel.Children.Add(headerPanel);
+            }
+
+            // Create data table preview
+            if (data.Rows.Count > 0)
+            {
+                var grid = new Avalonia.Controls.Grid
+                {
+                    ShowGridLines = configuration.IncludeGridLines
+                };
+
+                // Create column definitions based on visible columns
+                var visibleColumns = configuration.VisibleColumns
+                    ?.Where(c => c.IsVisible)
+                    .OrderBy(c => c.DisplayOrder)
+                    .ToList() ?? new List<PrintColumnInfo>();
+
+                if (visibleColumns.Count == 0)
+                {
+                    // If no visible columns defined, use all columns
+                    for (int i = 0; i < data.Columns.Count; i++)
+                    {
+                        grid.ColumnDefinitions.Add(new Avalonia.Controls.ColumnDefinition(Avalonia.Controls.GridLength.Star));
+                    }
+                }
+                else
+                {
+                    foreach (var col in visibleColumns)
+                    {
+                        grid.ColumnDefinitions.Add(new Avalonia.Controls.ColumnDefinition(new Avalonia.Controls.GridLength(col.Width, Avalonia.Controls.GridUnitType.Pixel)));
+                    }
+                }
+
+                // Add header row
+                grid.RowDefinitions.Add(new Avalonia.Controls.RowDefinition(Avalonia.Controls.GridLength.Auto));
+                
+                int colIndex = 0;
+                if (visibleColumns.Count == 0)
+                {
+                    foreach (DataColumn column in data.Columns)
+                    {
+                        var headerBlock = new Avalonia.Controls.TextBlock
+                        {
+                            Text = column.ColumnName,
+                            FontWeight = Avalonia.Media.FontWeight.Bold,
+                            FontSize = configuration.FontSize,
+                            Padding = new Avalonia.Thickness(8, 4),
+                            Background = Avalonia.Media.Brushes.LightGray
+                        };
+                        Avalonia.Controls.Grid.SetRow(headerBlock, 0);
+                        Avalonia.Controls.Grid.SetColumn(headerBlock, colIndex++);
+                        grid.Children.Add(headerBlock);
+                    }
+                }
+                else
+                {
+                    foreach (var visibleCol in visibleColumns)
+                    {
+                        var headerBlock = new Avalonia.Controls.TextBlock
+                        {
+                            Text = visibleCol.Header,
+                            FontWeight = Avalonia.Media.FontWeight.Bold,
+                            FontSize = configuration.FontSize,
+                            Padding = new Avalonia.Thickness(8, 4),
+                            Background = Avalonia.Media.Brushes.LightGray,
+                            TextAlignment = GetTextAlignment(visibleCol.Alignment)
+                        };
+                        Avalonia.Controls.Grid.SetRow(headerBlock, 0);
+                        Avalonia.Controls.Grid.SetColumn(headerBlock, colIndex++);
+                        grid.Children.Add(headerBlock);
+                    }
+                }
+
+                // Add data rows (limit to first 10 for preview)
+                int rowsToShow = Math.Min(10, data.Rows.Count);
+                for (int rowIndex = 0; rowIndex < rowsToShow; rowIndex++)
+                {
+                    grid.RowDefinitions.Add(new Avalonia.Controls.RowDefinition(Avalonia.Controls.GridLength.Auto));
+                    var dataRow = data.Rows[rowIndex];
+                    
+                    colIndex = 0;
+                    if (visibleColumns.Count == 0)
+                    {
+                        foreach (DataColumn column in data.Columns)
+                        {
+                            var cellBlock = new Avalonia.Controls.TextBlock
+                            {
+                                Text = dataRow[column.ColumnName]?.ToString() ?? "",
+                                FontSize = configuration.FontSize,
+                                Padding = new Avalonia.Thickness(8, 4),
+                                Background = rowIndex % 2 == 0 ? Avalonia.Media.Brushes.White : Avalonia.Media.Brushes.WhiteSmoke
+                            };
+                            Avalonia.Controls.Grid.SetRow(cellBlock, rowIndex + 1);
+                            Avalonia.Controls.Grid.SetColumn(cellBlock, colIndex++);
+                            grid.Children.Add(cellBlock);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var visibleCol in visibleColumns)
+                        {
+                            var cellValue = "";
+                            if (data.Columns.Contains(visibleCol.PropertyName))
+                            {
+                                cellValue = dataRow[visibleCol.PropertyName]?.ToString() ?? "";
+                            }
+                            
+                            var cellBlock = new Avalonia.Controls.TextBlock
+                            {
+                                Text = cellValue,
+                                FontSize = configuration.FontSize,
+                                Padding = new Avalonia.Thickness(8, 4),
+                                Background = rowIndex % 2 == 0 ? Avalonia.Media.Brushes.White : Avalonia.Media.Brushes.WhiteSmoke,
+                                TextAlignment = GetTextAlignment(visibleCol.Alignment)
+                            };
+                            Avalonia.Controls.Grid.SetRow(cellBlock, rowIndex + 1);
+                            Avalonia.Controls.Grid.SetColumn(cellBlock, colIndex++);
+                            grid.Children.Add(cellBlock);
+                        }
+                    }
+                }
+
+                // Add "..." if more rows exist
+                if (data.Rows.Count > rowsToShow)
+                {
+                    grid.RowDefinitions.Add(new Avalonia.Controls.RowDefinition(Avalonia.Controls.GridLength.Auto));
+                    var moreRowsBlock = new Avalonia.Controls.TextBlock
+                    {
+                        Text = $"... and {data.Rows.Count - rowsToShow} more rows",
+                        FontSize = configuration.FontSize - 1,
+                        Padding = new Avalonia.Thickness(8, 4),
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                        FontStyle = Avalonia.Media.FontStyle.Italic,
+                        Foreground = Avalonia.Media.Brushes.Gray
+                    };
+                    Avalonia.Controls.Grid.SetRow(moreRowsBlock, rowsToShow + 1);
+                    Avalonia.Controls.Grid.SetColumnSpan(moreRowsBlock, Math.Max(1, visibleColumns.Count > 0 ? visibleColumns.Count : data.Columns.Count));
+                    grid.Children.Add(moreRowsBlock);
+                }
+
+                mainPanel.Children.Add(grid);
+            }
+            else
+            {
+                var noDataBlock = new Avalonia.Controls.TextBlock
+                {
+                    Text = "No data to preview",
+                    FontSize = 14,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    Foreground = Avalonia.Media.Brushes.Gray
+                };
+                mainPanel.Children.Add(noDataBlock);
+            }
+
+            // Document footer
+            if (configuration.IncludeFooters)
+            {
+                var footerBlock = new Avalonia.Controls.TextBlock
+                {
+                    Text = $"Page 1 of {Math.Max(1, (int)Math.Ceiling((double)data.Rows.Count / 50))} • Total Records: {data.Rows.Count}",
+                    FontSize = 10,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    Foreground = Avalonia.Media.Brushes.Gray,
+                    Margin = new Avalonia.Thickness(0, 16, 0, 0)
+                };
+                mainPanel.Children.Add(footerBlock);
+            }
+
+            canvas.Children.Add(mainPanel);
+        }
+        catch (Exception ex)
+        {
+            // Fallback to simple preview if detailed preview fails
+            var errorBlock = new Avalonia.Controls.TextBlock
+            {
+                Text = $"Print Preview\n{configuration.DocumentTitle}\n{data.Rows.Count} rows\n\n(Preview generation error: {ex.Message})",
+                FontSize = 14,
+                Margin = new Avalonia.Thickness(20),
+                Foreground = Avalonia.Media.Brushes.Red
+            };
+            
+            canvas.Children.Clear();
+            canvas.Children.Add(errorBlock);
+        }
+    }
+
+    private Avalonia.Media.TextAlignment GetTextAlignment(PrintAlignment alignment)
+    {
+        return alignment switch
+        {
+            PrintAlignment.Left => Avalonia.Media.TextAlignment.Left,
+            PrintAlignment.Center => Avalonia.Media.TextAlignment.Center,
+            PrintAlignment.Right => Avalonia.Media.TextAlignment.Right,
+            _ => Avalonia.Media.TextAlignment.Left
         };
-        
-        canvas.Children.Add(textBlock);
     }
 
     private double GetPageWidth(Models.PaperSize paperSize)

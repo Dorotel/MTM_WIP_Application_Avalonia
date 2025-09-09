@@ -28,6 +28,11 @@ public partial class PrintViewModel : BaseViewModel
     private readonly IThemeService? _themeService;
     private readonly IConfigurationService? _configurationService;
 
+    /// <summary>
+    /// ViewModel for the layout customization control
+    /// </summary>
+    public PrintLayoutControlViewModel PrintLayoutControlViewModel { get; }
+
     #region Data Context
 
     /// <summary>
@@ -209,6 +214,11 @@ public partial class PrintViewModel : BaseViewModel
         _themeService = themeService;
         _configurationService = configurationService;
 
+        // Initialize the layout control ViewModel
+        var layoutLogger = Program.GetOptionalService<ILogger<PrintLayoutControlViewModel>>() ??
+                          Microsoft.Extensions.Logging.Abstractions.NullLogger<PrintLayoutControlViewModel>.Instance;
+        PrintLayoutControlViewModel = new PrintLayoutControlViewModel(layoutLogger);
+
         Logger.LogDebug("PrintViewModel initialized");
         
         // Initialize with default title
@@ -364,6 +374,9 @@ public partial class PrintViewModel : BaseViewModel
 
                     PrintColumns.Add(printColumn);
                 }
+
+                // Initialize the layout control with print columns
+                PrintLayoutControlViewModel.InitializeColumns(PrintColumns);
 
                 Logger.LogDebug("Initialized {ColumnCount} print columns", PrintColumns.Count);
             }

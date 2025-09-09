@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="800"
@@ -88,23 +89,29 @@
                                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                                     
                                     <!-- Orientation -->
-                                    <Grid ColumnDefinitions="100,*" ColumnSpacing="8">
+                                    <Grid ColumnDefinitions="80,*" ColumnSpacing="8">
                                         <TextBlock Grid.Column="0" 
                                                   Text="Orientation:" 
-                                                  VerticalAlignment="Center" />
+                                                  VerticalAlignment="Center" 
+                                                  FontSize="11" />
                                         <ComboBox Grid.Column="1" 
                                                  ItemsSource="{Binding OrientationOptions}"
-                                                 SelectedItem="{Binding SelectedOrientation}" />
+                                                 SelectedItem="{Binding SelectedOrientation}"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalContentAlignment="Center" />
                                     </Grid>
 
                                     <!-- Paper Size -->
-                                    <Grid ColumnDefinitions="100,*" ColumnSpacing="8">
+                                    <Grid ColumnDefinitions="80,*" ColumnSpacing="8">
                                         <TextBlock Grid.Column="0" 
                                                   Text="Paper Size:" 
-                                                  VerticalAlignment="Center" />
+                                                  VerticalAlignment="Center" 
+                                                  FontSize="11" />
                                         <ComboBox Grid.Column="1" 
                                                  ItemsSource="{Binding PaperSizeOptions}"
-                                                 SelectedItem="{Binding SelectedPaperSize}" />
+                                                 SelectedItem="{Binding SelectedPaperSize}"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalContentAlignment="Center" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -119,28 +126,35 @@
                                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                                     
                                     <!-- Quality -->
-                                    <Grid ColumnDefinitions="70,*" ColumnSpacing="8">
+                                    <Grid ColumnDefinitions="60,*" ColumnSpacing="8">
                                         <TextBlock Grid.Column="0" 
                                                   Text="Quality:" 
-                                                  VerticalAlignment="Center" />
+                                                  VerticalAlignment="Center" 
+                                                  FontSize="11" />
                                         <ComboBox Grid.Column="1" 
                                                  ItemsSource="{Binding QualityOptions}"
-                                                 SelectedItem="{Binding SelectedQuality}" />
+                                                 SelectedItem="{Binding SelectedQuality}"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalContentAlignment="Center" />
                                     </Grid>
 
                                     <!-- Copies -->
-                                    <Grid ColumnDefinitions="70,*,80" ColumnSpacing="8">
+                                    <Grid ColumnDefinitions="60,*,80" ColumnSpacing="8">
                                         <TextBlock Grid.Column="0" 
                                                   Text="Copies:" 
-                                                  VerticalAlignment="Center" />
+                                                  VerticalAlignment="Center" 
+                                                  FontSize="11" />
                                         <NumericUpDown Grid.Column="1" 
                                                       Value="{Binding Copies}"
                                                       Minimum="1" 
                                                       Maximum="999"
-                                                      ShowButtonSpinner="True" />
+                                                      ShowButtonSpinner="True"
+                                                      HorizontalAlignment="Stretch" />
                                         <CheckBox Grid.Column="2" 
                                                  Content="Collate" 
-                                                 IsChecked="{Binding Collate}" />
+                                                 IsChecked="{Binding Collate}"
+                                                 VerticalAlignment="Center"
+                                                 FontSize="11" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -157,19 +171,30 @@
                                     <!-- Style Selection -->
                                     <ComboBox ItemsSource="{Binding StyleOptions}"
                                              SelectedItem="{Binding SelectedStyle}"
-                                             HorizontalAlignment="Stretch" />
+                                             HorizontalAlignment="Stretch"
+                                             VerticalContentAlignment="Center" />
 
                                     <!-- Style Options -->
                                     <CheckBox Content="Include Headers" 
-                                             IsChecked="{Binding IncludeHeaders}" />
+                                             IsChecked="{Binding IncludeHeaders}"
+                                             FontSize="11"
+                                             VerticalAlignment="Center" />
                                     <CheckBox Content="Include Footers" 
-                                             IsChecked="{Binding IncludeFooters}" />
+                                             IsChecked="{Binding IncludeFooters}"
+                                             FontSize="11"
+                                             VerticalAlignment="Center" />
                                     <CheckBox Content="Include Grid Lines" 
-                                             IsChecked="{Binding IncludeGridLines}" />
+                                             IsChecked="{Binding IncludeGridLines}"
+                                             FontSize="11"
+                                             VerticalAlignment="Center" />
                                     <CheckBox Content="Include Timestamp" 
-                                             IsChecked="{Binding IncludeTimestamp}" />
+                                             IsChecked="{Binding IncludeTimestamp}"
+                                             FontSize="11"
+                                             VerticalAlignment="Center" />
                                     <CheckBox Content="Include User Info" 
-                                             IsChecked="{Binding IncludeUserInfo}" />
+                                             IsChecked="{Binding IncludeUserInfo}"
+                                             FontSize="11"
+                                             VerticalAlignment="Center" />
                                 </StackPanel>
                             </Border>
 
@@ -184,18 +209,23 @@
                                     
                                     <!-- Document Title -->
                                     <TextBox Text="{Binding DocumentTitle}" 
-                                            Watermark="Document title" />
+                                            Watermark="Document title"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalContentAlignment="Center" />
 
                                     <!-- Font Settings -->
                                     <Grid ColumnDefinitions="*,60" ColumnSpacing="8">
                                         <ComboBox Grid.Column="0" 
                                                  ItemsSource="{Binding FontFamilyOptions}"
-                                                 SelectedItem="{Binding FontFamily}" />
+                                                 SelectedItem="{Binding FontFamily}"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalContentAlignment="Center" />
                                         <NumericUpDown Grid.Column="1" 
                                                       Value="{Binding FontSize}"
                                                       Minimum="8" 
                                                       Maximum="72"
-                                                      ShowButtonSpinner="True" />
+                                                      ShowButtonSpinner="True"
+                                                      HorizontalAlignment="Stretch" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -212,11 +242,14 @@
                                     <ComboBox ItemsSource="{Binding AvailableTemplates}"
                                              SelectedItem="{Binding SelectedTemplate}"
                                              DisplayMemberBinding="{Binding Name}"
-                                             HorizontalAlignment="Stretch" />
+                                             HorizontalAlignment="Stretch"
+                                             VerticalContentAlignment="Center" />
 
                                     <Button Content="Load Template" 
                                            Command="{Binding LoadTemplateCommand}"
                                            HorizontalAlignment="Stretch"
+                                           HorizontalContentAlignment="Center"
+                                           VerticalContentAlignment="Center"
                                            Classes="mtm-secondary" />
                                 </StackPanel>
                             </Border>
@@ -240,7 +273,7 @@
                             Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}" 
                             CornerRadius="8,8,0,0" 
                             Padding="16,12">
-                        <Grid ColumnDefinitions="*,Auto,Auto">
+                        <Grid ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
                                 <TextBlock Text="👁️" FontSize="20" VerticalAlignment="Center" />
                                 <TextBlock Text="Print Preview" 
@@ -258,34 +291,50 @@
                                           VerticalAlignment="Center" />
                             </StackPanel>
 
-                            <!-- Zoom Controls -->
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" Margin="0,0,12,0">
-                                <Button Content="🔍-" 
-                                       Command="{Binding ZoomOutCommand}"
-                                       Classes="mtm-secondary"
-                                       Width="32" Height="24" />
-                                <TextBlock Text="{Binding PreviewZoom, StringFormat='\{0:F0\}%'}" 
-                                          FontSize="12" 
-                                          VerticalAlignment="Center" 
-                                          MinWidth="40"
-                                          HorizontalAlignment="Center" />
-                                <Button Content="🔍+" 
-                                       Command="{Binding ZoomInCommand}"
-                                       Classes="mtm-secondary"
-                                       Width="32" Height="24" />
-                                <Button Content="100%" 
-                                       Command="{Binding ResetZoomCommand}"
-                                       Classes="mtm-secondary"
-                                       Width="40" Height="24" />
-                            </StackPanel>
+                            <!-- Right side controls -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                <!-- Zoom Controls -->
+                                <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}"
+                                       CornerRadius="4"
+                                       Padding="8,4">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <Button Content="🔍-" 
+                                               Command="{Binding ZoomOutCommand}"
+                                               Classes="mtm-secondary"
+                                               Width="28" Height="24"
+                                               HorizontalContentAlignment="Center"
+                                               VerticalContentAlignment="Center" />
+                                        <TextBlock Text="{Binding PreviewZoom, StringFormat='\{0:F0\}%'}" 
+                                                  FontSize="11" 
+                                                  VerticalAlignment="Center" 
+                                                  MinWidth="35"
+                                                  HorizontalAlignment="Center"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                                        <Button Content="🔍+" 
+                                               Command="{Binding ZoomInCommand}"
+                                               Classes="mtm-secondary"
+                                               Width="28" Height="24"
+                                               HorizontalContentAlignment="Center"
+                                               VerticalContentAlignment="Center" />
+                                        <Button Content="100%" 
+                                               Command="{Binding ResetZoomCommand}"
+                                               Classes="mtm-secondary"
+                                               Width="38" Height="24"
+                                               FontSize="10"
+                                               HorizontalContentAlignment="Center"
+                                               VerticalContentAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
 
-                            <!-- Layout Button -->
-                            <Button Grid.Column="2" 
-                                   Content="⚙️ Layout" 
-                                   Command="{Binding ToggleLayoutPanelCommand}"
-                                   Classes="mtm-secondary"
-                                   MinWidth="80" 
-                                   Height="32" />
+                                <!-- Layout Button -->
+                                <Button Content="⚙️ Layout" 
+                                       Command="{Binding ToggleLayoutPanelCommand}"
+                                       Classes="mtm-secondary"
+                                       MinWidth="80" 
+                                       Height="32"
+                                       HorizontalContentAlignment="Center"
+                                       VerticalContentAlignment="Center" />
+                            </StackPanel>
                         </Grid>
                     </Border>
                     
@@ -341,22 +390,9 @@
                            IsVisible="{Binding ShowLayoutPanel}"
                            Height="200">
                         
-                        <Grid RowDefinitions="Auto,*" Margin="16">
-                            <TextBlock Grid.Row="0" 
-                                      Text="📋 Column Layout Customization" 
-                                      FontSize="16" 
-                                      FontWeight="Bold" 
-                                      Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
-                                      Margin="0,0,0,12" />
-
-                            <!-- Layout Control will be implemented as separate UserControl -->
-                            <TextBlock Grid.Row="1" 
-                                      Text="Layout customization controls will be implemented here" 
-                                      FontSize="12" 
-                                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center" />
-                        </Grid>
+                        <!-- Integrated PrintLayoutControl -->
+                        <views:PrintLayoutControl DataContext="{Binding PrintLayoutControlViewModel}" 
+                                                 Margin="8" />
                     </Border>
                 </Grid>
             </Border>
@@ -401,19 +437,17 @@
                            Command="{Binding PrintCommand}" 
                            IsEnabled="{Binding CanPrint, FallbackValue=True}" 
                            MinWidth="110" 
-                           Height="32" />
-                    
-                    <Button Content="👁️ Preview" 
-                           Classes="mtm-secondary" 
-                           Command="{Binding GeneratePreviewCommand}" 
-                           MinWidth="80" 
-                           Height="32" />
+                           Height="32"
+                           HorizontalContentAlignment="Center"
+                           VerticalContentAlignment="Center" />
                     
                     <Button Content="❌ Close" 
                            Classes="mtm-secondary" 
                            Command="{Binding CloseCommand}" 
                            MinWidth="70" 
-                           Height="32" />
+                           Height="32"
+                           HorizontalContentAlignment="Center"
+                           VerticalContentAlignment="Center" />
                 </StackPanel>
             </Grid>
         </Border>
