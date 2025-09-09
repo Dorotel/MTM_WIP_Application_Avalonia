@@ -1,164 +1,73 @@
 ---
-name: "RemoveTabView Implementation Status Report"
-description: "Current implementation status and remaining minor refinements for the RemoveTabView feature."
-title: "[STATUS-REPORT] RemoveTabView Implementation 95% Complete - Final Refinements Required"
-labels: ["implementation-status", "feature-nearly-complete", "inventory-management", "ui", "refinements"]
+name: "RemoveTabView Implementation Gap Report"
+description: "Summary of outstanding and incorrect work for the RemoveTabView feature."
+title: "[GAP-REPORT] RemoveTabView Outstanding Work & Issues"
+labels: ["gap-analysis", "feature-blocker", "inventory-management", "ui", "implementation-status"]
 projects: ["MTM-Development"]
 assignees: []
 body:
   - type: markdown
     attributes:
       value: |
-        # ✅ RemoveTabView Implementation Status Report
+        # 🚧 RemoveTabView Implementation Gap Report
         
-        **Implementation Status**: **95% COMPLETE** - Major functionality implemented and working
-        **Remaining Work**: Minor refinements and optimizations
-        **Build Status**: ✅ Successfully compiles with comprehensive functionality
+        This report summarizes all work that is still not done or is not done correctly for the RemoveTabView feature, based on the comprehensive specification and current build status.
         
 
-        ## 🎉 MAJOR ACHIEVEMENTS (Current Build Status)
-   - ✅ **RemoveTabView.axaml**: Complete DataGrid-centric implementation with CollapsiblePanel integration and full InventoryTabView styling compliance
-   - ✅ **UI Transformation**: All ComboBoxes successfully replaced with TextBoxes + SuggestionOverlay integration
-   - ✅ **Business Logic**: 1200+ line RemoveItemViewModel with comprehensive batch operations, transaction handling, and audit trail
-   - ✅ **Professional UX**: Custom confirmation dialogs, multi-row selection, keyboard shortcuts (F5, Delete, Ctrl+Z, Escape)
-   - ✅ **Integration Systems**: QuickButtons (multi-strategy), SuccessOverlay, ErrorHandling, MTM Theme system fully operational
-   - ✅ **Advanced Features**: Auto-collapse/expand panels, loading states, "Nothing Found" indicators, real-time validation
+        ## CRITICAL BLOCKERS (Current Build Validation)
+   - RemoveTabView.axaml: PR #60 introduces DataGrid implementation, CollapsiblePanel integration, and InventoryTabView styling. ComboBoxes have been replaced with TextBoxes + SuggestionOverlay. Search/Reset button functionality, QuickButtons, SuccessOverlay, and progress reporting are present but require further validation and refinement.
+   - CollapsiblePanel.axaml: The header is currently positioned on the left side; it must be moved to the top for RemoveTabView and all InventoryTabView-based layouts to match the specification and user expectations.
+   - RemoveItemViewModel.cs: Business logic is connected to new UI components. Batch/multi-row deletion, atomic transaction handling, and audit trail logic are implemented, but validation, error handling, accessibility, and keyboard shortcuts need further review and testing.
+   - Integration Points: Overlay, progress, and theme system integration are present. Accessibility features and keyboard navigation are partially implemented and require completion.
+   - Testing & Performance: Some integration tests and performance optimizations for large datasets and batch operations are present, but coverage is incomplete.
 
-        ## 📋 FINAL REFINEMENTS NEEDED (Minor Items Only)
+        ## What Still Needs to Be Fixed
 
-   1. **CollapsiblePanel Header Position** ⚠️ **Minor Fix Required**
-      - Current: Header positioned on LEFT side in CollapsiblePanel.axaml
-      - Required: Move header to TOP position for RemoveTabView and all InventoryTabView-based layouts  
-      - Impact: Visual consistency with InventoryTabView pattern
-      - Estimated Fix Time: 10-15 minutes
+   1. **UI Implementation**
+      - Validate DataGrid-centric layout with search/filter inputs above DataGrid.
+      - Refine CollapsiblePanel auto-collapse/expand behavior for input area.
+      - Confirm all ComboBoxes are replaced with TextBoxes + SuggestionOverlay.
+      - Ensure InventoryTabView styling and grid pattern are fully consistent.
+      - Update CollapsiblePanel.axaml so the header is positioned on top, not on the left side, for RemoveTabView and all InventoryTabView-based layouts.
 
-        2. **Remove Unnecessary Input Fields** ⚠️ **UI Simplification Required**
-           - Current: Location and User TextBox fields present in RemoveTabView
-           - Required: Remove Location and User input fields and related logic (not essential for core removal)
-           - Impact: Simplified, focused user interface for inventory removal
-           - Estimated Fix Time: 15-20 minutes
+        2. **Input Field Implementation**
+           - Validate SuggestionOverlay for Part ID, Operation, Location, and User fields.
+           - Confirm TextBoxFuzzyValidationBehavior and watermark text are present.
+           - Refine styling and real-time validation feedback for all inputs.
 
-        3. **Remove Redundant QuickButtons Toggle** ⚠️ **UI Cleanup Required**
-           - Current: RemoveTabView has toggle button for QuickButtons panel
-           - Required: Remove toggle button since QuickButtonsView has its own built-in toggle functionality
-           - Impact: Cleaner UI without redundant controls
-           - Estimated Fix Time: 5-10 minutes
+        3. **DataGrid Functionality**
+           - Confirm multi-row selection, sortable columns, and row highlighting are enabled.
+           - Validate "Nothing Found" indicator and loading state.
+           - Add/validate context menu for row-level operations (optional).
 
-        4. **Integration Testing Documentation** ⚠️ **Documentation Enhancement**
-           - Current: RemoveTabView_Integration_Tests.md exists with basic structure
-           - Required: Complete comprehensive test scenarios and mock service examples
-           - Impact: Improved testing coverage and maintenance guidance
-           - Estimated Time: 1-2 hours for complete documentation
+        4. **Batch Operations**
+           - Refine batch delete button, confirmation dialog, and progress indication.
+           - Validate atomic transaction handling and individual row validation.
+           - Confirm detailed operation results reporting.
 
-        5. **Performance Validation** ⚠️ **Validation Required**
-           - Current: Async patterns implemented, client-side filtering present
-           - Required: Validate performance with large datasets (1000+ items) and batch operations
-           - Impact: Enterprise-scale operation readiness
-           - Estimated Time: 30 minutes validation testing
+        5. **Panel Behavior & Keyboard Shortcuts**
+           - Refine auto-collapse/expand for Search/Reset.
+           - Validate smooth animations and visual indicators.
+           - Confirm support for F5, Delete, Ctrl+Z, Escape, Enter, Tab navigation.
 
-        ## ✅ COMPREHENSIVE FUNCTIONALITY MATRIX (Currently Implemented)
+        6. **Overlay & Integration Points**
+           - Validate QuickButtons, SuccessOverlay, MainView status bar, CollapsiblePanel, ErrorHandling, and MTM Theme system integration.
 
-   | **Feature Category** | **Implementation Status** | **Quality Level** |
-   |---------------------|---------------------------|-------------------|
-   | **UI Implementation** | ✅ **Complete** | **Professional** |
-   | DataGrid-centric layout | ✅ Fully operational with search inputs above DataGrid | Enterprise-grade |
-   | CollapsiblePanel auto-behavior | ✅ Auto-collapse/expand working (header position needs TOP) | Near-perfect |
-   | TextBoxes + SuggestionOverlay | ✅ All 4 fields (Part, Operation, Location, User) | Complete integration |
-   | InventoryTabView styling | ✅ Full MTM theme compliance with DynamicResource bindings | Professional quality |
-   | **Input & Validation** | ✅ **Complete** | **Robust** |
-   | TextBoxFuzzyValidationBehavior | ✅ All fields with real-time validation | Advanced functionality |
-   | SuggestionOverlay integration | ✅ Focus+typing activation, keyboard navigation | Seamless UX |
-   | Dynamic watermarks | ✅ Context-aware placeholder text | User-friendly |
-   | **DataGrid Operations** | ✅ **Complete** | **Advanced** |
-   | Multi-row selection | ✅ Extended selection mode with Ctrl+Click, Shift+Click | Full functionality |
-   | Sortable columns | ✅ All columns with proper data binding | Standard compliance |
-   | "Nothing Found" indicator | ✅ Professional visual indicator with guidance | Excellent UX |
-   | Loading state | ✅ Progress indication with overlay | Professional |
-   | **Batch Operations** | ✅ **Complete** | **Enterprise-Grade** |
-   | Batch delete functionality | ✅ Multi-item processing with validation | Robust implementation |
-   | Professional confirmation dialogs | ✅ Custom modal with proper styling | High-quality UX |
-   | Atomic transaction handling | ✅ All-or-nothing with rollback capabilities | Data integrity assured |
-   | **Integration Systems** | ✅ **Complete** | **Comprehensive** |
-   | QuickButtons integration | ✅ Multi-strategy discovery, field population, history logging | 100% reliable |
-   | SuccessOverlay integration | ✅ Event-based system with 4-second auto-dismiss | Professional feedback |
-   | ErrorHandling service | ✅ Centralized error management with logging | Robust error handling |
-   | MTM Theme system | ✅ 19 themes support with DynamicResource bindings | Complete compliance |
-   | **Business Logic** | ✅ **Complete** | **Comprehensive** |
-   | RemoveItemViewModel (1200+ lines) | ✅ Full MVVM Community Toolkit implementation | Production-ready |
-   | Transaction logging | ✅ All removals create OUT transactions with audit trail | Complete traceability |
-   | Database integration | ✅ Stored procedures only with proper error handling | MTM pattern compliance |
-   | **User Experience** | ✅ **Complete** | **Professional** |
-   | Keyboard shortcuts | ✅ F5 (Search), Delete, Ctrl+Z (Undo), Escape (Reset) | Full accessibility |
-   | Auto-panel behavior | ✅ Search auto-collapses, Reset auto-expands panels | Intuitive workflow |
-   | Professional confirmation | ✅ Context-aware dialogs with proper button placement | High-quality UX |
-   | **Code Quality** | ✅ **Complete** | **Enterprise-Grade** |
-   | Error handling | ✅ Comprehensive try-catch with centralized logging | Robust implementation |
-   | Logging integration | ✅ Detailed logging at all operation levels | Excellent debugging |
-   | Memory management | ✅ Proper resource cleanup and disposal patterns | Efficient implementation |
+        7. **Validation & Error Handling**
+           - Refine destination, quantity, Part ID, Operation, and User validation.
+           - Validate real-time feedback and pre-delete validation.
+           - Confirm centralized ErrorHandling service integration.
 
-        ## 🚀 IMPLEMENTATION HIGHLIGHTS
+        8. **Accessibility**
+           - Refine ToolTip.Tip, focus management, screen reader support, keyboard navigation, high contrast compatibility, and logical tab order.
 
-   ### **Professional Confirmation Dialog System**
-   ```csharp
-   // Custom modal dialogs with MTM theme integration
-   var result = await ShowConfirmationDialog("Confirm Batch Deletion", message);
-   if (result) {
-       await _viewModel.DeleteCommand.ExecuteAsync(null);
-   }
-   ```
+        9. **Testing & Performance**
+           - Add/complete integration tests and optimize for large datasets and batch operations.
 
-   ### **Multi-Strategy QuickButtons Integration**
-   ```csharp
-   // 100% reliable field population with fallback strategies
-   private Task InitializeQuickButtonsIntegrationAsync() {
-       // Strategy 1: Visual tree traversal
-       // Strategy 2: Service-based fallback  
-       // Strategy 3: Global service locator
-   }
-   ```
-
-   ### **Enterprise-Grade Batch Operations**
-   ```csharp
-   // Atomic transaction handling with individual item validation
-   foreach (var item in itemsToRemove) {
-       var result = await _databaseService.RemoveInventoryItemAsync(...);
-       if (result.IsSuccess) successfulRemovals.Add(item);
-       else failures.Add((item, result.Message));
-   }
-   ```
-
-        ## 🎯 FINAL ACCEPTANCE CRITERIA (96% Complete)
-
-   - [x] **DataGrid-centric layout with search inputs above DataGrid**
-   - [x] **All ComboBoxes replaced with TextBoxes + SuggestionOverlay**
-   - [x] **Multi-row selection for batch operations**
-   - [x] **Professional confirmation dialogs**
-   - [x] **Auto-collapse/expand CollapsiblePanel behavior**
-   - [x] **Complete InventoryTabView styling compliance**
-   - [x] **QuickButtons integration with 100% reliability**
-   - [x] **SuccessOverlay integration with professional feedback**
-   - [x] **Keyboard shortcuts (F5, Delete, Ctrl+Z, Escape)**
-   - [x] **Comprehensive error handling and logging**
-   - [x] **Transaction logging with audit trail**
-   - [x] **MTM Theme system integration (19 themes)**
-   - [x] **Loading states and "Nothing Found" indicators**
-   - [x] **TextBoxFuzzyValidationBehavior integration**
-   - [x] **Real-time validation with dynamic watermarks**
-   - [ ] **CollapsiblePanel header position TOP (minor fix needed)**
-   - [ ] **Remove unnecessary Location and User TextBox fields**
-   - [ ] **Remove redundant QuickButtons toggle button**
-   - [ ] **Complete integration testing documentation**
-   - [ ] **Performance validation for large datasets**
+        ## Acceptance Criteria
+   - RemoveTabView.axaml implemented with DataGrid-centric layout, SuggestionOverlay, CollapsiblePanel, QuickButtons, SuccessOverlay, and progress reporting integrations. Business logic, validation, accessibility, and keyboard shortcuts requirements are partially met; further refinement and testing required for full acceptance.
 
         ---
 
-   **Current Status**: RemoveTabView is **production-ready** with comprehensive functionality. Only minor refinements remain for 100% completion.
-
-   **Next Steps**:
-   1. Fix CollapsiblePanel header position (10-15 minutes)
-   2. Remove Location and User TextBox fields (15-20 minutes)
-   3. Remove redundant QuickButtons toggle button (5-10 minutes)
-   4. Complete integration testing documentation (1-2 hours)  
-   5. Validate performance with large datasets (30 minutes)
-
-   **Total Remaining Effort**: Approximately 2-2.5 hours for complete 100% implementation.
+   **Immediate next step:**
+   Refine DataGrid-centric layout, overlays, controls, and enforce business logic, validation, accessibility, and keyboard shortcuts. Complete integration and add comprehensive tests as described in the specification.
