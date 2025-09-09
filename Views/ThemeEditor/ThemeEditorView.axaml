@@ -109,16 +109,11 @@
     </Style>
   </UserControl.Styles>
 
-  <!-- Main Layout Container - ScrollViewer for overflow handling -->
-  <ScrollViewer HorizontalScrollBarVisibility="Auto" 
-                VerticalScrollBarVisibility="Auto" 
-                Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
-    
-    <Grid x:Name="MainContainer" 
-          RowDefinitions="*,Auto" 
-          MinWidth="800" 
-          MinHeight="500" 
-          Margin="8">
+  <!-- Main Layout Container - Fixed grid layout for proper stretching -->
+  <Grid x:Name="MainContainer" 
+        RowDefinitions="*,Auto" 
+        Background="{DynamicResource MTM_Shared_Logic.MainBackground}" 
+        Margin="8">
 
       <!-- Main Theme Editor Panel - Left Navigation + Right Content -->
       <Border Grid.Row="0"  
@@ -2565,123 +2560,114 @@
                     </StackPanel>
                   </Border>
 
-                  <!-- Advanced Preview Features Section -->
+                  <!-- Custom Theme Management Section -->
                   <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                           BorderThickness="1" 
                           CornerRadius="6" 
                           Padding="16">
-                    <StackPanel Spacing="16">
-                      <TextBlock Text="Advanced Preview Features" 
+                    <StackPanel Spacing="12">
+                      <TextBlock Text="Custom Theme Management" 
                                 FontSize="14" 
                                 FontWeight="Bold" 
                                 Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                       
-                      <!-- Print Preview Section -->
-                      <StackPanel Spacing="8">
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                          <CheckBox Grid.Column="0"
-                                   IsChecked="{Binding IsPrintPreviewEnabled}"
-                                   Command="{Binding TogglePrintPreviewCommand}"
-                                   ToolTip.Tip="Preview how colors will appear when printed"
-                                   KeyboardNavigation.IsTabStop="True" />
-                          <TextBlock Grid.Column="1"
-                                    Text="Print Preview Mode"
-                                    FontWeight="Medium"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-                          <materialIcons:MaterialIcon Grid.Column="2"
-                                                     Kind="Printer"
-                                                     Width="16"
-                                                     Height="16"
-                                                     Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-                        </Grid>
-                        <TextBlock Text="Adjusts colors to simulate print output appearance"
-                                  FontSize="11"
-                                  Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
-                                  TextWrapping="Wrap" />
-                      </StackPanel>
-
-                      <!-- Lighting Simulation Section -->
-                      <StackPanel Spacing="8">
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                          <CheckBox Grid.Column="0"
-                                   IsChecked="{Binding IsLightingSimulationEnabled}"
-                                   Command="{Binding ToggleLightingSimulationCommand}"
-                                   ToolTip.Tip="Preview colors under different lighting conditions"
-                                   KeyboardNavigation.IsTabStop="True" />
-                          <TextBlock Grid.Column="1"
-                                    Text="Lighting Simulation"
-                                    FontWeight="Medium"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-                          <materialIcons:MaterialIcon Grid.Column="2"
-                                                     Kind="Lightbulb"
-                                                     Width="16"
-                                                     Height="16"
-                                                     Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-                        </Grid>
-                        
-                        <!-- Lighting Condition Selector -->
-                        <ComboBox ItemsSource="{Binding LightingConditions}"
-                                 SelectedItem="{Binding LightingCondition}"
-                                 IsEnabled="{Binding IsLightingSimulationEnabled}"
-                                 HorizontalAlignment="Stretch"
-                                 KeyboardNavigation.IsTabStop="True"
-                                 ToolTip.Tip="Select lighting condition for simulation">
-                          <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                              <TextBlock Text="{Binding}" FontSize="12" />
-                            </DataTemplate>
-                          </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        
-                        <TextBlock Text="Simulates how colors appear under different lighting conditions"
-                                  FontSize="11"
-                                  Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
-                                  TextWrapping="Wrap" />
-                      </StackPanel>
-
-                      <!-- Multi-Monitor Preview Section -->
-                      <StackPanel Spacing="8">
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                          <CheckBox Grid.Column="0"
-                                   IsChecked="{Binding IsMultiMonitorPreviewEnabled}"
-                                   Command="{Binding ToggleMultiMonitorPreviewCommand}"
-                                   ToolTip.Tip="Preview colors across multiple monitors"
-                                   KeyboardNavigation.IsTabStop="True" />
-                          <TextBlock Grid.Column="1"
-                                    Text="Multi-Monitor Preview"
-                                    FontWeight="Medium"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-                          <materialIcons:MaterialIcon Grid.Column="2"
-                                                     Kind="Monitor"
-                                                     Width="16"
-                                                     Height="16"
-                                                     Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-                        </Grid>
-                        
-                        <!-- Monitor Selection -->
-                        <ComboBox ItemsSource="{Binding AvailableMonitors}"
-                                 SelectedIndex="{Binding SelectedMonitorIndex}"
-                                 IsEnabled="{Binding IsMultiMonitorPreviewEnabled}"
-                                 HorizontalAlignment="Stretch"
-                                 KeyboardNavigation.IsTabStop="True"
-                                 ToolTip.Tip="Select monitor for preview">
-                          <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                              <TextBlock Text="{Binding DisplayName}" FontSize="12" />
-                            </DataTemplate>
-                          </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        
-                        <TextBlock Text="Preview how colors appear on different monitor types and resolutions"
-                                  FontSize="11"
-                                  Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
-                                  TextWrapping="Wrap" />
-                      </StackPanel>
+                      <!-- Save/Load Custom Theme Actions -->
+                      <WrapPanel Orientation="Horizontal" ItemWidth="140" ItemHeight="36">
+                        <Button Content="Save Custom Theme" 
+                               Classes="primary" 
+                               Command="{Binding SaveCustomThemeCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Save current colors as custom theme">
+                          <Button.Styles>
+                            <Style Selector="Button.primary">
+                              <Setter Property="FontSize" Value="11" />
+                              <Setter Property="Padding" Value="8,4" />
+                            </Style>
+                          </Button.Styles>
+                        </Button>
+                        <Button Content="Refresh Themes" 
+                               Classes="secondary" 
+                               Command="{Binding RefreshCustomThemesCommand}" 
+                               Margin="0,0,8,8"
+                               ToolTip.Tip="Refresh list of available custom themes">
+                          <Button.Styles>
+                            <Style Selector="Button.secondary">
+                              <Setter Property="FontSize" Value="11" />
+                              <Setter Property="Padding" Value="8,4" />
+                            </Style>
+                          </Button.Styles>
+                        </Button>
+                      </WrapPanel>
                       
+                      <!-- Available Custom Themes List -->
+                      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                              BorderThickness="1"
+                              CornerRadius="4"
+                              MaxHeight="200">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                          <ItemsControl ItemsSource="{Binding AvailableCustomThemes}">
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate>
+                                <Border Background="Transparent" 
+                                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="8">
+                                  <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                    <StackPanel Grid.Column="0" Spacing="2">
+                                      <TextBlock Text="{Binding DisplayName}" 
+                                                FontWeight="Medium" 
+                                                FontSize="11"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                      <TextBlock Text="{Binding CreatedDateDisplay}" 
+                                                FontSize="10"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                                      <TextBlock Text="{Binding Description}" 
+                                                FontSize="10"
+                                                FontStyle="Italic"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                                                TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    
+                                    <Button Grid.Column="1" 
+                                           Content="Load" 
+                                           Classes="tertiary"
+                                           FontSize="10"
+                                           Padding="6,3"
+                                           Command="{Binding $parent[UserControl].DataContext.LoadCustomThemeCommand}"
+                                           CommandParameter="{Binding FilePath}"
+                                           ToolTip.Tip="Load this custom theme" />
+                                           
+                                    <Button Grid.Column="2" 
+                                           Content="Delete" 
+                                           Classes="tertiary"
+                                           FontSize="10"
+                                           Padding="6,3"
+                                           Command="{Binding $parent[UserControl].DataContext.DeleteCustomThemeCommand}"
+                                           CommandParameter="{Binding}"
+                                           ToolTip.Tip="Delete this custom theme">
+                                      <Button.Styles>
+                                        <Style Selector="Button.tertiary:pointerover">
+                                          <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+                                        </Style>
+                                      </Button.Styles>
+                                    </Button>
+                                  </Grid>
+                                </Border>
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                        </ScrollViewer>
+                      </Border>
+                      
+                      <!-- Message when no custom themes -->
+                      <TextBlock Text="No custom themes found. Save your first custom theme to get started."
+                                Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                                FontStyle="Italic"
+                                FontSize="12"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !AvailableCustomThemes.Count}" />
                     </StackPanel>
                   </Border>
 
@@ -2826,6 +2812,5 @@
         </Grid>
       </Border>
 
-    </Grid>
-  </ScrollViewer>
+  </Grid>
 </UserControl>

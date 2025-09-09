@@ -1126,6 +1126,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
         // Initialize with current colors as first snapshot
         SaveColorSnapshot("Initial Theme State");
         
+        // Load available custom themes
+        _ = Task.Run(async () => await RefreshCustomThemesAsync());
+        
         // Set initial status message with real-time preview information
         StatusMessage = "🎨 Theme Editor ready - Real-time preview enabled for instant color changes";
     }
@@ -1752,6 +1755,280 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogError(ex, "Error loading industry template: {TemplateName}", templateName);
             await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to load {templateName} template", Environment.UserName);
             StatusMessage = $"Failed to load {templateName} template";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    #endregion
+
+    #region Custom Theme Persistence
+
+    [RelayCommand]
+    private async Task SaveCustomThemeAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Saving custom theme...";
+
+            var customTheme = new ThemeExportModel
+            {
+                Name = string.IsNullOrWhiteSpace(CurrentThemeName) ? "Custom Theme" : CurrentThemeName,
+                Description = $"Custom theme created on {DateTime.Now:yyyy-MM-dd HH:mm:ss}",
+                Version = ThemeVersion,
+                CreatedDate = DateTime.Now,
+                CreatedBy = Environment.UserName,
+                Colors = new Dictionary<string, string>
+                {
+                    // Core Colors
+                    ["PrimaryAction"] = PrimaryActionColor.ToString(),
+                    ["SecondaryAction"] = SecondaryActionColor.ToString(),
+                    ["Accent"] = AccentColor.ToString(),
+                    ["Highlight"] = HighlightColor.ToString(),
+                    
+                    // Text Colors
+                    ["HeadingText"] = HeadingTextColor.ToString(),
+                    ["BodyText"] = BodyTextColor.ToString(),
+                    ["TertiaryText"] = TertiaryTextColor.ToString(),
+                    ["InteractiveText"] = InteractiveTextColor.ToString(),
+                    ["OverlayText"] = OverlayTextColor.ToString(),
+                    
+                    // Background Colors
+                    ["MainBackground"] = MainBackgroundColor.ToString(),
+                    ["CardBackground"] = CardBackgroundColor.ToString(),
+                    ["PanelBackground"] = PanelBackgroundColor.ToString(),
+                    ["SidebarBackground"] = SidebarBackgroundColor.ToString(),
+                    ["HoverBackground"] = HoverBackgroundColor.ToString(),
+                    
+                    // Status Colors
+                    ["Success"] = SuccessColor.ToString(),
+                    ["Warning"] = WarningColor.ToString(),
+                    ["Error"] = ErrorColor.ToString(),
+                    ["Info"] = InfoColor.ToString(),
+                    
+                    // Border Colors
+                    ["Border"] = BorderColor.ToString(),
+                    ["BorderAccent"] = BorderAccentColor.ToString()
+                }
+            };
+
+            // Create custom theme file name
+            var fileName = $"Custom_{customTheme.Name.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+            var themesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Themes");
+            
+            // Ensure directory exists
+            Directory.CreateDirectory(themesDirectory);
+            
+            var filePath = Path.Combine(themesDirectory, fileName);
+            
+            var json = JsonSerializer.Serialize(customTheme, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+            
+            await File.WriteAllTextAsync(filePath, json);
+            
+            HasUnsavedChanges = false;
+            StatusMessage = $"✅ Custom theme saved as '{fileName}'";
+            Logger.LogInformation("Custom theme saved to {FilePath}", filePath);
+            
+            // Trigger refresh of available custom themes
+            await RefreshCustomThemesAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving custom theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to save custom theme", Environment.UserName);
+            StatusMessage = "❌ Failed to save custom theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task LoadCustomThemeAsync(string themePath)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(themePath) || !File.Exists(themePath))
+            {
+                StatusMessage = "❌ Custom theme file not found";
+                return;
+            }
+
+            IsLoading = true;
+            StatusMessage = "Loading custom theme...";
+
+            var json = await File.ReadAllTextAsync(themePath);
+            var customTheme = JsonSerializer.Deserialize<ThemeExportModel>(json, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (customTheme?.Colors == null)
+            {
+                StatusMessage = "❌ Invalid custom theme file format";
+                return;
+            }
+
+            // Load colors from custom theme
+            if (customTheme.Colors.TryGetValue("PrimaryAction", out var primaryAction))
+                PrimaryActionColor = SafeParseColor(primaryAction, PrimaryActionColor);
+            if (customTheme.Colors.TryGetValue("SecondaryAction", out var secondaryAction))
+                SecondaryActionColor = SafeParseColor(secondaryAction, SecondaryActionColor);
+            if (customTheme.Colors.TryGetValue("Accent", out var accent))
+                AccentColor = SafeParseColor(accent, AccentColor);
+            if (customTheme.Colors.TryGetValue("Highlight", out var highlight))
+                HighlightColor = SafeParseColor(highlight, HighlightColor);
+
+            if (customTheme.Colors.TryGetValue("HeadingText", out var headingText))
+                HeadingTextColor = SafeParseColor(headingText, HeadingTextColor);
+            if (customTheme.Colors.TryGetValue("BodyText", out var bodyText))
+                BodyTextColor = SafeParseColor(bodyText, BodyTextColor);
+            if (customTheme.Colors.TryGetValue("TertiaryText", out var tertiaryText))
+                TertiaryTextColor = SafeParseColor(tertiaryText, TertiaryTextColor);
+            if (customTheme.Colors.TryGetValue("InteractiveText", out var interactiveText))
+                InteractiveTextColor = SafeParseColor(interactiveText, InteractiveTextColor);
+            if (customTheme.Colors.TryGetValue("OverlayText", out var overlayText))
+                OverlayTextColor = SafeParseColor(overlayText, OverlayTextColor);
+
+            if (customTheme.Colors.TryGetValue("MainBackground", out var mainBackground))
+                MainBackgroundColor = SafeParseColor(mainBackground, MainBackgroundColor);
+            if (customTheme.Colors.TryGetValue("CardBackground", out var cardBackground))
+                CardBackgroundColor = SafeParseColor(cardBackground, CardBackgroundColor);
+            if (customTheme.Colors.TryGetValue("PanelBackground", out var panelBackground))
+                PanelBackgroundColor = SafeParseColor(panelBackground, PanelBackgroundColor);
+            if (customTheme.Colors.TryGetValue("SidebarBackground", out var sidebarBackground))
+                SidebarBackgroundColor = SafeParseColor(sidebarBackground, SidebarBackgroundColor);
+            if (customTheme.Colors.TryGetValue("HoverBackground", out var hoverBackground))
+                HoverBackgroundColor = SafeParseColor(hoverBackground, HoverBackgroundColor);
+
+            if (customTheme.Colors.TryGetValue("Success", out var success))
+                SuccessColor = SafeParseColor(success, SuccessColor);
+            if (customTheme.Colors.TryGetValue("Warning", out var warning))
+                WarningColor = SafeParseColor(warning, WarningColor);
+            if (customTheme.Colors.TryGetValue("Error", out var error))
+                ErrorColor = SafeParseColor(error, ErrorColor);
+            if (customTheme.Colors.TryGetValue("Info", out var info))
+                InfoColor = SafeParseColor(info, InfoColor);
+
+            if (customTheme.Colors.TryGetValue("Border", out var border))
+                BorderColor = SafeParseColor(border, BorderColor);
+            if (customTheme.Colors.TryGetValue("BorderAccent", out var borderAccent))
+                BorderAccentColor = SafeParseColor(borderAccent, BorderAccentColor);
+
+            // Update theme metadata
+            CurrentThemeName = customTheme.Name;
+            HasUnsavedChanges = false;
+            
+            var fileName = Path.GetFileName(themePath);
+            StatusMessage = $"✅ Custom theme '{customTheme.Name}' loaded successfully";
+            Logger.LogInformation("Custom theme loaded from {FileName} - {ThemeName}", fileName, customTheme.Name);
+            
+            // Trigger real-time preview
+            TriggerRealTimePreview();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading custom theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to load custom theme", Environment.UserName);
+            StatusMessage = "❌ Failed to load custom theme";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [ObservableProperty]
+    private ObservableCollection<CustomThemeInfo> availableCustomThemes = new();
+
+    [RelayCommand]
+    private async Task RefreshCustomThemesAsync()
+    {
+        try
+        {
+            var themesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Themes");
+            
+            if (!Directory.Exists(themesDirectory))
+            {
+                Directory.CreateDirectory(themesDirectory);
+                return;
+            }
+
+            var customThemeFiles = Directory.GetFiles(themesDirectory, "Custom_*.json");
+            
+            AvailableCustomThemes.Clear();
+            
+            foreach (var filePath in customThemeFiles.OrderByDescending(f => new FileInfo(f).CreationTime))
+            {
+                try
+                {
+                    var json = await File.ReadAllTextAsync(filePath);
+                    var themeInfo = JsonSerializer.Deserialize<ThemeExportModel>(json, new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    if (themeInfo != null)
+                    {
+                        AvailableCustomThemes.Add(new CustomThemeInfo
+                        {
+                            Name = themeInfo.Name,
+                            FilePath = filePath,
+                            CreatedDate = themeInfo.CreatedDate,
+                            Author = themeInfo.CreatedBy ?? "Unknown",
+                            Description = themeInfo.Description ?? "Custom theme"
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "Failed to read custom theme file: {FilePath}", filePath);
+                }
+            }
+
+            Logger.LogInformation("Refreshed custom themes - found {Count} themes", AvailableCustomThemes.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error refreshing custom themes");
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteCustomThemeAsync(CustomThemeInfo themeInfo)
+    {
+        try
+        {
+            if (themeInfo?.FilePath == null || !File.Exists(themeInfo.FilePath))
+            {
+                StatusMessage = "❌ Custom theme file not found";
+                return;
+            }
+
+            IsLoading = true;
+            StatusMessage = $"Deleting custom theme '{themeInfo.Name}'...";
+
+            File.Delete(themeInfo.FilePath);
+            AvailableCustomThemes.Remove(themeInfo);
+            
+            StatusMessage = $"✅ Custom theme '{themeInfo.Name}' deleted successfully";
+            Logger.LogInformation("Custom theme deleted: {FilePath}", themeInfo.FilePath);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error deleting custom theme");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to delete custom theme", Environment.UserName);
+            StatusMessage = "❌ Failed to delete custom theme";
         }
         finally
         {
@@ -6322,6 +6599,20 @@ public class ColorUsageStats
     public int UsageCount { get; set; }
     public DateTime FirstUsed { get; set; } = DateTime.Now;
     public DateTime LastUsed { get; set; } = DateTime.Now;
+}
+
+/// <summary>
+/// Custom theme information model for displaying available custom themes
+/// </summary>
+public class CustomThemeInfo
+{
+    public string Name { get; set; } = string.Empty;
+    public string FilePath { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public string Author { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string DisplayName => $"{Name} (by {Author})";
+    public string CreatedDateDisplay => CreatedDate.ToString("yyyy-MM-dd HH:mm");
 }
 
 /// <summary>
