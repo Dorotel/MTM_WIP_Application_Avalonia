@@ -381,6 +381,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(HeadingTextColorHex));
         TriggerRealTimePreview();
     }
 
@@ -388,6 +390,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(BodyTextColorHex));
         TriggerRealTimePreview();
     }
 
@@ -395,6 +399,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(InteractiveTextColorHex));
         TriggerRealTimePreview();
     }
 
@@ -402,6 +408,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(OverlayTextColorHex));
         TriggerRealTimePreview();
     }
 
@@ -409,7 +417,93 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(TertiaryTextColorHex));
         TriggerRealTimePreview();
+    }
+
+    #endregion
+
+    #region Text Colors Hex Properties
+
+    /// <summary>
+    /// Hex color representation for Heading Text Color
+    /// </summary>
+    public string HeadingTextColorHex
+    {
+        get => HeadingTextColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != HeadingTextColor)
+            {
+                HeadingTextColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Body Text Color
+    /// </summary>
+    public string BodyTextColorHex
+    {
+        get => BodyTextColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != BodyTextColor)
+            {
+                BodyTextColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Interactive Text Color
+    /// </summary>
+    public string InteractiveTextColorHex
+    {
+        get => InteractiveTextColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != InteractiveTextColor)
+            {
+                InteractiveTextColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Overlay Text Color
+    /// </summary>
+    public string OverlayTextColorHex
+    {
+        get => OverlayTextColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != OverlayTextColor)
+            {
+                OverlayTextColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Tertiary Text Color
+    /// </summary>
+    public string TertiaryTextColorHex
+    {
+        get => TertiaryTextColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != TertiaryTextColor)
+            {
+                TertiaryTextColor = color;
+                OnPropertyChanged();
+            }
+        }
     }
 
     #endregion
@@ -436,6 +530,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(MainBackgroundColorHex));
         TriggerRealTimePreview();
     }
 
@@ -443,6 +539,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(CardBackgroundColorHex));
         TriggerRealTimePreview();
     }
 
@@ -450,6 +548,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(HoverBackgroundColorHex));
         TriggerRealTimePreview();
     }
 
@@ -457,6 +557,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(PanelBackgroundColorHex));
         TriggerRealTimePreview();
     }
 
@@ -464,7 +566,93 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(SidebarBackgroundColorHex));
         TriggerRealTimePreview();
+    }
+
+    #endregion
+
+    #region Background Colors Hex Properties
+
+    /// <summary>
+    /// Hex color representation for Main Background Color
+    /// </summary>
+    public string MainBackgroundColorHex
+    {
+        get => MainBackgroundColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != MainBackgroundColor)
+            {
+                MainBackgroundColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Card Background Color
+    /// </summary>
+    public string CardBackgroundColorHex
+    {
+        get => CardBackgroundColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != CardBackgroundColor)
+            {
+                CardBackgroundColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Hover Background Color
+    /// </summary>
+    public string HoverBackgroundColorHex
+    {
+        get => HoverBackgroundColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != HoverBackgroundColor)
+            {
+                HoverBackgroundColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Panel Background Color
+    /// </summary>
+    public string PanelBackgroundColorHex
+    {
+        get => PanelBackgroundColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != PanelBackgroundColor)
+            {
+                PanelBackgroundColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Sidebar Background Color
+    /// </summary>
+    public string SidebarBackgroundColorHex
+    {
+        get => SidebarBackgroundColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != SidebarBackgroundColor)
+            {
+                SidebarBackgroundColor = color;
+                OnPropertyChanged();
+            }
+        }
     }
 
     #endregion
@@ -488,6 +676,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(SuccessColorHex));
         TriggerRealTimePreview();
     }
 
@@ -495,6 +685,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(WarningColorHex));
         TriggerRealTimePreview();
     }
 
@@ -502,6 +694,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(ErrorColorHex));
         TriggerRealTimePreview();
     }
 
@@ -509,7 +703,77 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(InfoColorHex));
         TriggerRealTimePreview();
+    }
+
+    #endregion
+
+    #region Status Colors Hex Properties
+
+    /// <summary>
+    /// Hex color representation for Success Color
+    /// </summary>
+    public string SuccessColorHex
+    {
+        get => SuccessColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != SuccessColor)
+            {
+                SuccessColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Warning Color
+    /// </summary>
+    public string WarningColorHex
+    {
+        get => WarningColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != WarningColor)
+            {
+                WarningColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Error Color
+    /// </summary>
+    public string ErrorColorHex
+    {
+        get => ErrorColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != ErrorColor)
+            {
+                ErrorColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Info Color
+    /// </summary>
+    public string InfoColorHex
+    {
+        get => InfoColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != InfoColor)
+            {
+                InfoColor = color;
+                OnPropertyChanged();
+            }
+        }
     }
 
     #endregion
@@ -527,6 +791,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(BorderColorHex));
         TriggerRealTimePreview();
     }
 
@@ -534,7 +800,45 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        AddToRecentColors(value);
+        OnPropertyChanged(nameof(BorderAccentColorHex));
         TriggerRealTimePreview();
+    }
+
+    #endregion
+
+    #region Border Colors Hex Properties
+
+    /// <summary>
+    /// Hex color representation for Border Color
+    /// </summary>
+    public string BorderColorHex
+    {
+        get => BorderColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != BorderColor)
+            {
+                BorderColor = color;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hex color representation for Border Accent Color
+    /// </summary>
+    public string BorderAccentColorHex
+    {
+        get => BorderAccentColor.ToString();
+        set
+        {
+            if (TryParseHexColor(value, out var color) && color != BorderAccentColor)
+            {
+                BorderAccentColor = color;
+                OnPropertyChanged();
+            }
+        }
     }
 
     #endregion

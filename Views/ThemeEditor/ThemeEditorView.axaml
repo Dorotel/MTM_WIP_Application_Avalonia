@@ -820,95 +820,440 @@
                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
                             Margin="0,0,0,8" />
                   
-                  <!-- Heading Text Color -->
-                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
-                    <TextBlock Grid.Column="0" 
-                              Text="Heading Text:" 
-                              VerticalAlignment="Center" 
-                              FontWeight="Medium" />
-                    <TextBox Grid.Column="1" 
-                            Text="{Binding HeadingTextColor, Mode=TwoWay}" 
-                            Classes="input-field"
-                            Watermark="Enter hex color (e.g., #323130)" />
-                    <Border Grid.Column="2" 
-                           Background="{Binding HeadingTextColor, Converter={StaticResource ColorToBrushConverter}}" 
-                           CornerRadius="4" 
-                           Height="32" 
-                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                           BorderThickness="1" />
-                  </Grid>
+                  <!-- Heading Text Color with Professional RGB/HSL/Hex Controls -->
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                          BorderThickness="1" 
+                          CornerRadius="6" 
+                          Padding="16" 
+                          Margin="0,0,0,12">
+                    <StackPanel Spacing="12">
+                      
+                      <!-- Header Row -->
+                      <Grid ColumnDefinitions="*,80,40" ColumnSpacing="12">
+                        <TextBlock Grid.Column="0" 
+                                  Text="Heading Text Color" 
+                                  FontSize="14" 
+                                  FontWeight="Bold" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                  VerticalAlignment="Center" />
+                        <!-- Large Color Preview -->
+                        <Border Grid.Column="1" 
+                               Background="{Binding HeadingTextColor, Converter={StaticResource ColorToBrushConverter}}" 
+                               CornerRadius="6" 
+                               Height="40" 
+                               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                               BorderThickness="2"
+                               Cursor="Hand"
+                               PointerPressed="ColorPreview_OnPointerPressed"
+                               Tag="HeadingText"
+                               ToolTip.Tip="Click to open color picker">
+                          <Border.Styles>
+                            <Style Selector="Border:pointerover">
+                              <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                              <Setter Property="BorderThickness" Value="3" />
+                            </Style>
+                          </Border.Styles>
+                        </Border>
+                        <!-- Advanced Picker Button -->
+                        <Button Grid.Column="2"
+                               Classes="tertiary" 
+                               Width="40" 
+                               Height="40"
+                               Padding="8"
+                               Command="{Binding OpenAdvancedColorPickerCommand}"
+                               CommandParameter="HeadingText"
+                               ToolTip.Tip="Open professional color picker">
+                          <materialIcons:MaterialIcon Kind="Tune" Width="20" Height="20" />
+                        </Button>
+                      </Grid>
 
-                  <!-- Body Text Color -->
-                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
-                    <TextBlock Grid.Column="0" 
-                              Text="Body Text:" 
-                              VerticalAlignment="Center" 
-                              FontWeight="Medium" />
-                    <TextBox Grid.Column="1" 
-                            Text="{Binding BodyTextColor, Mode=TwoWay}" 
-                            Classes="input-field"
-                            Watermark="Enter hex color (e.g., #605E5C)" />
-                    <Border Grid.Column="2" 
-                           Background="{Binding BodyTextColor, Converter={StaticResource ColorToBrushConverter}}" 
-                           CornerRadius="4" 
-                           Height="32" 
-                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                           BorderThickness="1" />
-                  </Grid>
+                      <!-- Compact Color Input Controls -->
+                      <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                        
+                        <!-- Hex Input -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hex:" FontWeight="Medium" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                Text="{Binding HeadingTextColorHex, Mode=TwoWay}" 
+                                Classes="input-field"
+                                Watermark="#323130"
+                                KeyboardNavigation.IsTabStop="True"
+                                ToolTip.Tip="Enter hex color code (e.g., #323130)" />
+                        
+                        <!-- Color Actions -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Pick" 
+                                 Command="{Binding EyeDropperCommand}" 
+                                 CommandParameter="HeadingText"
+                                 ToolTip.Tip="Pick color from screen" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Copy" 
+                                 Command="{Binding CopyColorCommand}" 
+                                 CommandParameter="HeadingText"
+                                 ToolTip.Tip="Copy hex code to clipboard" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Reset" 
+                                 Command="{Binding ResetColorCommand}" 
+                                 CommandParameter="HeadingText"
+                                 ToolTip.Tip="Reset to default color" />
+                        </WrapPanel>
+                      </Grid>
+                      
+                    </StackPanel>
+                  </Border>
 
-                  <!-- Interactive Text Color -->
-                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
-                    <TextBlock Grid.Column="0" 
-                              Text="Interactive Text:" 
-                              VerticalAlignment="Center" 
-                              FontWeight="Medium" />
-                    <TextBox Grid.Column="1" 
-                            Text="{Binding InteractiveTextColor, Mode=TwoWay}" 
-                            Classes="input-field"
-                            Watermark="Enter hex color (e.g., #0078D4)" />
-                    <Border Grid.Column="2" 
-                           Background="{Binding InteractiveTextColor, Converter={StaticResource ColorToBrushConverter}}" 
-                           CornerRadius="4" 
-                           Height="32" 
-                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                           BorderThickness="1" />
-                  </Grid>
+                  <!-- Body Text Color with Professional RGB/HSL/Hex Controls -->
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                          BorderThickness="1" 
+                          CornerRadius="6" 
+                          Padding="16" 
+                          Margin="0,0,0,12">
+                    <StackPanel Spacing="12">
+                      
+                      <!-- Header Row -->
+                      <Grid ColumnDefinitions="*,80,40" ColumnSpacing="12">
+                        <TextBlock Grid.Column="0" 
+                                  Text="Body Text Color" 
+                                  FontSize="14" 
+                                  FontWeight="Bold" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                  VerticalAlignment="Center" />
+                        <!-- Large Color Preview -->
+                        <Border Grid.Column="1" 
+                               Background="{Binding BodyTextColor, Converter={StaticResource ColorToBrushConverter}}" 
+                               CornerRadius="6" 
+                               Height="40" 
+                               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                               BorderThickness="2"
+                               Cursor="Hand"
+                               PointerPressed="ColorPreview_OnPointerPressed"
+                               Tag="BodyText"
+                               ToolTip.Tip="Click to open color picker">
+                          <Border.Styles>
+                            <Style Selector="Border:pointerover">
+                              <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                              <Setter Property="BorderThickness" Value="3" />
+                            </Style>
+                          </Border.Styles>
+                        </Border>
+                        <!-- Advanced Picker Button -->
+                        <Button Grid.Column="2"
+                               Classes="tertiary" 
+                               Width="40" 
+                               Height="40"
+                               Padding="8"
+                               Command="{Binding OpenAdvancedColorPickerCommand}"
+                               CommandParameter="BodyText"
+                               ToolTip.Tip="Open professional color picker">
+                          <materialIcons:MaterialIcon Kind="Tune" Width="20" Height="20" />
+                        </Button>
+                      </Grid>
 
-                  <!-- Overlay Text Color -->
-                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
-                    <TextBlock Grid.Column="0" 
-                              Text="Overlay Text:" 
-                              VerticalAlignment="Center" 
-                              FontWeight="Medium" />
-                    <TextBox Grid.Column="1" 
-                            Text="{Binding OverlayTextColor, Mode=TwoWay}" 
-                            Classes="input-field"
-                            Watermark="Enter hex color (e.g., #FFFFFF)" />
-                    <Border Grid.Column="2" 
-                           Background="{Binding OverlayTextColor, Converter={StaticResource ColorToBrushConverter}}" 
-                           CornerRadius="4" 
-                           Height="32" 
-                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                           BorderThickness="1" />
-                  </Grid>
+                      <!-- Compact Color Input Controls -->
+                      <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                        
+                        <!-- Hex Input -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hex:" FontWeight="Medium" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                Text="{Binding BodyTextColorHex, Mode=TwoWay}" 
+                                Classes="input-field"
+                                Watermark="#605E5C"
+                                KeyboardNavigation.IsTabStop="True"
+                                ToolTip.Tip="Enter hex color code (e.g., #605E5C)" />
+                        
+                        <!-- Color Actions -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Pick" 
+                                 Command="{Binding EyeDropperCommand}" 
+                                 CommandParameter="BodyText"
+                                 ToolTip.Tip="Pick color from screen" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Copy" 
+                                 Command="{Binding CopyColorCommand}" 
+                                 CommandParameter="BodyText"
+                                 ToolTip.Tip="Copy hex code to clipboard" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Reset" 
+                                 Command="{Binding ResetColorCommand}" 
+                                 CommandParameter="BodyText"
+                                 ToolTip.Tip="Reset to default color" />
+                        </WrapPanel>
+                      </Grid>
+                      
+                    </StackPanel>
+                  </Border>
 
-                  <!-- Tertiary Text Color -->
-                  <Grid ColumnDefinitions="140,*,80" ColumnSpacing="12">
-                    <TextBlock Grid.Column="0" 
-                              Text="Tertiary Text:" 
-                              VerticalAlignment="Center" 
-                              FontWeight="Medium" />
-                    <TextBox Grid.Column="1" 
-                            Text="{Binding TertiaryTextColor, Mode=TwoWay}" 
-                            Classes="input-field"
-                            Watermark="Enter hex color (e.g., #8A8886)" />
-                    <Border Grid.Column="2" 
-                           Background="{Binding TertiaryTextColor, Converter={StaticResource ColorToBrushConverter}}" 
-                           CornerRadius="4" 
-                           Height="32" 
-                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
-                           BorderThickness="1" />
-                  </Grid>
+                  <!-- Interactive Text Color with Professional RGB/HSL/Hex Controls -->
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                          BorderThickness="1" 
+                          CornerRadius="6" 
+                          Padding="16" 
+                          Margin="0,0,0,12">
+                    <StackPanel Spacing="12">
+                      
+                      <!-- Header Row -->
+                      <Grid ColumnDefinitions="*,80,40" ColumnSpacing="12">
+                        <TextBlock Grid.Column="0" 
+                                  Text="Interactive Text Color" 
+                                  FontSize="14" 
+                                  FontWeight="Bold" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                  VerticalAlignment="Center" />
+                        <!-- Large Color Preview -->
+                        <Border Grid.Column="1" 
+                               Background="{Binding InteractiveTextColor, Converter={StaticResource ColorToBrushConverter}}" 
+                               CornerRadius="6" 
+                               Height="40" 
+                               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                               BorderThickness="2"
+                               Cursor="Hand"
+                               PointerPressed="ColorPreview_OnPointerPressed"
+                               Tag="InteractiveText"
+                               ToolTip.Tip="Click to open color picker">
+                          <Border.Styles>
+                            <Style Selector="Border:pointerover">
+                              <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                              <Setter Property="BorderThickness" Value="3" />
+                            </Style>
+                          </Border.Styles>
+                        </Border>
+                        <!-- Advanced Picker Button -->
+                        <Button Grid.Column="2"
+                               Classes="tertiary" 
+                               Width="40" 
+                               Height="40"
+                               Padding="8"
+                               Command="{Binding OpenAdvancedColorPickerCommand}"
+                               CommandParameter="InteractiveText"
+                               ToolTip.Tip="Open professional color picker">
+                          <materialIcons:MaterialIcon Kind="Tune" Width="20" Height="20" />
+                        </Button>
+                      </Grid>
+
+                      <!-- Compact Color Input Controls -->
+                      <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                        
+                        <!-- Hex Input -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hex:" FontWeight="Medium" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                Text="{Binding InteractiveTextColorHex, Mode=TwoWay}" 
+                                Classes="input-field"
+                                Watermark="#0078D4"
+                                KeyboardNavigation.IsTabStop="True"
+                                ToolTip.Tip="Enter hex color code (e.g., #0078D4)" />
+                        
+                        <!-- Color Actions -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Pick" 
+                                 Command="{Binding EyeDropperCommand}" 
+                                 CommandParameter="InteractiveText"
+                                 ToolTip.Tip="Pick color from screen" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Copy" 
+                                 Command="{Binding CopyColorCommand}" 
+                                 CommandParameter="InteractiveText"
+                                 ToolTip.Tip="Copy hex code to clipboard" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Reset" 
+                                 Command="{Binding ResetColorCommand}" 
+                                 CommandParameter="InteractiveText"
+                                 ToolTip.Tip="Reset to default color" />
+                        </WrapPanel>
+                      </Grid>
+                      
+                    </StackPanel>
+                  </Border>
+
+                  <!-- Overlay Text Color with Professional RGB/HSL/Hex Controls -->
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                          BorderThickness="1" 
+                          CornerRadius="6" 
+                          Padding="16" 
+                          Margin="0,0,0,12">
+                    <StackPanel Spacing="12">
+                      
+                      <!-- Header Row -->
+                      <Grid ColumnDefinitions="*,80,40" ColumnSpacing="12">
+                        <TextBlock Grid.Column="0" 
+                                  Text="Overlay Text Color" 
+                                  FontSize="14" 
+                                  FontWeight="Bold" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                  VerticalAlignment="Center" />
+                        <!-- Large Color Preview -->
+                        <Border Grid.Column="1" 
+                               Background="{Binding OverlayTextColor, Converter={StaticResource ColorToBrushConverter}}" 
+                               CornerRadius="6" 
+                               Height="40" 
+                               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                               BorderThickness="2"
+                               Cursor="Hand"
+                               PointerPressed="ColorPreview_OnPointerPressed"
+                               Tag="OverlayText"
+                               ToolTip.Tip="Click to open color picker">
+                          <Border.Styles>
+                            <Style Selector="Border:pointerover">
+                              <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                              <Setter Property="BorderThickness" Value="3" />
+                            </Style>
+                          </Border.Styles>
+                        </Border>
+                        <!-- Advanced Picker Button -->
+                        <Button Grid.Column="2"
+                               Classes="tertiary" 
+                               Width="40" 
+                               Height="40"
+                               Padding="8"
+                               Command="{Binding OpenAdvancedColorPickerCommand}"
+                               CommandParameter="OverlayText"
+                               ToolTip.Tip="Open professional color picker">
+                          <materialIcons:MaterialIcon Kind="Tune" Width="20" Height="20" />
+                        </Button>
+                      </Grid>
+
+                      <!-- Compact Color Input Controls -->
+                      <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                        
+                        <!-- Hex Input -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hex:" FontWeight="Medium" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                Text="{Binding OverlayTextColorHex, Mode=TwoWay}" 
+                                Classes="input-field"
+                                Watermark="#FFFFFF"
+                                KeyboardNavigation.IsTabStop="True"
+                                ToolTip.Tip="Enter hex color code (e.g., #FFFFFF)" />
+                        
+                        <!-- Color Actions -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Pick" 
+                                 Command="{Binding EyeDropperCommand}" 
+                                 CommandParameter="OverlayText"
+                                 ToolTip.Tip="Pick color from screen" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Copy" 
+                                 Command="{Binding CopyColorCommand}" 
+                                 CommandParameter="OverlayText"
+                                 ToolTip.Tip="Copy hex code to clipboard" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Reset" 
+                                 Command="{Binding ResetColorCommand}" 
+                                 CommandParameter="OverlayText"
+                                 ToolTip.Tip="Reset to default color" />
+                        </WrapPanel>
+                      </Grid>
+                      
+                    </StackPanel>
+                  </Border>
+
+                  <!-- Tertiary Text Color with Professional RGB/HSL/Hex Controls -->
+                  <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                          BorderThickness="1" 
+                          CornerRadius="6" 
+                          Padding="16" 
+                          Margin="0,0,0,12">
+                    <StackPanel Spacing="12">
+                      
+                      <!-- Header Row -->
+                      <Grid ColumnDefinitions="*,80,40" ColumnSpacing="12">
+                        <TextBlock Grid.Column="0" 
+                                  Text="Tertiary Text Color" 
+                                  FontSize="14" 
+                                  FontWeight="Bold" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                  VerticalAlignment="Center" />
+                        <!-- Large Color Preview -->
+                        <Border Grid.Column="1" 
+                               Background="{Binding TertiaryTextColor, Converter={StaticResource ColorToBrushConverter}}" 
+                               CornerRadius="6" 
+                               Height="40" 
+                               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                               BorderThickness="2"
+                               Cursor="Hand"
+                               PointerPressed="ColorPreview_OnPointerPressed"
+                               Tag="TertiaryText"
+                               ToolTip.Tip="Click to open color picker">
+                          <Border.Styles>
+                            <Style Selector="Border:pointerover">
+                              <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                              <Setter Property="BorderThickness" Value="3" />
+                            </Style>
+                          </Border.Styles>
+                        </Border>
+                        <!-- Advanced Picker Button -->
+                        <Button Grid.Column="2"
+                               Classes="tertiary" 
+                               Width="40" 
+                               Height="40"
+                               Padding="8"
+                               Command="{Binding OpenAdvancedColorPickerCommand}"
+                               CommandParameter="TertiaryText"
+                               ToolTip.Tip="Open professional color picker">
+                          <materialIcons:MaterialIcon Kind="Tune" Width="20" Height="20" />
+                        </Button>
+                      </Grid>
+
+                      <!-- Compact Color Input Controls -->
+                      <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                        
+                        <!-- Hex Input -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hex:" FontWeight="Medium" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                Text="{Binding TertiaryTextColorHex, Mode=TwoWay}" 
+                                Classes="input-field"
+                                Watermark="#8A8886"
+                                KeyboardNavigation.IsTabStop="True"
+                                ToolTip.Tip="Enter hex color code (e.g., #8A8886)" />
+                        
+                        <!-- Color Actions -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Pick" 
+                                 Command="{Binding EyeDropperCommand}" 
+                                 CommandParameter="TertiaryText"
+                                 ToolTip.Tip="Pick color from screen" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Copy" 
+                                 Command="{Binding CopyColorCommand}" 
+                                 CommandParameter="TertiaryText"
+                                 ToolTip.Tip="Copy hex code to clipboard" />
+                          <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
+                                 Content="Reset" 
+                                 Command="{Binding ResetColorCommand}" 
+                                 CommandParameter="TertiaryText"
+                                 ToolTip.Tip="Reset to default color" />
+                        </WrapPanel>
+                      </Grid>
+                      
+                    </StackPanel>
+                  </Border>
                   
                 </StackPanel>
 
