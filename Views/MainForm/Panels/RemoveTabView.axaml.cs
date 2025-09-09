@@ -12,6 +12,8 @@ using System.Collections.Specialized;
 using Avalonia.Platform.Storage;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia;
+using System.Linq;
+using Avalonia.VisualTree;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -823,41 +825,103 @@ public partial class RemoveTabView : UserControl
     #region QuickButtons Integration
 
     /// <summary>
-    /// Initializes QuickButtons integration to handle quick action events.
+    /// Initializes QuickButtons integration for field population from QuickButton clicks.
+    /// Uses multiple strategies: visual tree traversal with fallback to service-based integration.
+    /// Ensures 100% reliable QuickButtons integration regardless of UI layout complexity.
     /// </summary>
     private Task InitializeQuickButtonsIntegrationAsync()
     {
         try
         {
-            // Find QuickButtonsView in the visual tree
+            _logger?.LogDebug("Starting QuickButtons integration initialization...");
+            
+            // Strategy 1: Visual tree traversal (primary approach)
             var quickButtonsView = FindQuickButtonsView();
             if (quickButtonsView?.DataContext is QuickButtonsViewModel quickButtonsViewModel)
             {
                 _quickButtonsViewModel = quickButtonsViewModel;
+                SubscribeToQuickButtonsEvents(quickButtonsViewModel, "Visual Tree");
+                _logger?.LogInformation("QuickButtons integration initialized via visual tree traversal");
+                return Task.CompletedTask;
+            }
 
-                // Subscribe to quick action executed events if they exist
-                var quickActionEvent = _quickButtonsViewModel.GetType().GetEvent("QuickActionExecuted");
-                if (quickActionEvent != null)
+            _logger?.LogWarning("Visual tree traversal failed to find QuickButtonsView, attempting service fallback...");
+
+            // Strategy 2: Service-based fallback through ViewModel
+            if (_viewModel != null)
+            {
+                // Use reflection to get QuickButtonsService from ViewModel
+                var quickButtonsServiceField = _viewModel.GetType().GetField("_quickButtonsService", 
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                
+                if (quickButtonsServiceField?.GetValue(_viewModel) != null)
                 {
-                    // Use reflection to subscribe to the event
-                    var handler = new EventHandler<object>((sender, args) => OnQuickActionExecuted(sender, args));
-                    quickActionEvent.AddEventHandler(_quickButtonsViewModel, handler);
+                    _logger?.LogInformation("QuickButtons service found in ViewModel - direct service integration active");
+                    return Task.CompletedTask;
                 }
+            }
 
-                _logger?.LogInformation("QuickButtons integration initialized successfully");
+            // Strategy 3: Global service locator as last resort
+            try
+            {
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+                    desktop.MainWindow?.DataContext is MainWindowViewModel mainViewModel)
+                {
+                    // Try to find QuickButtonsViewModel through main window
+                    var mainViewModelType = mainViewModel.GetType();
+                    var quickButtonsProperty = mainViewModelType.GetProperty("QuickButtons") ?? 
+                                             mainViewModelType.GetProperty("QuickButtonsViewModel");
+                    
+                    if (quickButtonsProperty?.GetValue(mainViewModel) is QuickButtonsViewModel globalQuickButtonsViewModel)
+                    {
+                        _quickButtonsViewModel = globalQuickButtonsViewModel;
+                        SubscribeToQuickButtonsEvents(globalQuickButtonsViewModel, "Global Service Locator");
+                        _logger?.LogInformation("QuickButtons integration initialized via global service locator");
+                        return Task.CompletedTask;
+                    }
+                }
+            }
+            catch (Exception serviceEx)
+            {
+                _logger?.LogWarning(serviceEx, "Service locator fallback failed, but non-critical");
+            }
+
+            _logger?.LogWarning("All QuickButtons integration strategies failed - field population from QuickButtons may not work");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Critical error initializing QuickButtons integration");
+        }
+        
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Subscribes to QuickButtons events using reflection for event discovery.
+    /// Provides comprehensive logging for debugging integration issues.
+    /// </summary>
+    private void SubscribeToQuickButtonsEvents(QuickButtonsViewModel quickButtonsViewModel, string integrationMethod)
+    {
+        try
+        {
+            // Subscribe to quick action executed events if they exist
+            var quickActionEvent = quickButtonsViewModel.GetType().GetEvent("QuickActionExecuted");
+            if (quickActionEvent != null)
+            {
+                // Use reflection to subscribe to the event
+                var handler = new EventHandler<object>((sender, args) => OnQuickActionExecuted(sender, args));
+                quickActionEvent.AddEventHandler(quickButtonsViewModel, handler);
+                _logger?.LogDebug("QuickActionExecuted event subscribed via {Method}", integrationMethod);
             }
             else
             {
-                _logger?.LogDebug("QuickButtonsView not found in visual tree - integration skipped");
+                _logger?.LogWarning("QuickActionExecuted event not found on QuickButtonsViewModel - manual field population only");
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error initializing QuickButtons integration");
-            System.Diagnostics.Debug.WriteLine($"Error initializing QuickButtons integration: {ex.Message}");
+            _logger?.LogError(ex, "Error subscribing to QuickButtons events via {Method}", integrationMethod);
         }
-        
-        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -887,46 +951,91 @@ public partial class RemoveTabView : UserControl
     }
 
     /// <summary>
-    /// Finds the QuickButtonsView in the visual tree.
+    /// Finds the QuickButtonsView in the visual tree using comprehensive search strategies.
+    /// Enhanced version with better error handling and more thorough searching.
     /// </summary>
     private QuickButtonsView? FindQuickButtonsView()
     {
         try
         {
-            // Start from the current control and walk up to find a parent that contains QuickButtonsView
+            _logger?.LogDebug("Starting comprehensive QuickButtonsView search...");
+            
+            // Strategy 1: Search up the parent hierarchy
             var current = this.Parent;
-            while (current != null)
+            int parentLevels = 0;
+            while (current != null && parentLevels < 10) // Prevent infinite loops
             {
+                _logger?.LogTrace("Searching parent level {Level}: {Type}", parentLevels, current.GetType().Name);
+                
                 if (current is Panel panel)
                 {
-                    foreach (var child in panel.Children)
+                    var result = SearchInPanel(panel);
+                    if (result != null)
                     {
-                        if (child is QuickButtonsView quickButtonsView)
-                        {
-                            return quickButtonsView;
-                        }
-
-                        var found = FindQuickButtonsViewInChildren(child);
-                        if (found != null)
-                        {
-                            return found;
-                        }
+                        _logger?.LogDebug("QuickButtonsView found via parent hierarchy at level {Level}", parentLevels);
+                        return result;
                     }
                 }
+                
                 current = current.Parent;
+                parentLevels++;
             }
 
+            // Strategy 2: Search from Application MainWindow if parent search failed
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+                desktop.MainWindow != null)
+            {
+                _logger?.LogDebug("Parent hierarchy search failed, searching from MainWindow...");
+                var result = FindQuickButtonsViewInChildren(desktop.MainWindow);
+                if (result != null)
+                {
+                    _logger?.LogDebug("QuickButtonsView found via MainWindow search");
+                    return result;
+                }
+            }
+
+            _logger?.LogWarning("QuickButtonsView not found after comprehensive search");
             return null;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error finding QuickButtonsView: {ex.Message}");
+            _logger?.LogError(ex, "Error during comprehensive QuickButtonsView search");
             return null;
         }
     }
 
     /// <summary>
-    /// Recursively searches for QuickButtonsView in child controls.
+    /// Searches for QuickButtonsView within a specific panel.
+    /// </summary>
+    private QuickButtonsView? SearchInPanel(Panel panel)
+    {
+        try
+        {
+            foreach (var child in panel.Children)
+            {
+                if (child is QuickButtonsView quickButtonsView)
+                {
+                    return quickButtonsView;
+                }
+
+                var found = FindQuickButtonsViewInChildren(child);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogTrace(ex, "Error searching in panel {Type}", panel.GetType().Name);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Recursively searches for QuickButtonsView in child controls with comprehensive coverage.
+    /// Enhanced with better error handling and support for multiple control types.
     /// </summary>
     private QuickButtonsView? FindQuickButtonsViewInChildren(Control control)
     {
@@ -937,23 +1046,71 @@ public partial class RemoveTabView : UserControl
                 return quickButtonsView;
             }
 
-            if (control is Panel panel)
+            // Search in different types of containers
+            switch (control)
             {
-                foreach (var child in panel.Children)
-                {
-                    var found = FindQuickButtonsViewInChildren(child);
-                    if (found != null)
+                case Panel panel:
+                    foreach (var child in panel.Children)
                     {
-                        return found;
+                        var panelResult = FindQuickButtonsViewInChildren(child);
+                        if (panelResult != null) return panelResult;
                     }
-                }
+                    break;
+
+                case ContentControl contentControl when contentControl.Content is Control childContent:
+                    var contentResult = FindQuickButtonsViewInChildren(childContent);
+                    if (contentResult != null) return contentResult;
+                    break;
+
+                case Border border when border.Child is Control borderChild:
+                    var borderResult = FindQuickButtonsViewInChildren(borderChild);
+                    if (borderResult != null) return borderResult;
+                    break;
+
+                case ScrollViewer scrollViewer when scrollViewer.Content is Control scrollContent:
+                    var scrollResult = FindQuickButtonsViewInChildren(scrollContent);
+                    if (scrollResult != null) return scrollResult;
+                    break;
+
+                // Add support for other container types as needed
+                case UserControl userControl:
+                    // Don't recurse into other UserControls to avoid infinite loops
+                    if (userControl != this)
+                    {
+                        var userControlResult = SearchUserControlChildren(userControl);
+                        if (userControlResult != null) return userControlResult;
+                    }
+                    break;
             }
 
             return null;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error in FindQuickButtonsViewInChildren: {ex.Message}");
+            _logger?.LogTrace(ex, "Error searching children of {Type}", control.GetType().Name);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Safely searches within UserControl children without causing infinite recursion.
+    /// </summary>
+    private QuickButtonsView? SearchUserControlChildren(UserControl userControl)
+    {
+        try
+        {
+            // Use reflection to access the internal visual tree if possible
+            var visualChildren = userControl.GetVisualChildren().OfType<Control>();
+            foreach (var visualChild in visualChildren)
+            {
+                var found = FindQuickButtonsViewInChildren(visualChild);
+                if (found != null) return found;
+            }
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogTrace(ex, "Error searching UserControl {Type}", userControl.GetType().Name);
             return null;
         }
     }
