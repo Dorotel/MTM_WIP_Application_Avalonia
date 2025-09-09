@@ -3046,6 +3046,18 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 warnings.Add($"⚠️ Colors may not be harmonious - consider using auto-fill algorithms");
             }
 
+            // Color blindness accessibility validation
+            var (isColorBlindSafe, colorBlindIssues) = await ValidateColorBlindnessDistinction();
+            if (isColorBlindSafe)
+            {
+                validationResults.Add("✅ Colors remain distinguishable across all color vision types");
+            }
+            else
+            {
+                warnings.AddRange(colorBlindIssues);
+            }
+            validationResults.Add($"✅ Color blindness validation completed ({colorBlindIssues.Count} findings)");
+
             // Prepare final status message
             var resultCount = validationResults.Count;
             var warningCount = warnings.Count;
@@ -3080,6 +3092,55 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogError(ex, "Error during theme validation");
             await Services.ErrorHandling.HandleErrorAsync(ex, "Theme validation failed", Environment.UserName);
             StatusMessage = "❌ Theme validation encountered an error";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Command to perform standalone color blindness accessibility validation
+    /// </summary>
+    [RelayCommand]
+    private async Task ValidateColorBlindnessAccessibilityAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "🔍 Validating color blindness accessibility...";
+            Logger.LogDebug("Starting color blindness accessibility validation");
+
+            var (isValid, issues) = await ValidateColorBlindnessDistinction();
+            
+            if (isValid)
+            {
+                StatusMessage = "✅ All colors remain distinguishable across all color vision types!";
+                Logger.LogInformation("Color blindness validation passed - theme is accessible");
+            }
+            else
+            {
+                var criticalIssues = issues.Count(i => i.StartsWith("⚠️"));
+                var warnings = issues.Count(i => i.StartsWith("🟡"));
+                
+                StatusMessage = $"⚠️ Color blindness validation: {criticalIssues} critical, {warnings} warnings";
+                Logger.LogWarning("Color blindness validation found {Critical} critical issues and {Warnings} warnings", 
+                    criticalIssues, warnings);
+                
+                // Log detailed findings
+                foreach (var issue in issues.Take(5)) // Limit console output
+                {
+                    Logger.LogDebug("Color blindness finding: {Issue}", issue);
+                }
+            }
+
+            await Task.Delay(50); // Brief pause for user feedback
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during color blindness validation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Color blindness validation failed", Environment.UserName);
+            StatusMessage = "❌ Color blindness validation encountered an error";
         }
         finally
         {
@@ -5334,6 +5395,186 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         var gray = (byte)(0.299 * color.R + 0.587 * color.G + 0.114 * color.B);
         return Color.FromArgb(color.A, gray, gray, gray);
+    }
+
+    /// <summary>
+    /// Validates color distinction for various types of color blindness.
+    /// Ensures critical UI elements remain distinguishable across all vision types.
+    /// </summary>
+    private async Task<(bool IsValid, List<string> Issues)> ValidateColorBlindnessDistinction()
+    {
+        await Task.Delay(50); // Simulate processing time
+        
+        var issues = new List<string>();
+        bool isValid = true;
+
+        try
+        {
+            // Define critical color pairs that must remain distinguishable
+            var criticalPairs = new[]
+            {
+                ("Primary Action", PrimaryActionColor, "Secondary Action", SecondaryActionColor),
+                ("Success", SuccessColor, "Error", ErrorColor),
+                ("Success", SuccessColor, "Warning", WarningColor),
+                ("Error", ErrorColor, "Warning", WarningColor),
+                ("Heading Text", HeadingTextColor, "Body Text", BodyTextColor),
+                ("Interactive Text", InteractiveTextColor, "Tertiary Text", TertiaryTextColor),
+            };
+
+            // Test each color blindness type
+            var testTypes = new[]
+            {
+                "Protanopia (Red-blind)",
+                "Deuteranopia (Green-blind)", 
+                "Tritanopia (Blue-blind)",
+                "Protanomaly (Red-weak)",
+                "Deuteranomaly (Green-weak)",
+                "Tritanomaly (Blue-weak)",
+                "Monochromacy (Total color blindness)"
+            };
+
+            foreach (var testType in testTypes)
+            {
+                foreach (var (name1, color1, name2, color2) in criticalPairs)
+                {
+                    var simulatedColor1 = SimulateColorBlindness(color1, testType);
+                    var simulatedColor2 = SimulateColorBlindness(color2, testType);
+                    
+                    var deltaE = CalculateColorDistance(simulatedColor1, simulatedColor2);
+                    
+                    // Colors should have Delta E > 3.0 for basic distinction
+                    // and > 7.0 for strong distinction (accessibility best practice)
+                    if (deltaE < 3.0)
+                    {
+                        issues.Add($"⚠️ {name1} and {name2} are indistinguishable for {testType} (ΔE: {deltaE:F1})");
+                        isValid = false;
+                    }
+                    else if (deltaE < 7.0)
+                    {
+                        issues.Add($"🟡 {name1} and {name2} have weak distinction for {testType} (ΔE: {deltaE:F1})");
+                    }
+                }
+            }
+
+            // Additional validation for text contrast
+            await ValidateTextContrastForColorBlindness(issues);
+            
+            if (isValid)
+            {
+                Logger.LogDebug("Color blindness validation passed - all critical colors remain distinguishable");
+            }
+            else
+            {
+                Logger.LogWarning("Color blindness validation failed with {Count} issues", issues.Count);
+            }
+
+            return (isValid, issues);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during color blindness validation");
+            issues.Add("❌ Color blindness validation failed due to internal error");
+            return (false, issues);
+        }
+    }
+
+    /// <summary>
+    /// Simulates how a color appears for different types of color blindness
+    /// </summary>
+    private Color SimulateColorBlindness(Color color, string blindnessType)
+    {
+        return blindnessType switch
+        {
+            "Protanopia (Red-blind)" => SimulateProtanopia(color),
+            "Deuteranopia (Green-blind)" => SimulateDeuteranopia(color),
+            "Tritanopia (Blue-blind)" => SimulateTritanopia(color),
+            "Protanomaly (Red-weak)" => SimulateProtanopia(color), // Use full simulation for weak forms
+            "Deuteranomaly (Green-weak)" => SimulateDeuteranopia(color), // Use full simulation for weak forms
+            "Tritanomaly (Blue-weak)" => SimulateTritanopia(color), // Use full simulation for weak forms
+            "Monochromacy (Total color blindness)" => ToGrayscale(color),
+            _ => color
+        };
+    }
+
+    /// <summary>
+    /// Calculates perceptual color distance using simplified Delta E formula
+    /// </summary>
+    private double CalculateColorDistance(Color color1, Color color2)
+    {
+        // Convert to LAB-like space for perceptual distance
+        var lab1 = RgbToLab(color1);
+        var lab2 = RgbToLab(color2);
+
+        var deltaL = lab1.L - lab2.L;
+        var deltaA = lab1.A - lab2.A;
+        var deltaB = lab1.B - lab2.B;
+
+        return Math.Sqrt(deltaL * deltaL + deltaA * deltaA + deltaB * deltaB);
+    }
+
+    /// <summary>
+    /// Simplified RGB to LAB conversion for color distance calculation
+    /// </summary>
+    private (double L, double A, double B) RgbToLab(Color color)
+    {
+        // Simplified conversion - not full CIE LAB but sufficient for relative comparison
+        double r = color.R / 255.0;
+        double g = color.G / 255.0;
+        double b = color.B / 255.0;
+
+        // Gamma correction
+        r = r > 0.04045 ? Math.Pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+        g = g > 0.04045 ? Math.Pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+        b = b > 0.04045 ? Math.Pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+
+        // Convert to XYZ (simplified D65 illuminant)
+        double x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
+        double y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
+        double z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
+
+        // Convert to LAB (simplified)
+        x /= 0.95047;
+        z /= 1.08883;
+
+        x = x > 0.008856 ? Math.Pow(x, 1.0 / 3.0) : (7.787 * x + 16.0 / 116.0);
+        y = y > 0.008856 ? Math.Pow(y, 1.0 / 3.0) : (7.787 * y + 16.0 / 116.0);
+        z = z > 0.008856 ? Math.Pow(z, 1.0 / 3.0) : (7.787 * z + 16.0 / 116.0);
+
+        return (116 * y - 16, 500 * (x - y), 200 * (y - z));
+    }
+
+    /// <summary>
+    /// Validates text contrast ratios under color blindness simulation
+    /// </summary>
+    private async Task ValidateTextContrastForColorBlindness(List<string> issues)
+    {
+        await Task.Delay(10);
+
+        var textBackgroundPairs = new[]
+        {
+            ("Heading Text", HeadingTextColor, "Main Background", MainBackgroundColor),
+            ("Body Text", BodyTextColor, "Main Background", MainBackgroundColor),
+            ("Interactive Text", InteractiveTextColor, "Card Background", CardBackgroundColor),
+            ("Primary Action Text", Colors.White, "Primary Action", PrimaryActionColor),
+        };
+
+        var testTypes = new[] { "Protanopia (Red-blind)", "Deuteranopia (Green-blind)", "Tritanopia (Blue-blind)" };
+
+        foreach (var testType in testTypes)
+        {
+            foreach (var (textName, textColor, bgName, bgColor) in textBackgroundPairs)
+            {
+                var simTextColor = SimulateColorBlindness(textColor, testType);
+                var simBgColor = SimulateColorBlindness(bgColor, testType);
+                
+                var contrastRatio = CalculateContrastRatio(simTextColor, simBgColor);
+                
+                if (contrastRatio < 4.5) // WCAG AA standard
+                {
+                    issues.Add($"⚠️ {textName} on {bgName} fails WCAG contrast for {testType} ({contrastRatio:F1}:1)");
+                }
+            }
+        }
     }
 
     /// <summary>

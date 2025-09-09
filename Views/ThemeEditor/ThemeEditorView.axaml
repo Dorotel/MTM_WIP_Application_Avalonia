@@ -348,115 +348,103 @@
                                 ToolTip.Tip="Enter hex color code (e.g., #0078D4)" />
                         
                         <!-- RGB Sliders -->
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="RGB:" FontWeight="Medium" VerticalAlignment="Center" />
-                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="R:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding PrimaryActionColorRed, Mode=TwoWay}" 
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="RGB:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Spacing="4">
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="R:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding PrimaryActionColorRed, Mode=TwoWay}" 
                                    Minimum="0" Maximum="255" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Red component (0-255)" />
-                            <TextBlock Text="{Binding PrimaryActionColorRed}" FontSize="10" Width="30" VerticalAlignment="Center" />
-                          </StackPanel>
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="G:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding PrimaryActionColorGreen, Mode=TwoWay}" 
+                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorRed}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="G:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding PrimaryActionColorGreen, Mode=TwoWay}" 
                                    Minimum="0" Maximum="255" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Green component (0-255)" />
-                            <TextBlock Text="{Binding PrimaryActionColorGreen}" FontSize="10" Width="30" VerticalAlignment="Center" />
-                          </StackPanel>
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="B:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding PrimaryActionColorBlue, Mode=TwoWay}" 
+                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorGreen}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="B:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding PrimaryActionColorBlue, Mode=TwoWay}" 
                                    Minimum="0" Maximum="255" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Blue component (0-255)" />
-                            <TextBlock Text="{Binding PrimaryActionColorBlue}" FontSize="10" Width="30" VerticalAlignment="Center" />
-                          </StackPanel>
+                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorBlue}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
                         </StackPanel>
 
                         <!-- HSL Sliders -->
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="HSL:" FontWeight="Medium" VerticalAlignment="Center" />
-                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="H:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding PrimaryActionColorHue, Mode=TwoWay}" 
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="HSL:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical" Spacing="4">
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="H:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding PrimaryActionColorHue, Mode=TwoWay}" 
                                    Minimum="0" Maximum="360" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Hue (0-360°)" />
-                            <TextBlock Text="{Binding PrimaryActionColorHue, StringFormat='{}{0}°'}" FontSize="10" Width="35" VerticalAlignment="Center" />
-                          </StackPanel>
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="S:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding PrimaryActionColorSaturation, Mode=TwoWay}" 
+                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorHue, StringFormat='{}{0}°'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="S:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding PrimaryActionColorSaturation, Mode=TwoWay}" 
                                    Minimum="0" Maximum="100" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Saturation (0-100%)" />
-                            <TextBlock Text="{Binding PrimaryActionColorSaturation, StringFormat='{}{0}%'}" FontSize="10" Width="35" VerticalAlignment="Center" />
-                          </StackPanel>
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="L:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding PrimaryActionColorLightness, Mode=TwoWay}" 
+                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorSaturation, StringFormat='{}{0}%'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="L:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding PrimaryActionColorLightness, Mode=TwoWay}" 
                                    Minimum="0" Maximum="100" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Lightness (0-100%)" />
-                            <TextBlock Text="{Binding PrimaryActionColorLightness, StringFormat='{}{0}%'}" FontSize="10" Width="35" VerticalAlignment="Center" />
-                          </StackPanel>
+                            <TextBlock Grid.Column="2" Text="{Binding PrimaryActionColorLightness, StringFormat='{}{0}%'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
                         </StackPanel>
 
                         <!-- Color Actions -->
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Center" />
-                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                           <Button Classes="tertiary" 
-                                 Content="Eye Dropper" 
+                                 Margin="0,0,8,4"
                                  Command="{Binding EyeDropperCommand}" 
                                  CommandParameter="PrimaryAction"
                                  ToolTip.Tip="Pick color from screen">
-                            <Button.ContentTemplate>
-                              <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                  <materialIcons:MaterialIcon Kind="Eyedropper" Width="12" Height="12" />
-                                  <TextBlock Text="Pick" FontSize="10" />
-                                </StackPanel>
-                              </DataTemplate>
-                            </Button.ContentTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                              <materialIcons:MaterialIcon Kind="Eyedropper" Width="12" Height="12" />
+                              <TextBlock Text="Pick" FontSize="10" />
+                            </StackPanel>
                           </Button>
                           <Button Classes="tertiary" 
-                                 Content="Copy Hex" 
+                                 Margin="0,0,8,4"
                                  Command="{Binding CopyColorCommand}" 
                                  CommandParameter="PrimaryAction"
                                  ToolTip.Tip="Copy hex code to clipboard">
-                            <Button.ContentTemplate>
-                              <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                  <materialIcons:MaterialIcon Kind="ContentCopy" Width="12" Height="12" />
-                                  <TextBlock Text="Copy" FontSize="10" />
-                                </StackPanel>
-                              </DataTemplate>
-                            </Button.ContentTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                              <materialIcons:MaterialIcon Kind="ContentCopy" Width="12" Height="12" />
+                              <TextBlock Text="Copy" FontSize="10" />
+                            </StackPanel>
                           </Button>
                           <Button Classes="tertiary" 
-                                 Content="Reset" 
+                                 Margin="0,0,8,4"
                                  Command="{Binding ResetColorCommand}" 
                                  CommandParameter="PrimaryAction"
                                  ToolTip.Tip="Reset to default color">
-                            <Button.ContentTemplate>
-                              <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                  <materialIcons:MaterialIcon Kind="Refresh" Width="12" Height="12" />
-                                  <TextBlock Text="Reset" FontSize="10" />
-                                </StackPanel>
-                              </DataTemplate>
-                            </Button.ContentTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                              <materialIcons:MaterialIcon Kind="Refresh" Width="12" Height="12" />
+                              <TextBlock Text="Reset" FontSize="10" />
+                            </StackPanel>
                           </Button>
-                        </StackPanel>
+                        </WrapPanel>
                       </Grid>
 
                       <!-- WCAG Contrast Information -->
@@ -536,115 +524,103 @@
                                 ToolTip.Tip="Enter hex color code (e.g., #106EBE)" />
                         
                         <!-- RGB Sliders -->
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="RGB:" FontWeight="Medium" VerticalAlignment="Center" />
-                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="R:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding SecondaryActionColorRed, Mode=TwoWay}" 
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="RGB:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Spacing="4">
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="R:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding SecondaryActionColorRed, Mode=TwoWay}" 
                                    Minimum="0" Maximum="255" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Red component (0-255)" />
-                            <TextBlock Text="{Binding SecondaryActionColorRed}" FontSize="10" Width="30" VerticalAlignment="Center" />
-                          </StackPanel>
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="G:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding SecondaryActionColorGreen, Mode=TwoWay}" 
+                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorRed}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="G:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding SecondaryActionColorGreen, Mode=TwoWay}" 
                                    Minimum="0" Maximum="255" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Green component (0-255)" />
-                            <TextBlock Text="{Binding SecondaryActionColorGreen}" FontSize="10" Width="30" VerticalAlignment="Center" />
-                          </StackPanel>
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="B:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding SecondaryActionColorBlue, Mode=TwoWay}" 
+                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorGreen}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="B:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding SecondaryActionColorBlue, Mode=TwoWay}" 
                                    Minimum="0" Maximum="255" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Blue component (0-255)" />
-                            <TextBlock Text="{Binding SecondaryActionColorBlue}" FontSize="10" Width="30" VerticalAlignment="Center" />
-                          </StackPanel>
+                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorBlue}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
                         </StackPanel>
 
                         <!-- HSL Sliders -->
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="HSL:" FontWeight="Medium" VerticalAlignment="Center" />
-                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="H:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding SecondaryActionColorHue, Mode=TwoWay}" 
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="HSL:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical" Spacing="4">
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="H:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding SecondaryActionColorHue, Mode=TwoWay}" 
                                    Minimum="0" Maximum="360" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Hue (0-360°)" />
-                            <TextBlock Text="{Binding SecondaryActionColorHue, StringFormat='{}{0}°'}" FontSize="10" Width="35" VerticalAlignment="Center" />
-                          </StackPanel>
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="S:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding SecondaryActionColorSaturation, Mode=TwoWay}" 
+                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorHue, StringFormat='{}{0}°'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="S:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding SecondaryActionColorSaturation, Mode=TwoWay}" 
                                    Minimum="0" Maximum="100" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Saturation (0-100%)" />
-                            <TextBlock Text="{Binding SecondaryActionColorSaturation, StringFormat='{}{0}%'}" FontSize="10" Width="35" VerticalAlignment="Center" />
-                          </StackPanel>
-                          <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="L:" FontSize="10" VerticalAlignment="Center" />
-                            <Slider Value="{Binding SecondaryActionColorLightness, Mode=TwoWay}" 
+                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorSaturation, StringFormat='{}{0}%'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
+                          <Grid ColumnDefinitions="20,*,40" ColumnSpacing="4">
+                            <TextBlock Grid.Column="0" Text="L:" FontSize="10" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" 
+                                   Value="{Binding SecondaryActionColorLightness, Mode=TwoWay}" 
                                    Minimum="0" Maximum="100" 
-                                   Width="60" 
                                    KeyboardNavigation.IsTabStop="True"
                                    ToolTip.Tip="Lightness (0-100%)" />
-                            <TextBlock Text="{Binding SecondaryActionColorLightness, StringFormat='{}{0}%'}" FontSize="10" Width="35" VerticalAlignment="Center" />
-                          </StackPanel>
+                            <TextBlock Grid.Column="2" Text="{Binding SecondaryActionColorLightness, StringFormat='{}{0}%'}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                          </Grid>
                         </StackPanel>
 
                         <!-- Color Actions -->
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Center" />
-                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                           <Button Classes="tertiary" 
-                                 Content="Eye Dropper" 
+                                 Margin="0,0,8,4"
                                  Command="{Binding EyeDropperCommand}" 
                                  CommandParameter="SecondaryAction"
                                  ToolTip.Tip="Pick color from screen">
-                            <Button.ContentTemplate>
-                              <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                  <materialIcons:MaterialIcon Kind="Eyedropper" Width="12" Height="12" />
-                                  <TextBlock Text="Pick" FontSize="10" />
-                                </StackPanel>
-                              </DataTemplate>
-                            </Button.ContentTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                              <materialIcons:MaterialIcon Kind="Eyedropper" Width="12" Height="12" />
+                              <TextBlock Text="Pick" FontSize="10" />
+                            </StackPanel>
                           </Button>
                           <Button Classes="tertiary" 
-                                 Content="Copy Hex" 
+                                 Margin="0,0,8,4"
                                  Command="{Binding CopyColorCommand}" 
                                  CommandParameter="SecondaryAction"
                                  ToolTip.Tip="Copy hex code to clipboard">
-                            <Button.ContentTemplate>
-                              <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                  <materialIcons:MaterialIcon Kind="ContentCopy" Width="12" Height="12" />
-                                  <TextBlock Text="Copy" FontSize="10" />
-                                </StackPanel>
-                              </DataTemplate>
-                            </Button.ContentTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                              <materialIcons:MaterialIcon Kind="ContentCopy" Width="12" Height="12" />
+                              <TextBlock Text="Copy" FontSize="10" />
+                            </StackPanel>
                           </Button>
                           <Button Classes="tertiary" 
-                                 Content="Reset" 
+                                 Margin="0,0,8,4"
                                  Command="{Binding ResetColorCommand}" 
                                  CommandParameter="SecondaryAction"
                                  ToolTip.Tip="Reset to default color">
-                            <Button.ContentTemplate>
-                              <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                  <materialIcons:MaterialIcon Kind="Refresh" Width="12" Height="12" />
-                                  <TextBlock Text="Reset" FontSize="10" />
-                                </StackPanel>
-                              </DataTemplate>
-                            </Button.ContentTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                              <materialIcons:MaterialIcon Kind="Refresh" Width="12" Height="12" />
+                              <TextBlock Text="Reset" FontSize="10" />
+                            </StackPanel>
                           </Button>
-                        </StackPanel>
+                        </WrapPanel>
                       </Grid>
 
                       <!-- WCAG Contrast Information -->
@@ -724,24 +700,27 @@
                                 ToolTip.Tip="Enter hex color code (e.g., #40A2E8)" />
                         
                         <!-- Color Actions -->
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Center" />
-                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Actions:" FontWeight="Medium" VerticalAlignment="Top" />
+                        <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                           <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
                                  Content="Pick" 
                                  Command="{Binding EyeDropperCommand}" 
                                  CommandParameter="Accent"
                                  ToolTip.Tip="Pick color from screen" />
                           <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
                                  Content="Copy" 
                                  Command="{Binding CopyColorCommand}" 
                                  CommandParameter="Accent"
                                  ToolTip.Tip="Copy hex code to clipboard" />
                           <Button Classes="tertiary" 
+                                 Margin="0,0,8,4"
                                  Content="Reset" 
                                  Command="{Binding ResetColorCommand}" 
                                  CommandParameter="Accent"
                                  ToolTip.Tip="Reset to default color" />
-                        </StackPanel>
+                        </WrapPanel>
                       </Grid>
                       
                     </StackPanel>
@@ -1598,10 +1577,11 @@
           <Grid Grid.Column="1" />
           
           <!-- Action buttons -->
-          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+          <WrapPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
             
             <Button Classes="secondary" 
-                    Width="100" 
+                    MinWidth="90" 
+                    Margin="0,0,8,4"
                     Command="{Binding PreviewThemeCommand}" 
                     IsEnabled="{Binding HasUnsavedChanges, FallbackValue=False}"
                     ToolTip.Tip="Preview changes without saving">
@@ -1612,7 +1592,8 @@
             </Button>
             
             <Button Classes="primary" 
-                    Width="100" 
+                    MinWidth="90" 
+                    Margin="0,0,8,4"
                     Command="{Binding ApplyThemeCommand}" 
                     IsEnabled="{Binding CanApplyTheme, FallbackValue=True}"
                     ToolTip.Tip="Apply and save theme changes">
@@ -1623,7 +1604,8 @@
             </Button>
             
             <Button Classes="secondary" 
-                    Width="100" 
+                    MinWidth="90" 
+                    Margin="0,0,8,4"
                     Command="{Binding ResetThemeCommand}" 
                     IsEnabled="{Binding HasUnsavedChanges, FallbackValue=False}"
                     ToolTip.Tip="Reset to default colors">
@@ -1634,7 +1616,8 @@
             </Button>
             
             <Button Classes="secondary" 
-                    Width="80" 
+                    MinWidth="70" 
+                    Margin="0,0,0,4"
                     Command="{Binding CloseCommand}" 
                     ToolTip.Tip="Close theme editor">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
@@ -1643,7 +1626,7 @@
               </StackPanel>
             </Button>
             
-          </StackPanel>
+          </WrapPanel>
         </Grid>
       </Border>
 
