@@ -6,6 +6,21 @@
 
 ---
 
+## @copilot Prompt
+
+@copilot Please help me standardize the MTM Advanced Theme Editor System by implementing consistent color card interfaces, fixing layout issues, and streamlining the user experience. The current implementation has inconsistent color card features, layout scrolling problems, and unnecessary feature bloat that needs to be addressed.
+
+**Key Requirements:**
+1. **Standardize all 20 color cards** with identical 5-button layout (TextBox, ColorPicker, Eyedropper, Copy, Reset)
+2. **Fix MainWindow layout** - left panel should stretch (no scroll), right panel vertical scroll only, bottom bar always visible
+3. **Remove feature bloat** - Print Preview, Light Simulation, Multi-monitor Preview
+4. **Add theme persistence** - save custom themes to Resources/Themes/ directory
+5. **Update ThemeQuickSwitcher** to include custom theme files
+
+Focus on creating a professional, consistent user experience that matches MTM design patterns and maintains the existing advanced features (auto-fill, validation, accessibility).
+
+---
+
 ## Implementation Objective
 
 **Standardize the Theme Editor interface with consistent color cards, proper MainWindow layout, and streamlined user experience** by implementing identical 5-button color card interfaces, fixing layout scrolling behavior, and removing unnecessary feature bloat.
