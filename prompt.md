@@ -1,5 +1,10 @@
 @copilot TransferTabView implementation is now 85% complete with comprehensive functionality! 🎉
 
+New Bugs, need to fix
+1) SuggestionOVerlay not showing up as it should - refer to InventoryTabView to see proper implementaion
+2) QuickButtons not filling Part or Operation
+3) 
+
 **MAJOR DISCOVERY**: Current build analysis reveals TransferTabView is far more advanced than previously assessed! 
 
 **IMPLEMENTED COMPONENTS** (Verified from build logs and code analysis):
