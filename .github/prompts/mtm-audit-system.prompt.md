@@ -150,6 +150,12 @@ Execute a complete MTM Pull Request Audit workflow that:
 
    ## 🚀 Execution Instruction
    [Clear instruction for Copilot automation with hashtag]
+
+   #github-pull-request_copilot-coding-agent
+
+   ---
+
+   @copilot [Specific @copilot directive with focused implementation areas, referencing the detailed patterns and requirements above. Always include critical gaps and MTM compliance requirements.]
    ```
 
 ## MTM-Specific Validation Requirements
@@ -205,6 +211,7 @@ Execute a complete MTM Pull Request Audit workflow that:
 - **Format**: Ready-to-use Copilot prompt with rich context
 - **Content**: Critical gaps, MTM patterns, code examples, implementation priorities
 - **Integration**: Include `#github-pull-request_copilot-coding-agent` hashtag for automation
+- **Automation**: Must include `@copilot` continuation directive with specific implementation guidance
 
 ### Quality Validation
 - Reports contain specific, actionable items with clear priorities

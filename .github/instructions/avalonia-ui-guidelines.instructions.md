@@ -450,7 +450,7 @@ MTM_Shared_Logic.ErrorBrush: #F44336 (Red)
 <!-- Built-in converters -->
 <TextBlock Text="{Binding Count, StringFormat='Items: {0}'}" />
 <Border IsVisible="{Binding HasItems}" />
-<TextBlock Text="{Binding LastUpdated, StringFormat='Last Updated: September 09, 2025
+<TextBlock Text="{Binding LastUpdated, StringFormat='Last Updated: September 07, 2025
 
 <!-- Custom converters (defined in Converters/ folder) -->
 <TextBlock Foreground="{Binding Status, Converter={StaticResource StatusToBrushConverter}}" />
