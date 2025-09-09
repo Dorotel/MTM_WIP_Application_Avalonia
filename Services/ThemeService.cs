@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Threading;
@@ -368,28 +369,75 @@ public class ThemeService : IThemeService
     }
 
     /// <summary>
-    /// Applies custom color overrides to current theme.
+    /// Applies custom color overrides to current theme with real-time resource dictionary updates.
     /// </summary>
     public async Task<ServiceResult> ApplyCustomColorsAsync(Dictionary<string, string> colorOverrides)
     {
         try
         {
-            await Task.CompletedTask; // Placeholder for async implementation
-            
             if (colorOverrides?.Any() != true)
             {
                 return ServiceResult.Failure("No color overrides provided");
             }
 
-            // Apply custom colors to current theme
-            // This would modify the resource dictionary at runtime
-            
-            _logger.LogInformation("Applied {Count} custom color overrides", colorOverrides.Count);
-            return ServiceResult.Success($"Applied {colorOverrides.Count} color customizations");
+            _logger.LogInformation("Applying {Count} custom color overrides to theme resources", colorOverrides.Count);
+
+            // Apply colors to application resources on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                try
+                {
+                    if (Application.Current?.Resources == null)
+                    {
+                        _logger.LogError("Application resources not available");
+                        return;
+                    }
+
+                    var successCount = 0;
+                    foreach (var colorOverride in colorOverrides)
+                    {
+                        try
+                        {
+                            // Parse the color string
+                            if (Color.TryParse(colorOverride.Value, out var color))
+                            {
+                                // Create a SolidColorBrush from the color
+                                var brush = new SolidColorBrush(color);
+                                
+                                // Update or add the resource
+                                Application.Current.Resources[colorOverride.Key] = brush;
+                                
+                                _logger.LogDebug("Applied color override: {Key} = {Color}", 
+                                    colorOverride.Key, colorOverride.Value);
+                                successCount++;
+                            }
+                            else
+                            {
+                                _logger.LogWarning("Invalid color format for {Key}: {Value}", 
+                                    colorOverride.Key, colorOverride.Value);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Error applying color override for {Key}", colorOverride.Key);
+                        }
+                    }
+
+                    _logger.LogInformation("Successfully applied {SuccessCount}/{TotalCount} color overrides", 
+                        successCount, colorOverrides.Count);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error during UI thread resource update");
+                    throw;
+                }
+            });
+
+            return ServiceResult.Success($"Applied {colorOverrides.Count} color customizations to live theme");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error applying custom colors");
+            _logger.LogError(ex, "Error applying custom colors to theme resources");
             return ServiceResult.Failure($"Failed to apply custom colors: {ex.Message}", ex);
         }
     }

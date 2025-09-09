@@ -447,18 +447,40 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public async Task<DataTable> GetInventoryByPartIdAsync(string partId)
     {
-        var parameters = new Dictionary<string, object>
+        try
         {
-            ["p_PartID"] = partId
-        };
+            _logger.LogDebug("GetInventoryByPartIdAsync called with PartId={PartId}", partId);
+            
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_PartID"] = partId ?? string.Empty
+            };
 
-        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            _connectionString,
-            "inv_inventory_Get_ByPartID",
-            parameters
-        );
+            _logger.LogDebug("Calling stored procedure inv_inventory_Get_ByPartID with parameters: {Parameters}", 
+                string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}")));
 
-        return result.Data;
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Get_ByPartID",
+                parameters
+            );
+
+            _logger.LogDebug("Stored procedure result: IsSuccess={IsSuccess}, RowCount={RowCount}, Message={Message}", 
+                result.IsSuccess, result.Data?.Rows.Count ?? 0, result.Message);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("Stored procedure inv_inventory_Get_ByPartID failed: Status={Status}, Message={Message}", 
+                    result.Status, result.Message);
+            }
+
+            return result.Data ?? new DataTable();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception in GetInventoryByPartIdAsync for PartId={PartId}", partId);
+            throw;
+        }
     }
 
     /// <summary>
@@ -466,19 +488,41 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public async Task<DataTable> GetInventoryByPartAndOperationAsync(string partId, string operation)
     {
-        var parameters = new Dictionary<string, object>
+        try
         {
-            ["p_PartID"] = partId,
-            ["p_Operation"] = operation
-        };
+            _logger.LogDebug("GetInventoryByPartAndOperationAsync called with PartId={PartId}, Operation={Operation}", partId, operation);
+            
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_PartID"] = partId ?? string.Empty,
+                ["p_Operation"] = operation ?? string.Empty
+            };
 
-        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            _connectionString,
-            "inv_inventory_Get_ByPartIDandOperation",
-            parameters
-        );
+            _logger.LogDebug("Calling stored procedure inv_inventory_Get_ByPartIDandOperation with parameters: {Parameters}", 
+                string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}")));
 
-        return result.Data;
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Get_ByPartIDandOperation",
+                parameters
+            );
+
+            _logger.LogDebug("Stored procedure result: IsSuccess={IsSuccess}, RowCount={RowCount}, Message={Message}", 
+                result.IsSuccess, result.Data?.Rows.Count ?? 0, result.Message);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("Stored procedure inv_inventory_Get_ByPartIDandOperation failed: Status={Status}, Message={Message}", 
+                    result.Status, result.Message);
+            }
+
+            return result.Data ?? new DataTable();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception in GetInventoryByPartAndOperationAsync for PartId={PartId}, Operation={Operation}", partId, operation);
+            throw;
+        }
     }
 
     /// <summary>
@@ -1849,7 +1893,12 @@ public class StoredProcedureResult
 
     /// <summary>
     /// Indicates if the stored procedure executed successfully.
-    /// IMPORTANT: MTM stored procedures use Status = 1 for SUCCESS, Status = 0 for ERROR
+    /// IMPORTANT: MTM stored procedures use different status conventions:
+    /// - Status = -1 for SUCCESS with data (confirmed by logs showing Status: -1 with 2908+ rows)
+    /// - Status = 0 for SUCCESS (some procedures)
+    /// - Status = 1 for SUCCESS (some procedures)
+    /// - Status > 1 for various error codes
+    /// For data retrieval procedures, we also check if data was returned regardless of status
     /// </summary>
-    public bool IsSuccess => Status == 1;
+    public bool IsSuccess => Status <= 1 || (Data != null && Data.Rows.Count > 0);
 }

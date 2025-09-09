@@ -68,8 +68,12 @@ public static class ServiceCollectionExtensions
         // Register Focus Management service - singleton for application-wide focus management
         services.TryAddSingleton<IFocusManagementService, FocusManagementService>();
         
+
         // Register Print service - singleton for shared access across ViewModels
         services.TryAddSingleton<IPrintService, PrintService>();
+
+        // Register Remove service - singleton for centralized inventory removal business logic
+        services.TryAddSingleton<IRemoveService, RemoveService>();
         
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
@@ -174,7 +178,8 @@ public static class ServiceCollectionExtensions
             typeof(ISuggestionOverlayService),
             typeof(IMasterDataService),
             typeof(IFileLoggingService),
-            typeof(IFocusManagementService)
+            typeof(IFocusManagementService),
+            typeof(IRemoveService)
         };
 
         var missingServices = requiredServices
@@ -210,7 +215,8 @@ public static class ServiceCollectionExtensions
             typeof(ISuggestionOverlayService),
             typeof(IMasterDataService),
             typeof(IFileLoggingService),
-            typeof(IFocusManagementService)
+            typeof(IFocusManagementService),
+            typeof(IRemoveService)
         };
 
         var failedServices = new List<string>();
