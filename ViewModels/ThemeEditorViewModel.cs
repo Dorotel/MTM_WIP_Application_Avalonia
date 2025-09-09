@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using Avalonia.Media;
 
@@ -16,7 +17,6 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 /// Features navigation, color pickers, auto-fill generation, and real-time preview.
 /// Uses MVVM Community Toolkit for property and command management.
 /// </summary>
-[ObservableObject]
 public partial class ThemeEditorViewModel : BaseViewModel
 {
     private readonly IThemeService? _themeService;
@@ -524,167 +524,5 @@ public class ColorCategory
         Id = id;
         Name = name;
         Description = description;
-    }
-}
-
-/// <summary>
-/// Color category model for sidebar navigation
-/// </summary>
-public class ColorCategory
-{
-    public string Id { get; }
-    public string Name { get; }
-    public string Description { get; }
-
-    public ColorCategory(string id, string name, string description)
-    {
-        Id = id;
-        Name = name;
-        Description = description;
-    }
-}
-    private string _headingTextColor = "#1F2937";
-
-    [ObservableProperty]
-    private string _bodyTextColor = "#4B5563";
-
-    [ObservableProperty]
-    private string _overlayTextColor = "#FFFFFF";
-
-    // Border Colors
-    [ObservableProperty]
-    private string _borderColor = "#E5E7EB";
-
-    [ObservableProperty]
-    private string _borderAccentColor = "#D1D5DB";
-
-    // Event to notify about closing
-    public event EventHandler? CloseRequested;
-
-    public ThemeEditorViewModel(ILogger<ThemeEditorViewModel> logger) : base(logger)
-    {
-        Logger.LogInformation("ThemeEditorViewModel initialized");
-        
-        // Subscribe to property changes to track unsaved changes
-        PropertyChanged += OnPropertyChanged;
-    }
-
-    private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        // Check if any color property changed
-        if (e.PropertyName?.EndsWith("Color") == true)
-        {
-            HasUnsavedChanges = true;
-            StatusMessage = "Theme colors modified - click Apply to update";
-        }
-    }
-
-    /// <summary>
-    /// Command to apply the current theme changes
-    /// </summary>
-    [RelayCommand]
-    private async Task ApplyTheme()
-    {
-        try
-        {
-            IsLoading = true;
-            StatusMessage = "Applying theme changes...";
-
-            // TODO: Implement actual theme application logic
-            await Task.Delay(1000); // Simulate processing
-
-            HasUnsavedChanges = false;
-            StatusMessage = "Theme applied successfully";
-            
-            Logger.LogInformation("Theme applied successfully");
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Failed to apply theme: {ex.Message}";
-            Logger.LogError(ex, "Failed to apply theme");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    /// <summary>
-    /// Command to reset theme changes
-    /// </summary>
-    [RelayCommand]
-    private void ResetTheme()
-    {
-        try
-        {
-            // Reset to default values
-            PrimaryActionColor = "#0078D4";
-            SecondaryActionColor = "#106EBE";
-            MainBackgroundColor = "#FFFFFF";
-            CardBackgroundColor = "#FAFAFA";
-            HoverBackgroundColor = "#F0F0F0";
-            HeadingTextColor = "#1F2937";
-            BodyTextColor = "#4B5563";
-            OverlayTextColor = "#FFFFFF";
-            BorderColor = "#E5E7EB";
-            BorderAccentColor = "#D1D5DB";
-
-            HasUnsavedChanges = false;
-            StatusMessage = "Theme reset to defaults";
-            
-            Logger.LogInformation("Theme reset to defaults");
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Failed to reset theme: {ex.Message}";
-            Logger.LogError(ex, "Failed to reset theme");
-        }
-    }
-
-    /// <summary>
-    /// Command to close the theme editor
-    /// </summary>
-    [RelayCommand]
-    private void Close()
-    {
-        try
-        {
-            Logger.LogInformation("Closing theme editor");
-            CloseRequested?.Invoke(this, EventArgs.Empty);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error closing theme editor");
-        }
-    }
-
-    /// <summary>
-    /// Loads the current theme colors for editing
-    /// </summary>
-    public async Task LoadCurrentThemeAsync(string themeName = "MTM Theme")
-    {
-        try
-        {
-            IsLoading = true;
-            StatusMessage = $"Loading {themeName} theme...";
-            CurrentThemeName = themeName;
-
-            // TODO: Implement actual theme loading logic
-            await Task.Delay(500); // Simulate loading
-
-            StatusMessage = $"{themeName} theme loaded";
-            HasUnsavedChanges = false;
-            
-            Logger.LogInformation("Theme loaded: {ThemeName}", themeName);
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Failed to load theme: {ex.Message}";
-            Logger.LogError(ex, "Failed to load theme: {ThemeName}", themeName);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
     }
 }

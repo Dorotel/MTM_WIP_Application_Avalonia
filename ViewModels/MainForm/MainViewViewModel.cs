@@ -13,7 +13,7 @@ using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
 
-namespace MTM_WIP_Application_Avalonia.ViewModels;
+namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 /// <summary>
 /// MainViewViewModel manages the main application view including tab navigation,
