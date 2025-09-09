@@ -103,22 +103,6 @@ public partial class RemoveTabView : UserControl
                 operationTextBox.TextChanged += OnOperationTextBoxTextChanged;
             }
 
-            // Setup Location TextBox
-            var locationTextBox = this.FindControl<TextBox>("LocationTextBox");
-            if (locationTextBox != null)
-            {
-                locationTextBox.GotFocus += OnLocationTextBoxGotFocus;
-                locationTextBox.TextChanged += OnLocationTextBoxTextChanged;
-            }
-
-            // Setup User TextBox
-            var userTextBox = this.FindControl<TextBox>("UserTextBox");
-            if (userTextBox != null)
-            {
-                userTextBox.GotFocus += OnUserTextBoxGotFocus;
-                userTextBox.TextChanged += OnUserTextBoxTextChanged;
-            }
-
             _logger?.LogDebug("TextBox SuggestionOverlay event handlers setup completed");
         }
         catch (Exception ex)
@@ -722,100 +706,6 @@ public partial class RemoveTabView : UserControl
             catch (Exception ex)
             {
                 _logger?.LogWarning(ex, "Error showing operation suggestions on text change");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Handles Location TextBox focus event for SuggestionOverlay
-    /// </summary>
-    private async void OnLocationTextBoxGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
-    {
-        if (_viewModel != null && sender is TextBox textBox)
-        {
-            try
-            {
-                var result = await _viewModel.ShowLocationSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
-                if (result != null)
-                {
-                    _viewModel.SelectedLocation = result;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogWarning(ex, "Error showing location suggestions");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Handles Location TextBox text changed event for SuggestionOverlay
-    /// </summary>
-    private async void OnLocationTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
-    {
-        if (_viewModel != null && sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
-        {
-            try
-            {
-                if (textBox.Text.Length > 1)
-                {
-                    var result = await _viewModel.ShowLocationSuggestionsAsync(textBox, textBox.Text);
-                    if (result != null && result != textBox.Text)
-                    {
-                        _viewModel.SelectedLocation = result;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogWarning(ex, "Error showing location suggestions on text change");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Handles User TextBox focus event for SuggestionOverlay
-    /// </summary>
-    private async void OnUserTextBoxGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
-    {
-        if (_viewModel != null && sender is TextBox textBox)
-        {
-            try
-            {
-                var result = await _viewModel.ShowUserSuggestionsAsync(textBox, textBox.Text ?? string.Empty);
-                if (result != null)
-                {
-                    _viewModel.SelectedUser = result;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogWarning(ex, "Error showing user suggestions");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Handles User TextBox text changed event for SuggestionOverlay
-    /// </summary>
-    private async void OnUserTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
-    {
-        if (_viewModel != null && sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
-        {
-            try
-            {
-                if (textBox.Text.Length > 1)
-                {
-                    var result = await _viewModel.ShowUserSuggestionsAsync(textBox, textBox.Text);
-                    if (result != null && result != textBox.Text)
-                    {
-                        _viewModel.SelectedUser = result;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogWarning(ex, "Error showing user suggestions on text change");
             }
         }
     }

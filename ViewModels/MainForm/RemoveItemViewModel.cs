@@ -41,16 +41,6 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// Available operations for filtering (InventoryTabView pattern)
     /// </summary>
     public ObservableCollection<string> Operations { get; } = new();
-    
-    /// <summary>
-    /// Available locations for filtering (InventoryTabView pattern)
-    /// </summary>
-    public ObservableCollection<string> Locations { get; } = new();
-    
-    /// <summary>
-    /// Available users for filtering (InventoryTabView pattern)
-    /// </summary>
-    public ObservableCollection<string> Users { get; } = new();
 
     #endregion
 
@@ -65,16 +55,6 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// Available operation options for refined filtering
     /// </summary>
     public ObservableCollection<string> OperationOptions { get; } = new();
-    
-    /// <summary>
-    /// Available location options for filtering by location
-    /// </summary>
-    public ObservableCollection<string> LocationOptions { get; } = new();
-    
-    /// <summary>
-    /// Available user options for advanced filtering by user
-    /// </summary>
-    public ObservableCollection<string> UserOptions { get; } = new();
     
     /// <summary>
     /// Current inventory items displayed in the DataGrid
@@ -107,16 +87,6 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// </summary>
     public string OperationWatermark => "Enter operation (optional)...";
 
-    /// <summary>
-    /// Dynamic watermark for Location field - shows error or placeholder
-    /// </summary>
-    public string LocationWatermark => "Enter location (optional)...";
-
-    /// <summary>
-    /// Dynamic watermark for User field - shows error or placeholder
-    /// </summary>
-    public string UserWatermark => "Enter user (advanced filtering)...";
-
     #endregion
 
     #region Search Criteria Properties
@@ -137,20 +107,6 @@ public partial class RemoveItemViewModel : BaseViewModel
     private string? _selectedOperation;
 
     /// <summary>
-    /// Selected location for filtering (optional).
-    /// Must be a valid location if specified.
-    /// </summary>
-    [ObservableProperty]
-    private string? _selectedLocation;
-
-    /// <summary>
-    /// Selected user for advanced filtering (optional).
-    /// Must be a valid user if specified.
-    /// </summary>
-    [ObservableProperty]
-    private string? _selectedUser;
-
-    /// <summary>
     /// Text content for Part AutoCompleteBox.
     /// Synchronized with SelectedPart property.
     /// </summary>
@@ -166,22 +122,6 @@ public partial class RemoveItemViewModel : BaseViewModel
     [ObservableProperty]
     [StringLength(10, ErrorMessage = "Operation text cannot exceed 10 characters")]
     private string _operationText = string.Empty;
-
-    /// <summary>
-    /// Text content for Location filtering.
-    /// Used for location-based inventory filtering.
-    /// </summary>
-    [ObservableProperty]
-    [StringLength(20, ErrorMessage = "Location text cannot exceed 20 characters")]
-    private string _locationText = string.Empty;
-
-    /// <summary>
-    /// Text content for User filtering (advanced filtering).
-    /// Used for filtering inventory by user who created/modified records.
-    /// </summary>
-    [ObservableProperty]
-    [StringLength(50, ErrorMessage = "User text cannot exceed 50 characters")]
-    private string _userText = string.Empty;
 
     #endregion
 
@@ -300,14 +240,6 @@ public partial class RemoveItemViewModel : BaseViewModel
                 OperationText = SelectedOperation ?? string.Empty;
                 OnPropertyChanged(nameof(OperationWatermark));
                 break;
-            case nameof(SelectedLocation):
-                LocationText = SelectedLocation ?? string.Empty;
-                OnPropertyChanged(nameof(LocationWatermark));
-                break;
-            case nameof(SelectedUser):
-                UserText = SelectedUser ?? string.Empty;
-                OnPropertyChanged(nameof(UserWatermark));
-                break;
             case nameof(PartText):
                 if (!string.IsNullOrEmpty(PartText) && (PartOptions.Contains(PartText) || PartIds.Contains(PartText)))
                     SelectedPart = PartText;
@@ -315,14 +247,6 @@ public partial class RemoveItemViewModel : BaseViewModel
             case nameof(OperationText):
                 if (!string.IsNullOrEmpty(OperationText) && (OperationOptions.Contains(OperationText) || Operations.Contains(OperationText)))
                     SelectedOperation = OperationText;
-                break;
-            case nameof(LocationText):
-                if (!string.IsNullOrEmpty(LocationText) && (LocationOptions.Contains(LocationText) || Locations.Contains(LocationText)))
-                    SelectedLocation = LocationText;
-                break;
-            case nameof(UserText):
-                if (!string.IsNullOrEmpty(UserText) && (UserOptions.Contains(UserText) || Users.Contains(UserText)))
-                    SelectedUser = UserText;
                 break;
         }
     }
@@ -361,8 +285,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             InventoryItems.Clear();
 
             using var scope = Logger.BeginScope("InventorySearch");
-            Logger.LogInformation("Executing search for Part: {PartId}, Operation: {Operation}, Location: {Location}, User: {User}", 
-                SelectedPart, SelectedOperation, LocationText, UserText);
+            Logger.LogInformation("Executing search for Part: {PartId}, Operation: {Operation}", 
+                SelectedPart, SelectedOperation);
 
             // Validate search criteria
             if (string.IsNullOrWhiteSpace(SelectedPart))
@@ -411,29 +335,8 @@ public partial class RemoveItemViewModel : BaseViewModel
                     Notes = row["Notes"]?.ToString() ?? string.Empty
                 };
                 
-                // Apply client-side filtering for Location and User if specified
-                var includeItem = true;
-                
-                // Filter by Location if specified (use InventoryTabView pattern)
-                if (!string.IsNullOrWhiteSpace(SelectedLocation) || !string.IsNullOrWhiteSpace(LocationText))
-                {
-                    var locationFilter = !string.IsNullOrWhiteSpace(SelectedLocation) ? SelectedLocation : LocationText;
-                    includeItem = includeItem && 
-                        inventoryItem.Location.Contains(locationFilter, StringComparison.OrdinalIgnoreCase);
-                }
-                
-                // Filter by User if specified (use InventoryTabView pattern)
-                if (!string.IsNullOrWhiteSpace(SelectedUser) || !string.IsNullOrWhiteSpace(UserText))
-                {
-                    var userFilter = !string.IsNullOrWhiteSpace(SelectedUser) ? SelectedUser : UserText;
-                    includeItem = includeItem && 
-                        inventoryItem.User.Contains(userFilter, StringComparison.OrdinalIgnoreCase);
-                }
-                
-                if (includeItem)
-                {
-                    InventoryItems.Add(inventoryItem);
-                }
+                // All items are included without client-side filtering
+                InventoryItems.Add(inventoryItem);
             }
 
             Logger.LogInformation("Search completed. Found {Count} inventory items", InventoryItems.Count);
@@ -471,12 +374,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             // Clear search criteria
             SelectedPart = null;
             SelectedOperation = null;
-            SelectedLocation = null; // InventoryTabView pattern
-            SelectedUser = null; // InventoryTabView pattern
             PartText = string.Empty;
             OperationText = string.Empty;
-            LocationText = string.Empty;
-            UserText = string.Empty;
             InventoryItems.Clear();
             SelectedItem = null;
 
@@ -829,63 +728,8 @@ public partial class RemoveItemViewModel : BaseViewModel
                 Logger.LogInformation("Loaded {Count} operations", OperationOptions.Count);
             }
 
-            // Load Locations using md_locations_Get_All stored procedure
-            var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                _databaseService.GetConnectionString(),
-                "md_locations_Get_All",
-                new Dictionary<string, object>()
-            ).ConfigureAwait(false);
-
-            if (locationResult.IsSuccess)
-            {
-                // Update collection on UI thread
-                Dispatcher.UIThread.Post(() =>
-                {
-                    LocationOptions.Clear();
-                    Locations.Clear(); // InventoryTabView pattern
-                    foreach (System.Data.DataRow row in locationResult.Data.Rows)
-                    {
-                        var location = row["Location"]?.ToString();
-                        if (!string.IsNullOrEmpty(location))
-                        {
-                            LocationOptions.Add(location);
-                            Locations.Add(location); // InventoryTabView pattern
-                        }
-                    }
-                });
-                Logger.LogInformation("Loaded {Count} locations", LocationOptions.Count);
-            }
-
-            // Load Users using usr_users_Get_All stored procedure  
-            var userResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                _databaseService.GetConnectionString(),
-                "usr_users_Get_All",
-                new Dictionary<string, object>()
-            ).ConfigureAwait(false);
-
-            if (userResult.IsSuccess)
-            {
-                // Update collection on UI thread
-                Dispatcher.UIThread.Post(() =>
-                {
-                    UserOptions.Clear();
-                    Users.Clear(); // InventoryTabView pattern
-                    foreach (System.Data.DataRow row in userResult.Data.Rows)
-                    {
-                        // Note: User table column is "User" but property is User_Name to avoid conflicts
-                        var user = row["User"]?.ToString();
-                        if (!string.IsNullOrEmpty(user))
-                        {
-                            UserOptions.Add(user);
-                            Users.Add(user); // InventoryTabView pattern
-                        }
-                    }
-                });
-                Logger.LogInformation("Loaded {Count} users", UserOptions.Count);
-            }
-
-            Logger.LogInformation("ComboBox data loaded successfully - Parts: {PartCount}, Operations: {OperationCount}, Locations: {LocationCount}, Users: {UserCount}", 
-                PartOptions.Count, OperationOptions.Count, LocationOptions.Count, UserOptions.Count);
+            Logger.LogInformation("ComboBox data loaded successfully - Parts: {PartCount}, Operations: {OperationCount}", 
+                PartOptions.Count, OperationOptions.Count);
         }
         catch (Exception ex)
         {
@@ -906,10 +750,6 @@ public partial class RemoveItemViewModel : BaseViewModel
             PartIds.Clear(); // InventoryTabView pattern
             OperationOptions.Clear();
             Operations.Clear(); // InventoryTabView pattern
-            LocationOptions.Clear();
-            Locations.Clear(); // InventoryTabView pattern
-            UserOptions.Clear();
-            Users.Clear(); // InventoryTabView pattern
 
             // Sample parts
             var sampleParts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005" };
@@ -925,22 +765,6 @@ public partial class RemoveItemViewModel : BaseViewModel
             {
                 OperationOptions.Add(operation);
                 Operations.Add(operation); // InventoryTabView pattern
-            }
-
-            // Sample locations
-            var sampleLocations = new[] { "A01", "A02", "B01", "B02", "WC01", "WC02", "LINE1", "LINE2" };
-            foreach (var location in sampleLocations)
-            {
-                LocationOptions.Add(location);
-                Locations.Add(location); // InventoryTabView pattern
-            }
-
-            // Sample users
-            var sampleUsers = new[] { "TestUser", "Operator1", "Operator2", "Supervisor", "Admin" };
-            foreach (var user in sampleUsers)
-            {
-                UserOptions.Add(user);
-                Users.Add(user); // InventoryTabView pattern
             }
         });
         return Task.CompletedTask;
@@ -1126,57 +950,17 @@ public partial class RemoveItemViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Shows location suggestions using the SuggestionOverlay service
-    /// </summary>
-    /// <param name="targetControl">The control to position the overlay relative to</param>
-    /// <param name="userInput">The current user input to filter suggestions</param>
-    /// <returns>The selected suggestion or null if cancelled</returns>
-    public async Task<string?> ShowLocationSuggestionsAsync(Control targetControl, string userInput)
-    {
-        try
-        {
-            Logger.LogDebug("Showing location suggestions for input: {Input}", userInput);
-            return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, LocationOptions, userInput);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to show location suggestions");
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Shows user suggestions using the SuggestionOverlay service
-    /// </summary>
-    /// <param name="targetControl">The control to position the overlay relative to</param>
-    /// <param name="userInput">The current user input to filter suggestions</param>
-    /// <returns>The selected suggestion or null if cancelled</returns>
-    public async Task<string?> ShowUserSuggestionsAsync(Control targetControl, string userInput)
-    {
-        try
-        {
-            Logger.LogDebug("Showing user suggestions for input: {Input}", userInput);
-            return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, UserOptions, userInput);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to show user suggestions");
-            return null;
-        }
-    }
-
-    /// <summary>
     /// Handles QuickButton integration for field population
     /// </summary>
     /// <param name="partId">Part ID from QuickButton</param>
     /// <param name="operation">Operation from QuickButton</param>
-    /// <param name="location">Location from QuickButton</param>
+    /// <param name="location">Location from QuickButton (ignored)</param>
     public void PopulateFromQuickButton(string? partId, string? operation, string? location)
     {
         try
         {
-            Logger.LogInformation("Populating fields from QuickButton: Part={PartId}, Operation={Operation}, Location={Location}", 
-                partId, operation, location);
+            Logger.LogInformation("Populating fields from QuickButton: Part={PartId}, Operation={Operation}", 
+                partId, operation);
 
             if (!string.IsNullOrWhiteSpace(partId))
             {
@@ -1186,11 +970,6 @@ public partial class RemoveItemViewModel : BaseViewModel
             if (!string.IsNullOrWhiteSpace(operation))
             {
                 SelectedOperation = operation; // InventoryTabView pattern
-            }
-
-            if (!string.IsNullOrWhiteSpace(location))
-            {
-                SelectedLocation = location; // InventoryTabView pattern
             }
 
             // Auto-execute search after populating fields

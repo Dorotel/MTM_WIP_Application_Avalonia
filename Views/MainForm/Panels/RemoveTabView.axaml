@@ -153,7 +153,7 @@
 
           <!-- Search Input Panel (CollapsiblePanel) -->
           <controls:CollapsiblePanel Grid.Row="1" x:Name="SearchPanel" Header="Search Filters" HeaderPosition="Top" IsExpanded="True" Margin="0,0,0,16">
-            <Grid x:Name="SearchFieldsGrid" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12" Margin="8">
+            <Grid x:Name="SearchFieldsGrid" RowDefinitions="Auto,Auto" RowSpacing="12" Margin="8">
               
               <!-- Part ID Field -->
               <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
@@ -171,24 +171,6 @@
                   <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
                 <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter an operation number" TabIndex="2" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Operations}" />
-              </Grid>
-
-              <!-- Location Field -->
-              <Grid x:Name="LocationGrid" Grid.Row="2" ColumnDefinitions="90,*" ColumnSpacing="12">
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
-                  <materialIcons:MaterialIcon Kind="MapMarker" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-                  <TextBlock Text="Location:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
-                </StackPanel>
-                <TextBox Grid.Column="1" x:Name="LocationTextBox" Text="{Binding SelectedLocation, Mode=TwoWay}" Watermark="{Binding LocationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a location" TabIndex="3" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Locations}" />
-              </Grid>
-
-              <!-- User Field (Advanced Filtering) -->
-              <Grid x:Name="UserGrid" Grid.Row="3" ColumnDefinitions="90,*" ColumnSpacing="12">
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
-                  <materialIcons:MaterialIcon Kind="Account" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-                  <TextBlock Text="User:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
-                </StackPanel>
-                <TextBox Grid.Column="1" x:Name="UserTextBox" Text="{Binding SelectedUser, Mode=TwoWay}" Watermark="{Binding UserWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a username for filtering" TabIndex="4" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Users}" />
               </Grid>
 
             </Grid>
@@ -284,10 +266,6 @@
                 <materialIcons:MaterialIcon Kind="Settings" Width="14" Height="14" />
                 <TextBlock Text="Advanced" FontSize="11" />
               </StackPanel>
-            </Button>
-
-            <Button Classes="secondary" Width="40" Command="{Binding TogglePanelCommand}" ToolTip.Tip="Toggle panel">
-              <materialIcons:MaterialIcon Kind="DotsVertical" Width="14" Height="14" />
             </Button>
 
           </StackPanel>
