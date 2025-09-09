@@ -1,0 +1,274 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="300"
+             x:Class="MTM_WIP_Application_Avalonia.Views.PrintLayoutControl"
+             x:Name="PrintLayoutControlRoot"
+             x:DataType="vm:PrintLayoutControlViewModel">
+
+    <!-- Column Layout Customization Interface -->
+    <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+            BorderThickness="1" 
+            CornerRadius="8" 
+            Padding="16">
+        
+        <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+            
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="📋 Column Layout Customization" 
+                          FontSize="16" 
+                          FontWeight="Bold" 
+                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                          VerticalAlignment="Center" />
+                          
+                <TextBlock Text="{Binding VisibleColumnCount, StringFormat='\{0\} visible'}" 
+                          FontSize="12" 
+                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                          VerticalAlignment="Center" />
+                          
+                <TextBlock Text="{Binding TotalColumnCount, StringFormat='of \{0\} total'}" 
+                          FontSize="12" 
+                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                          VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Print Style Options -->
+            <Border Grid.Row="1" 
+                    Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                    CornerRadius="6" 
+                    Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Print Style Settings" 
+                              FontWeight="SemiBold" 
+                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                    
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+                        <!-- Style Selection -->
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Style:" FontSize="12" />
+                            <ComboBox ItemsSource="{Binding StyleOptions}"
+                                     SelectedItem="{Binding SelectedStyle}"
+                                     HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <!-- Include Options -->
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="Include:" FontSize="12" />
+                            <CheckBox Content="Headers" IsChecked="{Binding IncludeHeaders}" />
+                            <CheckBox Content="Footers" IsChecked="{Binding IncludeFooters}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="Options:" FontSize="12" />
+                            <CheckBox Content="Grid Lines" IsChecked="{Binding IncludeGridLines}" />
+                            <CheckBox Content="Row Numbers" IsChecked="{Binding IncludeRowNumbers}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Column Management -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,200" ColumnSpacing="12">
+                
+                <!-- Column List -->
+                <Border Grid.Column="0" 
+                        Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                        BorderThickness="1" 
+                        CornerRadius="6">
+                    
+                    <Grid RowDefinitions="Auto,*">
+                        <!-- Column List Header -->
+                        <Border Grid.Row="0" 
+                                Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}" 
+                                CornerRadius="6,6,0,0" 
+                                Padding="12,8">
+                            <Grid ColumnDefinitions="30,*,80,80,80,40">
+                                <TextBlock Grid.Column="0" Text="👁️" FontWeight="Bold" FontSize="12" />
+                                <TextBlock Grid.Column="1" Text="Column" FontWeight="Bold" FontSize="12" />
+                                <TextBlock Grid.Column="2" Text="Width" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" />
+                                <TextBlock Grid.Column="3" Text="Alignment" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" />
+                                <TextBlock Grid.Column="4" Text="Order" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" />
+                                <TextBlock Grid.Column="5" Text="↕️" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Column List -->
+                        <ScrollViewer Grid.Row="1" 
+                                      VerticalScrollBarVisibility="Auto" 
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding Columns}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{DynamicResource MTM_Shared_Logic.MainBackground}" 
+                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                                                BorderThickness="0,0,0,1" 
+                                                Padding="8,6">
+                                            <Grid ColumnDefinitions="30,*,80,80,80,40" ColumnSpacing="8">
+                                                
+                                                <!-- Visibility Toggle -->
+                                                <CheckBox Grid.Column="0" 
+                                                         IsChecked="{Binding IsVisible}" 
+                                                         HorizontalAlignment="Center" />
+                                                
+                                                <!-- Column Name -->
+                                                <TextBlock Grid.Column="1" 
+                                                          Text="{Binding Header}" 
+                                                          VerticalAlignment="Center" />
+                                                
+                                                <!-- Width -->
+                                                <NumericUpDown Grid.Column="2" 
+                                                              Value="{Binding Width}"
+                                                              Minimum="50" 
+                                                              Maximum="500"
+                                                              Increment="10"
+                                                              ShowButtonSpinner="False"
+                                                              FontSize="11"
+                                                              Height="24" />
+                                                
+                                                <!-- Alignment -->
+                                                <ComboBox Grid.Column="3" 
+                                                         ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AlignmentOptions}"
+                                                         SelectedItem="{Binding Alignment}"
+                                                         FontSize="11"
+                                                         Height="24" />
+                                                
+                                                <!-- Display Order -->
+                                                <NumericUpDown Grid.Column="4" 
+                                                              Value="{Binding DisplayOrder}"
+                                                              Minimum="0" 
+                                                              Maximum="100"
+                                                              ShowButtonSpinner="False"
+                                                              FontSize="11"
+                                                              Height="24" />
+                                                
+                                                <!-- Move Buttons -->
+                                                <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="2">
+                                                    <Button Content="↑" 
+                                                           Width="16" Height="12" 
+                                                           FontSize="8" 
+                                                           Classes="mtm-secondary"
+                                                           Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.MoveColumnUpCommand}"
+                                                           CommandParameter="{Binding}" />
+                                                    <Button Content="↓" 
+                                                           Width="16" Height="12" 
+                                                           FontSize="8" 
+                                                           Classes="mtm-secondary"
+                                                           Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.MoveColumnDownCommand}"
+                                                           CommandParameter="{Binding}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <!-- Column Actions Panel -->
+                <Border Grid.Column="1" 
+                        Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                        BorderThickness="1" 
+                        CornerRadius="6" 
+                        Padding="12">
+                    
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Quick Actions" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+
+                        <!-- Visibility Actions -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Column Visibility:" 
+                                      FontSize="12" 
+                                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                            
+                            <Button Content="👁️ Show All" 
+                                   Command="{Binding ToggleAllColumnsCommand}"
+                                   IsVisible="{Binding !AllColumnsVisible}"
+                                   HorizontalAlignment="Stretch"
+                                   Classes="mtm-secondary" 
+                                   Height="28" />
+                                   
+                            <Button Content="🙈 Hide All" 
+                                   Command="{Binding ToggleAllColumnsCommand}"
+                                   IsVisible="{Binding AllColumnsVisible}"
+                                   HorizontalAlignment="Stretch"
+                                   Classes="mtm-secondary" 
+                                   Height="28" />
+                        </StackPanel>
+
+                        <!-- Reset Actions -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Reset Options:" 
+                                      FontSize="12" 
+                                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                            
+                            <Button Content="🔄 Reset to Defaults" 
+                                   Command="{Binding ResetToDefaultsCommand}"
+                                   HorizontalAlignment="Stretch"
+                                   Classes="mtm-secondary" 
+                                   Height="28" />
+                        </StackPanel>
+
+                        <!-- Selected Column Info -->
+                        <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                                CornerRadius="4" 
+                                Padding="8"
+                                IsVisible="{Binding SelectedColumn, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Selected Column:" 
+                                          FontSize="12" 
+                                          FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding SelectedColumn.Header}" 
+                                          FontSize="11" />
+                                <TextBlock Text="{Binding SelectedColumn.TypeDisplayText}" 
+                                          FontSize="10" 
+                                          Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Status Bar -->
+            <Border Grid.Row="3" 
+                    Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                    CornerRadius="6" 
+                    Padding="12,6">
+                <Grid ColumnDefinitions="*,Auto">
+                    <!-- Status Message -->
+                    <TextBlock Grid.Column="0" 
+                              Text="{Binding StatusMessage, FallbackValue='Ready to customize column layout'}" 
+                              Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                              VerticalAlignment="Center" 
+                              FontSize="12" />
+                    
+                    <!-- Loading Indicator -->
+                    <StackPanel Grid.Column="1" 
+                               Orientation="Horizontal" 
+                               Spacing="6" 
+                               IsVisible="{Binding IsLoading, FallbackValue=False}">
+                        <ProgressBar IsIndeterminate="True" 
+                                    Width="80" 
+                                    Height="3" 
+                                    VerticalAlignment="Center" />
+                        <TextBlock Text="Working..." 
+                                  FontSize="10" 
+                                  Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                                  VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+
+</UserControl>
