@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -65,12 +67,21 @@ public partial class ThemeQuickSwitcher : UserControl
     /// <summary>
     /// Initialize the theme dropdown with available themes and set current selection.
     /// </summary>
-    private void InitializeThemeDropdown()
+    private async void InitializeThemeDropdown()
     {
         try
         {
             if (_themeService != null && ThemeComboBox != null)
             {
+                // Clear existing items
+                ThemeComboBox.Items.Clear();
+                
+                // Add built-in themes
+                AddBuiltInThemes();
+                
+                // Add custom themes
+                await AddCustomThemesAsync();
+                
                 // Get current theme and set selection
                 var currentTheme = _themeService.CurrentTheme;
                 
@@ -97,6 +108,104 @@ public partial class ThemeQuickSwitcher : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error initializing theme dropdown");
+        }
+    }
+
+    /// <summary>
+    /// Add built-in MTM themes to the ComboBox.
+    /// </summary>
+    private void AddBuiltInThemes()
+    {
+        if (ThemeComboBox == null) return;
+
+        // Core MTM Themes
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Default (Base)", Tag = "MTMTheme" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Light", Tag = "MTM_Light" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Dark", Tag = "MTM_Dark" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM High Contrast", Tag = "MTM_HighContrast" });
+
+        // Professional Business Themes
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Professional Blue", Tag = "MTM_Blue" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Professional Blue Dark", Tag = "MTM_Blue_Dark" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Success Green", Tag = "MTM_Green" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Success Green Dark", Tag = "MTM_Green_Dark" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Focus Teal", Tag = "MTM_Teal" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Focus Teal Dark", Tag = "MTM_Teal_Dark" });
+
+        // Manufacturing-Specialized Themes
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Alert Red", Tag = "MTM_Red" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Industrial Amber", Tag = "MTM_Amber" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Deep Indigo", Tag = "MTM_Indigo" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Deep Indigo Dark", Tag = "MTM_Indigo_Dark" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Soft Rose", Tag = "MTM_Rose" });
+        ThemeComboBox.Items.Add(new ComboBoxItem { Content = "MTM Modern Emerald", Tag = "MTM_Emerald" });
+    }
+
+    /// <summary>
+    /// Add custom themes from Resources/Themes/ directory to the ComboBox.
+    /// </summary>
+    private async Task AddCustomThemesAsync()
+    {
+        try
+        {
+            if (ThemeComboBox == null) return;
+
+            var themesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Themes");
+            
+            if (!Directory.Exists(themesDirectory))
+            {
+                _logger?.LogDebug("Custom themes directory does not exist: {Directory}", themesDirectory);
+                return;
+            }
+
+            var customThemeFiles = Directory.GetFiles(themesDirectory, "Custom_*.json");
+            
+            if (customThemeFiles.Length > 0)
+            {
+                // Add separator for custom themes
+                var separator = new ComboBoxItem 
+                { 
+                    Content = "─── Custom Themes ───", 
+                    Tag = "separator",
+                    IsEnabled = false
+                };
+                ThemeComboBox.Items.Add(separator);
+
+                // Add custom theme items
+                foreach (var filePath in customThemeFiles.OrderByDescending(f => new FileInfo(f).CreationTime))
+                {
+                    try
+                    {
+                        var json = await File.ReadAllTextAsync(filePath);
+                        var themeInfo = System.Text.Json.JsonSerializer.Deserialize<ThemeExportModel>(json, new System.Text.Json.JsonSerializerOptions
+                        {
+                            PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                            PropertyNameCaseInsensitive = true
+                        });
+
+                        if (themeInfo != null && !string.IsNullOrWhiteSpace(themeInfo.Name))
+                        {
+                            var customThemeItem = new ComboBoxItem 
+                            { 
+                                Content = $"🎨 {themeInfo.Name} (Custom)", 
+                                Tag = Path.GetFileNameWithoutExtension(filePath)
+                            };
+                            ToolTip.SetTip(customThemeItem, $"Custom theme by {themeInfo.CreatedBy ?? "Unknown"}\nCreated: {new FileInfo(filePath).CreationTime:yyyy-MM-dd}");
+                            ThemeComboBox.Items.Add(customThemeItem);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger?.LogWarning(ex, "Failed to read custom theme file: {FilePath}", filePath);
+                    }
+                }
+
+                _logger?.LogInformation("Added {Count} custom themes to quick switcher", customThemeFiles.Length);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error adding custom themes to quick switcher");
         }
     }
 
@@ -415,4 +524,15 @@ public partial class ThemeQuickSwitcher : UserControl
             System.Diagnostics.Debug.WriteLine($"Error applying basic theme: {ex.Message}");
         }
     }
+}
+
+/// <summary>
+/// Simple theme export model for reading custom theme JSON files
+/// </summary>
+public class ThemeExportModel
+{
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public Dictionary<string, string> Colors { get; set; } = new();
+    public string CreatedBy { get; set; } = string.Empty;
 }
