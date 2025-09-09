@@ -447,18 +447,40 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public async Task<DataTable> GetInventoryByPartIdAsync(string partId)
     {
-        var parameters = new Dictionary<string, object>
+        try
         {
-            ["p_PartID"] = partId
-        };
+            _logger.LogDebug("GetInventoryByPartIdAsync called with PartId={PartId}", partId);
+            
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_PartID"] = partId ?? string.Empty
+            };
 
-        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            _connectionString,
-            "inv_inventory_Get_ByPartID",
-            parameters
-        );
+            _logger.LogDebug("Calling stored procedure inv_inventory_Get_ByPartID with parameters: {Parameters}", 
+                string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}")));
 
-        return result.Data;
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Get_ByPartID",
+                parameters
+            );
+
+            _logger.LogDebug("Stored procedure result: IsSuccess={IsSuccess}, RowCount={RowCount}, Message={Message}", 
+                result.IsSuccess, result.Data?.Rows.Count ?? 0, result.Message);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("Stored procedure inv_inventory_Get_ByPartID failed: Status={Status}, Message={Message}", 
+                    result.Status, result.Message);
+            }
+
+            return result.Data ?? new DataTable();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception in GetInventoryByPartIdAsync for PartId={PartId}", partId);
+            throw;
+        }
     }
 
     /// <summary>
@@ -466,19 +488,41 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public async Task<DataTable> GetInventoryByPartAndOperationAsync(string partId, string operation)
     {
-        var parameters = new Dictionary<string, object>
+        try
         {
-            ["p_PartID"] = partId,
-            ["p_Operation"] = operation
-        };
+            _logger.LogDebug("GetInventoryByPartAndOperationAsync called with PartId={PartId}, Operation={Operation}", partId, operation);
+            
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_PartID"] = partId ?? string.Empty,
+                ["p_Operation"] = operation ?? string.Empty
+            };
 
-        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-            _connectionString,
-            "inv_inventory_Get_ByPartIDandOperation",
-            parameters
-        );
+            _logger.LogDebug("Calling stored procedure inv_inventory_Get_ByPartIDandOperation with parameters: {Parameters}", 
+                string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}")));
 
-        return result.Data;
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Get_ByPartIDandOperation",
+                parameters
+            );
+
+            _logger.LogDebug("Stored procedure result: IsSuccess={IsSuccess}, RowCount={RowCount}, Message={Message}", 
+                result.IsSuccess, result.Data?.Rows.Count ?? 0, result.Message);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("Stored procedure inv_inventory_Get_ByPartIDandOperation failed: Status={Status}, Message={Message}", 
+                    result.Status, result.Message);
+            }
+
+            return result.Data ?? new DataTable();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception in GetInventoryByPartAndOperationAsync for PartId={PartId}, Operation={Operation}", partId, operation);
+            throw;
+        }
     }
 
     /// <summary>

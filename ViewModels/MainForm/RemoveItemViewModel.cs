@@ -282,7 +282,9 @@ public partial class RemoveItemViewModel : BaseViewModel
         try
         {
             IsLoading = true;
-            InventoryItems.Clear();
+            
+            // Clear inventory on UI thread to prevent threading violations
+            await Dispatcher.UIThread.InvokeAsync(() => InventoryItems.Clear());
 
             using var scope = Logger.BeginScope("InventorySearch");
             Logger.LogInformation("Executing search for Part: {PartId}, Operation: {Operation}", 
@@ -317,7 +319,9 @@ public partial class RemoveItemViewModel : BaseViewModel
                 return;
             }
 
-            // Convert DataTable to InventoryItem objects and apply client-side filtering
+            // Convert DataTable to InventoryItem objects and apply client-side filtering on UI thread
+            var inventoryItems = new List<InventoryItem>();
+            
             foreach (System.Data.DataRow row in result.Rows)
             {
                 var inventoryItem = new InventoryItem
@@ -335,9 +339,18 @@ public partial class RemoveItemViewModel : BaseViewModel
                     Notes = row["Notes"]?.ToString() ?? string.Empty
                 };
                 
-                // All items are included without client-side filtering
-                InventoryItems.Add(inventoryItem);
+                inventoryItems.Add(inventoryItem);
             }
+
+            // Update UI collection on UI thread to prevent threading violations
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                InventoryItems.Clear();
+                foreach (var item in inventoryItems)
+                {
+                    InventoryItems.Add(item);
+                }
+            });
 
             Logger.LogInformation("Search completed. Found {Count} inventory items", InventoryItems.Count);
         }
@@ -376,8 +389,13 @@ public partial class RemoveItemViewModel : BaseViewModel
             SelectedOperation = null;
             PartText = string.Empty;
             OperationText = string.Empty;
-            InventoryItems.Clear();
-            SelectedItem = null;
+            
+            // Clear inventory on UI thread to prevent threading violations
+            await Dispatcher.UIThread.InvokeAsync(() => 
+            {
+                InventoryItems.Clear();
+                SelectedItem = null;
+            });
 
             // Reload all ComboBox data
             await LoadData().ConfigureAwait(false);
@@ -478,15 +496,18 @@ public partial class RemoveItemViewModel : BaseViewModel
                 _lastRemovedItems.AddRange(successfulRemovals);
                 HasUndoItems = _lastRemovedItems.Count > 0;
 
-                // Remove successful items from UI collections
-                foreach (var removedItem in successfulRemovals)
+                // Remove successful items from UI collections on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    InventoryItems.Remove(removedItem);
-                }
-
-                // Clear selection since items were deleted
-                SelectedItems.Clear();
-                SelectedItem = null;
+                    foreach (var removedItem in successfulRemovals)
+                    {
+                        InventoryItems.Remove(removedItem);
+                    }
+                    
+                    // Clear selection since items were deleted
+                    SelectedItems.Clear();
+                    SelectedItem = null;
+                });
 
                 // Log successful removals to QuickButtons history (RED color for OUT transactions)
                 foreach (var removedItem in successfulRemovals)
@@ -588,7 +609,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// Restores last deleted items using undo functionality
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanUndo))]
-    private void Undo()
+    private async Task Undo()
     {
         if (_lastRemovedItems.Count == 0)
         {
@@ -613,11 +634,14 @@ public partial class RemoveItemViewModel : BaseViewModel
             //     );
             // }
 
-            // Restore to UI collections
-            foreach (var item in _lastRemovedItems)
+            // Restore to UI collections on UI thread
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                InventoryItems.Add(item);
-            }
+                foreach (var item in _lastRemovedItems)
+                {
+                    InventoryItems.Add(item);
+                }
+            });
 
             Logger.LogInformation("Successfully restored {Count} inventory items via undo", 
                 _lastRemovedItems.Count);
@@ -675,11 +699,15 @@ public partial class RemoveItemViewModel : BaseViewModel
             Logger.LogInformation("Loading ComboBox data from database");
 
             // Load Parts using md_part_ids_Get_All stored procedure
+            Logger.LogDebug("Calling md_part_ids_Get_All stored procedure");
             var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_part_ids_Get_All",
                 new Dictionary<string, object>()
             ).ConfigureAwait(false);
+
+            Logger.LogDebug("md_part_ids_Get_All result: IsSuccess={IsSuccess}, RowCount={RowCount}", 
+                partResult.IsSuccess, partResult.Data?.Rows.Count ?? 0);
 
             if (partResult.IsSuccess)
             {
@@ -688,7 +716,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 {
                     PartOptions.Clear();
                     PartIds.Clear(); // InventoryTabView pattern
-                    foreach (System.Data.DataRow row in partResult.Data.Rows)
+                    foreach (System.Data.DataRow row in (partResult.Data?.Rows ?? new System.Data.DataTable().Rows))
                     {
                         var partId = row["PartID"]?.ToString();
                         if (!string.IsNullOrEmpty(partId))
@@ -700,13 +728,23 @@ public partial class RemoveItemViewModel : BaseViewModel
                 });
                 Logger.LogInformation("Loaded {Count} parts", PartOptions.Count);
             }
+            else
+            {
+                Logger.LogError("Failed to load parts from md_part_ids_Get_All: {Message}", partResult.Message);
+                Logger.LogInformation("Loading sample part data as fallback");
+                await LoadSampleDataAsync().ConfigureAwait(false);
+            }
             
             // Load Operations using md_operation_numbers_Get_All stored procedure
+            Logger.LogDebug("Calling md_operation_numbers_Get_All stored procedure");
             var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_operation_numbers_Get_All",
                 new Dictionary<string, object>()
             ).ConfigureAwait(false);
+
+            Logger.LogDebug("md_operation_numbers_Get_All result: IsSuccess={IsSuccess}, RowCount={RowCount}", 
+                operationResult.IsSuccess, operationResult.Data?.Rows.Count ?? 0);
 
             if (operationResult.IsSuccess)
             {
@@ -715,7 +753,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 {
                     OperationOptions.Clear();
                     Operations.Clear(); // InventoryTabView pattern
-                    foreach (System.Data.DataRow row in operationResult.Data.Rows)
+                    foreach (System.Data.DataRow row in (operationResult.Data?.Rows ?? new System.Data.DataTable().Rows))
                     {
                         var operation = row["Operation"]?.ToString();
                         if (!string.IsNullOrEmpty(operation))
@@ -726,6 +764,12 @@ public partial class RemoveItemViewModel : BaseViewModel
                     }
                 });
                 Logger.LogInformation("Loaded {Count} operations", OperationOptions.Count);
+            }
+            else
+            {
+                Logger.LogError("Failed to load operations from md_operation_numbers_Get_All: {Message}", operationResult.Message);
+                Logger.LogInformation("Loading sample operation data as fallback");
+                await LoadSampleDataAsync().ConfigureAwait(false);
             }
 
             Logger.LogInformation("ComboBox data loaded successfully - Parts: {PartCount}, Operations: {OperationCount}", 
@@ -920,6 +964,14 @@ public partial class RemoveItemViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Showing part suggestions for input: {Input}", userInput);
+            Logger.LogDebug("PartOptions collection has {Count} items", PartOptions.Count);
+            Logger.LogDebug("PartIds collection has {Count} items", PartIds.Count);
+            
+            if (PartOptions.Count == 0 && PartIds.Count == 0)
+            {
+                Logger.LogWarning("Both PartOptions and PartIds collections are empty - data may not have loaded yet");
+            }
+            
             return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, PartOptions, userInput);
         }
         catch (Exception ex)
@@ -940,6 +992,14 @@ public partial class RemoveItemViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Showing operation suggestions for input: {Input}", userInput);
+            Logger.LogDebug("OperationOptions collection has {Count} items", OperationOptions.Count);
+            Logger.LogDebug("Operations collection has {Count} items", Operations.Count);
+            
+            if (OperationOptions.Count == 0 && Operations.Count == 0)
+            {
+                Logger.LogWarning("Both OperationOptions and Operations collections are empty - data may not have loaded yet");
+            }
+            
             return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, OperationOptions, userInput);
         }
         catch (Exception ex)
