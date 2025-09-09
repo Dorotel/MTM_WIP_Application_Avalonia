@@ -1,0 +1,332 @@
+name: "Copilot Feature Request"
+description: "Request a feature implementation by GitHub Copilot coding agent"
+title: "[FEATURE] "
+labels: ["feature", "copilot-implementation", "enhancement"]
+projects: ["MTM-Development"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Copilot Feature Request Template
+        Use this template to request feature implementation by GitHub Copilot coding agent.
+        
+        **Important**: Include `#github-pull-request_copilot-coding-agent` at the end of your issue description to trigger the coding agent.
+        
+        **Example Features**: "Print Service Implementation", "Advanced Search Functionality", "User Management Interface"
+
+  - type: input
+    id: feature_title
+    attributes:
+      label: "Feature Title"
+      description: "Clear, descriptive title for this feature (will be prefixed with [FEATURE] automatically)"
+      placeholder: "e.g., Print Service - Full Window Print Interface with Preview and Layout Control"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_priority
+    attributes:
+      label: "Feature Priority"
+      description: "Implementation priority for Copilot coding agent"
+      options:
+        - "Critical - Core Functionality"
+        - "High - Important Enhancement"
+        - "Medium - Nice to Have"
+        - "Low - Future Enhancement"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_category
+    attributes:
+      label: "Feature Category"
+      description: "Primary application area this feature addresses"
+      options:
+        - "Inventory Management"
+        - "User Interface & UX"
+        - "Reporting & Analytics"
+        - "System Administration"
+        - "Database Operations"
+        - "Integration & Services"
+        - "Print & Export"
+        - "Navigation & Layout"
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_overview
+    attributes:
+      label: "Feature Overview & Business Need"
+      description: "Describe what this feature does and why it's needed"
+      placeholder: |
+        **What this feature does:**
+        This feature provides...
+
+        **Business need:**
+        Users currently struggle with...
+
+        **Expected benefit:**
+        This will enable users to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: detailed_requirements
+    attributes:
+      label: "Detailed Requirements"
+      description: "Comprehensive list of feature requirements for Copilot implementation"
+      placeholder: |
+        **Core Requirements:**
+        - Requirement 1: Must provide X functionality
+        - Requirement 2: Should integrate with Y system
+        - Requirement 3: Must follow Z pattern
+
+        **UI/UX Requirements:**
+        - Interface should include A, B, and C components
+        - Navigation should follow existing patterns
+        - Theme integration with MTM design system
+
+        **Technical Requirements:**
+        - Must use MVVM Community Toolkit patterns
+        - Integration with existing services (NavigationService, etc.)
+        - Avalonia AXAML with proper syntax compliance
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_workflow
+    attributes:
+      label: "User Workflow & Interaction Design"
+      description: "Step-by-step user workflow and interaction patterns"
+      placeholder: |
+        **User Workflow:**
+        1. User clicks [Button/Menu Item] from [Location]
+        2. System displays [Interface/Dialog/View]
+        3. User can [Action 1], [Action 2], [Action 3]
+        4. System provides [Feedback/Response]
+        5. User completes workflow with [Final Action]
+
+        **Key Interactions:**
+        - Primary actions: [List main actions]
+        - Secondary actions: [List additional actions]
+        - Error handling: [How errors are presented]
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_specifications
+    attributes:
+      label: "Technical Specifications for Copilot"
+      description: "Specific technical details for implementation"
+      placeholder: |
+        **Technology Stack:**
+        - .NET 8, Avalonia 11.3.4, MVVM Community Toolkit 8.3.2
+        - MySQL 9.4.0 with stored procedures only
+        - Microsoft Extensions 9.0.8 (DI, Logging, Configuration)
+
+        **Architecture Patterns:**
+        - MVVM with [ObservableProperty] and [RelayCommand]
+        - Service-oriented design with dependency injection
+        - Navigation via existing NavigationService
+        - Error handling via Services.ErrorHandling.HandleErrorAsync()
+
+        **Database Integration:**
+        - Use Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()
+        - Stored procedures: [List specific procedures if known]
+        - No direct SQL queries allowed
+
+        **UI Framework:**
+        - Avalonia UserControl inheritance
+        - AXAML with xmlns="https://github.com/avaloniaui"
+        - MTM design system with DynamicResource bindings
+    validations:
+      required: true
+
+  - type: textarea
+    id: files_to_modify
+    attributes:
+      label: "Expected Files to Create/Modify"
+      description: "List of files Copilot should create or modify"
+      placeholder: |
+        **New Files to Create:**
+        - `Services/[FeatureName]Service.cs` - Core service implementation
+        - `ViewModels/[FeatureName]ViewModel.cs` - Main view model
+        - `Views/[FeatureName]View.axaml` - Main user interface
+        - `Views/[FeatureName]View.axaml.cs` - Code-behind (minimal)
+
+        **Files to Modify:**
+        - `Extensions/ServiceCollectionExtensions.cs` - Add service registration
+        - `ViewModels/MainForm/[Parent]ViewModel.cs` - Add command integration
+        - `Views/MainForm/[Parent]View.axaml` - Add UI triggers (buttons, etc.)
+
+        **Optional Database Files:**
+        - New stored procedures if database operations required
+    validations:
+      required: true
+
+  - type: textarea
+    id: integration_points
+    attributes:
+      label: "Integration Points & Dependencies"
+      description: "How this feature integrates with existing systems"
+      placeholder: |
+        **Service Dependencies:**
+        - INavigationService - For view navigation
+        - IThemeService - For UI theming
+        - IConfigurationService - For settings storage
+        - IErrorHandling - For error management
+
+        **ViewModel Dependencies:**
+        - MainViewViewModel - For parent integration
+        - [Other]ViewModel - For cross-feature communication
+
+        **Database Dependencies:**
+        - Existing stored procedures: [List if using existing]
+        - Master data tables: [List if accessing master data]
+
+        **UI Integration:**
+        - Parent views: [Where feature is accessed from]
+        - Navigation flow: [How user reaches this feature]
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      description: "Specific, testable criteria for feature completion"
+      placeholder: |
+        **Functional Criteria:**
+        - [ ] Feature accessible from [location] via [trigger]
+        - [ ] Core functionality works as specified
+        - [ ] All user workflows complete successfully
+        - [ ] Error handling works for edge cases
+        - [ ] Integration with existing features functions properly
+
+        **Technical Criteria:**
+        - [ ] Follows MVVM Community Toolkit patterns
+        - [ ] Proper Avalonia AXAML syntax (no AVLN2000 errors)
+        - [ ] Service registration in ServiceCollectionExtensions
+        - [ ] Comprehensive error handling implementation
+        - [ ] MTM theme integration working correctly
+
+        **Quality Criteria:**
+        - [ ] No compilation errors or warnings
+        - [ ] Follows established naming conventions
+        - [ ] Proper dependency injection implementation
+        - [ ] Code follows existing architectural patterns
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimated_complexity
+    attributes:
+      label: "Implementation Complexity"
+      description: "Estimated complexity for Copilot implementation"
+      options:
+        - "Simple - Basic UI with minimal logic (1-2 files)"
+        - "Medium - Standard feature with service integration (3-5 files)"
+        - "Complex - Advanced feature with multiple components (6-10 files)"
+        - "Major - Significant feature with extensive integration (10+ files)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: design_mockups
+    attributes:
+      label: "Design Mockups & UI Specifications"
+      description: "Visual design specifications or mockups (use text descriptions if no images)"
+      placeholder: |
+        **Layout Description:**
+        - Main container: [Grid/StackPanel/DockPanel with specific arrangement]
+        - Left panel: [Content and sizing]
+        - Right panel: [Content and sizing]
+        - Action buttons: [Location and styling]
+
+        **Visual Specifications:**
+        - Primary colors: MTM Windows 11 Blue (#0078D4)
+        - Card-based layout with 8px/16px/24px spacing
+        - DynamicResource bindings for theme compatibility
+        - Professional typography with consistent FontSize/FontWeight
+
+        **Interactive Elements:**
+        - Buttons: [Primary/Secondary styling as per MTM design system]
+        - Input controls: [TextBox/ComboBox/etc. with validation]
+        - Data displays: [DataGrid/ListView/etc. formatting]
+    validations:
+      required: false
+
+  - type: textarea
+    id: related_documentation
+    attributes:
+      label: "Related Documentation & References"
+      description: "Links to relevant documentation, similar implementations, or reference materials"
+      placeholder: |
+        **Implementation Plan:**
+        - Detailed plan location: `docs/ways-of-work/plan/[feature-name]/implementation-plan.md`
+
+        **Related Features:**
+        - Similar implementation: [Reference to existing feature]
+        - Integration examples: [Reference to integration patterns]
+
+        **Technical References:**
+        - MTM patterns: [Link to pattern documentation]
+        - Avalonia docs: [Specific Avalonia documentation sections]
+        - MVVM examples: [Reference implementations in codebase]
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: copilot_readiness
+    attributes:
+      label: "Copilot Implementation Readiness"
+      description: "Ensure feature request is ready for Copilot coding agent"
+      options:
+        - label: "Requirements are specific and unambiguous"
+          required: true
+        - label: "Technical specifications include all necessary details"
+          required: true
+        - label: "Integration points clearly defined"
+          required: true
+        - label: "Acceptance criteria are testable"
+          required: true
+        - label: "File structure and naming conventions specified"
+          required: true
+
+  - type: textarea
+    id: copilot_instructions
+    attributes:
+      label: "Special Instructions for Copilot"
+      description: "Any specific guidance or constraints for the coding agent"
+      placeholder: |
+        **Implementation Priority:**
+        - Start with [Component/Service] first
+        - Focus on [Specific aspect] as highest priority
+
+        **Code Style Preferences:**
+        - Follow existing [Pattern] in [Reference file]
+        - Use established error handling patterns from Services.ErrorHandling
+        - Maintain consistency with [Similar feature] implementation
+
+        **Testing Considerations:**
+        - Ensure feature works with existing data structure
+        - Test integration with [Specific component]
+        - Verify theme compatibility across all MTM variants
+
+        **Special Requirements:**
+        - [Any unique constraints or considerations]
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## 🤖 Copilot Agent Activation
+        
+        **To activate GitHub Copilot coding agent implementation, add the following tag at the end of your issue description:**
+        
+        `#github-pull-request_copilot-coding-agent`
+        
+        This will trigger the coding agent to create a branch, implement the feature, and open a pull request.
