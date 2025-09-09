@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MTM_Shared_Logic.Models;
 
 namespace MTM_WIP_Application_Avalonia.Models;
 
@@ -144,11 +145,11 @@ public class TriggerLostFocusEventArgs : EventArgs
 /// </summary>
 public class ItemsRemovedEventArgs : EventArgs
 {
-    public List<RemovedItem> RemovedItems { get; set; } = new();
+    public List<MTM_Shared_Logic.Models.InventoryItem> RemovedItems { get; set; } = new();
     public int TotalQuantityRemoved { get; set; }
     public string Location { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
-    public DateTime RemovedDateTime { get; set; } = DateTime.Now;
+    public DateTime RemovalTime { get; set; } = DateTime.Now;
 }
 
 /// <summary>
