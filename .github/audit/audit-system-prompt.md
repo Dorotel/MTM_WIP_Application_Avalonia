@@ -4,7 +4,7 @@
 
 ---
 
-@copilot #file:.github/scripts/README.md Execute comprehensive MTM Pull Request Audit and Copilot Continuation System for current branch.
+@copilot #file:.github/audit/README.md Execute comprehensive MTM Pull Request Audit and Copilot Continuation System for current branch.
 
 ## Audit Execution Requirements:
 

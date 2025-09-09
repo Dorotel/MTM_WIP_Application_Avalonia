@@ -41,7 +41,7 @@ Copy-Item ".github\scripts\templates\copilot-prompt-template.md" "copilot-prompt
 ## File Structure Reference
 
 ```
-.github/scripts/
+.github/audit/
 ├── README.md                          # This usage guide
 ├── audit-system-prompt.md            # Main execution prompt (Phase 1-3)
 ├── templates/
