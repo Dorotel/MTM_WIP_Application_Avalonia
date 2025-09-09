@@ -416,5 +416,3 @@ public class RemoveService : IRemoveService
 ---
 
 #github-pull-request_copilot-coding-agent
-
-@copilot Create the missing IRemoveService interface and RemoveService implementation following the MTM service-oriented architecture pattern. Extract the business logic from the 1,061-line RemoveItemViewModel into a dedicated service layer, implement batch removal operations with atomic database transactions, and add session-based undo functionality. Ensure ALL removal operations create "OUT" transactions and maintain the existing MVVM Community Toolkit patterns in the refactored ViewModel. Register the new service in ServiceCollectionExtensions and implement comprehensive error handling throughout the service layer.
