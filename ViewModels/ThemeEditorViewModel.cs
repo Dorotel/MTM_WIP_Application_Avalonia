@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -24,6 +25,10 @@ public partial class ThemeEditorViewModel : BaseViewModel
 {
     private readonly IThemeService? _themeService;
     private readonly INavigationService? _navigationService;
+    
+    // Real-time preview system
+    private Timer? _previewTimer;
+    private const int PreviewDebounceMs = 500; // 500ms debounce for smooth real-time preview
 
     #region Theme Identification and Status
 
@@ -221,13 +226,14 @@ public partial class ThemeEditorViewModel : BaseViewModel
     [ObservableProperty]
     private Color highlightColor = Color.Parse("#005A9E");
 
-    // Color change handlers for validation and unsaved changes tracking
+    // Color change handlers for validation, unsaved changes tracking, and real-time preview
     partial void OnPrimaryActionColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
         AddToRecentColors(value);
         OnPropertyChanged(nameof(PrimaryActionColorHex));
+        TriggerRealTimePreview();
     }
 
     partial void OnSecondaryActionColorChanged(Color value)
@@ -236,6 +242,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         ValidateAllColors();
         AddToRecentColors(value);
         OnPropertyChanged(nameof(SecondaryActionColorHex));
+        TriggerRealTimePreview();
     }
 
     partial void OnAccentColorChanged(Color value)
@@ -244,6 +251,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         ValidateAllColors();
         AddToRecentColors(value);
         OnPropertyChanged(nameof(AccentColorHex));
+        TriggerRealTimePreview();
     }
 
     partial void OnHighlightColorChanged(Color value)
@@ -252,6 +260,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         ValidateAllColors();
         AddToRecentColors(value);
         OnPropertyChanged(nameof(HighlightColorHex));
+        TriggerRealTimePreview();
     }
 
     #endregion
@@ -372,30 +381,35 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnBodyTextColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnInteractiveTextColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnOverlayTextColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnTertiaryTextColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     #endregion
@@ -422,30 +436,35 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnCardBackgroundColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnHoverBackgroundColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnPanelBackgroundColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnSidebarBackgroundColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     #endregion
@@ -469,24 +488,28 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnWarningColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnErrorColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnInfoColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     #endregion
@@ -504,12 +527,14 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     partial void OnBorderAccentColorChanged(Color value)
     {
         HasUnsavedChanges = true;
         ValidateAllColors();
+        TriggerRealTimePreview();
     }
 
     #endregion
@@ -796,7 +821,114 @@ public partial class ThemeEditorViewModel : BaseViewModel
         
         // Initialize with current colors as first snapshot
         SaveColorSnapshot("Initial Theme State");
+        
+        // Set initial status message with real-time preview information
+        StatusMessage = "🎨 Theme Editor ready - Real-time preview enabled for instant color changes";
     }
+
+    #region Real-Time Preview System
+
+    /// <summary>
+    /// Triggers a debounced real-time preview of theme changes.
+    /// Automatically applies color changes after a short delay to provide smooth user experience.
+    /// </summary>
+    private void TriggerRealTimePreview()
+    {
+        try
+        {
+            // Reset the debounce timer
+            _previewTimer?.Dispose();
+            _previewTimer = new Timer(async _ =>
+            {
+                try
+                {
+                    // Apply real-time preview (similar to PreviewThemeAsync but without loading states)
+                    await ApplyRealTimePreviewAsync();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error in real-time theme preview");
+                }
+            }, null, PreviewDebounceMs, Timeout.Infinite);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error triggering real-time preview");
+        }
+    }
+
+    /// <summary>
+    /// Applies theme colors immediately for real-time preview without user interaction.
+    /// This is a streamlined version of PreviewThemeAsync for automatic updates.
+    /// </summary>
+    private async Task ApplyRealTimePreviewAsync()
+    {
+        if (_themeService == null) return;
+
+        try
+        {
+            // Create color dictionary with all current colors (same as PreviewThemeAsync)
+            var previewColors = new Dictionary<string, string>
+            {
+                // Core Action Colors (4)
+                ["MTM_Shared_Logic.PrimaryAction"] = PrimaryActionColor.ToString(),
+                ["MTM_Shared_Logic.SecondaryAction"] = SecondaryActionColor.ToString(),
+                ["MTM_Shared_Logic.AccentColor"] = AccentColor.ToString(),
+                ["MTM_Shared_Logic.HighlightColor"] = HighlightColor.ToString(),
+                
+                // Text Colors (5)
+                ["MTM_Shared_Logic.HeadingText"] = HeadingTextColor.ToString(),
+                ["MTM_Shared_Logic.BodyText"] = BodyTextColor.ToString(),
+                ["MTM_Shared_Logic.InteractiveText"] = InteractiveTextColor.ToString(),
+                ["MTM_Shared_Logic.OverlayTextBrush"] = OverlayTextColor.ToString(),
+                ["MTM_Shared_Logic.TertiaryTextBrush"] = TertiaryTextColor.ToString(),
+                
+                // Background Colors (5)
+                ["MTM_Shared_Logic.MainBackground"] = MainBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.CardBackgroundBrush"] = CardBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.HoverBackground"] = HoverBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.PanelBackgroundBrush"] = PanelBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.SidebarBackground"] = SidebarBackgroundColor.ToString(),
+                
+                // Status Colors (4)
+                ["MTM_Shared_Logic.SuccessBrush"] = SuccessColor.ToString(),
+                ["MTM_Shared_Logic.WarningBrush"] = WarningColor.ToString(),
+                ["MTM_Shared_Logic.ErrorBrush"] = ErrorColor.ToString(),
+                ["MTM_Shared_Logic.InfoBrush"] = InfoColor.ToString(),
+                
+                // Border Colors (2)
+                ["MTM_Shared_Logic.BorderBrush"] = BorderColor.ToString(),
+                ["MTM_Shared_Logic.BorderAccentBrush"] = BorderAccentColor.ToString(),
+                
+                // Additional derived resources
+                ["MTM_Shared_Logic.FocusBrush"] = AccentColor.ToString(),
+                ["MTM_Shared_Logic.BorderDarkBrush"] = DarkenColor(BorderColor, 0.2f).ToString(),
+                ["MTM_Shared_Logic.ErrorLightBrush"] = LightenColor(ErrorColor, 0.8f).ToString(),
+                ["MTM_Shared_Logic.SidebarGradientBrush"] = PanelBackgroundColor.ToString(),
+                ["MTM_Shared_Logic.HoverBrush"] = HoverBackgroundColor.ToString()
+            };
+
+            // Apply the preview via ThemeService (real-time update)
+            var result = await _themeService.ApplyCustomColorsAsync(previewColors);
+            if (result.IsSuccess)
+            {
+                IsPreviewMode = true;
+                StatusMessage = $"🎨 Real-time preview active ({previewColors.Count} colors updated)";
+                Logger.LogDebug("Real-time theme preview applied with {ColorCount} colors", previewColors.Count);
+            }
+            else
+            {
+                StatusMessage = $"⚠️ Real-time preview failed: {result.Message}";
+                Logger.LogWarning("Real-time preview failed: {Error}", result.Message);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error applying real-time theme preview");
+        }
+    }
+
+    #endregion
 
     #region Navigation Commands
 
@@ -5570,6 +5702,23 @@ public partial class ThemeEditorViewModel : BaseViewModel
     }
 
     #endregion
+
+    #endregion
+
+    #region IDisposable Implementation
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // Dispose managed resources specific to ThemeEditorViewModel
+            _previewTimer?.Dispose();
+            _previewTimer = null;
+        }
+        
+        // Call base class dispose
+        base.Dispose(disposing);
+    }
 
     #endregion
 }
