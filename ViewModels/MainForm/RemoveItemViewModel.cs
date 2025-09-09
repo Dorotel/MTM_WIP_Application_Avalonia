@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Threading;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -60,18 +61,18 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Current inventory items displayed in the DataGrid
     /// </summary>
-    public ObservableCollection<InventoryItem> InventoryItems { get; } = new();
+    public ObservableCollection<MTM_Shared_Logic.Models.InventoryItem> InventoryItems { get; } = new();
     
     /// <summary>
     /// Currently selected items in the DataGrid for batch operations
     /// </summary>
-    public ObservableCollection<InventoryItem> SelectedItems { get; } = new();
+    public ObservableCollection<MTM_Shared_Logic.Models.InventoryItem> SelectedItems { get; } = new();
 
     /// <summary>
     /// Currently selected inventory item in the DataGrid
     /// </summary>
     [ObservableProperty]
-    private InventoryItem? _selectedItem;
+    private MTM_Shared_Logic.Models.InventoryItem? _selectedItem;
 
     #endregion
 
@@ -135,14 +136,6 @@ public partial class RemoveItemViewModel : BaseViewModel
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanDelete), nameof(CanUndo))]
     private bool _isLoading;
-
-    /// <summary>
-    /// Indicates if there are items available for undo operation.
-    /// Used to enable/disable the undo functionality.
-    /// </summary>
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanUndo))]
-    private bool _hasUndoItems;
 
     /// <summary>
     /// Indicates if there are inventory items to display
@@ -237,8 +230,9 @@ public partial class RemoveItemViewModel : BaseViewModel
         // Propagate the event to the UI
         ItemsRemoved?.Invoke(this, e);
         
-        // Update UI state
-        HasUndoItems = _removeService.HasUndoItems;
+        // Update UI state by notifying property changed
+        OnPropertyChanged(nameof(HasUndoItems));
+        OnPropertyChanged(nameof(CanUndo));
         
         Logger.LogInformation("Items removed event received from RemoveService: {Count} items", e.RemovedItems.Count);
     }
@@ -508,8 +502,9 @@ public partial class RemoveItemViewModel : BaseViewModel
                 Logger.LogInformation("Undo operation completed successfully via RemoveService: {SuccessCount} restored, {FailureCount} failed", 
                     restoreResult.SuccessCount, restoreResult.FailureCount);
 
-                // Update UI state - RemoveService handles collection updates
-                HasUndoItems = _removeService.HasUndoItems;
+                // Update UI state - RemoveService handles collection updates, notify property changes
+                OnPropertyChanged(nameof(HasUndoItems));
+                OnPropertyChanged(nameof(CanUndo));
 
                 // Report any failures
                 if (restoreResult.HasFailures)
@@ -694,7 +689,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         {
             var sampleItems = new[]
             {
-                new InventoryItem
+                new MTM_Shared_Logic.Models.InventoryItem
                 {
                     ID = 1,
                     PartID = "PART001",
@@ -705,7 +700,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                     User = "TestUser",
                     LastUpdated = DateTime.Now.AddHours(-2)
                 },
-                new InventoryItem
+                new MTM_Shared_Logic.Models.InventoryItem
                 {
                     ID = 2,
                     PartID = "PART001", 
@@ -716,7 +711,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                     User = "TestUser",
                     LastUpdated = DateTime.Now.AddHours(-1)
                 },
-                new InventoryItem
+                new MTM_Shared_Logic.Models.InventoryItem
                 {
                     ID = 3,
                     PartID = "PART002",
@@ -862,18 +857,6 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     /// <summary>
     /// Shows operation suggestions using the SuggestionOverlay service
-    /// </summary>
-    /// <param name="targetControl">The control to position the overlay relative to</param>
-    /// <param name="userInput">The current user input to filter suggestions</param>
-    /// <returns>The selected suggestion or null if cancelled</returns>
-    public async Task<string?> ShowOperationSuggestionsAsync(Control targetControl, string userInput)
-    {
-        try
-        {
-            Logger.LogDebug("Showing operation suggestions for input: {Input}", userInput);
-            Logger.LogDebug("OperationOptions collection has {Count} items", OperationOptions.Count);
-            Logger.LogDebug("Operations collection has {Count} items", Operations.Count);
-            
     /// <summary>
     /// Shows operation suggestions using the RemoveService and SuggestionOverlay service
     /// </summary>

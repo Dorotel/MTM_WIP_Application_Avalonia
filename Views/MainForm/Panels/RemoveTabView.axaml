@@ -136,20 +136,6 @@
       <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,8">
         
         <Grid x:Name="DataGridContainer" RowDefinitions="Auto,Auto,*">
-          
-          <!-- Header Section -->
-          <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}" CornerRadius="6" Padding="12,8" Margin="0,0,0,16">
-            <Grid x:Name="HeaderGrid" ColumnDefinitions="Auto,*,Auto">
-              <materialIcons:MaterialIcon Grid.Column="0" Kind="Delete" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
-              <TextBlock Grid.Column="1" Text="MTM Inventory Removal" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" VerticalAlignment="Center" />
-              <Border Grid.Column="2" Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" CornerRadius="8" Padding="8,4">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                  <TextBlock Text="{Binding InventoryItems.Count}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" VerticalAlignment="Center" />
-                  <TextBlock Text="items" FontSize="11" Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" VerticalAlignment="Center" />
-                </StackPanel>
-              </Border>
-            </Grid>
-          </Border>
 
           <!-- Search Input Panel (CollapsiblePanel) -->
           <controls:CollapsiblePanel Grid.Row="1" x:Name="SearchPanel" Header="Search Filters" HeaderPosition="Top" IsExpanded="True" Margin="0,0,0,16">
@@ -161,7 +147,7 @@
                   <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding SelectedPart, Mode=TwoWay}" Watermark="{Binding PartWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a part number to search" TabIndex="1" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding PartIds}" />
+                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding SelectedPart, Mode=TwoWay}" Watermark="{Binding PartWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a part number to search" TabIndex="1" />
               </Grid>
 
               <!-- Operation Field -->
@@ -170,7 +156,7 @@
                   <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter an operation number" TabIndex="2" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Operations}" />
+                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter an operation number" TabIndex="2" />
               </Grid>
 
             </Grid>

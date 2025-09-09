@@ -14,7 +14,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia;
 using System.Linq;
 using Avalonia.VisualTree;
-using System.Threading;
+using Avalonia.Interactivity;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -32,10 +32,8 @@ public partial class RemoveTabView : UserControl
     private RemoveItemViewModel? _viewModel;
     private QuickButtonsViewModel? _quickButtonsViewModel;
 
-    // Debouncing timers to prevent SuggestionOverlay spamming
-    private Timer? _partSuggestionTimer;
-    private Timer? _operationSuggestionTimer;
-    private const int SUGGESTION_DEBOUNCE_MS = 500; // 500ms delay
+    // Flag to prevent cascading suggestion overlays (like InventoryTabView)
+    private bool _isShowingSuggestionOverlay = false;
 
     /// <summary>
     /// Initializes a new instance of the RemoveTabView with minimal dependency injection support.
@@ -87,28 +85,30 @@ public partial class RemoveTabView : UserControl
     }
 
     /// <summary>
-    /// Sets up SuggestionOverlay event handlers for all TextBox controls with debouncing to prevent spamming.
-    /// Removes GotFocus handlers to prevent excessive overlay creation and implements proper debouncing.
+    /// Sets up SuggestionOverlay event handlers using LostFocus pattern (like InventoryTabView).
+    /// Avoids double triggering by not using TextChanged events for suggestions.
     /// </summary>
     private void SetupTextBoxSuggestionHandlers()
     {
         try
         {
-            // Setup Part TextBox - only TextChanged with debouncing
+            // Setup Part TextBox - LostFocus only (not TextChanged to avoid double triggering)
             var partTextBox = this.FindControl<TextBox>("PartTextBox");
             if (partTextBox != null)
             {
-                partTextBox.TextChanged += OnPartTextBoxTextChanged;
+                partTextBox.LostFocus += OnPartLostFocus;
+                _logger?.LogDebug("Part TextBox LostFocus event handler attached");
             }
 
-            // Setup Operation TextBox - only TextChanged with debouncing  
+            // Setup Operation TextBox - LostFocus only (not TextChanged to avoid double triggering)  
             var operationTextBox = this.FindControl<TextBox>("OperationTextBox");
             if (operationTextBox != null)
             {
-                operationTextBox.TextChanged += OnOperationTextBoxTextChanged;
+                operationTextBox.LostFocus += OnOperationLostFocus;
+                _logger?.LogDebug("Operation TextBox LostFocus event handler attached");
             }
 
-            _logger?.LogDebug("TextBox SuggestionOverlay event handlers setup completed (debounced TextChanged only)");
+            _logger?.LogDebug("TextBox SuggestionOverlay event handlers setup completed (LostFocus only)");
         }
         catch (Exception ex)
         {
@@ -621,79 +621,227 @@ public partial class RemoveTabView : UserControl
     #region SuggestionOverlay Event Handlers
 
     /// <summary>
-    /// Handles Part TextBox text changed event for SuggestionOverlay with debouncing.
-    /// Uses a timer to prevent excessive overlay creation during rapid typing.
+    /// Handles Part TextBox lost focus event for SuggestionOverlay (following InventoryTabView pattern).
+    /// Avoids double triggering by using LostFocus instead of TextChanged.
     /// </summary>
-    private void OnPartTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    private async void OnPartLostFocus(object? sender, RoutedEventArgs e)
     {
-        if (_viewModel == null || sender is not TextBox textBox) 
-            return;
-
-        // Dispose existing timer
-        _partSuggestionTimer?.Dispose();
-
-        // Only show suggestions for meaningful input
-        var text = textBox.Text?.Trim() ?? string.Empty;
-        if (text.Length < 2)
-            return;
-
-        // Create new debounced timer
-        _partSuggestionTimer = new Timer(async _ =>
+        try
         {
-            try
+            if (_viewModel == null || sender is not TextBox textBox) return;
+
+            var value = textBox.Text?.Trim() ?? string.Empty;
+            var data = _viewModel.PartIds ?? Enumerable.Empty<string>();
+            int count = data.Count();
+
+            _logger?.LogDebug("PartTextBox lost focus. User entered: '{Value}'. PartIds count: {Count}", value, count);
+
+            // Check if no data is available from server
+            if (count == 0)
             {
-                await Dispatcher.UIThread.InvokeAsync(async () =>
+                _logger?.LogWarning("No Part IDs available - likely database connectivity issue");
+                textBox.Text = string.Empty;
+                _viewModel.SelectedPart = string.Empty;
+                return;
+            }
+
+            // Find partial matches (not exact matches)
+            var semiMatches = data
+                .Where(partId => !string.IsNullOrEmpty(partId) && 
+                               partId.Contains(value, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(partId => partId)
+                .ToList();
+
+            bool isExactMatch = data.Any(partId => 
+                string.Equals(partId, value, StringComparison.OrdinalIgnoreCase));
+
+            _logger?.LogDebug("Part '{Value}' - ExactMatch: {IsExactMatch}, SemiMatches: {SemiMatchesCount}", 
+                value, isExactMatch, semiMatches.Count);
+
+            // Show overlay only for partial matches (not exact matches or empty input)
+            if (!string.IsNullOrEmpty(value) && 
+                !isExactMatch && 
+                semiMatches.Count > 0 && 
+                !_isShowingSuggestionOverlay)
+            {
+                try
                 {
-                    var result = await _viewModel.ShowPartSuggestionsAsync(textBox, text);
-                    if (result != null && result != text)
+                    _isShowingSuggestionOverlay = true;
+                    var selected = await _viewModel.ShowPartSuggestionsAsync(textBox, value);
+                    
+                    if (!string.IsNullOrEmpty(selected) && selected != value)
                     {
-                        _viewModel.SelectedPart = result;
+                        _logger?.LogDebug("Part overlay - User selected: '{Selected}'", selected);
+                        _viewModel.SelectedPart = selected;
+                        textBox.Text = selected;
                     }
-                });
+                    else
+                    {
+                        _logger?.LogDebug("Part overlay - User cancelled or no selection, keeping: '{Value}'", value);
+                        _viewModel.SelectedPart = value;
+                    }
+                }
+                finally
+                {
+                    _isShowingSuggestionOverlay = false;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                _logger?.LogWarning(ex, "Error showing debounced part suggestions");
+                // Handle different cases
+                if (string.IsNullOrEmpty(value))
+                {
+                    _logger?.LogDebug("Part overlay not shown - value is empty");
+                }
+                else if (isExactMatch)
+                {
+                    _logger?.LogDebug("Part overlay not shown - '{Value}' is exact match", value);
+                    _viewModel.SelectedPart = value;
+                }
+                else if (semiMatches.Count == 0)
+                {
+                    _logger?.LogDebug("Part overlay not shown - no semi-matches for '{Value}'", value);
+                    
+                    // Clear invalid input to maintain data integrity (MTM pattern)
+                    textBox.Text = string.Empty;
+                    _viewModel.SelectedPart = string.Empty;
+                    
+                    // Show user feedback
+                    try
+                    {
+                        await Services.ErrorHandling.HandleErrorAsync(
+                            new ArgumentException($"Invalid Part ID: '{value}' not found in available parts."),
+                            "Part ID validation failed - input cleared",
+                            "System"
+                        );
+                    }
+                    catch (Exception errorEx)
+                    {
+                        _logger?.LogWarning(errorEx, "Failed to show error message for invalid Part ID");
+                    }
+                }
+                else
+                {
+                    _viewModel.SelectedPart = value;
+                }
             }
-        }, null, SUGGESTION_DEBOUNCE_MS, Timeout.Infinite);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling part lost focus");
+        }
     }
 
     /// <summary>
-    /// Handles Operation TextBox text changed event for SuggestionOverlay with debouncing.
-    /// Uses a timer to prevent excessive overlay creation during rapid typing.
+    /// Handles Operation TextBox lost focus event for SuggestionOverlay (following InventoryTabView pattern).
+    /// Avoids double triggering by using LostFocus instead of TextChanged.
     /// </summary>
-    private void OnOperationTextBoxTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    private async void OnOperationLostFocus(object? sender, RoutedEventArgs e)
     {
-        if (_viewModel == null || sender is not TextBox textBox) 
-            return;
-
-        // Dispose existing timer
-        _operationSuggestionTimer?.Dispose();
-
-        // Operations are often single digit, so show suggestions for any input
-        var text = textBox.Text?.Trim() ?? string.Empty;
-        if (text.Length < 1)
-            return;
-
-        // Create new debounced timer
-        _operationSuggestionTimer = new Timer(async _ =>
+        try
         {
-            try
+            if (_viewModel == null || sender is not TextBox textBox) return;
+
+            var value = textBox.Text?.Trim() ?? string.Empty;
+            var data = _viewModel.Operations ?? Enumerable.Empty<string>();
+            int count = data.Count();
+
+            _logger?.LogDebug("OperationTextBox lost focus. User entered: '{Value}'. Operations count: {Count}", value, count);
+
+            // Check if no data is available from server
+            if (count == 0)
             {
-                await Dispatcher.UIThread.InvokeAsync(async () =>
+                _logger?.LogWarning("No Operations available - likely database connectivity issue");
+                textBox.Text = string.Empty;
+                _viewModel.SelectedOperation = string.Empty;
+                return;
+            }
+
+            // Find partial matches (not exact matches)
+            var semiMatches = data
+                .Where(operation => !string.IsNullOrEmpty(operation) && 
+                                  operation.Contains(value, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(operation => operation)
+                .ToList();
+
+            bool isExactMatch = data.Any(operation => 
+                string.Equals(operation, value, StringComparison.OrdinalIgnoreCase));
+
+            _logger?.LogDebug("Operation '{Value}' - ExactMatch: {IsExactMatch}, SemiMatches: {SemiMatchesCount}", 
+                value, isExactMatch, semiMatches.Count);
+
+            // Show overlay only for partial matches (not exact matches or empty input)
+            if (!string.IsNullOrEmpty(value) && 
+                !isExactMatch && 
+                semiMatches.Count > 0 && 
+                !_isShowingSuggestionOverlay)
+            {
+                try
                 {
-                    var result = await _viewModel.ShowOperationSuggestionsAsync(textBox, text);
-                    if (result != null && result != text)
+                    _isShowingSuggestionOverlay = true;
+                    var selected = await _viewModel.ShowOperationSuggestionsAsync(textBox, value);
+                    
+                    if (!string.IsNullOrEmpty(selected) && selected != value)
                     {
-                        _viewModel.SelectedOperation = result;
+                        _logger?.LogDebug("Operation overlay - User selected: '{Selected}'", selected);
+                        _viewModel.SelectedOperation = selected;
+                        textBox.Text = selected;
                     }
-                });
+                    else
+                    {
+                        _logger?.LogDebug("Operation overlay - User cancelled or no selection, keeping: '{Value}'", value);
+                        _viewModel.SelectedOperation = value;
+                    }
+                }
+                finally
+                {
+                    _isShowingSuggestionOverlay = false;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                _logger?.LogWarning(ex, "Error showing debounced operation suggestions");
+                // Handle different cases
+                if (string.IsNullOrEmpty(value))
+                {
+                    _logger?.LogDebug("Operation overlay not shown - value is empty");
+                }
+                else if (isExactMatch)
+                {
+                    _logger?.LogDebug("Operation overlay not shown - '{Value}' is exact match", value);
+                    _viewModel.SelectedOperation = value;
+                }
+                else if (semiMatches.Count == 0)
+                {
+                    _logger?.LogDebug("Operation overlay not shown - no semi-matches for '{Value}'", value);
+                    
+                    // Clear invalid input to maintain data integrity (MTM pattern)
+                    textBox.Text = string.Empty;
+                    _viewModel.SelectedOperation = string.Empty;
+                    
+                    // Show user feedback
+                    try
+                    {
+                        await Services.ErrorHandling.HandleErrorAsync(
+                            new ArgumentException($"Invalid Operation: '{value}' not found in available operations."),
+                            "Operation validation failed - input cleared",
+                            "System"
+                        );
+                    }
+                    catch (Exception errorEx)
+                    {
+                        _logger?.LogWarning(errorEx, "Failed to show error message for invalid Operation");
+                    }
+                }
+                else
+                {
+                    _viewModel.SelectedOperation = value;
+                }
             }
-        }, null, SUGGESTION_DEBOUNCE_MS, Timeout.Infinite);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling operation lost focus");
+        }
     }
 
     #endregion
@@ -1029,13 +1177,7 @@ public partial class RemoveTabView : UserControl
 
             this.DataContextChanged -= OnDataContextChanged;
             
-            // Cleanup debouncing timers to prevent memory leaks
-            _partSuggestionTimer?.Dispose();
-            _partSuggestionTimer = null;
-            _operationSuggestionTimer?.Dispose();
-            _operationSuggestionTimer = null;
-            
-            _logger?.LogInformation("RemoveTabView cleanup completed including timer disposal");
+            _logger?.LogInformation("RemoveTabView cleanup completed");
         }
         catch (Exception ex)
         {
