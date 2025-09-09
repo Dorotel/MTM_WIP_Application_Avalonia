@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire: Missing Reference Files in .github Folder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: #2563eb;
+            color: white;
+            padding: 30px;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-left: 5px solid #2563eb;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .section {
+            background: white;
+            margin: 0;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section:last-of-type {
+            border-radius: 0 0 15px 15px;
+        }
+
+        .section-header {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            color: #6b7280;
+            margin-top: 5px;
+            font-size: 1rem;
+        }
+
+        .question {
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .question-header {
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .question-text {
+            margin-bottom: 15px;
+            color: #374151;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover, .checkbox-option:hover {
+            background: #f0f9ff;
+            border-color: #2563eb;
+        }
+
+        .radio-option input, .checkbox-option input {
+            margin: 0;
+        }
+
+        .rating-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .rating-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+        }
+
+        .rating-option:hover {
+            background: #f0f9ff;
+        }
+
+        .rating-option input {
+            margin-bottom: 5px;
+        }
+
+        .rating-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .auto-save-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .auto-save-indicator.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .rating-scale {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📁 Missing Reference Files Assessment</h1>
+            <p>MTM WIP Application Avalonia - .github Folder Analysis</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Section 1 of 4</div>
+        </div>
+
+        <!-- Section 1: Project Understanding -->
+        <div class="section active" id="section1">
+            <div class="section-header">
+                <div class="section-title">Section 1: Project Understanding</div>
+                <div class="section-subtitle">Let's start with your current knowledge of the missing files</div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">1a. Current Awareness Level</div>
+                <div class="question-text">How aware were you of the missing reference files in the .github folder before this assessment?</div>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="awareness_level" value="completely_unaware">
+                        <span>Completely unaware - This is the first I'm hearing about it</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="awareness_level" value="somewhat_aware">
+                        <span>Somewhat aware - I noticed some Copilot instructions weren't working</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="awareness_level" value="very_aware">
+                        <span>Very aware - I knew specific files were missing</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="awareness_level" value="expert_level">
+                        <span>Expert level - I knew exactly which files were missing and why</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">1b. Missing File Categories</div>
+                <div class="question-text">Which of these missing file categories do you think would impact Copilot's performance the most? (Select all that apply)</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="impact_categories" value="ui_instructions">
+                        <span>UI-Instructions folder (Avalonia XAML syntax, styling guidelines)</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="impact_categories" value="development_instructions">
+                        <span>Development-Instructions folder (database patterns, error handling)</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="impact_categories" value="core_instructions">
+                        <span>Core-Instructions folder (dependency injection, naming conventions)</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="impact_categories" value="context_files">
+                        <span>Context files (business domain, technology stack)</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="impact_categories" value="pattern_files">
+                        <span>Pattern files (MVVM toolkit, stored procedures)</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="impact_categories" value="template_files">
+                        <span>Template files (feature requests, UI components)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">1c. Development Impact</div>
+                <div class="question-text">On a scale of 1-5, how much do you think these missing files have impacted your development experience?</div>
+                <div class="rating-scale">
+                    <label class="rating-option">
+                        <input type="radio" name="development_impact" value="1">
+                        <div class="rating-label">1<br>No impact</div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="development_impact" value="2">
+                        <div class="rating-label">2<br>Minor impact</div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="development_impact" value="3">
+                        <div class="rating-label">3<br>Moderate impact</div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="development_impact" value="4">
+                        <div class="rating-label">4<br>Significant impact</div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="development_impact" value="5">
+                        <div class="rating-label">5<br>Major impact</div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Specific File Importance -->
+        <div class="section" id="section2">
+            <div class="section-header">
+                <div class="section-title">Section 2: Specific File Importance</div>
+                <div class="section-subtitle">Rate the importance of each missing file category</div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">2a. UI-Instructions Priority</div>
+                <div class="question-text">How critical are UI-Instructions files for your RemoveTabView implementation work?</div>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="ui_instructions_priority" value="critical">
+                        <span>Critical - Cannot proceed without Avalonia AXAML syntax guidance</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="ui_instructions_priority" value="high">
+                        <span>High - Would significantly improve code quality</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="ui_instructions_priority" value="medium">
+                        <span>Medium - Helpful but not blocking</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="ui_instructions_priority" value="low">
+                        <span>Low - Can work around missing guidance</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">2b. Database Pattern Files</div>
+                <div class="question-text">Rate the importance of stored-procedures.instruction.md and database-patterns.instruction.md files:</div>
+                <div class="rating-scale">
+                    <label class="rating-option">
+                        <input type="radio" name="database_files_importance" value="1">
+                        <div class="rating-label">1<br>Not important</div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="database_files_importance" value="2">
+                        <div class="rating-label">2<br>Slightly important</div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="database_files_importance" value="3">
+                        <div class="rating-label">3<br>Moderately important</div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="database_files_importance" value="4">
+                        <div class="rating-label">4<br>Very important</div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="database_files_importance" value="5">
+                        <div class="rating-label">5<br>Extremely important</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">2c. MVVM Community Toolkit Guidance</div>
+                <div class="question-text">How much would mtm-mvvm-community-toolkit.md help with your current RemoveTabView ViewModel work?</div>
+                <select class="form-control" name="mvvm_toolkit_help">
+                    <option value="">Select how much this would help...</option>
+                    <option value="game_changer">Game changer - Would solve major implementation questions</option>
+                    <option value="very_helpful">Very helpful - Would improve code patterns significantly</option>
+                    <option value="somewhat_helpful">Somewhat helpful - Would clarify some confusion</option>
+                    <option value="minimal_help">Minimal help - Already understand MVVM toolkit well</option>
+                    <option value="not_needed">Not needed - Working fine without it</option>
+                </select>
+            </div>
+
+            <div class="question">
+                <div class="question-header">2d. Business Domain Context</div>
+                <div class="question-text">Would mtm-business-domain.md help Copilot understand manufacturing-specific requirements better?</div>
+                <textarea class="form-control" name="business_domain_value" placeholder="Explain how business domain context would help with your project..."></textarea>
+            </div>
+        </div>
+
+        <!-- Section 3: Implementation Impact -->
+        <div class="section" id="section3">
+            <div class="section-header">
+                <div class="section-title">Section 3: Implementation Impact</div>
+                <div class="section-subtitle">Assess how missing files affect your current work</div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">3a. Copilot Performance Issues</div>
+                <div class="question-text">What specific problems have you noticed with Copilot due to missing context files? (Select all that apply)</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="copilot_issues" value="wrong_syntax">
+                        <span>Generates wrong AXAML syntax (WPF instead of Avalonia)</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="copilot_issues" value="wrong_patterns">
+                        <span>Uses ReactiveUI instead of MVVM Community Toolkit patterns</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="copilot_issues" value="database_issues">
+                        <span>Suggests direct SQL instead of stored procedures</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="copilot_issues" value="naming_problems">
+                        <span>Inconsistent naming conventions</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="copilot_issues" value="business_context">
+                        <span>Doesn't understand manufacturing business context</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="copilot_issues" value="architecture_confusion">
+                        <span>Suggests incorrect architecture patterns</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="copilot_issues" value="no_issues">
+                        <span>Haven't noticed any specific issues</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">3b. Time Impact Assessment</div>
+                <div class="question-text">Approximately how much extra time do you spend correcting Copilot suggestions due to missing context?</div>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="time_impact" value="none">
+                        <span>No extra time - Copilot works fine</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="time_impact" value="minimal">
+                        <span>5-15 minutes per session</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="time_impact" value="moderate">
+                        <span>15-30 minutes per session</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="time_impact" value="significant">
+                        <span>30-60 minutes per session</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="time_impact" value="major">
+                        <span>Over 1 hour per session</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">3c. Code Quality Impact</div>
+                <div class="question-text">On a scale of 1-10, how would having complete .github instruction files improve your code quality?</div>
+                <input type="range" class="form-control" name="code_quality_improvement" min="1" max="10" value="5" 
+                       oninput="document.getElementById('qualityValue').textContent = this.value">
+                <div style="text-align: center; margin-top: 10px; font-weight: bold; color: #2563eb;">
+                    Quality Improvement Level: <span id="qualityValue">5</span>/10
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">3d. Specific Examples</div>
+                <div class="question-text">Can you provide a specific example where missing context files caused confusion or incorrect suggestions?</div>
+                <textarea class="form-control" name="specific_examples" placeholder="Describe a specific situation where missing .github files impacted your development..."></textarea>
+            </div>
+        </div>
+
+        <!-- Section 4: Priority and Next Steps -->
+        <div class="section" id="section4">
+            <div class="section-header">
+                <div class="section-title">Section 4: Priority and Next Steps</div>
+                <div class="section-subtitle">Help us prioritize which files to create first</div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">4a. Top 3 Priority Files</div>
+                <div class="question-text">Rank your top 3 most needed missing files (1 = highest priority):</div>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin: 10px 0;"><strong>Priority 1 (Most Needed):</strong></label>
+                    <select class="form-control" name="priority_1" style="margin-bottom: 15px;">
+                        <option value="">Select highest priority file...</option>
+                        <option value="avalonia-xaml-syntax.instruction.md">avalonia-xaml-syntax.instruction.md</option>
+                        <option value="ui-generation.instruction.md">ui-generation.instruction.md</option>
+                        <option value="database-patterns.instruction.md">database-patterns.instruction.md</option>
+                        <option value="stored-procedures.instruction.md">stored-procedures.instruction.md</option>
+                        <option value="dependency-injection.instruction.md">dependency-injection.instruction.md</option>
+                        <option value="mtm-mvvm-community-toolkit.md">mtm-mvvm-community-toolkit.md</option>
+                        <option value="mtm-business-domain.md">mtm-business-domain.md</option>
+                        <option value="mtm-technology-stack.md">mtm-technology-stack.md</option>
+                    </select>
+
+                    <label style="display: block; margin: 10px 0;"><strong>Priority 2:</strong></label>
+                    <select class="form-control" name="priority_2" style="margin-bottom: 15px;">
+                        <option value="">Select second priority file...</option>
+                        <option value="avalonia-xaml-syntax.instruction.md">avalonia-xaml-syntax.instruction.md</option>
+                        <option value="ui-generation.instruction.md">ui-generation.instruction.md</option>
+                        <option value="database-patterns.instruction.md">database-patterns.instruction.md</option>
+                        <option value="stored-procedures.instruction.md">stored-procedures.instruction.md</option>
+                        <option value="dependency-injection.instruction.md">dependency-injection.instruction.md</option>
+                        <option value="mtm-mvvm-community-toolkit.md">mtm-mvvm-community-toolkit.md</option>
+                        <option value="mtm-business-domain.md">mtm-business-domain.md</option>
+                        <option value="mtm-technology-stack.md">mtm-technology-stack.md</option>
+                    </select>
+
+                    <label style="display: block; margin: 10px 0;"><strong>Priority 3:</strong></label>
+                    <select class="form-control" name="priority_3">
+                        <option value="">Select third priority file...</option>
+                        <option value="avalonia-xaml-syntax.instruction.md">avalonia-xaml-syntax.instruction.md</option>
+                        <option value="ui-generation.instruction.md">ui-generation.instruction.md</option>
+                        <option value="database-patterns.instruction.md">database-patterns.instruction.md</option>
+                        <option value="stored-procedures.instruction.md">stored-procedures.instruction.md</option>
+                        <option value="dependency-injection.instruction.md">dependency-injection.instruction.md</option>
+                        <option value="mtm-mvvm-community-toolkit.md">mtm-mvvm-community-toolkit.md</option>
+                        <option value="mtm-business-domain.md">mtm-business-domain.md</option>
+                        <option value="mtm-technology-stack.md">mtm-technology-stack.md</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">4b. Implementation Timeline</div>
+                <div class="question-text">What timeline would be most helpful for getting these missing files created?</div>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="timeline_preference" value="immediate">
+                        <span>Immediate (within 1 day) - Blocking current work</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="timeline_preference" value="urgent">
+                        <span>Urgent (within 1 week) - High priority for current sprint</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="timeline_preference" value="moderate">
+                        <span>Moderate (within 2-3 weeks) - Important for upcoming work</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="timeline_preference" value="flexible">
+                        <span>Flexible (within 1 month) - Nice to have improvement</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-header">4c. Additional Missing Files</div>
+                <div class="question-text">Are there any other instruction or reference files you think would be helpful that weren't mentioned?</div>
+                <textarea class="form-control" name="additional_files" placeholder="Describe any other files that would help improve Copilot performance..."></textarea>
+            </div>
+
+            <div class="question">
+                <div class="question-header">4d. Overall Assessment</div>
+                <div class="question-text">Any final thoughts on how complete .github instruction files would improve your development experience?</div>
+                <textarea class="form-control" name="final_thoughts" placeholder="Share your overall thoughts on the importance of having complete Copilot instruction files..."></textarea>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeSection(-1)" disabled>Previous</button>
+            <div>
+                <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeSection(1)">Next Section</button>
+                <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveAnswers()" style="display: none;">Save Answers</button>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="success-message" style="display: none;">
+            <h3>✅ Questionnaire Completed Successfully!</h3>
+            <p>Your responses have been saved to answers-missing-reference-files-github-folder.html</p>
+            <p>Thank you for providing detailed feedback about the missing .github reference files.</p>
+        </div>
+    </div>
+
+    <!-- Auto-save Indicator -->
+    <div id="autoSaveIndicator" class="auto-save-indicator">
+        💾 Auto-saved
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 4;
+        let responses = {};
+
+        // Initialize questionnaire
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            loadSavedData();
+            setupAutoSave();
+        });
+
+        // Section navigation
+        function changeSection(direction) {
+            // Save current section data before moving
+            saveCurrentSection();
+
+            // Hide current section
+            document.getElementById(`section${currentSection}`).classList.remove('active');
+            
+            // Update section number
+            currentSection += direction;
+            
+            // Show new section
+            document.getElementById(`section${currentSection}`).classList.add('active');
+            
+            // Update navigation buttons
+            updateNavigation();
+            
+            // Update progress
+            updateProgress();
+            
+            // Scroll to top
+            document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            
+            prevBtn.disabled = currentSection === 1;
+            
+            if (currentSection === totalSections) {
+                nextBtn.style.display = 'none';
+                saveBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'none';
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentSection / totalSections) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `Section ${currentSection} of ${totalSections}`;
+        }
+
+        // Auto-save functionality
+        function setupAutoSave() {
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    saveCurrentSection();
+                    showAutoSaveIndicator();
+                });
+            });
+        }
+
+        function saveCurrentSection() {
+            const section = document.getElementById(`section${currentSection}`);
+            const inputs = section.querySelectorAll('input, select, textarea');
+            
+            inputs.forEach(input => {
+                if (input.type === 'radio' || input.type === 'checkbox') {
+                    if (input.checked) {
+                        if (input.type === 'checkbox') {
+                            if (!responses[input.name]) {
+                                responses[input.name] = [];
+                            }
+                            if (!responses[input.name].includes(input.value)) {
+                                responses[input.name].push(input.value);
+                            }
+                        } else {
+                            responses[input.name] = input.value;
+                        }
+                    }
+                } else {
+                    responses[input.name] = input.value;
+                }
+            });
+
+            // Save to localStorage
+            localStorage.setItem('missingFilesQuestionnaire', JSON.stringify(responses));
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('missingFilesQuestionnaire');
+            if (saved) {
+                responses = JSON.parse(saved);
+                populateForm();
+            }
+        }
+
+        function populateForm() {
+            Object.keys(responses).forEach(name => {
+                const elements = document.querySelectorAll(`[name="${name}"]`);
+                elements.forEach(element => {
+                    if (element.type === 'radio') {
+                        if (element.value === responses[name]) {
+                            element.checked = true;
+                        }
+                    } else if (element.type === 'checkbox') {
+                        if (Array.isArray(responses[name]) && responses[name].includes(element.value)) {
+                            element.checked = true;
+                        }
+                    } else {
+                        element.value = responses[name] || '';
+                    }
+                });
+            });
+        }
+
+        function showAutoSaveIndicator() {
+            const indicator = document.getElementById('autoSaveIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        // Save final answers
+        function saveAnswers() {
+            saveCurrentSection();
+            
+            // Generate timestamp
+            const now = new Date();
+            const timestamp = now.toLocaleString();
+            
+            // Generate HTML content for answers
+            const answersHtml = generateAnswersHTML(timestamp);
+            
+            // Create and download file
+            const blob = new Blob([answersHtml], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'answers-missing-reference-files-github-folder.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            document.querySelector('.navigation').style.display = 'none';
+            
+            // Clear localStorage
+            localStorage.removeItem('missingFilesQuestionnaire');
+            
+            // Scroll to success message
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateAnswersHTML(timestamp) {
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Answers: Missing Reference Files in .github Folder</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; margin: 40px; background: #f8fafc; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header { text-align: center; color: #2563eb; border-bottom: 3px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
+        .section { margin: 30px 0; padding: 20px; background: #f8fafc; border-left: 5px solid #2563eb; border-radius: 0 8px 8px 0; }
+        .question { margin: 20px 0; }
+        .question-title { font-weight: bold; color: #1e40af; margin-bottom: 10px; }
+        .answer { background: white; padding: 15px; border-radius: 6px; border: 1px solid #e5e7eb; }
+        .metadata { background: #e5e7eb; padding: 15px; border-radius: 6px; margin-bottom: 30px; font-size: 0.9em; }
+        ul { margin: 10px 0; padding-left: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📁 Missing Reference Files Assessment - Responses</h1>
+            <p>MTM WIP Application Avalonia - .github Folder Analysis</p>
+        </div>
+        
+        <div class="metadata">
+            <strong>Completion Date:</strong> ${timestamp}<br>
+            <strong>Assessment Subject:</strong> Missing reference files in .github folder<br>
+            <strong>Reading Level:</strong> High School<br>
+            <strong>Total Questions:</strong> 16 questions across 4 sections
+        </div>
+
+        ${generateSectionAnswers()}
+        
+        <div style="margin-top: 40px; padding: 20px; background: #10b981; color: white; border-radius: 8px; text-align: center;">
+            <h3>Assessment Complete ✅</h3>
+            <p>This file contains your responses for prioritizing .github instruction file creation.</p>
+        </div>
+    </div>
+</body>
+</html>`;
+        }
+
+        function generateSectionAnswers() {
+            let html = '';
+            
+            // Section 1
+            html += `<div class="section">
+                <h2>Section 1: Project Understanding</h2>
+                <div class="question">
+                    <div class="question-title">1a. Current Awareness Level</div>
+                    <div class="answer">${formatAnswer(responses.awareness_level)}</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">1b. Missing File Categories (Impact Priority)</div>
+                    <div class="answer">${formatArrayAnswer(responses.impact_categories)}</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">1c. Development Impact Rating</div>
+                    <div class="answer">${formatAnswer(responses.development_impact)}/5</div>
+                </div>
+            </div>`;
+            
+            // Section 2
+            html += `<div class="section">
+                <h2>Section 2: Specific File Importance</h2>
+                <div class="question">
+                    <div class="question-title">2a. UI-Instructions Priority Level</div>
+                    <div class="answer">${formatAnswer(responses.ui_instructions_priority)}</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">2b. Database Pattern Files Importance</div>
+                    <div class="answer">${formatAnswer(responses.database_files_importance)}/5</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">2c. MVVM Community Toolkit Guidance Value</div>
+                    <div class="answer">${formatAnswer(responses.mvvm_toolkit_help)}</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">2d. Business Domain Context Importance</div>
+                    <div class="answer">${formatAnswer(responses.business_domain_value)}</div>
+                </div>
+            </div>`;
+            
+            // Section 3
+            html += `<div class="section">
+                <h2>Section 3: Implementation Impact</h2>
+                <div class="question">
+                    <div class="question-title">3a. Observed Copilot Performance Issues</div>
+                    <div class="answer">${formatArrayAnswer(responses.copilot_issues)}</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">3b. Extra Time Spent per Session</div>
+                    <div class="answer">${formatAnswer(responses.time_impact)}</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">3c. Expected Code Quality Improvement</div>
+                    <div class="answer">${formatAnswer(responses.code_quality_improvement)}/10</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">3d. Specific Examples of Impact</div>
+                    <div class="answer">${formatAnswer(responses.specific_examples)}</div>
+                </div>
+            </div>`;
+            
+            // Section 4
+            html += `<div class="section">
+                <h2>Section 4: Priority and Next Steps</h2>
+                <div class="question">
+                    <div class="question-title">4a. Top 3 Priority Files</div>
+                    <div class="answer">
+                        <strong>Priority 1:</strong> ${formatAnswer(responses.priority_1)}<br>
+                        <strong>Priority 2:</strong> ${formatAnswer(responses.priority_2)}<br>
+                        <strong>Priority 3:</strong> ${formatAnswer(responses.priority_3)}
+                    </div>
+                </div>
+                <div class="question">
+                    <div class="question-title">4b. Preferred Implementation Timeline</div>
+                    <div class="answer">${formatAnswer(responses.timeline_preference)}</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">4c. Additional Missing Files Needed</div>
+                    <div class="answer">${formatAnswer(responses.additional_files)}</div>
+                </div>
+                <div class="question">
+                    <div class="question-title">4d. Overall Assessment and Final Thoughts</div>
+                    <div class="answer">${formatAnswer(responses.final_thoughts)}</div>
+                </div>
+            </div>`;
+            
+            return html;
+        }
+
+        function formatAnswer(answer) {
+            if (!answer) return '<em>No response provided</em>';
+            if (typeof answer === 'string') {
+                return answer.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            }
+            return answer;
+        }
+
+        function formatArrayAnswer(answers) {
+            if (!answers || !Array.isArray(answers) || answers.length === 0) {
+                return '<em>No options selected</em>';
+            }
+            return '<ul>' + answers.map(answer => 
+                `<li>${answer.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</li>`
+            ).join('') + '</ul>';
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSection > 1) {
+                changeSection(-1);
+            } else if (e.key === 'ArrowRight' && currentSection < totalSections) {
+                changeSection(1);
+            }
+        });
+    </script>
+</body>
+</html>
