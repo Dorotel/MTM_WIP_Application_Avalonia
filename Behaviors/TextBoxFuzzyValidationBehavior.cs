@@ -313,15 +313,23 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
                 return; // Exact match, do nothing more
             }
             
-            // Fuzzy match: contains or startswith
-            var like = sourceItems
-                .Where(item => item != null && item.ToString() != null && item.ToString()!.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0)
-                .Take(20)
+            // Fuzzy matching with intelligent scoring using Levenshtein distance
+            var scoredMatches = sourceItems
+                .Where(item => item != null && item.ToString() != null)
+                .Select(item => new
+                {
+                    Item = item,
+                    Score = CalculateMatchScore(text, item.ToString()!)
+                })
+                .Where(scored => scored.Score > 0.3) // Threshold for relevance - only show meaningful matches
+                .OrderByDescending(scored => scored.Score) // Sort by relevance (best matches first)
+                .Take(20) // Limit to top 20 suggestions for performance
+                .Select(scored => scored.Item)
                 .ToList();
                 
-            System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: Found {like.Count} matches");
+            System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: Found {scoredMatches.Count} fuzzy matches");
             
-            if (like.Count == 0)
+            if (scoredMatches.Count == 0)
             {
                 // No fuzzy matches found - clear the textbox to maintain data integrity
                 System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: No matches found for '{text}'. Clearing textbox.");
@@ -400,9 +408,115 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
                     System.Diagnostics.Debug.WriteLine($"Failed to clear error state for fuzzy matches: {ex.Message}");
                 }
                 
-                System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: Firing SuggestionOverlayRequested event with {like.Count} suggestions");
-                handler(box, like);
+                System.Diagnostics.Debug.WriteLine($"TextBoxFuzzyValidationBehavior.OnLostFocus: Firing SuggestionOverlayRequested event with {scoredMatches.Count} suggestions");
+                handler(box, scoredMatches);
             }
+        }
+
+        /// <summary>
+        /// Calculates a relevance score for fuzzy matching using multiple algorithms.
+        /// Provides intelligent scoring that prioritizes exact matches, then prefix matches, 
+        /// then substring matches, and finally uses Levenshtein distance for typo tolerance.
+        /// 
+        /// Scoring system:
+        /// - Exact match: 1.0 (highest priority)
+        /// - Prefix match: 0.9 (very high priority for manufacturing part codes)  
+        /// - Contains match: 0.7 (high priority for partial part numbers)
+        /// - Fuzzy match via Levenshtein: 0.1-0.6 based on edit distance (typo tolerance)
+        /// - No match: 0.0 (filtered out by threshold)
+        /// 
+        /// This scoring ensures that manufacturing users get the most relevant suggestions
+        /// first, with exact and prefix matches taking priority over fuzzy suggestions.
+        /// </summary>
+        /// <param name="input">User input text to match against</param>
+        /// <param name="target">Target text (part ID, operation, location) to compare</param>
+        /// <returns>Relevance score between 0.0 and 1.0, where higher values indicate better matches</returns>
+        private static double CalculateMatchScore(string input, string target)
+        {
+            if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(target))
+                return 0.0;
+
+            var inputLower = input.Trim().ToLowerInvariant();
+            var targetLower = target.Trim().ToLowerInvariant();
+
+            // Exact match gets highest score (perfect match)
+            if (string.Equals(inputLower, targetLower, StringComparison.OrdinalIgnoreCase))
+                return 1.0;
+
+            // Prefix match gets very high score (manufacturing part codes often searched by prefix)
+            if (targetLower.StartsWith(inputLower))
+                return 0.9;
+
+            // Contains match gets high score (partial part numbers are common)  
+            if (targetLower.Contains(inputLower))
+                return 0.7;
+
+            // Fuzzy matching using Levenshtein distance for typo tolerance
+            var distance = LevenshteinDistance(inputLower, targetLower);
+            var maxLength = Math.Max(inputLower.Length, targetLower.Length);
+            
+            if (maxLength == 0) return 0.0;
+            
+            // Convert distance to similarity score (0.0 to 0.6 range for fuzzy matches)
+            var similarity = 1.0 - (double)distance / maxLength;
+            
+            // Only return fuzzy scores above 0.3 threshold, scaled to 0.1-0.6 range
+            return similarity > 0.5 ? similarity * 0.6 : 0.0;
+        }
+
+        /// <summary>
+        /// Calculates the Levenshtein distance between two strings.
+        /// The Levenshtein distance is the minimum number of single-character edits 
+        /// (insertions, deletions, or substitutions) required to change one string into another.
+        /// 
+        /// This algorithm is essential for manufacturing data entry scenarios where users
+        /// may have typos in part numbers, operation codes, or location identifiers.
+        /// It enables the system to suggest correct values even when the input contains
+        /// minor spelling errors or transposed characters.
+        /// 
+        /// Algorithm complexity: O(m * n) where m and n are the lengths of the input strings.
+        /// Optimized for manufacturing data which typically involves short alphanumeric codes.
+        /// </summary>
+        /// <param name="source">Source string (user input)</param>
+        /// <param name="target">Target string (master data value)</param>
+        /// <returns>Number of single-character edits needed to transform source into target</returns>
+        private static int LevenshteinDistance(string source, string target)
+        {
+            if (string.IsNullOrEmpty(source))
+                return string.IsNullOrEmpty(target) ? 0 : target.Length;
+            
+            if (string.IsNullOrEmpty(target))
+                return source.Length;
+
+            var sourceLength = source.Length;
+            var targetLength = target.Length;
+
+            // Create matrix to store distances
+            var matrix = new int[sourceLength + 1, targetLength + 1];
+
+            // Initialize first row and column
+            for (int i = 0; i <= sourceLength; i++)
+                matrix[i, 0] = i;
+            
+            for (int j = 0; j <= targetLength; j++)
+                matrix[0, j] = j;
+
+            // Fill in the matrix using dynamic programming
+            for (int i = 1; i <= sourceLength; i++)
+            {
+                for (int j = 1; j <= targetLength; j++)
+                {
+                    var cost = (source[i - 1] == target[j - 1]) ? 0 : 1;
+                    
+                    matrix[i, j] = Math.Min(
+                        Math.Min(
+                            matrix[i - 1, j] + 1,     // deletion
+                            matrix[i, j - 1] + 1),    // insertion
+                        matrix[i - 1, j - 1] + cost); // substitution
+                }
+            }
+
+            return matrix[sourceLength, targetLength];
         }
 
         // REMOVED: ShowSuggestionFlyout. Overlay is now handled by parent.
