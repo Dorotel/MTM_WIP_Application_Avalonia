@@ -1,35 +1,52 @@
-@copilot RemoveTabView implementation is now 93% complete with comprehensive functionality! 🎉
+@copilot **CRITICAL BUGS IDENTIFIED** in RemoveTabView requiring immediate fixes:
 
-**MAJOR ACHIEVEMENT**: All core requirements have been successfully implemented:
-- ✅ Complete DataGrid-centric layout with professional UI
-- ✅ All ComboBoxes replaced with TextBoxes + SuggestionOverlay
-- ✅ Multi-row batch operations with confirmation dialogs
-- ✅ Auto-collapse/expand CollapsiblePanel behavior working
-- ✅ QuickButtons integration with 100% reliability (multi-strategy)
-- ✅ SuccessOverlay, ErrorHandling, MTM Theme integration complete
-- ✅ Keyboard shortcuts (F5, Delete, Ctrl+Z, Escape) operational
-- ✅ Comprehensive 1200+ line ViewModel with full business logic
+## 🚨 **Critical Issues Found via Error Log Analysis:**
 
-**FINAL REFINEMENTS NEEDED** (2-2.5 hours remaining work):
+### 1. **SuggestionOverlay Not Showing - Root Cause: Empty Suggestion Lists**
+```
+SuggestionOverlayService: Debug: No suggestions provided, returning null
+```
+- **Problem**: `SuggestionOverlayService` receives **empty suggestion arrays** and returns null
+- **Root Cause**: RemoveItemViewModel suggestion methods aren't populating data correctly
+- **Impact**: No suggestion overlays appear when typing in Part/Operation fields
+- **Required Fix**: Debug why suggestion lists are empty in RemoveItemViewModel
 
-2. **Remove Unnecessary Input Fields** (15-20 minutes)
-   - Current: Location and User TextBox fields present
-   - Required: Remove Location and User input fields and their related logic (not essential for core removal)
-   - Impact: Simplified, focused user interface
+### 2. **QuickButtons Working BUT Database Search Failing**
+```  
+QuickButtonsViewModel: Information: Executing quick action: 21094864-PKG, 90, 500
+RemoveItemViewModel: Debug: Showing part suggestions for input: 21094864-PKG
+SuggestionOverlayService: Debug: No suggestions provided, returning null
+```
+- **Status**: QuickButtons **ARE** filling Part/Operation correctly (21094864-PKG, 90)
+- **Problem**: After QuickButton populates data, suggestion system fails
+- **Impact**: User can't see if the filled data is valid
 
-3. **Remove Redundant QuickButtons Toggle** (5-10 minutes)
-   - Current: RemoveTabView has toggle button for QuickButtons panel
-   - Required: Remove since QuickButtonsView has its own built-in toggle functionality
-   - Impact: Cleaner UI without redundant controls
+### 3. **Fatal Database Parameter Mismatch**
+```
+System.ArgumentException: Parameter 'o_Operation' not found in the collection.
+   at inv_inventory_Get_ByPartIDandOperation
+```
+- **Problem**: Stored procedure parameter mismatch causing search failures
+- **Impact**: All inventory searches fail, preventing removal operations
+- **Required Fix**: Correct parameter mapping for RemoveTabView database calls
 
-4. **Integration Testing Documentation** (1-2 hours)  
-   - Complete `Documentation/RemoveTabView_Integration_Tests.md` with comprehensive test scenarios
-   - Add mock service examples and performance testing guidelines
+### 4. **Critical Threading Violation - App Crashing**
+```
+System.InvalidOperationException: Call from invalid thread
+   at MTM_WIP_Application_Avalonia.ViewModels.RemoveItemViewModel.Search()
+   at Avalonia.Controls.DataGrid.UpdatePseudoClasses()
+```
+- **Problem**: DataGrid collection updates happening off UI thread
+- **Impact**: **Application crashes** when performing searches
+- **Required Fix**: Wrap DataGrid updates in `Dispatcher.UIThread.Invoke()`
 
-5. **Performance Validation** (30 minutes)
-   - Test with large datasets (1000+ items) and validate batch operation performance
-   - Ensure smooth UI responsiveness during bulk operations
+## 🎯 **Immediate Action Required:**
 
-**Current Status**: RemoveTabView is production-ready with enterprise-grade functionality. The implementation exceeds original specification requirements with professional confirmation dialogs, multi-strategy QuickButtons integration, and comprehensive error handling.
+**Priority 1 (App Crash)**: Fix threading issue in RemoveItemViewModel.Search()
+**Priority 2 (Core Function)**: Fix database parameter mapping for inventory search
+**Priority 3 (UX)**: Debug empty suggestion lists in SuggestionOverlayService
+**Priority 4 (Integration)**: Ensure QuickButton data triggers proper suggestion display
 
-Please focus on these final refinements to achieve 100% completion. The heavy lifting is done! 🚀
+**Current Status**: RemoveTabView is **non-functional** due to critical threading and database errors.
+
+Refer to error logs for detailed stack traces and parameter mismatches.
