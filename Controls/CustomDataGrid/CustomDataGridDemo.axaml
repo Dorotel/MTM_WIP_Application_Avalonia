@@ -1,0 +1,61 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:customGrid="using:MTM_WIP_Application_Avalonia.Controls.CustomDataGrid"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.CustomDataGridDemo">
+
+  <Grid RowDefinitions="Auto,*" Margin="16">
+    
+    <!-- Demo Header -->
+    <Border Grid.Row="0" 
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+            BorderThickness="1"
+            CornerRadius="6"
+            Padding="16"
+            Margin="0,0,0,16">
+      
+      <StackPanel Spacing="8">
+        <TextBlock Text="MTM Custom Data Grid - Phase 1 Demo" 
+                   FontSize="18" 
+                   FontWeight="Bold"
+                   Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+        
+        <TextBlock Text="High-performance data grid using ListBox with virtual scrolling for MTM inventory data." 
+                   FontSize="12"
+                   Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                   TextWrapping="Wrap" />
+        
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <Button Content="Load Sample Data" 
+                  Classes="primary"
+                  Click="OnLoadSampleDataClick"
+                  Padding="12,6" />
+          
+          <Button Content="Clear Data" 
+                  Classes="secondary"
+                  Click="OnClearDataClick"
+                  Padding="12,6" />
+          
+          <TextBlock Text="{Binding ItemCount, StringFormat='Items: {0}'}" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+        </StackPanel>
+      </StackPanel>
+      
+    </Border>
+    
+    <!-- Custom Data Grid -->
+    <customGrid:CustomDataGrid x:Name="DemoDataGrid"
+                               Grid.Row="1"
+                               ItemsSource="{Binding SampleInventoryData}"
+                               SelectedItem="{Binding SelectedInventoryItem, Mode=TwoWay}"
+                               IsMultiSelectEnabled="False" />
+    
+  </Grid>
+
+</UserControl>

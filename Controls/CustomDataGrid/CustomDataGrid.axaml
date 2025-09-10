@@ -1,0 +1,170 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="400"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.CustomDataGrid"
+             x:CompileBindings="False">
+
+  <UserControl.Styles>
+    
+    <!-- MTM Header Cell Style -->
+    <Style Selector="Border.header-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="MinHeight" Value="32" />
+    </Style>
+
+    <Style Selector="Border.header-cell:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+    </Style>
+
+    <!-- MTM Data Cell Style -->
+    <Style Selector="Border.data-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="MinHeight" Value="28" />
+    </Style>
+
+    <Style Selector="Border.data-cell:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+    </Style>
+
+    <!-- Selected row styling -->
+    <Style Selector="Border.data-cell.selected">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryLightBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+    </Style>
+
+    <!-- Header text style -->
+    <Style Selector="TextBlock.header-text">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Data text style -->
+    <Style Selector="TextBlock.data-text">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+  </UserControl.Styles>
+
+  <!-- Main Grid Layout -->
+  <Grid x:Name="MainGrid" RowDefinitions="Auto,*">
+    
+    <!-- Header Section -->
+    <Border x:Name="HeaderSection" 
+            Grid.Row="0"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+            BorderThickness="1,1,1,0"
+            CornerRadius="6,6,0,0">
+      
+      <!-- Static Header for Phase 1 - Dynamic columns will be implemented in later phases -->
+      <Grid x:Name="StaticHeaderGrid" ColumnDefinitions="120,80,100,90,140,*">
+        
+        <Border Grid.Column="0" Classes="header-cell">
+          <TextBlock Classes="header-text" Text="Part ID" />
+        </Border>
+        
+        <Border Grid.Column="1" Classes="header-cell">
+          <TextBlock Classes="header-text" Text="Operation" />
+        </Border>
+        
+        <Border Grid.Column="2" Classes="header-cell">
+          <TextBlock Classes="header-text" Text="Location" />
+        </Border>
+        
+        <Border Grid.Column="3" Classes="header-cell">
+          <TextBlock Classes="header-text" Text="Quantity" />
+        </Border>
+        
+        <Border Grid.Column="4" Classes="header-cell">
+          <TextBlock Classes="header-text" Text="Last Updated" />
+        </Border>
+        
+        <Border Grid.Column="5" Classes="header-cell">
+          <TextBlock Classes="header-text" Text="Notes" />
+        </Border>
+        
+      </Grid>
+      
+    </Border>
+
+    <!-- Data Section with ScrollViewer -->
+    <ScrollViewer x:Name="DataScrollViewer"
+                  Grid.Row="1"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                  BorderThickness="1,0,1,1"
+                  CornerRadius="0,0,6,6">
+      
+      <!-- ListBox for Virtual Scrolling -->
+      <ListBox x:Name="DataListBox"
+               ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
+               Background="Transparent"
+               BorderThickness="0"
+               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+               ScrollViewer.VerticalScrollBarVisibility="Auto">
+        
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel />
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            
+            <!-- Data Row - Static layout matching header for Phase 1 -->
+            <Grid ColumnDefinitions="120,80,100,90,140,*">
+              
+              <Border Grid.Column="0" Classes="data-cell">
+                <TextBlock Classes="data-text" Text="{Binding PartId}" />
+              </Border>
+              
+              <Border Grid.Column="1" Classes="data-cell">
+                <TextBlock Classes="data-text" Text="{Binding Operation}" />
+              </Border>
+              
+              <Border Grid.Column="2" Classes="data-cell">
+                <TextBlock Classes="data-text" Text="{Binding Location}" />
+              </Border>
+              
+              <Border Grid.Column="3" Classes="data-cell">
+                <TextBlock Classes="data-text" Text="{Binding Quantity, StringFormat=N0}" />
+              </Border>
+              
+              <Border Grid.Column="4" Classes="data-cell">
+                <TextBlock Classes="data-text" Text="{Binding LastUpdated, StringFormat='MM/dd/yy HH:mm'}" />
+              </Border>
+              
+              <Border Grid.Column="5" Classes="data-cell">
+                <TextBlock Classes="data-text" Text="{Binding Notes}" />
+              </Border>
+              
+            </Grid>
+            
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+        
+      </ListBox>
+      
+    </ScrollViewer>
+    
+  </Grid>
+
+</UserControl>
