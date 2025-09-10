@@ -74,6 +74,9 @@ public static class ServiceCollectionExtensions
 
         // Register Remove service - singleton for centralized inventory removal business logic
         services.TryAddSingleton<IRemoveService, RemoveService>();
+
+        // Register CustomDataGrid service - singleton for shared data grid functionality across views
+        services.TryAddSingleton<ICustomDataGridService, CustomDataGridService>();
         
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
