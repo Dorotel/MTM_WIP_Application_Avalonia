@@ -53,6 +53,24 @@
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryLightBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
       <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="Opacity" Value="0.7" />
+    </Style>
+
+    <!-- Phase 4: Drag preview style -->
+    <Style Selector="Border.drag-preview">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryLightBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Opacity" Value="0.9" />
+      <Setter Property="BoxShadow" Value="0 4 8 rgba(0,0,0,0.3)" />
+    </Style>
+
+    <!-- Phase 4: Drop target indicator style -->
+    <Style Selector="Rectangle.drop-indicator">
+      <Setter Property="Fill" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="Height" Value="2" />
+      <Setter Property="Opacity" Value="0.8" />
     </Style>
 
     <!-- Action Button Style -->
@@ -162,7 +180,10 @@
                             Classes="column-action"
                             ToolTip.Tip="Drag to reorder"
                             Cursor="Hand"
-                            x:Name="DragHandle">
+                            x:Name="DragHandle"
+                            PointerPressed="OnDragHandlePointerPressed"
+                            PointerMoved="OnDragHandlePointerMoved"
+                            PointerReleased="OnDragHandlePointerReleased">
                       <materialIcons:MaterialIcon Kind="DragVertical" 
                                                   Width="12" 
                                                   Height="12"

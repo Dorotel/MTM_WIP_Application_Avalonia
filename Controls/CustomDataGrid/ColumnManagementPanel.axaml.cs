@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
+using Avalonia.Input;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -84,8 +85,17 @@ public partial class ColumnManagementPanel : UserControl
     #region Fields
 
     private readonly ILogger? _logger;
+    
+    // Phase 4: Enhanced drag-and-drop state management
     private bool _isDragging = false;
     private CustomDataGridColumn? _draggedColumn = null;
+    private Point _dragStartPosition = new(0, 0);
+    private Border? _dragPreview = null;
+    private Grid? _dropIndicator = null;
+    private int _dropTargetIndex = -1;
+    private bool _isResizing = false;
+    private CustomDataGridColumn? _resizeColumn = null;
+    private double _resizeStartX = 0;
 
     #endregion
 
@@ -634,6 +644,9 @@ public partial class ColumnManagementPanel : UserControl
                 }
             }
             
+            // Clean up any drag operations
+            CleanupDragOperation();
+            
             _logger?.LogDebug("ColumnManagementPanel cleanup completed");
         }
         catch (Exception ex)
@@ -643,6 +656,238 @@ public partial class ColumnManagementPanel : UserControl
         finally
         {
             base.OnDetachedFromVisualTree(e);
+        }
+    }
+
+    #endregion
+
+    #region Phase 4: Drag-and-Drop Event Handlers
+
+    /// <summary>
+    /// Handles the start of a drag operation on a drag handle.
+    /// Phase 4 feature for visual column reordering.
+    /// </summary>
+    private void OnDragHandlePointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        try
+        {
+            if (sender is Button dragHandle && 
+                dragHandle.Parent is Grid columnGrid && 
+                columnGrid.DataContext is CustomDataGridColumn column)
+            {
+                _isDragging = true;
+                _draggedColumn = column;
+                _dragStartPosition = e.GetPosition(this);
+
+                // Start visual drag operation
+                column.StartDrag(_dragStartPosition);
+                
+                // Create drag preview
+                CreateDragPreview(column, columnGrid);
+                
+                // Set up pointer capture for drag tracking - simplified for Avalonia
+                // dragHandle.CapturePointer(e.Pointer);
+                
+                _logger?.LogDebug("Started drag operation for column: {ColumnName}", column.DisplayName);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error starting drag operation");
+        }
+    }
+
+    /// <summary>
+    /// Handles pointer movement during drag operation.
+    /// Provides visual feedback and drop target indication.
+    /// </summary>
+    private void OnDragHandlePointerMoved(object? sender, PointerEventArgs e)
+    {
+        try
+        {
+            if (_isDragging && _draggedColumn != null && sender is Button dragHandle)
+            {
+                var currentPosition = e.GetPosition(this);
+                
+                // Update column drag state
+                _draggedColumn.UpdateDrag(currentPosition);
+                
+                // Update drag preview position
+                UpdateDragPreview(currentPosition);
+                
+                // Update drop target indication
+                UpdateDropTarget(currentPosition);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error during drag move");
+        }
+    }
+
+    /// <summary>
+    /// Handles the end of a drag operation.
+    /// Commits or cancels the column reordering based on drop target.
+    /// </summary>
+    private void OnDragHandlePointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        try
+        {
+            if (_isDragging && _draggedColumn != null && sender is Button dragHandle)
+            {
+                // dragHandle.ReleasePointerCapture(e.Pointer);
+                
+                var shouldCommit = _dropTargetIndex >= 0 && _dropTargetIndex != Columns?.IndexOf(_draggedColumn);
+                
+                if (shouldCommit && Columns != null)
+                {
+                    // Perform the reorder operation
+                    var currentIndex = Columns.IndexOf(_draggedColumn);
+                    if (currentIndex >= 0 && _dropTargetIndex >= 0 && _dropTargetIndex < Columns.Count)
+                    {
+                        Columns.Move(currentIndex, _dropTargetIndex);
+                        UpdateDisplayOrders();
+                        
+                        _logger?.LogDebug("Moved column {ColumnName} from index {FromIndex} to {ToIndex}",
+                            _draggedColumn.DisplayName, currentIndex, _dropTargetIndex);
+                    }
+                }
+                
+                // Complete drag operation
+                _draggedColumn.CompleteDrag(shouldCommit);
+                
+                // Clean up drag visuals
+                CleanupDragOperation();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error completing drag operation");
+            CleanupDragOperation();
+        }
+    }
+
+    /// <summary>
+    /// Creates a visual preview for the dragged column.
+    /// </summary>
+    private void CreateDragPreview(CustomDataGridColumn column, Grid originalGrid)
+    {
+        try
+        {
+            _dragPreview = new Border
+            {
+                Background = Avalonia.Media.Brushes.LightBlue,
+                BorderBrush = Avalonia.Media.Brushes.Blue,
+                BorderThickness = new Thickness(2),
+                CornerRadius = new CornerRadius(4),
+                Opacity = 0.8,
+                Child = new TextBlock
+                {
+                    Text = column.DisplayName,
+                    Padding = new Thickness(8, 4),
+                    Foreground = Avalonia.Media.Brushes.DarkBlue,
+                    FontWeight = Avalonia.Media.FontWeight.SemiBold
+                }
+            };
+
+            // Add to visual tree (will be positioned during drag)
+            if (this.Parent is Grid parentGrid)
+            {
+                parentGrid.Children.Add(_dragPreview);
+                // Grid.SetZIndex(_dragPreview, 1000); // Not available in current Avalonia version
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error creating drag preview");
+        }
+    }
+
+    /// <summary>
+    /// Updates the position of the drag preview to follow the pointer.
+    /// </summary>
+    private void UpdateDragPreview(Point currentPosition)
+    {
+        try
+        {
+            if (_dragPreview != null)
+            {
+                var offset = currentPosition - _dragStartPosition;
+                Canvas.SetLeft(_dragPreview, offset.X);
+                Canvas.SetTop(_dragPreview, offset.Y);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error updating drag preview");
+        }
+    }
+
+    /// <summary>
+    /// Updates the drop target indication based on current pointer position.
+    /// </summary>
+    private void UpdateDropTarget(Point currentPosition)
+    {
+        try
+        {
+            if (Columns == null) return;
+
+            // Simple drop target calculation (can be enhanced with visual indicators)
+            var columnItemsControl = this.FindControl<ItemsControl>("ColumnItemsControl");
+            if (columnItemsControl != null)
+            {
+                // Find which column item the pointer is over
+                var targetIndex = -1;
+                
+                // This is a simplified version - a full implementation would check visual bounds
+                var relativeY = currentPosition.Y - _dragStartPosition.Y;
+                var itemHeight = 40; // Approximate height of column items
+                var indexOffset = (int)(relativeY / itemHeight);
+                
+                if (_draggedColumn != null)
+                {
+                    var currentIndex = Columns.IndexOf(_draggedColumn);
+                    targetIndex = Math.Max(0, Math.Min(Columns.Count - 1, currentIndex + indexOffset));
+                }
+
+                _dropTargetIndex = targetIndex;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error updating drop target");
+        }
+    }
+
+    /// <summary>
+    /// Cleans up drag operation visuals and state.
+    /// </summary>
+    private void CleanupDragOperation()
+    {
+        try
+        {
+            _isDragging = false;
+            _draggedColumn = null;
+            _dropTargetIndex = -1;
+            _dragStartPosition = new Point(0, 0);
+
+            // Remove drag preview
+            if (_dragPreview != null && this.Parent is Grid parentGrid)
+            {
+                parentGrid.Children.Remove(_dragPreview);
+                _dragPreview = null;
+            }
+
+            // Remove drop indicator
+            if (_dropIndicator != null && this.Parent is Grid parentGrid2)
+            {
+                parentGrid2.Children.Remove(_dropIndicator);
+                _dropIndicator = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error cleaning up drag operation");
         }
     }
 

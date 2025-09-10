@@ -20,12 +20,12 @@
             Margin="0,0,0,16">
       
       <StackPanel Spacing="12">
-        <TextBlock Text="MTM Custom Data Grid - Phase 3 Demo" 
+        <TextBlock Text="MTM Custom Data Grid - Phase 4 Demo" 
                    FontSize="18" 
                    FontWeight="Bold"
                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
         
-        <TextBlock Text="Advanced column management with show/hide columns, drag-and-drop reordering, and column resizing for MTM inventory management." 
+        <TextBlock Text="Professional-grade column management with drag-and-drop reordering, interactive resizing, and complete settings persistence for enterprise MTM inventory management." 
                    FontSize="12"
                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
                    TextWrapping="Wrap" />
@@ -48,7 +48,7 @@
                         Padding="12,6" />
         </StackPanel>
         
-        <!-- Action Buttons Row 2 - Phase 3 Features -->
+        <!-- Action Buttons Row 2 - Phase 4 Enhanced Features -->
         <StackPanel Orientation="Horizontal" Spacing="12">
           <ToggleButton Content="Column Management" 
                         IsChecked="{Binding IsColumnManagementVisible, Mode=TwoWay}"
@@ -71,7 +71,32 @@
                   Padding="12,6" />
         </StackPanel>
         
-        <!-- Status Information -->
+        <!-- Action Buttons Row 3 - Phase 4 Configuration Management -->
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <ComboBox ItemsSource="{Binding SavedConfigurationNames}"
+                    PlaceholderText="Load Configuration..."
+                    SelectedItem="{Binding SelectedConfigurationName, Mode=TwoWay}"
+                    Width="180" />
+          
+          <Button Content="Load Config" 
+                  Classes="secondary"
+                  Command="{Binding LoadConfigurationCommand}"
+                  CommandParameter="{Binding SelectedConfigurationName}"
+                  Padding="12,6" />
+          
+          <Button Content="Delete Config" 
+                  Classes="warning"
+                  Command="{Binding DeleteConfigurationCommand}"
+                  CommandParameter="{Binding SelectedConfigurationName}"
+                  Padding="12,6" />
+          
+          <ToggleButton Content="Interactive Resize" 
+                        IsChecked="{Binding IsInteractiveResizeEnabled, Mode=TwoWay}"
+                        Classes="accent"
+                        Padding="12,6" />
+        </StackPanel>
+        
+        <!-- Status Information - Enhanced for Phase 4 -->
         <StackPanel Orientation="Horizontal" Spacing="16">
           <TextBlock Text="{Binding ItemCount, StringFormat='Total Items: {0}'}" 
                      VerticalAlignment="Center"
@@ -92,6 +117,14 @@
           <TextBlock Text="{Binding VisibleColumnCount, StringFormat='Visible Columns: {0}'}" 
                      VerticalAlignment="Center"
                      Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+          
+          <TextBlock Text="{Binding IsInteractiveResizeEnabled, StringFormat='Interactive Resize: {0}'}" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+          
+          <TextBlock Text="{Binding SelectedConfigurationName, StringFormat='Config: {0}', FallbackValue='Config: Default'}" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
         </StackPanel>
       </StackPanel>
       

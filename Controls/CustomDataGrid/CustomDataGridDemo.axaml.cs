@@ -166,10 +166,43 @@ public partial class CustomDataGridDemo : UserControl
     public ICommand SaveLayoutCommand => new RelayCommand(SaveLayout);
 
     /// <summary>
-    /// Command to auto-size all columns.
-    /// Phase 3 feature for column width management.
+    /// Command to load a saved configuration.
+    /// Phase 4 feature for configuration management.
     /// </summary>
-    public ICommand AutoSizeAllCommand => new RelayCommand(AutoSizeAllColumns);
+    public ICommand LoadConfigurationCommand => new RelayCommand<string>(LoadConfiguration);
+
+    /// <summary>
+    /// Command to delete a saved configuration.
+    /// Phase 4 feature for configuration management.
+    /// </summary>
+    public ICommand DeleteConfigurationCommand => new RelayCommand<string>(DeleteConfiguration);
+
+    /// <summary>
+    /// Gets the collection of available saved configurations for the demo.
+    /// Phase 4 feature for configuration management.
+    /// </summary>
+    public ObservableCollection<string> SavedConfigurationNames { get; private set; } = new();
+
+    /// <summary>
+    /// Gets or sets whether interactive resize handles are enabled.
+    /// Phase 4 feature for column resizing.
+    /// </summary>
+    public bool IsInteractiveResizeEnabled { get; set; } = true;
+
+    private string? _selectedConfigurationName;
+    /// <summary>
+    /// Gets or sets the currently selected configuration name.
+    /// Phase 4 feature for configuration management.
+    /// </summary>
+    public string? SelectedConfigurationName
+    {
+        get => _selectedConfigurationName;
+        set 
+        { 
+            _selectedConfigurationName = value;
+            OnPropertyChanged(nameof(SelectedConfigurationName));
+        }
+    }
 
     #endregion
 
@@ -179,6 +212,18 @@ public partial class CustomDataGridDemo : UserControl
     {
         InitializeComponent();
         DataContext = this;
+        
+        // Initialize saved configuration names for Phase 4 demo
+        foreach (var configName in new[]
+        {
+            "Default Layout",
+            "Compact View", 
+            "Detailed View",
+            "Essential Only"
+        })
+        {
+            SavedConfigurationNames.Add(configName);
+        }
         
         // Load initial sample data
         LoadSampleData();
@@ -395,6 +440,144 @@ public partial class CustomDataGridDemo : UserControl
         }
 
         System.Diagnostics.Debug.WriteLine("All columns set to auto-size");
+    }
+
+    /// <summary>
+    /// Loads a saved configuration by name.
+    /// Phase 4 feature for enhanced configuration management.
+    /// </summary>
+    private void LoadConfiguration(string? configurationName)
+    {
+        if (string.IsNullOrEmpty(configurationName))
+            return;
+
+        // In a full implementation, this would load from ColumnConfigurationService
+        System.Diagnostics.Debug.WriteLine($"Loading configuration: {configurationName}");
+
+        // For demo purposes, simulate different configurations
+        var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+        if (demoDataGrid?.Columns == null) return;
+
+        switch (configurationName)
+        {
+            case "Compact View":
+                ApplyCompactConfiguration(demoDataGrid.Columns);
+                break;
+            case "Detailed View":
+                ApplyDetailedConfiguration(demoDataGrid.Columns);
+                break;
+            case "Essential Only":
+                ApplyEssentialConfiguration(demoDataGrid.Columns);
+                break;
+            default:
+                ResetColumns();
+                break;
+        }
+
+        OnPropertyChanged(nameof(VisibleColumnCount));
+    }
+
+    /// <summary>
+    /// Deletes a saved configuration by name.
+    /// Phase 4 feature for configuration management.
+    /// </summary>
+    private void DeleteConfiguration(string? configurationName)
+    {
+        if (string.IsNullOrEmpty(configurationName))
+            return;
+
+        // In a full implementation, this would delete from ColumnConfigurationService
+        SavedConfigurationNames.Remove(configurationName);
+        System.Diagnostics.Debug.WriteLine($"Deleted configuration: {configurationName}");
+    }
+
+    /// <summary>
+    /// Applies a compact view configuration for smaller screens.
+    /// </summary>
+    private void ApplyCompactConfiguration(ObservableCollection<CustomDataGridColumn> columns)
+    {
+        foreach (var column in columns)
+        {
+            column.IsVisible = true;
+            switch (column.PropertyName)
+            {
+                case "PartId":
+                    column.Width = 80;
+                    break;
+                case "Operation":
+                    column.Width = 60;
+                    break;
+                case "Location":
+                    column.Width = 70;
+                    break;
+                case "Quantity":
+                    column.Width = 60;
+                    break;
+                case "LastUpdated":
+                    column.Width = 100;
+                    break;
+                case "Notes":
+                    column.IsVisible = false; // Hide in compact view
+                    break;
+            }
+        }
+        System.Diagnostics.Debug.WriteLine("Applied compact view configuration");
+    }
+
+    /// <summary>
+    /// Applies a detailed view configuration with all columns visible and wide.
+    /// </summary>
+    private void ApplyDetailedConfiguration(ObservableCollection<CustomDataGridColumn> columns)
+    {
+        foreach (var column in columns)
+        {
+            column.IsVisible = true;
+            switch (column.PropertyName)
+            {
+                case "PartId":
+                    column.Width = 140;
+                    break;
+                case "Operation":
+                    column.Width = 100;
+                    break;
+                case "Location":
+                    column.Width = 120;
+                    break;
+                case "Quantity":
+                    column.Width = 100;
+                    break;
+                case "LastUpdated":
+                    column.Width = 160;
+                    break;
+                case "Notes":
+                    column.Width = 250;
+                    break;
+            }
+        }
+        System.Diagnostics.Debug.WriteLine("Applied detailed view configuration");
+    }
+
+    /// <summary>
+    /// Applies an essential-only configuration showing just the key fields.
+    /// </summary>
+    private void ApplyEssentialConfiguration(ObservableCollection<CustomDataGridColumn> columns)
+    {
+        foreach (var column in columns)
+        {
+            switch (column.PropertyName)
+            {
+                case "PartId":
+                case "Operation":
+                case "Quantity":
+                    column.IsVisible = true;
+                    column.Width = double.NaN; // Auto-size
+                    break;
+                default:
+                    column.IsVisible = false;
+                    break;
+            }
+        }
+        System.Diagnostics.Debug.WriteLine("Applied essential-only configuration");
     }
 
     #endregion

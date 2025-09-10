@@ -26,6 +26,13 @@ public class CustomDataGridColumn : INotifyPropertyChanged
     private bool _isResizing = false;
     private double _minWidth = 30;
     private double _maxWidth = double.MaxValue;
+    
+    // Phase 4: Enhanced drag-and-drop and resize state management
+    private Avalonia.Point _dragStartPosition = new(0, 0);
+    private double _dragOffset = 0;
+    private double _resizeStartWidth = 0;
+    private bool _isDragValid = false;
+    private int _originalDisplayOrder = 0;
     private DataTemplate? _cellTemplate;
     private IValueConverter? _cellConverter;
     private string? _stringFormat;
@@ -291,6 +298,74 @@ public class CustomDataGridColumn : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Gets or sets the drag start position for drag-and-drop operations.
+    /// Phase 4 feature for visual column reordering.
+    /// </summary>
+    public Avalonia.Point DragStartPosition
+    {
+        get => _dragStartPosition;
+        set
+        {
+            if (!_dragStartPosition.Equals(value))
+            {
+                _dragStartPosition = value;
+                OnPropertyChanged(nameof(DragStartPosition));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the current drag offset for visual feedback.
+    /// Phase 4 feature for drag-and-drop positioning.
+    /// </summary>
+    public double DragOffset
+    {
+        get => _dragOffset;
+        set
+        {
+            if (!_dragOffset.Equals(value))
+            {
+                _dragOffset = value;
+                OnPropertyChanged(nameof(DragOffset));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the starting width when a resize operation begins.
+    /// Phase 4 feature for interactive column resizing.
+    /// </summary>
+    public double ResizeStartWidth
+    {
+        get => _resizeStartWidth;
+        set
+        {
+            if (!_resizeStartWidth.Equals(value))
+            {
+                _resizeStartWidth = value;
+                OnPropertyChanged(nameof(ResizeStartWidth));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether the current drag operation is valid.
+    /// Phase 4 feature for drag-and-drop validation.
+    /// </summary>
+    public bool IsDragValid
+    {
+        get => _isDragValid;
+        set
+        {
+            if (_isDragValid != value)
+            {
+                _isDragValid = value;
+                OnPropertyChanged(nameof(IsDragValid));
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets or sets a string format for displaying values in this column.
     /// Only applies when CellTemplate is null.
     /// </summary>
@@ -391,6 +466,126 @@ public class CustomDataGridColumn : INotifyPropertyChanged
             StringFormat = StringFormat
         };
     }
+
+    #region Phase 4: Drag-and-Drop Operations
+
+    /// <summary>
+    /// Starts a drag operation for this column.
+    /// Phase 4 feature for visual column reordering.
+    /// </summary>
+    /// <param name="startPosition">The starting position of the drag</param>
+    public void StartDrag(Avalonia.Point startPosition)
+    {
+        DragStartPosition = startPosition;
+        _originalDisplayOrder = DisplayOrder;
+        IsDragging = true;
+        IsDragValid = true;
+        DragOffset = 0;
+        
+        OnPropertyChanged(nameof(IsDragging));
+    }
+
+    /// <summary>
+    /// Updates the drag position and validates the drag operation.
+    /// Phase 4 feature for drag-and-drop feedback.
+    /// </summary>
+    /// <param name="currentPosition">Current drag position</param>
+    /// <returns>True if the drag is valid and should continue</returns>
+    public bool UpdateDrag(Avalonia.Point currentPosition)
+    {
+        if (!IsDragging) return false;
+
+        var deltaX = currentPosition.X - DragStartPosition.X;
+        var deltaY = currentPosition.Y - DragStartPosition.Y;
+        
+        DragOffset = deltaX;
+        
+        // Basic validation - can be enhanced with drop zone logic
+        IsDragValid = Math.Abs(deltaY) < 50; // Allow some vertical tolerance
+        
+        OnPropertyChanged(nameof(DragOffset));
+        OnPropertyChanged(nameof(IsDragValid));
+        
+        return IsDragValid;
+    }
+
+    /// <summary>
+    /// Completes or cancels the drag operation.
+    /// Phase 4 feature for drag-and-drop completion.
+    /// </summary>
+    /// <param name="commit">True to commit the drag, false to cancel</param>
+    public void CompleteDrag(bool commit = true)
+    {
+        if (!commit)
+        {
+            // Restore original order if drag was cancelled
+            DisplayOrder = _originalDisplayOrder;
+        }
+        
+        IsDragging = false;
+        IsDragValid = false;
+        DragOffset = 0;
+        DragStartPosition = new Avalonia.Point(0, 0);
+        
+        OnPropertyChanged(nameof(IsDragging));
+        OnPropertyChanged(nameof(IsDragValid));
+        OnPropertyChanged(nameof(DragOffset));
+        OnPropertyChanged(nameof(DisplayOrder));
+    }
+
+    #endregion
+
+    #region Phase 4: Interactive Resize Operations
+
+    /// <summary>
+    /// Starts a resize operation for this column.
+    /// Phase 4 feature for interactive column resizing.
+    /// </summary>
+    /// <param name="currentWidth">The current width of the column</param>
+    public void StartResize(double currentWidth)
+    {
+        ResizeStartWidth = double.IsNaN(currentWidth) ? EffectiveWidth : currentWidth;
+        IsResizing = true;
+        
+        OnPropertyChanged(nameof(IsResizing));
+        OnPropertyChanged(nameof(ResizeStartWidth));
+    }
+
+    /// <summary>
+    /// Updates the column width during a resize operation.
+    /// Phase 4 feature for interactive resizing with constraints.
+    /// </summary>
+    /// <param name="deltaWidth">The change in width from the start position</param>
+    /// <returns>True if the resize was applied, false if constrained</returns>
+    public bool UpdateResize(double deltaWidth)
+    {
+        if (!IsResizing) return false;
+        
+        var newWidth = ResizeStartWidth + deltaWidth;
+        var constrainedWidth = Math.Max(MinWidth, Math.Min(MaxWidth, newWidth));
+        
+        if (Math.Abs(constrainedWidth - newWidth) > 0.1)
+        {
+            // Hit a constraint
+            Width = constrainedWidth;
+            return false;
+        }
+        
+        Width = constrainedWidth;
+        return true;
+    }
+
+    /// <summary>
+    /// Completes the resize operation.
+    /// Phase 4 feature for resize completion.
+    /// </summary>
+    public void CompleteResize()
+    {
+        IsResizing = false;
+        OnPropertyChanged(nameof(IsResizing));
+    }
+
+    #endregion
 
     public override string ToString()
     {
