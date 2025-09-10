@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -35,6 +36,13 @@ public static class Program
 
         try
         {
+            // Check for validation mode command line argument
+            if (args.Length > 0 && args[0].Equals("--validate-procedures", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Running in stored procedure validation mode");
+                await RunStoredProcedureValidationAsync();
+                return;
+            }
 
             // Phase 2: Configure services using ApplicationStartup infrastructure
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring services using ApplicationStartup...");
@@ -198,6 +206,65 @@ public static class Program
         }
 
         await Task.Delay(100); // Allow logging to complete
+    }
+
+    /// <summary>
+    /// Runs stored procedure validation in console mode
+    /// </summary>
+    private static async Task RunStoredProcedureValidationAsync()
+    {
+        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Initializing services for validation...");
+        
+        try
+        {
+            // Configure services using ApplicationStartup
+            var services = new ServiceCollection();
+            _serviceProvider = ApplicationStartup.InitializeApplication(services, Environment.GetCommandLineArgs());
+
+            if (_serviceProvider == null)
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Failed to initialize service provider");
+                Environment.Exit(1);
+                return;
+            }
+
+            // Get validation service
+            var validationService = _serviceProvider.GetRequiredService<Services.IStoredProcedureValidationService>();
+            _logger = _serviceProvider.GetService<ILogger<object>>();
+
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Starting stored procedure validation...");
+
+            // Run validation
+            var report = await validationService.ValidateAllStoredProceduresAsync();
+
+            // Output results to console
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Validation completed!");
+            Console.WriteLine("========================================");
+            Console.WriteLine(report.ToSummaryReport());
+            Console.WriteLine("========================================");
+
+            // Save detailed JSON report
+            var reportPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"validation_report_{DateTime.Now:yyyyMMdd_HHmmss}.json");
+            await File.WriteAllTextAsync(reportPath, report.ToJsonReport());
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Detailed report saved to: {reportPath}");
+
+            // Summary for immediate feedback
+            if (report.MismatchedCalls > 0)
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] VALIDATION FAILED: {report.MismatchedCalls} procedure calls have issues");
+                Environment.Exit(1);
+            }
+            else
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] VALIDATION PASSED: All procedure calls are consistent");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Validation failed: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            Environment.Exit(1);
+        }
     }
 
     // Service resolution methods with null checking
