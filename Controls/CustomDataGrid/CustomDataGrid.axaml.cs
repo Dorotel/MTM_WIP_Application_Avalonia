@@ -123,6 +123,34 @@ public partial class CustomDataGrid : UserControl
     public static readonly StyledProperty<System.Windows.Input.ICommand?> ColumnVisibilityCommandProperty =
         AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(ColumnVisibilityCommand), null);
 
+    /// <summary>
+    /// Gets or sets whether the filter panel is visible.
+    /// Phase 5 feature for advanced filtering and search capabilities.
+    /// </summary>
+    public static readonly StyledProperty<bool> IsFilterPanelVisibleProperty =
+        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsFilterPanelVisible), false);
+
+    /// <summary>
+    /// Gets or sets whether filtering is enabled for this grid.
+    /// Phase 5 feature for data filtering capabilities.
+    /// </summary>
+    public static readonly StyledProperty<bool> IsFilteringEnabledProperty =
+        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsFilteringEnabled), true);
+
+    /// <summary>
+    /// Gets or sets the current filter configuration.
+    /// Phase 5 feature for managing active filters and search criteria.
+    /// </summary>
+    public static readonly StyledProperty<FilterConfiguration?> FilterConfigurationProperty =
+        AvaloniaProperty.Register<CustomDataGrid, FilterConfiguration?>(nameof(FilterConfiguration), null, defaultBindingMode: BindingMode.TwoWay);
+
+    /// <summary>
+    /// Gets or sets the filtered items source (items that match current filters).
+    /// Phase 5 feature for displaying filtered results.
+    /// </summary>
+    public static readonly StyledProperty<IEnumerable?> FilteredItemsSourceProperty =
+        AvaloniaProperty.Register<CustomDataGrid, IEnumerable?>(nameof(FilteredItemsSource), null, defaultBindingMode: BindingMode.OneWay);
+
     #endregion
 
     #region Properties
@@ -211,6 +239,30 @@ public partial class CustomDataGrid : UserControl
         set => SetValue(ColumnVisibilityCommandProperty, value);
     }
 
+    public bool IsFilterPanelVisible
+    {
+        get => GetValue(IsFilterPanelVisibleProperty);
+        set => SetValue(IsFilterPanelVisibleProperty, value);
+    }
+
+    public bool IsFilteringEnabled
+    {
+        get => GetValue(IsFilteringEnabledProperty);
+        set => SetValue(IsFilteringEnabledProperty, value);
+    }
+
+    public FilterConfiguration? FilterConfiguration
+    {
+        get => GetValue(FilterConfigurationProperty);
+        set => SetValue(FilterConfigurationProperty, value);
+    }
+
+    public IEnumerable? FilteredItemsSource
+    {
+        get => GetValue(FilteredItemsSourceProperty);
+        private set => SetValue(FilteredItemsSourceProperty, value);
+    }
+
     /// <summary>
     /// Gets the collection of visible columns (filtered from Columns where IsVisible = true).
     /// </summary>
@@ -227,6 +279,10 @@ public partial class CustomDataGrid : UserControl
     private Grid? _columnManagementPanelHost;
     private Border? _columnManagementContainer;
     private ColumnManagementPanel? _columnManagementPanel;
+    private Grid? _filterPanelHost;
+    private Border? _filterPanelContainer;
+    private FilterPanel? _filterPanel;
+    private ViewModels.FilterPanelViewModel? _filterPanelViewModel;
     private readonly ILogger? _logger;
 
     #endregion
@@ -285,12 +341,17 @@ public partial class CustomDataGrid : UserControl
         _selectAllCheckBox = this.FindControl<CheckBox>("SelectAllCheckBox");
         _columnManagementPanelHost = this.FindControl<Grid>("ColumnManagementPanelHost");
         _columnManagementContainer = this.FindControl<Border>("ColumnManagementContainer");
+        _filterPanelHost = this.FindControl<Grid>("FilterPanelHost");
+        _filterPanelContainer = this.FindControl<Border>("FilterPanelContainer");
         
         // Set up ListBox selection mode based on IsMultiSelectEnabled
         UpdateSelectionMode();
         
         // Initialize column management panel
         InitializeColumnManagementPanel();
+        
+        // Initialize filter panel
+        InitializeFilterPanel();
         
         _logger?.LogDebug("CustomDataGrid components initialized");
     }
@@ -331,6 +392,49 @@ public partial class CustomDataGrid : UserControl
         }
     }
 
+    /// <summary>
+    /// Initializes the filter panel for Phase 5 features.
+    /// Sets up the panel UI and binds to filter events.
+    /// </summary>
+    private void InitializeFilterPanel()
+    {
+        try
+        {
+            if (_filterPanelHost != null)
+            {
+                // Create the filter panel ViewModel first (we'll need to use DI here in a real implementation)
+                _filterPanelViewModel = new ViewModels.FilterPanelViewModel(
+                    Microsoft.Extensions.Logging.Abstractions.NullLogger<ViewModels.FilterPanelViewModel>.Instance);
+
+                // Create the filter panel
+                _filterPanel = new FilterPanel
+                {
+                    DataContext = _filterPanelViewModel,
+                    Margin = new Thickness(0)
+                };
+
+                // Subscribe to panel events
+                _filterPanelViewModel.FiltersChanged += OnFiltersChanged;
+                _filterPanelViewModel.CloseRequested += OnFilterPanelCloseRequested;
+
+                // Add panel to host grid
+                _filterPanelHost.Children.Add(_filterPanel);
+
+                // Initialize filter configuration if not already set
+                if (FilterConfiguration == null)
+                {
+                    FilterConfiguration = new FilterConfiguration();
+                }
+
+                _logger?.LogDebug("Filter panel initialized");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error initializing filter panel");
+        }
+    }
+
     #endregion
 
     #region Event Handlers
@@ -363,6 +467,21 @@ public partial class CustomDataGrid : UserControl
             {
                 UpdateColumnManagementVisibility();
                 _logger?.LogDebug("Column management visibility changed: {IsVisible}", IsColumnManagementVisible);
+            }
+            else if (e.Property == IsFilterPanelVisibleProperty)
+            {
+                UpdateFilterPanelVisibility();
+                _logger?.LogDebug("Filter panel visibility changed: {IsVisible}", IsFilterPanelVisible);
+            }
+            else if (e.Property == ItemsSourceProperty)
+            {
+                ApplyFilters();
+                _logger?.LogDebug("ItemsSource changed, applying filters");
+            }
+            else if (e.Property == FilterConfigurationProperty)
+            {
+                ApplyFilters();
+                _logger?.LogDebug("Filter configuration changed, applying filters");
             }
         }
         catch (Exception ex)
@@ -537,6 +656,49 @@ public partial class CustomDataGrid : UserControl
         }
     }
 
+    /// <summary>
+    /// Handles filter changes from the filter panel.
+    /// </summary>
+    private void OnFiltersChanged(object? sender, ViewModels.FilterChangedEventArgs e)
+    {
+        try
+        {
+            _logger?.LogDebug("Filters changed: {HasFilters}", e.HasActiveFilters);
+            
+            // Update the filter configuration
+            if (FilterConfiguration != null)
+            {
+                FilterConfiguration.GlobalSearchText = e.GlobalSearchText;
+                FilterConfiguration.IsGlobalSearchCaseSensitive = e.IsGlobalSearchCaseSensitive;
+                FilterConfiguration.IsActive = e.HasActiveFilters;
+                FilterConfiguration.UpdateLastModified();
+            }
+            
+            // Apply the filters
+            ApplyFilters();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling filter changes");
+        }
+    }
+
+    /// <summary>
+    /// Handles close requests from the filter panel.
+    /// </summary>
+    private void OnFilterPanelCloseRequested(object? sender, EventArgs e)
+    {
+        try
+        {
+            _logger?.LogDebug("Filter panel close requested");
+            IsFilterPanelVisible = false;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling filter panel close request");
+        }
+    }
+
     #endregion
 
     #region Public Methods
@@ -698,6 +860,100 @@ public partial class CustomDataGrid : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error updating column management visibility");
+        }
+    }
+
+    /// <summary>
+    /// Updates the visibility of the filter panel.
+    /// Phase 5 feature for toggling the filtering UI.
+    /// </summary>
+    private void UpdateFilterPanelVisibility()
+    {
+        try
+        {
+            if (_filterPanelContainer != null)
+            {
+                _filterPanelContainer.IsVisible = IsFilterPanelVisible;
+                
+                // Initialize or update filter panel when shown
+                if (_filterPanel != null && _filterPanelViewModel != null && IsFilterPanelVisible)
+                {
+                    _filterPanelViewModel.InitializeFromColumns(Columns);
+                }
+                
+                _logger?.LogDebug("Filter panel visibility updated: {IsVisible}", IsFilterPanelVisible);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error updating filter panel visibility");
+        }
+    }
+
+    /// <summary>
+    /// Applies the current filter configuration to the data source.
+    /// Phase 5 feature for filtering data based on search criteria and column filters.
+    /// </summary>
+    private void ApplyFilters()
+    {
+        try
+        {
+            if (!IsFilteringEnabled || ItemsSource == null)
+            {
+                FilteredItemsSource = ItemsSource;
+                return;
+            }
+
+            var sourceItems = ItemsSource.Cast<object>().ToList();
+            
+            // If no filters are active, show all items
+            if (FilterConfiguration == null || !HasActiveFilters())
+            {
+                FilteredItemsSource = sourceItems;
+                UpdateFilterStatistics(sourceItems.Count, sourceItems.Count);
+                return;
+            }
+
+            // Apply filters
+            var filteredItems = sourceItems.Where(item => FilterConfiguration.MatchesFilters(item)).ToList();
+            
+            FilteredItemsSource = filteredItems;
+            UpdateFilterStatistics(sourceItems.Count, filteredItems.Count);
+            
+            _logger?.LogDebug("Applied filters: {FilteredCount}/{TotalCount} items visible", 
+                filteredItems.Count, sourceItems.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error applying filters");
+            // On error, show all items
+            FilteredItemsSource = ItemsSource;
+        }
+    }
+
+    /// <summary>
+    /// Checks if there are any active filters.
+    /// </summary>
+    private bool HasActiveFilters()
+    {
+        return FilterConfiguration?.HasActiveFilters == true;
+    }
+
+    /// <summary>
+    /// Updates filter statistics in the filter panel.
+    /// </summary>
+    private void UpdateFilterStatistics(int totalCount, int filteredCount)
+    {
+        try
+        {
+            if (_filterPanelViewModel != null)
+            {
+                _filterPanelViewModel.UpdateFilterStatistics(totalCount, filteredCount);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error updating filter statistics");
         }
     }
 

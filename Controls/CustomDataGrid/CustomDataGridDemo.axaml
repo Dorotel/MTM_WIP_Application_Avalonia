@@ -20,12 +20,12 @@
             Margin="0,0,0,16">
       
       <StackPanel Spacing="12">
-        <TextBlock Text="MTM Custom Data Grid - Phase 4 Demo" 
+        <TextBlock Text="MTM Custom Data Grid - Phase 5 Demo" 
                    FontSize="18" 
                    FontWeight="Bold"
                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
         
-        <TextBlock Text="Professional-grade column management with drag-and-drop reordering, interactive resizing, and complete settings persistence for enterprise MTM inventory management." 
+        <TextBlock Text="Advanced filtering and search capabilities with global search, column-specific filters, filter presets, and real-time result feedback for professional inventory management." 
                    FontSize="12"
                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
                    TextWrapping="Wrap" />
@@ -96,6 +96,29 @@
                         Padding="12,6" />
         </StackPanel>
         
+        <!-- Action Buttons Row 4 - Phase 5 Advanced Filtering -->
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <ToggleButton Content="Filter Panel" 
+                        IsChecked="{Binding IsFilterPanelVisible, Mode=TwoWay}"
+                        Classes="accent"
+                        Padding="12,6" />
+          
+          <Button Content="Clear Filters" 
+                  Classes="secondary"
+                  Click="OnClearFiltersClick"
+                  Padding="12,6" />
+          
+          <Button Content="Apply Low Stock Filter" 
+                  Classes="primary"
+                  Click="OnApplyLowStockFilterClick"
+                  Padding="12,6" />
+          
+          <Button Content="Apply Recent Activity Filter" 
+                  Classes="primary"
+                  Click="OnApplyRecentActivityFilterClick"
+                  Padding="12,6" />
+        </StackPanel>
+        
         <!-- Status Information - Enhanced for Phase 4 -->
         <StackPanel Orientation="Horizontal" Spacing="16">
           <TextBlock Text="{Binding ItemCount, StringFormat='Total Items: {0}'}" 
@@ -125,6 +148,14 @@
           <TextBlock Text="{Binding SelectedConfigurationName, StringFormat='Config: {0}', FallbackValue='Config: Default'}" 
                      VerticalAlignment="Center"
                      Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+          
+          <TextBlock Text="{Binding IsFilterPanelVisible, StringFormat='Filter Panel: {0}'}" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+          
+          <TextBlock Text="{Binding FilterStatsText}" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
         </StackPanel>
       </StackPanel>
       
@@ -140,6 +171,8 @@
                                IsColumnReorderingEnabled="True"
                                IsColumnResizingEnabled="True"
                                IsColumnManagementVisible="{Binding IsColumnManagementVisible, Mode=TwoWay}"
+                               IsFilterPanelVisible="{Binding IsFilterPanelVisible, Mode=TwoWay}"
+                               IsFilteringEnabled="True"
                                DeleteItemCommand="{Binding DeleteItemCommand}"
                                EditItemCommand="{Binding EditItemCommand}"
                                DuplicateItemCommand="{Binding DuplicateItemCommand}"

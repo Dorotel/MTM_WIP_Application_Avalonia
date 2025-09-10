@@ -105,8 +105,8 @@
 
   </UserControl.Styles>
 
-  <!-- Main Grid Layout with Column Management -->
-  <Grid x:Name="MainGrid" RowDefinitions="Auto,*" ColumnDefinitions="*,Auto">
+  <!-- Main Grid Layout with Column Management and Filter Panel -->
+  <Grid x:Name="MainGrid" RowDefinitions="Auto,*" ColumnDefinitions="*,Auto,Auto">
     
     <!-- Header Section -->
     <Border x:Name="HeaderSection" 
@@ -206,7 +206,7 @@
       
       <!-- ListBox for Virtual Scrolling -->
       <ListBox x:Name="DataListBox"
-               ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
+               ItemsSource="{Binding FilteredItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}, FallbackValue={Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}}"
                Background="Transparent"
                BorderThickness="0"
                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -353,11 +353,26 @@
             Width="300"
             Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-            BorderThickness="1,1,1,1"
-            CornerRadius="0,6,6,0">
+            BorderThickness="1,1,0,1"
+            CornerRadius="0">
       
       <!-- Column Management Panel Content -->
       <Grid x:Name="ColumnManagementPanelHost" />
+      
+    </Border>
+    
+    <!-- Filter Panel (Phase 5) -->
+    <Border x:Name="FilterPanelContainer"
+            Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
+            IsVisible="False"
+            Width="350"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+            BorderThickness="1,1,1,1"
+            CornerRadius="0,6,6,0">
+      
+      <!-- Filter Panel Content -->
+      <Grid x:Name="FilterPanelHost" />
       
     </Border>
     

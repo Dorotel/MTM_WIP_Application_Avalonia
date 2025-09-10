@@ -204,6 +204,36 @@ public partial class CustomDataGridDemo : UserControl
         }
     }
 
+    /// <summary>
+    /// Gets or sets whether the filter panel is visible.
+    /// Phase 5 feature for advanced filtering.
+    /// </summary>
+    private bool _isFilterPanelVisible;
+    public bool IsFilterPanelVisible
+    {
+        get => _isFilterPanelVisible;
+        set 
+        { 
+            _isFilterPanelVisible = value;
+            OnPropertyChanged(nameof(IsFilterPanelVisible));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the current filter statistics text.
+    /// Phase 5 feature for filter result feedback.
+    /// </summary>
+    private string _filterStatsText = "No filters applied";
+    public string FilterStatsText
+    {
+        get => _filterStatsText;
+        set 
+        { 
+            _filterStatsText = value;
+            OnPropertyChanged(nameof(FilterStatsText));
+        }
+    }
+
     #endregion
 
     #region Constructor
@@ -277,6 +307,33 @@ public partial class CustomDataGridDemo : UserControl
     private void OnAutoSizeAllClick(object? sender, RoutedEventArgs e)
     {
         AutoSizeAllColumns();
+    }
+
+    /// <summary>
+    /// Handles the Clear Filters button click.
+    /// Phase 5 feature for clearing all active filters.
+    /// </summary>
+    private void OnClearFiltersClick(object? sender, RoutedEventArgs e)
+    {
+        ClearAllFilters();
+    }
+
+    /// <summary>
+    /// Handles the Apply Low Stock Filter button click.
+    /// Phase 5 feature for applying predefined filter scenarios.
+    /// </summary>
+    private void OnApplyLowStockFilterClick(object? sender, RoutedEventArgs e)
+    {
+        ApplyLowStockFilter();
+    }
+
+    /// <summary>
+    /// Handles the Apply Recent Activity Filter button click.
+    /// Phase 5 feature for applying predefined filter scenarios.
+    /// </summary>
+    private void OnApplyRecentActivityFilterClick(object? sender, RoutedEventArgs e)
+    {
+        ApplyRecentActivityFilter();
     }
 
     #endregion
@@ -489,6 +546,71 @@ public partial class CustomDataGridDemo : UserControl
         // In a full implementation, this would delete from ColumnConfigurationService
         SavedConfigurationNames.Remove(configurationName);
         System.Diagnostics.Debug.WriteLine($"Deleted configuration: {configurationName}");
+    }
+
+    /// <summary>
+    /// Clears all active filters.
+    /// Phase 5 feature for filter management.
+    /// </summary>
+    private void ClearAllFilters()
+    {
+        var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+        if (demoDataGrid?.FilterConfiguration != null)
+        {
+            demoDataGrid.FilterConfiguration.ClearAllFilters();
+            FilterStatsText = "All filters cleared";
+            System.Diagnostics.Debug.WriteLine("All filters cleared");
+        }
+    }
+
+    /// <summary>
+    /// Applies a low stock filter (quantity <= 10).
+    /// Phase 5 feature for preset filter scenarios.
+    /// </summary>
+    private void ApplyLowStockFilter()
+    {
+        var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+        if (demoDataGrid?.FilterConfiguration != null)
+        {
+            var config = demoDataGrid.FilterConfiguration;
+            config.ClearAllFilters();
+            
+            var quantityFilter = config.GetColumnFilter("Quantity");
+            if (quantityFilter != null)
+            {
+                quantityFilter.IsActive = true;
+                quantityFilter.FilterOperator = FilterOperator.LessThanOrEqual;
+                quantityFilter.FilterValue = 10;
+            }
+            
+            FilterStatsText = "Low stock filter applied (quantity <= 10)";
+            System.Diagnostics.Debug.WriteLine("Applied low stock filter");
+        }
+    }
+
+    /// <summary>
+    /// Applies a recent activity filter (last 7 days).
+    /// Phase 5 feature for preset filter scenarios.
+    /// </summary>
+    private void ApplyRecentActivityFilter()
+    {
+        var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+        if (demoDataGrid?.FilterConfiguration != null)
+        {
+            var config = demoDataGrid.FilterConfiguration;
+            config.ClearAllFilters();
+            
+            var dateFilter = config.GetColumnFilter("LastUpdated");
+            if (dateFilter != null)
+            {
+                dateFilter.IsActive = true;
+                dateFilter.FilterOperator = FilterOperator.GreaterThanOrEqual;
+                dateFilter.FilterValue = DateTime.Now.AddDays(-7);
+            }
+            
+            FilterStatsText = "Recent activity filter applied (last 7 days)";
+            System.Diagnostics.Debug.WriteLine("Applied recent activity filter");
+        }
     }
 
     /// <summary>
