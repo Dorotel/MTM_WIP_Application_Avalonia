@@ -2,13 +2,16 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -22,15 +25,22 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 public partial class AdvancedInventoryViewModel : BaseViewModel
 {
     private readonly ILogger<AdvancedInventoryViewModel> _logger;
+    private readonly IConfigurationService? _configurationService;
 
     // Common options
     public ObservableCollection<string> PartIDOptions { get; } = new();
     public ObservableCollection<string> OperationOptions { get; } = new();
     public ObservableCollection<string> LocationOptions { get; } = new();
 
-    #region Filter Panel Properties
+    #region CollapsiblePanel Properties
     /// <summary>
-    /// Gets or sets whether the filter panel is expanded
+    /// Gets or sets whether the mode selection panel is expanded
+    /// </summary>
+    [ObservableProperty]
+    private bool _isModeSelectionExpanded = true;
+
+    /// <summary>
+    /// Gets or sets whether the filter panel is expanded (legacy support)
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FilterPanelWidth))]
@@ -46,6 +56,22 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     /// Gets the icon for the collapse button based on expansion state
     /// </summary>
     public string CollapseButtonIcon => IsFilterPanelExpanded ? "ChevronLeft" : "ChevronRight";
+    #endregion
+
+    #region Mode Selection Properties
+    /// <summary>
+    /// Gets or sets whether Multiple Times mode is active
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsMultipleLocationsMode))]
+    private bool _isMultipleTimesMode = true; // Default to first mode
+
+    /// <summary>
+    /// Gets or sets whether Multiple Locations mode is active
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsMultipleTimesMode))]
+    private bool _isMultipleLocationsMode;
     #endregion
 
     #region Multiple Times
@@ -197,7 +223,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
                                             MultiLocationQuantity > 0;
 
     // Design-time constructor
-    public AdvancedInventoryViewModel() : this(CreateDesignTimeLogger<AdvancedInventoryViewModel>())
+    public AdvancedInventoryViewModel() : this(CreateDesignTimeLogger<AdvancedInventoryViewModel>(), null)
     {
         // Only initialize for design-time
         if (IsDesignMode())
@@ -206,14 +232,31 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         }
     }
 
-    public AdvancedInventoryViewModel(ILogger<AdvancedInventoryViewModel> logger) : base(logger)
+    public AdvancedInventoryViewModel(ILogger<AdvancedInventoryViewModel> logger, IConfigurationService? configurationService = null) : base(logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _configurationService = configurationService;
         
         InitializeDesignTimeData();
         
         // Setup property change notifications for computed properties
         PropertyChanged += OnPropertyChanged;
+
+        // Load master data if not in design mode
+        if (_configurationService != null && !IsDesignMode())
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await LoadDataAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to load initial data");
+                }
+            });
+        }
 
         _logger.LogInformation("AdvancedInventoryViewModel initialized with dependency injection");
     }
@@ -254,6 +297,19 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             case nameof(IsFilterPanelExpanded):
                 OnPropertyChanged(nameof(FilterPanelWidth));
                 OnPropertyChanged(nameof(CollapseButtonIcon));
+                break;
+            // Mode selection - ensure only one mode is active at a time
+            case nameof(IsMultipleTimesMode):
+                if (IsMultipleTimesMode)
+                {
+                    IsMultipleLocationsMode = false;
+                }
+                break;
+            case nameof(IsMultipleLocationsMode):
+                if (IsMultipleLocationsMode)
+                {
+                    IsMultipleTimesMode = false;
+                }
                 break;
             // Add synchronization from Text properties back to SelectedItem properties
             case nameof(PartIDText):
@@ -315,7 +371,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     #region Command Implementations
 
     /// <summary>
-    /// Loads ComboBox data from database for advanced inventory operations
+    /// Loads ComboBox data from database for advanced inventory operations using stored procedures
     /// </summary>
     [RelayCommand]
     private async Task LoadDataAsync()
@@ -323,29 +379,106 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         try
         {
             IsBusy = true;
-            StatusMessage = "Loading options...";
+            StatusMessage = "Loading options from database...";
 
-            // Use Task.Run for CPU-bound operations to properly make this async
-            await Task.Run(() =>
+            // Get connection string from configuration service
+            var connectionString = _configurationService?.GetConnectionString() ?? throw new InvalidOperationException("Configuration service not available");
+
+            // Load Part IDs using stored procedure
+            var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString,
+                "md_part_ids_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (partResult.Status == 1)
             {
                 PartIDOptions.Clear();
-                foreach (var p in new[] { "PART001", "PART002", "PART003", "PART004", "PART005" }) PartIDOptions.Add(p);
+                foreach (DataRow row in partResult.Data.Rows)
+                {
+                    var partId = row["PartID"].ToString() ?? string.Empty;
+                    if (!string.IsNullOrEmpty(partId))
+                        PartIDOptions.Add(partId);
+                }
+                _logger.LogInformation("Loaded {Count} part IDs from database", PartIDOptions.Count);
+            }
+            else
+            {
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"Failed to load parts: Status {partResult.Status}"),
+                    "Load Part IDs",
+                    Environment.UserName
+                );
+                // Keep empty collection to indicate data unavailability
+            }
+
+            // Load Operations using stored procedure
+            var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString,
+                "md_operation_numbers_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (operationResult.Status == 1)
+            {
                 OperationOptions.Clear();
-                foreach (var o in new[] { "90", "100", "110", "120", "130" }) OperationOptions.Add(o);
+                foreach (DataRow row in operationResult.Data.Rows)
+                {
+                    var operation = row["OperationNumber"].ToString() ?? string.Empty;
+                    if (!string.IsNullOrEmpty(operation))
+                        OperationOptions.Add(operation);
+                }
+                _logger.LogInformation("Loaded {Count} operations from database", OperationOptions.Count);
+            }
+            else
+            {
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"Failed to load operations: Status {operationResult.Status}"),
+                    "Load Operations",
+                    Environment.UserName
+                );
+                // Keep empty collection to indicate data unavailability
+            }
+
+            // Load Locations using stored procedure
+            var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString,
+                "md_locations_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            if (locationResult.Status == 1)
+            {
                 LocationOptions.Clear();
-                foreach (var l in new[] { "WC01", "WC02", "WC03", "WC04", "WC05" }) LocationOptions.Add(l);
-
                 AvailableLocations.Clear();
-                foreach (var l in LocationOptions) AvailableLocations.Add(l);
-            }).ConfigureAwait(false);
+                foreach (DataRow row in locationResult.Data.Rows)
+                {
+                    var location = row["Location"].ToString() ?? string.Empty;
+                    if (!string.IsNullOrEmpty(location))
+                    {
+                        LocationOptions.Add(location);
+                        AvailableLocations.Add(location);
+                    }
+                }
+                _logger.LogInformation("Loaded {Count} locations from database", LocationOptions.Count);
+            }
+            else
+            {
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"Failed to load locations: Status {locationResult.Status}"),
+                    "Load Locations",
+                    Environment.UserName
+                );
+                // Keep empty collection to indicate data unavailability
+            }
 
-            StatusMessage = "Ready";
-            _logger.LogInformation("Loaded ComboBox data for advanced inventory operations");
+            StatusMessage = $"Loaded {PartIDOptions.Count} parts, {OperationOptions.Count} operations, {LocationOptions.Count} locations";
+            _logger.LogInformation("Successfully loaded master data for advanced inventory operations");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load ComboBox data for advanced inventory");
-            StatusMessage = "Error loading data";
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Load Master Data", Environment.UserName);
+            StatusMessage = "Error loading data from database";
         }
         finally 
         { 
@@ -354,7 +487,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Adds the same item multiple times to inventory
+    /// Adds the same item multiple times to inventory using database stored procedures
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanAddMultipleTimes))]
     private async Task AddMultipleTimesAsync()
@@ -362,21 +495,69 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         try
         {
             IsBusy = true;
-            StatusMessage = $"Adding {RepeatTimes}x {SelectedPartID}...";
+            StatusMessage = $"Adding {RepeatTimes}x {SelectedPartID} to {SelectedLocation}...";
             
-            // TODO: Implement Dao_Inventory calls in a loop
-            await Task.Delay(500).ConfigureAwait(false);
+            var connectionString = _configurationService?.GetConnectionString() ?? throw new InvalidOperationException("Configuration service not available");
+            var successCount = 0;
+            var failureCount = 0;
+
+            // Add each transaction individually
+            for (int i = 0; i < RepeatTimes; i++)
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_PartID"] = SelectedPartID ?? string.Empty,
+                    ["p_Location"] = SelectedLocation ?? string.Empty,
+                    ["p_Operation"] = SelectedOperation ?? string.Empty,
+                    ["p_Quantity"] = Quantity,
+                    ["p_ItemType"] = "Standard",
+                    ["p_User"] = Environment.UserName,
+                    ["p_Notes"] = $"Advanced Inventory - Multiple Times ({i + 1} of {RepeatTimes})"
+                };
+
+                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                    connectionString,
+                    "inv_inventory_Add_Item",
+                    parameters
+                );
+
+                if (result.Status == 1)
+                {
+                    successCount++;
+                }
+                else
+                {
+                    failureCount++;
+                    _logger.LogWarning("Failed to add inventory item {Count} of {Total}: Status {Status}", 
+                        i + 1, RepeatTimes, result.Status);
+                }
+
+                // Update progress
+                StatusMessage = $"Added {successCount} of {RepeatTimes} transactions...";
+            }
             
-            StatusMessage = $"Added {RepeatTimes} item(s)";
-            _logger.LogInformation("Added {RepeatTimes} items of {PartID} to {Location}", 
-                RepeatTimes, SelectedPartID, SelectedLocation);
-            
-            ResetMultipleTimes();
+            if (successCount > 0)
+            {
+                StatusMessage = $"Successfully added {successCount} transactions" + (failureCount > 0 ? $" ({failureCount} failed)" : "");
+                _logger.LogInformation("Added {SuccessCount} items of {PartID} to {Location} (Multiple Times mode)", 
+                    successCount, SelectedPartID, SelectedLocation);
+                
+                if (failureCount == 0)
+                    ResetMultipleTimes();
+            }
+            else
+            {
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"All {RepeatTimes} transactions failed"),
+                    "Add Multiple Times",
+                    Environment.UserName
+                );
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to add multiple items");
-            StatusMessage = "Error adding items";
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Add Multiple Times", Environment.UserName);
+            StatusMessage = "Error adding multiple items";
         }
         finally 
         { 
@@ -403,7 +584,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Adds the same item to multiple locations
+    /// Adds the same item to multiple locations using database stored procedures
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanAddToMultipleLocations))]
     private async Task AddToMultipleLocationsAsync()
@@ -412,20 +593,68 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         {
             IsBusy = true;
             var count = SelectedLocations.Count;
-            StatusMessage = $"Adding to {count} locations...";
+            StatusMessage = $"Adding {MultiLocationPartID} to {count} locations...";
             
-            // TODO: iterate locations and call Dao_Inventory
-            await Task.Delay(500).ConfigureAwait(false);
+            var connectionString = _configurationService?.GetConnectionString() ?? throw new InvalidOperationException("Configuration service not available");
+            var successCount = 0;
+            var failureCount = 0;
+
+            // Add to each selected location
+            foreach (var location in SelectedLocations)
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_PartID"] = MultiLocationPartID ?? string.Empty,
+                    ["p_Location"] = location,
+                    ["p_Operation"] = MultiLocationOperation ?? string.Empty,
+                    ["p_Quantity"] = MultiLocationQuantity,
+                    ["p_ItemType"] = "Standard",
+                    ["p_User"] = Environment.UserName,
+                    ["p_Notes"] = $"Advanced Inventory - Multiple Locations (Location: {location})"
+                };
+
+                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                    connectionString,
+                    "inv_inventory_Add_Item",
+                    parameters
+                );
+
+                if (result.Status == 1)
+                {
+                    successCount++;
+                }
+                else
+                {
+                    failureCount++;
+                    _logger.LogWarning("Failed to add inventory item to location {Location}: Status {Status}", 
+                        location, result.Status);
+                }
+
+                // Update progress
+                StatusMessage = $"Added to {successCount} of {count} locations...";
+            }
             
-            StatusMessage = $"Added to {count} location(s)";
-            _logger.LogInformation("Added {PartID} to {Count} locations", 
-                MultiLocationPartID, count);
-            
-            ResetMultipleLocations();
+            if (successCount > 0)
+            {
+                StatusMessage = $"Successfully added to {successCount} locations" + (failureCount > 0 ? $" ({failureCount} failed)" : "");
+                _logger.LogInformation("Added {PartID} to {SuccessCount} locations (Multiple Locations mode)", 
+                    MultiLocationPartID, successCount);
+                
+                if (failureCount == 0)
+                    ResetMultipleLocations();
+            }
+            else
+            {
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"All {count} location additions failed"),
+                    "Add To Multiple Locations",
+                    Environment.UserName
+                );
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to add to multiple locations");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Add To Multiple Locations", Environment.UserName);
             StatusMessage = "Error adding to locations";
         }
         finally 
@@ -469,34 +698,6 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     {
         SelectedLocations.Clear();
         _logger.LogInformation("Cleared all selected locations");
-    }
-
-    /// <summary>
-    /// Imports inventory data from Excel file
-    /// </summary>
-    [RelayCommand]
-    private async Task ImportFromExcelAsync()
-    {
-        try
-        {
-            IsBusy = true;
-            StatusMessage = "Importing from Excel...";
-            
-            // TODO: Helper_Excel integration
-            await Task.Delay(800).ConfigureAwait(false);
-            
-            StatusMessage = "Import complete";
-            _logger.LogInformation("Excel import operation completed successfully");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to import from Excel");
-            StatusMessage = "Import failed";
-        }
-        finally 
-        { 
-            IsBusy = false; 
-        }
     }
 
     /// <summary>
