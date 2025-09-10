@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Input;
+using MTM_WIP_Application_Avalonia.Services;
 
 namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 
@@ -59,6 +63,7 @@ public partial class CustomDataGridDemo : UserControl
             _selectedItems = value;
             OnPropertyChanged(nameof(SelectedItems));
             OnPropertyChanged(nameof(SelectedItemCount));
+        OnPropertyChanged(nameof(HasSelectedItems));
         }
     }
 
@@ -234,6 +239,42 @@ public partial class CustomDataGridDemo : UserControl
         }
     }
 
+    /// <summary>
+    /// Gets whether there are any selected items.
+    /// Phase 6 feature for bulk operations.
+    /// </summary>
+    public bool HasSelectedItems => SelectedItems.Count > 0;
+
+    /// <summary>
+    /// Gets or sets the current data analytics text.
+    /// Phase 6 feature for analytics feedback.
+    /// </summary>
+    private string _dataAnalyticsText = "No analytics run";
+    public string DataAnalyticsText
+    {
+        get => _dataAnalyticsText;
+        set 
+        { 
+            _dataAnalyticsText = value;
+            OnPropertyChanged(nameof(DataAnalyticsText));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the last operation status text.
+    /// Phase 6 feature for operation feedback.
+    /// </summary>
+    private string _lastOperationText = "Ready";
+    public string LastOperationText
+    {
+        get => _lastOperationText;
+        set 
+        { 
+            _lastOperationText = value;
+            OnPropertyChanged(nameof(LastOperationText));
+        }
+    }
+
     #endregion
 
     #region Constructor
@@ -280,6 +321,7 @@ public partial class CustomDataGridDemo : UserControl
         SelectedItems.Clear();
         OnPropertyChanged(nameof(ItemCount));
         OnPropertyChanged(nameof(SelectedItemCount));
+        OnPropertyChanged(nameof(HasSelectedItems));
     }
 
     /// <summary>
@@ -336,6 +378,60 @@ public partial class CustomDataGridDemo : UserControl
         ApplyRecentActivityFilter();
     }
 
+    /// <summary>
+    /// Handles the Import CSV button click.
+    /// Phase 6 feature for data import functionality.
+    /// </summary>
+    private void OnImportCsvClick(object? sender, RoutedEventArgs e)
+    {
+        ImportCsvData();
+    }
+
+    /// <summary>
+    /// Handles the Export CSV button click.
+    /// Phase 6 feature for data export functionality.
+    /// </summary>
+    private void OnExportCsvClick(object? sender, RoutedEventArgs e)
+    {
+        ExportCsvData();
+    }
+
+    /// <summary>
+    /// Handles the Export Excel button click.
+    /// Phase 6 feature for Excel export functionality.
+    /// </summary>
+    private void OnExportExcelClick(object? sender, RoutedEventArgs e)
+    {
+        ExportExcelData();
+    }
+
+    /// <summary>
+    /// Handles the Bulk Update button click.
+    /// Phase 6 feature for batch operations.
+    /// </summary>
+    private void OnBulkUpdateClick(object? sender, RoutedEventArgs e)
+    {
+        BulkUpdateSelectedItems();
+    }
+
+    /// <summary>
+    /// Handles the Bulk Delete button click.
+    /// Phase 6 feature for batch operations.
+    /// </summary>
+    private void OnBulkDeleteClick(object? sender, RoutedEventArgs e)
+    {
+        BulkDeleteSelectedItems();
+    }
+
+    /// <summary>
+    /// Handles the Data Analytics button click.
+    /// Phase 6 feature for data analysis and insights.
+    /// </summary>
+    private void OnDataAnalyticsClick(object? sender, RoutedEventArgs e)
+    {
+        ShowDataAnalytics();
+    }
+
     #endregion
 
     #region Command Implementations
@@ -351,6 +447,7 @@ public partial class CustomDataGridDemo : UserControl
             SelectedItems.Remove(item);
             OnPropertyChanged(nameof(ItemCount));
             OnPropertyChanged(nameof(SelectedItemCount));
+        OnPropertyChanged(nameof(HasSelectedItems));
         }
     }
 
@@ -412,6 +509,7 @@ public partial class CustomDataGridDemo : UserControl
         {
             SelectedItems.Clear();
             OnPropertyChanged(nameof(SelectedItemCount));
+        OnPropertyChanged(nameof(HasSelectedItems));
         }
     }
 
@@ -738,7 +836,273 @@ public partial class CustomDataGridDemo : UserControl
         
         OnPropertyChanged(nameof(ItemCount));
         OnPropertyChanged(nameof(SelectedItemCount));
+        OnPropertyChanged(nameof(HasSelectedItems));
     }
+
+    #region Phase 6 Implementation
+
+    /// <summary>
+    /// Imports data from a CSV file.
+    /// Phase 6 feature for data import functionality.
+    /// </summary>
+    private async void ImportCsvData()
+    {
+        try
+        {
+            LastOperationText = "Importing CSV data...";
+            
+            // For demo purposes, simulate CSV import
+            var tempFilePath = "/tmp/demo_import.csv";
+            await CreateSampleCsvFileAsync(tempFilePath);
+            
+            var service = new CustomDataGridService(null!);
+            var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+            
+            if (demoDataGrid?.Columns != null)
+            {
+                var result = await service.ImportFromCsvAsync<DemoInventoryItem>(tempFilePath, demoDataGrid.Columns);
+                
+                if (result.IsSuccess)
+                {
+                    foreach (var item in result.ImportedData)
+                    {
+                        SampleInventoryData.Add(item);
+                    }
+                    
+                    LastOperationText = $"Imported {result.ImportedData.Count} items from CSV";
+                    OnPropertyChanged(nameof(ItemCount));
+                }
+                else
+                {
+                    LastOperationText = $"Import failed: {string.Join(", ", result.Errors)}";
+                }
+            }
+            
+            // Clean up temp file
+            if (File.Exists(tempFilePath))
+                File.Delete(tempFilePath);
+        }
+        catch (Exception ex)
+        {
+            LastOperationText = $"Import error: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Exports data to a CSV file.
+    /// Phase 6 feature for data export functionality.
+    /// </summary>
+    private async void ExportCsvData()
+    {
+        try
+        {
+            LastOperationText = "Exporting to CSV...";
+            
+            var service = new CustomDataGridService(null!);
+            var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+            var exportPath = $"/tmp/demo_export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            
+            if (demoDataGrid?.Columns != null)
+            {
+                var success = await service.ExportDataAsync(SampleInventoryData, demoDataGrid.Columns, exportPath, "csv");
+                
+                if (success)
+                {
+                    LastOperationText = $"Exported {SampleInventoryData.Count} items to {Path.GetFileName(exportPath)}";
+                }
+                else
+                {
+                    LastOperationText = "Export failed";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            LastOperationText = $"Export error: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Exports data to an Excel file.
+    /// Phase 6 feature for Excel export functionality.
+    /// </summary>
+    private async void ExportExcelData()
+    {
+        try
+        {
+            LastOperationText = "Exporting to Excel...";
+            
+            var service = new CustomDataGridService(null!);
+            var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+            var exportPath = $"/tmp/demo_export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            
+            if (demoDataGrid?.Columns != null)
+            {
+                var success = await service.ExportDataAsync(SampleInventoryData, demoDataGrid.Columns, exportPath, "excel");
+                
+                if (success)
+                {
+                    LastOperationText = $"Exported {SampleInventoryData.Count} items to {Path.GetFileName(exportPath)}";
+                }
+                else
+                {
+                    LastOperationText = "Excel export not yet fully implemented - use CSV format";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            LastOperationText = $"Excel export error: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Performs bulk update on selected items.
+    /// Phase 6 feature for batch operations.
+    /// </summary>
+    private async void BulkUpdateSelectedItems()
+    {
+        try
+        {
+            if (SelectedItems.Count == 0)
+            {
+                LastOperationText = "No items selected for bulk update";
+                return;
+            }
+            
+            LastOperationText = $"Bulk updating {SelectedItems.Count} items...";
+            
+            var service = new CustomDataGridService(null!);
+            var selectedInventoryItems = SelectedItems.Cast<DemoInventoryItem>();
+            
+            // Example bulk update - increase quantity by 10
+            var updates = new Dictionary<string, object>
+            {
+                { "Quantity", 0 } // Will be updated per item
+            };
+            
+            var updatedItems = new List<DemoInventoryItem>();
+            foreach (var item in selectedInventoryItems)
+            {
+                updates["Quantity"] = item.Quantity + 10;
+                var result = await service.BulkUpdateAsync(new[] { item }, updates);
+                
+                if (result.IsSuccess)
+                {
+                    updatedItems.AddRange(result.SuccessfulItems);
+                }
+            }
+            
+            LastOperationText = $"Bulk updated {updatedItems.Count} items (added 10 to quantity)";
+            OnPropertyChanged(nameof(SampleInventoryData)); // Trigger UI refresh
+        }
+        catch (Exception ex)
+        {
+            LastOperationText = $"Bulk update error: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Performs bulk delete on selected items.
+    /// Phase 6 feature for batch operations.
+    /// </summary>
+    private async void BulkDeleteSelectedItems()
+    {
+        try
+        {
+            if (SelectedItems.Count == 0)
+            {
+                LastOperationText = "No items selected for bulk delete";
+                return;
+            }
+            
+            LastOperationText = $"Bulk deleting {SelectedItems.Count} items...";
+            
+            var service = new CustomDataGridService(null!);
+            var selectedInventoryItems = SelectedItems.Cast<DemoInventoryItem>().ToList();
+            
+            var result = await service.BulkDeleteAsync(selectedInventoryItems);
+            
+            if (result.IsSuccess)
+            {
+                // Remove from UI collection
+                foreach (var item in selectedInventoryItems)
+                {
+                    SampleInventoryData.Remove(item);
+                }
+                
+                SelectedItems.Clear();
+                LastOperationText = $"Bulk deleted {result.SuccessfulItems.Count} items";
+                OnPropertyChanged(nameof(ItemCount));
+                OnPropertyChanged(nameof(SelectedItemCount));
+        OnPropertyChanged(nameof(HasSelectedItems));
+                OnPropertyChanged(nameof(HasSelectedItems));
+            }
+            else
+            {
+                LastOperationText = $"Bulk delete failed: {string.Join(", ", result.Errors)}";
+            }
+        }
+        catch (Exception ex)
+        {
+            LastOperationText = $"Bulk delete error: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Shows data analytics and insights.
+    /// Phase 6 feature for data analysis.
+    /// </summary>
+    private async void ShowDataAnalytics()
+    {
+        try
+        {
+            LastOperationText = "Analyzing data...";
+            
+            var service = new CustomDataGridService(null!);
+            var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+            
+            if (demoDataGrid?.Columns != null)
+            {
+                var analytics = await service.GetDataAnalyticsAsync(SampleInventoryData, demoDataGrid.Columns);
+                
+                var qualityScore = analytics.QualityMetrics.OverallScore;
+                var totalItems = analytics.TotalItems;
+                var insightCount = analytics.Insights.Count;
+                
+                DataAnalyticsText = $"Quality: {qualityScore:F1}%, Items: {totalItems}, Insights: {insightCount}";
+                LastOperationText = $"Analytics complete - {insightCount} insights found";
+                
+                // Log insights to debug console
+                foreach (var insight in analytics.Insights.Take(3))
+                {
+                    System.Diagnostics.Debug.WriteLine($"[{insight.Importance}] {insight.Title}: {insight.Description}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            LastOperationText = $"Analytics error: {ex.Message}";
+            DataAnalyticsText = "Analytics failed";
+        }
+    }
+
+    /// <summary>
+    /// Creates a sample CSV file for import demonstration.
+    /// </summary>
+    private async Task CreateSampleCsvFileAsync(string filePath)
+    {
+        var csvContent = """
+            PartId,Operation,Location,Quantity,Notes
+            IMP-001,90,RECV-A1,50,Imported sample part 1
+            IMP-002,100,WIP-B1,30,Imported sample part 2
+            IMP-003,110,WIP-C1,20,Imported sample part 3
+            """;
+        
+        await File.WriteAllTextAsync(filePath, csvContent);
+    }
+
+    #endregion
 
     #endregion
 

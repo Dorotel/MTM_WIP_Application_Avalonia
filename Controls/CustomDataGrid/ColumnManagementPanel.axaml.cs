@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -96,6 +97,23 @@ public partial class ColumnManagementPanel : UserControl
     private bool _isResizing = false;
     private CustomDataGridColumn? _resizeColumn = null;
     private double _resizeStartX = 0;
+
+    #endregion
+
+    #region Custom Properties
+
+    /// <summary>
+    /// Property changed event for INotifyPropertyChanged.
+    /// </summary>
+    public new event PropertyChangedEventHandler? PropertyChanged;
+
+    /// <summary>
+    /// Raises the PropertyChanged event for our custom properties.
+    /// </summary>
+    protected void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
     #endregion
 
@@ -197,7 +215,7 @@ public partial class ColumnManagementPanel : UserControl
             Columns.CollectionChanged += OnColumnsCollectionChanged;
         }
 
-        // OnPropertyChanged(nameof(VisibleColumnCount)); // TODO: Implement property notification
+        RaisePropertyChanged(nameof(VisibleColumnCount));
         _logger?.LogDebug("Columns collection updated, count: {Count}", Columns?.Count ?? 0);
     }
 
@@ -205,7 +223,7 @@ public partial class ColumnManagementPanel : UserControl
     {
         if (e.PropertyName == nameof(CustomDataGridColumn.IsVisible))
         {
-            // OnPropertyChanged(nameof(VisibleColumnCount)); // TODO: Implement property notification
+            RaisePropertyChanged(nameof(VisibleColumnCount));
             NotifyColumnsModified();
         }
         else if (e.PropertyName == nameof(CustomDataGridColumn.Width) ||
@@ -217,7 +235,7 @@ public partial class ColumnManagementPanel : UserControl
 
     private void OnColumnsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        // OnPropertyChanged(nameof(VisibleColumnCount)); // TODO: Implement property notification
+        RaisePropertyChanged(nameof(VisibleColumnCount));
         NotifyColumnsModified();
     }
 
@@ -597,7 +615,7 @@ public partial class ColumnManagementPanel : UserControl
             if (Columns != null)
             {
                 configuration.ApplyToColumns(Columns);
-                // OnPropertyChanged(nameof(VisibleColumnCount)); // TODO: Implement property notification
+                RaisePropertyChanged(nameof(VisibleColumnCount));
                 NotifyColumnsModified();
                 
                 _logger?.LogDebug("Applied configuration: {ConfigName}", configuration.DisplayName);
