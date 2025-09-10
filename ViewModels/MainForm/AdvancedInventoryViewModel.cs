@@ -40,12 +40,6 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     private bool _isModeSelectionExpanded = true;
 
     /// <summary>
-    /// Gets or sets whether the analytics panel is expanded
-    /// </summary>
-    [ObservableProperty]
-    private bool _isAnalyticsExpanded = true;
-
-    /// <summary>
     /// Gets or sets whether the filter panel is expanded (legacy support)
     /// </summary>
     [ObservableProperty]
@@ -70,7 +64,6 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMultipleLocationsMode))]
-    [NotifyPropertyChangedFor(nameof(IsExcelImportMode))]
     private bool _isMultipleTimesMode = true; // Default to first mode
 
     /// <summary>
@@ -78,16 +71,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMultipleTimesMode))]
-    [NotifyPropertyChangedFor(nameof(IsExcelImportMode))]
     private bool _isMultipleLocationsMode;
-
-    /// <summary>
-    /// Gets or sets whether Excel Import mode is active
-    /// </summary>
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsMultipleTimesMode))]
-    [NotifyPropertyChangedFor(nameof(IsMultipleLocationsMode))]
-    private bool _isExcelImportMode;
     #endregion
 
     #region Multiple Times
@@ -319,21 +303,12 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
                 if (IsMultipleTimesMode)
                 {
                     IsMultipleLocationsMode = false;
-                    IsExcelImportMode = false;
                 }
                 break;
             case nameof(IsMultipleLocationsMode):
                 if (IsMultipleLocationsMode)
                 {
                     IsMultipleTimesMode = false;
-                    IsExcelImportMode = false;
-                }
-                break;
-            case nameof(IsExcelImportMode):
-                if (IsExcelImportMode)
-                {
-                    IsMultipleTimesMode = false;
-                    IsMultipleLocationsMode = false;
                 }
                 break;
             // Add synchronization from Text properties back to SelectedItem properties
@@ -723,40 +698,6 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     {
         SelectedLocations.Clear();
         _logger.LogInformation("Cleared all selected locations");
-    }
-
-    /// <summary>
-    /// Imports inventory data from Excel file (placeholder implementation)
-    /// </summary>
-    [RelayCommand]
-    private async Task ImportFromExcelAsync()
-    {
-        try
-        {
-            IsBusy = true;
-            StatusMessage = "Excel import feature not yet implemented...";
-            
-            // TODO: Implement Excel import using ClosedXML or similar library
-            // This would involve:
-            // 1. File selection dialog
-            // 2. Excel file validation and parsing
-            // 3. Data validation against master data
-            // 4. Batch insertion using Helper_Database_StoredProcedure
-            
-            await Task.Delay(800).ConfigureAwait(false);
-            
-            StatusMessage = "Excel import feature coming soon";
-            _logger.LogInformation("Excel import operation placeholder executed");
-        }
-        catch (Exception ex)
-        {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Import From Excel", Environment.UserName);
-            StatusMessage = "Excel import failed";
-        }
-        finally 
-        { 
-            IsBusy = false; 
-        }
     }
 
     /// <summary>

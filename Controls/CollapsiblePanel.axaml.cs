@@ -268,11 +268,15 @@ public partial class CollapsiblePanel : UserControl
         if (_toggleButton == null)
             return;
 
+        // Enhanced button centering for perfect alignment both vertically and horizontally
+        _toggleButton.HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center;
+        _toggleButton.VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center;
+
         switch (HeaderPosition)
         {
             case HeaderPosition.Left:
             case HeaderPosition.Right:
-                // Button at bottom for vertical headers
+                // Button at bottom for vertical headers with perfect centering
                 _toggleButton.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
                 _toggleButton.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Bottom;
                 _toggleButton.Margin = new Avalonia.Thickness(0, 0, 0, 8);
@@ -280,7 +284,7 @@ public partial class CollapsiblePanel : UserControl
 
             case HeaderPosition.Top:
             case HeaderPosition.Bottom:
-                // Button on left for horizontal headers
+                // Button on left for horizontal headers with perfect centering
                 _toggleButton.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
                 _toggleButton.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
                 _toggleButton.Margin = new Avalonia.Thickness(8, 0, 0, 0);

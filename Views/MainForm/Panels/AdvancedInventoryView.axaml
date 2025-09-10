@@ -104,14 +104,28 @@
 
       <!-- Main Three-Panel Layout with CollapsiblePanel -->
       <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,8">
-        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
           
           <!-- Left Panel: Mode & Entry -->
           <controls:CollapsiblePanel Grid.Column="0" 
                                    IsExpanded="{Binding IsModeSelectionExpanded}"
-                                   Header="Mode &amp; Entry"
                                    HeaderPosition="Left"
                                    MinWidth="200">
+            <controls:CollapsiblePanel.Header>
+              <Border>
+                <TextBlock Text="Mode &amp; Entry" 
+                           VerticalAlignment="Center" 
+                           HorizontalAlignment="Center"
+                           FontSize="10" 
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                           RenderTransformOrigin="0.5,0.5">
+                  <TextBlock.RenderTransform>
+                    <RotateTransform Angle="-90"/>
+                  </TextBlock.RenderTransform>
+                </TextBlock>
+              </Border>
+            </controls:CollapsiblePanel.Header>
             
             <StackPanel Spacing="8">
               
@@ -126,9 +140,6 @@
                   <RadioButton Content="Multiple Locations" IsChecked="{Binding IsMultipleLocationsMode}"
                                Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                ToolTip.Tip="Add item to multiple locations" />
-                  <RadioButton Content="Excel Import" IsChecked="{Binding IsExcelImportMode}"
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                               ToolTip.Tip="Import from Excel file" />
                 </StackPanel>
               </Border>
 
@@ -225,45 +236,6 @@
 
                 </StackPanel>
               </Border>
-
-              <!-- Excel Import Mode Controls -->
-              <Border IsVisible="{Binding IsExcelImportMode}" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="8">
-                <StackPanel Spacing="6">
-                  
-                  <TextBlock Text="Excel Import" FontWeight="SemiBold" FontSize="11" />
-                  
-                  <!-- File Selection -->
-                  <StackPanel Spacing="3">
-                    <TextBlock Text="Excel File:" FontSize="9" />
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
-                      <TextBox Grid.Column="0" Classes="input-field" Watermark="Select Excel file..." ToolTip.Tip="Path to Excel file" IsReadOnly="True" />
-                      <Button Grid.Column="1" Classes="action-button secondary" Width="60" Height="24" ToolTip.Tip="Browse for Excel file">
-                        <StackPanel Orientation="Horizontal" Spacing="2">
-                          <materialIcons:MaterialIcon Kind="FileExcel" Width="8" Height="8" />
-                          <TextBlock Text="Browse" FontSize="8" />
-                        </StackPanel>
-                      </Button>
-                    </Grid>
-                  </StackPanel>
-
-                  <!-- Import Settings -->
-                  <StackPanel Spacing="3">
-                    <TextBlock Text="Import Settings:" FontSize="9" />
-                    <CheckBox Content="Skip header row" FontSize="9" IsChecked="True" />
-                    <CheckBox Content="Validate parts against master data" FontSize="9" IsChecked="True" />
-                    <CheckBox Content="Stop on first error" FontSize="9" IsChecked="False" />
-                  </StackPanel>
-
-                  <!-- Import Action -->
-                  <Button Classes="action-button primary" Width="120" Height="24" Command="{Binding ImportFromExcelCommand}" ToolTip.Tip="Start Excel import">
-                    <StackPanel Orientation="Horizontal" Spacing="3">
-                      <materialIcons:MaterialIcon Kind="FileImport" Width="10" Height="10" />
-                      <TextBlock Text="Import" FontSize="9" />
-                    </StackPanel>
-                  </Button>
-                  
-                </StackPanel>
-              </Border>
               
             </StackPanel>
           </controls:CollapsiblePanel>
@@ -291,58 +263,6 @@
               </DataGrid>
             </Grid>
           </Border>
-
-          <!-- Right Panel: Analytics -->
-          <controls:CollapsiblePanel Grid.Column="2" 
-                                   IsExpanded="{Binding IsAnalyticsExpanded}"
-                                   Header="Analytics"
-                                   HeaderPosition="Right"
-                                   MinWidth="180">
-            
-            <StackPanel Spacing="8">
-              
-              <!-- Status Summary -->
-              <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}" CornerRadius="4" Padding="6">
-                <StackPanel Spacing="4">
-                  <TextBlock Text="Status" FontWeight="SemiBold" FontSize="10" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-                  <TextBlock Text="{Binding StatusMessage}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" TextWrapping="Wrap" />
-                </StackPanel>
-              </Border>
-
-              <!-- Operation Statistics -->
-              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="6">
-                <StackPanel Spacing="4">
-                  <TextBlock Text="Session Stats" FontWeight="SemiBold" FontSize="10" />
-                  <StackPanel Spacing="2">
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Grid.Column="0" Text="Parts:" FontSize="8" />
-                      <TextBlock Grid.Column="1" Text="{Binding PartIDOptions.Count}" FontSize="8" FontWeight="Bold" />
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Grid.Column="0" Text="Operations:" FontSize="8" />
-                      <TextBlock Grid.Column="1" Text="{Binding OperationOptions.Count}" FontSize="8" FontWeight="Bold" />
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Grid.Column="0" Text="Locations:" FontSize="8" />
-                      <TextBlock Grid.Column="1" Text="{Binding LocationOptions.Count}" FontSize="8" FontWeight="Bold" />
-                    </Grid>
-                  </StackPanel>
-                </StackPanel>
-              </Border>
-
-              <!-- Mode Info -->
-              <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="6">
-                <StackPanel Spacing="4">
-                  <TextBlock Text="Current Mode" FontWeight="SemiBold" FontSize="10" />
-                  <TextBlock Text="Multiple Times" FontSize="8" FontWeight="Bold" IsVisible="{Binding IsMultipleTimesMode}" />
-                  <TextBlock Text="Multiple Locations" FontSize="8" FontWeight="Bold" IsVisible="{Binding IsMultipleLocationsMode}" />
-                  <TextBlock Text="Excel Import" FontSize="8" FontWeight="Bold" IsVisible="{Binding IsExcelImportMode}" />
-                </StackPanel>
-              </Border>
-              
-            </StackPanel>
-            
-          </controls:CollapsiblePanel>
           
         </Grid>
       </Border>
