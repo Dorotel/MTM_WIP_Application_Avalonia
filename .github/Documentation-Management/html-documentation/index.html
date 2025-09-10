@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM WIP Application Documentation</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <style>
+        /* MTM Documentation Theme */
+        :root {
+            --mtm-primary: #0078D4;
+            --mtm-secondary: #106EBE;
+            --mtm-success: #4CAF50;
+            --mtm-warning: #FFB900;
+            --mtm-error: #D13438;
+            --mtm-text-primary: #323130;
+            --mtm-text-secondary: #605E5C;
+            --mtm-text-tertiary: #8A8886;
+            --mtm-bg-main: #FAFAFA;
+            --mtm-bg-card: #FFFFFF;
+            --mtm-bg-panel: #F3F2F1;
+            --mtm-border: #E1DFDD;
+            --mtm-border-light: #EDEBE9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background-color: var(--mtm-bg-main);
+            color: var(--mtm-text-primary);
+            line-height: 1.6;
+        }
+
+        .documentation-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 320px;
+            background: var(--mtm-bg-card);
+            border-right: 1px solid var(--mtm-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: var(--mtm-primary);
+            color: white;
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .search-container {
+            padding: 16px;
+            border-bottom: 1px solid var(--mtm-border-light);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 1px solid var(--mtm-border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' fill='%23605E5C' viewBox='0 0 24 24'><path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/></svg>") no-repeat 12px center;
+            background-size: 20px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--mtm-primary);
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+        }
+
+        .folder-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .folder-item {
+            display: block;
+            padding: 8px 16px 8px 24px;
+            color: var(--mtm-text-primary);
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .folder-item:hover {
+            background: var(--mtm-bg-panel);
+            color: var(--mtm-primary);
+        }
+
+        .folder-item.active {
+            background: rgba(0, 120, 212, 0.1);
+            color: var(--mtm-primary);
+            font-weight: 600;
+        }
+
+        .folder-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--mtm-primary);
+        }
+
+        .folder-parent {
+            padding: 12px 16px;
+            font-weight: 600;
+            color: var(--mtm-text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 16px;
+        }
+
+        .folder-parent:first-child {
+            margin-top: 0;
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: 20px 24px;
+            background: var(--mtm-bg-card);
+            border-bottom: 1px solid var(--mtm-border-light);
+        }
+
+        .content-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--mtm-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .content-subtitle {
+            color: var(--mtm-text-secondary);
+            font-size: 1rem;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .file-details {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .plain-english {
+            background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%);
+            border: 1px solid var(--mtm-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .usage-scenario {
+            background: var(--mtm-bg-card);
+            border: 1px solid var(--mtm-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .usage-scenario h3 {
+            color: var(--mtm-primary);
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+        }
+
+        .scenario-steps {
+            margin: 16px 0;
+            padding-left: 20px;
+        }
+
+        .scenario-steps li {
+            margin-bottom: 8px;
+            color: var(--mtm-text-secondary);
+        }
+
+        .scenario-steps code {
+            background: var(--mtm-bg-panel);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--mtm-primary);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .quick-action-card {
+            background: var(--mtm-bg-card);
+            border: 1px solid var(--mtm-border);
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 120, 212, 0.15);
+            border-color: var(--mtm-primary);
+        }
+
+        .quick-action-card h4 {
+            color: var(--mtm-primary);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .quick-action-card p {
+            color: var(--mtm-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-card {
+            background: var(--mtm-bg-card);
+            border: 1px solid var(--mtm-border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--mtm-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--mtm-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .documentation-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 40vh;
+            }
+
+            .content-body {
+                padding: 16px;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--mtm-border);
+            border-radius: 50%;
+            border-top-color: var(--mtm-primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--mtm-bg-panel);
+            border: 1px solid var(--mtm-border);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="documentation-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>MTM Documentation</h1>
+                <p>Interactive Developer Guide</p>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search documentation..." id="searchInput">
+            </div>
+            
+            <div class="folder-tree" id="folderTree">
+                <div class="folder-parent">Prompts</div>
+                <button class="folder-item active" onclick="loadContent('mtm-feature-request')">MTM Feature Request</button>
+                <button class="folder-item" onclick="loadContent('documentation-writer')">Documentation Writer</button>
+                <button class="folder-item" onclick="loadContent('prompt-builder')">Prompt Builder</button>
+                
+                <div class="folder-parent">Instructions</div>
+                <button class="folder-item" onclick="loadContent('avalonia-ui-guidelines')">Avalonia UI Guidelines</button>
+                <button class="folder-item" onclick="loadContent('mvvm-community-toolkit')">MVVM Community Toolkit</button>
+                <button class="folder-item" onclick="loadContent('mysql-database-patterns')">MySQL Database Patterns</button>
+                <button class="folder-item" onclick="loadContent('service-architecture')">Service Architecture</button>
+                <button class="folder-item" onclick="loadContent('data-models')">Data Models</button>
+                
+                <div class="folder-parent">Chat Modes</div>
+                <button class="folder-item" onclick="loadContent('mtm-architect')">MTM Architect</button>
+                <button class="folder-item" onclick="loadContent('mtm-ui-developer')">MTM UI Developer</button>
+                <button class="folder-item" onclick="loadContent('mtm-database-developer')">MTM Database Developer</button>
+                <button class="folder-item" onclick="loadContent('mtm-code-reviewer')">MTM Code Reviewer</button>
+                
+                <div class="folder-parent">Development Guides</div>
+                <button class="folder-item" onclick="loadContent('view-implementation')">View Implementation Guide</button>
+                <button class="folder-item" onclick="loadContent('setup-configuration')">Setup & Configuration</button>
+                <button class="folder-item" onclick="loadContent('code-standards')">Code Standards</button>
+                <button class="folder-item" onclick="loadContent('testing-procedures')">Testing Procedures</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <header class="content-header">
+                <h1 class="content-title" id="contentTitle">MTM Feature Request Generator</h1>
+                <p class="content-subtitle" id="contentSubtitle">Create comprehensive feature requests with technical specifications</p>
+            </header>
+            
+            <div class="content-body">
+                <div class="file-details" id="contentDetails">
+                    <div class="plain-english">
+                        This prompt helps you create detailed feature requests for the MTM application.
+                        Use it when you want to add new functionality or improve existing features.
+                        It generates complete technical specifications, implementation plans, and testing strategies.
+                    </div>
+                    
+                    <div class="usage-scenario">
+                        <h3>Real-World Example:</h3>
+                        <p>You're tasked with adding a new inventory search feature...</p>
+                        <ol class="scenario-steps">
+                            <li>Open GitHub Copilot Chat in VS Code</li>
+                            <li>Type: <code>/mtm-feature-request</code></li>
+                            <li>Describe your inventory search requirements</li>
+                            <li>Follow the generated template</li>
+                            <li>Review technical implementation plan</li>
+                            <li>Validate against MTM architectural patterns</li>
+                        </ol>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">17</div>
+                            <div class="stat-label">Prompt Files</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">6</div>
+                            <div class="stat-label">Instruction Files</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">4</div>
+                            <div class="stat-label">Chat Modes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">217</div>
+                            <div class="stat-label">Total MD Files</div>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <a href="#" class="quick-action-card" onclick="loadContent('mtm-architect')">
+                            <h4>🏗️ Architecture Guidance</h4>
+                            <p>Get expert architectural advice for complex system design decisions</p>
+                        </a>
+                        
+                        <a href="#" class="quick-action-card" onclick="loadContent('mtm-ui-developer')">
+                            <h4>🎨 UI Development</h4>
+                            <p>Create beautiful Avalonia interfaces following MTM design system</p>
+                        </a>
+                        
+                        <a href="#" class="quick-action-card" onclick="loadContent('mtm-database-developer')">
+                            <h4>🗄️ Database Operations</h4>
+                            <p>Implement secure stored procedures and data access patterns</p>
+                        </a>
+                        
+                        <a href="#" class="quick-action-card" onclick="loadContent('mtm-code-reviewer')">
+                            <h4>🔍 Code Review</h4>
+                            <p>Ensure code quality and MTM standards compliance</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Documentation content data
+        const documentationData = {
+            'mtm-feature-request': {
+                title: 'MTM Feature Request Generator',
+                subtitle: 'Create comprehensive feature requests with technical specifications',
+                description: 'This prompt helps you create detailed feature requests for the MTM application. Use it when you want to add new functionality or improve existing features.',
+                example: 'You\'re tasked with adding a new inventory search feature...',
+                steps: [
+                    'Open GitHub Copilot Chat in VS Code',
+                    'Type: <code>/mtm-feature-request</code>',
+                    'Describe your inventory search requirements',
+                    'Follow the generated template',
+                    'Review technical implementation plan',
+                    'Validate against MTM architectural patterns'
+                ]
+            },
+            'mtm-architect': {
+                title: 'MTM Application Senior Architect',
+                subtitle: 'Expert in .NET 8 Avalonia MVVM architecture and system design',
+                description: 'You are a senior software architect specializing in the MTM WIP Application. Use this persona for high-level architectural decisions, designing new features, or refactoring existing systems.',
+                example: 'You need to design a new service integration...',
+                steps: [
+                    'Open GitHub Copilot Chat in VS Code',
+                    'Type: <code>@mtm-architect</code>',
+                    'Describe your architectural challenge',
+                    'Get expert guidance on patterns and design',
+                    'Review performance implications',
+                    'Document architectural decisions'
+                ]
+            },
+            'mtm-ui-developer': {
+                title: 'MTM UI Developer',
+                subtitle: 'Expert in Avalonia AXAML, MTM design system, and MVVM integration',
+                description: 'You are a senior UI developer specializing in Avalonia-based user interfaces for the MTM WIP Application manufacturing system.',
+                example: 'You need to create a new form with proper theming...',
+                steps: [
+                    'Open GitHub Copilot Chat in VS Code',
+                    'Type: <code>@mtm-ui-developer</code>',
+                    'Describe your UI requirements',
+                    'Get AXAML code following MTM patterns',
+                    'Ensure accessibility compliance',
+                    'Test responsive design'
+                ]
+            },
+            'mtm-database-developer': {
+                title: 'MTM Database Developer',
+                subtitle: 'Expert in MySQL stored procedures and MTM database architecture',
+                description: 'You are a database specialist focused on the MTM WIP Application\'s MySQL 9.4.0 database architecture and stored procedure development.',
+                example: 'You need to create a new stored procedure for inventory operations...',
+                steps: [
+                    'Open GitHub Copilot Chat in VS Code',
+                    'Type: <code>@mtm-database-developer</code>',
+                    'Describe your data requirements',
+                    'Get secure stored procedure code',
+                    'Review parameter validation',
+                    'Test database operations'
+                ]
+            },
+            'avalonia-ui-guidelines': {
+                title: 'Avalonia UI Guidelines',
+                subtitle: 'Complete guide to MTM AXAML syntax and design patterns',
+                description: 'Comprehensive documentation for implementing Avalonia UI components following MTM design system standards.',
+                example: 'You need to understand proper AXAML syntax...',
+                steps: [
+                    'Review critical AXAML rules',
+                    'Study MTM layout patterns',
+                    'Implement theme resources',
+                    'Follow accessibility guidelines',
+                    'Test cross-platform compatibility'
+                ]
+            },
+            'view-implementation': {
+                title: 'MTM View Implementation Guide',
+                subtitle: 'Step-by-step guide for creating new views in MTM application',
+                description: 'Complete documentation for implementing new views in the MTM WIP Application, including ViewModels, AXAML, and service integration.',
+                example: 'You need to create a new tab view for the application...',
+                steps: [
+                    'Study existing view patterns',
+                    'Create ViewModel with MVVM Community Toolkit',
+                    'Implement AXAML with proper layout',
+                    'Add service integration',
+                    'Test data binding and commands'
+                ]
+            }
+        };
+
+        // Load content function
+        function loadContent(contentKey) {
+            const data = documentationData[contentKey] || documentationData['mtm-feature-request'];
+            
+            // Update active state
+            document.querySelectorAll('.folder-item').forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content
+            document.getElementById('contentTitle').textContent = data.title;
+            document.getElementById('contentSubtitle').textContent = data.subtitle;
+            
+            const stepsHtml = data.steps.map((step, index) => `<li>${step}</li>`).join('');
+            
+            document.getElementById('contentDetails').innerHTML = `
+                <div class="plain-english">
+                    ${data.description}
+                </div>
+                
+                <div class="usage-scenario">
+                    <h3>Real-World Example:</h3>
+                    <p>${data.example}</p>
+                    <ol class="scenario-steps">
+                        ${stepsHtml}
+                    </ol>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">17</div>
+                        <div class="stat-label">Prompt Files</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">6</div>
+                        <div class="stat-label">Instruction Files</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">Chat Modes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">217</div>
+                        <div class="stat-label">Total MD Files</div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <a href="#" class="quick-action-card" onclick="loadContent('mtm-architect')">
+                        <h4>🏗️ Architecture Guidance</h4>
+                        <p>Get expert architectural advice for complex system design decisions</p>
+                    </a>
+                    
+                    <a href="#" class="quick-action-card" onclick="loadContent('mtm-ui-developer')">
+                        <h4>🎨 UI Development</h4>
+                        <p>Create beautiful Avalonia interfaces following MTM design system</p>
+                    </a>
+                    
+                    <a href="#" class="quick-action-card" onclick="loadContent('mtm-database-developer')">
+                        <h4>🗄️ Database Operations</h4>
+                        <p>Implement secure stored procedures and data access patterns</p>
+                    </a>
+                    
+                    <a href="#" class="quick-action-card" onclick="loadContent('mtm-code-reviewer')">
+                        <h4>🔍 Code Review</h4>
+                        <p>Ensure code quality and MTM standards compliance</p>
+                    </a>
+                </div>
+            `;
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const folderItems = document.querySelectorAll('.folder-item');
+            
+            folderItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadContent('mtm-feature-request');
+        });
+    </script>
+</body>
+</html>
