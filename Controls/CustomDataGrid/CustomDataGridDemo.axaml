@@ -20,17 +20,17 @@
             Margin="0,0,0,16">
       
       <StackPanel Spacing="12">
-        <TextBlock Text="MTM Custom Data Grid - Phase 2 Demo" 
+        <TextBlock Text="MTM Custom Data Grid - Phase 3 Demo" 
                    FontSize="18" 
                    FontWeight="Bold"
                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
         
-        <TextBlock Text="High-performance data grid with multi-selection, checkboxes, and action buttons for MTM inventory management." 
+        <TextBlock Text="Advanced column management with show/hide columns, drag-and-drop reordering, and column resizing for MTM inventory management." 
                    FontSize="12"
                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
                    TextWrapping="Wrap" />
         
-        <!-- Action Buttons Row -->
+        <!-- Action Buttons Row 1 -->
         <StackPanel Orientation="Horizontal" Spacing="12">
           <Button Content="Load Sample Data" 
                   Classes="primary"
@@ -48,6 +48,29 @@
                         Padding="12,6" />
         </StackPanel>
         
+        <!-- Action Buttons Row 2 - Phase 3 Features -->
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <ToggleButton Content="Column Management" 
+                        IsChecked="{Binding IsColumnManagementVisible, Mode=TwoWay}"
+                        Classes="accent"
+                        Padding="12,6" />
+          
+          <Button Content="Reset Columns" 
+                  Classes="secondary"
+                  Click="OnResetColumnsClick"
+                  Padding="12,6" />
+          
+          <Button Content="Save Layout" 
+                  Classes="primary"
+                  Click="OnSaveLayoutClick"
+                  Padding="12,6" />
+          
+          <Button Content="Auto Size All" 
+                  Classes="secondary"
+                  Click="OnAutoSizeAllClick"
+                  Padding="12,6" />
+        </StackPanel>
+        
         <!-- Status Information -->
         <StackPanel Orientation="Horizontal" Spacing="16">
           <TextBlock Text="{Binding ItemCount, StringFormat='Total Items: {0}'}" 
@@ -61,22 +84,34 @@
           <TextBlock Text="{Binding IsMultiSelectEnabled, StringFormat='Multi-Select: {0}'}" 
                      VerticalAlignment="Center"
                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+          
+          <TextBlock Text="{Binding IsColumnManagementVisible, StringFormat='Column Mgmt: {0}'}" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+          
+          <TextBlock Text="{Binding VisibleColumnCount, StringFormat='Visible Columns: {0}'}" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
         </StackPanel>
       </StackPanel>
       
     </Border>
     
-    <!-- Custom Data Grid with Phase 2 Features -->
+    <!-- Custom Data Grid with Phase 3 Features -->
     <customGrid:CustomDataGrid x:Name="DemoDataGrid"
                                Grid.Row="1"
                                ItemsSource="{Binding SampleInventoryData}"
                                SelectedItem="{Binding SelectedInventoryItem, Mode=TwoWay}"
                                SelectedItems="{Binding SelectedItems, Mode=TwoWay}"
                                IsMultiSelectEnabled="{Binding IsMultiSelectEnabled}"
+                               IsColumnReorderingEnabled="True"
+                               IsColumnResizingEnabled="True"
+                               IsColumnManagementVisible="{Binding IsColumnManagementVisible, Mode=TwoWay}"
                                DeleteItemCommand="{Binding DeleteItemCommand}"
                                EditItemCommand="{Binding EditItemCommand}"
                                DuplicateItemCommand="{Binding DuplicateItemCommand}"
-                               ViewDetailsCommand="{Binding ViewDetailsCommand}" />
+                               ViewDetailsCommand="{Binding ViewDetailsCommand}"
+                               ColumnVisibilityCommand="{Binding ToggleColumnVisibilityCommand}" />
     
   </Grid>
 

@@ -95,6 +95,34 @@ public partial class CustomDataGrid : UserControl
     public static readonly StyledProperty<double> RowHeightProperty =
         AvaloniaProperty.Register<CustomDataGrid, double>(nameof(RowHeight), 28.0);
 
+    /// <summary>
+    /// Gets or sets whether column reordering is enabled.
+    /// Phase 3 feature for drag-and-drop column reordering.
+    /// </summary>
+    public static readonly StyledProperty<bool> IsColumnReorderingEnabledProperty =
+        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsColumnReorderingEnabled), true);
+
+    /// <summary>
+    /// Gets or sets whether column resizing is enabled.
+    /// Phase 3 feature for interactive column width adjustment.
+    /// </summary>
+    public static readonly StyledProperty<bool> IsColumnResizingEnabledProperty =
+        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsColumnResizingEnabled), true);
+
+    /// <summary>
+    /// Gets or sets whether the column management panel is visible.
+    /// Phase 3 feature for advanced column management UI.
+    /// </summary>
+    public static readonly StyledProperty<bool> IsColumnManagementVisibleProperty =
+        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsColumnManagementVisible), false);
+
+    /// <summary>
+    /// Gets or sets the command to execute when toggling column visibility.
+    /// Phase 3 feature for column show/hide operations.
+    /// </summary>
+    public static readonly StyledProperty<System.Windows.Input.ICommand?> ColumnVisibilityCommandProperty =
+        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(ColumnVisibilityCommand), null);
+
     #endregion
 
     #region Properties
@@ -159,6 +187,30 @@ public partial class CustomDataGrid : UserControl
         set => SetValue(ViewDetailsCommandProperty, value);
     }
 
+    public bool IsColumnReorderingEnabled
+    {
+        get => GetValue(IsColumnReorderingEnabledProperty);
+        set => SetValue(IsColumnReorderingEnabledProperty, value);
+    }
+
+    public bool IsColumnResizingEnabled
+    {
+        get => GetValue(IsColumnResizingEnabledProperty);
+        set => SetValue(IsColumnResizingEnabledProperty, value);
+    }
+
+    public bool IsColumnManagementVisible
+    {
+        get => GetValue(IsColumnManagementVisibleProperty);
+        set => SetValue(IsColumnManagementVisibleProperty, value);
+    }
+
+    public System.Windows.Input.ICommand? ColumnVisibilityCommand
+    {
+        get => GetValue(ColumnVisibilityCommandProperty);
+        set => SetValue(ColumnVisibilityCommandProperty, value);
+    }
+
     /// <summary>
     /// Gets the collection of visible columns (filtered from Columns where IsVisible = true).
     /// </summary>
@@ -172,6 +224,9 @@ public partial class CustomDataGrid : UserControl
     private ScrollViewer? _dataScrollViewer;
     private ItemsControl? _headerItemsControl;
     private CheckBox? _selectAllCheckBox;
+    private Grid? _columnManagementPanelHost;
+    private Border? _columnManagementContainer;
+    private ColumnManagementPanel? _columnManagementPanel;
     private readonly ILogger? _logger;
 
     #endregion
@@ -228,11 +283,52 @@ public partial class CustomDataGrid : UserControl
         _dataScrollViewer = this.FindControl<ScrollViewer>("DataScrollViewer");
         _headerItemsControl = this.FindControl<ItemsControl>("HeaderItemsControl");
         _selectAllCheckBox = this.FindControl<CheckBox>("SelectAllCheckBox");
+        _columnManagementPanelHost = this.FindControl<Grid>("ColumnManagementPanelHost");
+        _columnManagementContainer = this.FindControl<Border>("ColumnManagementContainer");
         
         // Set up ListBox selection mode based on IsMultiSelectEnabled
         UpdateSelectionMode();
         
+        // Initialize column management panel
+        InitializeColumnManagementPanel();
+        
         _logger?.LogDebug("CustomDataGrid components initialized");
+    }
+
+    /// <summary>
+    /// Initializes the column management panel for Phase 3 features.
+    /// Sets up the panel UI and binds to column management events.
+    /// </summary>
+    private void InitializeColumnManagementPanel()
+    {
+        try
+        {
+            if (_columnManagementPanelHost != null)
+            {
+                // Create the column management panel
+                _columnManagementPanel = new ColumnManagementPanel
+                {
+                    Columns = Columns,
+                    SavedConfigurations = new ObservableCollection<ColumnConfiguration>(), // Will be populated by service
+                    Margin = new Thickness(0)
+                };
+
+                // Subscribe to panel events
+                _columnManagementPanel.CloseRequested += OnColumnManagementCloseRequested;
+                _columnManagementPanel.ColumnsModified += OnColumnManagementColumnsModified;
+                _columnManagementPanel.ConfigurationSaveRequested += OnColumnManagementConfigurationSaveRequested;
+                _columnManagementPanel.ConfigurationLoadRequested += OnColumnManagementConfigurationLoadRequested;
+
+                // Add panel to host grid
+                _columnManagementPanelHost.Children.Add(_columnManagementPanel);
+
+                _logger?.LogDebug("Column management panel initialized");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error initializing column management panel");
+        }
     }
 
     #endregion
@@ -262,6 +358,11 @@ public partial class CustomDataGrid : UserControl
             {
                 UpdateSelectAllCheckBoxState();
                 _logger?.LogDebug("SelectedItems changed, count: {Count}", SelectedItems?.Count ?? 0);
+            }
+            else if (e.Property == IsColumnManagementVisibleProperty)
+            {
+                UpdateColumnManagementVisibility();
+                _logger?.LogDebug("Column management visibility changed: {IsVisible}", IsColumnManagementVisible);
             }
         }
         catch (Exception ex)
@@ -342,6 +443,97 @@ public partial class CustomDataGrid : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling Select All click");
+        }
+    }
+
+    /// <summary>
+    /// Handles the toggle column management button click event.
+    /// Phase 3 feature for showing/hiding the column management panel.
+    /// </summary>
+    public void OnToggleColumnManagement(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            IsColumnManagementVisible = !IsColumnManagementVisible;
+            _logger?.LogDebug("Column management toggled: {IsVisible}", IsColumnManagementVisible);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error toggling column management");
+        }
+    }
+
+    #endregion
+
+    #region Phase 3 - Column Management Event Handlers
+
+    /// <summary>
+    /// Handles the close request from the column management panel.
+    /// </summary>
+    private void OnColumnManagementCloseRequested(object? sender, EventArgs e)
+    {
+        IsColumnManagementVisible = false;
+    }
+
+    /// <summary>
+    /// Handles columns modified event from the management panel.
+    /// </summary>
+    private void OnColumnManagementColumnsModified(object? sender, EventArgs e)
+    {
+        try
+        {
+            RefreshGrid();
+            _logger?.LogDebug("Grid refreshed due to column modifications");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling column modifications");
+        }
+    }
+
+    /// <summary>
+    /// Handles configuration save requests from the management panel.
+    /// </summary>
+    private void OnColumnManagementConfigurationSaveRequested(object? sender, ColumnConfiguration configuration)
+    {
+        try
+        {
+            // In a real implementation, this would use a service to save the configuration
+            _logger?.LogInformation("Configuration save requested: {ConfigName}", configuration.DisplayName);
+            
+            // For now, just add it to the panel's saved configurations if it doesn't exist
+            if (_columnManagementPanel?.SavedConfigurations != null)
+            {
+                var existing = _columnManagementPanel.SavedConfigurations
+                    .FirstOrDefault(c => c.ConfigurationId == configuration.ConfigurationId);
+                    
+                if (existing == null)
+                {
+                    _columnManagementPanel.SavedConfigurations.Add(configuration);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling configuration save request");
+        }
+    }
+
+    /// <summary>
+    /// Handles configuration load requests from the management panel.
+    /// </summary>
+    private void OnColumnManagementConfigurationLoadRequested(object? sender, ColumnConfiguration configuration)
+    {
+        try
+        {
+            _logger?.LogInformation("Configuration load requested: {ConfigName}", configuration.DisplayName);
+            
+            // Apply the configuration to the current columns
+            _columnManagementPanel?.ApplyConfiguration(configuration);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling configuration load request");
         }
     }
 
@@ -479,6 +671,33 @@ public partial class CustomDataGrid : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error updating selection mode");
+        }
+    }
+
+    /// <summary>
+    /// Updates the visibility of the column management panel.
+    /// Phase 3 feature for toggling the management UI.
+    /// </summary>
+    private void UpdateColumnManagementVisibility()
+    {
+        try
+        {
+            if (_columnManagementContainer != null)
+            {
+                _columnManagementContainer.IsVisible = IsColumnManagementVisible;
+                
+                // Update the columns binding in the management panel
+                if (_columnManagementPanel != null && IsColumnManagementVisible)
+                {
+                    _columnManagementPanel.Columns = Columns;
+                }
+                
+                _logger?.LogDebug("Column management visibility updated: {IsVisible}", IsColumnManagementVisible);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error updating column management visibility");
         }
     }
 

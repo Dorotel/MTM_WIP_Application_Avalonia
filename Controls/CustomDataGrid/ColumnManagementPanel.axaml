@@ -1,0 +1,350 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             mc:Ignorable="d"
+             d:DesignWidth="300"
+             d:DesignHeight="500"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.ColumnManagementPanel"
+             x:CompileBindings="False">
+
+  <UserControl.Styles>
+    
+    <!-- MTM Panel Style -->
+    <Style Selector="Border.management-panel">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="16" />
+    </Style>
+
+    <!-- Header Style -->
+    <Style Selector="TextBlock.panel-header">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Section Header Style -->
+    <Style Selector="TextBlock.section-header">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+
+    <!-- Column Item Style -->
+    <Style Selector="Border.column-item">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="Margin" Value="0,2" />
+    </Style>
+
+    <Style Selector="Border.column-item:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+    </Style>
+
+    <Style Selector="Border.column-item.dragging">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryLightBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
+    <!-- Action Button Style -->
+    <Style Selector="Button.column-action">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="Width" Value="20" />
+      <Setter Property="Height" Value="20" />
+    </Style>
+
+    <Style Selector="Button.column-action:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+    </Style>
+
+    <!-- Configuration Action Style -->
+    <Style Selector="Button.config-action">
+      <Setter Property="Padding" Value="8,4" />
+      <Setter Property="FontSize" Value="11" />
+    </Style>
+    
+  </UserControl.Styles>
+
+  <!-- Main Panel Layout -->
+  <Border Classes="management-panel">
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      
+      <StackPanel Spacing="16">
+        
+        <!-- Panel Header -->
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Grid.Column="0" 
+                     Classes="panel-header" 
+                     Text="Column Management" 
+                     VerticalAlignment="Center" />
+          
+          <Button Grid.Column="1" 
+                  Classes="column-action"
+                  ToolTip.Tip="Close panel"
+                  Click="OnClosePanel">
+            <materialIcons:MaterialIcon Kind="Close" 
+                                        Width="14" 
+                                        Height="14"
+                                        Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+          </Button>
+        </Grid>
+        
+        <!-- Quick Actions Section -->
+        <StackPanel Spacing="8">
+          <TextBlock Classes="section-header" Text="Quick Actions" />
+          
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+            <Button Grid.Column="0" 
+                    Classes="config-action secondary" 
+                    Content="Show All"
+                    Click="OnShowAllColumns" />
+            
+            <Button Grid.Column="1" 
+                    Classes="config-action secondary" 
+                    Content="Hide All"
+                    Click="OnHideAllColumns" />
+          </Grid>
+          
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+            <Button Grid.Column="0" 
+                    Classes="config-action secondary" 
+                    Content="Reset Order"
+                    Click="OnResetColumnOrder" />
+            
+            <Button Grid.Column="1" 
+                    Classes="config-action secondary" 
+                    Content="Auto Size"
+                    Click="OnAutoSizeColumns" />
+          </Grid>
+        </StackPanel>
+        
+        <!-- Column List Section -->
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0" 
+                       Classes="section-header" 
+                       Text="Columns" 
+                       VerticalAlignment="Center" />
+            
+            <TextBlock Grid.Column="1" 
+                       Text="{Binding VisibleColumnCount, StringFormat=\{0\} visible}"
+                       FontSize="10"
+                       Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                       VerticalAlignment="Center" />
+          </Grid>
+          
+          <!-- Column Items List -->
+          <ItemsControl x:Name="ColumnItemsControl" 
+                        ItemsSource="{Binding Columns}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                
+                <!-- Column Item -->
+                <Border Classes="column-item"
+                        Classes.dragging="{Binding IsDragging}">
+                  
+                  <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+                    
+                    <!-- Drag Handle -->
+                    <Button Grid.Column="0" 
+                            Classes="column-action"
+                            ToolTip.Tip="Drag to reorder"
+                            Cursor="Hand"
+                            x:Name="DragHandle">
+                      <materialIcons:MaterialIcon Kind="DragVertical" 
+                                                  Width="12" 
+                                                  Height="12"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                    </Button>
+                    
+                    <!-- Visibility Toggle -->
+                    <CheckBox Grid.Column="1"
+                              IsChecked="{Binding IsVisible, Mode=TwoWay}"
+                              ToolTip.Tip="Toggle column visibility"
+                              VerticalAlignment="Center" />
+                    
+                    <!-- Column Information -->
+                    <StackPanel Grid.Column="2" 
+                                Spacing="2"
+                                VerticalAlignment="Center">
+                      <TextBlock Text="{Binding DisplayName}" 
+                                 FontSize="11"
+                                 FontWeight="Medium"
+                                 Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                      
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{Binding PropertyName}" 
+                                   FontSize="9"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                        
+                        <TextBlock Text="{Binding EffectiveWidth, StringFormat='W: {0:F0}px'}" 
+                                   FontSize="9"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                      </StackPanel>
+                    </StackPanel>
+                    
+                    <!-- Width Controls -->
+                    <StackPanel Grid.Column="3" 
+                                Orientation="Horizontal" 
+                                Spacing="2"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding CanResize}">
+                      <Button Classes="column-action"
+                              ToolTip.Tip="Decrease width"
+                              Click="OnDecreaseWidth"
+                              Tag="{Binding}">
+                        <materialIcons:MaterialIcon Kind="Minus" 
+                                                    Width="10" 
+                                                    Height="10"
+                                                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                      </Button>
+                      
+                      <Button Classes="column-action"
+                              ToolTip.Tip="Increase width"
+                              Click="OnIncreaseWidth"
+                              Tag="{Binding}">
+                        <materialIcons:MaterialIcon Kind="Plus" 
+                                                    Width="10" 
+                                                    Height="10"
+                                                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                      </Button>
+                    </StackPanel>
+                    
+                    <!-- Move Controls -->
+                    <StackPanel Grid.Column="4" 
+                                Orientation="Horizontal" 
+                                Spacing="2"
+                                VerticalAlignment="Center">
+                      <Button Classes="column-action"
+                              ToolTip.Tip="Move left"
+                              Click="OnMoveLeft"
+                              Tag="{Binding}">
+                        <materialIcons:MaterialIcon Kind="ArrowLeft" 
+                                                    Width="10" 
+                                                    Height="10"
+                                                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                      </Button>
+                      
+                      <Button Classes="column-action"
+                              ToolTip.Tip="Move right"
+                              Click="OnMoveRight"
+                              Tag="{Binding}">
+                        <materialIcons:MaterialIcon Kind="ArrowRight" 
+                                                    Width="10" 
+                                                    Height="10"
+                                                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                      </Button>
+                    </StackPanel>
+                    
+                    <!-- Column Options -->
+                    <Button Grid.Column="5" 
+                            Classes="column-action"
+                            ToolTip.Tip="Column options">
+                      <materialIcons:MaterialIcon Kind="DotsVertical" 
+                                                  Width="12" 
+                                                  Height="12"
+                                                  Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                      
+                      <Button.Flyout>
+                        <MenuFlyout>
+                          <MenuItem Header="Reset Width" 
+                                    Click="OnResetColumnWidth"
+                                    Tag="{Binding}">
+                            <MenuItem.Icon>
+                              <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14" />
+                            </MenuItem.Icon>
+                          </MenuItem>
+                          
+                          <MenuItem Header="Set Fixed Width..." 
+                                    Click="OnSetFixedWidth"
+                                    Tag="{Binding}">
+                            <MenuItem.Icon>
+                              <materialIcons:MaterialIcon Kind="Ruler" Width="14" Height="14" />
+                            </MenuItem.Icon>
+                          </MenuItem>
+                          
+                          <Separator />
+                          
+                          <MenuItem Header="Move to Start" 
+                                    Click="OnMoveToStart"
+                                    Tag="{Binding}">
+                            <MenuItem.Icon>
+                              <materialIcons:MaterialIcon Kind="ArrowLeftBold" Width="14" Height="14" />
+                            </MenuItem.Icon>
+                          </MenuItem>
+                          
+                          <MenuItem Header="Move to End" 
+                                    Click="OnMoveToEnd"
+                                    Tag="{Binding}">
+                            <MenuItem.Icon>
+                              <materialIcons:MaterialIcon Kind="ArrowRightBold" Width="14" Height="14" />
+                            </MenuItem.Icon>
+                          </MenuItem>
+                        </MenuFlyout>
+                      </Button.Flyout>
+                    </Button>
+                    
+                  </Grid>
+                  
+                </Border>
+                
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          
+        </StackPanel>
+        
+        <!-- Configuration Management Section -->
+        <StackPanel Spacing="8">
+          <TextBlock Classes="section-header" Text="Saved Configurations" />
+          
+          <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="4">
+            <ComboBox Grid.Column="0"
+                      x:Name="ConfigurationComboBox"
+                      ItemsSource="{Binding SavedConfigurations}"
+                      SelectedItem="{Binding SelectedConfiguration, Mode=TwoWay}"
+                      DisplayMemberBinding="{Binding DisplayName}"
+                      PlaceholderText="Select configuration..." />
+            
+            <Button Grid.Column="1" 
+                    Classes="column-action"
+                    ToolTip.Tip="Load configuration"
+                    Click="OnLoadConfiguration">
+              <materialIcons:MaterialIcon Kind="Download" 
+                                          Width="12" 
+                                          Height="12"
+                                          Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+            </Button>
+            
+            <Button Grid.Column="2" 
+                    Classes="column-action"
+                    ToolTip.Tip="Save current configuration"
+                    Click="OnSaveConfiguration">
+              <materialIcons:MaterialIcon Kind="ContentSave" 
+                                          Width="12" 
+                                          Height="12"
+                                          Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+            </Button>
+          </Grid>
+          
+        </StackPanel>
+        
+      </StackPanel>
+      
+    </ScrollViewer>
+    
+  </Border>
+
+</UserControl>

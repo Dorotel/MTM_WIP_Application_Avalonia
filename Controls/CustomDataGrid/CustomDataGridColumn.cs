@@ -21,6 +21,11 @@ public class CustomDataGridColumn : INotifyPropertyChanged
     private bool _canSort = true;
     private bool _canFilter = true;
     private bool _canResize = true;
+    private int _displayOrder = 0;
+    private bool _isDragging = false;
+    private bool _isResizing = false;
+    private double _minWidth = 30;
+    private double _maxWidth = double.MaxValue;
     private DataTemplate? _cellTemplate;
     private IValueConverter? _cellConverter;
     private string? _stringFormat;
@@ -156,6 +161,103 @@ public class CustomDataGridColumn : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Gets or sets the display order of this column in the grid.
+    /// Lower values appear first (left-most). Used for column reordering.
+    /// </summary>
+    public int DisplayOrder
+    {
+        get => _displayOrder;
+        set
+        {
+            if (_displayOrder != value)
+            {
+                _displayOrder = value;
+                OnPropertyChanged(nameof(DisplayOrder));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether this column is currently being dragged.
+    /// Used internally for drag-and-drop reordering UI feedback.
+    /// </summary>
+    public bool IsDragging
+    {
+        get => _isDragging;
+        set
+        {
+            if (_isDragging != value)
+            {
+                _isDragging = value;
+                OnPropertyChanged(nameof(IsDragging));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether this column is currently being resized.
+    /// Used internally for resize operation UI feedback.
+    /// </summary>
+    public bool IsResizing
+    {
+        get => _isResizing;
+        set
+        {
+            if (_isResizing != value)
+            {
+                _isResizing = value;
+                OnPropertyChanged(nameof(IsResizing));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the minimum width for this column in pixels.
+    /// Prevents user from resizing column below this value.
+    /// </summary>
+    public double MinWidth
+    {
+        get => _minWidth;
+        set
+        {
+            if (!_minWidth.Equals(value) && value >= 0)
+            {
+                _minWidth = Math.Max(0, value);
+                OnPropertyChanged(nameof(MinWidth));
+                
+                // Ensure current width respects min width
+                if (!double.IsNaN(Width) && Width < _minWidth)
+                {
+                    Width = _minWidth;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum width for this column in pixels.
+    /// Prevents user from resizing column above this value.
+    /// </summary>
+    public double MaxWidth
+    {
+        get => _maxWidth;
+        set
+        {
+            if (!_maxWidth.Equals(value) && value > 0)
+            {
+                _maxWidth = Math.Max(_minWidth, value);
+                OnPropertyChanged(nameof(MaxWidth));
+                
+                // Ensure current width respects max width
+                if (!double.IsNaN(Width) && Width > _maxWidth)
+                {
+                    Width = _maxWidth;
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets or sets a custom data template for rendering cells in this column.
     /// If null, uses default string representation.
     /// </summary>
@@ -208,8 +310,29 @@ public class CustomDataGridColumn : INotifyPropertyChanged
     /// <summary>
     /// Gets the effective display width for this column.
     /// Returns actual width or a default if auto-sized.
+    /// Ensures the value is within MinWidth and MaxWidth constraints.
     /// </summary>
-    public double EffectiveWidth => double.IsNaN(Width) ? 100 : Width;
+    public double EffectiveWidth 
+    {
+        get
+        {
+            var effectiveWidth = double.IsNaN(Width) ? 100 : Width;
+            effectiveWidth = Math.Max(MinWidth, effectiveWidth);
+            effectiveWidth = Math.Min(MaxWidth, effectiveWidth);
+            return effectiveWidth;
+        }
+    }
+
+    /// <summary>
+    /// Gets whether this column can be reordered via drag-and-drop.
+    /// Based on whether the column allows reordering (can be extended in future).
+    /// </summary>
+    public bool CanReorder => true; // For now, all columns can be reordered
+
+    /// <summary>
+    /// Gets whether this column width is automatically sized.
+    /// </summary>
+    public bool IsAutoWidth => double.IsNaN(Width);
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -218,8 +341,59 @@ public class CustomDataGridColumn : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    /// <summary>
+    /// Sets the width of this column with constraint validation.
+    /// Ensures the new width is within MinWidth and MaxWidth bounds.
+    /// </summary>
+    /// <param name="newWidth">The desired width</param>
+    /// <param name="respectConstraints">Whether to enforce min/max width constraints</param>
+    public void SetWidth(double newWidth, bool respectConstraints = true)
+    {
+        if (respectConstraints)
+        {
+            newWidth = Math.Max(MinWidth, newWidth);
+            newWidth = Math.Min(MaxWidth, newWidth);
+        }
+        
+        Width = newWidth;
+    }
+
+    /// <summary>
+    /// Moves this column to a new display order position.
+    /// </summary>
+    /// <param name="newOrder">The new display order</param>
+    public void MoveTo(int newOrder)
+    {
+        DisplayOrder = Math.Max(0, newOrder);
+    }
+
+    /// <summary>
+    /// Creates a copy of this column with the same settings.
+    /// </summary>
+    /// <returns>New CustomDataGridColumn instance with copied properties</returns>
+    public CustomDataGridColumn Clone()
+    {
+        return new CustomDataGridColumn
+        {
+            PropertyName = PropertyName,
+            DisplayName = DisplayName,
+            DataType = DataType,
+            IsVisible = IsVisible,
+            Width = Width,
+            CanSort = CanSort,
+            CanFilter = CanFilter,
+            CanResize = CanResize,
+            DisplayOrder = DisplayOrder,
+            MinWidth = MinWidth,
+            MaxWidth = MaxWidth,
+            CellTemplate = CellTemplate,
+            CellConverter = CellConverter,
+            StringFormat = StringFormat
+        };
+    }
+
     public override string ToString()
     {
-        return $"{DisplayName} ({PropertyName})";
+        return $"{DisplayName} ({PropertyName}) - Order: {DisplayOrder}, Width: {(double.IsNaN(Width) ? "Auto" : Width.ToString("F0"))}, Visible: {IsVisible}";
     }
 }

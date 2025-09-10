@@ -105,24 +105,24 @@
 
   </UserControl.Styles>
 
-  <!-- Main Grid Layout -->
-  <Grid x:Name="MainGrid" RowDefinitions="Auto,*">
+  <!-- Main Grid Layout with Column Management -->
+  <Grid x:Name="MainGrid" RowDefinitions="Auto,*" ColumnDefinitions="*,Auto">
     
     <!-- Header Section -->
     <Border x:Name="HeaderSection" 
-            Grid.Row="0"
+            Grid.Row="0" Grid.Column="0"
             Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
             BorderThickness="1,1,1,0"
             CornerRadius="6,6,0,0">
       
-      <!-- Dynamic Header with Selection and Action Columns -->
+      <!-- Dynamic Header with Selection, Data, and Action Columns -->
       <Grid x:Name="DynamicHeaderGrid">
         
         <Grid.ColumnDefinitions>
           <!-- Selection column (conditional) -->
           <ColumnDefinition Width="Auto" />
-          <!-- Data columns -->
+          <!-- Data columns (dynamic based on visible columns) -->
           <ColumnDefinition Width="120" />
           <ColumnDefinition Width="80" />
           <ColumnDefinition Width="100" />
@@ -130,6 +130,8 @@
           <ColumnDefinition Width="140" />
           <ColumnDefinition Width="*" />
           <!-- Actions column -->
+          <ColumnDefinition Width="Auto" />
+          <!-- Column Management toggle -->
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         
@@ -173,13 +175,28 @@
           <TextBlock Classes="header-text" Text="Actions" HorizontalAlignment="Center" />
         </Border>
         
+        <!-- Column Management Header -->
+        <Border Grid.Column="8" Classes="header-cell" 
+                Background="{DynamicResource MTM_Shared_Logic.PrimaryLightBrush}"
+                BorderThickness="0,0,0,1">
+          <Button x:Name="ColumnManagementToggle"
+                  Classes="action-button"
+                  ToolTip.Tip="Column Management"
+                  Click="OnToggleColumnManagement">
+            <materialIcons:MaterialIcon Kind="ViewColumn" 
+                                        Width="14" 
+                                        Height="14"
+                                        Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+          </Button>
+        </Border>
+        
       </Grid>
       
     </Border>
 
     <!-- Data Section with ScrollViewer -->
     <ScrollViewer x:Name="DataScrollViewer"
-                  Grid.Row="1"
+                  Grid.Row="1" Grid.Column="0"
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
@@ -210,7 +227,7 @@
               <Grid.ColumnDefinitions>
                 <!-- Selection column (conditional) -->
                 <ColumnDefinition Width="Auto" />
-                <!-- Data columns -->
+                <!-- Data columns (matching header) -->
                 <ColumnDefinition Width="120" />
                 <ColumnDefinition Width="80" />
                 <ColumnDefinition Width="100" />
@@ -218,6 +235,8 @@
                 <ColumnDefinition Width="140" />
                 <ColumnDefinition Width="*" />
                 <!-- Actions column -->
+                <ColumnDefinition Width="Auto" />
+                <!-- Column Management space (empty for data rows) -->
                 <ColumnDefinition Width="Auto" />
               </Grid.ColumnDefinitions>
               
@@ -315,6 +334,8 @@
                   
                 </StackPanel>
               </Border>
+              <!-- Empty space for column management alignment -->
+              <Border Grid.Column="8" Classes="data-cell" Background="Transparent" BorderThickness="0" />
               
             </Grid>
             
@@ -324,6 +345,21 @@
       </ListBox>
       
     </ScrollViewer>
+    
+    <!-- Column Management Panel (Phase 3) -->
+    <Border x:Name="ColumnManagementContainer"
+            Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+            IsVisible="False"
+            Width="300"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+            BorderThickness="1,1,1,1"
+            CornerRadius="0,6,6,0">
+      
+      <!-- Column Management Panel Content -->
+      <Grid x:Name="ColumnManagementPanelHost" />
+      
+    </Border>
     
   </Grid>
 

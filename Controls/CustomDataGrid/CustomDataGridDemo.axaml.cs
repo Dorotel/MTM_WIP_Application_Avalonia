@@ -76,6 +76,21 @@ public partial class CustomDataGridDemo : UserControl
         }
     }
 
+    private bool _isColumnManagementVisible = false;
+    /// <summary>
+    /// Gets or sets whether the column management panel is visible.
+    /// Phase 3 feature for advanced column management.
+    /// </summary>
+    public bool IsColumnManagementVisible
+    {
+        get => _isColumnManagementVisible;
+        set 
+        { 
+            _isColumnManagementVisible = value;
+            OnPropertyChanged(nameof(IsColumnManagementVisible));
+        }
+    }
+
     /// <summary>
     /// Gets the count of selected items.
     /// </summary>
@@ -85,6 +100,23 @@ public partial class CustomDataGridDemo : UserControl
     /// Gets the count of items in the sample data.
     /// </summary>
     public int ItemCount => SampleInventoryData.Count;
+
+    /// <summary>
+    /// Gets the count of visible columns in the grid.
+    /// Phase 3 feature for column management feedback.
+    /// </summary>
+    public int VisibleColumnCount
+    {
+        get
+        {
+            var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+            if (demoDataGrid?.Columns != null)
+            {
+                return demoDataGrid.Columns.Count(c => c.IsVisible);
+            }
+            return 6; // Default column count
+        }
+    }
 
     #endregion
 
@@ -114,6 +146,30 @@ public partial class CustomDataGridDemo : UserControl
     /// Command to toggle multi-selection mode.
     /// </summary>
     public ICommand ToggleMultiSelectCommand => new RelayCommand(ToggleMultiSelect);
+
+    /// <summary>
+    /// Command to toggle column visibility.
+    /// Phase 3 feature for interactive column management.
+    /// </summary>
+    public ICommand ToggleColumnVisibilityCommand => new RelayCommand<string>(ToggleColumnVisibility);
+
+    /// <summary>
+    /// Command to reset all columns to default layout.
+    /// Phase 3 feature for column management.
+    /// </summary>
+    public ICommand ResetColumnsCommand => new RelayCommand(ResetColumns);
+
+    /// <summary>
+    /// Command to save current column layout.
+    /// Phase 3 feature for configuration persistence.
+    /// </summary>
+    public ICommand SaveLayoutCommand => new RelayCommand(SaveLayout);
+
+    /// <summary>
+    /// Command to auto-size all columns.
+    /// Phase 3 feature for column width management.
+    /// </summary>
+    public ICommand AutoSizeAllCommand => new RelayCommand(AutoSizeAllColumns);
 
     #endregion
 
@@ -149,6 +205,33 @@ public partial class CustomDataGridDemo : UserControl
         SelectedItems.Clear();
         OnPropertyChanged(nameof(ItemCount));
         OnPropertyChanged(nameof(SelectedItemCount));
+    }
+
+    /// <summary>
+    /// Handles the Reset Columns button click.
+    /// Phase 3 feature for resetting column layout.
+    /// </summary>
+    private void OnResetColumnsClick(object? sender, RoutedEventArgs e)
+    {
+        ResetColumns();
+    }
+
+    /// <summary>
+    /// Handles the Save Layout button click.
+    /// Phase 3 feature for saving column configuration.
+    /// </summary>
+    private void OnSaveLayoutClick(object? sender, RoutedEventArgs e)
+    {
+        SaveLayout();
+    }
+
+    /// <summary>
+    /// Handles the Auto Size All button click.
+    /// Phase 3 feature for auto-sizing columns.
+    /// </summary>
+    private void OnAutoSizeAllClick(object? sender, RoutedEventArgs e)
+    {
+        AutoSizeAllColumns();
     }
 
     #endregion
@@ -228,6 +311,90 @@ public partial class CustomDataGridDemo : UserControl
             SelectedItems.Clear();
             OnPropertyChanged(nameof(SelectedItemCount));
         }
+    }
+
+    /// <summary>
+    /// Toggles the visibility of a specific column.
+    /// Phase 3 feature for interactive column management.
+    /// </summary>
+    private void ToggleColumnVisibility(string? columnName)
+    {
+        if (string.IsNullOrEmpty(columnName))
+            return;
+
+        var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+        if (demoDataGrid?.Columns == null)
+            return;
+
+        var column = demoDataGrid.Columns.FirstOrDefault(c => c.PropertyName == columnName);
+        if (column != null)
+        {
+            column.IsVisible = !column.IsVisible;
+            OnPropertyChanged(nameof(VisibleColumnCount));
+            System.Diagnostics.Debug.WriteLine($"Toggled column visibility: {columnName} = {column.IsVisible}");
+        }
+    }
+
+    /// <summary>
+    /// Resets all columns to their default layout and visibility.
+    /// Phase 3 feature for column management.
+    /// </summary>
+    private void ResetColumns()
+    {
+        var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+        if (demoDataGrid?.Columns == null)
+            return;
+
+        // Reset all columns to visible and default widths
+        foreach (var column in demoDataGrid.Columns)
+        {
+            column.IsVisible = true;
+            column.Width = double.NaN; // Auto-size
+            column.DisplayOrder = demoDataGrid.Columns.IndexOf(column);
+        }
+
+        OnPropertyChanged(nameof(VisibleColumnCount));
+        System.Diagnostics.Debug.WriteLine("All columns reset to default layout");
+    }
+
+    /// <summary>
+    /// Saves the current column layout configuration.
+    /// Phase 3 feature for configuration persistence.
+    /// </summary>
+    private void SaveLayout()
+    {
+        var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+        if (demoDataGrid?.Columns == null)
+            return;
+
+        var config = ColumnConfiguration.FromColumns(demoDataGrid.Columns, "Demo Layout");
+        
+        // In a real implementation, this would save to a service or file
+        System.Diagnostics.Debug.WriteLine($"Saved column configuration: {config.DisplayName}");
+        System.Diagnostics.Debug.WriteLine($"Configuration has {config.ColumnSettings.Count} columns");
+        
+        foreach (var setting in config.ColumnSettings.OrderBy(s => s.Order))
+        {
+            System.Diagnostics.Debug.WriteLine($"  {setting.DisplayName}: Visible={setting.IsVisible}, Width={setting.Width:F0}px, Order={setting.Order}");
+        }
+    }
+
+    /// <summary>
+    /// Auto-sizes all columns to fit their content.
+    /// Phase 3 feature for column width management.
+    /// </summary>
+    private void AutoSizeAllColumns()
+    {
+        var demoDataGrid = this.FindControl<CustomDataGrid>("DemoDataGrid");
+        if (demoDataGrid?.Columns == null)
+            return;
+
+        foreach (var column in demoDataGrid.Columns.Where(c => c.CanResize))
+        {
+            column.Width = double.NaN; // Set to auto-size
+        }
+
+        System.Diagnostics.Debug.WriteLine("All columns set to auto-size");
     }
 
     #endregion
