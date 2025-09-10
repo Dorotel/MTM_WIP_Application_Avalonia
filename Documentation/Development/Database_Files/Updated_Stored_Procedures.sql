@@ -363,32 +363,141 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_last_10_transactions_Get_ByUser`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `qb_quickbuttons_Clear_ByUser`(
     IN p_User VARCHAR(100),
-    IN p_Limit INT
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
 )
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        RESIGNAL;
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
     END;
 
-    SELECT 
-        TransactionType,
-        BatchNumber,
-        PartID,
-        FromLocation,
-        ToLocation,
-        Operation,
-        Quantity,
-        ItemType,
-        ReceiveDate,
-        User,
-        Notes
-    FROM inv_transaction 
-    WHERE User = p_User 
-    ORDER BY ReceiveDate DESC 
-    LIMIT p_Limit;
+    START TRANSACTION;
+
+    DELETE FROM qb_quickbuttons WHERE User = p_User;
+
+    SET p_Status = 0;
+    SET p_ErrorMsg = 'All quick buttons cleared successfully';
+    COMMIT;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`%` PROCEDURE `qb_quickbuttons_Get_ByUser`(
+    IN p_User VARCHAR(50),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
+BEGIN
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving quick buttons';
+        ROLLBACK;
+    END;
+    
+    
+    SET p_Status = -1;
+    SET p_ErrorMsg = '';
+    
+    START TRANSACTION;
+    
+    
+    IF p_User IS NULL OR TRIM(p_User) = '' THEN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'User parameter is required';
+        ROLLBACK;
+    ELSE
+        
+        SELECT 
+            ID,
+            User,
+            Position,
+            PartID,
+            Operation,
+            Quantity,
+            Location,
+            ItemType,
+            DateCreated,
+            DateModified
+        FROM qb_quickbuttons 
+        WHERE User = p_User 
+        ORDER BY Position;
+        
+        
+        SET p_Status = 0;
+        SET p_ErrorMsg = CONCAT('Retrieved ', ROW_COUNT(), ' quick buttons successfully');
+        
+        COMMIT;
+    END IF;
+    
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `qb_quickbuttons_Remove`(
+    IN p_User VARCHAR(100),
+    IN p_Position INT,
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM qb_quickbuttons WHERE User = p_User AND Position = p_Position;
+
+    SET p_Status = 0;
+    SET p_ErrorMsg = 'Quick button removed successfully';
+    COMMIT;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `qb_quickbuttons_Save`(
+    IN p_User VARCHAR(100),
+    IN p_Position INT,
+    IN p_PartID VARCHAR(300),
+    IN p_Location VARCHAR(100),
+    IN p_Operation VARCHAR(100),
+    IN p_Quantity INT,
+    IN p_ItemType VARCHAR(100),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO qb_quickbuttons (User, Position, PartID, Location, Operation, Quantity, ItemType, DateCreated)
+    VALUES (p_User, p_Position, p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType, NOW())
+    ON DUPLICATE KEY UPDATE
+        PartID = VALUES(PartID),
+        Location = VALUES(Location),
+        Operation = VALUES(Operation),
+        Quantity = VALUES(Quantity),
+        ItemType = VALUES(ItemType),
+        DateModified = NOW();
+
+    SET p_Status = 0;
+    SET p_ErrorMsg = 'Quick button saved successfully';
+    COMMIT;
 END$$
 DELIMITER ;
 
@@ -433,71 +542,9 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `qb_quickbuttons_Save`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_last_10_transactions_Get_ByUser`(
     IN p_User VARCHAR(100),
-    IN p_Position INT,
-    IN p_PartID VARCHAR(300),
-    IN p_Location VARCHAR(100),
-    IN p_Operation VARCHAR(100),
-    IN p_Quantity INT,
-    IN p_ItemType VARCHAR(100),
-    OUT p_Status INT,
-    OUT p_ErrorMsg VARCHAR(255)
-)
-BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
-        SET p_Status = -1;
-    END;
-
-    START TRANSACTION;
-
-    INSERT INTO qb_quickbuttons (User, Position, PartID, Location, Operation, Quantity, ItemType, DateCreated)
-    VALUES (p_User, p_Position, p_PartID, p_Location, p_Operation, p_Quantity, p_ItemType, NOW())
-    ON DUPLICATE KEY UPDATE
-        PartID = VALUES(PartID),
-        Location = VALUES(Location),
-        Operation = VALUES(Operation),
-        Quantity = VALUES(Quantity),
-        ItemType = VALUES(ItemType),
-        DateModified = NOW();
-
-    SET p_Status = 0;
-    SET p_ErrorMsg = 'Quick button saved successfully';
-    COMMIT;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `qb_quickbuttons_Remove`(
-    IN p_User VARCHAR(100),
-    IN p_Position INT,
-    OUT p_Status INT,
-    OUT p_ErrorMsg VARCHAR(255)
-)
-BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
-        SET p_Status = -1;
-    END;
-
-    START TRANSACTION;
-
-    DELETE FROM qb_quickbuttons WHERE User = p_User AND Position = p_Position;
-
-    SET p_Status = 0;
-    SET p_ErrorMsg = 'Quick button removed successfully';
-    COMMIT;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `qb_quickbuttons_Get_ByUser`(
-    IN p_User VARCHAR(100)
+    IN p_Limit INT
 )
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -505,31 +552,22 @@ BEGIN
         RESIGNAL;
     END;
 
-    SELECT * FROM qb_quickbuttons WHERE User = p_User ORDER BY Position;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `qb_quickbuttons_Clear_ByUser`(
-    IN p_User VARCHAR(100),
-    OUT p_Status INT,
-    OUT p_ErrorMsg VARCHAR(255)
-)
-BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
-        SET p_Status = -1;
-    END;
-
-    START TRANSACTION;
-
-    DELETE FROM qb_quickbuttons WHERE User = p_User;
-
-    SET p_Status = 0;
-    SET p_ErrorMsg = 'All quick buttons cleared successfully';
-    COMMIT;
+    SELECT 
+        TransactionType,
+        BatchNumber,
+        PartID,
+        FromLocation,
+        ToLocation,
+        Operation,
+        Quantity,
+        ItemType,
+        ReceiveDate,
+        User,
+        Notes
+    FROM inv_transaction 
+    WHERE User = p_User 
+    ORDER BY ReceiveDate DESC 
+    LIMIT p_Limit;
 END$$
 DELIMITER ;
 
@@ -537,34 +575,6 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_roles_Get_ById`(IN `p_ID` INT)
 BEGIN
     SELECT * FROM sys_roles WHERE ID = p_ID;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Add`(IN `p_User` INT, IN `p_RoleID` INT, IN `p_AssignedBy` VARCHAR(100))
-BEGIN
-    INSERT INTO sys_user_roles (UserID, RoleID, AssignedBy)
-    VALUES (p_User, p_RoleID, p_AssignedBy);
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Delete`(IN `p_User` INT, IN `p_RoleID` INT)
-BEGIN
-    DELETE FROM sys_user_roles
-    WHERE UserID = p_User AND RoleID = p_RoleID;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Update`(IN `p_User` INT, IN `p_NewRoleID` INT, IN `p_AssignedBy` VARCHAR(100))
-BEGIN
-    -- Remove all roles for the user
-    DELETE FROM sys_user_roles WHERE UserID = p_User;
-
-    -- Add the new role
-    INSERT INTO sys_user_roles (UserID, RoleID, AssignedBy)
-    VALUES (p_User, p_NewRoleID, p_AssignedBy);
 END$$
 DELIMITER ;
 
@@ -630,6 +640,34 @@ sys_user_Validate:BEGIN
         SET p_Status = 1;
         SET p_ErrorMsg = CONCAT('User does not exist or is inactive: ', p_User);
     END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Add`(IN `p_User` INT, IN `p_RoleID` INT, IN `p_AssignedBy` VARCHAR(100))
+BEGIN
+    INSERT INTO sys_user_roles (UserID, RoleID, AssignedBy)
+    VALUES (p_User, p_RoleID, p_AssignedBy);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Delete`(IN `p_User` INT, IN `p_RoleID` INT)
+BEGIN
+    DELETE FROM sys_user_roles
+    WHERE UserID = p_User AND RoleID = p_RoleID;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Update`(IN `p_User` INT, IN `p_NewRoleID` INT, IN `p_AssignedBy` VARCHAR(100))
+BEGIN
+    -- Remove all roles for the user
+    DELETE FROM sys_user_roles WHERE UserID = p_User;
+
+    -- Add the new role
+    INSERT INTO sys_user_roles (UserID, RoleID, AssignedBy)
+    VALUES (p_User, p_NewRoleID, p_AssignedBy);
 END$$
 DELIMITER ;
 
