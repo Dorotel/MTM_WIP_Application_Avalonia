@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm" xmlns:materialIcons="using:Material.Icons.Avalonia" xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls" xmlns:i="using:Avalonia.Xaml.Interactivity" xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors" mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800" x:Class="MTM_WIP_Application_Avalonia.Views.AdvancedRemoveView" x:CompileBindings="True" x:DataType="vm:AdvancedRemoveViewModel">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm" xmlns:materialIcons="using:Material.Icons.Avalonia" xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls" xmlns:i="using:Avalonia.Xaml.Interactivity" xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors" mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800" x:Class="MTM_WIP_Application_Avalonia.Views.AdvancedRemoveView"  HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:CompileBindings="True" x:DataType="vm:AdvancedRemoveViewModel">
 
   <UserControl.Resources>
     <!-- Theme resources will be provided by DynamicResource bindings -->
@@ -87,9 +87,9 @@
   </UserControl.Styles>
 
   <!-- Main Layout Container - ScrollViewer for overflow handling -->
-  <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+
     
-    <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8">
+    <Grid x:Name="MainContainer" RowDefinitions="*,Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="600" MinHeight="400" Margin="8">
 
       <!-- Main Entry Panel -->
       <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,8">
@@ -238,13 +238,14 @@
             <!-- Data Grid -->
             <DataGrid Grid.Row="1" ItemsSource="{Binding RemovalHistoryGrid}" SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}" AutoGenerateColumns="False" FontSize="9" RowHeight="20">
               <DataGrid.Columns>
-                <DataGridTextColumn Header="Batch" Binding="{Binding BatchNumber}" Width="35" />
-                <DataGridTextColumn Header="Part" Binding="{Binding PartId}" Width="80" />
+                <DataGridTextColumn Header="Date/Time" Binding="{Binding TransactionTime, StringFormat='yyyy-MM-dd HH:mm'}" Width="120" />
+                <DataGridTextColumn Header="Part ID" Binding="{Binding PartId}" Width="100" />
                 <DataGridTextColumn Header="Op" Binding="{Binding Operation}" Width="35" />
                 <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="60" />
                 <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="40" />
                 <DataGridTextColumn Header="User" Binding="{Binding User}" Width="50" />
-                <DataGridTextColumn Header="Date" Binding="{Binding TransactionTime, StringFormat='{}{0:MM/dd/yy}'}" Width="50" />
+                <DataGridTextColumn Header="Batch" Binding="{Binding BatchNumber}" Width="80" />
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="60" />
               </DataGrid.Columns>
             </DataGrid>
           </Grid>
@@ -413,5 +414,4 @@
     </Border>
 
     </Grid>
-  </ScrollViewer>
 </UserControl>
