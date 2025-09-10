@@ -1,11 +1,11 @@
 # MTM Documentation Link Validation Report
 
-**Generated**: 2025-09-10T17:06:19.114Z  
+**Generated**: 2025-09-10T17:51:06.432Z  
 **Health Score**: 45%  
 
 ## Summary
 
-- **Total Files Scanned**: 198
+- **Total Files Scanned**: 202
 - **Total Links Found**: 150
 - **Valid Links**: 68
 - **Broken Links**: 78
