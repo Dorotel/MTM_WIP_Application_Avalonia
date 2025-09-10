@@ -60,6 +60,36 @@ public partial class CustomDataGrid : UserControl
         AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsMultiSelectEnabled), false);
 
     /// <summary>
+    /// Gets or sets the collection of selected items for multi-selection.
+    /// </summary>
+    public static readonly StyledProperty<ObservableCollection<object>?> SelectedItemsProperty =
+        AvaloniaProperty.Register<CustomDataGrid, ObservableCollection<object>?>(nameof(SelectedItems), null, defaultBindingMode: BindingMode.TwoWay);
+
+    /// <summary>
+    /// Gets or sets the command to execute when deleting an item.
+    /// </summary>
+    public static readonly StyledProperty<System.Windows.Input.ICommand?> DeleteItemCommandProperty =
+        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(DeleteItemCommand), null);
+
+    /// <summary>
+    /// Gets or sets the command to execute when editing an item.
+    /// </summary>
+    public static readonly StyledProperty<System.Windows.Input.ICommand?> EditItemCommandProperty =
+        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(EditItemCommand), null);
+
+    /// <summary>
+    /// Gets or sets the command to execute when duplicating an item.
+    /// </summary>
+    public static readonly StyledProperty<System.Windows.Input.ICommand?> DuplicateItemCommandProperty =
+        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(DuplicateItemCommand), null);
+
+    /// <summary>
+    /// Gets or sets the command to execute when viewing item details.
+    /// </summary>
+    public static readonly StyledProperty<System.Windows.Input.ICommand?> ViewDetailsCommandProperty =
+        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(ViewDetailsCommand), null);
+
+    /// <summary>
     /// Gets or sets the row height for data rows.
     /// </summary>
     public static readonly StyledProperty<double> RowHeightProperty =
@@ -87,6 +117,12 @@ public partial class CustomDataGrid : UserControl
         set => SetValue(SelectedItemProperty, value);
     }
 
+    public ObservableCollection<object>? SelectedItems
+    {
+        get => GetValue(SelectedItemsProperty);
+        set => SetValue(SelectedItemsProperty, value);
+    }
+
     public bool IsMultiSelectEnabled
     {
         get => GetValue(IsMultiSelectEnabledProperty);
@@ -97,6 +133,30 @@ public partial class CustomDataGrid : UserControl
     {
         get => GetValue(RowHeightProperty);
         set => SetValue(RowHeightProperty, value);
+    }
+
+    public System.Windows.Input.ICommand? DeleteItemCommand
+    {
+        get => GetValue(DeleteItemCommandProperty);
+        set => SetValue(DeleteItemCommandProperty, value);
+    }
+
+    public System.Windows.Input.ICommand? EditItemCommand
+    {
+        get => GetValue(EditItemCommandProperty);
+        set => SetValue(EditItemCommandProperty, value);
+    }
+
+    public System.Windows.Input.ICommand? DuplicateItemCommand
+    {
+        get => GetValue(DuplicateItemCommandProperty);
+        set => SetValue(DuplicateItemCommandProperty, value);
+    }
+
+    public System.Windows.Input.ICommand? ViewDetailsCommand
+    {
+        get => GetValue(ViewDetailsCommandProperty);
+        set => SetValue(ViewDetailsCommandProperty, value);
     }
 
     /// <summary>
@@ -111,6 +171,7 @@ public partial class CustomDataGrid : UserControl
     private ListBox? _dataListBox;
     private ScrollViewer? _dataScrollViewer;
     private ItemsControl? _headerItemsControl;
+    private CheckBox? _selectAllCheckBox;
     private readonly ILogger? _logger;
 
     #endregion
@@ -133,6 +194,12 @@ public partial class CustomDataGrid : UserControl
         catch
         {
             _logger = null; // Graceful fallback for design-time
+        }
+
+        // Initialize SelectedItems if null
+        if (SelectedItems == null)
+        {
+            SelectedItems = new ObservableCollection<object>();
         }
 
         VisibleColumns = new ObservableCollection<CustomDataGridColumn>();
@@ -160,6 +227,10 @@ public partial class CustomDataGrid : UserControl
         _dataListBox = this.FindControl<ListBox>("DataListBox");
         _dataScrollViewer = this.FindControl<ScrollViewer>("DataScrollViewer");
         _headerItemsControl = this.FindControl<ItemsControl>("HeaderItemsControl");
+        _selectAllCheckBox = this.FindControl<CheckBox>("SelectAllCheckBox");
+        
+        // Set up ListBox selection mode based on IsMultiSelectEnabled
+        UpdateSelectionMode();
         
         _logger?.LogDebug("CustomDataGrid components initialized");
     }
@@ -181,6 +252,16 @@ public partial class CustomDataGrid : UserControl
             {
                 _logger?.LogDebug("ItemsSource changed, item count: {Count}", 
                     (ItemsSource as ICollection)?.Count ?? 0);
+            }
+            else if (e.Property == IsMultiSelectEnabledProperty)
+            {
+                UpdateSelectionMode();
+                _logger?.LogDebug("Multi-select mode changed to: {IsEnabled}", IsMultiSelectEnabled);
+            }
+            else if (e.Property == SelectedItemsProperty)
+            {
+                UpdateSelectAllCheckBoxState();
+                _logger?.LogDebug("SelectedItems changed, count: {Count}", SelectedItems?.Count ?? 0);
             }
         }
         catch (Exception ex)
@@ -237,6 +318,33 @@ public partial class CustomDataGrid : UserControl
         }
     }
 
+    /// <summary>
+    /// Handles the Select All checkbox click event.
+    /// </summary>
+    public void OnSelectAllClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (!IsMultiSelectEnabled || _selectAllCheckBox == null || SelectedItems == null)
+                return;
+
+            if (_selectAllCheckBox.IsChecked == true)
+            {
+                SelectAllItems();
+            }
+            else
+            {
+                ClearSelection();
+            }
+
+            _logger?.LogDebug("Select All clicked, new selection count: {Count}", SelectedItems.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling Select All click");
+        }
+    }
+
     #endregion
 
     #region Public Methods
@@ -277,6 +385,58 @@ public partial class CustomDataGrid : UserControl
         }
     }
 
+    /// <summary>
+    /// Selects all items in the grid.
+    /// Only works when IsMultiSelectEnabled is true.
+    /// </summary>
+    public void SelectAllItems()
+    {
+        try
+        {
+            if (!IsMultiSelectEnabled || SelectedItems == null || ItemsSource == null)
+                return;
+
+            SelectedItems.Clear();
+            foreach (var item in ItemsSource.Cast<object>())
+            {
+                SelectedItems.Add(item);
+            }
+
+            UpdateSelectAllCheckBoxState();
+            _logger?.LogDebug("All items selected, count: {Count}", SelectedItems.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error selecting all items");
+        }
+    }
+
+    /// <summary>
+    /// Clears the current selection.
+    /// </summary>
+    public void ClearSelection()
+    {
+        try
+        {
+            SelectedItem = null;
+            SelectedItems?.Clear();
+            UpdateSelectAllCheckBoxState();
+            _logger?.LogDebug("Selection cleared");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error clearing selection");
+        }
+    }
+
+    /// <summary>
+    /// Gets the number of selected items.
+    /// </summary>
+    public int GetSelectedCount()
+    {
+        return IsMultiSelectEnabled ? (SelectedItems?.Count ?? 0) : (SelectedItem != null ? 1 : 0);
+    }
+
     #endregion
 
     #region Private Methods
@@ -297,6 +457,62 @@ public partial class CustomDataGrid : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error refreshing visible columns");
+        }
+    }
+
+    /// <summary>
+    /// Updates the ListBox selection mode based on IsMultiSelectEnabled property.
+    /// </summary>
+    private void UpdateSelectionMode()
+    {
+        try
+        {
+            if (_dataListBox != null)
+            {
+                _dataListBox.SelectionMode = IsMultiSelectEnabled 
+                    ? Avalonia.Controls.SelectionMode.Multiple 
+                    : Avalonia.Controls.SelectionMode.Single;
+                
+                _logger?.LogDebug("Selection mode updated to: {Mode}", _dataListBox.SelectionMode);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error updating selection mode");
+        }
+    }
+
+    /// <summary>
+    /// Updates the state of the Select All checkbox based on current selection.
+    /// </summary>
+    private void UpdateSelectAllCheckBoxState()
+    {
+        try
+        {
+            if (_selectAllCheckBox == null || !IsMultiSelectEnabled || ItemsSource == null)
+                return;
+
+            var totalItems = ItemsSource.Cast<object>().Count();
+            var selectedCount = SelectedItems?.Count ?? 0;
+
+            if (selectedCount == 0)
+            {
+                _selectAllCheckBox.IsChecked = false;
+            }
+            else if (selectedCount == totalItems)
+            {
+                _selectAllCheckBox.IsChecked = true;
+            }
+            else
+            {
+                _selectAllCheckBox.IsChecked = null; // Indeterminate state
+            }
+
+            _logger?.LogDebug("Select All checkbox state updated: {State}", _selectAllCheckBox.IsChecked);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error updating Select All checkbox state");
         }
     }
 

@@ -19,17 +19,18 @@
             Padding="16"
             Margin="0,0,0,16">
       
-      <StackPanel Spacing="8">
-        <TextBlock Text="MTM Custom Data Grid - Phase 1 Demo" 
+      <StackPanel Spacing="12">
+        <TextBlock Text="MTM Custom Data Grid - Phase 2 Demo" 
                    FontSize="18" 
                    FontWeight="Bold"
                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
         
-        <TextBlock Text="High-performance data grid using ListBox with virtual scrolling for MTM inventory data." 
+        <TextBlock Text="High-performance data grid with multi-selection, checkboxes, and action buttons for MTM inventory management." 
                    FontSize="12"
                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
                    TextWrapping="Wrap" />
         
+        <!-- Action Buttons Row -->
         <StackPanel Orientation="Horizontal" Spacing="12">
           <Button Content="Load Sample Data" 
                   Classes="primary"
@@ -41,7 +42,23 @@
                   Click="OnClearDataClick"
                   Padding="12,6" />
           
-          <TextBlock Text="{Binding ItemCount, StringFormat='Items: {0}'}" 
+          <ToggleButton Content="Multi-Select Mode" 
+                        IsChecked="{Binding IsMultiSelectEnabled, Mode=TwoWay}"
+                        Classes="accent"
+                        Padding="12,6" />
+        </StackPanel>
+        
+        <!-- Status Information -->
+        <StackPanel Orientation="Horizontal" Spacing="16">
+          <TextBlock Text="{Binding ItemCount, StringFormat='Total Items: {0}'}" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+          
+          <TextBlock Text="{Binding SelectedItemCount, StringFormat='Selected: {0}'}" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+          
+          <TextBlock Text="{Binding IsMultiSelectEnabled, StringFormat='Multi-Select: {0}'}" 
                      VerticalAlignment="Center"
                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
         </StackPanel>
@@ -49,12 +66,17 @@
       
     </Border>
     
-    <!-- Custom Data Grid -->
+    <!-- Custom Data Grid with Phase 2 Features -->
     <customGrid:CustomDataGrid x:Name="DemoDataGrid"
                                Grid.Row="1"
                                ItemsSource="{Binding SampleInventoryData}"
                                SelectedItem="{Binding SelectedInventoryItem, Mode=TwoWay}"
-                               IsMultiSelectEnabled="False" />
+                               SelectedItems="{Binding SelectedItems, Mode=TwoWay}"
+                               IsMultiSelectEnabled="{Binding IsMultiSelectEnabled}"
+                               DeleteItemCommand="{Binding DeleteItemCommand}"
+                               EditItemCommand="{Binding EditItemCommand}"
+                               DuplicateItemCommand="{Binding DuplicateItemCommand}"
+                               ViewDetailsCommand="{Binding ViewDetailsCommand}" />
     
   </Grid>
 

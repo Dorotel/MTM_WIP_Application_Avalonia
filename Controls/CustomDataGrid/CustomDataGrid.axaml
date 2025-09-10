@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d"
-             d:DesignWidth="800"
+             d:DesignWidth="900"
              d:DesignHeight="400"
              x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.CustomDataGrid"
              x:CompileBindings="False">
@@ -43,6 +43,33 @@
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
     </Style>
 
+    <!-- Checkbox cell style -->
+    <Style Selector="Border.checkbox-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="MinHeight" Value="28" />
+    </Style>
+
+    <Style Selector="Border.checkbox-cell.selected">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryLightBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+    </Style>
+
+    <!-- Action cell style -->
+    <Style Selector="Border.action-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
+      <Setter Property="Padding" Value="4,6" />
+      <Setter Property="MinHeight" Value="28" />
+    </Style>
+
+    <Style Selector="Border.action-cell.selected">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryLightBrush}" />
+    </Style>
+
     <!-- Header text style -->
     <Style Selector="TextBlock.header-text">
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
@@ -58,6 +85,24 @@
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
+    <!-- Action button styles -->
+    <Style Selector="Button.action-button">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="Margin" Value="2,0" />
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
+    </Style>
+
+    <Style Selector="Button.action-button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+    </Style>
+
+    <Style Selector="Button.action-button.delete:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+    </Style>
+
   </UserControl.Styles>
 
   <!-- Main Grid Layout -->
@@ -71,31 +116,61 @@
             BorderThickness="1,1,1,0"
             CornerRadius="6,6,0,0">
       
-      <!-- Static Header for Phase 1 - Dynamic columns will be implemented in later phases -->
-      <Grid x:Name="StaticHeaderGrid" ColumnDefinitions="120,80,100,90,140,*">
+      <!-- Dynamic Header with Selection and Action Columns -->
+      <Grid x:Name="DynamicHeaderGrid">
         
-        <Border Grid.Column="0" Classes="header-cell">
+        <Grid.ColumnDefinitions>
+          <!-- Selection column (conditional) -->
+          <ColumnDefinition Width="Auto" />
+          <!-- Data columns -->
+          <ColumnDefinition Width="120" />
+          <ColumnDefinition Width="80" />
+          <ColumnDefinition Width="100" />
+          <ColumnDefinition Width="90" />
+          <ColumnDefinition Width="140" />
+          <ColumnDefinition Width="*" />
+          <!-- Actions column -->
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <!-- Selection Header (CheckBox for Select All) -->
+        <Border Grid.Column="0" Classes="header-cell" 
+                IsVisible="{Binding IsMultiSelectEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}">
+          <CheckBox x:Name="SelectAllCheckBox" 
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="Select All"
+                    Click="OnSelectAllClick" />
+        </Border>
+        
+        <!-- Data Headers -->
+        <Border Grid.Column="1" Classes="header-cell">
           <TextBlock Classes="header-text" Text="Part ID" />
         </Border>
         
-        <Border Grid.Column="1" Classes="header-cell">
+        <Border Grid.Column="2" Classes="header-cell">
           <TextBlock Classes="header-text" Text="Operation" />
         </Border>
         
-        <Border Grid.Column="2" Classes="header-cell">
+        <Border Grid.Column="3" Classes="header-cell">
           <TextBlock Classes="header-text" Text="Location" />
         </Border>
         
-        <Border Grid.Column="3" Classes="header-cell">
+        <Border Grid.Column="4" Classes="header-cell">
           <TextBlock Classes="header-text" Text="Quantity" />
         </Border>
         
-        <Border Grid.Column="4" Classes="header-cell">
+        <Border Grid.Column="5" Classes="header-cell">
           <TextBlock Classes="header-text" Text="Last Updated" />
         </Border>
         
-        <Border Grid.Column="5" Classes="header-cell">
+        <Border Grid.Column="6" Classes="header-cell">
           <TextBlock Classes="header-text" Text="Notes" />
+        </Border>
+        
+        <!-- Actions Header -->
+        <Border Grid.Column="7" Classes="header-cell">
+          <TextBlock Classes="header-text" Text="Actions" HorizontalAlignment="Center" />
         </Border>
         
       </Grid>
@@ -129,31 +204,116 @@
         <ListBox.ItemTemplate>
           <DataTemplate>
             
-            <!-- Data Row - Static layout matching header for Phase 1 -->
-            <Grid ColumnDefinitions="120,80,100,90,140,*">
+            <!-- Data Row with Selection and Action Columns -->
+            <Grid>
               
-              <Border Grid.Column="0" Classes="data-cell">
+              <Grid.ColumnDefinitions>
+                <!-- Selection column (conditional) -->
+                <ColumnDefinition Width="Auto" />
+                <!-- Data columns -->
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="90" />
+                <ColumnDefinition Width="140" />
+                <ColumnDefinition Width="*" />
+                <!-- Actions column -->
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              
+              <!-- Selection CheckBox -->
+              <Border Grid.Column="0" 
+                      Classes="checkbox-cell"
+                      IsVisible="{Binding IsMultiSelectEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <CheckBox HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding IsSelected}"
+                          ToolTip.Tip="Select item" />
+              </Border>
+              
+              <!-- Data Cells -->
+              <Border Grid.Column="1" Classes="data-cell">
                 <TextBlock Classes="data-text" Text="{Binding PartId}" />
               </Border>
               
-              <Border Grid.Column="1" Classes="data-cell">
+              <Border Grid.Column="2" Classes="data-cell">
                 <TextBlock Classes="data-text" Text="{Binding Operation}" />
               </Border>
               
-              <Border Grid.Column="2" Classes="data-cell">
+              <Border Grid.Column="3" Classes="data-cell">
                 <TextBlock Classes="data-text" Text="{Binding Location}" />
               </Border>
               
-              <Border Grid.Column="3" Classes="data-cell">
+              <Border Grid.Column="4" Classes="data-cell">
                 <TextBlock Classes="data-text" Text="{Binding Quantity, StringFormat=N0}" />
               </Border>
               
-              <Border Grid.Column="4" Classes="data-cell">
+              <Border Grid.Column="5" Classes="data-cell">
                 <TextBlock Classes="data-text" Text="{Binding LastUpdated, StringFormat='MM/dd/yy HH:mm'}" />
               </Border>
               
-              <Border Grid.Column="5" Classes="data-cell">
+              <Border Grid.Column="6" Classes="data-cell">
                 <TextBlock Classes="data-text" Text="{Binding Notes}" />
+              </Border>
+              
+              <!-- Action Buttons -->
+              <Border Grid.Column="7" Classes="action-cell">
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="2">
+                  
+                  <!-- Delete Button -->
+                  <Button Classes="action-button delete"
+                          ToolTip.Tip="Delete item"
+                          Command="{Binding DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                          CommandParameter="{Binding}">
+                    <materialIcons:MaterialIcon Kind="Delete" 
+                                                Width="14" 
+                                                Height="14"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+                  </Button>
+                  
+                  <!-- Context Menu Button -->
+                  <Button Classes="action-button"
+                          ToolTip.Tip="More actions">
+                    <materialIcons:MaterialIcon Kind="DotsVertical" 
+                                                Width="14" 
+                                                Height="14"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                    
+                    <Button.Flyout>
+                      <MenuFlyout>
+                        <MenuItem Header="Edit" 
+                                  Command="{Binding EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                  CommandParameter="{Binding}">
+                          <MenuItem.Icon>
+                            <materialIcons:MaterialIcon Kind="Edit" Width="16" Height="16" />
+                          </MenuItem.Icon>
+                        </MenuItem>
+                        
+                        <MenuItem Header="Duplicate" 
+                                  Command="{Binding DuplicateItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                  CommandParameter="{Binding}">
+                          <MenuItem.Icon>
+                            <materialIcons:MaterialIcon Kind="ContentDuplicate" Width="16" Height="16" />
+                          </MenuItem.Icon>
+                        </MenuItem>
+                        
+                        <Separator />
+                        
+                        <MenuItem Header="View Details" 
+                                  Command="{Binding ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                  CommandParameter="{Binding}">
+                          <MenuItem.Icon>
+                            <materialIcons:MaterialIcon Kind="InformationOutline" Width="16" Height="16" />
+                          </MenuItem.Icon>
+                        </MenuItem>
+                      </MenuFlyout>
+                    </Button.Flyout>
+                  </Button>
+                  
+                </StackPanel>
               </Border>
               
             </Grid>

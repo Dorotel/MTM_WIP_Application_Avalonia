@@ -28,20 +28,36 @@ public interface ICustomDataGridService
     /// Exports grid data to the specified format.
     /// </summary>
     Task<bool> ExportDataAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns, string filePath, string format);
+    
+    /// <summary>
+    /// Exports grid data to the specified format with selection filtering support.
+    /// </summary>
+    Task<bool> ExportDataAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns, string filePath, string format, bool exportOnlySelected, IEnumerable<T>? selectedItems = null);
+    
+    /// <summary>
+    /// Gets selection statistics for the provided data and selected items.
+    /// </summary>
+    SelectionStatistics GetSelectionStatistics<T>(IEnumerable<T> totalItems, IEnumerable<T>? selectedItems = null);
 }
 
 /// <summary>
-/// MTM Custom Data Grid Service - Phase 1 Implementation
+/// MTM Custom Data Grid Service - Phase 2 Implementation
 /// 
 /// Provides data management and configuration services for CustomDataGrid controls.
 /// Follows established MTM service patterns with category-based consolidation,
 /// proper error handling, and MVVM Community Toolkit integration.
 /// 
-/// Features:
+/// Phase 1 Features:
 /// - Default column configuration for MTM data types
-/// - Export functionality for common formats
+/// - Basic CSV export functionality  
 /// - Performance optimization for large datasets
 /// - Integration with MTM error handling and logging patterns
+/// 
+/// Phase 2 Features:
+/// - Multi-selection support with export filtering
+/// - Selection statistics and metrics
+/// - Enhanced action command support
+/// - Improved user experience with selection state management
 /// </summary>
 public class CustomDataGridService : ICustomDataGridService
 {
@@ -245,12 +261,28 @@ public class CustomDataGridService : ICustomDataGridService
     /// <summary>
     /// Exports grid data to the specified format (CSV, Excel, etc.).
     /// Phase 1 implementation provides basic CSV export functionality.
+    /// Phase 2 enhancement: Supports exporting only selected items.
+    /// </summary>
+    public Task<bool> ExportDataAsync<T>(
+        IEnumerable<T> data, 
+        ObservableCollection<CustomDataGridColumn> columns, 
+        string filePath, 
+        string format)
+    {
+        return ExportDataAsync(data, columns, filePath, format, exportOnlySelected: false);
+    }
+
+    /// <summary>
+    /// Exports grid data to the specified format with selection filtering support.
+    /// Phase 2 implementation supports exporting only selected items.
     /// </summary>
     public async Task<bool> ExportDataAsync<T>(
         IEnumerable<T> data, 
         ObservableCollection<CustomDataGridColumn> columns, 
         string filePath, 
-        string format)
+        string format,
+        bool exportOnlySelected,
+        IEnumerable<T>? selectedItems = null)
     {
         try
         {
@@ -259,17 +291,23 @@ public class CustomDataGridService : ICustomDataGridService
             ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
             ArgumentException.ThrowIfNullOrWhiteSpace(format);
             
-            _logger.LogInformation("Exporting data to {Format} format: {FilePath}", format.ToUpper(), filePath);
+            _logger.LogInformation("Exporting data to {Format} format: {FilePath} (Selected only: {SelectedOnly})", 
+                format.ToUpper(), filePath, exportOnlySelected);
+
+            // Filter data if only exporting selected items
+            var exportData = exportOnlySelected && selectedItems != null
+                ? selectedItems
+                : data;
             
             switch (format.ToLowerInvariant())
             {
                 case "csv":
-                    return await ExportToCsvAsync(data, columns, filePath);
+                    return await ExportToCsvAsync(exportData, columns, filePath);
                     
                 case "excel":
                 case "xlsx":
                     // Future implementation - Phase 6
-                    _logger.LogWarning("Excel export not yet implemented in Phase 1");
+                    _logger.LogWarning("Excel export not yet implemented in Phase 2");
                     return false;
                     
                 default:
@@ -282,6 +320,36 @@ public class CustomDataGridService : ICustomDataGridService
             _logger.LogError(ex, "Error exporting data to {Format}", format);
             await HandleErrorAsync(ex, $"Export data to {format}");
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Gets selection statistics for the provided data and selected items.
+    /// Useful for displaying selection information in UI.
+    /// </summary>
+    public SelectionStatistics GetSelectionStatistics<T>(
+        IEnumerable<T> totalItems,
+        IEnumerable<T>? selectedItems = null)
+    {
+        try
+        {
+            var total = totalItems.Count();
+            var selected = selectedItems?.Count() ?? 0;
+            
+            return new SelectionStatistics
+            {
+                TotalCount = total,
+                SelectedCount = selected,
+                HasSelection = selected > 0,
+                HasMultipleSelection = selected > 1,
+                SelectionPercentage = total > 0 ? (double)selected / total * 100 : 0,
+                IsAllSelected = total > 0 && selected == total
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calculating selection statistics");
+            return new SelectionStatistics();
         }
     }
 
@@ -375,4 +443,50 @@ public class CustomDataGridService : ICustomDataGridService
     }
 
     #endregion
+}
+
+/// <summary>
+/// Statistics about the current selection state in a data grid.
+/// Provides useful metrics for UI display and business logic decisions.
+/// </summary>
+public class SelectionStatistics
+{
+    /// <summary>
+    /// Gets or sets the total number of items.
+    /// </summary>
+    public int TotalCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of selected items.
+    /// </summary>
+    public int SelectedCount { get; set; }
+
+    /// <summary>
+    /// Gets whether there are any selected items.
+    /// </summary>
+    public bool HasSelection { get; set; }
+
+    /// <summary>
+    /// Gets whether multiple items are selected.
+    /// </summary>
+    public bool HasMultipleSelection { get; set; }
+
+    /// <summary>
+    /// Gets the percentage of items selected (0-100).
+    /// </summary>
+    public double SelectionPercentage { get; set; }
+
+    /// <summary>
+    /// Gets whether all items are selected.
+    /// </summary>
+    public bool IsAllSelected { get; set; }
+
+    /// <summary>
+    /// Gets a summary string describing the selection.
+    /// </summary>
+    public string SelectionSummary => 
+        SelectedCount == 0 ? "No items selected" :
+        SelectedCount == 1 ? "1 item selected" :
+        IsAllSelected ? $"All {TotalCount} items selected" :
+        $"{SelectedCount} of {TotalCount} items selected ({SelectionPercentage:F0}%)";
 }
