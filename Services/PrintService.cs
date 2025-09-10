@@ -114,10 +114,12 @@ public class PrintService : IPrintService
                     // Get installed printers using System.Drawing.Printing (Windows only)
                     if (OperatingSystem.IsWindows())
                     {
+#pragma warning disable CA1416 // Validate platform compatibility
                         foreach (string printerName in PrinterSettings.InstalledPrinters)
                         {
                             printers.Add(printerName);
                         }
+#pragma warning restore CA1416 // Validate platform compatibility
                     }
                     else
                     {

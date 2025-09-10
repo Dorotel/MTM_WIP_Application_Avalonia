@@ -8,23 +8,44 @@ namespace MTM_WIP_Application_Avalonia.Models;
 /// </summary>
 
 /// <summary>
-/// Simplified inventory item model for UI binding.
-/// Compatible with InventoryViewModel and other UI components.
+/// Comprehensive inventory item model matching all database columns.
+/// Users can choose which columns to show/hide in the DataGrid.
 /// </summary>
 public class InventoryItem
 {
+    // Core identification
     public int Id { get; set; }
     public string PartId { get; set; } = string.Empty;
     public string Location { get; set; } = string.Empty;
     public string Operation { get; set; } = string.Empty;
+    
+    // Quantity and type information
     public int Quantity { get; set; }
     public string ItemType { get; set; } = string.Empty;
     public string BatchNumber { get; set; } = string.Empty;
-    public DateTime DateAdded { get; set; }
+    
+    // Date information - matching database schema
+    public DateTime ReceiveDate { get; set; }    // Maps to database "ReceiveDate" column
+    public DateTime LastUpdated { get; set; }    // Maps to database "LastUpdated" column  
+    public DateTime DateAdded { get; set; }      // Alias for ReceiveDate (for UI compatibility)
+    
+    // User and tracking information
     public string User { get; set; } = string.Empty;
+    public string LastUpdatedBy { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
     
+    // Additional database columns that might be present
+    public string Status { get; set; } = string.Empty;
+    public string WorkOrder { get; set; } = string.Empty;
+    public string SerialNumber { get; set; } = string.Empty;
+    public decimal? Cost { get; set; }
+    public string Vendor { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
+    
+    // Display properties
     public string DisplayText => $"({Operation}) - [{PartId} x {Quantity}]";
+    public string ShortDescription => $"{PartId} ({Quantity})";
+    public string FullDescription => $"{PartId} - {Location} - Op: {Operation} - Qty: {Quantity}";
 }
 
 /// <summary>

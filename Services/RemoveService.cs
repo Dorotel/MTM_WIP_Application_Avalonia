@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Avalonia.Threading;
 using MySql.Data.MySqlClient;
-using InventoryItem = MTM_Shared_Logic.Models.InventoryItem;
 using MTM_WIP_Application_Avalonia.Models;
 
 namespace MTM_WIP_Application_Avalonia.Services;
@@ -286,11 +285,11 @@ public class RemoveService : IRemoveService
                     }
                     
                     _logger.LogDebug("Processing removal: {PartId}, Operation: {Operation}, Quantity: {Quantity}", 
-                        item.PartID, item.Operation, item.Quantity);
+                        item.PartId, item.Operation, item.Quantity);
                     
                     // Remove item using database service
                     var removeResult = await _databaseService.RemoveInventoryItemAsync(
-                        item.PartID,
+                        item.PartId,
                         item.Location,
                         item.Operation ?? string.Empty,
                         item.Quantity,
@@ -303,21 +302,21 @@ public class RemoveService : IRemoveService
                     if (removeResult.IsSuccess)
                     {
                         successfulRemovals.Add(item);
-                        _logger.LogDebug("Successfully removed inventory item: {PartId}", item.PartID);
+                        _logger.LogDebug("Successfully removed inventory item: {PartId}", item.PartId);
                         
                         // Log to QuickButtons history as OUT transaction
                         try
                         {
                             await _quickButtonsService.AddTransactionToLast10Async(
                                 currentUser,
-                                item.PartID,
+                                item.PartId,
                                 item.Operation ?? string.Empty,
                                 item.Quantity
                             ).ConfigureAwait(false);
                         }
                         catch (Exception logEx)
                         {
-                            _logger.LogWarning(logEx, "Failed to log removal to QuickButtons history for {PartId}", item.PartID);
+                            _logger.LogWarning(logEx, "Failed to log removal to QuickButtons history for {PartId}", item.PartId);
                         }
                     }
                     else
@@ -328,7 +327,7 @@ public class RemoveService : IRemoveService
                             Error = removeResult.Message ?? "Database operation failed",
                             ErrorType = "Database"
                         });
-                        _logger.LogError("Failed to remove inventory item {PartId}: {Error}", item.PartID, removeResult.Message);
+                        _logger.LogError("Failed to remove inventory item {PartId}: {Error}", item.PartId, removeResult.Message);
                     }
                 }
                 catch (Exception itemEx)
@@ -339,7 +338,7 @@ public class RemoveService : IRemoveService
                         Error = itemEx.Message,
                         ErrorType = "Exception"
                     });
-                    _logger.LogError(itemEx, "Exception removing inventory item {PartId}", item.PartID);
+                    _logger.LogError(itemEx, "Exception removing inventory item {PartId}", item.PartId);
                 }
             }
             
@@ -444,7 +443,7 @@ public class RemoveService : IRemoveService
                 {
                     // Use AddInventoryItemAsync to restore the item
                     var restoreResult = await _databaseService.AddInventoryItemAsync(
-                        item.PartID,
+                        item.PartId,
                         item.Location,
                         item.Operation ?? string.Empty,
                         item.Quantity,
@@ -457,7 +456,7 @@ public class RemoveService : IRemoveService
                     if (restoreResult.IsSuccess)
                     {
                         successfulRestores.Add(item);
-                        _logger.LogDebug("Successfully restored inventory item: {PartId}", item.PartID);
+                        _logger.LogDebug("Successfully restored inventory item: {PartId}", item.PartId);
                     }
                     else
                     {
@@ -467,7 +466,7 @@ public class RemoveService : IRemoveService
                             Error = restoreResult.Message ?? "Database restore operation failed",
                             ErrorType = "Database"
                         });
-                        _logger.LogError("Failed to restore inventory item {PartId}: {Error}", item.PartID, restoreResult.Message);
+                        _logger.LogError("Failed to restore inventory item {PartId}: {Error}", item.PartId, restoreResult.Message);
                     }
                 }
                 catch (Exception itemEx)
@@ -478,7 +477,7 @@ public class RemoveService : IRemoveService
                         Error = itemEx.Message,
                         ErrorType = "Exception"
                     });
-                    _logger.LogError(itemEx, "Exception restoring inventory item {PartId}", item.PartID);
+                    _logger.LogError(itemEx, "Exception restoring inventory item {PartId}", item.PartId);
                 }
             }
             
@@ -699,7 +698,7 @@ public class RemoveService : IRemoveService
             return ServiceResult.Failure("Item cannot be null");
         }
         
-        if (string.IsNullOrWhiteSpace(item.PartID))
+        if (string.IsNullOrWhiteSpace(item.PartId))
         {
             return ServiceResult.Failure("Part ID is required");
         }
@@ -730,22 +729,40 @@ public class RemoveService : IRemoveService
             {
                 var item = new InventoryItem
                 {
-                    ID = row.Field<int?>("ID") ?? 0,
-                    PartID = row.Field<string>("PartID") ?? string.Empty,
+                    // Core identification columns - required fields with safe fallbacks
+                    Id = row.Field<int?>("ID") ?? 0,
+                    PartId = row.Field<string>("PartID") ?? string.Empty,
                     Location = row.Field<string>("Location") ?? string.Empty,
-                    Operation = row.Field<string>("Operation"),
+                    Operation = row.Field<string>("Operation") ?? string.Empty,
+                    
+                    // Quantity and type information
                     Quantity = row.Field<int?>("Quantity") ?? 0,
-                    ItemType = row.Field<string>("ItemType") ?? "WIP",
-                    ReceiveDate = row.Field<DateTime?>("ReceiveDate") ?? DateTime.Now,
-                    LastUpdated = row.Field<DateTime?>("LastUpdated") ?? DateTime.Now,
-                    User = row.Field<string>("User") ?? string.Empty,
-                    BatchNumber = row.Field<string>("BatchNumber")
+                    ItemType = TryGetField(row, "ItemType") ?? "WIP",
+                    BatchNumber = TryGetField(row, "BatchNumber") ?? string.Empty,
+                    
+                    // Date information - map to actual database column names
+                    ReceiveDate = TryGetDateTimeField(row, "ReceiveDate") ?? DateTime.Now,
+                    LastUpdated = TryGetDateTimeField(row, "LastUpdated") ?? DateTime.Now,
+                    DateAdded = TryGetDateTimeField(row, "ReceiveDate") ?? DateTime.Now, // DateAdded maps to ReceiveDate from database
+                    
+                    // User and tracking information
+                    User = TryGetField(row, "User") ?? string.Empty,
+                    LastUpdatedBy = TryGetField(row, "LastUpdatedBy") ?? TryGetField(row, "User") ?? string.Empty,
+                    Notes = TryGetField(row, "Notes") ?? string.Empty,
+                    
+                    // Additional columns (may not exist in all tables)
+                    Status = TryGetField(row, "Status") ?? string.Empty,
+                    WorkOrder = TryGetField(row, "WorkOrder") ?? TryGetField(row, "WO") ?? string.Empty,
+                    SerialNumber = TryGetField(row, "SerialNumber") ?? TryGetField(row, "Serial") ?? string.Empty,
+                    Cost = TryGetDecimalField(row, "Cost") ?? TryGetDecimalField(row, "UnitCost"),
+                    Vendor = TryGetField(row, "Vendor") ?? TryGetField(row, "Supplier") ?? string.Empty,
+                    Category = TryGetField(row, "Category") ?? TryGetField(row, "Type") ?? string.Empty
                 };
                 
                 items.Add(item);
             }
             
-            _logger.LogDebug("Converted {Count} rows from DataTable to InventoryItems", items.Count);
+            _logger.LogDebug("Converted {Count} rows from DataTable to InventoryItems with all available columns", items.Count);
         }
         catch (Exception ex)
         {
@@ -753,6 +770,51 @@ public class RemoveService : IRemoveService
         }
         
         return items;
+    }
+    
+    /// <summary>
+    /// Safely tries to get a string field from DataRow, returns null if column doesn't exist
+    /// </summary>
+    private static string? TryGetField(DataRow row, string columnName)
+    {
+        try
+        {
+            return row.Table.Columns.Contains(columnName) ? row.Field<string>(columnName) : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+    
+    /// <summary>
+    /// Safely tries to get a decimal field from DataRow, returns null if column doesn't exist
+    /// </summary>
+    private static decimal? TryGetDecimalField(DataRow row, string columnName)
+    {
+        try
+        {
+            return row.Table.Columns.Contains(columnName) ? row.Field<decimal?>(columnName) : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+    
+    /// <summary>
+    /// Safely tries to get a DateTime field from DataRow, returns null if column doesn't exist
+    /// </summary>
+    private static DateTime? TryGetDateTimeField(DataRow row, string columnName)
+    {
+        try
+        {
+            return row.Table.Columns.Contains(columnName) ? row.Field<DateTime?>(columnName) : null;
+        }
+        catch
+        {
+            return null;
+        }
     }
     
     #endregion

@@ -145,7 +145,7 @@ public class TriggerLostFocusEventArgs : EventArgs
 /// </summary>
 public class ItemsRemovedEventArgs : EventArgs
 {
-    public List<MTM_Shared_Logic.Models.InventoryItem> RemovedItems { get; set; } = new();
+    public List<InventoryItem> RemovedItems { get; set; } = new();
     public int TotalQuantityRemoved { get; set; }
     public string Location { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;

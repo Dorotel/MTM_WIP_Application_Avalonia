@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Views;
-using MTM_Shared_Logic.Models;
+using MTM_WIP_Application_Avalonia.Models;
 using System;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -379,7 +379,7 @@ public partial class RemoveTabView : UserControl
             // Show confirmation dialog
             var itemCount = _viewModel.SelectedItems.Count;
             var confirmationMessage = itemCount == 1
-                ? $"Delete 1 inventory item?\n\nPart: {_viewModel.SelectedItems[0].PartID}\nOperation: {_viewModel.SelectedItems[0].Operation}\nQuantity: {_viewModel.SelectedItems[0].Quantity}"
+                ? $"Delete 1 inventory item?\n\nPart: {_viewModel.SelectedItems[0].PartId}\nOperation: {_viewModel.SelectedItems[0].Operation}\nQuantity: {_viewModel.SelectedItems[0].Quantity}"
                 : $"Delete {itemCount} inventory items?\n\nThis action cannot be undone automatically.\nUse the Undo button immediately after deletion if needed.";
 
             var result = await ShowConfirmationDialog("Confirm Batch Deletion", confirmationMessage);

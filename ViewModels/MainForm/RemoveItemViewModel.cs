@@ -7,7 +7,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
@@ -65,18 +64,18 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Current inventory items displayed in the DataGrid
     /// </summary>
-    public ObservableCollection<MTM_Shared_Logic.Models.InventoryItem> InventoryItems { get; } = new();
+    public ObservableCollection<InventoryItem> InventoryItems { get; } = new();
 
     /// <summary>
     /// Currently selected items in the DataGrid for batch operations
     /// </summary>
-    public ObservableCollection<MTM_Shared_Logic.Models.InventoryItem> SelectedItems { get; } = new();
+    public ObservableCollection<InventoryItem> SelectedItems { get; } = new();
 
     /// <summary>
     /// Currently selected inventory item in the DataGrid
     /// </summary>
     [ObservableProperty]
-    private MTM_Shared_Logic.Models.InventoryItem? _selectedItem;
+    private InventoryItem? _selectedItem;
 
     #endregion
 
@@ -330,7 +329,27 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             if (result.IsSuccess)
             {
-                // RemoveService handles UI thread updates internally
+                // Synchronize search results from RemoveService to ViewModel's collection
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    InventoryItems.Clear();
+                    if (result.Value != null)
+                    {
+                        Logger.LogDebug("Adding {Count} items to InventoryItems collection", result.Value.Count);
+                        foreach (var item in result.Value)
+                        {
+                            Logger.LogDebug("Adding item - ID: {ID}, PartID: {PartID}, Location: {Location}, Operation: {Operation}, Quantity: {Quantity}", 
+                                item.Id, item.PartId, item.Location, item.Operation, item.Quantity);
+                            InventoryItems.Add(item);
+                        }
+                        Logger.LogDebug("InventoryItems collection now has {Count} items", InventoryItems.Count);
+                    }
+                    
+                    // Manually trigger HasInventoryItems property change notification
+                    OnPropertyChanged(nameof(HasInventoryItems));
+                    Logger.LogDebug("HasInventoryItems property changed, value: {HasItems}", HasInventoryItems);
+                });
+
                 Logger.LogInformation("Search completed successfully: {Count} items found", result.Value?.Count ?? 0);
             }
             else
@@ -429,7 +448,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                         : $"Successfully removed {removalResult.SuccessCount} inventory items";
 
                     var detailsText = removalResult.SuccessCount == 1
-                        ? $"Part ID: {removalResult.SuccessfulRemovals[0].PartID}\nOperation: {removalResult.SuccessfulRemovals[0].Operation}\nLocation: {removalResult.SuccessfulRemovals[0].Location}\nQuantity: {removalResult.SuccessfulRemovals[0].Quantity}"
+                        ? $"Part ID: {removalResult.SuccessfulRemovals[0].PartId}\nOperation: {removalResult.SuccessfulRemovals[0].Operation}\nLocation: {removalResult.SuccessfulRemovals[0].Location}\nQuantity: {removalResult.SuccessfulRemovals[0].Quantity}"
                         : $"Batch operation completed\nItems removed: {removalResult.SuccessCount}\nTotal quantity removed: {removalResult.SuccessfulRemovals.Sum(x => x.Quantity)}";
 
                     // Fire SuccessOverlay event for View to handle
@@ -469,7 +488,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 if (removalResult.HasFailures)
                 {
                     var failureMessage = $"Failed to remove {removalResult.FailureCount} items:\n" +
-                        string.Join("\n", removalResult.Failures.Select(f => $"• {f.Item.PartID}: {f.Error}"));
+                        string.Join("\n", removalResult.Failures.Select(f => $"• {f.Item.PartId}: {f.Error}"));
                     Logger.LogWarning("Batch deletion had failures: {FailureMessage}", failureMessage);
                 }
 
@@ -517,7 +536,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 if (restoreResult.HasFailures)
                 {
                     var failureMessage = $"Failed to restore {restoreResult.FailureCount} items:\n" +
-                        string.Join("\n", restoreResult.Failures.Select(f => $"• {f.Item.PartID}: {f.Error}"));
+                        string.Join("\n", restoreResult.Failures.Select(f => $"• {f.Item.PartId}: {f.Error}"));
                     Logger.LogWarning("Undo operation had failures: {FailureMessage}", failureMessage);
                 }
             }
@@ -729,10 +748,10 @@ public partial class RemoveItemViewModel : BaseViewModel
         {
             var sampleItems = new[]
             {
-                new MTM_Shared_Logic.Models.InventoryItem
+                new InventoryItem
                 {
-                    ID = 1,
-                    PartID = "PART001",
+                    Id = 1,
+                    PartId = "PART001",
                     Operation = "100",
                     Location = "WC01",
                     Quantity = 25,
@@ -740,10 +759,10 @@ public partial class RemoveItemViewModel : BaseViewModel
                     User = "TestUser",
                     LastUpdated = DateTime.Now.AddHours(-2)
                 },
-                new MTM_Shared_Logic.Models.InventoryItem
+                new InventoryItem
                 {
-                    ID = 2,
-                    PartID = "PART001",
+                    Id = 2,
+                    PartId = "PART001",
                     Operation = "110",
                     Location = "WC02",
                     Quantity = 15,
@@ -751,10 +770,10 @@ public partial class RemoveItemViewModel : BaseViewModel
                     User = "TestUser",
                     LastUpdated = DateTime.Now.AddHours(-1)
                 },
-                new MTM_Shared_Logic.Models.InventoryItem
+                new InventoryItem
                 {
-                    ID = 3,
-                    PartID = "PART002",
+                    Id = 3,
+                    PartId = "PART002",
                     Operation = "90",
                     Location = "WC01",
                     Quantity = 40,
@@ -770,7 +789,7 @@ public partial class RemoveItemViewModel : BaseViewModel
             if (!string.IsNullOrWhiteSpace(SelectedPart))
             {
                 filteredItems = filteredItems.Where(item =>
-                    item.PartID.Equals(SelectedPart, StringComparison.OrdinalIgnoreCase));
+                    item.PartId.Equals(SelectedPart, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(SelectedOperation))
@@ -860,7 +879,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Converts inventory items to DataTable for print service
     /// </summary>
-    private DataTable ConvertInventoryToDataTable(ObservableCollection<MTM_Shared_Logic.Models.InventoryItem> inventoryItems)
+    private DataTable ConvertInventoryToDataTable(ObservableCollection<InventoryItem> inventoryItems)
     {
         var dataTable = new DataTable();
 
@@ -877,7 +896,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         foreach (var item in inventoryItems)
         {
             var row = dataTable.NewRow();
-            row["PartId"] = item.PartID ?? string.Empty;
+            row["PartId"] = item.PartId ?? string.Empty;
             row["Operation"] = item.Operation ?? string.Empty;
             row["Location"] = item.Location ?? string.Empty;
             row["Quantity"] = item.Quantity;

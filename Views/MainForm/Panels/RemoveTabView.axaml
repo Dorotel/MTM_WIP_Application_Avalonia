@@ -95,36 +95,6 @@
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorDarkBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorDarkBrush}" />
     </Style>
-
-    <!-- DataGrid Styling -->
-    <Style Selector="DataGrid">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="GridLinesVisibility" Value="Horizontal" />
-      <Setter Property="HeadersVisibility" Value="Column" />
-      <Setter Property="CanUserReorderColumns" Value="True" />
-      <Setter Property="CanUserResizeColumns" Value="True" />
-      <Setter Property="CanUserSortColumns" Value="True" />
-      <Setter Property="IsReadOnly" Value="True" />
-      <Setter Property="SelectionMode" Value="Extended" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
-    </Style>
-
-    <Style Selector="DataGridColumnHeader">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
-
-    <Style Selector="DataGridRow:selected">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SelectionBrush}" />
-    </Style>
-
-    <Style Selector="DataGridRow:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
-    </Style>
   </UserControl.Styles>
 
   <!-- Main Layout Container - ScrollViewer for overflow handling -->
@@ -132,10 +102,10 @@
     
     <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8">
 
-      <!-- DataGrid Section - Main Focus -->
+      <!-- Data Display Section -->
       <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,8">
         
-        <Grid x:Name="DataGridContainer" RowDefinitions="Auto,Auto,*">
+        <Grid x:Name="DataContainer" RowDefinitions="Auto,Auto,*">
 
           <!-- Search Input Panel (CollapsiblePanel) -->
           <controls:CollapsiblePanel Grid.Row="1" x:Name="SearchPanel" Header="Search Filters" HeaderPosition="Top" IsExpanded="True" Margin="0,0,0,16">
@@ -162,35 +132,52 @@
             </Grid>
           </controls:CollapsiblePanel>
 
-          <!-- DataGrid with Inventory Display -->
+          <!-- Data Display Area - Placeholder for new display method -->
           <Grid Grid.Row="2" RowDefinitions="*,Auto">
             
-            <!-- Main DataGrid -->
-            <DataGrid Grid.Row="0" x:Name="InventoryDataGrid" ItemsSource="{Binding InventoryItems}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" AutoGenerateColumns="False" FontSize="11" RowHeight="28" MinHeight="200" IsVisible="{Binding HasInventoryItems}">
-              <DataGrid.Columns>
-                <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="100" />
-                <DataGridTextColumn Header="Part ID" Binding="{Binding PartID}" Width="120" />
-                <DataGridTextColumn Header="Op" Binding="{Binding Operation}" Width="60" />
-                <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="80" />
-                <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*" />
-                <DataGridTextColumn Header="Date" Binding="{Binding LastUpdated, StringFormat='{}{0:MM/dd/yyyy}'}" Width="100" />
-              </DataGrid.Columns>
-            </DataGrid>
+            <!-- Inventory Data Available - Placeholder for new display component -->
+            <Border Grid.Row="0" IsVisible="{Binding HasInventoryItems}" 
+                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" 
+                    BorderThickness="1" CornerRadius="4" Padding="16" MinHeight="200">
+              <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                <materialIcons:MaterialIcon Kind="CheckCircle" Width="48" Height="48" 
+                                          Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+                <TextBlock Text="Inventory data loaded successfully" 
+                          FontSize="16" FontWeight="Medium" 
+                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                          HorizontalAlignment="Center" />
+                <TextBlock Text="Data is ready - new display component will be added here" 
+                          FontSize="12" 
+                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                          HorizontalAlignment="Center" />
+              </StackPanel>
+            </Border>
 
             <!-- Nothing Found Indicator -->
-            <Border Grid.Row="0" IsVisible="{Binding !HasInventoryItems}" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" BorderThickness="1" CornerRadius="4" Padding="32" MinHeight="200">
+            <Border Grid.Row="0" IsVisible="{Binding !HasInventoryItems}" 
+                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" 
+                    BorderThickness="1" CornerRadius="4" Padding="32" MinHeight="200">
               <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
-                <materialIcons:MaterialIcon Kind="DatabaseRemove" Width="48" Height="48" Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
-                <TextBlock Text="No inventory items found" FontSize="16" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" HorizontalAlignment="Center" />
-                <TextBlock Text="Enter search criteria above and click Search" FontSize="12" Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" HorizontalAlignment="Center" />
+                <materialIcons:MaterialIcon Kind="DatabaseRemove" Width="48" Height="48" 
+                                          Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                <TextBlock Text="No inventory items found" FontSize="16" FontWeight="Medium" 
+                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                          HorizontalAlignment="Center" />
+                <TextBlock Text="Enter search criteria above and click Search" FontSize="12" 
+                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                          HorizontalAlignment="Center" />
               </StackPanel>
             </Border>
 
             <!-- Loading Indicator -->
             <Border Grid.Row="0" IsVisible="{Binding IsLoading}" Background="#80000000" MinHeight="200">
               <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
-                <ProgressBar IsIndeterminate="True" Width="200" Height="4" Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-                <TextBlock Text="Loading inventory data..." FontSize="14" Foreground="White" HorizontalAlignment="Center" />
+                <ProgressBar IsIndeterminate="True" Width="200" Height="4" 
+                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                <TextBlock Text="Loading inventory data..." FontSize="14" Foreground="White" 
+                          HorizontalAlignment="Center" />
               </StackPanel>
             </Border>
 

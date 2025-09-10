@@ -114,35 +114,6 @@
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SuccessDarkBrush}" />
     </Style>
 
-    <!-- DataGrid styling -->
-    <Style Selector="DataGrid">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="GridLinesVisibility" Value="Horizontal" />
-      <Setter Property="HeadersVisibility" Value="Column" />
-      <Setter Property="CanUserReorderColumns" Value="True" />
-      <Setter Property="CanUserResizeColumns" Value="True" />
-      <Setter Property="CanUserSortColumns" Value="True" />
-      <Setter Property="IsReadOnly" Value="True" />
-      <Setter Property="SelectionMode" Value="Extended" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
-    </Style>
-
-    <Style Selector="DataGridColumnHeader">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
-
-    <Style Selector="DataGridRow:selected">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SelectionBrush}" />
-    </Style>
-
-    <Style Selector="DataGridRow:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
-    </Style>
   </UserControl.Styles>
 
   <!-- Main Layout Container - ScrollViewer for overflow handling (InventoryTabView pattern) -->
@@ -285,8 +256,9 @@
                 </Grid>
               </Border>
               
-              <!-- DataGrid Container -->
+              <!-- Data Display Area - Placeholder for new display method -->
               <Grid Grid.Row="1">
+                
                 <!-- Loading Overlay -->
                 <Border Background="#80000000" 
                         CornerRadius="6"
@@ -305,6 +277,28 @@
                               FontWeight="Medium"
                               Foreground="White"
                               HorizontalAlignment="Center"/>
+                  </StackPanel>
+                </Border>
+
+                <!-- Inventory Data Available - Placeholder for new display component -->
+                <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="16" MinHeight="200"
+                        IsVisible="{Binding HasInventoryItems}"
+                        ZIndex="1">
+                  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                    <materialIcons:MaterialIcon Kind="CheckCircle" Width="48" Height="48" 
+                                              Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+                    <TextBlock Text="Transfer inventory data loaded successfully" 
+                              FontSize="16" FontWeight="Medium" 
+                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                              HorizontalAlignment="Center" />
+                    <TextBlock Text="Data is ready - new display component will be added here" 
+                              FontSize="12" 
+                              Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                              HorizontalAlignment="Center" />
                   </StackPanel>
                 </Border>
 
@@ -351,32 +345,6 @@
                     </StackPanel>
                   </StackPanel>
                 </Border>
-
-                <!-- DataGrid -->
-                <DataGrid x:Name="InventoryDataGrid"
-                          ItemsSource="{Binding InventoryItems}"
-                          SelectedItem="{Binding SelectedInventoryItem, Mode=TwoWay}"
-                          AutoGenerateColumns="False"
-                          CanUserReorderColumns="True"
-                          CanUserResizeColumns="True"
-                          CanUserSortColumns="True"
-                          IsReadOnly="True"
-                          SelectionMode="Extended"
-                          GridLinesVisibility="Horizontal"
-                          HeadersVisibility="Column"
-                          FontSize="11"
-                          RowHeight="28"
-                          ToolTip.Tip="Select inventory items for transfer. Use Ctrl+Click for multiple selection."
-                          IsVisible="{Binding HasInventoryItems}">
-                  <DataGrid.Columns>
-                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="100" />
-                    <DataGridTextColumn Header="Part ID" Binding="{Binding PartId}" Width="120" />
-                    <DataGridTextColumn Header="Operation" Binding="{Binding Operation}" Width="80" />
-                    <DataGridTextColumn Header="Available Qty" Binding="{Binding Quantity}" Width="100" />
-                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*" />
-                    <DataGridTextColumn Header="Last Updated" Binding="{Binding LastUpdated, StringFormat='MM/dd/yy HH:mm'}" Width="120" />
-                  </DataGrid.Columns>
-                </DataGrid>
               </Grid>
               
             </Grid>
