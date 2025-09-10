@@ -55,6 +55,9 @@ public static class ServiceCollectionExtensions
         // Stored Procedure Validation Service - Phase 1 implementation
         services.TryAddSingleton<IStoredProcedureValidationService, StoredProcedureValidationService>();
         
+        // Stored Procedure Correction Service - Phase 2 implementation
+        services.TryAddSingleton<IStoredProcedureCorrectionService, StoredProcedureCorrectionService>();
+        
         // UI and Application services - change to singleton for validation
         services.TryAddSingleton<IQuickButtonsService, QuickButtonsService>();
         services.TryAddSingleton<IProgressService, ProgressService>();

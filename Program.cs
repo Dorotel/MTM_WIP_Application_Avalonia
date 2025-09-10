@@ -243,10 +243,33 @@ public static class Program
             Console.WriteLine(report.ToSummaryReport());
             Console.WriteLine("========================================");
 
+            // Generate correction analysis
+            var correctionService = _serviceProvider.GetRequiredService<Services.IStoredProcedureCorrectionService>();
+            var correctionReport = await correctionService.AnalyzeValidationResultsAsync(report);
+
+            Console.WriteLine();
+            Console.WriteLine("CORRECTION ANALYSIS:");
+            Console.WriteLine("========================================");
+            Console.WriteLine(correctionReport.ToSummaryReport());
+            Console.WriteLine("========================================");
+
+            // Generate correction actions
+            var correctionActions = await correctionService.GenerateCorrectionActionsAsync(report);
+            Console.WriteLine();
+            Console.WriteLine($"Generated {correctionActions.Count} correction actions for critical and high priority issues");
+            
+            // Apply corrections in dry-run mode
+            await correctionService.ApplyCorrectionActionsAsync(correctionActions, dryRun: true);
+
             // Save detailed JSON report
             var reportPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"validation_report_{DateTime.Now:yyyyMMdd_HHmmss}.json");
             await File.WriteAllTextAsync(reportPath, report.ToJsonReport());
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Detailed report saved to: {reportPath}");
+
+            // Save correction report
+            var correctionPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"correction_analysis_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+            await File.WriteAllTextAsync(correctionPath, correctionReport.ToSummaryReport());
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Correction analysis saved to: {correctionPath}");
 
             // Summary for immediate feedback
             if (report.MismatchedCalls > 0)
