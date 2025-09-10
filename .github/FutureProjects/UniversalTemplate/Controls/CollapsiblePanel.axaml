@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+             xmlns:converters="using:YourProject.Converters"
+             mc:Ignorable="d"
+             d:DesignWidth="400"
+             d:DesignHeight="600"
+             x:Class="YourProject.Controls.CollapsiblePanel">
+
+  <UserControl.Resources>
+    <!-- Universal color references - customize these for your theme system -->
+    <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
+  </UserControl.Resources>
+
+  <!-- Universal collapsible panel template -->
+  <UserControl.Template>
+    <ControlTemplate>
+      <!-- Root container with theme-aware styling -->
+      <Border Background="{DynamicResource CardBackgroundBrush}"
+              BorderBrush="{DynamicResource BorderBrush}"
+              BorderThickness="1"
+              CornerRadius="4"
+              BoxShadow="0 2 8 0 #20000000">
+        
+        <Grid x:Name="RootGrid">
+          
+          <!-- Header Bar (position determined by HeaderPosition property) -->
+          <Border x:Name="HeaderArea"
+                  Background="{DynamicResource HeaderBackgroundBrush}"
+                  BorderBrush="{DynamicResource HeaderBorderBrush}"
+                  BorderThickness="0,0,0,1"
+                  MinHeight="32">
+            
+            <Grid x:Name="HeaderContentGrid">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              
+              <!-- Toggle Button -->
+              <Button x:Name="ToggleButton"
+                      Grid.Column="0"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Width="24"
+                      Height="24"
+                      Padding="0"
+                      Click="OnToggleClick">
+                <material:MaterialIcon x:Name="ToggleIcon"
+                                       Kind="ChevronRight"
+                                       Width="16"
+                                       Height="16"
+                                       Foreground="{DynamicResource ForegroundBrush}"/>
+              </Button>
+              
+              <!-- Header Content Presenter -->
+              <ContentPresenter x:Name="HeaderPresenter"
+                              Grid.Column="1"
+                              Content="{TemplateBinding Header}"
+                              VerticalAlignment="Center"
+                              Margin="8,0,8,0"/>
+              
+            </Grid>
+          </Border>
+
+          <!-- Content Area -->
+          <Border x:Name="ContentArea"
+                  Background="{DynamicResource ContentBackgroundBrush}"
+                  Padding="12">
+            <ContentPresenter x:Name="ContentPresenter" 
+                            Content="{TemplateBinding Content}"/>
+          </Border>
+
+        </Grid>
+      </Border>
+    </ControlTemplate>
+  </UserControl.Template>
+
+</UserControl>
