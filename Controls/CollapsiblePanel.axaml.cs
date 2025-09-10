@@ -175,12 +175,16 @@ public partial class CollapsiblePanel : UserControl
 
         // Update button positioning
         UpdateButtonPositioning();
+        
+        // Update header corner radius based on current expanded state
+        UpdateHeaderCornerRadius(!IsExpanded);
     }
 
     private void SetupLeftHeader()
     {
         // Root grid: Header | Content
-        _rootGrid!.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(40)));
+        // Account for root border thickness (2px on each side = 4px total)
+        _rootGrid!.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(30))); // 34 - 4 for border
         _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
         
         if (_headerArea != null)
@@ -195,8 +199,8 @@ public partial class CollapsiblePanel : UserControl
         if (_headerArea != null)
         {
             _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 1, 0);
-            _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 0, 0, 8); // Left side rounded corners
-            _headerArea.Width = 40;
+            // Corner radius will be set by UpdateHeaderCornerRadius based on expanded state
+            _headerArea.Width = 34;
             _headerArea.Height = double.NaN;
         }
     }
@@ -204,8 +208,9 @@ public partial class CollapsiblePanel : UserControl
     private void SetupRightHeader()
     {
         // Root grid: Content | Header
+        // Account for root border thickness (2px on each side = 4px total)
         _rootGrid!.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
-        _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(40)));
+        _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(30))); // 34 - 4 for border
         
         if (_contentArea != null)
         {
@@ -216,8 +221,8 @@ public partial class CollapsiblePanel : UserControl
             Grid.SetColumn(_headerArea, 1);
             
             _headerArea.BorderThickness = new Avalonia.Thickness(1, 0, 0, 0);
-            _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 8, 8, 0); // Right side rounded corners
-            _headerArea.Width = 40;
+            // Corner radius will be set by UpdateHeaderCornerRadius based on expanded state
+            _headerArea.Width = 34;
             _headerArea.Height = double.NaN;
         }
     }
@@ -225,16 +230,17 @@ public partial class CollapsiblePanel : UserControl
     private void SetupTopHeader()
     {
         // Root grid: Header / Content
-        _rootGrid!.RowDefinitions.Add(new RowDefinition(new GridLength(40)));
+        // Account for root border thickness (2px on each side = 4px total)
+        _rootGrid!.RowDefinitions.Add(new RowDefinition(new GridLength(30))); // 34 - 4 for border
         _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
         
         if (_headerArea != null)
         {
             Grid.SetRow(_headerArea, 0);
             _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 0, 1);
-            _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 8, 0, 0); // Top rounded corners
+            // Corner radius will be set by UpdateHeaderCornerRadius based on expanded state
             _headerArea.Width = double.NaN;
-            _headerArea.Height = 40;
+            _headerArea.Height = 34;
         }
         if (_contentArea != null)
         {
@@ -245,8 +251,9 @@ public partial class CollapsiblePanel : UserControl
     private void SetupBottomHeader()
     {
         // Root grid: Content / Header
+        // Account for root border thickness (2px on each side = 4px total)
         _rootGrid!.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
-        _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40)));
+        _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(30))); // 34 - 4 for border
         
         if (_contentArea != null)
         {
@@ -257,9 +264,9 @@ public partial class CollapsiblePanel : UserControl
             Grid.SetRow(_headerArea, 1);
             
             _headerArea.BorderThickness = new Avalonia.Thickness(0, 1, 0, 0);
-            _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 0, 8, 8); // Bottom rounded corners
+            // Corner radius will be set by UpdateHeaderCornerRadius based on expanded state
             _headerArea.Width = double.NaN;
-            _headerArea.Height = 40;
+            _headerArea.Height = 34;
         }
     }
 
@@ -294,7 +301,7 @@ public partial class CollapsiblePanel : UserControl
 
     private void UpdateDisplay()
     {
-        if (_contentArea == null || _toggleIcon == null)
+        if (_contentArea == null || _toggleIcon == null || _headerArea == null)
             return;
 
         // Update toggle icon and content visibility based on expanded state and header position
@@ -302,11 +309,17 @@ public partial class CollapsiblePanel : UserControl
         {
             _contentArea.IsVisible = true;
             _toggleIcon.Kind = GetCollapseIcon();
+            
+            // When expanded, use position-specific corner radius
+            UpdateHeaderCornerRadius(false);
         }
         else
         {
             _contentArea.IsVisible = false;
             _toggleIcon.Kind = GetExpandIcon();
+            
+            // When collapsed, header should have all 4 corners rounded
+            UpdateHeaderCornerRadius(true);
         }
         
         // Update the UserControl's dimensions based on expanded state and header position
@@ -314,6 +327,9 @@ public partial class CollapsiblePanel : UserControl
         {
             this.Width = double.NaN; // Auto width when expanded
             this.Height = double.NaN; // Auto height when expanded
+            
+            // Restore header to normal size when expanded
+            UpdateHeaderSize(false);
             
             switch (HeaderPosition)
             {
@@ -331,23 +347,105 @@ public partial class CollapsiblePanel : UserControl
         }
         else
         {
+            // Shrink header to fit collapsed panel
+            UpdateHeaderSize(true);
+            
             switch (HeaderPosition)
             {
                 case HeaderPosition.Left:
                 case HeaderPosition.Right:
-                    this.Width = 40;
+                    this.Width = 34;
                     this.Height = double.NaN;
-                    this.MinWidth = 40;
+                    this.MinWidth = 34;
                     this.MinHeight = 100;
                     break;
                 case HeaderPosition.Top:
                 case HeaderPosition.Bottom:
                     this.Width = double.NaN;
-                    this.Height = 40;
+                    this.Height = 34;
                     this.MinWidth = 200;
-                    this.MinHeight = 40;
+                    this.MinHeight = 34;
                     break;
             }
+        }
+    }
+
+    private void UpdateHeaderCornerRadius(bool isCollapsed)
+    {
+        if (_headerArea == null)
+            return;
+
+        if (isCollapsed)
+        {
+            // When collapsed, header has all 4 corners rounded
+            _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 8, 8, 8);
+        }
+        else
+        {
+            // When expanded, use position-specific corner radius
+            switch (HeaderPosition)
+            {
+                case HeaderPosition.Left:
+                    _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 0, 0, 8); // Left side rounded corners
+                    break;
+                case HeaderPosition.Right:
+                    _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 8, 8, 0); // Right side rounded corners
+                    break;
+                case HeaderPosition.Top:
+                    _headerArea.CornerRadius = new Avalonia.CornerRadius(8, 8, 0, 0); // Top rounded corners
+                    break;
+                case HeaderPosition.Bottom:
+                    _headerArea.CornerRadius = new Avalonia.CornerRadius(0, 0, 8, 8); // Bottom rounded corners
+                    break;
+            }
+        }
+    }
+
+    private void UpdateHeaderSize(bool isCollapsed)
+    {
+        if (_headerArea == null)
+            return;
+
+        switch (HeaderPosition)
+        {
+            case HeaderPosition.Left:
+            case HeaderPosition.Right:
+                if (isCollapsed)
+                {
+                    // When collapsed, make header fill the entire collapsed panel width
+                    _headerArea.Width = double.NaN; // Fill available width
+                    _headerArea.Height = double.NaN;
+                    _headerArea.ClearValue(MaxWidthProperty);
+                    _headerArea.ClearValue(MaxHeightProperty);
+                }
+                else
+                {
+                    // When expanded, use normal header width
+                    _headerArea.Width = 32;
+                    _headerArea.Height = double.NaN;
+                    _headerArea.ClearValue(MaxWidthProperty);
+                    _headerArea.ClearValue(MaxHeightProperty);
+                }
+                break;
+            case HeaderPosition.Top:
+            case HeaderPosition.Bottom:
+                if (isCollapsed)
+                {
+                    // When collapsed, make header fill the entire collapsed panel height
+                    _headerArea.Width = double.NaN;
+                    _headerArea.Height = double.NaN; // Fill available height
+                    _headerArea.ClearValue(MaxWidthProperty);
+                    _headerArea.ClearValue(MaxHeightProperty);
+                }
+                else
+                {
+                    // When expanded, use normal header height
+                    _headerArea.Width = double.NaN;
+                    _headerArea.Height = 32;
+                    _headerArea.ClearValue(MaxWidthProperty);
+                    _headerArea.ClearValue(MaxHeightProperty);
+                }
+                break;
         }
     }
 

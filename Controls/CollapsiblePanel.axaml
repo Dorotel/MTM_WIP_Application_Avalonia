@@ -32,8 +32,9 @@
           <Border x:Name="HeaderArea"
                   Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
                   BorderBrush="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
-                  MinWidth="40"
-                  MinHeight="40">
+                  BorderThickness="0"
+                  MinWidth="15"
+                  MinHeight="15">
             
             <!-- Simple grid for toggle button and header content -->
             <Grid x:Name="HeaderContentGrid">
