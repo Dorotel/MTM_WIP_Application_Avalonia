@@ -898,41 +898,47 @@ public class DatabaseService : IDatabaseService
 
     /// <summary>
     /// Gets all locations using md_locations_Get_All stored procedure.
-    /// This procedure doesn't follow MTM status pattern, so use direct execution.
+    /// This procedure follows MTM status pattern with OUT parameters.
     /// </summary>
     public async Task<DataTable> GetAllLocationsAsync()
     {
-        return await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
             _connectionString,
             "md_locations_Get_All",
             new Dictionary<string, object>()
         );
+        
+        return result.Data ?? new DataTable();
     }
 
     /// <summary>
     /// Gets all operations using md_operation_numbers_Get_All stored procedure.
-    /// This procedure doesn't follow MTM status pattern, so use direct execution.
+    /// This procedure follows MTM status pattern with OUT parameters.
     /// </summary>
     public async Task<DataTable> GetAllOperationsAsync()
     {
-        return await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
             _connectionString,
             "md_operation_numbers_Get_All",
             new Dictionary<string, object>()
         );
+        
+        return result.Data ?? new DataTable();
     }
 
     /// <summary>
     /// Gets all Part IDs using md_part_ids_Get_All stored procedure.
-    /// This procedure doesn't follow MTM status pattern, so use direct execution.
+    /// This procedure follows MTM status pattern with OUT parameters.
     /// </summary>
     public async Task<DataTable> GetAllPartIDsAsync()
     {
-        return await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
             _connectionString,
             "md_part_ids_Get_All",
             new Dictionary<string, object>()
         );
+        
+        return result.Data ?? new DataTable();
     }
 
     /// <summary>
