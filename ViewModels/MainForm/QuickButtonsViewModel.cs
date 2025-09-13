@@ -35,6 +35,13 @@ public partial class QuickButtonsViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isShowingHistory = false;
 
+    // Debug information properties for footer display
+    [ObservableProperty]
+    private string _databaseConnectionStatus = "Connected";
+
+    [ObservableProperty]
+    private string _lastOperationStatus = "Ready";
+
     // Event to notify the parent about quick action execution
     public event EventHandler<QuickActionExecutedEventArgs>? QuickActionExecuted;
 
@@ -142,6 +149,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
     private async Task RefreshButtons()
     {
         Logger.LogInformation("🔧 RefreshButtonsCommand executed");
+        LastOperationStatus = "Refreshing...";
         await LoadLast10TransactionsAsync();
     }
 
@@ -385,6 +393,10 @@ public partial class QuickButtonsViewModel : BaseViewModel
             });
 
             _progressService.CompleteOperation("Transactions loaded successfully");
+            
+            // Update debug status for footer display
+            DatabaseConnectionStatus = "Connected";
+            LastOperationStatus = $"Success - {DateTime.Now:HH:mm:ss}";
         }
         catch (Exception ex)
         {
@@ -392,6 +404,10 @@ public partial class QuickButtonsViewModel : BaseViewModel
             Console.WriteLine($"🔧🔧🔧 LoadLast10TransactionsAsync FAILED with exception: {ex.Message}");
             System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 LoadLast10TransactionsAsync FAILED with exception: {ex.Message}");
             Logger.LogError(ex, "🔧 LoadLast10TransactionsAsync FAILED with exception");
+
+            // Update debug status for footer display
+            DatabaseConnectionStatus = "Error";
+            LastOperationStatus = $"Failed - {DateTime.Now:HH:mm:ss}";
 
             // If database service fails, just load empty buttons
             LoadEmptyButtons();
