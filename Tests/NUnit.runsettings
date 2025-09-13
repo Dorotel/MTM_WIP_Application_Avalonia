@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <TestRunParameters>
+    <Parameter name="TestEnvironment" value="Development" />
+    <Parameter name="DatabaseProvider" value="MySQL" />
+    <Parameter name="EnableParallelExecution" value="true" />
+    <Parameter name="MaxParallelThreads" value="4" />
+  </TestRunParameters>
+  
+  <NUnit>
+    <NumberOfTestWorkers>4</NumberOfTestWorkers>
+    <DefaultTimeout>60000</DefaultTimeout>
+    <WorkDirectory>TestResults</WorkDirectory>
+    <InternalTraceLevel>Info</InternalTraceLevel>
+  </NUnit>
+  
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <CodeCoverage>
+            <ModulePaths>
+              <Include>
+                <ModulePath>MTM_WIP_Application_Avalonia.dll</ModulePath>
+              </Include>
+            </ModulePaths>
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

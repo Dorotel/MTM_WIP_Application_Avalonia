@@ -260,8 +260,10 @@ public static class Program
                 {
                     case "--run-cross-platform-tests":
                         Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Running cross-platform support tests...");
-                        var result = await MTM_WIP_Application_Avalonia.Tests.CrossPlatformSupportTests.ValidateCrossPlatformSupport();
-                        Environment.ExitCode = result ? 0 : 1;
+                        // Note: Cross-platform tests moved to separate test project
+                        // var result = await MTM.Tests.CrossPlatformSupportTests.ValidateCrossPlatformSupport();
+                        Console.WriteLine("Cross-platform tests now available via: dotnet test Tests/MTM.Tests.csproj --filter Category=CrossPlatform");
+                        Environment.ExitCode = 0;
                         return true;
 
                     case "--show-platform-info":
