@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
@@ -26,6 +28,11 @@ public interface IQuickButtonsService
     Task<bool> ReorderQuickButtonsAsync(string userId, List<QuickButtonData> reorderedButtons);
     Task<bool> AddQuickButtonFromOperationAsync(string userId, string partId, string operation, int quantity, string? notes = null);
     Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity);
+    Task<bool> CreateQuickButtonAsync(string partId, string operation, string location, int quantity, string? notes = null);
+    Task<bool> ExportQuickButtonsAsync(string userId, string fileName = "");
+    Task<bool> ImportQuickButtonsAsync(string userId, string filePath);
+    Task<List<string>> GetAvailableExportFilesAsync();
+    List<QuickButtonData> GetQuickButtons();
     event EventHandler<QuickButtonsChangedEventArgs>? QuickButtonsChanged;
 }
 
@@ -61,17 +68,21 @@ public class QuickButtonsService : IQuickButtonsService
 {
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService _configurationService;
+    private readonly IFilePathService _filePathService;
     private readonly ILogger<QuickButtonsService> _logger;
+    private const string DefaultItemType = "WIP"; // Align with stored procedure expectation
 
     public event EventHandler<QuickButtonsChangedEventArgs>? QuickButtonsChanged;
 
     public QuickButtonsService(
         IDatabaseService databaseService,
         IConfigurationService configurationService,
+        IFilePathService filePathService,
         ILogger<QuickButtonsService> logger)
     {
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+        _filePathService = filePathService ?? throw new ArgumentNullException(nameof(filePathService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -106,35 +117,41 @@ public class QuickButtonsService : IQuickButtonsService
                 var quickButtons = new List<QuickButtonData>();
 
                 // Check if the stored procedure executed successfully
-                // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
-                if (result.Status >= 0 && result.Data != null && result.Data.Rows.Count > 0)
+                // Updated Status Pattern: 1=Success with data, 0=Success no data, -1=Error
+                if (result.Status >= 0)
                 {
-                    // Log available columns for debugging
-                    if (result.Data.Columns.Count > 0)
+                    // Status 1 means success with data, Status 0 means success but no data
+                    if (result.Status == 1 && result.Data != null && result.Data.Rows.Count > 0)
                     {
-                        var columnNames = string.Join(", ", result.Data.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
-                        _logger.LogDebug("Available columns in qb_quickbuttons_Get_ByUser result: {Columns}", columnNames);
-                    }
-
-                    // Convert DataTable rows to QuickButtonData objects
-                    foreach (DataRow row in result.Data.Rows)
-                    {
-                        quickButtons.Add(new QuickButtonData
+                        // Log available columns for debugging
+                        if (result.Data.Columns.Count > 0)
                         {
-                            Id = SafeGetInt32(row, "ID", 0),
-                            UserId = userId,
-                            Position = SafeGetInt32(row, "Position", 0),
-                            PartId = SafeGetString(row, "PartID"),
-                            Operation = SafeGetString(row, "Operation"),
-                            Quantity = SafeGetInt32(row, "Quantity", 0),
-                            Notes = SafeGetString(row, "Location"), // Map Location to Notes for compatibility
-                            CreatedDate = SafeGetDateTime(row, "DateCreated") ?? DateTime.Now,
-                            LastUsedDate = SafeGetDateTime(row, "DateModified") ?? DateTime.Now
-                        });
+                            var columnNames = string.Join(", ", result.Data.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
+                            _logger.LogDebug("Available columns in qb_quickbuttons_Get_ByUser result: {Columns}", columnNames);
+                        }
+
+                        // Convert DataTable rows to QuickButtonData objects
+                        foreach (DataRow row in result.Data.Rows)
+                        {
+                            quickButtons.Add(new QuickButtonData
+                            {
+                                Id = SafeGetInt32(row, "ID", 0),
+                                UserId = userId,
+                                Position = SafeGetInt32(row, "Position", 0),
+                                PartId = SafeGetString(row, "PartID"),
+                                Operation = SafeGetString(row, "Operation"),
+                                Quantity = SafeGetInt32(row, "Quantity", 0),
+                                Notes = SafeGetString(row, "Location"), // Map Location to Notes for compatibility
+                                CreatedDate = SafeGetDateTime(row, "Created_Date") ?? DateTime.Now,
+                                LastUsedDate = SafeGetDateTime(row, "DateModified") ?? DateTime.Now
+                            });
+                        }
                     }
+                    // Status 0 means success but no data - this is OK, return empty list
                 }
-                else if (result.Status < 0)
+                else
                 {
+                    // Status -1 means error
                     _logger.LogWarning("qb_quickbuttons_Get_ByUser returned error status {Status}: {Message}", 
                         result.Status, result.Message);
                 }
@@ -349,6 +366,20 @@ public class QuickButtonsService : IQuickButtonsService
                 return false;
             }
 
+            if (quickButton.Position < 1 || quickButton.Position > 10)
+            {
+                _logger.LogError("QuickButton Position {Position} is out of range (1-10) - cannot save. PartId: {PartId}", 
+                    quickButton.Position, quickButton.PartId);
+                return false;
+            }
+
+            if (quickButton.Quantity <= 0)
+            {
+                _logger.LogError("QuickButton Quantity {Quantity} must be > 0 - cannot save. PartId: {PartId}, Position: {Position}", 
+                    quickButton.Quantity, quickButton.PartId, quickButton.Position);
+                return false;
+            }
+
             _logger.LogDebug("Saving quick button: Position {Position}, Part {PartId}, User {UserId}", 
                 quickButton.Position, quickButton.PartId, quickButton.UserId);
 
@@ -360,7 +391,7 @@ public class QuickButtonsService : IQuickButtonsService
                 ["p_Operation"] = quickButton.Operation ?? string.Empty,
                 ["p_Quantity"] = quickButton.Quantity,
                 ["p_Location"] = quickButton.Notes ?? string.Empty, // Use Notes field as Location
-                ["p_ItemType"] = "WIP" // Standard item type for MTM operations
+                ["p_ItemType"] = DefaultItemType
             };
 
             // Use ExecuteWithStatus which handles MySQL status codes correctly
@@ -370,8 +401,8 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR  
-            // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+            // Updated Status Pattern: 1=Success with data, 0=Success no data, -1=Error
+            // For Save operations, we expect Status 1 (success with row affected)
             if (result.Status >= 0)
             {
                 _logger.LogInformation("Quick button saved successfully: {PartId} at position {Position}", 
@@ -421,8 +452,8 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR
-            // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+            // Updated Status Pattern: 1=Success with data, 0=Success no data, -1=Error
+            // Status 1 = row removed, Status 0 = nothing to remove (still success)
             if (result.Status >= 0)
             {
                 _logger.LogInformation("Quick button removed successfully: ID {ButtonId}", buttonId);
@@ -475,8 +506,8 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR
-            // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+            // Updated Status Pattern: 1=Success with data, 0=Success no data, -1=Error
+            // Status 1 = rows deleted, Status 0 = no rows to delete (still success)
             if (result.Status >= 0)
             {
                 _logger.LogInformation("All quick buttons cleared for user: {UserId}", userId);
@@ -516,15 +547,28 @@ public class QuickButtonsService : IQuickButtonsService
             
             foreach (var button in reorderedButtons)
             {
+                // Enforce bounds locally before hitting database
+                if (button.Position < 1 || button.Position > 10)
+                {
+                    _logger.LogWarning("Skipping reorder save for out-of-range position {Position} (Part {PartId})", button.Position, button.PartId);
+                    allSuccessful = false;
+                    continue;
+                }
+                if (button.Quantity <= 0)
+                {
+                    _logger.LogWarning("Skipping reorder save for invalid quantity {Quantity} at position {Position} (Part {PartId})", button.Quantity, button.Position, button.PartId);
+                    allSuccessful = false;
+                    continue;
+                }
                 var parameters = new Dictionary<string, object>
                 {
                     ["p_User"] = userId,
                     ["p_Position"] = button.Position,
                     ["p_PartID"] = button.PartId,
                     ["p_Location"] = button.Notes ?? string.Empty, // Use Notes field as Location for now
-                    ["p_Operation"] = button.Operation,
+                    ["p_Operation"] = button.Operation ?? string.Empty,
                     ["p_Quantity"] = button.Quantity,
-                    ["p_ItemType"] = "Standard" // Default item type since we don't have this in QuickButtonData
+                    ["p_ItemType"] = DefaultItemType
                 };
 
                 // Use the proper stored procedure execution method that handles OUT parameters
@@ -534,8 +578,8 @@ public class QuickButtonsService : IQuickButtonsService
                     parameters
                 );
 
-                // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR
-                // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+                // Updated Status Pattern: 1=Success with data, 0=Success no data, -1=Error
+                // For Save operations, we expect Status 1 (success with row affected)
                 if (result.Status < 0)
                 {
                     allSuccessful = false;
@@ -581,11 +625,11 @@ public class QuickButtonsService : IQuickButtonsService
                 ["p_TransactionType"] = "IN", // Default transaction type based on user intent
                 ["p_BatchNumber"] = DateTime.Now.ToString("yyyyMMddHHmmss"), // Generate batch number
                 ["p_PartID"] = partId,
-                ["p_FromLocation"] = DBNull.Value,
-                ["p_ToLocation"] = DBNull.Value,
+                ["p_FromLocation"] = string.Empty, // Use empty string instead of DBNull
+                ["p_ToLocation"] = string.Empty, // Use empty string instead of DBNull
                 ["p_Operation"] = operation,
                 ["p_Quantity"] = quantity,
-                ["p_Notes"] = DBNull.Value,
+                ["p_Notes"] = string.Empty, // Use empty string instead of DBNull
                 ["p_User"] = userId,
                 ["p_ItemType"] = "Standard", // Default item type
                 ["p_ReceiveDate"] = DateTime.Now
@@ -763,6 +807,227 @@ public class QuickButtonsService : IQuickButtonsService
             CreatedDate = DateTime.Now.AddHours(-i),
             LastUsedDate = DateTime.Now.AddMinutes(-i * 10)
         }).ToList();
+    }
+
+    /// <summary>
+    /// Exports quick buttons configuration to a JSON file in MyDocuments
+    /// </summary>
+    public async Task<bool> ExportQuickButtonsAsync(string userId, string fileName = "")
+    {
+        try
+        {
+            _logger.LogDebug("Starting quick buttons export for user: {UserId}", userId);
+
+            // Load current quick buttons
+            var quickButtons = await LoadUserQuickButtonsAsync(userId);
+            if (!quickButtons.Any())
+            {
+                _logger.LogWarning("No quick buttons found to export for user: {UserId}", userId);
+                return false;
+            }
+
+            // Generate filename if not provided
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                fileName = _filePathService.GetTimestampedFileName($"QuickButtons_{userId}", "json");
+            }
+            else if (!fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+            {
+                fileName += ".json";
+            }
+
+            // Get export path
+            var exportPath = _filePathService.GetQuickButtonsExportPath();
+            var fullPath = Path.Combine(exportPath, fileName);
+
+            // Create export data structure
+            var exportData = new
+            {
+                ExportedAt = DateTime.Now,
+                ExportedBy = userId,
+                Version = "1.0",
+                QuickButtons = quickButtons.Select(qb => new
+                {
+                    qb.Position,
+                    qb.PartId,
+                    qb.Operation,
+                    qb.Quantity,
+                    qb.Notes,
+                    qb.CreatedDate,
+                    qb.LastUsedDate
+                }).ToList()
+            };
+
+            // Serialize to JSON with pretty formatting
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            var jsonContent = JsonSerializer.Serialize(exportData, options);
+            await File.WriteAllTextAsync(fullPath, jsonContent);
+
+            _logger.LogInformation("Successfully exported {Count} quick buttons to: {FilePath}", 
+                quickButtons.Count, fullPath);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to export quick buttons for user: {UserId}", userId);
+            await ErrorHandling.HandleErrorAsync(ex, nameof(ExportQuickButtonsAsync), userId);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Imports quick buttons configuration from a JSON file
+    /// </summary>
+    public async Task<bool> ImportQuickButtonsAsync(string userId, string filePath)
+    {
+        try
+        {
+            _logger.LogDebug("Starting quick buttons import for user: {UserId} from file: {FilePath}", userId, filePath);
+
+            if (!File.Exists(filePath))
+            {
+                _logger.LogError("Import file does not exist: {FilePath}", filePath);
+                return false;
+            }
+
+            // Read and parse JSON file
+            var jsonContent = await File.ReadAllTextAsync(filePath);
+            var importData = JsonSerializer.Deserialize<JsonElement>(jsonContent);
+
+            if (!importData.TryGetProperty("quickButtons", out var quickButtonsJson))
+            {
+                _logger.LogError("Invalid import file format - missing quickButtons property");
+                return false;
+            }
+
+            // Clear existing quick buttons for the user
+            var clearResult = await ClearAllQuickButtonsAsync(userId);
+            if (!clearResult)
+            {
+                _logger.LogWarning("Failed to clear existing quick buttons before import");
+            }
+
+            // Import each quick button
+            int importedCount = 0;
+            int position = 1;
+
+            foreach (var buttonJson in quickButtonsJson.EnumerateArray())
+            {
+                try
+                {
+                    var quickButton = new QuickButtonData
+                    {
+                        UserId = userId,
+                        Position = position++,
+                        PartId = buttonJson.TryGetProperty("partId", out var partId) ? partId.GetString() ?? "" : "",
+                        Operation = buttonJson.TryGetProperty("operation", out var operation) ? operation.GetString() ?? "" : "",
+                        Quantity = buttonJson.TryGetProperty("quantity", out var quantity) ? quantity.GetInt32() : 1,
+                        Notes = buttonJson.TryGetProperty("notes", out var notes) ? notes.GetString() ?? "" : "",
+                        CreatedDate = DateTime.Now,
+                        LastUsedDate = buttonJson.TryGetProperty("lastUsedDate", out var lastUsed) && lastUsed.TryGetDateTime(out var lastUsedDate) ? lastUsedDate : DateTime.Now
+                    };
+
+                    if (string.IsNullOrWhiteSpace(quickButton.PartId) || string.IsNullOrWhiteSpace(quickButton.Operation))
+                    {
+                        _logger.LogWarning("Skipping invalid quick button with empty PartId or Operation");
+                        continue;
+                    }
+
+                    var saveResult = await SaveQuickButtonAsync(quickButton);
+                    if (saveResult)
+                    {
+                        importedCount++;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to import quick button: {PartId}/{Operation}", quickButton.PartId, quickButton.Operation);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to parse quick button from import data");
+                }
+            }
+
+            _logger.LogInformation("Successfully imported {ImportedCount} quick buttons for user: {UserId}", importedCount, userId);
+
+            // Notify UI of the import
+            QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs
+            {
+                UserId = userId,
+                ChangeType = QuickButtonChangeType.Added
+            });
+
+            return importedCount > 0;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to import quick buttons for user: {UserId} from file: {FilePath}", userId, filePath);
+            await ErrorHandling.HandleErrorAsync(ex, nameof(ImportQuickButtonsAsync), userId);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Gets list of available export files in the export directory
+    /// </summary>
+    public async Task<List<string>> GetAvailableExportFilesAsync()
+    {
+        try
+        {
+            var exportPath = _filePathService.GetQuickButtonsExportPath();
+            
+            if (!Directory.Exists(exportPath))
+            {
+                return new List<string>();
+            }
+
+            var files = Directory.GetFiles(exportPath, "*.json")
+                .Select(f => new FileInfo(f))
+                .OrderByDescending(f => f.LastWriteTime)
+                .Select(f => f.FullName)
+                .ToList();
+
+            _logger.LogDebug("Found {Count} export files in {Path}", files.Count, exportPath);
+            
+            await Task.CompletedTask; // Make this properly async
+            return files;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get available export files");
+            await ErrorHandling.HandleErrorAsync(ex, nameof(GetAvailableExportFilesAsync), "system");
+            return new List<string>();
+        }
+    }
+
+    /// <summary>
+    /// Creates a new quick button.
+    /// This method delegates to AddQuickButtonFromOperationAsync to maintain consistency.
+    /// Note: userId is retrieved from application variables.
+    /// </summary>
+    public async Task<bool> CreateQuickButtonAsync(string partId, string operation, string location, int quantity, string? notes = null)
+    {
+        var userId = Models.Model_AppVariables.CurrentUser;
+        return await AddQuickButtonFromOperationAsync(userId, partId, operation, quantity, notes);
+    }
+
+    /// <summary>
+    /// Gets all quick buttons for the current user.
+    /// This method delegates to LoadUserQuickButtonsAsync to maintain consistency.
+    /// Note: userId is retrieved from application variables.
+    /// </summary>
+    public List<QuickButtonData> GetQuickButtons()
+    {
+        var userId = Models.Model_AppVariables.CurrentUser;
+        // Since this is a synchronous interface method, we need to use GetAwaiter().GetResult()
+        return LoadUserQuickButtonsAsync(userId).GetAwaiter().GetResult();
     }
 }
 

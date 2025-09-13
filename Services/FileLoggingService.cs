@@ -24,8 +24,15 @@ public class FileLoggingService : IFileLoggingService
     private readonly ConcurrentQueue<LogEntry> _logQueue;
     private readonly object _lockObject = new();
     private bool _disposed = false;
+    private readonly bool _suppressNetworkErrors;
+    private readonly bool _networkLoggingOptional;
+    private volatile bool _networkPathAvailable = true;
+    private volatile bool _networkPathPreviouslyFailed = false;
+    private readonly TimeSpan _networkRecheckInterval = TimeSpan.FromMinutes(5);
+    private Timer? _networkRecheckTimer;
+    private DateTime _lastNetworkFailureUtc = DateTime.MinValue; // DateTime is immutable struct; volatile not allowed
 
-    public FileLoggingService(IConfiguration configuration)
+    public FileLoggingService(IConfiguration configuration, IFilePathService filePathService)
     {
         _currentUser = Environment.UserName.ToUpper();
         
@@ -34,12 +41,13 @@ public class FileLoggingService : IFileLoggingService
                           configuration["ErrorHandling:FileServerPath"] ??
                           @"\\mtmanu-fs01\Expo Drive\MH_RESOURCE\Material_Handler\MTM WIP App\Logs";
         
-        // Local path (secondary) - expand environment variables
-        var configuredLocalPath = configuration["Logging:File:LocalBasePath"] ?? "%AppData%\\MTM_WIP_Application\\Logs";
-        _localBasePath = Environment.ExpandEnvironmentVariables(configuredLocalPath);
+        // Local path (secondary) - Use MyDocuments instead of AppData
+        _localBasePath = filePathService.GetLogsPath();
         
-        // Dual location logging setting
-        _enableDualLocationLogging = configuration.GetValue<bool>("Logging:File:EnableDualLocationLogging", true);
+    // Dual location logging setting
+    _enableDualLocationLogging = configuration.GetValue<bool>("Logging:File:EnableDualLocationLogging", true);
+    _suppressNetworkErrors = configuration.GetValue<bool>("Logging:File:SuppressNetworkErrors", false);
+    _networkLoggingOptional = configuration.GetValue<bool>("Logging:File:NetworkLoggingOptional", false);
         
         _logQueue = new ConcurrentQueue<LogEntry>();
         
@@ -48,6 +56,41 @@ public class FileLoggingService : IFileLoggingService
         
         // Flush logs at configured interval
         _flushTimer = new Timer(FlushLogs, null, TimeSpan.FromSeconds(flushInterval), TimeSpan.FromSeconds(flushInterval));
+
+        // Initial network path probe (non-blocking critical path)
+        _networkPathAvailable = ProbeNetworkPath();
+        if (!_networkPathAvailable)
+        {
+            _networkPathPreviouslyFailed = true;
+            _lastNetworkFailureUtc = DateTime.UtcNow;
+        }
+
+        // Recheck timer only if network logging configured
+        if (!string.IsNullOrWhiteSpace(_networkBasePath))
+        {
+            _networkRecheckTimer = new Timer(_ =>
+            {
+                try
+                {
+                    if (!_networkPathAvailable && (DateTime.UtcNow - _lastNetworkFailureUtc) >= _networkRecheckInterval)
+                    {
+                        if (Directory.Exists(_networkBasePath))
+                        {
+                            _networkPathAvailable = true;
+                            _networkPathPreviouslyFailed = false;
+                        }
+                        else
+                        {
+                            _lastNetworkFailureUtc = DateTime.UtcNow;
+                        }
+                    }
+                }
+                catch
+                {
+                    // Suppress recheck exceptions
+                }
+            }, null, _networkRecheckInterval, _networkRecheckInterval);
+        }
     }
 
     /// <summary>
@@ -139,7 +182,14 @@ public class FileLoggingService : IFileLoggingService
             // Fallback mode - try network first, then local
             try
             {
-                WriteToLocation(logs, Path.Combine(_networkBasePath, _currentUser), fileName);
+                if (_networkPathAvailable)
+                {
+                    WriteToLocation(logs, Path.Combine(_networkBasePath, _currentUser), fileName);
+                }
+                else if (!_networkLoggingOptional && !_suppressNetworkErrors && !_networkPathPreviouslyFailed)
+                {
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Network log path unavailable: {_networkBasePath}");
+                }
             }
             catch (Exception ex)
             {
@@ -167,59 +217,56 @@ public class FileLoggingService : IFileLoggingService
             return;
         }
 
-        // Dual location mode - write to both simultaneously
-        var tasks = new List<Task>();
+    // Dual location mode - write to both simultaneously
+    var tasks = new List<Task>();
 
         // Write to network location
         tasks.Add(Task.Run(() =>
         {
+            if (!_networkPathAvailable)
+            {
+                return; // Skip attempt until recheck succeeds
+            }
             try
             {
                 WriteToLocation(logs, Path.Combine(_networkBasePath, _currentUser), fileName);
             }
             catch (IOException ex)
             {
-                // Network I/O failure - log to local location only
-                var networkFailureLog = new LogEntry
+                _networkPathAvailable = false;
+                _lastNetworkFailureUtc = DateTime.UtcNow;
+                if (!_networkLoggingOptional && !_suppressNetworkErrors && !_networkPathPreviouslyFailed)
                 {
-                    Timestamp = DateTime.Now,
-                    Level = LogLevel.Warning,
-                    Category = "SystemLog",
-                    Message = $"Network I/O failure - cannot write to network log location: {ex.Message}",
-                    UserId = _currentUser,
-                    Exception = ex
-                };
-
-                try
-                {
-                    WriteToLocation(new List<LogEntry> { networkFailureLog }, Path.Combine(_localBasePath, _currentUser), "SystemLog.csv");
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Network I/O failure: {ex.Message}");
                 }
-                catch (Exception localEx)
+                _networkPathPreviouslyFailed = true;
+                if (!_networkLoggingOptional)
                 {
-                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] CRITICAL: Failed to log network I/O failure: {localEx.Message}");
+                    var networkFailureLog = new LogEntry
+                    {
+                        Timestamp = DateTime.Now,
+                        Level = LogLevel.Warning,
+                        Category = "SystemLog",
+                        Message = $"Network I/O failure - switched to local only: {ex.Message}",
+                        UserId = _currentUser,
+                        Exception = ex
+                    };
+                    try
+                    {
+                        WriteToLocation(new List<LogEntry> { networkFailureLog }, Path.Combine(_localBasePath, _currentUser), "SystemLog.csv");
+                    }
+                    catch { }
                 }
             }
             catch (Exception ex)
             {
-                // Other network failures
-                var networkFailureLog = new LogEntry
+                _networkPathAvailable = false;
+                _lastNetworkFailureUtc = DateTime.UtcNow;
+                if (!_networkLoggingOptional && !_suppressNetworkErrors && !_networkPathPreviouslyFailed)
                 {
-                    Timestamp = DateTime.Now,
-                    Level = LogLevel.Warning,
-                    Category = "SystemLog",
-                    Message = $"Failed to write to network log location: {ex.Message}",
-                    UserId = _currentUser,
-                    Exception = ex
-                };
-
-                try
-                {
-                    WriteToLocation(new List<LogEntry> { networkFailureLog }, Path.Combine(_localBasePath, _currentUser), "SystemLog.csv");
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Network logging failed: {ex.Message}");
                 }
-                catch (Exception localEx)
-                {
-                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] CRITICAL: Failed to log network failure: {localEx.Message}");
-                }
+                _networkPathPreviouslyFailed = true;
             }
         }));
 
@@ -310,10 +357,25 @@ public class FileLoggingService : IFileLoggingService
         if (!_disposed)
         {
             _flushTimer?.Dispose();
+            _networkRecheckTimer?.Dispose();
             FlushImmediate(); // Flush any remaining logs
             _disposed = true;
         }
         GC.SuppressFinalize(this);
+    }
+
+    private bool ProbeNetworkPath()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_networkBasePath)) return false;
+            if (!Directory.Exists(_networkBasePath)) return false;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
 

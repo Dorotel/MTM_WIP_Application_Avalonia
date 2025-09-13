@@ -604,6 +604,64 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
 
         /// <summary>
+        /// Shows the NewQuickButton view panel.
+        /// </summary>
+        /// <param name="viewModel">The ViewModel for the NewQuickButton view</param>
+        public void ShowNewQuickButtonOverlay(object? viewModel = null)
+        {
+            try
+            {
+                var overlayPanel = this.FindControl<Border>("NewQuickButtonOverlayPanel");
+                var newQuickButtonView = this.FindControl<MTM_WIP_Application_Avalonia.Views.NewQuickButtonView>("NewQuickButtonView");
+                
+                if (overlayPanel != null && newQuickButtonView != null)
+                {
+                    // Set the DataContext for the view if provided
+                    if (viewModel != null)
+                    {
+                        newQuickButtonView.DataContext = viewModel;
+                    }
+                    
+                    overlayPanel.IsVisible = true;
+                    System.Diagnostics.Debug.WriteLine("NewQuickButton view panel shown successfully");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Could not find NewQuickButton view panel or view control");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error showing NewQuickButton view: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Hides the NewQuickButton view panel.
+        /// </summary>
+        public void HideNewQuickButtonOverlay()
+        {
+            try
+            {
+                var overlayPanel = this.FindControl<Border>("NewQuickButtonOverlayPanel");
+                
+                if (overlayPanel != null)
+                {
+                    overlayPanel.IsVisible = false;
+                    System.Diagnostics.Debug.WriteLine("NewQuickButton view panel hidden successfully");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Could not find NewQuickButton view panel");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error hiding NewQuickButton view: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Shows the success overlay panel with the specified content.
         /// </summary>
         /// <param name="overlayContent">The success overlay content to display</param>
@@ -764,6 +822,12 @@ namespace MTM_WIP_Application_Avalonia.Views
                     viewModel.RemoveItemViewModel.AdvancedRemovalRequested += OnAdvancedRemovalRequested;
                 }
 
+                // Subscribe to QuickButtonsViewModel events for New button
+                if (viewModel.QuickButtonsViewModel != null)
+                {
+                    viewModel.QuickButtonsViewModel.NewQuickButtonRequested += OnNewQuickButtonRequested;
+                }
+
                 // Subscribe to AdvancedInventoryViewModel events for Back button
                 if (viewModel.AdvancedInventoryViewModel != null)
                 {
@@ -799,6 +863,11 @@ namespace MTM_WIP_Application_Avalonia.Views
                 if (viewModel.RemoveItemViewModel != null)
                 {
                     viewModel.RemoveItemViewModel.AdvancedRemovalRequested -= OnAdvancedRemovalRequested;
+                }
+
+                if (viewModel.QuickButtonsViewModel != null)
+                {
+                    viewModel.QuickButtonsViewModel.NewQuickButtonRequested -= OnNewQuickButtonRequested;
                 }
             }
             catch (Exception ex)
@@ -836,6 +905,93 @@ namespace MTM_WIP_Application_Avalonia.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error handling Advanced Removal request: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles New QuickButton button click - shows the NewQuickButton overlay
+        /// </summary>
+        private void OnNewQuickButtonRequested(object? sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("New QuickButton requested - showing view");
+                
+                // Get the NewQuickButtonOverlayViewModel from DI
+                var overlayViewModel = Program.GetService<ViewModels.Overlay.NewQuickButtonOverlayViewModel>();
+                if (overlayViewModel != null)
+                {
+                    // Show the view with the ViewModel
+                    ShowNewQuickButtonOverlay(overlayViewModel);
+                    
+                    // Subscribe to overlay events
+                    overlayViewModel.QuickButtonCreated += OnQuickButtonCreated;
+                    overlayViewModel.Cancelled += OnNewQuickButtonOverlayClosed;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("ERROR: NewQuickButtonOverlayViewModel not found in DI container");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling New QuickButton request: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles when the NewQuickButton overlay is closed/cancelled
+        /// </summary>
+        private void OnNewQuickButtonOverlayClosed(object? sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("NewQuickButton overlay closed - hiding overlay");
+                
+                // Hide the overlay
+                HideNewQuickButtonOverlay();
+                
+                // Unsubscribe from overlay events
+                if (sender is ViewModels.Overlay.NewQuickButtonOverlayViewModel overlayViewModel)
+                {
+                    overlayViewModel.QuickButtonCreated -= OnQuickButtonCreated;
+                    overlayViewModel.Cancelled -= OnNewQuickButtonOverlayClosed;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling NewQuickButton overlay close: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles when a new QuickButton is successfully created
+        /// </summary>
+        private void OnQuickButtonCreated(object? sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("QuickButton created successfully");
+                
+                // Hide the overlay
+                HideNewQuickButtonOverlay();
+                
+                // Refresh the QuickButtons view
+                if (_viewModel?.QuickButtonsViewModel != null)
+                {
+                    _viewModel.QuickButtonsViewModel.RefreshButtonsCommand.Execute(null);
+                }
+                
+                // Unsubscribe from overlay events
+                if (sender is ViewModels.Overlay.NewQuickButtonOverlayViewModel overlayViewModel)
+                {
+                    overlayViewModel.QuickButtonCreated -= OnQuickButtonCreated;
+                    overlayViewModel.Cancelled -= OnNewQuickButtonOverlayClosed;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling QuickButton created: {ex.Message}");
             }
         }
 
@@ -1273,25 +1429,6 @@ namespace MTM_WIP_Application_Avalonia.Views
             }
         }
         
-        /// <summary>
-        /// Handles clicking on the connection status to manually refresh the connection
-        /// </summary>
-        private async void OnConnectionStatusClicked(object? sender, Avalonia.Input.PointerPressedEventArgs e)
-        {
-            try
-            {
-                if (_viewModel != null)
-                {
-                    System.Diagnostics.Debug.WriteLine("Connection status clicked - refreshing connection");
-                    await _viewModel.RefreshConnectionStatusCommand.ExecuteAsync(null);
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error handling connection status click: {ex.Message}");
-            }
-        }
-
         /// <summary>
         /// Handles tab selection changes to clear input fields and prevent SuggestionOverlay triggers
         /// </summary>

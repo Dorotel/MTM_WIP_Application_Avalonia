@@ -1780,10 +1780,10 @@ public static class Helper_Database_StoredProcedure
                 break;
                 
             case "qb_quickbuttons_remove":
-                var buttonId = parameters.GetValueOrDefault("p_ButtonID", "unknown");
+                var removePosition = parameters.GetValueOrDefault("p_Position", "unknown");
                 var userId = parameters.GetValueOrDefault("p_User", "unknown");
-                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Remove operation for ButtonID {ButtonId} by user '{UserId}' - {StatusText}", 
-                    buttonId, userId, statusText);
+                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Remove operation for Position {Position} by user '{UserId}' - {StatusText}", 
+                    removePosition, userId, statusText);
                 break;
                 
             case "qb_quickbuttons_get_byuser":
@@ -1813,7 +1813,7 @@ public static class Helper_Database_StoredProcedure
         }
 
         // Log parameter context that might be causing the error
-        var criticalParams = new[] { "p_User", "p_PartID", "p_Position", "p_ButtonID", "p_Operation", "p_Quantity" };
+        var criticalParams = new[] { "p_User", "p_PartID", "p_Position", "p_Operation", "p_Quantity" };
         foreach (var paramName in criticalParams)
         {
             if (parameters.ContainsKey(paramName))
@@ -1847,10 +1847,10 @@ public static class Helper_Database_StoredProcedure
     private static void LogQuickButtonRemoveContext(Dictionary<string, object> parameters)
     {
         var userId = parameters.GetValueOrDefault("p_User", "");
-        var buttonId = parameters.GetValueOrDefault("p_ButtonID", "");
+        var position = parameters.GetValueOrDefault("p_Position", "");
         
-        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: REMOVE CONTEXT - User '{UserId}' removing button at position {ButtonId}", 
-            userId, buttonId);
+        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: REMOVE CONTEXT - User '{UserId}' removing button at position {Position}", 
+            userId, position);
     }
 
     private static void LogQuickButtonClearContext(Dictionary<string, object> parameters)

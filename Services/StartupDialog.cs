@@ -86,8 +86,8 @@ public static class StartupDialog
     private static string GetFallbackLogPath()
     {
         return Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "MTM_WIP_Application",
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "MTM WIP Application",
             "Logs",
             Environment.UserName.ToUpper()
         );

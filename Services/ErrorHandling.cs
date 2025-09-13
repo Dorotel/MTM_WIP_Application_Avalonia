@@ -502,7 +502,7 @@ public static class ErrorConfiguration
     public static string MySqlConnectionString { get; set; } = "";
     public static bool EnableFileServerLogging { get; set; } = true;
     public static bool EnableMySqlLogging { get; set; } = true;
-    public static string FallbackLocalPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MTM_WIP_Application", "Logs");
+    public static string FallbackLocalPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MTM WIP Application", "Logs");
 }
 
 public enum ErrorCategory

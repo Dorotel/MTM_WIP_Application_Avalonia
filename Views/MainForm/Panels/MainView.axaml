@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
+             xmlns:panelViews="using:MTM_WIP_Application_Avalonia.Views.MainForm.Panels"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d"
@@ -25,36 +26,6 @@
 
   <UserControl.Styles>
     <!-- TabControl styling is now handled globally by MTMComponents.axaml -->
-    
-    <!-- Connection Status Styles -->
-    <Style Selector="Border.connection-status">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-    </Style>
-    
-    <Style Selector="Border.connection-status[Tag=Connected]">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
-    </Style>
-    
-    <Style Selector="Border.connection-status[Tag=Disconnected]">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-    </Style>
-    
-    <Style Selector="Border.connection-status[Tag=Error]">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}"/>
-    </Style>
-
-    <!-- Signal strength progress bar styles -->
-    <Style Selector="ProgressBar.signal-bar[Tag=Connected]">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
-    </Style>
-    
-    <Style Selector="ProgressBar.signal-bar[Tag=Disconnected]">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
-    </Style>
-    
-    <Style Selector="ProgressBar.signal-bar[Tag=Error]">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}"/>
-    </Style>
   </UserControl.Styles>
 
   <!-- Keyboard shortcuts -->
@@ -118,60 +89,12 @@
             Padding="24,8"
             HorizontalAlignment="Stretch"
             MinHeight="36">
-      <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" 
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
             ColumnSpacing="16"
             HorizontalAlignment="Stretch">
         
-        <!-- Enhanced Connection Status with integrated signal bar -->
-        <Border Grid.Column="0" 
-                Classes="connection-status"
-                Tag="{Binding ConnectionStatus}"
-                Padding="12,8"
-                CornerRadius="20"
-                HorizontalAlignment="Left"
-                Cursor="Hand"
-                PointerPressed="OnConnectionStatusClicked">
-          <StackPanel Orientation="Vertical" Spacing="4">
-            <!-- Top: Connection info -->
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                      CornerRadius="8"
-                      Width="16"
-                      Height="16">
-                <TextBlock Text="🔗" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-              </Border>
-              <TextBlock Text="Connection:" 
-                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                         FontSize="11"
-                         FontWeight="Medium"/>
-              <TextBlock Text="{Binding ConnectionStatus, FallbackValue='Connected', TargetNullValue='Unknown'}"
-                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                         FontWeight="Bold"
-                         FontSize="11"/>
-            </StackPanel>
-            
-            <!-- Bottom: Dynamic signal bar with quality-based length and color -->
-            <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-              <TextBlock Text="Signal:" 
-                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
-                         FontSize="9"
-                         FontWeight="Medium"/>
-              <ProgressBar Classes="signal-bar"
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                          BorderThickness="1"
-                           Tag="{Binding ConnectionStatus}"
-                           Minimum="0" Maximum="100" 
-                           Width="{Binding ConnectionSignalBarWidth, FallbackValue=60}"
-                           Height="8" 
-                           Value="{Binding ConnectionStrength, FallbackValue=100}"
-                           Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                           CornerRadius="3"/>
-            </StackPanel>
-          </StackPanel>
-        </Border>
-
-        <!-- Main Progress Bar (repositioned) -->
-        <Border Grid.Column="1"
+        <!-- Main Progress Bar -->
+        <Border Grid.Column="0"
                 Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                 BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
                 BorderThickness="1"
@@ -193,10 +116,10 @@
         </Border>
 
         <!-- Spacer -->
-        <Border Grid.Column="2" Background="Transparent"/>
+        <Border Grid.Column="1" Background="Transparent"/>
 
         <!-- Enhanced Status Text Box -->
-        <Border Grid.Column="3" 
+        <Border Grid.Column="2" 
                 Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                 BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
                 BorderThickness="1"
@@ -214,7 +137,7 @@
         </Border>
 
         <!-- Enhanced Version Display -->
-        <Border Grid.Column="4"
+        <Border Grid.Column="3"
                 Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                 CornerRadius="12"
                 Padding="12,6"
@@ -352,7 +275,7 @@
                 VerticalAlignment="Stretch"
                 Margin="8"
                 CornerRadius="8"
-                ZIndex="1000">
+                ZIndex="1003">
           <!-- Centered overlay container -->
           <Border Padding="16"
                   HorizontalAlignment="Stretch"
@@ -386,6 +309,24 @@
                           VerticalAlignment="Stretch"
                           HorizontalContentAlignment="Stretch"
                           VerticalContentAlignment="Stretch"/>
+        </Border>
+        
+        <!-- NewQuickButton View Panel - Full screen view for creating new QuickButtons -->
+        <Border x:Name="NewQuickButtonOverlayPanel"
+                IsVisible="False"
+                Background="rgba(0,0,0,0.3)"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="8"
+                CornerRadius="8"
+                ZIndex="1002">
+          <!-- NewQuickButton view content -->
+          <views:NewQuickButtonView x:Name="NewQuickButtonView"
+                                        DataContext="{x:Null}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        MaxWidth="600"
+                                        MaxHeight="500"/>
         </Border>
       </Grid>
 

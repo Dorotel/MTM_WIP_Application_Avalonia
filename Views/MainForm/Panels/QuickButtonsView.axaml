@@ -362,68 +362,59 @@
               Padding="8"
               Margin="0,8,0,0">
         <Grid RowDefinitions="Auto,Auto">
-          <!-- QoL Buttons Row - Using same styling as header toggle buttons -->
+          <!-- QoL Buttons Row - Icon-only with tooltips for compact layout -->
           <StackPanel Grid.Row="0" 
                       Orientation="Horizontal" 
-                      Spacing="4"
+                      Spacing="2"
                       HorizontalAlignment="Center"
                       Margin="0,0,0,8">
+            
+            <!-- New Button -->
+            <Button Classes="toggle-button"
+                    Command="{Binding NewQuickButtonCommand}"
+                    ToolTip.Tip="Create new quick button">
+              <materialIcons:MaterialIcon Kind="Plus" Width="14" Height="14"/>
+            </Button>
             
             <!-- Refresh All Button -->
             <Button Classes="toggle-button"
                     Command="{Binding RefreshButtonsCommand}"
                     ToolTip.Tip="Refresh quick buttons from database">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <materialIcons:MaterialIcon Kind="Refresh" Width="12" Height="12"/>
-                <TextBlock Text="Refresh" FontSize="9" FontWeight="Medium"/>
-              </StackPanel>
+              <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14"/>
             </Button>
             
             <!-- Clear All Button -->
             <Button Classes="toggle-button"
                     Command="{Binding ClearAllButtonsCommand}"
                     ToolTip.Tip="Remove all quick actions">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <materialIcons:MaterialIcon Kind="DeleteSweep" Width="12" Height="12"/>
-                <TextBlock Text="Clear" FontSize="9" FontWeight="Medium"/>
-              </StackPanel>
+              <materialIcons:MaterialIcon Kind="DeleteSweep" Width="14" Height="14"/>
             </Button>
             
             <!-- Reset Order Button -->
             <Button Classes="toggle-button"
                     Command="{Binding ResetOrderCommand}"
                     ToolTip.Tip="Reset button order to default">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending" Width="12" Height="12"/>
-                <TextBlock Text="Reset" FontSize="9" FontWeight="Medium"/>
-              </StackPanel>
+              <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending" Width="14" Height="14"/>
             </Button>
             
             <!-- Export Settings Button -->
             <Button Classes="toggle-button"
+                    Command="{Binding ExportQuickButtonsCommand}"
                     ToolTip.Tip="Export quick buttons configuration">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <materialIcons:MaterialIcon Kind="Export" Width="12" Height="12"/>
-                <TextBlock Text="Export" FontSize="9" FontWeight="Medium"/>
-              </StackPanel>
+              <materialIcons:MaterialIcon Kind="Export" Width="14" Height="14"/>
             </Button>
             
             <!-- Import Settings Button -->
             <Button Classes="toggle-button"
+                    Command="{Binding ImportQuickButtonsCommand}"
                     ToolTip.Tip="Import quick buttons configuration">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <materialIcons:MaterialIcon Kind="Import" Width="12" Height="12"/>
-                <TextBlock Text="Import" FontSize="9" FontWeight="Medium"/>
-              </StackPanel>
+              <materialIcons:MaterialIcon Kind="Import" Width="14" Height="14"/>
             </Button>
             
             <!-- Help/Info Button -->
             <Button Classes="toggle-button"
                     ToolTip.Tip="Show quick buttons help and keyboard shortcuts">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="12" Height="12"/>
-                <TextBlock Text="Help" FontSize="9" FontWeight="Medium"/>
-              </StackPanel>
+              <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="14" Height="14"/>
             </Button>
             
           </StackPanel>

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
+using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Services;
 
 namespace MTM_WIP_Application_Avalonia.Extensions;
@@ -28,6 +29,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IConfigurationService, ConfigurationService>();
         services.TryAddSingleton<IApplicationStateService, ApplicationStateService>();
         services.TryAddSingleton<INavigationService, NavigationService>();
+        services.TryAddSingleton<IFilePathService, FilePathService>();
         
         // Logging services
         services.TryAddSingleton<IFileLoggingService, FileLoggingService>();
@@ -49,19 +51,10 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<VirtualPanelManager>();
         services.TryAddSingleton<SettingsPanelStateManager>();
         
-        // Database services - change to singleton for validation
+        // Database services
         services.TryAddSingleton<IDatabaseService, DatabaseService>();
         
-        // Stored Procedure Validation Service - Phase 1 implementation
-        services.TryAddSingleton<IStoredProcedureValidationService, StoredProcedureValidationService>();
-        
-        // Stored Procedure Correction Service - Phase 2 implementation
-        services.TryAddSingleton<IStoredProcedureCorrectionService, StoredProcedureCorrectionService>();
-        
-        // Stored Procedure Phase 3 Implementation Service - applies corrections and standardization
-        services.TryAddSingleton<IStoredProcedurePhase3ImplementationService, StoredProcedurePhase3ImplementationService>();
-        
-        // UI and Application services - change to singleton for validation
+        // UI and Application services
         services.TryAddSingleton<IQuickButtonsService, QuickButtonsService>();
         services.TryAddSingleton<IProgressService, ProgressService>();
         
@@ -100,6 +93,9 @@ public static class ServiceCollectionExtensions
         // Print ViewModels
         services.TryAddTransient<PrintViewModel>();
         services.TryAddTransient<PrintLayoutControlViewModel>();
+        
+        // Overlay ViewModels  
+        services.TryAddTransient<NewQuickButtonOverlayViewModel>();
         
         // SettingsForm ViewModels
         services.TryAddTransient<SettingsViewModel>();
@@ -179,6 +175,7 @@ public static class ServiceCollectionExtensions
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
             typeof(INavigationService),
+            typeof(IFilePathService),
             typeof(IThemeService),
             typeof(ISettingsService),
             typeof(IDatabaseService),
@@ -216,6 +213,7 @@ public static class ServiceCollectionExtensions
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
             typeof(INavigationService),
+            typeof(IFilePathService),
             typeof(IThemeService),
             typeof(ISettingsService),
             typeof(IDatabaseService),

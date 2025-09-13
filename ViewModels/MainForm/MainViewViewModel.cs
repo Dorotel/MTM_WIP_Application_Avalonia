@@ -27,7 +27,6 @@ public partial class MainViewViewModel : BaseViewModel
     private readonly IServiceProvider _serviceProvider;
     private readonly IDatabaseService _databaseService;
     private readonly IFocusManagementService _focusManagementService;
-    private readonly System.Timers.Timer _connectionCheckTimer;
 
     /// <summary>
     /// Gets or sets the currently selected tab index (0-based)
@@ -82,30 +81,6 @@ public partial class MainViewViewModel : BaseViewModel
     /// </summary>
     [ObservableProperty]
     private bool _isAdvancedRemoveMode;
-
-    /// <summary>
-    /// Gets or sets the database connection status text
-    /// </summary>
-    [ObservableProperty]
-    private string _connectionStatus = "Disconnected";
-
-    /// <summary>
-    /// Gets or sets the connection strength percentage (0-100)
-    /// </summary>
-    [ObservableProperty]
-    private int _connectionStrength = 0;
-
-    /// <summary>
-    /// Gets or sets the signal bar width based on connection quality
-    /// </summary>
-    [ObservableProperty]
-    private double _connectionSignalBarWidth = 60;
-
-    /// <summary>
-    /// Gets or sets the connection status brush for styling
-    /// </summary>
-    [ObservableProperty]
-    private string _connectionStatusBrush = "MTM_Shared_Logic.ErrorBrush";
 
     /// <summary>
     /// Gets or sets the progress value percentage (0-100)
@@ -189,15 +164,6 @@ public partial class MainViewViewModel : BaseViewModel
         _focusManagementService = focusManagementService ?? throw new ArgumentNullException(nameof(focusManagementService));
 
         Logger.LogInformation("MainViewViewModel initialized with dependency injection");
-
-        // Initialize connection status monitoring
-        _connectionCheckTimer = new System.Timers.Timer(5000); // Check every 5 seconds
-        _connectionCheckTimer.Elapsed += OnConnectionCheckTimerElapsed;
-        _connectionCheckTimer.AutoReset = true;
-        _connectionCheckTimer.Enabled = true;
-        
-        // Perform initial connection check
-        _ = Task.Run(async () => await CheckConnectionStatusAsync());
 
         // Bind progress properties to ApplicationStateService for centralized progress system
         _applicationState.PropertyChanged += OnApplicationStateChanged;
@@ -880,71 +846,6 @@ public partial class MainViewViewModel : BaseViewModel
         SwitchToAdvancedInventoryCommand.Execute(null);
     }
 
-    #region Connection Status Management
-
-    /// <summary>
-    /// Timer event handler for periodic connection status checks
-    /// </summary>
-    private async void OnConnectionCheckTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
-    {
-        await CheckConnectionStatusAsync();
-    }
-
-    /// <summary>
-    /// Checks the database connection status and updates the UI properties
-    /// </summary>
-    private async Task CheckConnectionStatusAsync()
-    {
-        try
-        {
-            var isConnected = await _databaseService.TestConnectionAsync();
-            
-            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                if (isConnected)
-                {
-                    ConnectionStatus = "Connected";
-                    ConnectionStrength = 100; // Full strength when connected
-                    ConnectionSignalBarWidth = 80; // Wide bar for good connection
-                    ConnectionStatusBrush = "MTM_Shared_Logic.SuccessBrush"; // Green for connected
-                    Logger.LogDebug("Database connection status: Connected");
-                }
-                else
-                {
-                    ConnectionStatus = "Disconnected";
-                    ConnectionStrength = 0; // No strength when disconnected
-                    ConnectionSignalBarWidth = 30; // Narrow bar for no connection
-                    ConnectionStatusBrush = "MTM_Shared_Logic.ErrorBrush"; // Red for disconnected
-                    Logger.LogDebug("Database connection status: Disconnected");
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error checking database connection status");
-            
-            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                ConnectionStatus = "Error";
-                ConnectionStrength = 25; // Low strength for error state
-                ConnectionSignalBarWidth = 50; // Medium bar for error state
-                ConnectionStatusBrush = "MTM_Shared_Logic.WarningBrush"; // Orange for error
-            });
-        }
-    }
-
-    /// <summary>
-    /// Manual refresh of connection status (can be called from UI)
-    /// </summary>
-    [RelayCommand]
-    private async Task RefreshConnectionStatus()
-    {
-        await CheckConnectionStatusAsync();
-        StatusText = $"Connection status refreshed: {ConnectionStatus}";
-    }
-
-    #endregion
-
     #region Focus Management
 
     /// <summary>
@@ -1016,14 +917,6 @@ public partial class MainViewViewModel : BaseViewModel
         {
             try
             {
-                // Dispose connection check timer
-                if (_connectionCheckTimer != null)
-                {
-                    _connectionCheckTimer.Stop();
-                    _connectionCheckTimer.Elapsed -= OnConnectionCheckTimerElapsed;
-                    _connectionCheckTimer.Dispose();
-                }
-
                 // Unsubscribe from events to prevent memory leaks
                 if (_applicationState != null)
                 {

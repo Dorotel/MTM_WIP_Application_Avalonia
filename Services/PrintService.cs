@@ -72,21 +72,23 @@ public class PrintService : IPrintService
 {
     private readonly ILogger<PrintService> _logger;
     private readonly IConfigurationService _configurationService;
+    private readonly IFilePathService _filePathService;
     private readonly string _templatesPath;
     private readonly string _configPath;
 
     public PrintService(
         ILogger<PrintService> logger,
-        IConfigurationService configurationService)
+        IConfigurationService configurationService,
+        IFilePathService filePathService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+        _filePathService = filePathService ?? throw new ArgumentNullException(nameof(filePathService));
 
-        // Create paths for storing templates and configuration
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var mtmPath = Path.Combine(appDataPath, "MTM_WIP_Application");
-        _templatesPath = Path.Combine(mtmPath, "PrintTemplates");
-        _configPath = Path.Combine(mtmPath, "PrintConfigurations");
+        // Create paths for storing templates and configuration using FilePathService
+        var basePath = _filePathService.GetApplicationBasePath();
+        _templatesPath = Path.Combine(basePath, "Print", "Templates");
+        _configPath = Path.Combine(basePath, "Print", "Configurations");
 
         // Ensure directories exist
         Directory.CreateDirectory(_templatesPath);
