@@ -301,7 +301,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Exports QuickButtons configuration to a JSON file in MyDocuments
+    /// Exports QuickButtons configuration using enhanced file selection
     /// </summary>
     [RelayCommand]
     private async Task ExportQuickButtons()
@@ -316,31 +316,23 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 currentUser = Environment.UserName.ToUpper();
             }
 
-            var success = await _quickButtonsService.ExportQuickButtonsAsync(currentUser);
+            // Use enhanced export with file selection - pass null for sourceControl as we'll handle it in the service
+            await _quickButtonsService.ExportQuickButtonsWithSelectionAsync(currentUser, null!);
             
-            if (success)
-            {
-                _progressService.CompleteOperation("Quick buttons exported successfully!");
-                LastOperationStatus = "Export Success";
-                Logger.LogInformation("Quick buttons exported successfully for user: {User}", currentUser);
-            }
-            else
-            {
-                _progressService.ReportError("Failed to export quick buttons");
-                LastOperationStatus = "Export Failed";
-                Logger.LogWarning("Failed to export quick buttons for user: {User}", currentUser);
-            }
+            _progressService.CompleteOperation("Export process completed");
+            LastOperationStatus = "Export Initiated";
+            Logger.LogInformation("Enhanced export initiated for user: {User}", currentUser);
         }
         catch (Exception ex)
         {
             _progressService.ReportError("Export failed with error");
             LastOperationStatus = "Export Error";
-            Logger.LogError(ex, "Error exporting quick buttons");
+            Logger.LogError(ex, "Error in enhanced export");
         }
     }
 
     /// <summary>
-    /// Imports QuickButtons configuration from a selected JSON file
+    /// Imports QuickButtons configuration using enhanced file selection
     /// </summary>
     [RelayCommand]
     private async Task ImportQuickButtons()
@@ -355,42 +347,21 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 currentUser = Environment.UserName.ToUpper();
             }
 
-            // Get available export files
-            var availableFiles = await _quickButtonsService.GetAvailableExportFilesAsync();
+            // Use enhanced import with file selection - pass null for sourceControl as we'll handle it in the service
+            await _quickButtonsService.ImportQuickButtonsWithSelectionAsync(currentUser, null!);
             
-            if (!availableFiles.Any())
-            {
-                _progressService.ReportError("No export files found to import");
-                LastOperationStatus = "No Import Files";
-                return;
-            }
-
-            // Use the most recent file for now (in a full implementation, you'd show a file picker)
-            var selectedFile = availableFiles.First();
+            _progressService.CompleteOperation("Import process completed");
+            LastOperationStatus = "Import Initiated";
+            Logger.LogInformation("Enhanced import initiated for user: {User}", currentUser);
             
-            var success = await _quickButtonsService.ImportQuickButtonsAsync(currentUser, selectedFile);
-            
-            if (success)
-            {
-                _progressService.CompleteOperation("Quick buttons imported successfully!");
-                LastOperationStatus = "Import Success";
-                Logger.LogInformation("Quick buttons imported successfully for user: {User}", currentUser);
-                
-                // Refresh the UI
-                await RefreshButtons();
-            }
-            else
-            {
-                _progressService.ReportError("Failed to import quick buttons");
-                LastOperationStatus = "Import Failed";
-                Logger.LogWarning("Failed to import quick buttons for user: {User}", currentUser);
-            }
+            // Refresh the UI after import
+            await RefreshButtons();
         }
         catch (Exception ex)
         {
             _progressService.ReportError("Import failed with error");
             LastOperationStatus = "Import Error";
-            Logger.LogError(ex, "Error importing quick buttons");
+            Logger.LogError(ex, "Error in enhanced import");
         }
     }
 

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using MTM_WIP_Application_Avalonia.Models;
@@ -32,6 +33,17 @@ public interface IQuickButtonsService
     Task<bool> ExportQuickButtonsAsync(string userId, string fileName = "");
     Task<bool> ImportQuickButtonsAsync(string userId, string filePath);
     Task<List<string>> GetAvailableExportFilesAsync();
+    
+    /// <summary>
+    /// Enhanced export with file selection dialog
+    /// </summary>
+    Task ExportQuickButtonsWithSelectionAsync(string userId, Control sourceControl);
+    
+    /// <summary>
+    /// Enhanced import with file selection dialog
+    /// </summary>
+    Task ImportQuickButtonsWithSelectionAsync(string userId, Control sourceControl);
+    
     List<QuickButtonData> GetQuickButtons();
     event EventHandler<QuickButtonsChangedEventArgs>? QuickButtonsChanged;
 }
@@ -69,6 +81,7 @@ public class QuickButtonsService : IQuickButtonsService
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService _configurationService;
     private readonly IFilePathService _filePathService;
+    private readonly IFileSelectionService _fileSelectionService;
     private readonly ILogger<QuickButtonsService> _logger;
     private const string DefaultItemType = "WIP"; // Align with stored procedure expectation
 
@@ -78,11 +91,13 @@ public class QuickButtonsService : IQuickButtonsService
         IDatabaseService databaseService,
         IConfigurationService configurationService,
         IFilePathService filePathService,
+        IFileSelectionService fileSelectionService,
         ILogger<QuickButtonsService> logger)
     {
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         _filePathService = filePathService ?? throw new ArgumentNullException(nameof(filePathService));
+        _fileSelectionService = fileSelectionService ?? throw new ArgumentNullException(nameof(fileSelectionService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -1028,6 +1043,243 @@ public class QuickButtonsService : IQuickButtonsService
         var userId = Models.Model_AppVariables.CurrentUser;
         // Since this is a synchronous interface method, we need to use GetAwaiter().GetResult()
         return LoadUserQuickButtonsAsync(userId).GetAwaiter().GetResult();
+    }
+
+    /// <summary>
+    /// Enhanced export with file selection dialog and success overlay integration
+    /// </summary>
+    public async Task ExportQuickButtonsWithSelectionAsync(string userId, Control sourceControl)
+    {
+        try
+        {
+            _logger.LogDebug("Starting enhanced export for user: {UserId}", userId);
+
+            // Load current quick buttons to check if we have data to export
+            var quickButtons = await LoadUserQuickButtonsAsync(userId);
+            if (!quickButtons.Any())
+            {
+                _logger.LogWarning("No quick buttons found to export for user: {UserId}", userId);
+                // Use error handling to show user-friendly message
+                await ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException("No QuickButtons available to export"),
+                    "Export QuickButtons - No Data",
+                    userId);
+                return;
+            }
+
+            // Configure file selection options for export
+            var options = new FileSelectionOptions
+            {
+                Title = "Export QuickButtons Configuration",
+                Extensions = new[] { "*.json" },
+                Mode = FileSelectionMode.Export,
+                PreferredPlacement = PanelPlacement.Auto,
+                InitialDirectory = _filePathService.GetQuickButtonsExportPath()
+            };
+
+            // Show file selection and handle the result
+            await _fileSelectionService.ShowFileSelectionViewAsync(sourceControl, options, async (selectedPath) =>
+            {
+                if (string.IsNullOrEmpty(selectedPath))
+                {
+                    _logger.LogDebug("Export cancelled by user");
+                    return;
+                }
+
+                try
+                {
+                    // Use the custom path for export
+                    var success = await ExportToSpecificPathAsync(userId, selectedPath);
+                    
+                    if (success)
+                    {
+                        // Success - trigger success overlay if available
+                        if (Program.GetService<ISuccessOverlayService>() is ISuccessOverlayService successService)
+                        {
+                            await successService.ShowSuccessOverlayInMainViewAsync(
+                                sourceControl,
+                                "QuickButtons exported successfully!",
+                                $"Saved to: {Path.GetFileName(selectedPath)}",
+                                "CheckCircle",
+                                3000
+                            );
+                        }
+
+                        _logger.LogInformation("Enhanced export completed successfully to: {FilePath}", selectedPath);
+                    }
+                    else
+                    {
+                        await ErrorHandling.HandleErrorAsync(
+                            new InvalidOperationException("Export operation failed"),
+                            "Export QuickButtons Failed",
+                            userId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error during enhanced export to path: {FilePath}", selectedPath);
+                    await ErrorHandling.HandleErrorAsync(ex, "Enhanced Export Error", userId);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in enhanced export for user: {UserId}", userId);
+            await ErrorHandling.HandleErrorAsync(ex, nameof(ExportQuickButtonsWithSelectionAsync), userId);
+        }
+    }
+
+    /// <summary>
+    /// Enhanced import with file selection dialog and success overlay integration
+    /// </summary>
+    public async Task ImportQuickButtonsWithSelectionAsync(string userId, Control sourceControl)
+    {
+        try
+        {
+            _logger.LogDebug("Starting enhanced import for user: {UserId}", userId);
+
+            // Configure file selection options for import
+            var options = new FileSelectionOptions
+            {
+                Title = "Import QuickButtons Configuration",
+                Extensions = new[] { "*.json" },
+                Mode = FileSelectionMode.Import,
+                PreferredPlacement = PanelPlacement.Auto,
+                InitialDirectory = _filePathService.GetQuickButtonsExportPath()
+            };
+
+            // Show file selection and handle the result
+            await _fileSelectionService.ShowFileSelectionViewAsync(sourceControl, options, async (selectedPath) =>
+            {
+                if (string.IsNullOrEmpty(selectedPath))
+                {
+                    _logger.LogDebug("Import cancelled by user");
+                    return;
+                }
+
+                try
+                {
+                    // Validate file access before import
+                    if (!await _fileSelectionService.ValidateFileAccessAsync(selectedPath))
+                    {
+                        await ErrorHandling.HandleErrorAsync(
+                            new UnauthorizedAccessException("Selected file is not accessible"),
+                            "Import File Access Error",
+                            userId);
+                        return;
+                    }
+
+                    // Perform the import
+                    var success = await ImportQuickButtonsAsync(userId, selectedPath);
+                    
+                    if (success)
+                    {
+                        // Success - trigger success overlay if available
+                        if (Program.GetService<ISuccessOverlayService>() is ISuccessOverlayService successService)
+                        {
+                            await successService.ShowSuccessOverlayInMainViewAsync(
+                                sourceControl,
+                                "QuickButtons imported successfully!",
+                                $"Loaded from: {Path.GetFileName(selectedPath)}",
+                                "CheckCircle",
+                                3000
+                            );
+                        }
+
+                        _logger.LogInformation("Enhanced import completed successfully from: {FilePath}", selectedPath);
+
+                        // Notify UI to refresh
+                        QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs
+                        {
+                            UserId = userId,
+                            ChangeType = QuickButtonChangeType.Added
+                        });
+                    }
+                    else
+                    {
+                        await ErrorHandling.HandleErrorAsync(
+                            new InvalidOperationException("Import operation failed or no valid data found"),
+                            "Import QuickButtons Failed",
+                            userId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error during enhanced import from path: {FilePath}", selectedPath);
+                    await ErrorHandling.HandleErrorAsync(ex, "Enhanced Import Error", userId);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in enhanced import for user: {UserId}", userId);
+            await ErrorHandling.HandleErrorAsync(ex, nameof(ImportQuickButtonsWithSelectionAsync), userId);
+        }
+    }
+
+    /// <summary>
+    /// Helper method to export to a specific path (used by enhanced export)
+    /// </summary>
+    private async Task<bool> ExportToSpecificPathAsync(string userId, string filePath)
+    {
+        try
+        {
+            _logger.LogDebug("Exporting to specific path: {FilePath}", filePath);
+
+            // Load current quick buttons
+            var quickButtons = await LoadUserQuickButtonsAsync(userId);
+            if (!quickButtons.Any())
+            {
+                _logger.LogWarning("No quick buttons found to export for user: {UserId}", userId);
+                return false;
+            }
+
+            // Ensure directory exists
+            var directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+                _logger.LogDebug("Created directory: {Directory}", directory);
+            }
+
+            // Create export data structure
+            var exportData = new
+            {
+                ExportedAt = DateTime.Now,
+                ExportedBy = userId,
+                Version = "1.0",
+                QuickButtons = quickButtons.Select(qb => new
+                {
+                    qb.Position,
+                    qb.PartId,
+                    qb.Operation,
+                    qb.Quantity,
+                    qb.Notes,
+                    qb.CreatedDate,
+                    qb.LastUsedDate
+                }).ToList()
+            };
+
+            // Serialize to JSON with pretty formatting
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            var jsonContent = JsonSerializer.Serialize(exportData, options);
+            await File.WriteAllTextAsync(filePath, jsonContent);
+
+            _logger.LogInformation("Successfully exported {Count} quick buttons to: {FilePath}", 
+                quickButtons.Count, filePath);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to export to specific path: {FilePath}", filePath);
+            return false;
+        }
     }
 }
 
