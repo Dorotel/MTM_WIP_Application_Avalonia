@@ -1,19 +1,27 @@
 
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <!-- Single target framework with cross-platform runtime support -->
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <!-- Disable compiled bindings temporarily to avoid issues -->
+    <UseAppHost>true</UseAppHost>
+    
+    <!-- Platform-specific output types -->
+    <OutputType Condition="$([MSBuild]::IsOSPlatform('Windows'))">WinExe</OutputType>
+    <OutputType Condition="!$([MSBuild]::IsOSPlatform('Windows'))">Exe</OutputType>
+    
+    <!-- Windows-specific settings -->
+    <BuiltInComInteropSupport Condition="$([MSBuild]::IsOSPlatform('Windows'))">true</BuiltInComInteropSupport>
+    <ApplicationManifest Condition="$([MSBuild]::IsOSPlatform('Windows'))">app.manifest</ApplicationManifest>
+    
+    <!-- Avalonia configuration -->
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
-    <!-- Enable XAML compilation for proper resource loading -->
     <EnableAvaloniaXamlCompilation>true</EnableAvaloniaXamlCompilation>
-    <!-- Ensure proper debug information generation -->
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <!-- Re-enable automatic XAML inclusion for simplicity -->
     <EnableDefaultAvaloniaXamlItems>true</EnableDefaultAvaloniaXamlItems>
+    
+    <!-- Runtime identifiers for supported platforms -->
+    <RuntimeIdentifiers>win-x64;win-x86;osx-x64;osx-arm64;linux-x64;linux-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -79,7 +87,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Avalonia packages with MVVM Community Toolkit integration -->
+    <!-- Core Avalonia packages for all platforms -->
     <PackageReference Include="Avalonia" Version="11.3.4" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.4" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
@@ -90,6 +98,8 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Avalonia.Xaml.Interactivity" Version="11.3.0.6" />
+    
+    <!-- Cross-platform hosting and logging -->
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
     
@@ -98,8 +108,13 @@
     
     <!-- Database and utility packages -->
     <PackageReference Include="Dapper" Version="2.1.66" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
     <PackageReference Include="MySql.Data" Version="9.4.0" />
+    
+    <!-- Cross-platform UI packages -->
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
+    
+    <!-- System packages -->
+    <PackageReference Include="System.Drawing.Common" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
     
     <!-- Microsoft Extensions packages (standardized to 8.0.0) -->
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.8" />
@@ -112,9 +127,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.8" />
-    
-    <!-- Print service dependencies -->
-    <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -55,7 +55,12 @@ public static class Program
             _logger?.LogInformation("Starting Avalonia application with {ArgCount} arguments", args.Length);
 
             var appStopwatch = Stopwatch.StartNew();
+            
+            // For now, all platforms use classic desktop lifetime
+            // Mobile support can be added later when creating dedicated mobile projects
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Starting with classic desktop lifetime (cross-platform compatible)");
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            
             appStopwatch.Stop();
 
             mainStopwatch.Stop();
@@ -73,20 +78,50 @@ public static class Program
     }
 
     /// <summary>
-    /// Builds the Avalonia application with platform detection and trace logging.
+    /// Builds the Avalonia application with cross-platform support and platform detection.
+    /// Supports desktop (Windows, macOS, Linux) and mobile (Android, iOS) platforms.
     /// </summary>
     /// <returns>Configured AppBuilder instance</returns>
     public static AppBuilder BuildAvaloniaApp()
     {
-        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Building Avalonia app...");
-        Debug.WriteLine($"[PROGRAM] Building Avalonia application");
+        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Building Avalonia app for platform: {Environment.OSVersion.Platform}");
+        Debug.WriteLine($"[PROGRAM] Building cross-platform Avalonia application");
 
         try
         {
-            return AppBuilder.Configure<App>()
+            var builder = AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace();
+                
+            // Platform-specific configurations
+            if (OperatingSystem.IsAndroid())
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring for Android platform");
+                // Android-specific configuration would go here if needed
+            }
+            else if (OperatingSystem.IsIOS())
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring for iOS platform");
+                // iOS-specific configuration would go here if needed
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring for macOS platform");
+                // macOS-specific configuration would go here if needed
+            }
+            else if (OperatingSystem.IsWindows())
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring for Windows platform");
+                // Windows-specific configuration would go here if needed
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring for Linux platform");
+                // Linux-specific configuration would go here if needed
+            }
+            
+            return builder;
         }
         catch (Exception ex)
         {

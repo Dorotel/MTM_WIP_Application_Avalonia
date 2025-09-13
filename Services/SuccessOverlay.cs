@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.Logging;
@@ -145,14 +146,24 @@ public class SuccessOverlayService : ISuccessOverlayService
                 // If we couldn't find MainView from sourceControl, try to find it globally
                 if (mainView == null)
                 {
-                    // Get the main window and search from there
-                    var mainWindow = Avalonia.Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
-                        ? desktop.MainWindow
-                        : null;
-                        
-                    if (mainWindow != null)
+                    // Get the main window/view and search from there
+                    TopLevel? topLevel = null;
+                    
+                    var applicationLifetime = Avalonia.Application.Current?.ApplicationLifetime;
+                    switch (applicationLifetime)
                     {
-                        mainView = FindControlInVisualTree<Views.MainView>(mainWindow);
+                        case Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop:
+                            topLevel = desktop.MainWindow;
+                            break;
+                        case ISingleViewApplicationLifetime singleView:
+                            // For single-view platforms, MainView is a TopLevel
+                            topLevel = singleView.MainView as TopLevel;
+                            break;
+                    }
+                        
+                    if (topLevel != null)
+                    {
+                        mainView = FindControlInVisualTree<Views.MainView>(topLevel);
                     }
                 }
 

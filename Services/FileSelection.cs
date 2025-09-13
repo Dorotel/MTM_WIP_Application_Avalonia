@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.Logging;
@@ -283,13 +284,25 @@ public class FileSelectionService : IFileSelectionService
 
     private TopLevel? GetTopLevelFromCurrentView()
     {
-        // Try to get the current application's main window
-        if (Avalonia.Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+        var applicationLifetime = Avalonia.Application.Current?.ApplicationLifetime;
+        
+        switch (applicationLifetime)
         {
-            return desktop.MainWindow;
+            // Desktop platforms (Windows, Linux, macOS desktop)
+            case IClassicDesktopStyleApplicationLifetime desktop:
+                return desktop.MainWindow;
+            
+            // Mobile platforms (Android, iOS) and single-view apps
+            case ISingleViewApplicationLifetime singleView:
+                // Cast to TopLevel since MainView implements Control but should also support TopLevel operations
+                return singleView.MainView as TopLevel;
+            
+            // Future platform support - return null for unsupported platforms
+            default:
+                _logger.LogWarning("Unsupported application lifetime type: {LifetimeType}", 
+                    applicationLifetime?.GetType().Name ?? "null");
+                return null;
         }
-
-        return null;
     }
 
     private List<FilePickerFileType> CreateFileTypes(string[] extensions)

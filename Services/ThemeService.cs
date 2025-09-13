@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform;
@@ -737,20 +738,38 @@ public class ThemeService : IThemeService
             {
                 try
                 {
-                    if (Application.Current.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+                    var applicationLifetime = Application.Current.ApplicationLifetime;
+                    switch (applicationLifetime)
                     {
-                        foreach (var window in desktop.Windows.ToList()) // ToList to avoid modification during iteration
-                        {
+                        case Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop:
+                            foreach (var window in desktop.Windows.ToList()) // ToList to avoid modification during iteration
+                            {
+                                try
+                                {
+                                    // Force complete window refresh
+                                    RefreshWindowCompletely(window);
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogWarning(ex, "Error during complete window refresh");
+                                }
+                            }
+                            break;
+                            
+                        case ISingleViewApplicationLifetime singleView:
                             try
                             {
-                                // Force complete window refresh
-                                RefreshWindowCompletely(window);
+                                // For mobile/single view apps, refresh the main view
+                                if (singleView.MainView != null)
+                                {
+                                    RefreshControlCompletely(singleView.MainView);
+                                }
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogWarning(ex, "Error during complete window refresh");
+                                _logger.LogWarning(ex, "Error during single view refresh");
                             }
-                        }
+                            break;
                     }
 
                     _logger.LogDebug("Complete application refresh completed");
@@ -795,6 +814,38 @@ public class ThemeService : IThemeService
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Error in RefreshWindowCompletely");
+        }
+    }
+
+    /// <summary>
+    /// Performs complete control refresh for mobile/single-view applications.
+    /// Similar to RefreshWindowCompletely but optimized for single-view scenarios.
+    /// </summary>
+    private void RefreshControlCompletely(Control control)
+    {
+        try
+        {
+            // Step 1: Force all visual invalidation
+            control.InvalidateVisual();
+            control.InvalidateMeasure();
+            control.InvalidateArrange();
+
+            // Step 2: Force all child controls to refresh recursively
+            InvalidateControlTreeRecursively(control);
+
+            // Step 3: Force re-application of styles by temporarily changing and restoring properties
+            var originalOpacity = control.Opacity;
+            control.Opacity = 0.99;
+            control.Opacity = originalOpacity;
+
+            // Step 4: Force layout update
+            control.UpdateLayout();
+
+            _logger.LogDebug("Complete control refresh performed for mobile platform");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error in RefreshControlCompletely");
         }
     }
 

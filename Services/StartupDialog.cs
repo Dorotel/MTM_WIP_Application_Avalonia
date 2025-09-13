@@ -100,10 +100,26 @@ public static class StartupDialog
     {
         try
         {
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            var applicationLifetime = Application.Current?.ApplicationLifetime;
+            switch (applicationLifetime)
             {
-                var messageWindow = new StartupInfoWindow(title, message);
-                await messageWindow.ShowDialog(desktop.MainWindow!);
+                case IClassicDesktopStyleApplicationLifetime desktop:
+                    var messageWindow = new StartupInfoWindow(title, message);
+                    await messageWindow.ShowDialog(desktop.MainWindow!);
+                    break;
+                    
+                case ISingleViewApplicationLifetime:
+                    // For mobile platforms, fall back to console output or logging
+                    // Could be enhanced with platform-specific dialogs in the future
+                    Console.WriteLine($"{title}:");
+                    Console.WriteLine(message);
+                    // Note: Could add logging here if a logger was available
+                    break;
+                    
+                default:
+                    Console.WriteLine($"{title}:");
+                    Console.WriteLine(message);
+                    break;
             }
         }
         catch (Exception ex)
