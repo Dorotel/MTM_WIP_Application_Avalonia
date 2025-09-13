@@ -73,7 +73,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Get_ByPartIDandOperation`(IN `p_PartID` VARCHAR(300), IN `o_Operation` VARCHAR(300))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Get_ByPartIDandOperation`(IN `p_PartID` VARCHAR(300), IN `p_Operation` VARCHAR(300))
 BEGIN
 SELECT 
     ID,
@@ -88,7 +88,7 @@ SELECT
     BatchNumber AS `BatchNumber`,
     Notes
 FROM inv_inventory
-    WHERE PartID = p_PartID AND Operation = o_Operation;
+    WHERE PartID = p_PartID AND Operation = p_Operation;
 END$$
 DELIMITER ;
 

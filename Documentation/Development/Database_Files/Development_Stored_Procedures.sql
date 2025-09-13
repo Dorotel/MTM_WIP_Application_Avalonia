@@ -53,51 +53,108 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Get_ByPartID`(IN `p_PartID` VARCHAR(300))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Get_ByPartID`(IN `p_PartID` VARCHAR(300), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
-SELECT 
-    ID,
-    PartID,
-    Location,
-    Operation,
-    Quantity,
-    ItemType,
-    ReceiveDate,
-    LastUpdated,
-    User,
-    BatchNumber AS `BatchNumber`,
-    Notes
-FROM inv_inventory
+    DECLARE v_RowCount INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving inventory by PartID';
+        ROLLBACK;
+    END;
+
+    SELECT 
+        ID,
+        PartID,
+        Location,
+        Operation,
+        Quantity,
+        ItemType,
+        ReceiveDate,
+        LastUpdated,
+        User,
+        BatchNumber AS `BatchNumber`,
+        Notes
+    FROM inv_inventory
     WHERE PartID = p_PartID;
+    
+    SET v_RowCount = FOUND_ROWS();
+    
+    IF v_RowCount > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Success';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data
+        SET p_ErrorMsg = 'No data found';
+    END IF;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Get_ByPartIDandOperation`(IN `p_PartID` VARCHAR(300), IN `o_Operation` VARCHAR(300))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Get_ByPartIDandOperation`(IN `p_PartID` VARCHAR(300), IN `o_Operation` VARCHAR(300), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
-SELECT 
-    ID,
-    PartID,
-    Location,
-    Operation,
-    Quantity,
-    ItemType,
-    ReceiveDate,
-    LastUpdated,
-    User,
-    BatchNumber AS `BatchNumber`,
-    Notes
-FROM inv_inventory
+    DECLARE v_RowCount INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving inventory by PartID and Operation';
+        ROLLBACK;
+    END;
+
+    SELECT 
+        ID,
+        PartID,
+        Location,
+        Operation,
+        Quantity,
+        ItemType,
+        ReceiveDate,
+        LastUpdated,
+        User,
+        BatchNumber AS `BatchNumber`,
+        Notes
+    FROM inv_inventory
     WHERE PartID = p_PartID AND Operation = o_Operation;
+    
+    SET v_RowCount = FOUND_ROWS();
+    
+    IF v_RowCount > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Success';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data
+        SET p_ErrorMsg = 'No data found';
+    END IF;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Get_ByUser`(IN `p_User` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Get_ByUser`(IN `p_User` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowCount INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving inventory by User';
+        ROLLBACK;
+    END;
+
     SELECT * FROM inv_inventory
     WHERE User = p_User
     ORDER BY LastUpdated DESC;
+    
+    SET v_RowCount = FOUND_ROWS();
+    
+    IF v_RowCount > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Success';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data
+        SET p_ErrorMsg = 'No data found';
+    END IF;
 END$$
 DELIMITER ;
 
@@ -157,8 +214,19 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Transfer_Part`(IN `in_BatchNumber` VARCHAR(300), IN `in_PartID` VARCHAR(300), IN `in_Operation` VARCHAR(100), IN `in_NewLocation` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Transfer_Part`(IN `in_BatchNumber` VARCHAR(300), IN `in_PartID` VARCHAR(300), IN `in_Operation` VARCHAR(100), IN `in_NewLocation` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while transferring part';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     -- Validate that the record exists
     IF EXISTS (
         SELECT 1 FROM inv_inventory
@@ -173,185 +241,626 @@ BEGIN
         WHERE BatchNumber = in_BatchNumber
           AND PartID = in_PartID
           AND Operation = in_Operation;
+        
+        SET v_RowsAffected = ROW_COUNT();
+        
+        IF v_RowsAffected > 0 THEN
+            SET p_Status = 1;  -- Worked with data
+            SET p_ErrorMsg = 'Part transferred successfully';
+        ELSE
+            SET p_Status = 0;  -- Worked but no data affected
+            SET p_ErrorMsg = 'No records updated';
+        END IF;
+    ELSE
+        SET p_Status = 0;  -- Worked but no data found
+        SET p_ErrorMsg = 'No matching record found for transfer';
     END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Transfer_Quantity`(IN `in_BatchNumber` VARCHAR(255), IN `in_PartID` VARCHAR(255), IN `in_Operation` VARCHAR(255), IN `in_TransferQuantity` INT, IN `in_OriginalQuantity` INT, IN `in_NewLocation` VARCHAR(255), IN `in_User` VARCHAR(255))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Transfer_Quantity`(IN `in_BatchNumber` VARCHAR(255), IN `in_PartID` VARCHAR(255), IN `in_Operation` VARCHAR(255), IN `in_TransferQuantity` INT, IN `in_OriginalQuantity` INT, IN `in_NewLocation` VARCHAR(255), IN `in_User` VARCHAR(255), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while transferring quantity';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     -- Check if transfer quantity is valid
     IF in_TransferQuantity <= 0 OR in_TransferQuantity > in_OriginalQuantity THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid transfer quantity';
+        SET p_Status = 0;  -- Worked but invalid data
+        SET p_ErrorMsg = 'Invalid transfer quantity';
+        ROLLBACK;
+    ELSE
+        -- Subtract the transfer quantity from the original inventory record and update User
+        UPDATE inv_inventory
+        SET Quantity = Quantity - in_TransferQuantity,
+            User = in_User
+        WHERE BatchNumber = in_BatchNumber
+          AND PartID = in_PartID
+          AND Operation = in_Operation
+          AND Quantity = in_OriginalQuantity;
+
+        SET v_RowsAffected = ROW_COUNT();
+
+        IF v_RowsAffected > 0 THEN
+            -- Insert a new record for the transferred quantity at the new location with User
+            INSERT INTO inv_inventory (BatchNumber, PartID, Operation, Quantity, Location, User)
+            VALUES (in_BatchNumber, in_PartID, in_Operation, in_TransferQuantity, in_NewLocation, in_User);
+            
+            SET p_Status = 1;  -- Worked with data
+            SET p_ErrorMsg = 'Quantity transferred successfully';
+        ELSE
+            SET p_Status = 0;  -- Worked but no data affected
+            SET p_ErrorMsg = 'No matching record found for quantity transfer';
+        END IF;
+        
+        COMMIT;
     END IF;
-
-    -- Subtract the transfer quantity from the original inventory record and update User
-    UPDATE inv_inventory
-    SET Quantity = Quantity - in_TransferQuantity,
-        User = in_User
-    WHERE BatchNumber = in_BatchNumber
-      AND PartID = in_PartID
-      AND Operation = in_Operation
-      AND Quantity = in_OriginalQuantity;
-
-    -- Insert a new record for the transferred quantity at the new location with User
-    INSERT INTO inv_inventory (BatchNumber, PartID, Operation, Quantity, Location, User)
-    VALUES (in_BatchNumber, in_PartID, in_Operation, in_TransferQuantity, in_NewLocation, in_User);
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `log_changelog_Get_Current`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `log_changelog_Get_Current`(OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowCount INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving changelog';
+        ROLLBACK;
+    END;
+
     SELECT *
     FROM log_changelog
     ORDER BY Version DESC
     LIMIT 1;
+    
+    SET v_RowCount = FOUND_ROWS();
+    
+    IF v_RowCount > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Success';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data
+        SET p_ErrorMsg = 'No changelog data found';
+    END IF;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Add_ItemType`(IN `p_ItemType` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Add_ItemType`(IN `p_ItemType` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while adding item type';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     INSERT INTO `md_item_types` (`ItemType`, `IssuedBy`)
     VALUES (p_ItemType, p_IssuedBy);
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Item type added successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No item type was added';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Delete_ByID`(IN `p_ID` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Delete_ByID`(IN `p_ID` INT, OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while deleting item type by ID';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     DELETE FROM `md_item_types`
     WHERE `ID` = p_ID;
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Item type deleted successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No item type found with the specified ID';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Delete_ByType`(IN `p_ItemType` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Delete_ByType`(IN `p_ItemType` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while deleting item type';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     DELETE FROM `md_item_types`
     WHERE `ItemType` = p_ItemType;
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Item type deleted successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No item type found with the specified name';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Get_All`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Get_All`(OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowCount INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving item types';
+        ROLLBACK;
+    END;
+
     SELECT * FROM `md_item_types`;
+    
+    SET v_RowCount = FOUND_ROWS();
+    
+    IF v_RowCount > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Success';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data
+        SET p_ErrorMsg = 'No item types found';
+    END IF;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Update_ItemType`(IN `p_ID` INT, IN `p_ItemType` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_item_types_Update_ItemType`(IN `p_ID` INT, IN `p_ItemType` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while updating item type';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     UPDATE `md_item_types`
     SET `ItemType` = p_ItemType,
         `IssuedBy` = p_IssuedBy
     WHERE `ID` = p_ID;
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Item type updated successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No item type found with the specified ID';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_locations_Add_Location`(IN `p_Location` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100), IN `p_Building` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_locations_Add_Location`(IN `p_Location` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100), IN `p_Building` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while adding location';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     INSERT INTO `md_locations` (`Location`, `Building` , `IssuedBy`)
     VALUES (p_Location, p_Building ,p_IssuedBy);
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Location added successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No location was added';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_locations_Delete_ByLocation`(IN `p_Location` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_locations_Delete_ByLocation`(IN `p_Location` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while deleting location';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     DELETE FROM `md_locations`
     WHERE `Location` = p_Location;
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Location deleted successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No location found with the specified name';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_locations_Get_All`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_locations_Get_All`(OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowCount INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving locations';
+        ROLLBACK;
+    END;
+
     SELECT * FROM `md_locations`;
+    
+    SET v_RowCount = FOUND_ROWS();
+    
+    IF v_RowCount > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Success';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data
+        SET p_ErrorMsg = 'No locations found';
+    END IF;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_locations_Update_Location`(IN `p_OldLocation` VARCHAR(100), IN `p_Location` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100), IN `p_Building` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_locations_Update_Location`(IN `p_OldLocation` VARCHAR(100), IN `p_Location` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100), IN `p_Building` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while updating location';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     UPDATE `md_locations`
     SET `Location` = p_Location,
     	`Building` = p_Building,
         `IssuedBy` = p_IssuedBy
     WHERE `Location` = p_OldLocation;
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Location updated successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No location found with the specified name';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_operation_numbers_Add_Operation`(IN `p_Operation` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_operation_numbers_Add_Operation`(IN `p_Operation` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while adding operation';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     INSERT INTO `md_operation_numbers` (`Operation`, `IssuedBy`)
     VALUES (p_Operation, p_IssuedBy);
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Operation added successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No operation was added';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_operation_numbers_Delete_ByOperation`(IN `p_Operation` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_operation_numbers_Delete_ByOperation`(IN `p_Operation` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while deleting operation';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     DELETE FROM `md_operation_numbers`
     WHERE `Operation` = p_Operation;
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Operation deleted successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No operation found with the specified name';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_operation_numbers_Get_All`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_operation_numbers_Get_All`(OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowCount INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving operations';
+        ROLLBACK;
+    END;
+
     SELECT * FROM `md_operation_numbers`;
+    
+    SET v_RowCount = FOUND_ROWS();
+    
+    IF v_RowCount > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Success';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data
+        SET p_ErrorMsg = 'No operations found';
+    END IF;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_operation_numbers_Update_Operation`(IN `p_Operation` VARCHAR(100), IN `p_NewOperation` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_operation_numbers_Update_Operation`(IN `p_Operation` VARCHAR(100), IN `p_NewOperation` VARCHAR(100), IN `p_IssuedBy` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while updating operation';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     UPDATE `md_operation_numbers`
     SET `Operation` = p_NewOperation,
         `IssuedBy` = p_IssuedBy
     WHERE `Operation` = p_Operation;
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Operation updated successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No operation found with the specified name';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Add_Part`(IN `p_ItemNumber` VARCHAR(300), IN `p_Customer` VARCHAR(300), IN `p_Description` VARCHAR(300), IN `p_IssuedBy` VARCHAR(100), IN `p_ItemType` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Add_Part`(IN `p_ItemNumber` VARCHAR(300), IN `p_Customer` VARCHAR(300), IN `p_Description` VARCHAR(300), IN `p_IssuedBy` VARCHAR(100), IN `p_ItemType` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while adding part';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     INSERT INTO `md_part_ids` (`PartID`, `Customer`, `Description`, `IssuedBy`, `ItemType`)
     VALUES (p_ItemNumber, p_Customer, p_Description, p_IssuedBy, p_ItemType);
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Part added successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No part was added';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Delete_ByItemNumber`(IN `p_ItemNumber` VARCHAR(300))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Delete_ByItemNumber`(IN `p_ItemNumber` VARCHAR(300), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while deleting part';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     DELETE FROM `md_part_ids`
     WHERE `PartID` = p_ItemNumber;
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Part deleted successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No part found with the specified item number';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Get_All`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Get_All`(OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowCount INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving parts';
+        ROLLBACK;
+    END;
+
     SELECT * FROM `md_part_ids`;
+    
+    SET v_RowCount = FOUND_ROWS();
+    
+    IF v_RowCount > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Success';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data
+        SET p_ErrorMsg = 'No parts found';
+    END IF;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Get_ByItemNumber`(IN `p_ItemNumber` VARCHAR(300))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Get_ByItemNumber`(IN `p_ItemNumber` VARCHAR(300), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowCount INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while retrieving part by item number';
+        ROLLBACK;
+    END;
+
     SELECT * FROM `md_part_ids`
     WHERE `PartID` = p_ItemNumber;
+    
+    SET v_RowCount = FOUND_ROWS();
+    
+    IF v_RowCount > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Success';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data
+        SET p_ErrorMsg = 'No part found with the specified item number';
+    END IF;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Update_Part`(IN `p_ID` INT, IN `p_ItemNumber` VARCHAR(300), IN `p_Customer` VARCHAR(300), IN `p_Description` VARCHAR(300), IN `p_IssuedBy` VARCHAR(100), IN `p_ItemType` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `md_part_ids_Update_Part`(IN `p_ID` INT, IN `p_ItemNumber` VARCHAR(300), IN `p_Customer` VARCHAR(300), IN `p_Description` VARCHAR(300), IN `p_IssuedBy` VARCHAR(100), IN `p_ItemType` VARCHAR(100), OUT p_Status INT, OUT p_ErrorMsg VARCHAR(255))
 BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET p_Status = -1;
+        SET p_ErrorMsg = 'Database error occurred while updating part';
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
     UPDATE `md_part_ids`
     SET `PartID` = p_ItemNumber,
         `Customer` = p_Customer,
@@ -359,6 +868,18 @@ BEGIN
         `IssuedBy` = p_IssuedBy,
         `ItemType` = p_ItemType
     WHERE `ID` = p_ID;
+    
+    SET v_RowsAffected = ROW_COUNT();
+    
+    IF v_RowsAffected > 0 THEN
+        SET p_Status = 1;  -- Worked with data
+        SET p_ErrorMsg = 'Part updated successfully';
+    ELSE
+        SET p_Status = 0;  -- Worked but no data affected
+        SET p_ErrorMsg = 'No part found with the specified ID';
+    END IF;
+    
+    COMMIT;
 END$$
 DELIMITER ;
 
@@ -380,8 +901,14 @@ BEGIN
 
     DELETE FROM qb_quickbuttons WHERE User = p_User;
 
-    SET p_Status = 0;
-    SET p_ErrorMsg = 'All quick buttons cleared successfully';
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'All quick buttons cleared successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'No quick buttons found to clear for user';
+    END IF;
+
     COMMIT;
 END$$
 DELIMITER ;
@@ -428,9 +955,13 @@ BEGIN
         WHERE User = p_User 
         ORDER BY Position;
         
-        
-        SET p_Status = 0;
-        SET p_ErrorMsg = CONCAT('Retrieved ', ROW_COUNT(), ' quick buttons successfully');
+        IF FOUND_ROWS() > 0 THEN
+            SET p_Status = 1;
+            SET p_ErrorMsg = CONCAT('Retrieved ', FOUND_ROWS(), ' quick buttons successfully');
+        ELSE
+            SET p_Status = 0;
+            SET p_ErrorMsg = 'No quick buttons found for user';
+        END IF;
         
         COMMIT;
     END IF;
@@ -457,8 +988,14 @@ BEGIN
 
     DELETE FROM qb_quickbuttons WHERE User = p_User AND Position = p_Position;
 
-    SET p_Status = 0;
-    SET p_ErrorMsg = 'Quick button removed successfully';
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Quick button removed successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'No quick button found to remove at specified position';
+    END IF;
+
     COMMIT;
 END$$
 DELIMITER ;
@@ -495,8 +1032,14 @@ BEGIN
         ItemType = VALUES(ItemType),
         DateModified = NOW();
 
-    SET p_Status = 0;
-    SET p_ErrorMsg = 'Quick button saved successfully';
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Quick button saved successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'Quick button not saved - no rows affected';
+    END IF;
+
     COMMIT;
 END$$
 DELIMITER ;
@@ -535,8 +1078,14 @@ BEGIN
         p_Quantity, p_ItemType, p_ReceiveDate, p_User, p_Notes
     );
 
-    SET p_Status = 0;
-    SET p_ErrorMsg = 'Transaction added successfully';
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Transaction added successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'Transaction not added - no rows affected';
+    END IF;
+
     COMMIT;
 END$$
 DELIMITER ;
@@ -544,13 +1093,19 @@ DELIMITER ;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_last_10_transactions_Get_ByUser`(
     IN p_User VARCHAR(100),
-    IN p_Limit INT
+    IN p_Limit INT,
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
 )
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        RESIGNAL;
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
     END;
+
+    START TRANSACTION;
 
     SELECT 
         TransactionType,
@@ -568,13 +1123,46 @@ BEGIN
     WHERE User = p_User 
     ORDER BY ReceiveDate DESC 
     LIMIT p_Limit;
+
+    IF FOUND_ROWS() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Transactions retrieved successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'No transactions found for user';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_roles_Get_ById`(IN `p_ID` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_roles_Get_ById`(
+    IN p_ID INT,
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     SELECT * FROM sys_roles WHERE ID = p_ID;
+
+    IF FOUND_ROWS() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Role retrieved successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'No role found with specified ID';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
@@ -644,30 +1232,104 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Add`(IN `p_User` INT, IN `p_RoleID` INT, IN `p_AssignedBy` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Add`(
+    IN p_User INT,
+    IN p_RoleID INT,
+    IN p_AssignedBy VARCHAR(100),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     INSERT INTO sys_user_roles (UserID, RoleID, AssignedBy)
     VALUES (p_User, p_RoleID, p_AssignedBy);
+
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'User role added successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'User role not added - no rows affected';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Delete`(IN `p_User` INT, IN `p_RoleID` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Delete`(
+    IN p_User INT,
+    IN p_RoleID INT,
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     DELETE FROM sys_user_roles
     WHERE UserID = p_User AND RoleID = p_RoleID;
+
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'User role deleted successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'User role not deleted - no matching record found';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Update`(IN `p_User` INT, IN `p_NewRoleID` INT, IN `p_AssignedBy` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sys_user_roles_Update`(
+    IN p_User INT,
+    IN p_NewRoleID INT,
+    IN p_AssignedBy VARCHAR(100),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     -- Remove all roles for the user
     DELETE FROM sys_user_roles WHERE UserID = p_User;
 
     -- Add the new role
     INSERT INTO sys_user_roles (UserID, RoleID, AssignedBy)
     VALUES (p_User, p_NewRoleID, p_AssignedBy);
+
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'User roles updated successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'User roles not updated - no rows affected';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
@@ -676,26 +1338,62 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_ui_settings_Get`(IN `p_User` VA
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SET p_Status = 1;
-        SET p_ErrorMsg = 'Database error occurred';
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
     END;
+
+    START TRANSACTION;
 
     SELECT SettingsJson
     FROM usr_ui_settings
     WHERE UserId = p_User;
 
-    SET p_Status = 0;
-    SET p_ErrorMsg = NULL;
+    IF FOUND_ROWS() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Settings retrieved successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'No settings found for user';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_ui_settings_GetShortcutsJson`(IN `p_User` VARCHAR(255), OUT `p_ShortcutsJson` JSON)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_ui_settings_GetShortcutsJson`(
+    IN p_User VARCHAR(255),
+    OUT p_ShortcutsJson JSON,
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+        SET p_ShortcutsJson = NULL;
+    END;
+
+    START TRANSACTION;
+
     SELECT ShortcutsJson INTO p_ShortcutsJson
     FROM usr_ui_settings
     WHERE UserId = p_User
     LIMIT 1;
+
+    IF FOUND_ROWS() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Shortcuts JSON retrieved successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'No shortcuts found for user';
+        SET p_ShortcutsJson = NULL;
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
@@ -705,8 +1403,14 @@ BEGIN
     DECLARE existing INT DEFAULT 0;
     DECLARE currentJson JSON;
 
-    SET p_Status = 0;
-    SET p_ErrorMsg = '';
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
 
     -- Check if a row exists for this user
     SELECT COUNT(*) INTO existing
@@ -717,12 +1421,30 @@ BEGIN
         -- Insert new row with this DGV branch
         INSERT INTO usr_ui_settings (UserId, SettingsJson)
         VALUES (p_User, JSON_OBJECT(p_DgvName, p_SettingJson));
+        
+        IF ROW_COUNT() > 0 THEN
+            SET p_Status = 1;
+            SET p_ErrorMsg = 'Settings created successfully';
+        ELSE
+            SET p_Status = 0;
+            SET p_ErrorMsg = 'Settings not created - no rows affected';
+        END IF;
     ELSE
         -- Update only the DGV branch in SettingsJson
         SELECT SettingsJson INTO currentJson FROM usr_ui_settings WHERE UserId = p_User LIMIT 1;
         SET currentJson = JSON_SET(IFNULL(currentJson, JSON_OBJECT()), CONCAT('$.', p_DgvName), p_SettingJson);
         UPDATE usr_ui_settings SET SettingsJson = currentJson, UpdatedAt = NOW() WHERE UserId = p_User;
+        
+        IF ROW_COUNT() > 0 THEN
+            SET p_Status = 1;
+            SET p_ErrorMsg = 'Settings updated successfully';
+        ELSE
+            SET p_Status = 0;
+            SET p_ErrorMsg = 'Settings not updated - no rows affected';
+        END IF;
     END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
@@ -731,9 +1453,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_ui_settings_SetShortcutsJson`(I
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SET p_Status = 1;
-        SET p_ErrorMsg = 'Database error while saving shortcuts JSON.';
         ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
     END;
 
     START TRANSACTION;
@@ -742,8 +1464,13 @@ BEGIN
     SET ShortcutsJson = p_ShortcutsJson
     WHERE UserId = p_User;
 
-    SET p_Status = 0;
-    SET p_ErrorMsg = '';
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Shortcuts JSON updated successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'Shortcuts JSON not updated - no user found';
+    END IF;
 
     COMMIT;
 END$$
@@ -761,7 +1488,7 @@ main_block: BEGIN
     BEGIN
 
         GET DIAGNOSTICS CONDITION 1 v_sqlstate = RETURNED_SQLSTATE, v_message = MESSAGE_TEXT;
-        SET p_Status = 1;
+        SET p_Status = -1;
         SET p_ErrorMsg = CONCAT('Database error [', v_sqlstate, ']: ', v_message);
         ROLLBACK;
     END;
@@ -770,7 +1497,7 @@ main_block: BEGIN
 
     SELECT COUNT(*) INTO v_exists FROM usr_ui_settings WHERE UserId = p_User;
     IF v_exists = 0 THEN
-        SET p_Status = 1;
+        SET p_Status = 0;
         SET p_ErrorMsg = 'User does not exist in usr_ui_settings.';
         ROLLBACK;
         LEAVE main_block;
@@ -788,16 +1515,47 @@ main_block: BEGIN
     SET SettingsJson = v_settingsJson
     WHERE UserId = p_User;
 
-    SET p_Status = 0;
-    SET p_ErrorMsg = '';
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Theme JSON updated successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'Theme JSON not updated - no rows affected';
+    END IF;
 
     COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Add_User`(IN `p_User` VARCHAR(100), IN `p_FullName` VARCHAR(200), IN `p_Shift` VARCHAR(50), IN `p_VitsUser` TINYINT, IN `p_Pin` VARCHAR(50), IN `p_LastShownVersion` VARCHAR(50), IN `p_HideChangeLog` VARCHAR(50), IN `p_Theme_Name` VARCHAR(50), IN `p_Theme_FontSize` INT, IN `p_VisualUserName` VARCHAR(50), IN `p_VisualPassword` VARCHAR(50), IN `p_WipServerAddress` VARCHAR(15), IN `p_WipServerPort` VARCHAR(10), IN `p_WipDatabase` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Add_User`(
+    IN p_User VARCHAR(100),
+    IN p_FullName VARCHAR(200),
+    IN p_Shift VARCHAR(50),
+    IN p_VitsUser TINYINT,
+    IN p_Pin VARCHAR(50),
+    IN p_LastShownVersion VARCHAR(50),
+    IN p_HideChangeLog VARCHAR(50),
+    IN p_Theme_Name VARCHAR(50),
+    IN p_Theme_FontSize INT,
+    IN p_VisualUserName VARCHAR(50),
+    IN p_VisualPassword VARCHAR(50),
+    IN p_WipServerAddress VARCHAR(15),
+    IN p_WipServerPort VARCHAR(10),
+    IN p_WipDatabase VARCHAR(100),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     -- Insert into application users table
     INSERT INTO usr_users (
         `User`, `Full Name`, `Shift`, `VitsUser`, `Pin`, `LastShownVersion`, `HideChangeLog`, 
@@ -826,12 +1584,35 @@ BEGIN
 
     -- Flush privileges to apply changes
     FLUSH PRIVILEGES;
+
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'User added successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'User not added - no rows affected';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Delete_User`(IN `p_User` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Delete_User`(
+    IN p_User VARCHAR(100),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     -- Remove MySQL user
     SET @d := CONCAT('DROP USER IF EXISTS \'', REPLACE(p_User, '\'', '\\\''), '\'@\'%\';');
     PREPARE stmt FROM @d;
@@ -840,33 +1621,129 @@ BEGIN
 
     -- Remove from application users table
     DELETE FROM usr_users WHERE `User` = p_User;
+
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'User deleted successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'User not deleted - no matching record found';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Exists`(IN `p_User` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Exists`(
+    IN p_User VARCHAR(100),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     SELECT COUNT(*) AS UserExists FROM usr_users WHERE `User` = p_User;
+
+    IF FOUND_ROWS() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'User exists check completed successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'No user existence data found';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Get_All`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Get_All`(
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     SELECT * FROM usr_users;
+
+    IF FOUND_ROWS() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'Users retrieved successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'No users found';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Get_ByUser`(IN `p_User` VARCHAR(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Get_ByUser`(
+    IN p_User VARCHAR(100),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     SELECT * FROM usr_users WHERE `User` = p_User;
+
+    IF FOUND_ROWS() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'User retrieved successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'No user found with specified ID';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Update_User`(IN `p_User` VARCHAR(100), IN `p_FullName` VARCHAR(200), IN `p_Shift` VARCHAR(50), IN `p_Pin` VARCHAR(50), IN `p_VisualUserName` VARCHAR(50), IN `p_VisualPassword` VARCHAR(50))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_users_Update_User`(
+    IN p_User VARCHAR(100),
+    IN p_FullName VARCHAR(200),
+    IN p_Shift VARCHAR(50),
+    IN p_Pin VARCHAR(50),
+    IN p_VisualUserName VARCHAR(50),
+    IN p_VisualPassword VARCHAR(50),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
     UPDATE usr_users SET
         `Full Name` = p_FullName,
         `Shift` = p_Shift,
@@ -874,5 +1751,15 @@ BEGIN
         `VisualUserName` = p_VisualUserName,
         `VisualPassword` = p_VisualPassword
     WHERE `User` = p_User;
+
+    IF ROW_COUNT() > 0 THEN
+        SET p_Status = 1;
+        SET p_ErrorMsg = 'User updated successfully';
+    ELSE
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'User not updated - no matching record found';
+    END IF;
+
+    COMMIT;
 END$$
 DELIMITER ;

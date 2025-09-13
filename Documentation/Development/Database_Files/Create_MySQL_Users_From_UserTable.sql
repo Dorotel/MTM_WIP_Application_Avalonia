@@ -1,21 +1,18 @@
 -- ================================================================
 -- MTM WIP Application - MySQL User Creation Script
+-- Compatible with MySQL 5.7 and phpMyAdmin
 -- ================================================================
--- This script creates MySQL server users based on the usr_users table
--- Users are created with NO PASSWORD and full privileges on mtm_wip_application database
 -- 
--- Usage:
--- 1. Execute this script as MySQL root user
--- 2. All users from usr_users table will be created as MySQL server users
--- 3. Users will have full access to mtm_wip_application database only
+-- IMPORTANT: If using phpMyAdmin or shared hosting MySQL, skip the stored procedure
+-- and use the Manual SQL Statements section below for better compatibility.
 --
--- WARNING: This creates users with NO PASSWORD - suitable for local development only
+-- Error "Table 'mysql.servers' doesn't exist" indicates system table restrictions.
+-- In such cases, use the manual approach which is more reliable.
 -- ================================================================
 
--- Ensure we're using the correct database
-USE mtm_wip_application;
+USE mtm_wip_application_test;
 
--- Create a stored procedure to generate user creation statements
+-- Create a simplified stored procedure for MySQL 5.7/phpMyAdmin compatibility
 DELIMITER //
 CREATE PROCEDURE CreateUsersFromTable()
 BEGIN
@@ -25,33 +22,16 @@ BEGIN
     DECLARE user_cursor CURSOR FOR 
         SELECT `User`, `Full Name` 
         FROM usr_users 
-        WHERE `User` NOT IN ('[ All Users ]', 'ROOT') -- Exclude system entries
+        WHERE `User` NOT IN ('[ All Users ]', 'ROOT') 
         AND `User` IS NOT NULL 
         AND `User` != '';
-    
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    -- Simple error handler that continues on any SQL exception
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN END;
 
-    -- Drop existing users first (ignore errors if user doesn't exist)
-    OPEN user_cursor;
-    read_loop: LOOP
-        FETCH user_cursor INTO username, fullname;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-        
-        -- Drop user if exists (MySQL 5.7+ syntax)
-        SET @sql = CONCAT('DROP USER IF EXISTS ''', username, '''@''%'';');
-        PREPARE stmt FROM @sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-        
-    END LOOP;
-    CLOSE user_cursor;
+    SELECT 'Starting user creation process...' as Status;
     
-    -- Reset the cursor
-    SET done = FALSE;
-    
-    -- Create new users
+    -- Create users without checking existence first (simpler approach)
     OPEN user_cursor;
     create_loop: LOOP
         FETCH user_cursor INTO username, fullname;
@@ -59,8 +39,15 @@ BEGIN
             LEAVE create_loop;
         END IF;
         
-        -- Create user with no password
-        SET @sql = CONCAT('CREATE USER ''', username, '''@''%'' IDENTIFIED BY '''';');
+        -- Try to drop user first (ignore errors if user doesn't exist)
+        SET @sql = CONCAT('DROP USER IF EXISTS ''', username, '''@''%'';');
+        SET @sql = CONCAT('DROP USER ''', username, '''@''%'';'); -- MySQL 5.7 compatible
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        
+        -- Create user with empty password (MySQL 5.7 syntax)
+        SET @sql = CONCAT('CREATE USER ''', username, '''@''%'';');
         PREPARE stmt FROM @sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
@@ -77,8 +64,8 @@ BEGIN
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
         
-        -- Log the creation
-        SELECT CONCAT('Created MySQL user: ', username, ' (', fullname, ')') as Status;
+        -- Log the creation (simplified)
+        SELECT CONCAT('Processed user: ', username) as Status;
         
     END LOOP;
     CLOSE user_cursor;
@@ -86,142 +73,148 @@ BEGIN
     -- Flush privileges to apply changes
     FLUSH PRIVILEGES;
     
-    SELECT 'User creation completed successfully!' as Result;
+    SELECT 'User creation process completed!' as Result;
 END//
 DELIMITER ;
 
--- Execute the procedure
-CALL CreateUsersFromTable();
-
--- Drop the temporary procedure
-DROP PROCEDURE CreateUsersFromTable;
+-- Execute the procedure (comment this out if it fails and use manual approach below)
+-- CALL CreateUsersFromTable();
+-- DROP PROCEDURE CreateUsersFromTable;
 
 -- ================================================================
--- Manual SQL Statements (Alternative approach)
+-- RECOMMENDED: Manual approach for maximum MySQL 5.7/phpMyAdmin compatibility
 -- ================================================================
--- If the stored procedure approach doesn't work, you can use these manual statements:
+-- Use this approach if you encounter "Table 'mysql.servers' doesn't exist" error
+-- or if you're using phpMyAdmin, shared hosting, or restricted MySQL environments.
+--
+-- Execute these statements in the following order:
 
--- Drop existing users (ignore errors)
-DROP USER IF EXISTS 'DLAFOND'@'%';
-DROP USER IF EXISTS 'JEGBERT'@'%';
-DROP USER IF EXISTS 'RECEIVING'@'%';
-DROP USER IF EXISTS 'SHOP2'@'%';
-DROP USER IF EXISTS 'SHIPPING'@'%';
-DROP USER IF EXISTS 'DHAMMONS'@'%';
-DROP USER IF EXISTS 'JMAUER'@'%';
-DROP USER IF EXISTS 'KWILKER'@'%';
-DROP USER IF EXISTS 'MHANDLER'@'%';
-DROP USER IF EXISTS 'MIKESAMZ'@'%';
-DROP USER IF EXISTS 'MLAURIN'@'%';
-DROP USER IF EXISTS 'MLEDVINA'@'%';
-DROP USER IF EXISTS 'NPITSCH'@'%';
-DROP USER IF EXISTS 'PBAHR'@'%';
-DROP USER IF EXISTS 'SCARBON'@'%';
-DROP USER IF EXISTS 'TTELETZKE'@'%';
-DROP USER IF EXISTS 'TLINDLOFF'@'%';
-DROP USER IF EXISTS 'ABEEMAN'@'%';
-DROP USER IF EXISTS 'DHAGENOW'@'%';
-DROP USER IF EXISTS 'JORNALES'@'%';
-DROP USER IF EXISTS 'TSMAXWELL'@'%';
-DROP USER IF EXISTS 'CMUCHOWSKI'@'%';
-DROP USER IF EXISTS 'NWUNSCH'@'%';
-DROP USER IF EXISTS 'GWHITSON'@'%';
-DROP USER IF EXISTS 'JCASTRO'@'%';
-DROP USER IF EXISTS 'MVOSS'@'%';
-DROP USER IF EXISTS 'NLEE'@'%';
-DROP USER IF EXISTS 'JMILLER'@'%';
-DROP USER IF EXISTS 'SSNYDER'@'%';
-DROP USER IF EXISTS 'CSNYDER'@'%';
-DROP USER IF EXISTS 'BAUSTIN'@'%';
-DROP USER IF EXISTS 'DEBLAFOND'@'%';
-DROP USER IF EXISTS 'ASCHULTZ'@'%';
-DROP USER IF EXISTS 'SJACKSON'@'%';
-DROP USER IF EXISTS 'DRIEBE'@'%';
-DROP USER IF EXISTS 'TRADDATZ'@'%';
-DROP USER IF EXISTS 'SDETTLAFF'@'%';
-DROP USER IF EXISTS 'JWETAK'@'%';
-DROP USER IF EXISTS 'KSKATTEBO'@'%';
-DROP USER IF EXISTS 'AGAUTHIER'@'%';
-DROP USER IF EXISTS 'MBECKER'@'%';
-DROP USER IF EXISTS 'RLESSER'@'%';
-DROP USER IF EXISTS 'AGROELLE'@'%';
-DROP USER IF EXISTS 'CEHLENBECK'@'%';
-DROP USER IF EXISTS 'BNEUMAN'@'%';
-DROP USER IF EXISTS 'MTMDC'@'%';
-DROP USER IF EXISTS 'KDREWIESKE'@'%';
-DROP USER IF EXISTS 'MHERNANDEZ'@'%';
-DROP USER IF EXISTS 'KLEE'@'%';
-DROP USER IF EXISTS 'ADMININT'@'%';
-DROP USER IF EXISTS 'CALVAREZ'@'%';
-DROP USER IF EXISTS 'TYANG'@'%';
-DROP USER IF EXISTS 'KSMITH'@'%';
-DROP USER IF EXISTS 'JKOLL'@'%';
-DROP USER IF EXISTS 'JBEHRMANN'@'%';
-DROP USER IF EXISTS 'MDRESSEL'@'%';
-DROP USER IF EXISTS 'DSMITH'@'%';
-DROP USER IF EXISTS 'APIESCHEL'@'%';
+-- Step 1: Drop existing users (MySQL 5.7 compatible - ignore errors)
+SET sql_notes = 0; -- Disable warnings for non-existent users
 
--- Create users with no password
-CREATE USER 'DLAFOND'@'%' IDENTIFIED BY '';
-CREATE USER 'JEGBERT'@'%' IDENTIFIED BY '';
-CREATE USER 'RECEIVING'@'%' IDENTIFIED BY '';
-CREATE USER 'SHOP2'@'%' IDENTIFIED BY '';
-CREATE USER 'SHIPPING'@'%' IDENTIFIED BY '';
-CREATE USER 'DHAMMONS'@'%' IDENTIFIED BY '';
-CREATE USER 'JMAUER'@'%' IDENTIFIED BY '';
-CREATE USER 'KWILKER'@'%' IDENTIFIED BY '';
-CREATE USER 'MHANDLER'@'%' IDENTIFIED BY '';
-CREATE USER 'MIKESAMZ'@'%' IDENTIFIED BY '';
-CREATE USER 'MLAURIN'@'%' IDENTIFIED BY '';
-CREATE USER 'MLEDVINA'@'%' IDENTIFIED BY '';
-CREATE USER 'NPITSCH'@'%' IDENTIFIED BY '';
-CREATE USER 'PBAHR'@'%' IDENTIFIED BY '';
-CREATE USER 'SCARBON'@'%' IDENTIFIED BY '';
-CREATE USER 'TTELETZKE'@'%' IDENTIFIED BY '';
-CREATE USER 'TLINDLOFF'@'%' IDENTIFIED BY '';
-CREATE USER 'ABEEMAN'@'%' IDENTIFIED BY '';
-CREATE USER 'DHAGENOW'@'%' IDENTIFIED BY '';
-CREATE USER 'JORNALES'@'%' IDENTIFIED BY '';
-CREATE USER 'TSMAXWELL'@'%' IDENTIFIED BY '';
-CREATE USER 'CMUCHOWSKI'@'%' IDENTIFIED BY '';
-CREATE USER 'NWUNSCH'@'%' IDENTIFIED BY '';
-CREATE USER 'GWHITSON'@'%' IDENTIFIED BY '';
-CREATE USER 'JCASTRO'@'%' IDENTIFIED BY '';
-CREATE USER 'MVOSS'@'%' IDENTIFIED BY '';
-CREATE USER 'NLEE'@'%' IDENTIFIED BY '';
-CREATE USER 'JMILLER'@'%' IDENTIFIED BY '';
-CREATE USER 'SSNYDER'@'%' IDENTIFIED BY '';
-CREATE USER 'CSNYDER'@'%' IDENTIFIED BY '';
-CREATE USER 'BAUSTIN'@'%' IDENTIFIED BY '';
-CREATE USER 'DEBLAFOND'@'%' IDENTIFIED BY '';
-CREATE USER 'ASCHULTZ'@'%' IDENTIFIED BY '';
-CREATE USER 'SJACKSON'@'%' IDENTIFIED BY '';
-CREATE USER 'DRIEBE'@'%' IDENTIFIED BY '';
-CREATE USER 'TRADDATZ'@'%' IDENTIFIED BY '';
-CREATE USER 'SDETTLAFF'@'%' IDENTIFIED BY '';
-CREATE USER 'JWETAK'@'%' IDENTIFIED BY '';
-CREATE USER 'KSKATTEBO'@'%' IDENTIFIED BY '';
-CREATE USER 'AGAUTHIER'@'%' IDENTIFIED BY '';
-CREATE USER 'MBECKER'@'%' IDENTIFIED BY '';
-CREATE USER 'RLESSER'@'%' IDENTIFIED BY '';
-CREATE USER 'AGROELLE'@'%' IDENTIFIED BY '';
-CREATE USER 'CEHLENBECK'@'%' IDENTIFIED BY '';
-CREATE USER 'BNEUMAN'@'%' IDENTIFIED BY '';
-CREATE USER 'MTMDC'@'%' IDENTIFIED BY '';
-CREATE USER 'KDREWIESKE'@'%' IDENTIFIED BY '';
-CREATE USER 'MHERNANDEZ'@'%' IDENTIFIED BY '';
-CREATE USER 'KLEE'@'%' IDENTIFIED BY '';
-CREATE USER 'ADMININT'@'%' IDENTIFIED BY '';
-CREATE USER 'CALVAREZ'@'%' IDENTIFIED BY '';
-CREATE USER 'TYANG'@'%' IDENTIFIED BY '';
-CREATE USER 'KSMITH'@'%' IDENTIFIED BY '';
-CREATE USER 'JKOLL'@'%' IDENTIFIED BY '';
-CREATE USER 'JBEHRMANN'@'%' IDENTIFIED BY '';
-CREATE USER 'MDRESSEL'@'%' IDENTIFIED BY '';
-CREATE USER 'DSMITH'@'%' IDENTIFIED BY '';
-CREATE USER 'APIESCHEL'@'%' IDENTIFIED BY '';
+-- Check and drop users individually (MySQL 5.7 doesn't support "IF EXISTS")
+DROP USER 'DLAFOND'@'%';
+DROP USER 'JEGBERT'@'%';
+DROP USER 'RECEIVING'@'%';
+DROP USER 'SHOP2'@'%';
+DROP USER 'SHIPPING'@'%';
+DROP USER 'DHAMMONS'@'%';
+DROP USER 'JMAUER'@'%';
+DROP USER 'KWILKER'@'%';
+DROP USER 'MHANDLER'@'%';
+DROP USER 'MIKESAMZ'@'%';
+DROP USER 'MLAURIN'@'%';
+DROP USER 'MLEDVINA'@'%';
+DROP USER 'NPITSCH'@'%';
+DROP USER 'PBAHR'@'%';
+DROP USER 'SCARBON'@'%';
+DROP USER 'TTELETZKE'@'%';
+DROP USER 'TLINDLOFF'@'%';
+DROP USER 'ABEEMAN'@'%';
+DROP USER 'DHAGENOW'@'%';
+DROP USER 'JORNALES'@'%';
+DROP USER 'TSMAXWELL'@'%';
+DROP USER 'CMUCHOWSKI'@'%';
+DROP USER 'NWUNSCH'@'%';
+DROP USER 'GWHITSON'@'%';
+DROP USER 'JCASTRO'@'%';
+DROP USER 'MVOSS'@'%';
+DROP USER 'NLEE'@'%';
+DROP USER 'JMILLER'@'%';
+DROP USER 'SSNYDER'@'%';
+DROP USER 'CSNYDER'@'%';
+DROP USER 'BAUSTIN'@'%';
+DROP USER 'DEBLAFOND'@'%';
+DROP USER 'ASCHULTZ'@'%';
+DROP USER 'SJACKSON'@'%';
+DROP USER 'DRIEBE'@'%';
+DROP USER 'TRADDATZ'@'%';
+DROP USER 'SDETTLAFF'@'%';
+DROP USER 'JWETAK'@'%';
+DROP USER 'KSKATTEBO'@'%';
+DROP USER 'AGAUTHIER'@'%';
+DROP USER 'MBECKER'@'%';
+DROP USER 'RLESSER'@'%';
+DROP USER 'AGROELLE'@'%';
+DROP USER 'CEHLENBECK'@'%';
+DROP USER 'BNEUMAN'@'%';
+DROP USER 'MTMDC'@'%';
+DROP USER 'KDREWIESKE'@'%';
+DROP USER 'MHERNANDEZ'@'%';
+DROP USER 'KLEE'@'%';
+DROP USER 'ADMININT'@'%';
+DROP USER 'CALVAREZ'@'%';
+DROP USER 'TYANG'@'%';
+DROP USER 'KSMITH'@'%';
+DROP USER 'JKOLL'@'%';
+DROP USER 'JBEHRMANN'@'%';
+DROP USER 'MDRESSEL'@'%';
+DROP USER 'DSMITH'@'%';
+DROP USER 'APIESCHEL'@'%';
 
--- Grant privileges on mtm_wip_application database
+SET sql_notes = 1; -- Re-enable warnings
+
+-- Step 2: Create users without password (MySQL 5.7 syntax)
+CREATE USER 'DLAFOND'@'%';
+CREATE USER 'JEGBERT'@'%';
+CREATE USER 'RECEIVING'@'%';
+CREATE USER 'SHOP2'@'%';
+CREATE USER 'SHIPPING'@'%';
+CREATE USER 'DHAMMONS'@'%';
+CREATE USER 'JMAUER'@'%';
+CREATE USER 'KWILKER'@'%';
+CREATE USER 'MHANDLER'@'%';
+CREATE USER 'MIKESAMZ'@'%';
+CREATE USER 'MLAURIN'@'%';
+CREATE USER 'MLEDVINA'@'%';
+CREATE USER 'NPITSCH'@'%';
+CREATE USER 'PBAHR'@'%';
+CREATE USER 'SCARBON'@'%';
+CREATE USER 'TTELETZKE'@'%';
+CREATE USER 'TLINDLOFF'@'%';
+CREATE USER 'ABEEMAN'@'%';
+CREATE USER 'DHAGENOW'@'%';
+CREATE USER 'JORNALES'@'%';
+CREATE USER 'TSMAXWELL'@'%';
+CREATE USER 'CMUCHOWSKI'@'%';
+CREATE USER 'NWUNSCH'@'%';
+CREATE USER 'GWHITSON'@'%';
+CREATE USER 'JCASTRO'@'%';
+CREATE USER 'MVOSS'@'%';
+CREATE USER 'NLEE'@'%';
+CREATE USER 'JMILLER'@'%';
+CREATE USER 'SSNYDER'@'%';
+CREATE USER 'CSNYDER'@'%';
+CREATE USER 'BAUSTIN'@'%';
+CREATE USER 'DEBLAFOND'@'%';
+CREATE USER 'ASCHULTZ'@'%';
+CREATE USER 'SJACKSON'@'%';
+CREATE USER 'DRIEBE'@'%';
+CREATE USER 'TRADDATZ'@'%';
+CREATE USER 'SDETTLAFF'@'%';
+CREATE USER 'JWETAK'@'%';
+CREATE USER 'KSKATTEBO'@'%';
+CREATE USER 'AGAUTHIER'@'%';
+CREATE USER 'MBECKER'@'%';
+CREATE USER 'RLESSER'@'%';
+CREATE USER 'AGROELLE'@'%';
+CREATE USER 'CEHLENBECK'@'%';
+CREATE USER 'BNEUMAN'@'%';
+CREATE USER 'MTMDC'@'%';
+CREATE USER 'KDREWIESKE'@'%';
+CREATE USER 'MHERNANDEZ'@'%';
+CREATE USER 'KLEE'@'%';
+CREATE USER 'ADMININT'@'%';
+CREATE USER 'CALVAREZ'@'%';
+CREATE USER 'TYANG'@'%';
+CREATE USER 'KSMITH'@'%';
+CREATE USER 'JKOLL'@'%';
+CREATE USER 'JBEHRMANN'@'%';
+CREATE USER 'MDRESSEL'@'%';
+CREATE USER 'DSMITH'@'%';
+CREATE USER 'APIESCHEL'@'%';
+
+-- Step 3: Grant privileges
 GRANT ALL PRIVILEGES ON mtm_wip_application.* TO 'DLAFOND'@'%';
 GRANT ALL PRIVILEGES ON mtm_wip_application.* TO 'JEGBERT'@'%';
 GRANT ALL PRIVILEGES ON mtm_wip_application.* TO 'RECEIVING'@'%';
@@ -281,41 +274,114 @@ GRANT ALL PRIVILEGES ON mtm_wip_application.* TO 'MDRESSEL'@'%';
 GRANT ALL PRIVILEGES ON mtm_wip_application.* TO 'DSMITH'@'%';
 GRANT ALL PRIVILEGES ON mtm_wip_application.* TO 'APIESCHEL'@'%';
 
--- Apply all changes
+-- Step 4: Also grant privileges on test database
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'DLAFOND'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'JEGBERT'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'RECEIVING'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'SHOP2'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'SHIPPING'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'DHAMMONS'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'JMAUER'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'KWILKER'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'MHANDLER'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'MIKESAMZ'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'MLAURIN'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'MLEDVINA'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'NPITSCH'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'PBAHR'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'SCARBON'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'TTELETZKE'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'TLINDLOFF'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'ABEEMAN'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'DHAGENOW'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'JORNALES'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'TSMAXWELL'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'CMUCHOWSKI'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'NWUNSCH'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'GWHITSON'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'JCASTRO'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'MVOSS'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'NLEE'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'JMILLER'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'SSNYDER'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'CSNYDER'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'BAUSTIN'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'DEBLAFOND'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'ASCHULTZ'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'SJACKSON'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'DRIEBE'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'TRADDATZ'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'SDETTLAFF'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'JWETAK'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'KSKATTEBO'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'AGAUTHIER'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'MBECKER'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'RLESSER'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'AGROELLE'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'CEHLENBECK'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'BNEUMAN'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'MTMDC'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'KDREWIESKE'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'MHERNANDEZ'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'KLEE'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'ADMININT'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'CALVAREZ'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'TYANG'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'KSMITH'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'JKOLL'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'JBEHRMANN'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'MDRESSEL'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'DSMITH'@'%';
+GRANT ALL PRIVILEGES ON mtm_wip_application_test.* TO 'APIESCHEL'@'%';
+
+-- Step 5: Flush privileges (required after user creation/modification)
 FLUSH PRIVILEGES;
 
--- Show created users
-SELECT User, Host FROM mysql.user WHERE User IN (
-    'DLAFOND', 'JEGBERT', 'RECEIVING', 'SHOP2', 'SHIPPING', 'DHAMMONS', 'JMAUER', 'KWILKER', 'MHANDLER', 
-    'MIKESAMZ', 'MLAURIN', 'MLEDVINA', 'NPITSCH', 'PBAHR', 'SCARBON', 'TTELETZKE', 'TLINDLOFF', 'ABEEMAN', 
-    'DHAGENOW', 'JORNALES', 'TSMAXWELL', 'CMUCHOWSKI', 'NWUNSCH', 'GWHITSON', 'JCASTRO', 'MVOSS', 'NLEE', 
-    'JMILLER', 'SSNYDER', 'CSNYDER', 'BAUSTIN', 'DEBLAFOND', 'ASCHULTZ', 'SJACKSON', 'DRIEBE', 'TRADDATZ', 
-    'SDETTLAFF', 'JWETAK', 'KSKATTEBO', 'AGAUTHIER', 'MBECKER', 'RLESSER', 'AGROELLE', 'CEHLENBECK', 
-    'BNEUMAN', 'MTMDC', 'KDREWIESKE', 'MHERNANDEZ', 'KLEE', 'ADMININT', 'CALVAREZ', 'TYANG', 'KSMITH', 
-    'JKOLL', 'JBEHRMANN', 'MDRESSEL', 'DSMITH', 'APIESCHEL'
-);
+-- ================================================================
+-- Verification (OPTIONAL - skip if system tables are restricted)
+-- ================================================================
+-- If your MySQL environment allows system table access, uncomment the following:
+-- SELECT User, Host FROM mysql.user WHERE User IN (
+--     'DLAFOND', 'JEGBERT', 'RECEIVING', 'SHOP2', 'SHIPPING', 'DHAMMONS', 'JMAUER', 'KWILKER', 'MHANDLER', 
+--     'MIKESAMZ', 'MLAURIN', 'MLEDVINA', 'NPITSCH', 'PBAHR', 'SCARBON', 'TTELETZKE', 'TLINDLOFF', 'ABEEMAN', 
+--     'DHAGENOW', 'JORNALES', 'TSMAXWELL', 'CMUCHOWSKI', 'NWUNSCH', 'GWHITSON', 'JCASTRO', 'MVOSS', 'NLEE', 
+--     'JMILLER', 'SSNYDER', 'CSNYDER', 'BAUSTIN', 'DEBLAFOND', 'ASCHULTZ', 'SJACKSON', 'DRIEBE', 'TRADDATZ', 
+--     'SDETTLAFF', 'JWETAK', 'KSKATTEBO', 'AGAUTHIER', 'MBECKER', 'RLESSER', 'AGROELLE', 'CEHLENBECK', 
+--     'BNEUMAN', 'MTMDC', 'KDREWIESKE', 'MHERNANDEZ', 'KLEE', 'ADMININT', 'CALVAREZ', 'TYANG', 'KSMITH', 
+--     'JKOLL', 'JBEHRMANN', 'MDRESSEL', 'DSMITH', 'APIESCHEL'
+-- );
+
+-- Alternative verification: Try to connect as one of the created users
+-- This will only work if the user creation was successful
+-- Example: SHOW DATABASES; (run this after connecting as one of the created users)
 
 -- ================================================================
--- Test Connection (Optional)
+-- Instructions for phpMyAdmin Usage
 -- ================================================================
--- You can test these users by connecting with:
--- mysql -u USERNAME -h localhost mtm_wip_application
--- (no -p flag needed since there's no password)
-
--- ================================================================
--- Security Notes:
--- ================================================================
--- WARNING: These users have NO PASSWORD and full database access
--- This is suitable for:
--- - Local development environments
--- - Internal networks with controlled access
--- - Testing environments
+-- RECOMMENDED APPROACH for phpMyAdmin/shared hosting:
+-- Use the Manual SQL Statements above (lines 92-360) as they are more reliable
+-- and don't require system table access.
 --
--- NOT suitable for:
--- - Production environments
--- - Internet-accessible servers
--- - Environments requiring user authentication
+-- 1. For the manual approach (RECOMMENDED):
+--    - Execute Step 1: DROP USER statements first (ignore any "user doesn't exist" errors)
+--    - Execute Step 2: CREATE USER statements  
+--    - Execute Step 3: GRANT privileges on mtm_wip_application database
+--    - Execute Step 4: GRANT privileges on mtm_wip_application_test database
+--    - Execute Step 5: FLUSH PRIVILEGES and verify
 --
--- Consider adding passwords in production:
--- ALTER USER 'username'@'%' IDENTIFIED BY 'secure_password';
--- ================================================================
+-- 2. For the stored procedure approach (if manual fails):
+--    - Only try this if your MySQL installation has full system table access
+--    - Copy lines 19-80 and execute in phpMyAdmin's SQL tab
+--
+-- 3. Troubleshooting common errors:
+--    - "Table 'mysql.servers' doesn't exist" → Use manual approach instead
+--    - "DROP USER failed" → User doesn't exist, this is expected and safe to ignore
+--    - "CREATE USER failed" → User already exists, run corresponding DROP USER first
+--    - "FLUSH PRIVILEGES failed" → Your MySQL environment restricts system table access
+--      In this case, user creation may still work, but verification queries won't
+--    - Always run FLUSH PRIVILEGES after user creation/modification (if permitted)
+--
+-- 4. Testing user creation success:
+--    - Try connecting to your database using one of the created usernames
+--    - If connection succeeds, user creation was successful
+--    - Run SHOW DATABASES; to verify database access permissions

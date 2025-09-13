@@ -106,7 +106,8 @@ public class QuickButtonsService : IQuickButtonsService
                 var quickButtons = new List<QuickButtonData>();
 
                 // Check if the stored procedure executed successfully
-                if (result.Status == 0 && result.Data != null && result.Data.Rows.Count > 0)
+                // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+                if (result.Status >= 0 && result.Data != null && result.Data.Rows.Count > 0)
                 {
                     // Log available columns for debugging
                     if (result.Data.Columns.Count > 0)
@@ -132,7 +133,7 @@ public class QuickButtonsService : IQuickButtonsService
                         });
                     }
                 }
-                else if (result.Status != 0)
+                else if (result.Status < 0)
                 {
                     _logger.LogWarning("qb_quickbuttons_Get_ByUser returned error status {Status}: {Message}", 
                         result.Status, result.Message);
@@ -369,8 +370,9 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
-            if (result.Status == 0)
+            // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR  
+            // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+            if (result.Status >= 0)
             {
                 _logger.LogInformation("Quick button saved successfully: {PartId} at position {Position}", 
                     quickButton.PartId, quickButton.Position);
@@ -419,8 +421,9 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
-            if (result.Status == 0)
+            // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR
+            // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+            if (result.Status >= 0)
             {
                 _logger.LogInformation("Quick button removed successfully: ID {ButtonId}", buttonId);
 
@@ -472,8 +475,9 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
-            if (result.Status == 0)
+            // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR
+            // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+            if (result.Status >= 0)
             {
                 _logger.LogInformation("All quick buttons cleared for user: {UserId}", userId);
 
@@ -530,8 +534,9 @@ public class QuickButtonsService : IQuickButtonsService
                     parameters
                 );
 
-                // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
-                if (result.Status != 0)
+                // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR
+                // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+                if (result.Status < 0)
                 {
                     allSuccessful = false;
                     _logger.LogError("Failed to reorder button at position {Position}: {Error}", button.Position, result.Message);
@@ -592,8 +597,9 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            // For MySQL stored procedures: Status = 0 means SUCCESS, Status = -1 means ERROR
-            if (result.Status == 0)
+            // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR  
+            // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
+            if (result.Status >= 0)
             {
                 _logger.LogInformation("Successfully added transaction to last 10 for user {UserId}: {PartId}/{Operation}/{Quantity}", 
                     userId, partId, operation, quantity);
