@@ -35,8 +35,18 @@ public partial class QuickButtonsViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isShowingHistory = false;
 
+    // Debug information properties for footer display
+    [ObservableProperty]
+    private string _databaseConnectionStatus = "Connected";
+
+    [ObservableProperty]
+    private string _lastOperationStatus = "Ready";
+
     // Event to notify the parent about quick action execution
     public event EventHandler<QuickActionExecutedEventArgs>? QuickActionExecuted;
+
+    // Event to request new quick button overlay display with panel expansion
+    public event EventHandler? NewQuickButtonRequested;
 
     /// <summary>
     /// Gets the count of non-empty quick buttons for display
@@ -142,6 +152,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
     private async Task RefreshButtons()
     {
         Logger.LogInformation("🔧 RefreshButtonsCommand executed");
+        LastOperationStatus = "Refreshing...";
         await LoadLast10TransactionsAsync();
     }
 
@@ -267,6 +278,122 @@ public partial class QuickButtonsViewModel : BaseViewModel
         Logger.LogInformation("ClearHistoryCommand executed");
     }
 
+    /// <summary>
+    /// Shows the overlay to create a new quick button
+    /// </summary>
+    [RelayCommand]
+    private void NewQuickButton()
+    {
+        try
+        {
+            Logger.LogInformation("NewQuickButton command executed - requesting overlay display");
+            
+            // Raise event to request overlay display with panel expansion
+            NewQuickButtonRequested?.Invoke(this, EventArgs.Empty);
+            
+            LastOperationStatus = "Creating...";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in NewQuickButton command");
+            LastOperationStatus = "Error";
+        }
+    }
+
+    /// <summary>
+    /// Exports QuickButtons configuration to a JSON file in MyDocuments
+    /// </summary>
+    [RelayCommand]
+    private async Task ExportQuickButtons()
+    {
+        try
+        {
+            _progressService.StartOperation("Exporting quick buttons...", false);
+            
+            var currentUser = _applicationState.CurrentUser;
+            if (string.IsNullOrEmpty(currentUser))
+            {
+                currentUser = Environment.UserName.ToUpper();
+            }
+
+            var success = await _quickButtonsService.ExportQuickButtonsAsync(currentUser);
+            
+            if (success)
+            {
+                _progressService.CompleteOperation("Quick buttons exported successfully!");
+                LastOperationStatus = "Export Success";
+                Logger.LogInformation("Quick buttons exported successfully for user: {User}", currentUser);
+            }
+            else
+            {
+                _progressService.ReportError("Failed to export quick buttons");
+                LastOperationStatus = "Export Failed";
+                Logger.LogWarning("Failed to export quick buttons for user: {User}", currentUser);
+            }
+        }
+        catch (Exception ex)
+        {
+            _progressService.ReportError("Export failed with error");
+            LastOperationStatus = "Export Error";
+            Logger.LogError(ex, "Error exporting quick buttons");
+        }
+    }
+
+    /// <summary>
+    /// Imports QuickButtons configuration from a selected JSON file
+    /// </summary>
+    [RelayCommand]
+    private async Task ImportQuickButtons()
+    {
+        try
+        {
+            _progressService.StartOperation("Importing quick buttons...", false);
+            
+            var currentUser = _applicationState.CurrentUser;
+            if (string.IsNullOrEmpty(currentUser))
+            {
+                currentUser = Environment.UserName.ToUpper();
+            }
+
+            // Get available export files
+            var availableFiles = await _quickButtonsService.GetAvailableExportFilesAsync();
+            
+            if (!availableFiles.Any())
+            {
+                _progressService.ReportError("No export files found to import");
+                LastOperationStatus = "No Import Files";
+                return;
+            }
+
+            // Use the most recent file for now (in a full implementation, you'd show a file picker)
+            var selectedFile = availableFiles.First();
+            
+            var success = await _quickButtonsService.ImportQuickButtonsAsync(currentUser, selectedFile);
+            
+            if (success)
+            {
+                _progressService.CompleteOperation("Quick buttons imported successfully!");
+                LastOperationStatus = "Import Success";
+                Logger.LogInformation("Quick buttons imported successfully for user: {User}", currentUser);
+                
+                // Refresh the UI
+                await RefreshButtons();
+            }
+            else
+            {
+                _progressService.ReportError("Failed to import quick buttons");
+                LastOperationStatus = "Import Failed";
+                Logger.LogWarning("Failed to import quick buttons for user: {User}", currentUser);
+            }
+        }
+        catch (Exception ex)
+        {
+            _progressService.ReportError("Import failed with error");
+            LastOperationStatus = "Import Error";
+            Logger.LogError(ex, "Error importing quick buttons");
+        }
+    }
+
     #endregion
 
     public async Task LoadLast10TransactionsAsync()
@@ -385,6 +512,10 @@ public partial class QuickButtonsViewModel : BaseViewModel
             });
 
             _progressService.CompleteOperation("Transactions loaded successfully");
+            
+            // Update debug status for footer display
+            DatabaseConnectionStatus = "Connected";
+            LastOperationStatus = $"Success - {DateTime.Now:HH:mm:ss}";
         }
         catch (Exception ex)
         {
@@ -392,6 +523,10 @@ public partial class QuickButtonsViewModel : BaseViewModel
             Console.WriteLine($"🔧🔧🔧 LoadLast10TransactionsAsync FAILED with exception: {ex.Message}");
             System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 LoadLast10TransactionsAsync FAILED with exception: {ex.Message}");
             Logger.LogError(ex, "🔧 LoadLast10TransactionsAsync FAILED with exception");
+
+            // Update debug status for footer display
+            DatabaseConnectionStatus = "Error";
+            LastOperationStatus = $"Failed - {DateTime.Now:HH:mm:ss}";
 
             // If database service fails, just load empty buttons
             LoadEmptyButtons();

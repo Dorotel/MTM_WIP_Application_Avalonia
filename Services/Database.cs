@@ -898,41 +898,47 @@ public class DatabaseService : IDatabaseService
 
     /// <summary>
     /// Gets all locations using md_locations_Get_All stored procedure.
-    /// This procedure doesn't follow MTM status pattern, so use direct execution.
+    /// This procedure follows MTM status pattern with OUT parameters.
     /// </summary>
     public async Task<DataTable> GetAllLocationsAsync()
     {
-        return await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
             _connectionString,
             "md_locations_Get_All",
             new Dictionary<string, object>()
         );
+        
+        return result.Data ?? new DataTable();
     }
 
     /// <summary>
     /// Gets all operations using md_operation_numbers_Get_All stored procedure.
-    /// This procedure doesn't follow MTM status pattern, so use direct execution.
+    /// This procedure follows MTM status pattern with OUT parameters.
     /// </summary>
     public async Task<DataTable> GetAllOperationsAsync()
     {
-        return await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
             _connectionString,
             "md_operation_numbers_Get_All",
             new Dictionary<string, object>()
         );
+        
+        return result.Data ?? new DataTable();
     }
 
     /// <summary>
     /// Gets all Part IDs using md_part_ids_Get_All stored procedure.
-    /// This procedure doesn't follow MTM status pattern, so use direct execution.
+    /// This procedure follows MTM status pattern with OUT parameters.
     /// </summary>
     public async Task<DataTable> GetAllPartIDsAsync()
     {
-        return await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
             _connectionString,
             "md_part_ids_Get_All",
             new Dictionary<string, object>()
         );
+        
+        return result.Data ?? new DataTable();
     }
 
     /// <summary>
@@ -1774,10 +1780,10 @@ public static class Helper_Database_StoredProcedure
                 break;
                 
             case "qb_quickbuttons_remove":
-                var buttonId = parameters.GetValueOrDefault("p_ButtonID", "unknown");
+                var removePosition = parameters.GetValueOrDefault("p_Position", "unknown");
                 var userId = parameters.GetValueOrDefault("p_User", "unknown");
-                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Remove operation for ButtonID {ButtonId} by user '{UserId}' - {StatusText}", 
-                    buttonId, userId, statusText);
+                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Remove operation for Position {Position} by user '{UserId}' - {StatusText}", 
+                    removePosition, userId, statusText);
                 break;
                 
             case "qb_quickbuttons_get_byuser":
@@ -1807,7 +1813,7 @@ public static class Helper_Database_StoredProcedure
         }
 
         // Log parameter context that might be causing the error
-        var criticalParams = new[] { "p_User", "p_PartID", "p_Position", "p_ButtonID", "p_Operation", "p_Quantity" };
+        var criticalParams = new[] { "p_User", "p_PartID", "p_Position", "p_Operation", "p_Quantity" };
         foreach (var paramName in criticalParams)
         {
             if (parameters.ContainsKey(paramName))
@@ -1841,10 +1847,10 @@ public static class Helper_Database_StoredProcedure
     private static void LogQuickButtonRemoveContext(Dictionary<string, object> parameters)
     {
         var userId = parameters.GetValueOrDefault("p_User", "");
-        var buttonId = parameters.GetValueOrDefault("p_ButtonID", "");
+        var position = parameters.GetValueOrDefault("p_Position", "");
         
-        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: REMOVE CONTEXT - User '{UserId}' removing button at position {ButtonId}", 
-            userId, buttonId);
+        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: REMOVE CONTEXT - User '{UserId}' removing button at position {Position}", 
+            userId, position);
     }
 
     private static void LogQuickButtonClearContext(Dictionary<string, object> parameters)
@@ -1893,12 +1899,11 @@ public class StoredProcedureResult
 
     /// <summary>
     /// Indicates if the stored procedure executed successfully.
-    /// IMPORTANT: MTM stored procedures use different status conventions:
-    /// - Status = -1 for SUCCESS with data (confirmed by logs showing Status: -1 with 2908+ rows)
-    /// - Status = 0 for SUCCESS (some procedures)
-    /// - Status = 1 for SUCCESS (some procedures)
-    /// - Status > 1 for various error codes
-    /// For data retrieval procedures, we also check if data was returned regardless of status
+    /// UPDATED: MTM standardized stored procedures now use consistent status conventions:
+    /// - Status = -1 for ERROR (database error or validation failure)
+    /// - Status = 0 for SUCCESS with NO DATA (successful execution but no results)
+    /// - Status = 1 for SUCCESS with DATA (successful execution with results)
+    /// For backward compatibility, we also check if data was returned regardless of status
     /// </summary>
-    public bool IsSuccess => Status <= 1 || (Data != null && Data.Rows.Count > 0);
+    public bool IsSuccess => Status >= 0 || (Data != null && Data.Rows.Count > 0);
 }

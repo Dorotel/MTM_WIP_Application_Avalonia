@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -7,6 +8,7 @@ using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Core.Startup;
 using Avalonia.Controls.ApplicationLifetimes;
 using ZstdSharp.Unsafe;
@@ -35,7 +37,6 @@ public static class Program
 
         try
         {
-
             // Phase 2: Configure services using ApplicationStartup infrastructure
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring services using ApplicationStartup...");
             var configureResult = await ConfigureServicesAsync();

@@ -262,8 +262,8 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
                     if (dataContext != null)
                     {
                         // Try to identify which property this textbox is bound to and update it
-                        var boundProperties = new[] { "SelectedPart", "SelectedOperation", "SelectedLocation" };
-                        var watermarkProperties = new[] { "PartWatermark", "OperationWatermark", "LocationWatermark" };
+                        var boundProperties = new[] { "SelectedPart", "SelectedOperation", "SelectedLocation", "PartId", "Operation", "Location" };
+                        var watermarkProperties = new[] { "PartWatermark", "OperationWatermark", "LocationWatermark", "PartIdWatermark", "OperationWatermark", "LocationWatermark" };
                         
                         foreach (var boundProp in boundProperties)
                         {

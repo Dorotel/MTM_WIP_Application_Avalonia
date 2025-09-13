@@ -150,14 +150,14 @@ namespace MTM_WIP_Application_Avalonia.Models
         }
 
         /// <summary>
-        /// Gets the application data directory.
+        /// Gets the application data directory in MyDocuments (non-OneDrive).
         /// </summary>
         public static string ApplicationDataDirectory
         {
             get
             {
-                var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                var mtmDir = Path.Combine(appData, "MTM_WIP_Application");
+                var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var mtmDir = Path.Combine(myDocuments, "MTM WIP Application");
                 
                 if (!Directory.Exists(mtmDir))
                     Directory.CreateDirectory(mtmDir);
