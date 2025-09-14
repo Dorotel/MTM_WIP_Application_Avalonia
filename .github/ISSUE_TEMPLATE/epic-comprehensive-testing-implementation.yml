@@ -1,7 +1,7 @@
-name: "🏗️ Epic - Comprehensive Testing Implementation"
-description: "Epic for implementing complete testing infrastructure using agent-driven test creation"
-title: "[EPIC] Comprehensive Testing Infrastructure - Phase 2: Test File Creation"
-labels: ["epic", "testing", "agent-driven", "cross-platform", "high-priority"]
+name: "Create Testing Framework & Comprehensive Test Files"
+description: "Enhance existing functionality in the MTM application with improvements or optimizations"
+title: "[TESTING] Create Testing Framework & Comprehensive Test Files"
+labels: ["testing", "improvement"]
 projects: ["MTM-Development"]
 assignees: []
 body:
