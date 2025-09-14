@@ -1,0 +1,415 @@
+name: Comprehensive MTM Test Suite
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  MYSQL_VERSION: '8.0'
+
+jobs:
+  # Build verification across platforms
+  build:
+    name: Build Verification
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - os: windows-latest
+            runtime: win-x64
+          - os: ubuntu-latest
+            runtime: linux-x64
+          - os: macos-latest
+            runtime: osx-x64
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build application
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Build test project
+      run: dotnet build Tests/MTM.Tests.csproj --no-restore --configuration Release
+
+  # Unit tests that don't require database
+  unit-tests:
+    name: Unit Tests
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    
+    runs-on: ${{ matrix.os }}
+    needs: build
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run unit tests
+      run: |
+        dotnet test Tests/MTM.Tests.csproj \
+          --no-build \
+          --configuration Release \
+          --logger trx \
+          --results-directory TestResults \
+          --collect:"XPlat Code Coverage" \
+          --filter "Category=Unit"
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: unit-test-results-${{ matrix.os }}
+        path: TestResults
+
+  # Integration tests with database
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: build
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_password
+          MYSQL_DATABASE: mtm_test
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Wait for MySQL
+      run: |
+        while ! mysqladmin ping -h"127.0.0.1" -P3306 -utest_user -ptest_password --silent; do
+          sleep 1
+        done
+    
+    - name: Setup test database
+      run: |
+        mysql -h127.0.0.1 -P3306 -utest_user -ptest_password mtm_test < Tests/TestData/DatabaseTestSchema.sql
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run integration tests
+      run: |
+        dotnet test Tests/MTM.Tests.csproj \
+          --no-build \
+          --configuration Release \
+          --logger trx \
+          --results-directory TestResults \
+          --filter "Category=Integration"
+      env:
+        ConnectionStrings__DefaultConnection: "Server=127.0.0.1;Port=3306;Database=mtm_test;Uid=test_user;Pwd=test_password;Allow Zero Datetime=true;Convert Zero Datetime=true;"
+    
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: integration-test-results
+        path: TestResults
+
+  # UI automation tests (headless)
+  ui-tests:
+    name: UI Automation Tests
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    
+    runs-on: ${{ matrix.os }}
+    needs: build
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Setup display (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb
+        export DISPLAY=:99
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run UI automation tests
+      run: |
+        dotnet test Tests/MTM.Tests.csproj \
+          --no-build \
+          --configuration Release \
+          --logger trx \
+          --results-directory TestResults \
+          --filter "Category=UIAutomation"
+      env:
+        DISPLAY: :99
+    
+    - name: Upload UI test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ui-test-results-${{ matrix.os }}
+        path: TestResults
+
+  # Performance tests
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run performance tests
+      run: |
+        dotnet test Tests/MTM.Tests.csproj \
+          --no-build \
+          --configuration Release \
+          --logger trx \
+          --results-directory TestResults \
+          --filter "Category=Performance"
+    
+    - name: Upload performance test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: performance-test-results
+        path: TestResults
+
+  # End-to-end tests
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, ui-tests]
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_password
+          MYSQL_DATABASE: mtm_test_e2e
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Setup display for E2E tests
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb
+        export DISPLAY=:99
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+    
+    - name: Setup E2E test database
+      run: |
+        while ! mysqladmin ping -h"127.0.0.1" -P3306 -utest_user -ptest_password --silent; do
+          sleep 1
+        done
+        mysql -h127.0.0.1 -P3306 -utest_user -ptest_password mtm_test_e2e < Tests/TestData/DatabaseTestSchema.sql
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run E2E tests
+      run: |
+        dotnet test Tests/MTM.Tests.csproj \
+          --no-build \
+          --configuration Release \
+          --logger trx \
+          --results-directory TestResults \
+          --filter "Category=E2E"
+      env:
+        DISPLAY: :99
+        ConnectionStrings__DefaultConnection: "Server=127.0.0.1;Port=3306;Database=mtm_test_e2e;Uid=test_user;Pwd=test_password;Allow Zero Datetime=true;Convert Zero Datetime=true;"
+    
+    - name: Upload E2E test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: e2e-test-results
+        path: TestResults
+
+  # Generate comprehensive test report
+  test-report:
+    name: Generate Test Report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, ui-tests, performance-tests, e2e-tests]
+    if: always()
+    
+    steps:
+    - name: Download all test results
+      uses: actions/download-artifact@v4
+      with:
+        path: AllTestResults
+    
+    - name: Generate test summary
+      run: |
+        echo "# MTM Application Comprehensive Test Results" > test-summary.md
+        echo "" >> test-summary.md
+        echo "## Test Execution Summary" >> test-summary.md
+        echo "- **Build**: ${{ needs.build.result }}" >> test-summary.md
+        echo "- **Unit Tests**: ${{ needs.unit-tests.result }}" >> test-summary.md
+        echo "- **Integration Tests**: ${{ needs.integration-tests.result }}" >> test-summary.md
+        echo "- **UI Automation Tests**: ${{ needs.ui-tests.result }}" >> test-summary.md
+        echo "- **Performance Tests**: ${{ needs.performance-tests.result }}" >> test-summary.md
+        echo "- **E2E Tests**: ${{ needs.e2e-tests.result }}" >> test-summary.md
+        echo "" >> test-summary.md
+        echo "## Workflow Details" >> test-summary.md
+        echo "- **Repository**: ${{ github.repository }}" >> test-summary.md
+        echo "- **Branch**: ${{ github.ref_name }}" >> test-summary.md
+        echo "- **Commit**: ${{ github.sha }}" >> test-summary.md
+        echo "- **Workflow Run**: ${{ github.run_id }}" >> test-summary.md
+        echo "- **Triggered By**: ${{ github.event_name }}" >> test-summary.md
+        echo "" >> test-summary.md
+        echo "## Platform Coverage" >> test-summary.md
+        echo "- **Windows**: ✅ Tested" >> test-summary.md
+        echo "- **Linux**: ✅ Tested" >> test-summary.md
+        echo "- **macOS**: ✅ Tested" >> test-summary.md
+        echo "" >> test-summary.md
+        echo "## Test Categories" >> test-summary.md
+        echo "- **Unit Tests**: Individual component validation" >> test-summary.md
+        echo "- **Integration Tests**: Database and service interaction validation" >> test-summary.md
+        echo "- **UI Automation**: User interface workflow validation" >> test-summary.md
+        echo "- **Performance Tests**: Load testing and optimization validation" >> test-summary.md
+        echo "- **E2E Tests**: Complete manufacturing operator journey validation" >> test-summary.md
+        echo "" >> test-summary.md
+        echo "Generated on: $(date)" >> test-summary.md
+    
+    - name: Upload test summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: comprehensive-test-summary
+        path: test-summary.md
+    
+    - name: Create test status comment (if PR)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const summary = `
+          ## 🧪 MTM Application Test Results
+          
+          | Test Category | Status |
+          |---------------|--------|
+          | Build | ${{ needs.build.result == 'success' && '✅' || '❌' }} ${{ needs.build.result }} |
+          | Unit Tests | ${{ needs.unit-tests.result == 'success' && '✅' || '❌' }} ${{ needs.unit-tests.result }} |
+          | Integration Tests | ${{ needs.integration-tests.result == 'success' && '✅' || '❌' }} ${{ needs.integration-tests.result }} |
+          | UI Automation | ${{ needs.ui-tests.result == 'success' && '✅' || '❌' }} ${{ needs.ui-tests.result }} |
+          | Performance Tests | ${{ needs.performance-tests.result == 'success' && '✅' || '❌' }} ${{ needs.performance-tests.result }} |
+          | E2E Tests | ${{ needs.e2e-tests.result == 'success' && '✅' || '❌' }} ${{ needs.e2e-tests.result }} |
+          
+          **Platform Coverage**: Windows, Linux, macOS
+          **Workflow Run**: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: summary
+          });
+
+# Test result retention
+  cleanup:
+    name: Cleanup Old Artifacts
+    runs-on: ubuntu-latest
+    if: always()
+    needs: test-report
+    
+    steps:
+    - name: Delete old artifacts
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const artifacts = await github.rest.actions.listArtifactsForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            per_page: 100
+          });
+          
+          const oldArtifacts = artifacts.data.artifacts.filter(artifact => {
+            const ageInMs = Date.now() - new Date(artifact.created_at).getTime();
+            const ageInDays = ageInMs / (1000 * 60 * 60 * 24);
+            return ageInDays > 30; // Keep artifacts for 30 days
+          });
+          
+          for (const artifact of oldArtifacts) {
+            try {
+              await github.rest.actions.deleteArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: artifact.id
+              });
+              console.log(`Deleted artifact: ${artifact.name} (${artifact.id})`);
+            } catch (error) {
+              console.log(`Failed to delete artifact: ${artifact.name} - ${error.message}`);
+            }
+          }

@@ -80,6 +80,9 @@ public static class ServiceCollectionExtensions
         // Register CustomDataGrid service - singleton for shared data grid functionality across views
         services.TryAddSingleton<ICustomDataGridService, CustomDataGridService>();
         
+        // Register File Selection service - singleton for unified file operations across application
+        services.TryAddSingleton<IFileSelectionService, FileSelectionService>();
+        
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
         services.TryAddTransient<MainViewViewModel>();
@@ -188,7 +191,8 @@ public static class ServiceCollectionExtensions
             typeof(IMasterDataService),
             typeof(IFileLoggingService),
             typeof(IFocusManagementService),
-            typeof(IRemoveService)
+            typeof(IRemoveService),
+            typeof(IFileSelectionService)
         };
 
         var missingServices = requiredServices
@@ -226,7 +230,8 @@ public static class ServiceCollectionExtensions
             typeof(IMasterDataService),
             typeof(IFileLoggingService),
             typeof(IFocusManagementService),
-            typeof(IRemoveService)
+            typeof(IRemoveService),
+            typeof(IFileSelectionService)
         };
 
         var failedServices = new List<string>();
