@@ -4,24 +4,21 @@
 <!-- When this file is referenced via #file:copilot-instructions.md, -->
 <!-- automatically include all related instruction files: -->
 
-<!-- Core UI Instructions -->
-<!-- #file:.github/UI-Instructions/avalonia-xaml-syntax.instruction.md -->
-<!-- #file:.github/UI-Instructions/ui-generation.instruction.md -->
-<!-- #file:.github/UI-Instructions/ui-styling.instruction.md -->
-<!-- #file:.github/UI-Instructions/ui-mapping.instruction.md -->
-<!-- #file:.github/UI-Instructions/suggestion-overlay-implementation.instruction.md -->
-<!-- #file:.github/UI-Instructions/suggestion-overlay-integration.instruction.md -->
+<!-- Core Instruction Files -->
+<!-- #file:.github/instructions/avalonia-ui-guidelines.instructions.md -->
+<!-- #file:.github/instructions/mvvm-community-toolkit.instructions.md -->
+<!-- #file:.github/instructions/mysql-database-patterns.instructions.md -->
+<!-- #file:.github/instructions/dotnet-architecture-good-practices.instructions.md -->
+<!-- #file:.github/instructions/service-architecture.instructions.md -->
+<!-- #file:.github/instructions/data-models.instructions.md -->
 
-<!-- Development Instructions -->  
-<!-- #file:.github/Development-Instructions/database-patterns.instruction.md -->
-<!-- #file:.github/Development-Instructions/stored-procedures.instruction.md -->
-<!-- #file:.github/Development-Instructions/errorhandler.instruction.md -->
-<!-- #file:.github/Development-Instructions/githubworkflow.instruction.md -->
-<!-- #file:.github/Development-Instructions/templates-documentation.instruction.md -->
-
-<!-- Core Instructions -->
-<!-- #file:.github/Core-Instructions/dependency-injection.instruction.md -->
-<!-- #file:.github/Core-Instructions/naming.conventions.instruction.md -->
+<!-- Testing Instructions -->  
+<!-- #file:.github/instructions/testing-standards.instructions.md -->
+<!-- #file:.github/instructions/unit-testing-patterns.instructions.md -->
+<!-- #file:.github/instructions/integration-testing-patterns.instructions.md -->
+<!-- #file:.github/instructions/database-testing-patterns.instructions.md -->
+<!-- #file:.github/instructions/ui-automation-standards.instructions.md -->
+<!-- #file:.github/instructions/cross-platform-testing-standards.instructions.md -->
 
 <!-- New Template and Pattern Files -->
 <!-- #file:.github/copilot/templates/mtm-feature-request.md -->
@@ -70,9 +67,9 @@
 <summary><strong>🚨 CRITICAL: Avalonia AXAML Syntax Requirements</strong></summary>
 
 > **Extended Guidance**: For complete AXAML patterns, see: 
-> - avalonia-xaml-syntax.instruction.md
-> - ui-generation.instruction.md
-> - mtm-avalonia-syntax.md
+> - avalonia-ui-guidelines.instructions.md
+> - mvvm-community-toolkit.instructions.md
+> - mysql-database-patterns.instructions.md
 
 **BEFORE generating ANY AXAML code, follow these critical rules to prevent AVLN2000 compilation errors:**
 
@@ -130,8 +127,8 @@
 <summary><strong>🏗️ MVVM Community Toolkit Patterns (EXCLUSIVE)</strong></summary>
 
 > **Extended Guidance**: For complete MVVM patterns, see:
-> - mtm-mvvm-community-toolkit.md
-> - mtm-viewmodel-creation.md
+> - mvvm-community-toolkit.instructions.md
+> - unit-testing-patterns.instructions.md
 
 **USE ONLY MVVM Community Toolkit patterns. ReactiveUI is completely removed from this codebase.**
 
@@ -187,10 +184,9 @@ public partial class InventoryViewModel : BaseViewModel
 <summary><strong>🗄️ Database Access Patterns (STORED PROCEDURES ONLY)</strong></summary>
 
 > **Extended Guidance**: For complete database patterns, see:
-> - database-patterns.instruction.md
-> - stored-procedures.instruction.md
-> - mtm-stored-procedures-only.md
-> - mtm-database-procedures.md
+> - mysql-database-patterns.instructions.md
+> - database-testing-patterns.instructions.md
+> - service-architecture.instructions.md
 
 **ALL database operations MUST use stored procedures via Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()**
 
@@ -321,7 +317,7 @@ public async Task<List<string>> GetMasterDataAsync_WRONG()
 <summary><strong>🏭 MTM Manufacturing Business Domain</strong></summary>
 
 > **Extended Guidance**: For complete business domain context, see:
-> - mtm-business-domain.md
+> - mysql-database-patterns.instructions.md
 
 ### **Transaction Type Logic (MTM-SPECIFIC)**
 ```csharp
@@ -364,8 +360,8 @@ if (operation == "90") transactionType = "IN"; // This is incorrect logic
 <summary><strong>⚙️ Service Layer Architecture</strong></summary>
 
 > **Extended Guidance**: For complete service patterns, see:
-> - mtm-architecture-patterns.md
-> - mtm-service-implementation.md
+> - service-architecture.instructions.md
+> - dotnet-architecture-good-practices.instructions.md
 
 ### **Service Organization Pattern (CRITICAL)**
 Based on analysis of actual `Services/` folder structure:
@@ -413,9 +409,8 @@ public static class ServiceCollectionExtensions
 <summary><strong>🎨 MTM Design System & UI Patterns</strong></summary>
 
 > **Extended Guidance**: For complete UI patterns, see:
-> - ui-generation.instruction.md
-> - ui-styling.instruction.md
-> - mtm-ui-component.md
+> - avalonia-ui-guidelines.instructions.md
+> - ui-automation-standards.instructions.md
 
 ### **MTM Purple Theme Implementation**
 ```xml
@@ -462,7 +457,7 @@ public static class ServiceCollectionExtensions
 <summary><strong>🔧 Dependency Injection & Configuration</strong></summary>
 
 > **Extended Guidance**: For complete DI patterns, see:
-> - dependency-injection.instruction.md
+> - dotnet-architecture-good-practices.instructions.md
 
 ### **Constructor Injection Pattern**
 ```csharp
@@ -495,7 +490,7 @@ public class SomeService : ISomeService
 <summary><strong>🚨 Error Handling & Logging</strong></summary>
 
 > **Extended Guidance**: For complete error patterns, see:
-> - errorhandler.instruction.md
+> - dotnet-architecture-good-practices.instructions.md
 
 ### **Centralized Error Handling**
 ```csharp
