@@ -1,0 +1,62 @@
+[
+  {
+    "PartId": "TEST001",
+    "Operation": "90",
+    "Quantity": 25,
+    "Location": "STATION_A",
+    "TransactionType": "IN",
+    "LastUpdated": "2024-12-01T10:00:00Z",
+    "LastUpdatedBy": "TestUser",
+    "WorkOrder": "WO2024001",
+    "BatchNumber": "B20241201001",
+    "IsActive": true
+  },
+  {
+    "PartId": "TEST002",
+    "Operation": "100",
+    "Quantity": 15,
+    "Location": "STATION_B",
+    "TransactionType": "IN",
+    "LastUpdated": "2024-12-01T10:15:00Z",
+    "LastUpdatedBy": "TestUser",
+    "WorkOrder": "WO2024002",
+    "BatchNumber": "B20241201002",
+    "IsActive": true
+  },
+  {
+    "PartId": "TEST003",
+    "Operation": "110",
+    "Quantity": 30,
+    "Location": "STATION_C",
+    "TransactionType": "IN",
+    "LastUpdated": "2024-12-01T10:30:00Z",
+    "LastUpdatedBy": "TestUser",
+    "WorkOrder": "WO2024003",
+    "BatchNumber": "B20241201003",
+    "IsActive": true
+  },
+  {
+    "PartId": "TEST004",
+    "Operation": "120",
+    "Quantity": 10,
+    "Location": "STATION_D",
+    "TransactionType": "OUT",
+    "LastUpdated": "2024-12-01T10:45:00Z",
+    "LastUpdatedBy": "TestUser",
+    "WorkOrder": "WO2024004",
+    "BatchNumber": "B20241201004",
+    "IsActive": true
+  },
+  {
+    "PartId": "TEST005",
+    "Operation": "90",
+    "Quantity": 50,
+    "Location": "STATION_E",
+    "TransactionType": "TRANSFER",
+    "LastUpdated": "2024-12-01T11:00:00Z",
+    "LastUpdatedBy": "TestUser2",
+    "WorkOrder": "WO2024005",
+    "BatchNumber": "B20241201005",
+    "IsActive": true
+  }
+]

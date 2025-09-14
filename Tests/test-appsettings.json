@@ -1,0 +1,30 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=mtm_test;Uid=test_user;Pwd=test_password;Allow Zero Datetime=true;Convert Zero Datetime=true;",
+    "WindowsConnection": "Server=localhost;Database=mtm_test_win;Uid=mtm_win_user;Pwd=test_password;Allow Zero Datetime=true;Convert Zero Datetime=true;",
+    "MacOSConnection": "Server=localhost;Database=mtm_test_mac;Uid=mtm_mac_user;Pwd=test_password;Allow Zero Datetime=true;Convert Zero Datetime=true;",
+    "LinuxConnection": "Server=localhost;Database=mtm_test_linux;Uid=mtm_linux_user;Pwd=test_password;Allow Zero Datetime=true;Convert Zero Datetime=true;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "Microsoft": "Warning",
+      "System": "Warning"
+    }
+  },
+  "MTMSettings": {
+    "TestMode": true,
+    "DatabaseTimeout": 30,
+    "EnableTestDataGeneration": true,
+    "TestDataDirectory": "TestData",
+    "MaxConcurrentTests": 10
+  },
+  "TestSettings": {
+    "UITestTimeout": 5000,
+    "DatabaseTestTimeout": 10000,
+    "PerformanceTestDuration": 60000,
+    "EnableHeadlessMode": true,
+    "GenerateTestReports": true,
+    "TestReportDirectory": "TestResults"
+  }
+}

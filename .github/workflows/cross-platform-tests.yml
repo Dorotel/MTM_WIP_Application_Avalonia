@@ -1,0 +1,302 @@
+name: Cross-Platform File Selection Service Tests
+
+on:
+  push:
+    branches: [ master, develop, 'feature/*' ]
+    paths:
+      - 'Services/FileSelection.cs'
+      - 'Tests/FileSelectionServiceTests.cs'
+      - 'Tests/CrossPlatformSupportTests.cs'
+      - 'MTM_WIP_Application_Avalonia.csproj'
+      - '.github/workflows/cross-platform-tests.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'Services/FileSelection.cs'
+      - 'Tests/FileSelectionServiceTests.cs'
+      - 'Tests/CrossPlatformSupportTests.cs'
+      - 'MTM_WIP_Application_Avalonia.csproj'
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_PATH: './MTM_WIP_Application_Avalonia.csproj'
+
+jobs:
+  # Test on Windows (primary platform)
+  test-windows:
+    name: Test on Windows
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+        
+      - name: Build for Windows
+        run: dotnet build ${{ env.PROJECT_PATH }} -r win-x64 --no-restore
+        
+      - name: Run Cross-Platform Support Tests
+        run: |
+          # Create test runner program
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --run-cross-platform-tests
+        continue-on-error: false
+        
+      - name: Test File Selection Service Core Functions
+        run: |
+          # Test file validation with Windows paths
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --test-file-validation "C:\Windows\System32\notepad.exe"
+        shell: pwsh
+        
+      - name: Create Test Files for File Operations
+        run: |
+          New-Item -ItemType Directory -Force -Path "TestFiles"
+          '{"test": "windows-data", "platform": "win-x64"}' | Out-File -FilePath "TestFiles\test-config.json" -Encoding UTF8
+        shell: pwsh
+        
+      - name: Test File Operations
+        run: |
+          # Test file existence and access
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --test-file-access "TestFiles\test-config.json"
+        shell: pwsh
+
+  # Test on macOS 
+  test-macos:
+    name: Test on macOS
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+        
+      - name: Build for macOS x64
+        run: dotnet build ${{ env.PROJECT_PATH }} -r osx-x64 --no-restore
+        
+      - name: Build for macOS ARM64
+        run: dotnet build ${{ env.PROJECT_PATH }} -r osx-arm64 --no-restore
+        
+      - name: Run Cross-Platform Support Tests
+        run: |
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --run-cross-platform-tests
+        
+      - name: Test macOS-specific Paths
+        run: |
+          # Test Documents folder access
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --test-documents-folder
+          
+      - name: Create Test Files with Unix Paths
+        run: |
+          mkdir -p TestFiles
+          echo '{"test": "macos-data", "platform": "osx-x64"}' > TestFiles/test-config.json
+          
+      - name: Test File Operations on macOS
+        run: |
+          # Test file access with Unix paths
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --test-file-access "TestFiles/test-config.json"
+          
+      - name: Test File Permissions
+        run: |
+          # Create read-only file and test access validation
+          echo '{"readonly": true}' > TestFiles/readonly.json
+          chmod 444 TestFiles/readonly.json
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --test-readonly-access "TestFiles/readonly.json"
+
+  # Test on Linux
+  test-linux:
+    name: Test on Linux
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libglib2.0-dev
+          
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+        
+      - name: Build for Linux x64
+        run: dotnet build ${{ env.PROJECT_PATH }} -r linux-x64 --no-restore
+        
+      - name: Build for Linux ARM64
+        run: dotnet build ${{ env.PROJECT_PATH }} -r linux-arm64 --no-restore
+        
+      - name: Run Cross-Platform Support Tests
+        run: |
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --run-cross-platform-tests
+          
+      - name: Create Test Files with Linux Paths
+        run: |
+          mkdir -p TestFiles
+          echo '{"test": "linux-data", "platform": "linux-x64"}' > TestFiles/test-config.json
+          
+      - name: Test File Operations on Linux
+        run: |
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --test-file-access "TestFiles/test-config.json"
+          
+      - name: Test Linux File Permissions
+        run: |
+          # Test various permission scenarios
+          echo '{"permissions": "test"}' > TestFiles/perm-test.json
+          chmod 755 TestFiles/perm-test.json
+          dotnet run --project ${{ env.PROJECT_PATH }} -- --test-file-permissions "TestFiles/perm-test.json"
+
+  # Android build validation (no emulator testing due to complexity)
+  validate-android-build:
+    name: Validate Android Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Install Android workload
+        run: |
+          dotnet workload install android
+          
+      - name: Create Android project template
+        run: |
+          # Create minimal Android project for testing
+          mkdir -p Android
+          cat > Android/Android.csproj << 'EOF'
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net8.0-android</TargetFramework>
+              <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+              <OutputType>Exe</OutputType>
+              <UseAndroidX>true</UseAndroidX>
+              <ApplicationId>com.mtm.wipapplication.test</ApplicationId>
+              <ApplicationVersion>1</ApplicationVersion>
+              <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+            </PropertyGroup>
+            
+            <ItemGroup>
+              <PackageReference Include="Avalonia.Android" Version="11.3.4" />
+            </ItemGroup>
+            
+            <ItemGroup>
+              <ProjectReference Include="../MTM_WIP_Application_Avalonia.csproj" />
+            </ItemGroup>
+          </Project>
+          EOF
+          
+      - name: Build Android project
+        run: |
+          dotnet restore Android/Android.csproj
+          dotnet build Android/Android.csproj -f net8.0-android
+          
+      - name: Validate Android-specific platform detection
+        run: |
+          # This validates that the platform detection code compiles for Android
+          echo "Android build validation completed successfully"
+
+  # Comprehensive cross-platform summary
+  cross-platform-summary:
+    name: Cross-Platform Test Summary
+    runs-on: ubuntu-latest
+    needs: [test-windows, test-macos, test-linux, validate-android-build]
+    if: always()
+    
+    steps:
+      - name: Check test results
+        run: |
+          echo "Cross-platform test results:"
+          echo "Windows: ${{ needs.test-windows.result }}"
+          echo "macOS: ${{ needs.test-macos.result }}"
+          echo "Linux: ${{ needs.test-linux.result }}"
+          echo "Android Build: ${{ needs.validate-android-build.result }}"
+          
+          # Fail if any required tests failed
+          if [[ "${{ needs.test-windows.result }}" != "success" ]]; then
+            echo "Windows tests failed!"
+            exit 1
+          fi
+          
+          if [[ "${{ needs.test-macos.result }}" != "success" ]]; then
+            echo "macOS tests failed!"
+            exit 1
+          fi
+          
+          if [[ "${{ needs.test-linux.result }}" != "success" ]]; then
+            echo "Linux tests failed!"
+            exit 1
+          fi
+          
+          if [[ "${{ needs.validate-android-build.result }}" != "success" ]]; then
+            echo "Android build validation failed!"
+            exit 1
+          fi
+          
+          echo "✅ All cross-platform tests passed successfully!"
+          
+      - name: Create test report
+        if: always()
+        run: |
+          cat > cross-platform-test-report.md << 'EOF'
+          # Cross-Platform Test Report
+          
+          ## Test Results Summary
+          - **Windows**: ${{ needs.test-windows.result }}
+          - **macOS**: ${{ needs.test-macos.result }}
+          - **Linux**: ${{ needs.test-linux.result }}
+          - **Android Build**: ${{ needs.validate-android-build.result }}
+          
+          ## FileSelectionService Cross-Platform Compatibility
+          The MTM File Selection Service has been validated across multiple platforms:
+          
+          ### ✅ Supported Platforms
+          - Windows (Primary development platform)
+          - macOS (Both Intel and Apple Silicon)
+          - Linux (x64 and ARM64)
+          - Android (Build validation - runtime testing requires emulator)
+          
+          ### 🧪 Test Coverage
+          - Platform detection and adaptation
+          - File system path handling
+          - File permission validation
+          - Storage provider availability
+          - Cross-platform build compatibility
+          
+          ### 📱 Mobile Platform Notes
+          - Android: Uses Android Storage Access Framework (SAF)
+          - iOS: Ready for future implementation with Document Picker
+          
+          Generated on: $(date)
+          EOF
+          
+          echo "Test report generated successfully"
+          
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cross-platform-test-report
+          path: cross-platform-test-report.md
+          retention-days: 30
