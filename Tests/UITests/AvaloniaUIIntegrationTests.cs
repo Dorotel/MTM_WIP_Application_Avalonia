@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -9,8 +10,12 @@ using Avalonia.Headless.NUnit;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Threading;
+using Avalonia.Platform;
+using Avalonia.Media;
+using Avalonia.Interactivity;
 using FluentAssertions;
 using NUnit.Framework;
+using MTM_WIP_Application_Avalonia;
 
 namespace MTM.Tests.UITests
 {
@@ -26,22 +31,24 @@ namespace MTM.Tests.UITests
     {
         #region Test Setup & Application Configuration
 
-        private Application _app;
-        private IClassicDesktopStyleApplicationLifetime _lifetime;
+        private Application? _app = null!;
+        private IClassicDesktopStyleApplicationLifetime? _lifetime = null!;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            // Initialize Avalonia application for headless testing
-            _app = AvaloniaApp.BuildAvaloniaApp()
+            // Initialize Avalonia application for headless testing using AppBuilder pattern
+            var appBuilder = AppBuilder.Configure<App>()
                 .UseHeadless(new AvaloniaHeadlessPlatformOptions
                 {
                     UseHeadlessDrawing = true,
-                    FrameBufferFormat = PixelFormat.Rgba8888
-                })
-                .StartWithClassicDesktopLifetime(new string[0]);
+                    FrameBufferFormat = PixelFormats.Rgba8888
+                });
 
-            _lifetime = (IClassicDesktopStyleApplicationLifetime)_app.ApplicationLifetime;
+            _app = appBuilder.Instance;
+            appBuilder.SetupWithoutStarting();
+            
+            _lifetime = null; // We'll work without lifetime for now
         }
 
         [OneTimeTearDown]
@@ -293,19 +300,11 @@ namespace MTM.Tests.UITests
                 };
             });
 
-            // Act - Simulate button click
+            // Act - Simulate button click using simpler approach
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                // Raise click event programmatically
-                button.RaiseEvent(new PointerPressedEventArgs
-                {
-                    RoutedEvent = Button.PointerPressedEvent
-                });
-                
-                button.RaiseEvent(new PointerReleasedEventArgs
-                {
-                    RoutedEvent = Button.PointerReleasedEvent
-                });
+                // Use Click event directly rather than low-level pointer events
+                button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             });
 
             // Allow event processing
@@ -452,7 +451,10 @@ namespace MTM.Tests.UITests
                 inventoryForm.Children.Add(operationLabel);
 
                 operationComboBox = new ComboBox { Width = 200, Margin = new Thickness(5) };
-                operationComboBox.Items.AddRange(new[] { "90", "100", "110", "120" });
+                foreach (var operation in new[] { "90", "100", "110", "120" })
+                {
+                    operationComboBox.Items.Add(operation);
+                }
                 Grid.SetRow(operationComboBox, 1);
                 Grid.SetColumn(operationComboBox, 1);
                 inventoryForm.Children.Add(operationComboBox);
@@ -475,7 +477,10 @@ namespace MTM.Tests.UITests
                 inventoryForm.Children.Add(locationLabel);
 
                 locationComboBox = new ComboBox { Width = 200, Margin = new Thickness(5) };
-                locationComboBox.Items.AddRange(new[] { "STATION_A", "STATION_B", "STATION_C" });
+                foreach (var location in new[] { "STATION_A", "STATION_B", "STATION_C" })
+                {
+                    locationComboBox.Items.Add(location);
+                }
                 Grid.SetRow(locationComboBox, 3);
                 Grid.SetColumn(locationComboBox, 1);
                 inventoryForm.Children.Add(locationComboBox);
@@ -537,7 +542,8 @@ namespace MTM.Tests.UITests
             // Note: In headless mode, we can't fully test the rendered grid,
             // but we can verify the data source is set correctly
             var items = inventoryGrid.ItemsSource as Array;
-            items.Should().HaveLength(3);
+            items.Should().NotBeNull();
+            items?.Length.Should().Be(3);
         }
 
         #endregion

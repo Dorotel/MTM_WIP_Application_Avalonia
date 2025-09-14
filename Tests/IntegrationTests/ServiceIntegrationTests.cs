@@ -22,8 +22,8 @@ namespace MTM.Tests.IntegrationTests
     {
         #region Test Setup & Service Configuration
 
-        private IServiceProvider _serviceProvider;
-        private IServiceCollection _services;
+        private IServiceProvider _serviceProvider = null!;
+        private IServiceCollection _services = null!;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -226,7 +226,7 @@ namespace MTM.Tests.IntegrationTests
         public void ServiceIntegration_LoggersShouldBeInjectedCorrectly()
         {
             // Arrange & Act
-            var services = new[]
+            var services = new object[]
             {
                 _serviceProvider.GetRequiredService<IDatabaseService>(),
                 _serviceProvider.GetRequiredService<IMasterDataService>()

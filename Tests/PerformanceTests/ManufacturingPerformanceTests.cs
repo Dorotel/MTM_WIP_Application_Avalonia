@@ -26,7 +26,7 @@ namespace MTM.Tests.PerformanceTests
     {
         #region Test Setup & Configuration
 
-        private IServiceProvider _serviceProvider;
+        private IServiceProvider _serviceProvider = null!;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
