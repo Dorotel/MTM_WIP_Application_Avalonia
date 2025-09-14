@@ -11,36 +11,13 @@ This directory contains comprehensive documentation for the MTM WIP Application,
 
 ### GitHub Instructions System
 The `.github/instructions/` system provides comprehensive development guidelines:
-- [README](../.github/instructions/README.md) - Overview and integration guide
-- [Avalonia UI Guidelines](../.github/instructions/avalonia-ui-guidelines.instructions.md)
-- [MVVM Community Toolkit Patterns](../.github/instructions/mvvm-community-toolkit.instructions.md) 
-- [MySQL Database Patterns](../.github/instructions/mysql-database-patterns.instructions.md)
-- [Service Architecture Guide](../.github/instructions/service-architecture.instructions.md)
-- [Data Models Documentation](../.github/instructions/data-models.instructions.md)
-- [.NET Architecture Best Practices](../.github/instructions/dotnet-architecture-good-practices.instructions.md)
-
-### Comprehensive Testing Infrastructure
-Following awesome-copilot patterns, complete agent-driven testing infrastructure:
-- [Testing Standards](../.github/instructions/testing-standards.instructions.md) - 5-tier testing strategy (Unit, Integration, UI, Database, Cross-Platform)
-- [Unit Testing Patterns](../.github/instructions/unit-testing-patterns.instructions.md) - MVVM Community Toolkit testing with Moq and NUnit
-- [Integration Testing Patterns](../.github/instructions/integration-testing-patterns.instructions.md) - Multi-service workflow validation
-- [UI Automation Standards](../.github/instructions/ui-automation-standards.instructions.md) - Avalonia.Headless UI testing framework
-- [Database Testing Patterns](../.github/instructions/database-testing-patterns.instructions.md) - MySQL stored procedure validation
-- [Cross-Platform Testing Standards](../.github/instructions/cross-platform-testing-standards.instructions.md) - Windows, macOS, Linux, Android compatibility
-
-### Agent-Driven Test Creation Prompts
-Detailed templates for automatic test generation:
-- [Unit Test Creation Template](../.github/copilot/prompts/create-unit-test.prompt.md) - ViewModel and Service unit testing
-- [Integration Test Template](../.github/copilot/prompts/create-integration-test.prompt.md) - Multi-service workflow testing
-- [UI Test Template](../.github/copilot/prompts/create-ui-test.prompt.md) - Avalonia UI automation testing
-- [Database Test Template](../.github/copilot/prompts/create-database-test.prompt.md) - MySQL performance and validation testing
-- [Performance Test Template](../.github/copilot/prompts/create-performance-test.prompt.md) - NBomber load and stress testing
-- [Cross-Platform Test Template](../.github/copilot/prompts/create-cross-platform-test.prompt.md) - Multi-platform compatibility testing
-
-### Cross-Platform Testing Resources
-- [Platform-Specific File System Guide](../.github/docs/Platform-Specific-File-System-Differences.md) - Technical reference for cross-platform development
-- [Cross-Platform Testing Setup Guide](../.github/docs/README-CrossPlatformTesting.md) - VM setup, emulator configuration, testing environments
-- [Cross-Platform Validation Script](../.github/scripts/Test-CrossPlatformCompatibility.ps1) - Quick validation for local development
+- [README](.github/instructions/README.md) - Overview and integration guide
+- [Avalonia UI Guidelines](.github/instructions/avalonia-ui-guidelines.instructions.md)
+- [MVVM Community Toolkit Patterns](.github/instructions/mvvm-community-toolkit.instructions.md) 
+- [MySQL Database Patterns](.github/instructions/mysql-database-patterns.instructions.md)
+- [Service Architecture Guide](.github/instructions/service-architecture.instructions.md)
+- [Data Models Documentation](.github/instructions/data-models.instructions.md)
+- [.NET Architecture Best Practices](.github/instructions/dotnet-architecture-good-practices.instructions.md)
 
 ### Development Workflow
 - Issue Templates: Bug reports, feature requests, enhancements, documentation improvements
@@ -50,20 +27,17 @@ Detailed templates for automatic test generation:
 ## 🏗️ Technology Stack
 
 - **.NET 8** with C# 12 language features
-- **Avalonia UI 11.3.4** for cross-platform desktop UI (Windows, macOS, Linux, Android)
+- **Avalonia UI 11.3.4** for cross-platform desktop UI
 - **MVVM Community Toolkit 8.3.2** for MVVM patterns with source generators
-- **MySQL 9.4.0** database with 45+ stored procedures (no direct SQL)
+- **MySQL 9.4.0** database with stored procedures only
 - **Microsoft Extensions** 9.0.8 for dependency injection, logging, configuration
-- **Testing Framework**: NUnit 4.1.0, Moq 4.20.70, Avalonia.Headless 11.3.4, NBomber performance testing
 
 ## 🎯 Architecture Patterns
 
-- **Service-Oriented MVVM**: Clean separation with comprehensive dependency injection
-- **Stored Procedures Only**: All database access via `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()`
-- **Manufacturing Domain**: Inventory management with operation-based workflows and transaction tracking
-- **Cross-Platform Ready**: Support for Windows, macOS, Linux, and Android platforms
-- **Comprehensive Testing**: 5-tier testing strategy with agent-driven test creation
-- **GitHub Copilot Enhanced**: Complete awesome-copilot patterns with instruction and prompt files
+- **Service-Oriented MVVM**: Clean separation with dependency injection
+- **Stored Procedures Only**: All database access via stored procedures
+- **Manufacturing Domain**: Inventory management with operation-based workflows
+- **GitHub Copilot Enhanced**: Comprehensive context for AI-assisted development
 
 ---
 
