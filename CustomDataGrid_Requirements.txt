@@ -1,0 +1,156 @@
+MTM Custom Data Grid Control Requirements
+==========================================
+
+PROJECT OVERVIEW:
+- Replace standard DataGrid with custom ItemsRepeater-based control
+- Reusable across multiple views (RemoveTabView, TransferTabView, etc.)
+- High performance with large datasets
+- Customizable appearance and behavior
+
+CORE FEATURES:
+=============
+
+1. BASE IMPLEMENTATION:
+   - Use ItemsRepeater for performance (NOT DataGrid)
+   - Custom templates for headers and cells
+   - Variable column support (configurable for different data types)
+   - Support for inv_inventory table and other data sources
+
+2. SELECTION FEATURES:
+   - Multi-selectable rows (toggleable via user privileges)
+   - Checkbox support (optional, can be hidden, hidden by default or if not set in call)
+   - Single-click and multi-click selection modes
+   - Selection state binding to ViewModel
+
+3. ROW ACTIONS:
+   - Optional delete button on right side (trash icon)
+   - Delete functionality can be enabled/disabled per implementation
+   - Custom action buttons support for future expansion
+   - Row-specific context menus
+
+ADVANCED FEATURES:
+=================
+
+5. SETTINGS BAR:
+   - ItemsControl or StackPanel inside a CollapsablePanel with controls below table grid
+   - ComboBox for view modes/filters
+   - Icon-Buttons for toggle features (These icons will needs borders and backgrounds set for on vs off)
+   - Settings controls bound to ViewModel properties
+
+6. USER SETTINGS PERSISTENCE:
+   - Store settings in AppData, user profile, or settings file - settings saved on a per control basis (RemoveTabView has different saved settings than TransferTabView)
+   - Column visibility preferences
+   - Column order preferences
+   - Sort order preferences
+   - Row height/density settings
+   - Font size preferences
+
+7. COLUMN MANAGEMENT:
+   - Show/Hide Columns: Use IsVisible binding or dynamic column generation
+   - Column Order: Maintain ordered list of column definitions in ViewModel
+   - Update DataGrid.Columns order dynamically
+   - Save/restore column configurations per user
+
+8. DISPLAY CUSTOMIZATION:
+   - Row Height & Density: Bind row height to ViewModel property
+   - Update via styles or property setters
+   - Font Size: Use DynamicResource or bind FontSize in templates
+   - Theme integration with existing MTM design system
+
+9. SORTING & FILTERING:
+   - Sort Order: Update CollectionView or ObservableCollection sort logic in ViewModel
+   - Multi-column sorting support
+   - Custom sort indicators in headers
+   - Filter capabilities per column
+
+10. VISUAL ENHANCEMENTS:
+    - Highlighting Rules: Conditional styles in row templates
+    - Triggers for low Quantity, expired dates, etc.
+    - Alternating row colors
+    - Hover effects and selection highlighting
+
+11. HEADER BEHAVIOR:
+    - Sticky Header: Separate header element above ScrollViewer
+    - Header remains visible during scrolling
+    - Resizable columns with drag handles
+    - Click-to-sort functionality
+
+12. EXPORT & PRINTING:
+    - Allow users to select columns to include in export
+    - ViewModel logic for CSV/Excel/PDF generation
+    - Print preview functionality
+    - Export filtered/selected data only
+
+TECHNICAL IMPLEMENTATION:
+========================
+
+13. ARCHITECTURE:
+    - UserControl similar to SuggestionOverlayView pattern
+    - Dependency properties for configuration
+    - Generic data binding support
+    - MVVM Community Toolkit integration
+
+14. DATA BINDING:
+    - ItemsSource for data collection
+    - SelectedItem and SelectedItems properties
+    - Column definitions as dependency properties
+    - Settings persistence through ViewModel
+
+15. STYLING:
+    - MTM design system integration
+    - Dynamic resource support for theming
+    - Consistent with existing controls
+    - Responsive layout capabilities
+
+16. PERFORMANCE:
+    - Virtual scrolling for large datasets
+    - Efficient ItemsRepeater implementation
+    - Optimized data binding
+    - Memory management for large collections
+
+DATABASE INTEGRATION:
+====================
+
+17. inv_inventory TABLE SUPPORT:
+    - All 11 columns: ID, PartID, Location, Operation, Quantity, ItemType, ReceiveDate, LastUpdated, User, BatchNumber, Notes
+    - Proper date formatting
+    - Numeric formatting for quantities
+    - Empty/null value handling
+
+18. EXTENSIBILITY:
+    - Support for other database tables
+    - Generic column definition system
+    - Configurable data templates
+    - Custom cell renderers
+
+FUTURE CONSIDERATIONS:
+=====================
+
+19. ACCESSIBILITY:
+    - Screen reader support
+    - Keyboard navigation
+    - High contrast mode support
+    - Focus management
+
+20. INTERNATIONALIZATION:
+    - Localizable headers and labels
+    - Date/number formatting per locale
+    - RTL language support
+    - Cultural settings integration
+
+FILES TO CREATE:
+===============
+- Controls/CustomDataGrid.axaml
+- Controls/CustomDataGrid.axaml.cs
+- ViewModels/Shared/CustomDataGridViewModel.cs
+- Models/CustomDataGridColumn.cs
+- Services/DataGridSettingsService.cs
+
+IMPLEMENTATION PHASES:
+=====================
+Phase 1: Basic ItemsRepeater with headers and cells
+Phase 2: Selection and row actions
+Phase 3: Sorting and column management
+Phase 4: Settings persistence and customization
+Phase 5: Export and advanced features
+Phase 6: Performance optimization and testing

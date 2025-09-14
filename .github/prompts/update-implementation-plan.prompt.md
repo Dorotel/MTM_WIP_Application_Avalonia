@@ -49,6 +49,116 @@ Plans must consist of discrete, atomic phases containing executable tasks. Each 
 - Example: `upgrade-system-command-4.md`, `feature-auth-module-1.md`
 - File must be valid Markdown with proper front matter structure
 
+## Progress Reporting Requirements
+
+All progress updates during implementation must use a simple, standardized format for maximum clarity and efficiency:
+
+### Required Update Report Format
+```
+## Implementation Progress Report
+
+**Progress**: [Completed Files] / [Total Files] ([Percentage]%)
+**Current Phase**: [Phase Number] - [Phase Name]  
+**Current Task**: TASK-[Number] - [Brief Task Description]
+
+**Implementation Plan Updated**: ✅ Tasks [Start-Number] through [End-Number] marked complete
+**Task Table Status**: [Number] tasks updated with completion dates in implementation plan
+
+**Relevant Notes**: 
+- [Key observation or issue encountered]
+- [Important decision made or pattern discovered]
+- [Any blockers or dependencies identified]
+
+**Completed Files This Session**:
+- [Full file path] - [Brief description of changes]
+- [Full file path] - [Brief description of changes]
+- [Additional files as applicable]
+
+**Next Actions**: 
+- [Immediate next task to be executed]
+- [Any preparatory work needed]
+- Update implementation plan task table for next batch of tasks
+```
+
+### Reporting Standards
+- Updates required every 5 completed tasks (at each checkpoint)
+- Keep descriptions concise and actionable
+- Focus on concrete progress rather than process details
+- Highlight any deviations from plan or unexpected discoveries
+
+## Agent-Driven PR Continuation Prompt
+
+When executing this implementation plan as an agent-driven PR, use the following prompt for systematic execution:
+
+```prompt
+# MTM Documentation Optimization - Implementation Execution
+
+## Context
+You are executing the MTM Documentation Validation and GitHub Copilot Optimization implementation plan. This is a comprehensive 8-phase, 80-task project to migrate docs/ content to .github/, eliminate duplicates, and optimize GitHub Copilot functionality.
+
+## Your Mission
+Execute tasks systematically following the implementation plan located at `.github/prompts/update-implementation-plan.prompt.md`. You must:
+
+1. **Follow the exact task sequence** outlined in the implementation phases
+2. **Provide progress reports** every 5 completed tasks using the standardized format
+3. **Create/update files** as specified in each task description
+4. **Validate completion** of each task before proceeding
+5. **Handle the quarantine folder** operations for redundant files
+
+## Critical Requirements
+- **NEVER delete files** - always relocate to quarantine/ folder
+- **Preserve content** during all migration and consolidation operations  
+- **Update cross-references** when files are moved or consolidated
+- **Test GitHub Copilot** functionality with updated instructions
+- **Maintain checkpoint validation** every 5 tasks
+- **UPDATE THE IMPLEMENTATION PLAN** - Mark tasks as completed with dates in the task tables
+- **Track progress in real-time** - Update completion status to avoid duplicate work verification
+
+## Execution Process
+1. **Read the full implementation plan** to understand scope and dependencies
+2. **Check existing completion status** in task tables before starting any work
+3. **Start with Phase 1, Task 1** - scan and categorize all documentation files
+4. **Execute tasks sequentially** within each phase
+5. **IMMEDIATELY update task table** with completion date when task is finished
+6. **Report progress** at each checkpoint (tasks 5, 10, 15, etc.)
+7. **Validate completion criteria** before marking tasks as complete
+8. **Update the implementation plan file** with completion dates and status
+
+## Implementation Plan Maintenance
+**CRITICAL**: After completing each task, you MUST update the corresponding task table entry:
+
+```markdown
+| TASK-XXX | Task description | ✅ | 2025-09-14 |
+```
+
+This prevents future agents from:
+- Re-executing completed tasks
+- Spending time verifying what work has been done
+- Creating duplicate efforts or conflicting changes
+- Losing track of actual progress
+
+**File to Update**: `.github/prompts/update-implementation-plan.prompt.md`
+**Section to Update**: Implementation Steps task tables
+**Format**: Replace empty completion cells with ✅ and completion date
+
+## Success Metrics
+- Reduce file count from 502+ to ~150 core files in .github/
+- All docs/ content successfully migrated to .github/ structure
+- Quarantine folder organized with all redundant/duplicate files
+- All cross-references updated and validated
+- GitHub Copilot instructions tested and optimized
+
+## Emergency Protocols
+- If any task encounters blockers, document in progress report
+- If file structure changes unexpectedly, pause and reassess
+- If critical files are at risk, create backup before proceeding
+- If GitHub Copilot effectiveness decreases, rollback and investigate
+
+**Start Execution**: Begin with Implementation Phase 1, Task 1 and provide your first progress report after completing Task 5.
+```
+
+This prompt should be used to initialize any agent that will continue this implementation work.
+
 ## Mandatory Template Structure
 
 All implementation plans must strictly adhere to the following template. Each section is required and must be populated with specific, actionable content. AI agents must validate template compliance before execution.
@@ -84,15 +194,15 @@ This implementation plan systematically validates, updates, and optimizes all 50
 
 ## 1. Requirements & Constraints
 
-## 1. Requirements & Constraints
-
 ### Core Requirements
 - **REQ-001**: Validate and update all 502+ documentation files for GitHub Copilot compatibility
 - **REQ-002**: Ensure all technology version references match MTM_WIP_Application_Avalonia.csproj exactly
-- **REQ-003**: Remove duplicate documentation files (target reduction from 502+ to ~150 core files)
-- **REQ-004**: Implement checkpoint validation every 5 completed files
-- **REQ-005**: Maintain backward compatibility during documentation updates
-- **REQ-006**: Preserve all essential content while eliminating redundancy
+- **REQ-003**: Merge all docs/ folder content into .github/ folder structure for unified documentation system
+- **REQ-004**: Relocate redundant/duplicate files to root-level quarantine folder instead of deletion
+- **REQ-005**: Reduce final documentation count from 502+ to ~150 core files in .github/ folder
+- **REQ-006**: Implement checkpoint validation every 5 completed files
+- **REQ-007**: Maintain backward compatibility during documentation migration
+- **REQ-008**: Preserve all essential content while eliminating redundancy
 
 ### Security Requirements  
 - **SEC-001**: Ensure no sensitive information is exposed in documentation updates
@@ -100,8 +210,10 @@ This implementation plan systematically validates, updates, and optimizes all 50
 
 ### Technical Constraints
 - **CON-001**: Must maintain existing .github/copilot-instructions.md as master reference
-- **CON-002**: All updates must preserve existing file structure during transition
-- **CON-003**: Cannot break existing cross-references during updates
+- **CON-002**: All docs/ folder content must be merged into .github/ folder structure during transition
+- **CON-003**: Cannot break existing cross-references during migration
+- **CON-004**: .github/ folder becomes the single source of truth for all documentation
+- **CON-005**: Quarantine folder must preserve all relocated files for recovery purposes
 
 ### Guidelines
 - **GUD-001**: Follow awesome-copilot repository standards for all instruction files
@@ -118,26 +230,43 @@ This implementation plan systematically validates, updates, and optimizes all 50
 
 ## 2. Implementation Steps
 
-### Implementation Phase 1: Analysis and Preparation
+### Implementation Phase 1: Analysis, Preparation, and docs/ Folder Migration
 
-- **GOAL-001**: Complete documentation inventory analysis and duplication identification
+- **GOAL-001**: Complete documentation inventory analysis, duplication identification, and migrate docs/ content to .github/
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
 | TASK-001 | Scan all 502+ .md files and categorize by type (instructions, prompts, guides, etc.) | | |
 | TASK-002 | Identify duplicate content across different locations (docs/, Documentation/, .github/) | | |
-| TASK-003 | Create master deduplication mapping showing files to merge/remove | | |
+| TASK-003 | Create master deduplication mapping showing files to merge/quarantine | | |
 | TASK-004 | Validate current .github/copilot-instructions.md as authoritative reference | | |
 | TASK-005 | **CHECKPOINT**: Review first 5 tasks completion status | | |
-| TASK-006 | Extract actual technology versions from MTM_WIP_Application_Avalonia.csproj | | |
-| TASK-007 | Create version consistency validation script | | |
-| TASK-008 | Identify all cross-reference links requiring updates | | |
-| TASK-009 | Create backup archive of current documentation state | | |
+| TASK-006 | Create root-level quarantine/ folder for relocated redundant files | | |
+| TASK-007 | Migrate docs/README.md to .github/docs-overview.md with updated structure | | |
+| TASK-008 | Move docs/architecture/ content to .github/architecture/ | | |
+| TASK-009 | Move docs/development/ content to .github/development-guides/ | | |
 | TASK-010 | **CHECKPOINT**: Review tasks 6-10 completion status | | |
 
-### Implementation Phase 2: Core Instruction Files Validation
+### Implementation Phase 2: Complete docs/ Folder Migration and Setup Validation Infrastructure
 
-- **GOAL-002**: Update and validate all .github/instructions/ files for current technology stack
+- **GOAL-002**: Complete docs/ folder migration to .github/ and establish validation infrastructure
+
+| Task | Description | Completed | Date |
+|------|-------------|-----------|------|
+| TASK-011 | Move docs/features/ content to .github/features/ | | |
+| TASK-012 | Move docs/project-management/ content to .github/project-management/ | | |
+| TASK-013 | Move docs/theme-development/ content to .github/ui-ux/ | | |
+| TASK-014 | Move docs/ways-of-work/ content to .github/processes/ | | |
+| TASK-015 | **CHECKPOINT**: Review tasks 11-15 completion status | | |
+| TASK-016 | Extract actual technology versions from MTM_WIP_Application_Avalonia.csproj | | |
+| TASK-017 | Create version consistency validation script | | |
+| TASK-018 | Identify all cross-reference links requiring updates after migration | | |
+| TASK-019 | Create backup archive of original documentation state | | |
+| TASK-020 | **CHECKPOINT**: Review tasks 16-20 completion status | | |
+
+### Implementation Phase 3: Core Instruction Files Validation
+
+- **GOAL-003**: Update and validate all .github/instructions/ files for current technology stack
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
@@ -152,92 +281,90 @@ This implementation plan systematically validates, updates, and optimizes all 50
 | TASK-019 | Update data-models.instructions.md manufacturing domain patterns | | |
 | TASK-020 | **CHECKPOINT**: Review tasks 16-20 completion status | | |
 
-### Implementation Phase 3: Template and Pattern Files Update
+### Implementation Phase 4: Template and Pattern Files Update
 
-- **GOAL-003**: Ensure all template and pattern files reflect current implementation
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-021 | Update .github/copilot/templates/mtm-feature-request.md | | |
-| TASK-022 | Update .github/copilot/templates/mtm-ui-component.md | | |
-| TASK-023 | Update .github/copilot/templates/mtm-viewmodel-creation.md | | |
-| TASK-024 | Update .github/copilot/templates/mtm-database-operation.md | | |
-| TASK-025 | **CHECKPOINT**: Review tasks 21-25 completion status | | |
-| TASK-026 | Update .github/copilot/patterns/mtm-mvvm-community-toolkit.md | | |
-| TASK-027 | Update .github/copilot/patterns/mtm-avalonia-syntax.md | | |
-| TASK-028 | Update .github/copilot/patterns/mtm-stored-procedures-only.md | | |
-| TASK-029 | Update .github/copilot/context/mtm-technology-stack.md | | |
-| TASK-030 | **CHECKPOINT**: Review tasks 26-30 completion status | | |
-
-### Implementation Phase 4: Duplicate Removal and Consolidation
-
-- **GOAL-004**: Remove duplicate files and consolidate overlapping content
+- **GOAL-004**: Ensure all template and pattern files reflect current implementation
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-031 | Remove duplicate UI documentation from docs/ui-theme-readiness/ (32+ files → 8 consolidated) | | |
-| TASK-032 | Consolidate view implementation guides in docs/development/view-management-md-files/ | | |
-| TASK-033 | Merge overlapping architecture documents (docs/architecture/ and .github/architecture/) | | |
-| TASK-034 | Remove redundant testing documentation (keep .github/instructions/ versions) | | |
+| TASK-031 | Update .github/copilot/templates/mtm-feature-request.md | | |
+| TASK-032 | Update .github/copilot/templates/mtm-ui-component.md | | |
+| TASK-033 | Update .github/copilot/templates/mtm-viewmodel-creation.md | | |
+| TASK-034 | Update .github/copilot/templates/mtm-database-operation.md | | |
 | TASK-035 | **CHECKPOINT**: Review tasks 31-35 completion status | | |
-| TASK-036 | Consolidate prompts from multiple locations into .github/prompts/ | | |
-| TASK-037 | Remove outdated implementation reports (Documentation/Development/) | | |
-| TASK-038 | Merge duplicate database documentation files | | |
-| TASK-039 | Remove redundant README files (keep authoritative versions) | | |
+| TASK-036 | Update .github/copilot/patterns/mtm-mvvm-community-toolkit.md | | |
+| TASK-037 | Update .github/copilot/patterns/mtm-avalonia-syntax.md | | |
+| TASK-038 | Update .github/copilot/patterns/mtm-stored-procedures-only.md | | |
+| TASK-039 | Update .github/copilot/context/mtm-technology-stack.md | | |
 | TASK-040 | **CHECKPOINT**: Review tasks 36-40 completion status | | |
 
-### Implementation Phase 5: Content Accuracy Validation
+### Implementation Phase 5: Duplicate Removal and Quarantine
 
-- **GOAL-005**: Ensure all remaining documentation accurately reflects current codebase
+- **GOAL-005**: Remove duplicate files, consolidate overlapping content, and relocate redundant files to quarantine
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-041 | Validate all ViewModels use MVVM Community Toolkit patterns (no ReactiveUI) | | |
-| TASK-042 | Confirm all database calls use stored procedures only pattern | | |
-| TASK-043 | Verify all AXAML examples use correct Avalonia 11.3.4 syntax | | |
-| TASK-044 | Validate service registration patterns match ServiceCollectionExtensions.cs | | |
+| TASK-041 | Relocate duplicate UI documentation from remaining docs/ui-theme-readiness/ to quarantine/ | | |
+| TASK-042 | Consolidate essential view implementation guides in .github/development-guides/ | | |
+| TASK-043 | Remove now-empty docs/ folder structure after successful migration | | |
+| TASK-044 | Relocate redundant testing documentation to quarantine/ (keep .github/instructions/ versions) | | |
 | TASK-045 | **CHECKPOINT**: Review tasks 41-45 completion status | | |
-| TASK-046 | Update all error handling examples to use Services.ErrorHandling.HandleErrorAsync | | |
-| TASK-047 | Confirm all theme examples use DynamicResource bindings | | |
-| TASK-048 | Validate manufacturing domain examples use correct transaction types | | |
-| TASK-049 | Update all dependency injection examples to match current patterns | | |
+| TASK-046 | Consolidate scattered prompts from multiple locations into .github/prompts/ | | |
+| TASK-047 | Relocate outdated implementation reports (Documentation/Development/) to quarantine/ | | |
+| TASK-048 | Merge essential database documentation files into .github/database-documentation/ | | |
+| TASK-049 | Relocate redundant README files to quarantine/ (keep one per functional area in .github/) | | |
 | TASK-050 | **CHECKPOINT**: Review tasks 46-50 completion status | | |
 
-### Implementation Phase 6: Cross-Reference Updates and Link Validation
+### Implementation Phase 6: Content Accuracy Validation
 
-- **GOAL-006**: Update all cross-references and validate internal links
+- **GOAL-006**: Ensure all remaining documentation in .github/ accurately reflects current codebase
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-051 | Update all #file: references in .github/copilot-instructions.md | | |
-| TASK-052 | Fix broken internal links in docs/ folder structure | | |
-| TASK-053 | Update relative paths after file consolidation | | |
-| TASK-054 | Validate all cross-references in instruction files | | |
+| TASK-051 | Validate all ViewModels use MVVM Community Toolkit patterns (no ReactiveUI) | | |
+| TASK-052 | Confirm all database calls use stored procedures only pattern | | |
+| TASK-053 | Verify all AXAML examples use correct Avalonia 11.3.4 syntax | | |
+| TASK-054 | Validate service registration patterns match ServiceCollectionExtensions.cs | | |
 | TASK-055 | **CHECKPOINT**: Review tasks 51-55 completion status | | |
-| TASK-056 | Update documentation index files with new structure | | |
-| TASK-057 | Fix links in README files after consolidation | | |
-| TASK-058 | Update navigation in Documentation-Management/master_documentation-index.md | | |
-| TASK-059 | Validate external links for accuracy | | |
+| TASK-056 | Update all error handling examples to use Services.ErrorHandling.HandleErrorAsync | | |
+| TASK-057 | Confirm all theme examples use DynamicResource bindings | | |
+| TASK-058 | Validate manufacturing domain examples use correct transaction types | | |
+| TASK-059 | Update all dependency injection examples to match current patterns | | |
 | TASK-060 | **CHECKPOINT**: Review tasks 56-60 completion status | | |
 
-### Implementation Phase 7: Automated Validation and Quality Assurance
+### Implementation Phase 7: Cross-Reference Updates and Link Validation
 
-- **GOAL-007**: Implement automated validation and create quality assurance processes
+- **GOAL-007**: Update all cross-references and validate internal links within .github/ structure
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-061 | Create PowerShell script for ongoing version consistency validation | | |
-| TASK-062 | Implement markdown linting for all documentation files | | |
-| TASK-063 | Create link validation automation | | |
-| TASK-064 | Set up documentation freshness monitoring | | |
+| TASK-061 | Update all #file: references in .github/copilot-instructions.md | | |
+| TASK-062 | Fix broken internal links after docs/ → .github/ migration | | |
+| TASK-063 | Update relative paths throughout .github/ folder structure | | |
+| TASK-064 | Validate all cross-references in instruction files | | |
 | TASK-065 | **CHECKPOINT**: Review tasks 61-65 completion status | | |
-| TASK-066 | Create documentation contribution guidelines | | |
-| TASK-067 | Implement GitHub Actions workflow for documentation validation | | |
-| TASK-068 | Create documentation change impact analysis | | |
-| TASK-069 | Establish documentation review process | | |
-| TASK-070 | **CHECKPOINT**: Final validation of all 70 tasks | | |
+| TASK-066 | Update documentation index files with new .github/ structure | | |
+| TASK-067 | Fix links in README files after consolidation | | |
+| TASK-068 | Update navigation in .github/Documentation-Management/master_documentation-index.md | | |
+| TASK-069 | Validate external links for accuracy | | |
+| TASK-070 | **CHECKPOINT**: Review tasks 66-70 completion status | | |
 
-## 3. Alternatives
+### Implementation Phase 8: Automated Validation and Quality Assurance
+
+- **GOAL-008**: Implement automated validation and create quality assurance processes for unified .github/ documentation system
+
+| Task | Description | Completed | Date |
+|------|-------------|-----------|------|
+| TASK-071 | Create PowerShell script for ongoing version consistency validation | | |
+| TASK-072 | Implement markdown linting for all .github/ documentation files | | |
+| TASK-073 | Create link validation automation for .github/ structure | | |
+| TASK-074 | Set up documentation freshness monitoring | | |
+| TASK-075 | **CHECKPOINT**: Review tasks 71-75 completion status | | |
+| TASK-076 | Create documentation contribution guidelines for .github/ system | | |
+| TASK-077 | Implement GitHub Actions workflow for .github/ documentation validation | | |
+| TASK-078 | Create documentation change impact analysis | | |
+| TASK-079 | Establish documentation review process for unified .github/ system | | |
+| TASK-080 | **CHECKPOINT**: Final validation of all 80 tasks | | |
 
 ## 3. Alternatives
 
@@ -245,7 +372,7 @@ Alternative approaches considered for documentation optimization:
 
 - **ALT-001**: **Complete Documentation Rewrite**: Considered starting from scratch but rejected due to loss of valuable existing content and institutional knowledge
 - **ALT-002**: **Manual Review Only**: Considered manual review without automated validation but rejected due to scale (502+ files) and risk of human error
-- **ALT-003**: **Keep All Files**: Considered keeping all existing files and only updating content but rejected due to maintenance burden and confusion from duplicates
+- **ALT-003**: **Keep All Files**: Considered keeping all existing files and only updating content but rejected in favor of relocating redundant files to a quarantine folder to establish .github/ as the single documentation system while preserving all content for recovery
 - **ALT-004**: **External Documentation System**: Considered moving to external documentation platform (GitBook, Confluence) but rejected to maintain GitHub integration and Copilot accessibility
 - **ALT-005**: **Gradual Migration**: Considered gradual file-by-file migration but rejected due to prolonged inconsistency and complexity of managing two systems
 
@@ -328,70 +455,60 @@ Critical dependencies for successful documentation optimization:
 - **FILE-049**: `.github/prompts/themeeditorview-implementation-audit.prompt.md`
 - **FILE-050**: `.github/prompts/transfertabview-implementation-audit.prompt.md`
 
-#### Core Documentation Files (20 files)
-- **FILE-051**: `docs/README.md` - Main documentation index
-- **FILE-052**: `docs/architecture/project-blueprint.md` - Architecture overview
-- **FILE-053**: `docs/architecture/folder-structure.md` - Project structure
-- **FILE-054**: `docs/development/Documentation-Standards.md` - Documentation standards
-- **FILE-055**: `.github/Documentation-Management/master_documentation-index.md`
-- **FILE-056**: `.github/database-documentation/MTM-Database-Procedures-Reference.md`
-- **FILE-057**: `.github/database-documentation/MTM-Database-ERD.md`
-- **FILE-058**: `.github/development-guides/MTM-MVVM-Patterns-Guide.md`
-- **FILE-059**: `.github/development-guides/MTM-Testing-Strategy.md`
-- **FILE-060**: `.github/qa-framework/MTM-Comprehensive-Testing-Strategy.md`
-- **FILE-061**: `.github/ui-ux/MTM-Design-System-Documentation.md`
-- **FILE-062**: `.github/ui-ux/MTM-Avalonia-Style-Guide.md`
-- **FILE-063**: `.github/project-management/code-review-guidelines.md`
-- **FILE-064**: `.github/audit/README.md`
-- **FILE-065**: `.github/scripts/README.md`
-- **FILE-066**: `Documentation/Development/Database_Files/Implementation_Summary.md`
-- **FILE-067**: `Documentation/FileLogging-README.md`
-- **FILE-068**: `scripts/README.md`
-- **FILE-069**: `LICENSE.txt`
-- **FILE-070**: Root `README.md` (if exists)
+#### Core Documentation Files (.github/ Structure - 25 files)
+- **FILE-051**: `.github/docs-overview.md` - Main documentation index (migrated from docs/README.md)
+- **FILE-052**: `.github/architecture/project-blueprint.md` - Architecture overview (migrated from docs/)
+- **FILE-053**: `.github/architecture/folder-structure.md` - Project structure (migrated from docs/)
+- **FILE-054**: `.github/development-guides/Documentation-Standards.md` - Documentation standards (migrated from docs/)
+- **FILE-055**: `.github/Documentation-Management/master_documentation-index.md` - Complete documentation inventory
+- **FILE-056**: `.github/database-documentation/MTM-Database-Procedures-Reference.md` - Database procedures catalog
+- **FILE-057**: `.github/database-documentation/MTM-Database-ERD.md` - Database entity relationship diagram
+- **FILE-058**: `.github/development-guides/MTM-MVVM-Patterns-Guide.md` - MVVM implementation patterns
+- **FILE-059**: `.github/development-guides/MTM-Testing-Strategy.md` - Comprehensive testing approach
+- **FILE-060**: `.github/qa-framework/MTM-Comprehensive-Testing-Strategy.md` - QA testing strategy
+- **FILE-061**: `.github/ui-ux/MTM-Design-System-Documentation.md` - UI/UX design system (migrated from docs/)
+- **FILE-062**: `.github/ui-ux/MTM-Avalonia-Style-Guide.md` - Avalonia-specific UI patterns (migrated from docs/)
+- **FILE-063**: `.github/project-management/code-review-guidelines.md` - Code review standards (migrated from docs/)
+- **FILE-064**: `.github/features/feature-implementation-guide.md` - Feature development guide (migrated from docs/)
+- **FILE-065**: `.github/processes/ways-of-work.md` - Development processes (migrated from docs/)
+- **FILE-066**: `.github/audit/README.md` - Audit framework overview
+- **FILE-067**: `.github/scripts/README.md` - Automation scripts documentation
+- **FILE-068**: `Documentation/FileLogging-README.md` - File logging implementation (to be relocated)
+- **FILE-069**: `scripts/README.md` - Build and utility scripts (to be relocated)
+- **FILE-070**: `LICENSE.txt` - Project license (remains in root)
 
-### Files to be Removed/Consolidated (352+ duplicate files)
+#### Files to be Relocated to Quarantine Folder
+- **FILE-071**: `quarantine/docs-archive/` - Complete docs/ folder contents after migration
+- **FILE-072**: `quarantine/redundant-documentation/` - Duplicate files from Documentation/ folder
+- **FILE-073**: `quarantine/obsolete-guides/` - Outdated implementation guides and reports
+- **FILE-074**: `quarantine/legacy-ui-docs/` - Obsolete UI theme readiness checklists
+- **FILE-075**: `quarantine/duplicate-scripts/` - Redundant script documentation
 
-#### Theme Readiness Checklists (32 files → 3 consolidated files)
-- Remove individual view theme checklists from `docs/ui-theme-readiness/`
-- Consolidate into: MainForm themes, SettingsForm themes, General UI themes
+### Files to be Relocated to Quarantine Folder (352+ redundant files)
 
-#### Duplicate View Implementation Guides (15 files → 3 consolidated files)  
-- Remove duplicate guides from `docs/development/view-management-md-files/`
-- Consolidate into: New View Guide, Update View Guide, Refactor View Guide
+#### Migrated docs/ Folder Content (entire folder structure)
+- Relocate complete `docs/` folder to `quarantine/docs-archive/` after successful migration to `.github/`
+- Preserve folder structure for reference and potential recovery
 
-#### Redundant Architecture Documentation (8 files → 2 files)
-- Merge overlapping content from `docs/architecture/` and `.github/architecture/`
+#### Redundant Theme Documentation (32+ files → quarantined)
+- Relocate individual view theme checklists from remaining locations to `quarantine/legacy-ui-docs/`
+- Keep 3-5 consolidated theme guides in `.github/ui-ux/`
 
-#### Outdated Implementation Reports (50+ files)
-- Remove completed implementation reports from `Documentation/Development/`
-- Archive critical historical information
+#### Duplicate Implementation Guides (15+ files → quarantined)
+- Relocate duplicate guides to `quarantine/redundant-documentation/implementation-guides/`
+- Keep consolidated versions in `.github/development-guides/`
 
-#### Duplicate Prompt Files (20+ files)
-- Consolidate scattered prompt files into `.github/prompts/`
-- Remove duplicates across multiple directories
+#### Outdated Documentation Reports (50+ files → quarantined)
+- Relocate completed implementation reports to `quarantine/obsolete-guides/`
+- Archive historical information while cleaning active documentation
 
-#### Redundant Testing Documentation (30+ files)
-- Keep authoritative versions in `.github/instructions/`
-- Remove duplicates from other locations
+#### Duplicate Database Files (25+ files → quarantined)
+- Relocate redundant database documentation to `quarantine/redundant-documentation/database/`
+- Keep authoritative versions in `.github/database-documentation/`
 
-#### Obsolete UI Documentation (100+ files)
-- Remove outdated UI instruction files
-- Keep current versions that match Avalonia 11.3.4
-
-#### Duplicate Database Files (25+ files)
-- Consolidate database documentation 
-- Remove redundant stored procedure listings
-
-#### Redundant README Files (20+ files)
-- Keep one authoritative README per functional area
-- Remove duplicate or outdated README files
-
-#### Miscellaneous Duplicates (100+ files)
-- Remove various duplicate markdown files across the repository
-- Consolidate overlapping content where valuable
-
-## 6. Testing
+#### Miscellaneous Duplicates (200+ files → quarantined)
+- Relocate various duplicate markdown files to appropriate `quarantine/` subdirectories
+- Organize by original location and content type for future reference
 
 ## 6. Testing
 
@@ -407,13 +524,14 @@ Comprehensive testing strategy to validate documentation optimization:
 - **TEST-008**: **Awesome-Copilot Compliance Test** - Validation against official awesome-copilot repository standards
 - **TEST-009**: **Search and Discoverability Test** - Verify documentation is findable within 2 clicks from main entry points
 - **TEST-010**: **Checkpoint Validation Test** - Systematic review every 5 completed tasks as specified in requirements
-- **TEST-011**: **File Count Validation Test** - Confirm reduction from 502+ files to target ~150 core files
-- **TEST-012**: **Archive Integrity Test** - Verify backup archive contains all original content before modifications
+- **TEST-011**: **File Count Validation Test** - Confirm reduction from 502+ files to target ~150 core files in .github/ folder
+- **TEST-012**: **Archive Integrity Test** - Verify backup archive and quarantine folder contain all original content
+- **TEST-013**: **docs/ Migration Completeness Test** - Validate all docs/ content successfully migrated to .github/ structure
+- **TEST-014**: **Quarantine Organization Test** - Verify quarantine folder properly organized by content type and origin
+- **TEST-015**: **.github/ Structure Validation Test** - Confirm .github/ folder contains all essential documentation
 - **TEST-013**: **Technology Stack Validation Test** - Confirm all patterns match current implementation (.NET 8, Avalonia 11.3.4, MVVM Community Toolkit 8.3.2, MySQL 9.4.0)
 - **TEST-014**: **Manufacturing Domain Accuracy Test** - Validate business domain examples accurately reflect MTM manufacturing processes
 - **TEST-015**: **Automation Script Test** - Validate all PowerShell and automation scripts function correctly
-
-## 7. Risks & Assumptions
 
 ## 7. Risks & Assumptions
 
@@ -426,10 +544,12 @@ Comprehensive testing strategy to validate documentation optimization:
   - *Mitigation*: Test with actual Copilot sessions after each phase completion
 - **RISK-004**: **Version Mismatch Introduction** - Risk of introducing new version inconsistencies during updates
   - *Mitigation*: Use automated validation scripts and single source of truth (project file)
-- **RISK-005**: **Development Team Disruption** - Risk of disrupting team workflow during documentation transition
-  - *Mitigation*: Preserve existing structure during updates, communicate changes clearly
-- **RISK-006**: **Scale Complexity** - Risk of project becoming unmanageable due to 502+ file scope
-  - *Mitigation*: Implement checkpoint validation every 5 files, break into atomic phases
+- **RISK-005**: **Development Team Disruption** - Risk of disrupting team workflow during docs/ → .github/ migration
+  - *Mitigation*: Execute migration in phases, communicate changes clearly, maintain quarantine for recovery
+- **RISK-006**: **Scale Complexity** - Risk of project becoming unmanageable due to 502+ file scope and docs/ migration
+  - *Mitigation*: Implement checkpoint validation every 5 files, break into atomic phases, use quarantine for safety
+- **RISK-007**: **Quarantine Folder Bloat** - Risk of quarantine folder becoming unmanageable with 352+ relocated files
+  - *Mitigation*: Organize quarantine by content type and origin, implement regular quarantine cleanup schedule
 
 ### Assumptions
 - **ASSUMPTION-001**: **Current .github/copilot-instructions.md is Authoritative** - Assumes existing master instruction file is accurate and should be preserved
@@ -442,13 +562,11 @@ Comprehensive testing strategy to validate documentation optimization:
 
 ## 8. Related Specifications / Further Reading
 
-## 8. Related Specifications / Further Reading
-
 ### Internal Documentation
-- [MTM WIP Application Architecture Blueprint](../../docs/architecture/project-blueprint.md) - Comprehensive architecture overview
-- [GitHub Copilot Instructions Master File](../.github/copilot-instructions.md) - Primary reference for all Copilot patterns
-- [Documentation Standards](../../docs/development/Documentation-Standards.md) - Writing and formatting guidelines
-- [Master Documentation Index](../.github/Documentation-Management/master_documentation-index.md) - Complete documentation inventory
+- [MTM WIP Application Architecture Blueprint](../architecture/project-blueprint.md) - Comprehensive architecture overview (migrated from docs/)
+- [GitHub Copilot Instructions Master File](../copilot-instructions.md) - Primary reference for all Copilot patterns
+- [Documentation Standards](../development-guides/Documentation-Standards.md) - Writing and formatting guidelines (migrated from docs/)
+- [Master Documentation Index](../Documentation-Management/master_documentation-index.md) - Complete documentation inventory
 
 ### External Standards and References  
 - [Awesome Copilot Repository](https://github.com/github/awesome-copilot) - Official GitHub Copilot best practices and standards
@@ -458,18 +576,18 @@ Comprehensive testing strategy to validate documentation optimization:
 - [MySQL 9.4.0 Documentation](https://dev.mysql.com/doc/refman/9.4/en/) - Official MySQL database documentation
 
 ### Implementation Context Files
-- [MTM Technology Stack Context](../.github/copilot/context/mtm-technology-stack.md) - Complete technology stack specification
-- [MTM Business Domain Context](../.github/copilot/context/mtm-business-domain.md) - Manufacturing domain knowledge
-- [Database Procedures Reference](../.github/database-documentation/MTM-Database-Procedures-Reference.md) - Complete stored procedure catalog
+- [MTM Technology Stack Context](../copilot/context/mtm-technology-stack.md) - Complete technology stack specification
+- [MTM Business Domain Context](../copilot/context/mtm-business-domain.md) - Manufacturing domain knowledge
+- [Database Procedures Reference](../database-documentation/MTM-Database-Procedures-Reference.md) - Complete stored procedure catalog
 
 ### Quality Assurance References
-- [Testing Strategy Documentation](../.github/development-guides/MTM-Testing-Strategy.md) - Comprehensive testing approach
-- [Code Review Guidelines](../.github/project-management/code-review-guidelines.md) - Review process and standards
-- [Cross-Platform Testing Standards](../.github/instructions/cross-platform-testing-standards.instructions.md) - Multi-platform validation requirements
+- [Testing Strategy Documentation](../development-guides/MTM-Testing-Strategy.md) - Comprehensive testing approach
+- [Code Review Guidelines](../project-management/code-review-guidelines.md) - Review process and standards (migrated from docs/)
+- [Cross-Platform Testing Standards](../instructions/cross-platform-testing-standards.instructions.md) - Multi-platform validation requirements
 
 ---
 
 **Implementation Plan Status**: ✅ **READY FOR EXECUTION**  
-**Target Completion**: 7 phases, 70 tasks with checkpoint validation every 5 tasks  
-**Expected Outcome**: 502+ files reduced to ~150 optimized files with 100% GitHub Copilot compatibility
+**Target Completion**: 8 phases, 80 tasks with checkpoint validation every 5 tasks  
+**Expected Outcome**: 502+ files reduced to ~150 optimized files in unified .github/ documentation system, with redundant files preserved in organized quarantine structure
 ```
