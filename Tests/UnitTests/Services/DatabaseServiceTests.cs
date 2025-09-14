@@ -40,17 +40,17 @@ namespace MTM.Tests.UnitTests.Services
             // Setup default mock behavior
             SetupDefaultMockBehavior();
 
-            // Create DatabaseService with mocked dependencies
+            // Create DatabaseService with mocked dependencies (corrected parameter order)
             _databaseService = new DatabaseService(
-                _mockConfigurationService.Object,
-                _mockLogger.Object
+                _mockLogger.Object,
+                _mockConfigurationService.Object
             );
         }
 
         [TearDown]
         public void TearDown()
         {
-            _databaseService?.Dispose();
+            // DatabaseService doesn't implement IDisposable, so no need to dispose
         }
 
         private void SetupDefaultMockBehavior()
@@ -75,7 +75,7 @@ namespace MTM.Tests.UnitTests.Services
         public void Constructor_WithNullLogger_ShouldThrowArgumentNullException()
         {
             // Act & Assert
-            var action = () => new DatabaseService(_mockConfigurationService.Object, null);
+            var action = () => new DatabaseService(null!, _mockConfigurationService.Object);
             action.Should().Throw<ArgumentNullException>()
                   .WithParameterName("logger");
         }
@@ -84,7 +84,7 @@ namespace MTM.Tests.UnitTests.Services
         public void Constructor_WithNullConfigurationService_ShouldThrowArgumentNullException()
         {
             // Act & Assert
-            var action = () => new DatabaseService(null, _mockLogger.Object);
+            var action = () => new DatabaseService(_mockLogger.Object, null!);
             action.Should().Throw<ArgumentNullException>()
                   .WithParameterName("configurationService");
         }
@@ -94,35 +94,32 @@ namespace MTM.Tests.UnitTests.Services
         #region Connection String Tests
 
         [Test]
-        public void GetConnectionString_ShouldRetrieveFromConfigurationService()
+        public void GetConnectionString_ShouldReturnConnectionString()
         {
-            // Arrange
-            var expectedConnectionString = "Server=test_server;Database=test_db;Uid=test_user;Pwd=test_pwd;";
-            _mockConfigurationService.Setup(s => s.GetConnectionString("TestConnection"))
-                .Returns(expectedConnectionString);
-
-            // Act
-            var result = _databaseService.GetConnectionString("TestConnection");
-
-            // Assert
-            result.Should().Be(expectedConnectionString);
-            _mockConfigurationService.Verify(s => s.GetConnectionString("TestConnection"), Times.Once);
-        }
-
-        [Test]
-        public void GetConnectionString_WithDefaultParameter_ShouldUseDefaultConnection()
-        {
-            // Arrange
-            var expectedConnectionString = "Server=default;Database=default_db;";
-            _mockConfigurationService.Setup(s => s.GetConnectionString("DefaultConnection"))
-                .Returns(expectedConnectionString);
+            // Arrange - Connection string is set during construction from configuration service
+            var expectedConnectionString = _testConnectionString;
 
             // Act
             var result = _databaseService.GetConnectionString();
 
             // Assert
             result.Should().Be(expectedConnectionString);
-            _mockConfigurationService.Verify(s => s.GetConnectionString("DefaultConnection"), Times.Once);
+        }
+
+        [Test]
+        public void GetConnectionString_ShouldReturnSameValueConsistently()
+        {
+            // Arrange - Multiple calls should return same connection string
+            var expectedConnectionString = _testConnectionString;
+
+            // Act
+            var result1 = _databaseService.GetConnectionString();
+            var result2 = _databaseService.GetConnectionString();
+
+            // Assert
+            result1.Should().Be(expectedConnectionString);
+            result2.Should().Be(expectedConnectionString);
+            result1.Should().Be(result2);
         }
 
         #endregion

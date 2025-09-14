@@ -247,18 +247,17 @@ namespace MTM.Tests.PerformanceTests
             var mockConfig = _serviceProvider.GetRequiredService<IConfigurationService>();
             var mockMasterData = _serviceProvider.GetRequiredService<IMasterDataService>();
 
-            // Act - Create multiple ViewModels
+            // Act - Create multiple ViewModels  
             for (int i = 0; i < viewModelCount; i++)
             {
                 var viewModel = new InventoryTabViewModel(
-                    mockLogger.Object,
-                    mockAppState,
-                    mockNavigation,
-                    mockDatabase,
-                    mockConfig,
-                    null, // suggestion service
-                    mockMasterData,
-                    null  // success overlay service
+                    mockAppState,               // IApplicationStateService
+                    mockNavigation,             // INavigationService
+                    mockDatabase,               // IDatabaseService
+                    mockConfig,                 // IConfigurationService
+                    null!,                      // ISuggestionOverlayService
+                    mockMasterData,             // IMasterDataService
+                    null                        // ISuccessOverlayService (optional)
                 );
                 
                 viewModels.Add(viewModel);
