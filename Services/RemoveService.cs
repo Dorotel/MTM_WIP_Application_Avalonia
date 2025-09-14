@@ -311,7 +311,8 @@ public class RemoveService : IRemoveService
                                 currentUser,
                                 item.PartId,
                                 item.Operation ?? string.Empty,
-                                item.Quantity
+                                item.Quantity,
+                                "OUT" // Specify OUT transaction type for removals
                             ).ConfigureAwait(false);
                         }
                         catch (Exception logEx)

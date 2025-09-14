@@ -90,6 +90,12 @@ public partial class CustomDataGrid : UserControl
         AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(ViewDetailsCommand), null);
 
     /// <summary>
+    /// Gets or sets the command to execute when reading/editing item notes.
+    /// </summary>
+    public static readonly StyledProperty<System.Windows.Input.ICommand?> ReadNoteCommandProperty =
+        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(ReadNoteCommand), null);
+
+    /// <summary>
     /// Gets or sets the row height for data rows.
     /// </summary>
     public static readonly StyledProperty<double> RowHeightProperty =
@@ -213,6 +219,12 @@ public partial class CustomDataGrid : UserControl
     {
         get => GetValue(ViewDetailsCommandProperty);
         set => SetValue(ViewDetailsCommandProperty, value);
+    }
+
+    public System.Windows.Input.ICommand? ReadNoteCommand
+    {
+        get => GetValue(ReadNoteCommandProperty);
+        set => SetValue(ReadNoteCommandProperty, value);
     }
 
     public bool IsColumnReorderingEnabled
@@ -347,6 +359,12 @@ public partial class CustomDataGrid : UserControl
         // Set up ListBox selection mode based on IsMultiSelectEnabled
         UpdateSelectionMode();
         
+        // Set up ListBox selection changed event
+        if (_dataListBox != null)
+        {
+            _dataListBox.SelectionChanged += OnListBoxSelectionChanged;
+        }
+        
         // Initialize column management panel
         InitializeColumnManagementPanel();
         
@@ -458,6 +476,11 @@ public partial class CustomDataGrid : UserControl
                 UpdateSelectionMode();
                 _logger?.LogDebug("Multi-select mode changed to: {IsEnabled}", IsMultiSelectEnabled);
             }
+            else if (e.Property == SelectedItemProperty)
+            {
+                SynchronizeSelectedItemWithListBox();
+                _logger?.LogDebug("SelectedItem changed: {Item}", SelectedItem?.ToString() ?? "null");
+            }
             else if (e.Property == SelectedItemsProperty)
             {
                 UpdateSelectAllCheckBoxState();
@@ -471,12 +494,8 @@ public partial class CustomDataGrid : UserControl
             else if (e.Property == IsFilterPanelVisibleProperty)
             {
                 UpdateFilterPanelVisibility();
+                ApplyFilters(); // Apply filters when panel visibility changes
                 _logger?.LogDebug("Filter panel visibility changed: {IsVisible}", IsFilterPanelVisible);
-            }
-            else if (e.Property == ItemsSourceProperty)
-            {
-                ApplyFilters();
-                _logger?.LogDebug("ItemsSource changed, applying filters");
             }
             else if (e.Property == FilterConfigurationProperty)
             {
@@ -579,6 +598,27 @@ public partial class CustomDataGrid : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error toggling column management");
+        }
+    }
+
+    /// <summary>
+    /// Handles ListBox selection changed to update the SelectedItem property.
+    /// </summary>
+    private void OnListBoxSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (_dataListBox == null)
+                return;
+
+            // Update the SelectedItem property when ListBox selection changes
+            SelectedItem = _dataListBox.SelectedItem;
+
+            _logger?.LogDebug("ListBox selection changed: {Item}", SelectedItem?.ToString() ?? "null");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling ListBox selection change");
         }
     }
 
@@ -958,6 +998,27 @@ public partial class CustomDataGrid : UserControl
     }
 
     /// <summary>
+    /// Synchronizes the SelectedItem property with the internal ListBox selection.
+    /// </summary>
+    private void SynchronizeSelectedItemWithListBox()
+    {
+        try
+        {
+            if (_dataListBox == null)
+                return;
+
+            // Set the ListBox's selected item to match the property
+            _dataListBox.SelectedItem = SelectedItem;
+
+            _logger?.LogDebug("Synchronized SelectedItem with ListBox: {Item}", SelectedItem?.ToString() ?? "null");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error synchronizing SelectedItem with ListBox");
+        }
+    }
+
+    /// <summary>
     /// Updates the state of the Select All checkbox based on current selection.
     /// </summary>
     private void UpdateSelectAllCheckBoxState()
@@ -1006,6 +1067,11 @@ public partial class CustomDataGrid : UserControl
             // Unsubscribe from events to prevent memory leaks
             PropertyChanged -= OnPropertyChanged;
             Columns.CollectionChanged -= OnColumnsCollectionChanged;
+            
+            if (_dataListBox != null)
+            {
+                _dataListBox.SelectionChanged -= OnListBoxSelectionChanged;
+            }
             
             foreach (var column in Columns)
             {

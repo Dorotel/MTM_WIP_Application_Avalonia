@@ -99,6 +99,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
 
         // Subscribe to service events
         _quickButtonsService.QuickButtonsChanged += OnQuickButtonsChanged;
+        _quickButtonsService.SessionTransactionAdded += OnSessionTransactionAdded;
 
         // Handle collection changes to update count
         QuickButtons.CollectionChanged += (sender, e) =>
@@ -851,6 +852,36 @@ public partial class QuickButtonsViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error handling quick buttons change event");
+        }
+    }
+
+    /// <summary>
+    /// Handles session transaction added events from QuickButtonsService
+    /// </summary>
+    private void OnSessionTransactionAdded(object? sender, SessionTransactionEventArgs e)
+    {
+        try
+        {
+            if (e.UserId == _applicationState.CurrentUser)
+            {
+                Logger.LogInformation("Adding session transaction for current user: {PartId}, {Operation}, {TransactionType}", 
+                    e.PartId, e.Operation, e.TransactionType);
+                
+                // Call AddSessionTransaction to add to the session history
+                AddSessionTransaction(
+                    e.PartId,
+                    e.Operation,
+                    e.Location,
+                    e.Quantity,
+                    e.TransactionType,
+                    e.UserId,
+                    e.Notes
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling session transaction added event");
         }
     }
 

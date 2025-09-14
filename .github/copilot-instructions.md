@@ -23,6 +23,9 @@
 <!-- #file:.github/Core-Instructions/dependency-injection.instruction.md -->
 <!-- #file:.github/Core-Instructions/naming.conventions.instruction.md -->
 
+<!-- Critical Pitfalls Prevention -->
+<!-- #file:.github/instructions/pitfalls.instructions.md -->
+
 <!-- New Template and Pattern Files -->
 <!-- #file:.github/copilot/templates/mtm-feature-request.md -->
 <!-- #file:.github/copilot/templates/mtm-ui-component.md -->

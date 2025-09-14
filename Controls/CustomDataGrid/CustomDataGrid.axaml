@@ -1,4 +1,12 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https:/    <!-- Data cell style -->
+    <Style Selector="Border.data-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+      <Setter Property="Padding" Value="8,8" />
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+    </Style>om/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -17,7 +25,8 @@
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
       <Setter Property="Padding" Value="8,6" />
-      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
     </Style>
 
     <Style Selector="Border.header-cell:pointerover">
@@ -30,7 +39,8 @@
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
       <Setter Property="Padding" Value="8,6" />
-      <Setter Property="MinHeight" Value="28" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="MaxHeight" Value="32" />
     </Style>
 
     <Style Selector="Border.data-cell:pointerover">
@@ -48,8 +58,19 @@
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
+      <Setter Property="Padding" Value="8" />
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+    </Style>
+
+    <!-- Checkbox header cell style -->
+    <Style Selector="Border.checkbox-header-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
       <Setter Property="Padding" Value="4" />
-      <Setter Property="MinHeight" Value="28" />
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
     </Style>
 
     <Style Selector="Border.checkbox-cell.selected">
@@ -63,7 +84,18 @@
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
       <Setter Property="BorderThickness" Value="0,0,0,1" />
       <Setter Property="Padding" Value="4,6" />
-      <Setter Property="MinHeight" Value="28" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="MaxHeight" Value="32" />
+    </Style>
+
+    <!-- Action header cell style -->
+    <Style Selector="Border.action-header-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+      <Setter Property="Padding" Value="4,6" />
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
     </Style>
 
     <Style Selector="Border.action-cell.selected">
@@ -76,6 +108,7 @@
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
     <!-- Data text style -->
@@ -83,6 +116,7 @@
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
       <Setter Property="FontSize" Value="11" />
       <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
     <!-- Action button styles -->
@@ -121,22 +155,22 @@
         
         <Grid.ColumnDefinitions>
           <!-- Selection column (conditional) -->
-          <ColumnDefinition Width="Auto" />
-          <!-- Data columns (dynamic based on visible columns) -->
-          <ColumnDefinition Width="120" />
-          <ColumnDefinition Width="80" />
-          <ColumnDefinition Width="100" />
-          <ColumnDefinition Width="90" />
-          <ColumnDefinition Width="140" />
-          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="40" />
+          <!-- Data columns (proportional to fit available space) -->
+          <ColumnDefinition Width="1.5*" />  <!-- Part ID -->
+          <ColumnDefinition Width="1*" />    <!-- Operation -->
+          <ColumnDefinition Width="1.2*" />  <!-- Location -->
+          <ColumnDefinition Width="1*" />    <!-- Quantity -->
+          <ColumnDefinition Width="1.8*" />  <!-- Last Updated -->
+          <ColumnDefinition Width="80" />    <!-- Notes (icon only) -->
           <!-- Actions column -->
-          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="100" />
           <!-- Column Management toggle -->
-          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="40" />
         </Grid.ColumnDefinitions>
         
         <!-- Selection Header (CheckBox for Select All) -->
-        <Border Grid.Column="0" Classes="header-cell" 
+        <Border Grid.Column="0" Classes="checkbox-header-cell" 
                 IsVisible="{Binding IsMultiSelectEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}">
           <CheckBox x:Name="SelectAllCheckBox" 
                     HorizontalAlignment="Center"
@@ -171,22 +205,23 @@
         </Border>
         
         <!-- Actions Header -->
-        <Border Grid.Column="7" Classes="header-cell">
+        <Border Grid.Column="7" Classes="action-header-cell">
           <TextBlock Classes="header-text" Text="Actions" HorizontalAlignment="Center" />
         </Border>
         
-        <!-- Column Management Header -->
-        <Border Grid.Column="8" Classes="header-cell" 
+        <!-- Column Management Header - DISABLED FOR INITIAL IMPLEMENTATION -->
+        <Border Grid.Column="8" Classes="action-header-cell" 
                 Background="{DynamicResource MTM_Shared_Logic.PrimaryLightBrush}"
                 BorderThickness="0,0,0,1">
           <Button x:Name="ColumnManagementToggle"
                   Classes="action-button"
-                  ToolTip.Tip="Column Management"
+                  IsEnabled="False"
+                  ToolTip.Tip="Column Management (Disabled)"
                   Click="OnToggleColumnManagement">
             <materialIcons:MaterialIcon Kind="ViewColumn" 
                                         Width="14" 
                                         Height="14"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                                        Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
           </Button>
         </Border>
         
@@ -197,7 +232,7 @@
     <!-- Data Section with ScrollViewer -->
     <ScrollViewer x:Name="DataScrollViewer"
                   Grid.Row="1" Grid.Column="0"
-                  HorizontalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
                   VerticalScrollBarVisibility="Auto"
                   Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                   BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
@@ -206,7 +241,7 @@
       
       <!-- ListBox for Virtual Scrolling -->
       <ListBox x:Name="DataListBox"
-               ItemsSource="{Binding FilteredItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}, FallbackValue={Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}}"
+               ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
                Background="Transparent"
                BorderThickness="0"
                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -226,18 +261,18 @@
               
               <Grid.ColumnDefinitions>
                 <!-- Selection column (conditional) -->
-                <ColumnDefinition Width="Auto" />
-                <!-- Data columns (matching header) -->
-                <ColumnDefinition Width="120" />
-                <ColumnDefinition Width="80" />
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="90" />
-                <ColumnDefinition Width="140" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="40" />
+                <!-- Data columns (matching header proportional sizing) -->
+                <ColumnDefinition Width="1.5*" />  <!-- Part ID -->
+                <ColumnDefinition Width="1*" />    <!-- Operation -->
+                <ColumnDefinition Width="1.2*" />  <!-- Location -->
+                <ColumnDefinition Width="1*" />    <!-- Quantity -->
+                <ColumnDefinition Width="1.8*" />  <!-- Last Updated -->
+                <ColumnDefinition Width="80" />    <!-- Notes (icon only) -->
                 <!-- Actions column -->
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="100" />
                 <!-- Column Management space (empty for data rows) -->
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="40" />
               </Grid.ColumnDefinitions>
               
               <!-- Selection CheckBox -->
@@ -252,27 +287,48 @@
               
               <!-- Data Cells -->
               <Border Grid.Column="1" Classes="data-cell">
-                <TextBlock Classes="data-text" Text="{Binding PartId}" />
+                <TextBlock Classes="data-text" 
+                           Text="{Binding PartId}" 
+                           TextTrimming="CharacterEllipsis" 
+                           ToolTip.Tip="{Binding PartId}" />
               </Border>
               
               <Border Grid.Column="2" Classes="data-cell">
-                <TextBlock Classes="data-text" Text="{Binding Operation}" />
+                <TextBlock Classes="data-text" 
+                           Text="{Binding Operation}" 
+                           TextTrimming="CharacterEllipsis" 
+                           ToolTip.Tip="{Binding Operation}" />
               </Border>
               
               <Border Grid.Column="3" Classes="data-cell">
-                <TextBlock Classes="data-text" Text="{Binding Location}" />
+                <TextBlock Classes="data-text" 
+                           Text="{Binding Location}" 
+                           TextTrimming="CharacterEllipsis" 
+                           ToolTip.Tip="{Binding Location}" />
               </Border>
               
               <Border Grid.Column="4" Classes="data-cell">
-                <TextBlock Classes="data-text" Text="{Binding Quantity, StringFormat=N0}" />
+                <TextBlock Classes="data-text" 
+                           Text="{Binding Quantity, StringFormat=N0}" 
+                           TextTrimming="CharacterEllipsis" />
               </Border>
               
               <Border Grid.Column="5" Classes="data-cell">
-                <TextBlock Classes="data-text" Text="{Binding LastUpdated, StringFormat='MM/dd/yy HH:mm'}" />
+                <TextBlock Classes="data-text" 
+                           Text="{Binding LastUpdated, StringFormat='MM/dd/yy HH:mm'}" 
+                           TextTrimming="CharacterEllipsis" 
+                           ToolTip.Tip="{Binding LastUpdated, StringFormat='MM/dd/yyyy HH:mm:ss'}" />
               </Border>
               
               <Border Grid.Column="6" Classes="data-cell">
-                <TextBlock Classes="data-text" Text="{Binding Notes}" />
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <materialIcons:MaterialIcon Kind="Check"
+                                              Width="16" 
+                                              Height="16"
+                                              Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                                              IsVisible="{Binding HasNotes}"
+                                              ToolTip.Tip="Item has notes - click Read Note button to view/edit" />
+                </Grid>
               </Border>
               
               <!-- Action Buttons -->
@@ -281,6 +337,17 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Spacing="2">
+                  
+                  <!-- Read Note Button -->
+                  <Button Classes="action-button"
+                          ToolTip.Tip="Read/Edit Note"
+                          Command="{Binding ReadNoteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                          CommandParameter="{Binding}">
+                    <materialIcons:MaterialIcon Kind="NoteText" 
+                                                Width="14" 
+                                                Height="14"
+                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                  </Button>
                   
                   <!-- Delete Button -->
                   <Button Classes="action-button delete"
@@ -346,10 +413,11 @@
       
     </ScrollViewer>
     
-    <!-- Column Management Panel (Phase 3) -->
+    <!-- Column Management Panel (Phase 3) - DISABLED FOR INITIAL IMPLEMENTATION -->
     <Border x:Name="ColumnManagementContainer"
             Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
             IsVisible="False"
+            IsEnabled="False"
             Width="300"
             Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
@@ -361,10 +429,11 @@
       
     </Border>
     
-    <!-- Filter Panel (Phase 5) -->
+    <!-- Filter Panel (Phase 5) - DISABLED FOR INITIAL IMPLEMENTATION -->
     <Border x:Name="FilterPanelContainer"
             Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
             IsVisible="False"
+            IsEnabled="False"
             Width="350"
             Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"

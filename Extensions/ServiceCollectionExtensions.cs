@@ -102,6 +102,8 @@ public static class ServiceCollectionExtensions
         
         // Overlay ViewModels  
         services.TryAddTransient<NewQuickButtonOverlayViewModel>();
+        services.TryAddTransient<NoteEditorViewModel>();
+        services.TryAddTransient<ConfirmationOverlayViewModel>();
         
         // SettingsForm ViewModels
         services.TryAddTransient<SettingsViewModel>();
