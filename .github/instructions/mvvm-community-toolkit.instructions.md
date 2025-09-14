@@ -1100,6 +1100,717 @@ public class InventoryTabViewIntegrationTests
 
 ---
 
+## 🚀 Advanced MVVM Community Toolkit Patterns
+
+### Advanced [ObservableProperty] Implementation Patterns
+
+#### Complex Property Validation with Manufacturing Context
+```csharp
+[ObservableObject]
+public partial class InventoryTabViewModel : BaseViewModel
+{
+    // Advanced validation with manufacturing business rules
+    [ObservableProperty]
+    [Required(ErrorMessage = "Part ID is required for inventory operations")]
+    [RegularExpression(@"^[A-Z0-9\-]{3,50}$", ErrorMessage = "Part ID must be 3-50 characters, uppercase alphanumeric with dashes")]
+    [NotifyDataErrorInfo]
+    [NotifyPropertyChangedFor(nameof(CanExecuteTransaction))]
+    private string partId = string.Empty;
+
+    // Property with complex validation and manufacturing workflow logic
+    [ObservableProperty]
+    [Range(1, 999999, ErrorMessage = "Quantity must be between 1 and 999,999")]
+    [NotifyDataErrorInfo]
+    [NotifyPropertyChangedFor(nameof(CanExecuteTransaction))]
+    [NotifyPropertyChangedFor(nameof(TotalValue))]
+    private int quantity = 1;
+
+    // Dependent property with manufacturing calculations
+    public decimal TotalValue => Quantity * (UnitCost ?? 0);
+    
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalValue))]
+    private decimal? unitCost;
+
+    // Advanced partial method for business logic
+    partial void OnPartIdChanged(string value)
+    {
+        // Auto-format part ID according to MTM standards
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            var formatted = value.ToUpperInvariant().Trim();
+            if (formatted != value)
+            {
+                PartId = formatted; // This will trigger validation
+                return;
+            }
+        }
+
+        // Clear related fields when part changes
+        UnitCost = null;
+        ClearErrors(nameof(PartId));
+        
+        // Trigger async validation for manufacturing part ID
+        _ = ValidatePartIdAsync(value);
+    }
+
+    private async Task ValidatePartIdAsync(string partId)
+    {
+        if (string.IsNullOrWhiteSpace(partId)) return;
+
+        try
+        {
+            // Check if part exists in manufacturing master data
+            var partExists = await _masterDataService.ValidatePartIdAsync(partId);
+            if (!partExists)
+            {
+                AddError(nameof(PartId), $"Part ID '{partId}' not found in master data");
+            }
+            
+            // Load part details for cost calculation
+            var partDetails = await _masterDataService.GetPartDetailsAsync(partId);
+            UnitCost = partDetails?.StandardCost;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error validating part ID: {PartId}", partId);
+            AddError(nameof(PartId), "Unable to validate part ID. Check network connection.");
+        }
+    }
+
+    // Complex computed property with manufacturing logic
+    public bool CanExecuteTransaction => 
+        !HasErrors &&
+        !IsLoading &&
+        !string.IsNullOrWhiteSpace(PartId) &&
+        !string.IsNullOrWhiteSpace(SelectedOperation) &&
+        Quantity > 0 &&
+        !string.IsNullOrWhiteSpace(Location) &&
+        IsValidManufacturingWorkflow();
+
+    private bool IsValidManufacturingWorkflow()
+    {
+        // Manufacturing-specific validation
+        if (TransactionType == "OUT" && Quantity > AvailableQuantity)
+        {
+            return false; // Cannot remove more than available
+        }
+
+        if (SelectedOperation == "90" && TransactionType == "OUT")
+        {
+            return false; // Cannot remove from receiving operation
+        }
+
+        return true;
+    }
+}
+```
+
+#### Memory-Efficient Collection Properties for Large Datasets
+```csharp
+[ObservableObject]
+public partial class TransactionHistoryViewModel : BaseViewModel
+{
+    // Virtualized collection for large manufacturing datasets
+    [ObservableProperty]
+    private VirtualizingCollection<TransactionRecord> transactionHistory = new();
+
+    // Paginated loading pattern for manufacturing transaction history
+    [ObservableProperty]
+    private int currentPage = 1;
+
+    [ObservableProperty]
+    private int pageSize = 100;
+
+    [ObservableProperty]
+    private int totalRecords;
+
+    public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
+
+    // Advanced collection management with memory optimization
+    private readonly ConcurrentDictionary<int, List<TransactionRecord>> _pageCache = new();
+    private readonly SemaphoreSlim _loadingSemaphore = new(1, 1);
+
+    [RelayCommand]
+    private async Task LoadPageAsync(int page)
+    {
+        if (page < 1 || page > TotalPages) return;
+
+        await _loadingSemaphore.WaitAsync();
+        try
+        {
+            IsLoading = true;
+
+            // Check cache first
+            if (_pageCache.TryGetValue(page, out var cachedData))
+            {
+                UpdateTransactionHistory(cachedData);
+                CurrentPage = page;
+                return;
+            }
+
+            // Load from database
+            var searchCriteria = new TransactionSearchCriteria
+            {
+                PageNumber = page,
+                PageSize = PageSize,
+                PartId = FilterPartId,
+                StartDate = FilterStartDate,
+                EndDate = FilterEndDate
+            };
+
+            var result = await _transactionService.GetPagedTransactionsAsync(searchCriteria);
+            
+            if (result.IsSuccess)
+            {
+                // Cache the result
+                _pageCache.TryAdd(page, result.Data.ToList());
+                
+                UpdateTransactionHistory(result.Data);
+                TotalRecords = result.TotalCount;
+                CurrentPage = page;
+                
+                // Cleanup old cache entries to prevent memory leaks
+                CleanupCache();
+            }
+            else
+            {
+                AddError("Failed to load transaction history");
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex, "Load transaction page");
+        }
+        finally
+        {
+            IsLoading = false;
+            _loadingSemaphore.Release();
+        }
+    }
+
+    private void UpdateTransactionHistory(IEnumerable<TransactionRecord> transactions)
+    {
+        TransactionHistory.Clear();
+        foreach (var transaction in transactions)
+        {
+            TransactionHistory.Add(transaction);
+        }
+    }
+
+    private void CleanupCache()
+    {
+        // Keep only current page ±2 pages to manage memory
+        var pagesToKeep = Enumerable.Range(Math.Max(1, CurrentPage - 2), 5)
+                                  .Where(p => p <= TotalPages)
+                                  .ToHashSet();
+
+        var keysToRemove = _pageCache.Keys.Where(k => !pagesToKeep.Contains(k)).ToList();
+        foreach (var key in keysToRemove)
+        {
+            _pageCache.TryRemove(key, out _);
+        }
+    }
+
+    // Dispose pattern for proper cleanup
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _loadingSemaphore?.Dispose();
+            _pageCache.Clear();
+        }
+        base.Dispose(disposing);
+    }
+}
+```
+
+### Advanced [RelayCommand] Patterns with Manufacturing Context
+
+#### Complex Async Command with Error Recovery
+```csharp
+[ObservableObject]
+public partial class InventoryOperationsViewModel : BaseViewModel
+{
+    private readonly SemaphoreSlim _operationSemaphore = new(1, 1);
+    private CancellationTokenSource? _currentOperationCancellation;
+
+    // Advanced command with cancellation, retry, and manufacturing workflow validation
+    [RelayCommand(CanExecute = nameof(CanExecuteInventoryOperation))]
+    private async Task ExecuteInventoryOperationAsync(InventoryOperation operation)
+    {
+        // Cancel any existing operation
+        _currentOperationCancellation?.Cancel();
+        _currentOperationCancellation = new CancellationTokenSource();
+        var cancellationToken = _currentOperationCancellation.Token;
+
+        await _operationSemaphore.WaitAsync(cancellationToken);
+        try
+        {
+            IsLoading = true;
+            ClearErrors();
+
+            // Pre-execution validation
+            var validationResult = await ValidateManufacturingOperationAsync(operation);
+            if (!validationResult.IsValid)
+            {
+                AddError($"Operation validation failed: {validationResult.ErrorMessage}");
+                return;
+            }
+
+            // Execute with retry logic for manufacturing operations
+            var success = await ExecuteWithRetryAsync(
+                () => PerformInventoryOperationAsync(operation, cancellationToken),
+                maxRetries: 3,
+                cancellationToken: cancellationToken
+            );
+
+            if (success)
+            {
+                StatusMessage = $"✅ {operation.Type} operation completed successfully";
+                
+                // Trigger UI refresh
+                await RefreshInventoryDataAsync();
+                
+                // Create QuickButton for successful operations
+                await CreateQuickButtonFromOperationAsync(operation);
+                
+                // Send notification to other ViewModels
+                _messenger.Send(new InventoryOperationCompletedMessage(operation));
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            StatusMessage = "⏹️ Operation cancelled";
+        }
+        catch (ManufacturingBusinessRuleException ex)
+        {
+            AddError($"Manufacturing rule violation: {ex.Message}");
+            Logger.LogWarning(ex, "Manufacturing business rule violated for operation: {@Operation}", operation);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex, "Execute inventory operation");
+        }
+        finally
+        {
+            IsLoading = false;
+            _operationSemaphore.Release();
+        }
+    }
+
+    private async Task<bool> ExecuteWithRetryAsync(
+        Func<Task> operation, 
+        int maxRetries, 
+        CancellationToken cancellationToken)
+    {
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
+        {
+            try
+            {
+                await operation();
+                return true;
+            }
+            catch (DatabaseConnectionException) when (attempt < maxRetries)
+            {
+                Logger.LogWarning("Database connection failed on attempt {Attempt}/{MaxRetries}", attempt, maxRetries);
+                
+                // Exponential backoff for manufacturing operations
+                var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt - 1));
+                await Task.Delay(delay, cancellationToken);
+            }
+            catch (ManufacturingBusinessRuleException)
+            {
+                // Don't retry business rule violations
+                throw;
+            }
+        }
+        
+        return false;
+    }
+
+    private async Task<ManufacturingValidationResult> ValidateManufacturingOperationAsync(InventoryOperation operation)
+    {
+        // Manufacturing-specific validation
+        switch (operation.Type)
+        {
+            case "IN":
+                return await ValidateReceivingOperationAsync(operation);
+            case "OUT":
+                return await ValidateRemovalOperationAsync(operation);
+            case "TRANSFER":
+                return await ValidateTransferOperationAsync(operation);
+            default:
+                return ManufacturingValidationResult.Invalid($"Unknown operation type: {operation.Type}");
+        }
+    }
+
+    private bool CanExecuteInventoryOperation => 
+        !IsLoading && 
+        SelectedOperation != null && 
+        !HasErrors &&
+        !string.IsNullOrWhiteSpace(CurrentUser);
+
+    // Batch operation command for manufacturing efficiency
+    [RelayCommand]
+    private async Task ExecuteBatchOperationsAsync(IEnumerable<InventoryOperation> operations)
+    {
+        if (!operations?.Any() == true) return;
+
+        var operationsList = operations.ToList();
+        var totalOperations = operationsList.Count;
+        var completedOperations = 0;
+
+        IsLoading = true;
+        ProgressValue = 0;
+        ProgressMaximum = totalOperations;
+        
+        try
+        {
+            // Group operations by type for manufacturing efficiency
+            var groupedOperations = operationsList.GroupBy(op => op.Type);
+            
+            foreach (var group in groupedOperations)
+            {
+                StatusMessage = $"Processing {group.Count()} {group.Key} operations...";
+                
+                // Process in batches for better performance
+                await foreach (var batch in group.Chunk(10).ToAsyncEnumerable())
+                {
+                    var tasks = batch.Select(async op =>
+                    {
+                        try
+                        {
+                            await PerformInventoryOperationAsync(op, CancellationToken.None);
+                            Interlocked.Increment(ref completedOperations);
+                            ProgressValue = completedOperations;
+                            return (Operation: op, Success: true, Error: (Exception?)null);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError(ex, "Batch operation failed: {@Operation}", op);
+                            return (Operation: op, Success: false, Error: ex);
+                        }
+                    });
+
+                    var results = await Task.WhenAll(tasks);
+                    
+                    // Report any failures
+                    foreach (var result in results.Where(r => !r.Success))
+                    {
+                        AddError($"Failed to process {result.Operation.PartId}: {result.Error?.Message}");
+                    }
+                }
+            }
+
+            var successCount = operationsList.Count - Errors.Count;
+            StatusMessage = $"✅ Batch operation completed: {successCount}/{totalOperations} successful";
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex, "Execute batch operations");
+        }
+        finally
+        {
+            IsLoading = false;
+            ProgressValue = 0;
+        }
+    }
+}
+```
+
+### ❌ Advanced Anti-Patterns (Avoid These)
+
+#### Memory Leaks in ViewModels
+```csharp
+// ❌ WRONG: Event subscription without cleanup leads to memory leaks
+[ObservableObject]
+public partial class LeakyViewModel : BaseViewModel
+{
+    public LeakyViewModel()
+    {
+        // This creates a memory leak - ViewModel will never be garbage collected
+        SomeStaticEventPublisher.DataChanged += OnDataChanged;
+        
+        // Timer without disposal
+        _timer = new Timer(UpdateData, null, 0, 1000);
+    }
+    
+    private void OnDataChanged(object sender, EventArgs e)
+    {
+        // Handler is never unsubscribed
+    }
+}
+
+// ✅ CORRECT: Proper event subscription management
+[ObservableObject]
+public partial class ProperViewModel : BaseViewModel, IDisposable
+{
+    private readonly Timer _timer;
+    private bool _disposed = false;
+
+    public ProperViewModel()
+    {
+        SomeStaticEventPublisher.DataChanged += OnDataChanged;
+        _timer = new Timer(UpdateData, null, 0, 1000);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!_disposed && disposing)
+        {
+            // Unsubscribe from events
+            SomeStaticEventPublisher.DataChanged -= OnDataChanged;
+            
+            // Dispose resources
+            _timer?.Dispose();
+            
+            _disposed = true;
+        }
+        base.Dispose(disposing);
+    }
+
+    private void OnDataChanged(object sender, EventArgs e)
+    {
+        if (_disposed) return;
+        // Handle event
+    }
+}
+```
+
+#### Blocking UI Thread with Synchronous Operations
+```csharp
+// ❌ WRONG: Blocking the UI thread in manufacturing operations
+[RelayCommand]
+private void LoadInventoryData() // Synchronous method
+{
+    IsLoading = true;
+    
+    // This blocks the UI thread - NEVER do this
+    var data = _inventoryService.GetInventoryDataAsync().Result;
+    
+    InventoryItems.Clear();
+    foreach (var item in data)
+    {
+        InventoryItems.Add(item); // UI freezes during large data loads
+    }
+    
+    IsLoading = false;
+}
+
+// ✅ CORRECT: Async operations with proper UI responsiveness
+[RelayCommand]
+private async Task LoadInventoryDataAsync()
+{
+    IsLoading = true;
+    try
+    {
+        // Non-blocking async operation
+        var data = await _inventoryService.GetInventoryDataAsync().ConfigureAwait(false);
+        
+        // Update UI on UI thread in batches to maintain responsiveness
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            InventoryItems.Clear();
+        });
+        
+        // Add items in batches to prevent UI freezing
+        const int batchSize = 50;
+        for (int i = 0; i < data.Count; i += batchSize)
+        {
+            var batch = data.Skip(i).Take(batchSize);
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                foreach (var item in batch)
+                {
+                    InventoryItems.Add(item);
+                }
+            });
+            
+            // Allow UI to update between batches
+            await Task.Delay(10);
+        }
+    }
+    catch (Exception ex)
+    {
+        await HandleErrorAsync(ex, "Load inventory data");
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+}
+```
+
+#### Improper Property Dependency Chains
+```csharp
+// ❌ WRONG: Circular property dependencies cause infinite loops
+[ObservableObject]
+public partial class CircularDependencyViewModel : BaseViewModel
+{
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PropertyB))]
+    private string propertyA = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PropertyA))] // Circular dependency!
+    private string propertyB = string.Empty;
+    
+    // This creates infinite recursion
+    partial void OnPropertyAChanged(string value)
+    {
+        PropertyB = value.ToUpperInvariant(); // Triggers PropertyB change
+    }
+    
+    partial void OnPropertyBChanged(string value)
+    {
+        PropertyA = value.ToLowerInvariant(); // Triggers PropertyA change - INFINITE LOOP!
+    }
+}
+
+// ✅ CORRECT: Break dependency cycles with flags or different approaches
+[ObservableObject]
+public partial class ProperDependencyViewModel : BaseViewModel
+{
+    private bool _isUpdatingFromCode = false;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FormattedValue))]
+    private string rawValue = string.Empty;
+
+    // Computed property doesn't create circular dependency
+    public string FormattedValue => !string.IsNullOrWhiteSpace(RawValue) 
+        ? RawValue.ToUpperInvariant() 
+        : string.Empty;
+
+    partial void OnRawValueChanged(string value)
+    {
+        if (_isUpdatingFromCode) return;
+        
+        _isUpdatingFromCode = true;
+        try
+        {
+            // Perform side effects without circular updates
+            ValidateValue(value);
+        }
+        finally
+        {
+            _isUpdatingFromCode = false;
+        }
+    }
+}
+```
+
+## 🔧 Manufacturing-Specific Troubleshooting Guide
+
+### Common MVVM Issues in Manufacturing Context
+
+#### Issue: ViewModel Not Updating UI During Long Operations
+**Symptoms**: UI freezes during manufacturing batch operations, user cannot see progress
+
+**Solution**: 
+```csharp
+// Use progress reporting and async operations
+[RelayCommand]
+private async Task ProcessLargeBatchAsync()
+{
+    var progress = new Progress<BatchProgress>(p =>
+    {
+        ProgressValue = p.CompletedItems;
+        StatusMessage = $"Processing {p.CompletedItems}/{p.TotalItems} items...";
+    });
+    
+    await _batchService.ProcessItemsAsync(Items, progress, CancellationToken.None);
+}
+```
+
+#### Issue: Memory Usage Grows During Manufacturing Operations
+**Symptoms**: Application memory increases over time, especially during shift changes
+
+**Solution**: Implement proper collection management and disposal patterns:
+```csharp
+// Clear collections periodically
+private async Task CleanupOldDataAsync()
+{
+    // Keep only recent transactions (e.g., last 1000)
+    if (TransactionHistory.Count > 1000)
+    {
+        var itemsToRemove = TransactionHistory
+            .OrderBy(t => t.Timestamp)
+            .Take(TransactionHistory.Count - 1000)
+            .ToList();
+            
+        foreach (var item in itemsToRemove)
+        {
+            TransactionHistory.Remove(item);
+        }
+    }
+}
+```
+
+#### Issue: Commands Not Updating CanExecute State
+**Symptoms**: Buttons remain disabled/enabled inappropriately during manufacturing operations
+
+**Solution**: Ensure proper property dependency notifications:
+```csharp
+[ObservableProperty]
+[NotifyCanExecuteChangedFor(nameof(SaveInventoryCommand))]
+[NotifyCanExecuteChangedFor(nameof(RemoveInventoryCommand))]
+private string selectedPartId = string.Empty;
+
+// Manually notify when complex conditions change
+private void OnValidationStateChanged()
+{
+    SaveInventoryCommand.NotifyCanExecuteChanged();
+    RemoveInventoryCommand.NotifyCanExecuteChanged();
+}
+```
+
+### Performance Optimization for Manufacturing Workflows
+
+#### Optimize Large Dataset Binding
+```csharp
+// Use virtualization for large manufacturing datasets
+[ObservableProperty]
+private CollectionView filteredTransactions = new();
+
+public void ApplyManufacturingFilters()
+{
+    // Use CollectionView for better performance than ObservableCollection filtering
+    FilteredTransactions.Filter = transaction =>
+    {
+        var t = (TransactionRecord)transaction;
+        return (!FilterPartId.HasValue || t.PartId.Contains(FilterPartId)) &&
+               (!FilterStartDate.HasValue || t.Timestamp >= FilterStartDate) &&
+               (!FilterEndDate.HasValue || t.Timestamp <= FilterEndDate);
+    };
+}
+```
+
+#### Batch UI Updates for Manufacturing Efficiency
+```csharp
+// Batch multiple property changes to reduce UI updates
+public void UpdateInventoryBatch(IEnumerable<InventoryUpdate> updates)
+{
+    // Suspend collection change notifications
+    using var suspension = InventoryItems.SuspendNotifications();
+    
+    foreach (var update in updates)
+    {
+        var item = InventoryItems.FirstOrDefault(i => i.PartId == update.PartId);
+        if (item != null)
+        {
+            item.Quantity = update.NewQuantity;
+            item.LastUpdated = update.Timestamp;
+        }
+    }
+    
+    // All changes fire notifications at once when suspension is disposed
+}
+```
+
+---
+
 ## 📚 Related MVVM Documentation
 
 - **.NET Architecture**: [Good Practices](./dotnet-architecture-good-practices.instructions.md)
