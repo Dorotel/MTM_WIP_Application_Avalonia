@@ -128,8 +128,9 @@ public class DatabaseIntegrationTests
         // Test that operation numbers follow manufacturing workflow standards
         var standardOperations = new[] { "90", "100", "110", "120", "130" };
         
-        // Assert manufacturing workflow sequence
-        standardOperations.Should().BeInAscendingOrder("Operations should follow numerical sequence");
+        // Assert manufacturing workflow sequence (convert to integers for proper sorting)
+        var operationNumbers = standardOperations.Select(int.Parse).ToArray();
+        operationNumbers.Should().BeInAscendingOrder("Operations should follow numerical sequence");
         
         foreach (var operation in standardOperations)
         {

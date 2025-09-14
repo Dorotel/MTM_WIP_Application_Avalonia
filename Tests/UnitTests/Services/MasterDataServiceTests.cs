@@ -49,7 +49,7 @@ public class MasterDataServiceTests
     private void SetupDefaultMockBehavior()
     {
         // Setup configuration service defaults
-        _mockConfigurationService.Setup(s => s.GetConnectionString())
+        _mockConfigurationService.Setup(s => s.GetConnectionString(It.IsAny<string>()))
             .Returns("Server=localhost;Database=mtm_test;Uid=test;Pwd=test;");
     }
 

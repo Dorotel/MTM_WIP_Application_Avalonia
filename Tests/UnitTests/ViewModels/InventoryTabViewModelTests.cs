@@ -80,7 +80,7 @@ public class InventoryTabViewModelTests
             .Returns(new ObservableCollection<string>());
 
         // Setup configuration service defaults
-        _mockConfigurationService.Setup(s => s.GetConnectionString())
+        _mockConfigurationService.Setup(s => s.GetConnectionString(It.IsAny<string>()))
             .Returns("Server=localhost;Database=mtm_test;Uid=test;Pwd=test;");
     }
 
@@ -217,7 +217,15 @@ public class InventoryTabViewModelTests
     [Test]
     public void CanSave_WhenAllFieldsValid_ShouldReturnTrue()
     {
-        // Arrange - Set all required fields to valid values
+        // Arrange - Setup master data with valid test values
+        _mockMasterDataService.Setup(s => s.PartIds)
+            .Returns(new ObservableCollection<string> { "TEST_PART_001" });
+        _mockMasterDataService.Setup(s => s.Operations)
+            .Returns(new ObservableCollection<string> { "100" });
+        _mockMasterDataService.Setup(s => s.Locations)
+            .Returns(new ObservableCollection<string> { "STATION_A" });
+
+        // Set all required fields to valid values
         _viewModel.SelectedPart = "TEST_PART_001";
         _viewModel.SelectedOperation = "100";
         _viewModel.Quantity = 10;
@@ -293,6 +301,7 @@ public class InventoryTabViewModelTests
         _mockMasterDataService.Setup(s => s.Locations).Returns(locations);
 
         // Act - Access master data through service
+        await Task.CompletedTask; // Satisfy async requirement
         var actualPartIds = _mockMasterDataService.Object.PartIds;
         var actualOperations = _mockMasterDataService.Object.Operations;
         var actualLocations = _mockMasterDataService.Object.Locations;
