@@ -1,977 +1,659 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
-
-/// <summary>
-/// Represents a filter operation that can be applied to a column.
-/// Phase 5 feature for advanced filtering capabilities.
-/// </summary>
-public enum FilterOperator
+namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 {
     /// <summary>
-    /// Value equals the filter criteria (case-insensitive for strings).
+    /// Configuration class for filtering data in the CustomDataGrid
+    /// Supports multiple filter types and conditions for flexible data filtering
+    /// Follows MTM MVVM Community Toolkit patterns for consistency
     /// </summary>
-    Equals,
-    
-    /// <summary>
-    /// Value contains the filter criteria (case-insensitive for strings).
-    /// </summary>
-    Contains,
-    
-    /// <summary>
-    /// Value starts with the filter criteria (case-insensitive for strings).
-    /// </summary>
-    StartsWith,
-    
-    /// <summary>
-    /// Value ends with the filter criteria (case-insensitive for strings).
-    /// </summary>
-    EndsWith,
-    
-    /// <summary>
-    /// Value is greater than the filter criteria.
-    /// </summary>
-    GreaterThan,
-    
-    /// <summary>
-    /// Value is greater than or equal to the filter criteria.
-    /// </summary>
-    GreaterThanOrEqual,
-    
-    /// <summary>
-    /// Value is less than the filter criteria.
-    /// </summary>
-    LessThan,
-    
-    /// <summary>
-    /// Value is less than or equal to the filter criteria.
-    /// </summary>
-    LessThanOrEqual,
-    
-    /// <summary>
-    /// Value is not equal to the filter criteria.
-    /// </summary>
-    NotEquals,
-    
-    /// <summary>
-    /// Value does not contain the filter criteria.
-    /// </summary>
-    NotContains,
-    
-    /// <summary>
-    /// Value is null or empty (for nullable types and strings).
-    /// </summary>
-    IsEmpty,
-    
-    /// <summary>
-    /// Value is not null or empty (for nullable types and strings).
-    /// </summary>
-    IsNotEmpty,
-    
-    /// <summary>
-    /// Value is within a date range (for DateTime columns).
-    /// </summary>
-    DateRange,
-    
-    /// <summary>
-    /// Value is within a numeric range (for numeric columns).
-    /// </summary>
-    NumericRange,
-    
-    /// <summary>
-    /// Value is in a list of values (for dropdown filtering).
-    /// </summary>
-    InList,
-    
-    /// <summary>
-    /// Value is not in a list of values.
-    /// </summary>
-    NotInList
-}
+    public partial class FilterConfiguration : ObservableObject
+    {
+        #region Observable Properties
 
-/// <summary>
-/// Represents a filter condition for a specific column.
-/// Phase 5 feature for advanced column-level filtering.
-/// </summary>
-public partial class ColumnFilter : INotifyPropertyChanged
-{
-    /// <summary>
-    /// Gets the property name of the column this filter applies to.
-    /// </summary>
-    public string PropertyName { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Gets the display name of the column for UI purposes.
-    /// </summary>
-    public string DisplayName { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Gets the data type of the column for appropriate filter UI.
-    /// </summary>
-    public Type DataType { get; set; } = typeof(string);
-    
-    private bool _isActive;
-    /// <summary>
-    /// Gets or sets whether this filter is currently active.
-    /// </summary>
-    public bool IsActive
-    {
-        get => _isActive;
-        set
-        {
-            if (_isActive != value)
-            {
-                _isActive = value;
-                OnPropertyChanged(nameof(IsActive));
-                OnPropertyChanged(nameof(HasValidCriteria));
-                OnPropertyChanged(nameof(FilterSummary));
-            }
-        }
-    }
-    
-    private FilterOperator _filterOperator = FilterOperator.Contains;
-    /// <summary>
-    /// Gets or sets the filter operator to use.
-    /// </summary>
-    public FilterOperator FilterOperator
-    {
-        get => _filterOperator;
-        set
-        {
-            if (_filterOperator != value)
-            {
-                _filterOperator = value;
-                OnPropertyChanged(nameof(FilterOperator));
-                OnPropertyChanged(nameof(IsTextFilter));
-                OnPropertyChanged(nameof(IsNumericFilter));
-                OnPropertyChanged(nameof(IsDateFilter));
-                OnPropertyChanged(nameof(IsBooleanFilter));
-                OnPropertyChanged(nameof(IsRangeFilter));
-                OnPropertyChanged(nameof(IsListFilter));
-                OnPropertyChanged(nameof(FilterSummary));
-            }
-        }
-    }
-    
-    private object? _filterValue;
-    /// <summary>
-    /// Gets or sets the primary filter value.
-    /// </summary>
-    public object? FilterValue
-    {
-        get => _filterValue;
-        set
-        {
-            if (!Equals(_filterValue, value))
-            {
-                _filterValue = value;
-                OnPropertyChanged(nameof(FilterValue));
-                OnPropertyChanged(nameof(FilterSummary));
-                OnPropertyChanged(nameof(HasValidCriteria));
-            }
-        }
-    }
-    
-    private object? _filterValueTo;
-    /// <summary>
-    /// Gets or sets the secondary filter value (used for range operations).
-    /// </summary>
-    public object? FilterValueTo
-    {
-        get => _filterValueTo;
-        set
-        {
-            if (!Equals(_filterValueTo, value))
-            {
-                _filterValueTo = value;
-                OnPropertyChanged(nameof(FilterValueTo));
-            }
-        }
-    }
-    
-    private ObservableCollection<object> _filterValues = new();
-    /// <summary>
-    /// Gets or sets the list of values for InList/NotInList operations.
-    /// </summary>
-    public ObservableCollection<object> FilterValues
-    {
-        get => _filterValues;
-        set
-        {
-            if (_filterValues != value)
-            {
-                _filterValues = value;
-                OnPropertyChanged(nameof(FilterValues));
-            }
-        }
-    }
-    
-    private bool _isCaseSensitive = false;
-    /// <summary>
-    /// Gets or sets whether the filter should be case-sensitive (for string operations).
-    /// </summary>
-    public bool IsCaseSensitive
-    {
-        get => _isCaseSensitive;
-        set
-        {
-            if (_isCaseSensitive != value)
-            {
-                _isCaseSensitive = value;
-                OnPropertyChanged(nameof(IsCaseSensitive));
-            }
-        }
-    }
+        /// <summary>
+        /// Gets or sets the column property name to filter on
+        /// </summary>
+        [ObservableProperty]
+        private string _propertyName = string.Empty;
 
-    /// <summary>
-    /// Property changed event for INotifyPropertyChanged.
-    /// </summary>
-    public event PropertyChangedEventHandler? PropertyChanged;
+        /// <summary>
+        /// Gets or sets the display name for this filter
+        /// </summary>
+        [ObservableProperty]
+        private string _displayName = string.Empty;
 
-    /// <summary>
-    /// Raises the PropertyChanged event.
-    /// </summary>
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-    
-    /// <summary>
-    /// Gets whether this filter has valid criteria.
-    /// </summary>
-    public bool HasValidCriteria => IsActive && (FilterValue != null || 
-        FilterOperator == FilterOperator.IsEmpty || 
-        FilterOperator == FilterOperator.IsNotEmpty ||
-        (FilterOperator == FilterOperator.InList && FilterValues.Count > 0) ||
-        (FilterOperator == FilterOperator.DateRange && FilterValue != null && FilterValueTo != null) ||
-        (FilterOperator == FilterOperator.NumericRange && FilterValue != null && FilterValueTo != null));
-    
-    /// <summary>
-    /// Gets available filter operators for the column's data type.
-    /// </summary>
-    public ObservableCollection<FilterOperator> AvailableOperators => GetAvailableOperators(DataType);
-    
-    /// <summary>
-    /// Gets a summary description of the current filter.
-    /// </summary>
-    public string FilterSummary
-    {
-        get
+        /// <summary>
+        /// Gets or sets the filter operator
+        /// </summary>
+        [ObservableProperty]
+        private FilterOperator _operator = FilterOperator.Contains;
+
+        /// <summary>
+        /// Gets or sets the filter value
+        /// </summary>
+        [ObservableProperty]
+        private object? _value;
+
+        /// <summary>
+        /// Gets or sets the secondary value for range filters
+        /// </summary>
+        [ObservableProperty]
+        private object? _value2;
+
+        /// <summary>
+        /// Gets or sets whether this filter is enabled
+        /// </summary>
+        [ObservableProperty]
+        private bool _isEnabled = true;
+
+        /// <summary>
+        /// Gets or sets whether this filter is active
+        /// </summary>
+        [ObservableProperty]
+        private bool _isActive;
+
+        /// <summary>
+        /// Gets or sets the data type for this filter
+        /// </summary>
+        [ObservableProperty]
+        private Type _dataType = typeof(string);
+
+        /// <summary>
+        /// Gets or sets whether this filter is case sensitive (for string filters)
+        /// </summary>
+        [ObservableProperty]
+        private bool _isCaseSensitive;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of FilterConfiguration
+        /// </summary>
+        public FilterConfiguration()
         {
-            if (!IsActive || !HasValidCriteria)
-                return "No filter applied";
-                
-            return FilterOperator switch
-            {
-                FilterOperator.Equals => $"= '{FilterValue}'",
-                FilterOperator.Contains => $"contains '{FilterValue}'",
-                FilterOperator.StartsWith => $"starts with '{FilterValue}'",
-                FilterOperator.EndsWith => $"ends with '{FilterValue}'",
-                FilterOperator.GreaterThan => $"> {FilterValue}",
-                FilterOperator.GreaterThanOrEqual => $">= {FilterValue}",
-                FilterOperator.LessThan => $"< {FilterValue}",
-                FilterOperator.LessThanOrEqual => $"<= {FilterValue}",
-                FilterOperator.NotEquals => $"!= '{FilterValue}'",
-                FilterOperator.NotContains => $"not contains '{FilterValue}'",
-                FilterOperator.IsEmpty => "is empty",
-                FilterOperator.IsNotEmpty => "is not empty",
-                FilterOperator.DateRange => $"between {FilterValue} and {FilterValueTo}",
-                FilterOperator.NumericRange => $"between {FilterValue} and {FilterValueTo}",
-                FilterOperator.InList => $"in ({FilterValues.Count} values)",
-                FilterOperator.NotInList => $"not in ({FilterValues.Count} values)",
-                _ => "Unknown filter"
-            };
         }
-    }
-    
-    /// <summary>
-    /// Gets whether this filter should display a text input control.
-    /// </summary>
-    public bool IsTextFilter => DataType == typeof(string) && 
-        (FilterOperator == FilterOperator.Contains ||
-         FilterOperator == FilterOperator.Equals ||
-         FilterOperator == FilterOperator.StartsWith ||
-         FilterOperator == FilterOperator.EndsWith ||
-         FilterOperator == FilterOperator.NotEquals ||
-         FilterOperator == FilterOperator.NotContains);
-    
-    /// <summary>
-    /// Gets whether this filter should display a numeric input control.
-    /// </summary>
-    public bool IsNumericFilter => IsNumericType(DataType) && 
-        (FilterOperator == FilterOperator.Equals ||
-         FilterOperator == FilterOperator.GreaterThan ||
-         FilterOperator == FilterOperator.GreaterThanOrEqual ||
-         FilterOperator == FilterOperator.LessThan ||
-         FilterOperator == FilterOperator.LessThanOrEqual ||
-         FilterOperator == FilterOperator.NotEquals);
-    
-    /// <summary>
-    /// Gets whether this filter should display a date picker control.
-    /// </summary>
-    public bool IsDateFilter => (DataType == typeof(DateTime) || DataType == typeof(DateTime?)) && 
-        (FilterOperator == FilterOperator.Equals ||
-         FilterOperator == FilterOperator.GreaterThan ||
-         FilterOperator == FilterOperator.GreaterThanOrEqual ||
-         FilterOperator == FilterOperator.LessThan ||
-         FilterOperator == FilterOperator.LessThanOrEqual ||
-         FilterOperator == FilterOperator.NotEquals);
-    
-    /// <summary>
-    /// Gets whether this filter should display a boolean selector control.
-    /// </summary>
-    public bool IsBooleanFilter => (DataType == typeof(bool) || DataType == typeof(bool?)) && 
-        (FilterOperator == FilterOperator.Equals ||
-         FilterOperator == FilterOperator.NotEquals);
-    
-    /// <summary>
-    /// Gets whether this filter should display range input controls.
-    /// </summary>
-    public bool IsRangeFilter => FilterOperator == FilterOperator.DateRange || 
-                                FilterOperator == FilterOperator.NumericRange;
-    
-    /// <summary>
-    /// Gets whether this filter should display list input controls.
-    /// </summary>
-    public bool IsListFilter => FilterOperator == FilterOperator.InList || 
-                               FilterOperator == FilterOperator.NotInList;
-    
-    /// <summary>
-    /// Initializes a new column filter.
-    /// </summary>
-    public ColumnFilter(string propertyName, string displayName, Type dataType)
-    {
-        PropertyName = propertyName;
-        DisplayName = displayName;
-        DataType = dataType;
-        FilterOperator = GetDefaultOperator(dataType);
-    }
-    
-    /// <summary>
-    /// Clears the filter criteria and deactivates the filter.
-    /// </summary>
-    public void Clear()
-    {
-        IsActive = false;
-        FilterValue = null;
-        FilterValueTo = null;
-        FilterValues.Clear();
-    }
-    
-    /// <summary>
-    /// Evaluates whether the given value matches this filter's criteria.
-    /// </summary>
-    public bool MatchesCriteria(object? value)
-    {
-        if (!IsActive || !HasValidCriteria)
-            return true;
+
+        /// <summary>
+        /// Initializes a new instance with basic settings
+        /// </summary>
+        /// <param name="propertyName">The property name to filter</param>
+        /// <param name="displayName">The display name for this filter</param>
+        /// <param name="dataType">The data type of the property</param>
+        public FilterConfiguration(string propertyName, string displayName, Type dataType)
+        {
+            PropertyName = propertyName;
+            DisplayName = displayName;
+            DataType = dataType;
+            Operator = GetDefaultOperatorForType(dataType);
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Gets the default filter operator for a given data type
+        /// </summary>
+        /// <param name="dataType">The data type</param>
+        /// <returns>Default filter operator</returns>
+        public static FilterOperator GetDefaultOperatorForType(Type dataType)
+        {
+            if (dataType == typeof(string))
+                return FilterOperator.Contains;
             
-        return FilterOperator switch
-        {
-            FilterOperator.Equals => EvaluateEquals(value, FilterValue),
-            FilterOperator.Contains => EvaluateContains(value, FilterValue),
-            FilterOperator.StartsWith => EvaluateStartsWith(value, FilterValue),
-            FilterOperator.EndsWith => EvaluateEndsWith(value, FilterValue),
-            FilterOperator.GreaterThan => EvaluateGreaterThan(value, FilterValue),
-            FilterOperator.GreaterThanOrEqual => EvaluateGreaterThanOrEqual(value, FilterValue),
-            FilterOperator.LessThan => EvaluateLessThan(value, FilterValue),
-            FilterOperator.LessThanOrEqual => EvaluateLessThanOrEqual(value, FilterValue),
-            FilterOperator.NotEquals => !EvaluateEquals(value, FilterValue),
-            FilterOperator.NotContains => !EvaluateContains(value, FilterValue),
-            FilterOperator.IsEmpty => EvaluateIsEmpty(value),
-            FilterOperator.IsNotEmpty => !EvaluateIsEmpty(value),
-            FilterOperator.DateRange => EvaluateDateRange(value, FilterValue, FilterValueTo),
-            FilterOperator.NumericRange => EvaluateNumericRange(value, FilterValue, FilterValueTo),
-            FilterOperator.InList => EvaluateInList(value, FilterValues),
-            FilterOperator.NotInList => !EvaluateInList(value, FilterValues),
-            _ => true
-        };
-    }
-    
-    #region Private Methods
-    
-    private static ObservableCollection<FilterOperator> GetAvailableOperators(Type dataType)
-    {
-        if (dataType == typeof(string))
-        {
-            return new ObservableCollection<FilterOperator>
-            {
-                FilterOperator.Contains,
-                FilterOperator.Equals,
-                FilterOperator.StartsWith,
-                FilterOperator.EndsWith,
-                FilterOperator.NotEquals,
-                FilterOperator.NotContains,
-                FilterOperator.IsEmpty,
-                FilterOperator.IsNotEmpty,
-                FilterOperator.InList,
-                FilterOperator.NotInList
-            };
-        }
-        
-        if (dataType == typeof(DateTime) || dataType == typeof(DateTime?))
-        {
-            return new ObservableCollection<FilterOperator>
-            {
-                FilterOperator.Equals,
-                FilterOperator.GreaterThan,
-                FilterOperator.GreaterThanOrEqual,
-                FilterOperator.LessThan,
-                FilterOperator.LessThanOrEqual,
-                FilterOperator.NotEquals,
-                FilterOperator.DateRange,
-                FilterOperator.IsEmpty,
-                FilterOperator.IsNotEmpty
-            };
-        }
-        
-        if (IsNumericType(dataType))
-        {
-            return new ObservableCollection<FilterOperator>
-            {
-                FilterOperator.Equals,
-                FilterOperator.GreaterThan,
-                FilterOperator.GreaterThanOrEqual,
-                FilterOperator.LessThan,
-                FilterOperator.LessThanOrEqual,
-                FilterOperator.NotEquals,
-                FilterOperator.NumericRange,
-                FilterOperator.InList,
-                FilterOperator.NotInList
-            };
-        }
-        
-        if (dataType == typeof(bool) || dataType == typeof(bool?))
-        {
-            return new ObservableCollection<FilterOperator>
-            {
-                FilterOperator.Equals,
-                FilterOperator.NotEquals,
-                FilterOperator.IsEmpty,
-                FilterOperator.IsNotEmpty
-            };
-        }
-        
-        // Default operators for other types
-        return new ObservableCollection<FilterOperator>
-        {
-            FilterOperator.Equals,
-            FilterOperator.NotEquals,
-            FilterOperator.IsEmpty,
-            FilterOperator.IsNotEmpty
-        };
-    }
-    
-    private static FilterOperator GetDefaultOperator(Type dataType)
-    {
-        if (dataType == typeof(string))
+            if (dataType == typeof(bool))
+                return FilterOperator.Equals;
+            
+            if (dataType.IsNumeric() || dataType == typeof(DateTime))
+                return FilterOperator.Equals;
+            
             return FilterOperator.Contains;
-            
-        return FilterOperator.Equals;
-    }
-    
-    private static bool IsNumericType(Type type)
-    {
-        var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
-        return underlyingType == typeof(int) || 
-               underlyingType == typeof(long) || 
-               underlyingType == typeof(decimal) || 
-               underlyingType == typeof(double) || 
-               underlyingType == typeof(float) || 
-               underlyingType == typeof(short) || 
-               underlyingType == typeof(byte);
-    }
-    
-    #region Evaluation Methods
-    
-    private bool EvaluateEquals(object? value, object? filterValue)
-    {
-        if (value == null && filterValue == null) return true;
-        if (value == null || filterValue == null) return false;
-        
-        if (value is string stringValue && filterValue is string filterStringValue)
-        {
-            return string.Equals(stringValue, filterStringValue, 
-                IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
         }
-        
-        return value.Equals(filterValue);
-    }
-    
-    private bool EvaluateContains(object? value, object? filterValue)
-    {
-        if (value is not string stringValue || filterValue is not string filterStringValue)
-            return false;
-            
-        return stringValue.Contains(filterStringValue, 
-            IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
-    }
-    
-    private bool EvaluateStartsWith(object? value, object? filterValue)
-    {
-        if (value is not string stringValue || filterValue is not string filterStringValue)
-            return false;
-            
-        return stringValue.StartsWith(filterStringValue, 
-            IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
-    }
-    
-    private bool EvaluateEndsWith(object? value, object? filterValue)
-    {
-        if (value is not string stringValue || filterValue is not string filterStringValue)
-            return false;
-            
-        return stringValue.EndsWith(filterStringValue, 
-            IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
-    }
-    
-    private static bool EvaluateGreaterThan(object? value, object? filterValue)
-    {
-        if (value == null || filterValue == null) return false;
-        
-        if (value is IComparable comparableValue && filterValue.GetType() == value.GetType())
-        {
-            return comparableValue.CompareTo(filterValue) > 0;
-        }
-        
-        return false;
-    }
-    
-    private static bool EvaluateGreaterThanOrEqual(object? value, object? filterValue)
-    {
-        if (value == null || filterValue == null) return false;
-        
-        if (value is IComparable comparableValue && filterValue.GetType() == value.GetType())
-        {
-            return comparableValue.CompareTo(filterValue) >= 0;
-        }
-        
-        return false;
-    }
-    
-    private static bool EvaluateLessThan(object? value, object? filterValue)
-    {
-        if (value == null || filterValue == null) return false;
-        
-        if (value is IComparable comparableValue && filterValue.GetType() == value.GetType())
-        {
-            return comparableValue.CompareTo(filterValue) < 0;
-        }
-        
-        return false;
-    }
-    
-    private static bool EvaluateLessThanOrEqual(object? value, object? filterValue)
-    {
-        if (value == null || filterValue == null) return false;
-        
-        if (value is IComparable comparableValue && filterValue.GetType() == value.GetType())
-        {
-            return comparableValue.CompareTo(filterValue) <= 0;
-        }
-        
-        return false;
-    }
-    
-    private static bool EvaluateIsEmpty(object? value)
-    {
-        return value == null || (value is string str && string.IsNullOrWhiteSpace(str));
-    }
-    
-    private static bool EvaluateDateRange(object? value, object? fromValue, object? toValue)
-    {
-        if (value is not DateTime dateValue || fromValue is not DateTime fromDate || toValue is not DateTime toDate)
-            return false;
-            
-        return dateValue >= fromDate && dateValue <= toDate;
-    }
-    
-    private static bool EvaluateNumericRange(object? value, object? fromValue, object? toValue)
-    {
-        if (value == null || fromValue == null || toValue == null) return false;
-        
-        if (value is IComparable comparableValue && 
-            fromValue.GetType() == value.GetType() && 
-            toValue.GetType() == value.GetType())
-        {
-            return comparableValue.CompareTo(fromValue) >= 0 && comparableValue.CompareTo(toValue) <= 0;
-        }
-        
-        return false;
-    }
-    
-    private bool EvaluateInList(object? value, ObservableCollection<object> values)
-    {
-        if (values.Count == 0) return false;
-        
-        return values.Any(filterValue => EvaluateEquals(value, filterValue));
-    }
-    
-    #endregion
-    
-    #endregion
-}
 
-/// <summary>
-/// Represents a complete filtering configuration for a CustomDataGrid.
-/// Phase 5 feature for advanced filtering and search capabilities.
-/// </summary>
-public partial class FilterConfiguration : INotifyPropertyChanged
-{
-    /// <summary>
-    /// Gets the unique identifier for this filter configuration.
-    /// </summary>
-    public string ConfigurationId { get; set; } = Guid.NewGuid().ToString();
-    
-    private string _displayName = "New Filter";
-    /// <summary>
-    /// Gets or sets the display name for this filter configuration.
-    /// </summary>
-    public string DisplayName
-    {
-        get => _displayName;
-        set
+        /// <summary>
+        /// Gets available operators for the current data type
+        /// </summary>
+        /// <returns>List of applicable filter operators</returns>
+        public List<FilterOperator> GetAvailableOperators()
         {
-            if (_displayName != value)
-            {
-                _displayName = value;
-                OnPropertyChanged(nameof(DisplayName));
-            }
-        }
-    }
-    
-    private string _description = string.Empty;
-    /// <summary>
-    /// Gets or sets the description of this filter configuration.
-    /// </summary>
-    public string Description
-    {
-        get => _description;
-        set
-        {
-            if (_description != value)
-            {
-                _description = value;
-                OnPropertyChanged(nameof(Description));
-            }
-        }
-    }
-    
-    private string _globalSearchText = string.Empty;
-    /// <summary>
-    /// Gets or sets the global search text that applies to all searchable columns.
-    /// </summary>
-    public string GlobalSearchText
-    {
-        get => _globalSearchText;
-        set
-        {
-            if (_globalSearchText != value)
-            {
-                _globalSearchText = value;
-                OnPropertyChanged(nameof(GlobalSearchText));
-            }
-        }
-    }
-    
-    private bool _isGlobalSearchCaseSensitive = false;
-    /// <summary>
-    /// Gets or sets whether the global search should be case-sensitive.
-    /// </summary>
-    public bool IsGlobalSearchCaseSensitive
-    {
-        get => _isGlobalSearchCaseSensitive;
-        set
-        {
-            if (_isGlobalSearchCaseSensitive != value)
-            {
-                _isGlobalSearchCaseSensitive = value;
-                OnPropertyChanged(nameof(IsGlobalSearchCaseSensitive));
-            }
-        }
-    }
-    
-    private ObservableCollection<ColumnFilter> _columnFilters = new();
-    /// <summary>
-    /// Gets the collection of column-specific filters.
-    /// </summary>
-    public ObservableCollection<ColumnFilter> ColumnFilters
-    {
-        get => _columnFilters;
-        set
-        {
-            if (_columnFilters != value)
-            {
-                _columnFilters = value;
-                OnPropertyChanged(nameof(ColumnFilters));
-            }
-        }
-    }
-    
-    private bool _isActive;
-    /// <summary>
-    /// Gets or sets whether this filter configuration is currently active.
-    /// </summary>
-    public bool IsActive
-    {
-        get => _isActive;
-        set
-        {
-            if (_isActive != value)
-            {
-                _isActive = value;
-                OnPropertyChanged(nameof(IsActive));
-            }
-        }
-    }
-    
-    /// <summary>
-    /// Gets or sets the date this configuration was created.
-    /// </summary>
-    public DateTime CreatedDate { get; set; } = DateTime.Now;
-    
-    private DateTime _lastModified = DateTime.Now;
-    /// <summary>
-    /// Gets or sets the date this configuration was last modified.
-    /// </summary>
-    public DateTime LastModified
-    {
-        get => _lastModified;
-        set
-        {
-            if (_lastModified != value)
-            {
-                _lastModified = value;
-                OnPropertyChanged(nameof(LastModified));
-            }
-        }
-    }
-    
-    /// <summary>
-    /// Gets or sets whether this is a built-in preset filter.
-    /// </summary>
-    public bool IsPreset { get; set; }
+            var operators = new List<FilterOperator>();
 
-    /// <summary>
-    /// Property changed event for INotifyPropertyChanged.
-    /// </summary>
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    /// <summary>
-    /// Raises the PropertyChanged event.
-    /// </summary>
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-    
-    /// <summary>
-    /// Gets whether this filter configuration has any active filters.
-    /// </summary>
-    public bool HasActiveFilters => !string.IsNullOrWhiteSpace(GlobalSearchText) || 
-                                   ColumnFilters.Any(f => f.IsActive && f.HasValidCriteria);
-    
-    /// <summary>
-    /// Gets the number of active column filters.
-    /// </summary>
-    public int ActiveFilterCount => ColumnFilters.Count(f => f.IsActive && f.HasValidCriteria);
-    
-    /// <summary>
-    /// Gets a summary of the active filters.
-    /// </summary>
-    public string FilterSummary
-    {
-        get
-        {
-            var summaryParts = new List<string>();
-            
-            if (!string.IsNullOrWhiteSpace(GlobalSearchText))
+            if (DataType == typeof(string))
             {
-                summaryParts.Add($"Global: '{GlobalSearchText}'");
-            }
-            
-            var activeColumnFilters = ColumnFilters.Where(f => f.IsActive && f.HasValidCriteria).ToList();
-            if (activeColumnFilters.Count > 0)
-            {
-                if (activeColumnFilters.Count == 1)
+                operators.AddRange(new[]
                 {
-                    summaryParts.Add($"{activeColumnFilters[0].DisplayName}: {activeColumnFilters[0].FilterSummary}");
+                    FilterOperator.Contains,
+                    FilterOperator.StartsWith,
+                    FilterOperator.EndsWith,
+                    FilterOperator.Equals,
+                    FilterOperator.NotEquals,
+                    FilterOperator.IsEmpty,
+                    FilterOperator.IsNotEmpty
+                });
+            }
+            else if (DataType == typeof(bool))
+            {
+                operators.AddRange(new[]
+                {
+                    FilterOperator.Equals,
+                    FilterOperator.NotEquals
+                });
+            }
+            else if (DataType.IsNumeric() || DataType == typeof(DateTime))
+            {
+                operators.AddRange(new[]
+                {
+                    FilterOperator.Equals,
+                    FilterOperator.NotEquals,
+                    FilterOperator.GreaterThan,
+                    FilterOperator.GreaterThanOrEqual,
+                    FilterOperator.LessThan,
+                    FilterOperator.LessThanOrEqual,
+                    FilterOperator.Between,
+                    FilterOperator.IsEmpty,
+                    FilterOperator.IsNotEmpty
+                });
+            }
+            else
+            {
+                // Default operators for other types
+                operators.AddRange(new[]
+                {
+                    FilterOperator.Equals,
+                    FilterOperator.NotEquals,
+                    FilterOperator.IsEmpty,
+                    FilterOperator.IsNotEmpty
+                });
+            }
+
+            return operators;
+        }
+
+        /// <summary>
+        /// Validates whether the current filter configuration is valid
+        /// </summary>
+        /// <returns>True if valid, false otherwise</returns>
+        public bool IsValid()
+        {
+            // Property name is required
+            if (string.IsNullOrWhiteSpace(PropertyName))
+                return false;
+
+            // For most operators, a value is required
+            if (Operator != FilterOperator.IsEmpty && Operator != FilterOperator.IsNotEmpty)
+            {
+                if (Value == null)
+                    return false;
+
+                // For Between operator, both values are required
+                if (Operator == FilterOperator.Between && Value2 == null)
+                    return false;
+            }
+
+            // Validate data type compatibility
+            if (Value != null && !IsValueCompatibleWithDataType(Value, DataType))
+                return false;
+
+            if (Value2 != null && !IsValueCompatibleWithDataType(Value2, DataType))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if a value is compatible with a data type
+        /// </summary>
+        /// <param name="value">The value to check</param>
+        /// <param name="dataType">The target data type</param>
+        /// <returns>True if compatible, false otherwise</returns>
+        private static bool IsValueCompatibleWithDataType(object value, Type dataType)
+        {
+            if (value == null)
+                return true;
+
+            var valueType = value.GetType();
+            
+            // Direct type match
+            if (valueType == dataType || dataType.IsAssignableFrom(valueType))
+                return true;
+
+            // String can be converted to most types
+            if (valueType == typeof(string))
+                return true;
+
+            // Numeric compatibility
+            if (valueType.IsNumeric() && dataType.IsNumeric())
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Applies this filter to a collection of items
+        /// </summary>
+        /// <param name="items">The items to filter</param>
+        /// <returns>Filtered collection</returns>
+        public IEnumerable<object> Apply(IEnumerable<object> items)
+        {
+            if (!IsActive || !IsValid())
+                return items;
+
+            return items.Where(item => EvaluateItem(item));
+        }
+
+        /// <summary>
+        /// Evaluates whether an item matches this filter
+        /// </summary>
+        /// <param name="item">The item to evaluate</param>
+        /// <returns>True if the item matches, false otherwise</returns>
+        public bool EvaluateItem(object item)
+        {
+            if (!IsActive || !IsValid() || item == null)
+                return true;
+
+            // Get the property value from the item
+            var propertyValue = GetPropertyValue(item, PropertyName);
+
+            return EvaluateValue(propertyValue);
+        }
+
+        /// <summary>
+        /// Evaluates whether a value matches the filter criteria
+        /// </summary>
+        /// <param name="propertyValue">The value to evaluate</param>
+        /// <returns>True if the value matches, false otherwise</returns>
+        private bool EvaluateValue(object? propertyValue)
+        {
+            return Operator switch
+            {
+                FilterOperator.Equals => AreValuesEqual(propertyValue, Value),
+                FilterOperator.NotEquals => !AreValuesEqual(propertyValue, Value),
+                FilterOperator.Contains => ContainsValue(propertyValue, Value),
+                FilterOperator.StartsWith => StartsWithValue(propertyValue, Value),
+                FilterOperator.EndsWith => EndsWithValue(propertyValue, Value),
+                FilterOperator.GreaterThan => CompareValues(propertyValue, Value) > 0,
+                FilterOperator.GreaterThanOrEqual => CompareValues(propertyValue, Value) >= 0,
+                FilterOperator.LessThan => CompareValues(propertyValue, Value) < 0,
+                FilterOperator.LessThanOrEqual => CompareValues(propertyValue, Value) <= 0,
+                FilterOperator.Between => IsBetweenValues(propertyValue, Value, Value2),
+                FilterOperator.IsEmpty => IsEmptyValue(propertyValue),
+                FilterOperator.IsNotEmpty => !IsEmptyValue(propertyValue),
+                _ => true
+            };
+        }
+
+        /// <summary>
+        /// Gets a property value from an object using reflection
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <param name="propertyName">The property name</param>
+        /// <returns>The property value</returns>
+        private static object? GetPropertyValue(object obj, string propertyName)
+        {
+            if (obj == null || string.IsNullOrEmpty(propertyName))
+                return null;
+
+            var property = obj.GetType().GetProperty(propertyName);
+            if (property == null)
+                return null;
+
+            try
+            {
+                return property.GetValue(obj);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Compares two values for equality
+        /// </summary>
+        private bool AreValuesEqual(object? value1, object? value2)
+        {
+            if (value1 == null && value2 == null)
+                return true;
+            
+            if (value1 == null || value2 == null)
+                return false;
+
+            // String comparison with case sensitivity option
+            if (value1 is string str1 && value2 is string str2)
+            {
+                var comparison = IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+                return string.Equals(str1, str2, comparison);
+            }
+
+            return object.Equals(value1, value2);
+        }
+
+        /// <summary>
+        /// Checks if value1 contains value2 (for string types)
+        /// </summary>
+        private bool ContainsValue(object? value1, object? value2)
+        {
+            if (value1?.ToString() is string str1 && value2?.ToString() is string str2)
+            {
+                var comparison = IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+                return str1.Contains(str2, comparison);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if value1 starts with value2 (for string types)
+        /// </summary>
+        private bool StartsWithValue(object? value1, object? value2)
+        {
+            if (value1?.ToString() is string str1 && value2?.ToString() is string str2)
+            {
+                var comparison = IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+                return str1.StartsWith(str2, comparison);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if value1 ends with value2 (for string types)
+        /// </summary>
+        private bool EndsWithValue(object? value1, object? value2)
+        {
+            if (value1?.ToString() is string str1 && value2?.ToString() is string str2)
+            {
+                var comparison = IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+                return str1.EndsWith(str2, comparison);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Compares two values numerically
+        /// </summary>
+        private static int CompareValues(object? value1, object? value2)
+        {
+            if (value1 == null && value2 == null) return 0;
+            if (value1 == null) return -1;
+            if (value2 == null) return 1;
+
+            if (value1 is IComparable comparable1 && value2 is IComparable)
+            {
+                try
+                {
+                    return comparable1.CompareTo(value2);
                 }
-                else
+                catch
                 {
-                    summaryParts.Add($"{activeColumnFilters.Count} column filters");
+                    return 0;
                 }
             }
-            
-            return summaryParts.Count > 0 
-                ? string.Join(", ", summaryParts)
-                : "No active filters";
-        }
-    }
-    
-    /// <summary>
-    /// Initializes a new filter configuration.
-    /// </summary>
-    public FilterConfiguration()
-    {
-        
-    }
-    
-    /// <summary>
-    /// Initializes a new filter configuration with the specified ID and name.
-    /// </summary>
-    public FilterConfiguration(string configurationId, string displayName)
-    {
-        ConfigurationId = configurationId;
-        DisplayName = displayName;
-    }
-    
-    /// <summary>
-    /// Initializes column filters based on the provided columns.
-    /// </summary>
-    public void InitializeFromColumns(ObservableCollection<CustomDataGridColumn> columns)
-    {
-        ColumnFilters.Clear();
-        
-        foreach (var column in columns.Where(c => c.CanFilter))
-        {
-            ColumnFilters.Add(new ColumnFilter(column.PropertyName, column.DisplayName, column.DataType));
-        }
-        
-        LastModified = DateTime.Now;
-    }
-    
-    /// <summary>
-    /// Clears all filters and deactivates them.
-    /// </summary>
-    public void ClearAllFilters()
-    {
-        GlobalSearchText = string.Empty;
-        
-        foreach (var filter in ColumnFilters)
-        {
-            filter.Clear();
-        }
-        
-        LastModified = DateTime.Now;
-    }
-    
-    /// <summary>
-    /// Evaluates whether the given item matches all active filters.
-    /// </summary>
-    public bool MatchesFilters<T>(T item)
-    {
-        if (!IsActive || !HasActiveFilters)
-            return true;
-            
-        // Check global search
-        if (!string.IsNullOrWhiteSpace(GlobalSearchText))
-        {
-            if (!MatchesGlobalSearch(item))
-                return false;
-        }
-        
-        // Check column-specific filters
-        foreach (var filter in ColumnFilters.Where(f => f.IsActive && f.HasValidCriteria))
-        {
-            var propertyInfo = typeof(T).GetProperty(filter.PropertyName);
-            var value = propertyInfo?.GetValue(item);
-            
-            if (!filter.MatchesCriteria(value))
-                return false;
-        }
-        
-        return true;
-    }
-    
-    /// <summary>
-    /// Updates the last modified timestamp.
-    /// </summary>
-    public void UpdateLastModified()
-    {
-        LastModified = DateTime.Now;
-    }
-    
-    /// <summary>
-    /// Gets the column filter for the specified property name.
-    /// </summary>
-    public ColumnFilter? GetColumnFilter(string propertyName)
-    {
-        return ColumnFilters.FirstOrDefault(f => f.PropertyName == propertyName);
-    }
-    
-    #region Private Methods
-    
-    private bool MatchesGlobalSearch<T>(T item)
-    {
-        if (string.IsNullOrWhiteSpace(GlobalSearchText))
-            return true;
-            
-        var searchText = IsGlobalSearchCaseSensitive ? GlobalSearchText : GlobalSearchText.ToLowerInvariant();
-        
-        // Search in all filterable columns
-        var searchableColumns = ColumnFilters.Where(f => f.DataType == typeof(string));
-        
-        foreach (var filter in searchableColumns)
-        {
-            var propertyInfo = typeof(T).GetProperty(filter.PropertyName);
-            var value = propertyInfo?.GetValue(item)?.ToString();
-            
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                var valueToSearch = IsGlobalSearchCaseSensitive ? value : value.ToLowerInvariant();
-                if (valueToSearch.Contains(searchText))
-                    return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    #endregion
-}
 
-/// <summary>
-/// Represents filter statistics and information for display in the UI.
-/// Phase 5 feature for filter result tracking and user feedback.
-/// </summary>
-public class FilterStatistics
-{
+            return string.Compare(value1.ToString(), value2?.ToString(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Checks if a value is between two other values
+        /// </summary>
+        private static bool IsBetweenValues(object? value, object? min, object? max)
+        {
+            if (value == null || min == null || max == null)
+                return false;
+
+            return CompareValues(value, min) >= 0 && CompareValues(value, max) <= 0;
+        }
+
+        /// <summary>
+        /// Checks if a value is considered empty
+        /// </summary>
+        private static bool IsEmptyValue(object? value)
+        {
+            if (value == null)
+                return true;
+
+            if (value is string str)
+                return string.IsNullOrWhiteSpace(str);
+
+            if (value is IEnumerable<object> enumerable)
+                return !enumerable.Any();
+
+            return false;
+        }
+
+        /// <summary>
+        /// Clears the filter values
+        /// </summary>
+        public void Clear()
+        {
+            Value = null;
+            Value2 = null;
+            IsActive = false;
+        }
+
+        /// <summary>
+        /// Creates a copy of this filter configuration
+        /// </summary>
+        /// <returns>New FilterConfiguration instance</returns>
+        public FilterConfiguration Clone()
+        {
+            return new FilterConfiguration
+            {
+                PropertyName = PropertyName,
+                DisplayName = DisplayName,
+                Operator = Operator,
+                Value = Value,
+                Value2 = Value2,
+                IsEnabled = IsEnabled,
+                IsActive = IsActive,
+                DataType = DataType,
+                IsCaseSensitive = IsCaseSensitive
+            };
+        }
+
+        #endregion
+
+        #region Override Methods
+
+        /// <summary>
+        /// Returns a string representation of this filter
+        /// </summary>
+        public override string ToString()
+        {
+            var valueText = Value?.ToString() ?? "null";
+            if (Operator == FilterOperator.Between && Value2 != null)
+            {
+                valueText = $"{valueText} - {Value2}";
+            }
+            
+            return $"{DisplayName} {Operator} {valueText} (Active: {IsActive})";
+        }
+
+        #endregion
+    }
+
     /// <summary>
-    /// Gets or sets the total number of items before filtering.
+    /// Enumeration of available filter operators
     /// </summary>
-    public int TotalCount { get; set; }
-    
+    public enum FilterOperator
+    {
+        /// <summary>Equal to</summary>
+        Equals,
+        
+        /// <summary>Not equal to</summary>
+        NotEquals,
+        
+        /// <summary>Contains (for strings)</summary>
+        Contains,
+        
+        /// <summary>Starts with (for strings)</summary>
+        StartsWith,
+        
+        /// <summary>Ends with (for strings)</summary>
+        EndsWith,
+        
+        /// <summary>Greater than</summary>
+        GreaterThan,
+        
+        /// <summary>Greater than or equal to</summary>
+        GreaterThanOrEqual,
+        
+        /// <summary>Less than</summary>
+        LessThan,
+        
+        /// <summary>Less than or equal to</summary>
+        LessThanOrEqual,
+        
+        /// <summary>Between two values</summary>
+        Between,
+        
+        /// <summary>Is empty or null</summary>
+        IsEmpty,
+        
+        /// <summary>Is not empty or null</summary>
+        IsNotEmpty
+    }
+
     /// <summary>
-    /// Gets or sets the number of items after filtering.
+    /// Collection of filter configurations for managing multiple filters
     /// </summary>
-    public int FilteredCount { get; set; }
-    
+    public partial class FilterCollection : ObservableObject
+    {
+        #region Observable Properties
+
+        /// <summary>
+        /// Gets or sets the collection of filter configurations
+        /// </summary>
+        [ObservableProperty]
+        private List<FilterConfiguration> _filters = new();
+
+        /// <summary>
+        /// Gets or sets the logical operator to combine filters (AND/OR)
+        /// </summary>
+        [ObservableProperty]
+        private FilterLogicalOperator _logicalOperator = FilterLogicalOperator.And;
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Adds a new filter to the collection
+        /// </summary>
+        /// <param name="filter">The filter to add</param>
+        public void Add(FilterConfiguration filter)
+        {
+            ArgumentNullException.ThrowIfNull(filter);
+            Filters.Add(filter);
+        }
+
+        /// <summary>
+        /// Removes a filter from the collection
+        /// </summary>
+        /// <param name="filter">The filter to remove</param>
+        /// <returns>True if removed, false if not found</returns>
+        public bool Remove(FilterConfiguration filter)
+        {
+            return Filters.Remove(filter);
+        }
+
+        /// <summary>
+        /// Clears all filters
+        /// </summary>
+        public void Clear()
+        {
+            Filters.Clear();
+        }
+
+        /// <summary>
+        /// Gets all active filters
+        /// </summary>
+        /// <returns>Collection of active filters</returns>
+        public IEnumerable<FilterConfiguration> GetActiveFilters()
+        {
+            return Filters.Where(f => f.IsActive && f.IsValid());
+        }
+
+        /// <summary>
+        /// Applies all active filters to a collection of items
+        /// </summary>
+        /// <param name="items">The items to filter</param>
+        /// <returns>Filtered collection</returns>
+        public IEnumerable<object> Apply(IEnumerable<object> items)
+        {
+            var activeFilters = GetActiveFilters().ToList();
+            if (activeFilters.Count == 0)
+                return items;
+
+            return items.Where(item =>
+            {
+                var results = activeFilters.Select(filter => filter.EvaluateItem(item));
+                
+                return LogicalOperator == FilterLogicalOperator.And 
+                    ? results.All(result => result) 
+                    : results.Any(result => result);
+            });
+        }
+
+        /// <summary>
+        /// Gets the count of active filters
+        /// </summary>
+        /// <returns>Number of active filters</returns>
+        public int GetActiveFilterCount()
+        {
+            return GetActiveFilters().Count();
+        }
+
+        /// <summary>
+        /// Checks if any filters are active
+        /// </summary>
+        /// <returns>True if any filters are active, false otherwise</returns>
+        public bool HasActiveFilters()
+        {
+            return GetActiveFilters().Any();
+        }
+
+        #endregion
+    }
+
     /// <summary>
-    /// Gets or sets the number of items hidden by filters.
+    /// Logical operators for combining multiple filters
     /// </summary>
-    public int HiddenCount => TotalCount - FilteredCount;
-    
+    public enum FilterLogicalOperator
+    {
+        /// <summary>All filters must match (AND)</summary>
+        And,
+        
+        /// <summary>Any filter can match (OR)</summary>
+        Or
+    }
+
     /// <summary>
-    /// Gets or sets whether any filters are currently applied.
+    /// Extension methods for Type to help with filter operations
     /// </summary>
-    public bool HasActiveFilters { get; set; }
-    
-    /// <summary>
-    /// Gets the percentage of items visible after filtering.
-    /// </summary>
-    public double VisibilityPercentage => TotalCount > 0 ? (double)FilteredCount / TotalCount * 100 : 100;
-    
-    /// <summary>
-    /// Gets a summary string describing the filter results.
-    /// </summary>
-    public string FilterResultSummary => HasActiveFilters
-        ? FilteredCount == 0 
-            ? "No items match the current filters"
-            : $"Showing {FilteredCount} of {TotalCount} items ({VisibilityPercentage:F0}% visible)"
-        : $"Showing all {TotalCount} items";
+    public static class TypeExtensions
+    {
+        /// <summary>
+        /// Checks if a type is numeric
+        /// </summary>
+        /// <param name="type">The type to check</param>
+        /// <returns>True if numeric, false otherwise</returns>
+        public static bool IsNumeric(this Type type)
+        {
+            return type == typeof(int) || type == typeof(long) || type == typeof(short) ||
+                   type == typeof(uint) || type == typeof(ulong) || type == typeof(ushort) ||
+                   type == typeof(byte) || type == typeof(sbyte) ||
+                   type == typeof(float) || type == typeof(double) || type == typeof(decimal) ||
+                   type == typeof(int?) || type == typeof(long?) || type == typeof(short?) ||
+                   type == typeof(uint?) || type == typeof(ulong?) || type == typeof(ushort?) ||
+                   type == typeof(byte?) || type == typeof(sbyte?) ||
+                   type == typeof(float?) || type == typeof(double?) || type == typeof(decimal?);
+        }
+    }
 }

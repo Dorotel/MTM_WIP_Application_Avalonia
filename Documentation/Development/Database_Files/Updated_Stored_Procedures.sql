@@ -102,6 +102,106 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Update_Notes`(
+    IN p_ID INT,
+    IN p_PartID VARCHAR(300),
+    IN p_BatchNumber VARCHAR(100),
+    IN p_Notes VARCHAR(1000),
+    IN p_User VARCHAR(100),
+    OUT p_Status INT,
+    OUT p_ErrorMsg VARCHAR(255)
+)
+BEGIN
+    DECLARE v_RowsAffected INT DEFAULT 0;
+    DECLARE v_OldNotes VARCHAR(1000) DEFAULT '';
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        GET DIAGNOSTICS CONDITION 1 p_Status = MYSQL_ERRNO, p_ErrorMsg = MESSAGE_TEXT;
+        SET p_Status = -1;
+    END;
+
+    START TRANSACTION;
+
+    -- Validate that the record exists and get current notes
+    SELECT Notes INTO v_OldNotes
+    FROM inv_inventory
+    WHERE ID = p_ID 
+      AND PartID = p_PartID 
+      AND BatchNumber = p_BatchNumber;
+
+    -- Check if record was found
+    IF ROW_COUNT() = 0 THEN
+        SET p_Status = -2;
+        SET p_ErrorMsg = 'Inventory record not found or parameters do not match';
+        ROLLBACK;
+    ELSE
+        -- Update the notes and user who made the change
+        UPDATE inv_inventory 
+        SET Notes = p_Notes,
+            User = p_User,
+            LastUpdated = NOW()
+        WHERE ID = p_ID 
+          AND PartID = p_PartID 
+          AND BatchNumber = p_BatchNumber;
+        
+        SET v_RowsAffected = ROW_COUNT();
+        
+        IF v_RowsAffected = 0 THEN
+            SET p_Status = -3;
+            SET p_ErrorMsg = 'Failed to update inventory notes';
+            ROLLBACK;
+        ELSE
+            -- Log the note change in transaction history
+            INSERT INTO inv_transaction (
+                TransactionType, BatchNumber, PartID, FromLocation, ToLocation, Operation, 
+                Quantity, ItemType, ReceiveDate, User, Notes
+            )
+            SELECT 
+                'NOTE_EDIT', 
+                BatchNumber, 
+                PartID, 
+                Location, 
+                NULL, 
+                Operation,
+                0, -- Zero quantity for note edit
+                ItemType, 
+                NOW(), 
+                p_User, 
+                CONCAT('Note changed from: "', COALESCE(v_OldNotes, ''), '" to: "', COALESCE(p_Notes, ''), '"')
+            FROM inv_inventory 
+            WHERE ID = p_ID;
+            
+            SET p_Status = 1;
+            SET p_ErrorMsg = 'Notes updated successfully';
+            COMMIT;
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Get_ByID`(IN `p_ID` INT)
+BEGIN
+    SELECT 
+        ID,
+        PartID,
+        Location,
+        Operation,
+        Quantity,
+        ItemType,
+        ReceiveDate,
+        LastUpdated,
+        User,
+        BatchNumber AS `BatchNumber`,
+        Notes
+    FROM inv_inventory
+    WHERE ID = p_ID;
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `inv_inventory_Remove_Item`(IN `p_PartID` VARCHAR(300), IN `p_Location` VARCHAR(100), IN `p_Operation` VARCHAR(100), IN `p_Quantity` INT, IN `p_ItemType` VARCHAR(100), IN `p_User` VARCHAR(100), IN `p_BatchNumber` VARCHAR(100), IN `p_Notes` VARCHAR(1000), OUT `p_Status` INT, OUT `p_ErrorMsg` VARCHAR(255))
 BEGIN
     DECLARE v_RowsAffected INT DEFAULT 0;

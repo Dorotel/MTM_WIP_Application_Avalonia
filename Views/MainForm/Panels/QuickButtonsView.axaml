@@ -49,7 +49,7 @@
 
     <!-- MTM Position indicator style -->
     <Style Selector="Border.position-indicator">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="Width" Value="24"/>
       <Setter Property="Height" Value="24"/>
@@ -60,14 +60,14 @@
     <Style Selector="TextBlock.primary-text">
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="FontSize" Value="12"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="TextWrapping" Value="Wrap"/>
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
     </Style>
 
     <Style Selector="TextBlock.secondary-text">
       <Setter Property="FontSize" Value="10"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="TextWrapping" Value="Wrap"/>
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
     </Style>
@@ -75,7 +75,7 @@
     <Style Selector="TextBlock.operation-text">
       <Setter Property="FontSize" Value="10"/>
       <Setter Property="FontWeight" Value="Bold"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
       <Setter Property="Margin" Value="4,0,0,0"/>
     </Style>
@@ -95,21 +95,72 @@
     </Style>
 
     <Style Selector="MenuItem">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="Background" Value="Transparent"/>
     </Style>
 
     <Style Selector="MenuItem:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <!-- Header Toggle Button Styles - Swapped selected/unselected with inverted hover -->
+    <Style Selector="Button.header-toggle-button">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TooltipForeground}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="Margin" Value="4,2"/>
+      <Setter Property="MinHeight" Value="36"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
+
+    <Style Selector="Button.header-toggle-button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
-    <!-- Toggle Button Styles - Fixed contrast issues -->
+    <Style Selector="Button.header-toggle-button.active">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+    </Style>
+
+    <!-- Icon color matching for header toggle buttons -->
+    <Style Selector="Button.header-toggle-button materialIcons|MaterialIcon">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <Style Selector="Button.header-toggle-button:pointerover materialIcons|MaterialIcon">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <Style Selector="Button.header-toggle-button.active materialIcons|MaterialIcon">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <!-- TextBlock color matching for header toggle buttons -->
+    <Style Selector="Button.header-toggle-button TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <Style Selector="Button.header-toggle-button:pointerover TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <Style Selector="Button.header-toggle-button.active TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <!-- Footer Toggle Button Styles - Swapped coloring with inverted hover -->
     <Style Selector="Button.toggle-button">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
-      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TooltipForeground}"/>
+      <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="Padding" Value="6,4"/>
       <Setter Property="Margin" Value="2,0"/>
@@ -118,23 +169,23 @@
     </Style>
 
     <Style Selector="Button.toggle-button:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
     <Style Selector="Button.toggle-button.active">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
     </Style>
 
     <Style Selector="Button.toggle-button materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </Style>
 
     <Style Selector="Button.toggle-button:pointerover materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
     </Style>
 
     <Style Selector="Button.toggle-button.active materialIcons|MaterialIcon">
@@ -146,91 +197,39 @@
   <Grid Margin="4" Background="Transparent">
     <!-- Header Section, Content Area, and Footer Section -->
     <Grid RowDefinitions="Auto,*,Auto">
-      <!-- Dynamic Header with Toggle Functionality -->
+      <!-- Simplified Header with Toggle Buttons -->
       <Border Grid.Row="0"
               Classes="header-panel"
               Padding="12,8"
               Margin="0,0,0,8">
-        <Grid ColumnDefinitions="Auto,*,Auto">
-          <!-- Left: Dynamic Icon and Title -->
-          <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-            <Border Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                    CornerRadius="12"
-                    Width="20"
-                    Height="20"
-                    VerticalAlignment="Center">
-              <Grid>
-                <materialIcons:MaterialIcon Kind="Flash"
-                                           Width="12"
-                                           Height="12"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           IsVisible="{Binding !IsShowingHistory}"/>
-                <materialIcons:MaterialIcon Kind="ClockOutline"
-                                           Width="12"
-                                           Height="12"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           IsVisible="{Binding IsShowingHistory}"/>
-              </Grid>
-            </Border>
-
-          </StackPanel>
-
-          <!-- Center: Count/Status -->
-          <Border Grid.Column="1" 
-                  Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                  CornerRadius="8"
-                  Padding="6,2"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center">
-            <StackPanel Orientation="Horizontal" Spacing="4">
-              <TextBlock Text="{Binding SessionTransactionCount}"
-                         FontSize="11"
-                         FontWeight="Bold"
-                         Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                         VerticalAlignment="Center"
-                         IsVisible="{Binding IsShowingHistory}"/>
-              <TextBlock Text="{Binding NonEmptyQuickButtonsCount}"
-                         FontSize="11"
-                         FontWeight="Bold"
-                         Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                         VerticalAlignment="Center"
-                         IsVisible="{Binding !IsShowingHistory}"/>
-              <TextBlock Text="Session Transactions"
-                         FontSize="9"
-                         FontWeight="Medium"
-                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                         VerticalAlignment="Center"
-                         IsVisible="{Binding IsShowingHistory}"/>
-              <TextBlock Text="Quick Actions"
-                         FontSize="9"
-                         FontWeight="Medium"
-                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                         VerticalAlignment="Center"
-                         IsVisible="{Binding !IsShowingHistory}"/>
+        <Grid ColumnDefinitions="*,Auto,*">
+          <!-- Left: Quick Actions Button -->
+          <Button Grid.Column="0"
+                  Classes="header-toggle-button"
+                  Classes.active="{Binding !IsShowingHistory}"
+                  Command="{Binding ShowQuickActionsCommand}"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
+                  ToolTip.Tip="Show Quick Actions">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <materialIcons:MaterialIcon Kind="Flash" Width="14" Height="14"/>
+              <TextBlock Text="Quick Actions" FontSize="11" FontWeight="Medium"/>
             </StackPanel>
-          </Border>
+          </Button>
 
-          <!-- Right: Toggle Buttons -->
-          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="1">
-            <Button Classes="toggle-button"
-                    Classes.active="{Binding !IsShowingHistory}"
-                    Command="{Binding ShowQuickActionsCommand}"
-                    ToolTip.Tip="Show Quick Actions">
-              <materialIcons:MaterialIcon Kind="Flash" Width="14" Height="14" 
-                                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-            </Button>
-            <Button Classes="toggle-button"
-                    Classes.active="{Binding IsShowingHistory}"
-                    Command="{Binding ShowHistoryCommand}"
-                    ToolTip.Tip="Show Transaction History">
-              <materialIcons:MaterialIcon Kind="ClockOutline" Width="14" Height="14"
-                                         Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-            </Button>
-          </StackPanel>
+          <!-- Right: Transaction History Button -->
+          <Button Grid.Column="2"
+                  Classes="header-toggle-button"
+                  Classes.active="{Binding IsShowingHistory}"
+                  Command="{Binding ShowHistoryCommand}"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Center"
+                  ToolTip.Tip="Show Transaction History">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <materialIcons:MaterialIcon Kind="ClockOutline" Width="14" Height="14"/>
+              <TextBlock Text="History" FontSize="11" FontWeight="Medium"/>
+            </StackPanel>
+          </Button>
         </Grid>
       </Border>
 
@@ -282,7 +281,7 @@
                                 ToolTip.Tip="Restore default button order"/>
                     </ContextMenu>
                   </Button.ContextMenu>
-                  <Grid ColumnDefinitions="Auto,8,*,Auto">
+                  <Grid ColumnDefinitions="Auto,8,*,Auto,Auto">
                     <!-- MTM Industrial position indicator -->
                     <Border Grid.Column="0" Classes="position-indicator">
                       <TextBlock Text="{Binding Position}"
@@ -293,25 +292,47 @@
                                  VerticalAlignment="Center"/>
                     </Border>
                     
-                    <!-- Button content with MTM typography -->
+                    <!-- Button content with MTM typography - Only Part ID -->
                     <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
                       <TextBlock Text="{Binding DisplayText}"
                                  Classes="primary-text"/>
-                      <TextBlock Text="{Binding SubText}"
-                                 Classes="secondary-text"/>
                     </StackPanel>
                     
-                    <!-- Operation indicator with MTM accent color -->
+                    <!-- Quantity indicator with lighter background -->
                     <Border Grid.Column="3"
-                            Background="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                            Background="Transparent"
+                            CornerRadius="4"
+                            Padding="6,2"
+                            Margin="0,0,4,0"
+                            VerticalAlignment="Center">
+                      <TextBlock FontSize="10"
+                                 FontWeight="Bold"
+                                 Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                                 ToolTip.Tip="Quantity">
+                        <Run Text="x "/>
+                        <Run Text="{Binding Quantity}"/>
+                      </TextBlock>
+                    </Border>
+                    
+                    <!-- Operation indicator with lighter background and Op. label -->
+                    <Border Grid.Column="4"
+                            Background="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
                             CornerRadius="4"
                             Padding="6,2"
                             VerticalAlignment="Center">
-                      <TextBlock Text="{Binding Operation}"
-                                 Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                                 FontSize="10"
-                                 FontWeight="Bold"
-                                 ToolTip.Tip="Operation Number"/>
+                      <StackPanel Spacing="1" HorizontalAlignment="Center">
+                        <TextBlock Text="Op."
+                                   FontSize="8"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding Operation}"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   ToolTip.Tip="Operation Number"/>
+                      </StackPanel>
                     </Border>
                   </Grid>
                 </Button>
@@ -361,150 +382,60 @@
               Classes="header-panel"
               Padding="8"
               Margin="0,8,0,0">
-        <Grid RowDefinitions="Auto,Auto">
-          <!-- QoL Buttons Row - Icon-only with tooltips for compact layout -->
-          <StackPanel Grid.Row="0" 
-                      Orientation="Horizontal" 
-                      Spacing="2"
-                      HorizontalAlignment="Center"
-                      Margin="0,0,0,8">
-            
-            <!-- New Button -->
-            <Button Classes="toggle-button"
-                    Command="{Binding NewQuickButtonCommand}"
-                    ToolTip.Tip="Create new quick button">
-              <materialIcons:MaterialIcon Kind="Plus" Width="14" Height="14"/>
-            </Button>
-            
-            <!-- Refresh All Button -->
-            <Button Classes="toggle-button"
-                    Command="{Binding RefreshButtonsCommand}"
-                    ToolTip.Tip="Refresh quick buttons from database">
-              <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14"/>
-            </Button>
-            
-            <!-- Clear All Button -->
-            <Button Classes="toggle-button"
-                    Command="{Binding ClearAllButtonsCommand}"
-                    ToolTip.Tip="Remove all quick actions">
-              <materialIcons:MaterialIcon Kind="DeleteSweep" Width="14" Height="14"/>
-            </Button>
-            
-            <!-- Reset Order Button -->
-            <Button Classes="toggle-button"
-                    Command="{Binding ResetOrderCommand}"
-                    ToolTip.Tip="Reset button order to default">
-              <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending" Width="14" Height="14"/>
-            </Button>
-            
-            <!-- Export Settings Button -->
-            <Button Classes="toggle-button"
-                    Command="{Binding ExportQuickButtonsCommand}"
-                    ToolTip.Tip="Export quick buttons configuration">
-              <materialIcons:MaterialIcon Kind="Export" Width="14" Height="14"/>
-            </Button>
-            
-            <!-- Import Settings Button -->
-            <Button Classes="toggle-button"
-                    Command="{Binding ImportQuickButtonsCommand}"
-                    ToolTip.Tip="Import quick buttons configuration">
-              <materialIcons:MaterialIcon Kind="Import" Width="14" Height="14"/>
-            </Button>
-            
-            <!-- Help/Info Button -->
-            <Button Classes="toggle-button"
-                    ToolTip.Tip="Show quick buttons help and keyboard shortcuts">
-              <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="14" Height="14"/>
-            </Button>
-            
-          </StackPanel>
+        <!-- QoL Buttons Row - Icon-only with tooltips for compact layout -->
+        <StackPanel Orientation="Horizontal" 
+                    Spacing="2"
+                    HorizontalAlignment="Center">
           
-          <!-- Debug Information Display Row -->
-          <Border Grid.Row="1"
-                  Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                  CornerRadius="4"
-                  Padding="8,4"
-                  Margin="4,0">
-            <Grid ColumnDefinitions="*,*,*">
-              
-              <!-- Left: Database Status -->
-              <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
-                <materialIcons:MaterialIcon Kind="Database" 
-                                           Width="12" 
-                                           Height="12"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                                           VerticalAlignment="Center"/>
-                <TextBlock Text="DB:" 
-                           FontSize="9" 
-                           FontWeight="Medium"
-                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                           VerticalAlignment="Center"/>
-                <Border Background="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                        CornerRadius="2"
-                        Padding="4,1">
-                  <TextBlock Text="{Binding DatabaseConnectionStatus, FallbackValue='Connected'}"
-                             FontSize="8"
-                             FontWeight="Bold"
-                             Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-                </Border>
-              </StackPanel>
-              
-              <!-- Center: Last Operation Status -->
-              <StackPanel Grid.Column="1" 
-                          Orientation="Horizontal" 
-                          Spacing="4"
-                          HorizontalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="ClockCheck" 
-                                           Width="12" 
-                                           Height="12"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                                           VerticalAlignment="Center"/>
-                <TextBlock Text="Last:" 
-                           FontSize="9" 
-                           FontWeight="Medium"
-                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                           VerticalAlignment="Center"/>
-                <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                        CornerRadius="2"
-                        Padding="4,1">
-                  <TextBlock Text="{Binding LastOperationStatus, FallbackValue='Success'}"
-                             FontSize="8"
-                             FontWeight="Bold"
-                             Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-                </Border>
-              </StackPanel>
-              
-              <!-- Right: Memory and Performance -->
-              <StackPanel Grid.Column="2" 
-                          Orientation="Horizontal" 
-                          Spacing="4"
-                          HorizontalAlignment="Right">
-                <materialIcons:MaterialIcon Kind="Memory" 
-                                           Width="12" 
-                                           Height="12"
-                                           Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
-                                           VerticalAlignment="Center"/>
-                <TextBlock Text="Buttons:" 
-                           FontSize="9" 
-                           FontWeight="Medium"
-                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                           VerticalAlignment="Center"/>
-                <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                        CornerRadius="2"
-                        Padding="4,1">
-                  <TextBlock FontSize="8"
-                             FontWeight="Bold"
-                             Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}">
-                    <Run Text="{Binding NonEmptyQuickButtonsCount}"/>
-                    <Run Text="/"/>
-                    <Run Text="10"/>
-                  </TextBlock>
-                </Border>
-              </StackPanel>
-              
-            </Grid>
-          </Border>
-        </Grid>
+          <!-- New Button -->
+          <Button Classes="toggle-button"
+                  Command="{Binding NewQuickButtonCommand}"
+                  ToolTip.Tip="Create new quick button">
+            <materialIcons:MaterialIcon Kind="Plus" Width="14" Height="14"/>
+          </Button>
+          
+          <!-- Refresh All Button -->
+          <Button Classes="toggle-button"
+                  Command="{Binding RefreshButtonsCommand}"
+                  ToolTip.Tip="Refresh quick buttons from database">
+            <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14"/>
+          </Button>
+          
+          <!-- Clear All Button -->
+          <Button Classes="toggle-button"
+                  Command="{Binding ClearAllButtonsCommand}"
+                  ToolTip.Tip="Remove all quick actions">
+            <materialIcons:MaterialIcon Kind="DeleteSweep" Width="14" Height="14"/>
+          </Button>
+          
+          <!-- Reset Order Button -->
+          <Button Classes="toggle-button"
+                  Command="{Binding ResetOrderCommand}"
+                  ToolTip.Tip="Reset button order to default">
+            <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending" Width="14" Height="14"/>
+          </Button>
+          
+          <!-- Export Settings Button -->
+          <Button Classes="toggle-button"
+                  Command="{Binding ExportQuickButtonsCommand}"
+                  ToolTip.Tip="Export quick buttons configuration">
+            <materialIcons:MaterialIcon Kind="Export" Width="14" Height="14"/>
+          </Button>
+          
+          <!-- Import Settings Button -->
+          <Button Classes="toggle-button"
+                  Command="{Binding ImportQuickButtonsCommand}"
+                  ToolTip.Tip="Import quick buttons configuration">
+            <materialIcons:MaterialIcon Kind="Import" Width="14" Height="14"/>
+          </Button>
+          
+          <!-- Help/Info Button -->
+          <Button Classes="toggle-button"
+                  ToolTip.Tip="Show quick buttons help and keyboard shortcuts">
+            <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="14" Height="14"/>
+          </Button>
+          
+        </StackPanel>
       </Border>
     </Grid>
   </Grid>

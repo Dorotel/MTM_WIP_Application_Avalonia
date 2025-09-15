@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
@@ -612,12 +613,17 @@ public partial class RemoveItemViewModel : BaseViewModel
         {
             Logger.LogInformation("Initiating single item delete operation via RemoveService for item: {PartId}", item.PartId);
 
-            // Delegate to RemoveService for business logic
-            var result = await _removeService.RemoveInventoryItemAsync(
+            // Add timeout to prevent UI freeze
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // 30 second timeout
+            
+            // Delegate to RemoveService for business logic with timeout
+            var removeTask = _removeService.RemoveInventoryItemAsync(
                 item,
                 _applicationState.CurrentUser,
                 "Removed via CustomDataGrid action button"
-            ).ConfigureAwait(false);
+            );
+            
+            var result = await removeTask.ConfigureAwait(false);
 
             if (result.IsSuccess)
             {
@@ -671,13 +677,75 @@ public partial class RemoveItemViewModel : BaseViewModel
             else
             {
                 Logger.LogError("Single item delete operation failed: {Message}", result.Message);
-                throw new InvalidOperationException($"Delete operation failed: {result.Message}");
+                
+                // Handle delete failure gracefully without throwing
+                await ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"Delete operation failed: {result.Message}"),
+                    $"Failed to delete inventory item {item.PartId}",
+                    _applicationState.CurrentUser
+                ).ConfigureAwait(false);
+                
+                // Show error overlay to user
+                if (_successOverlayService != null)
+                {
+                    await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                        null,
+                        "Delete Failed",
+                        $"Could not delete {item.PartId}: {result.Message}",
+                        "AlertCircle", // Error icon
+                        5000, // 5 seconds
+                        true // isError = true
+                    );
+                }
+                
+                return; // Exit without throwing
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Logger.LogWarning("Delete operation timed out for item: {PartId}", item.PartId);
+            
+            await ErrorHandling.HandleErrorAsync(
+                new TimeoutException("Delete operation timed out after 30 seconds"),
+                $"Delete timeout for item {item.PartId}",
+                _applicationState.CurrentUser
+            ).ConfigureAwait(false);
+            
+            // Show timeout error overlay
+            if (_successOverlayService != null)
+            {
+                await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                    null,
+                    "Delete Timeout",
+                    $"Delete operation for {item.PartId} timed out. Please try again.",
+                    "ClockAlert", // Timeout icon
+                    5000, // 5 seconds
+                    true // isError = true
+                );
             }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Unexpected error during single item deletion for {PartId}", item.PartId);
-            throw new ApplicationException($"Failed to delete inventory item: {ex.Message}", ex);
+            
+            // Don't throw - handle gracefully with user notification
+            await ErrorHandling.HandleErrorAsync(ex, 
+                $"Failed to delete inventory item {item.PartId}", 
+                _applicationState.CurrentUser
+            ).ConfigureAwait(false);
+            
+            // Show error overlay to user using success overlay with error icon
+            if (_successOverlayService != null)
+            {
+                await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                    null,
+                    "Delete Error",
+                    $"Unexpected error deleting {item.PartId}: {ex.Message}",
+                    "AlertCircle", // Error icon
+                    5000, // 5 seconds
+                    true // isError = true
+                );
+            }
         }
     }
 
@@ -769,13 +837,15 @@ public partial class RemoveItemViewModel : BaseViewModel
                 return;
             }
 
-            // Initialize with inventory item data
+            // Initialize with inventory item data - using full parameter version for proper stored procedure call
             await noteEditorViewModel.InitializeAsync(
                 item.Id,
                 item.PartId ?? string.Empty,
                 item.Operation ?? string.Empty,
                 item.Location ?? string.Empty,
                 item.Notes ?? string.Empty,
+                item.BatchNumber ?? string.Empty,
+                item.User ?? "SYSTEM",
                 isReadOnly: false // Allow editing by default
             );
 

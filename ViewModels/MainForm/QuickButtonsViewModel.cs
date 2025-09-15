@@ -425,7 +425,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
                     Operation = transaction.Operation ?? string.Empty, // Ensure not null and not "EMPTY"
                     Quantity = transaction.Quantity,
                     DisplayText = string.IsNullOrEmpty(transaction.PartId) ? "Empty Slot" : transaction.PartId,
-                    SubText = string.IsNullOrEmpty(transaction.PartId) ? "Click to assign" : $"{transaction.Operation} - {transaction.Quantity} parts",
+                    SubText = string.IsNullOrEmpty(transaction.PartId) ? "Click to assign" : string.Empty,
                     ToolTipText = string.IsNullOrEmpty(transaction.PartId) ? 
                         $"Empty slot {i + 1} - Click to assign a quick action." :
                         $"Position {i + 1}: Click to populate Part ID: {transaction.PartId}, Operation: {transaction.Operation}, Quantity: {transaction.Quantity} in the active tab. Right-click for move and remove options."
@@ -802,7 +802,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 
                 // Update the display properties to reflect the saved data
                 button.DisplayText = button.PartId;
-                button.SubText = $"{button.Quantity} parts.";
+                button.SubText = string.Empty;
                 button.ToolTipText = $"Position {button.Position}: Click to populate Part ID: {button.PartId}, Operation: {button.Operation}, Quantity: {button.Quantity} in the active tab. Right-click for move and remove options.";
             }
             else

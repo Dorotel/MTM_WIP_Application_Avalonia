@@ -87,14 +87,6 @@
         
         <Grid x:Name="EntryFormGrid" RowDefinitions="Auto,*">
           
-          <!-- Header Section -->
-          <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}" CornerRadius="6" Padding="12,8" Margin="0,0,0,16">
-            <Grid x:Name="HeaderGrid" ColumnDefinitions="Auto,*">
-              <materialIcons:MaterialIcon Grid.Column="0" Kind="Package" Width="16" Height="16" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" Margin="0,0,8,0" />
-              <TextBlock Grid.Column="1" Text="MTM Inventory Entry" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" VerticalAlignment="Center" />
-            </Grid>
-          </Border>
-
           <!-- Form Fields Section -->
           <Grid x:Name="FormFieldsGrid" Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="12">
 

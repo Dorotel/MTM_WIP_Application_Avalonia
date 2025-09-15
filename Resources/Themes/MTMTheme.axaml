@@ -3,15 +3,16 @@
 <!-- MTM Default Theme - Performance Optimized WCAG 2.1 AA Compliant -->
 
 <!-- Core Colors -->
-<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#0056B3"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#004085"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#B85500"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#0056B3"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#B71C1C"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#003D6B"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.DarkNavigation" Color="#212529"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.CardBackground" Color="#F8F9FA"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.HoverBackground" Color="#E9ECEF"/>
+<!-- Updated core colors for improved theme consistency and accessibility -->
+<SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#0078D4"/>        <!-- Windows 11 Blue (Primary) -->
+<SolidColorBrush x:Key="MTM_Shared_Logic.SecondaryAction" Color="#106EBE"/>      <!-- Secondary Blue -->
+<SolidColorBrush x:Key="MTM_Shared_Logic.Warning" Color="#B85500"/>              <!-- MTM Orange (Warning) -->
+<SolidColorBrush x:Key="MTM_Shared_Logic.Status" Color="#0056B3"/>               <!-- MTM Accent Blue -->
+<SolidColorBrush x:Key="MTM_Shared_Logic.Critical" Color="#B71C1C"/>             <!-- MTM Red (Critical/Error) -->
+<SolidColorBrush x:Key="MTM_Shared_Logic.Highlight" Color="#E3F2FD"/>            <!-- Light Blue (Highlight) -->
+<SolidColorBrush x:Key="MTM_Shared_Logic.DarkNavigation" Color="#212529"/>       <!-- Dark Gray (Navigation) -->
+<SolidColorBrush x:Key="MTM_Shared_Logic.CardBackground" Color="#FFFFFF"/>       <!-- Card Background (White) -->
+<SolidColorBrush x:Key="MTM_Shared_Logic.HoverBackground" Color="#F3F6FB"/>      <!-- Subtle Blue Tint (Hover) -->
 
 <!-- Interactive States -->
 <SolidColorBrush x:Key="MTM_Shared_Logic.OverlayTextBrush" Color="#000000"/>

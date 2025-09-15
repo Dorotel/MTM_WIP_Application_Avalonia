@@ -1,1093 +1,611 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Data;
+using Avalonia.LogicalTree;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
-
-/// <summary>
-/// MTM Custom Data Grid Control - Phase 1 Implementation
-/// 
-/// High-performance data grid using ItemsRepeater for virtual scrolling.
-/// Provides customizable columns, MTM theme integration, and basic selection.
-/// Designed to replace standard DataGrid implementations across MTM inventory views.
-/// 
-/// Features:
-/// - Virtual scrolling with ItemsRepeater for large datasets
-/// - Configurable column definitions with binding support
-/// - MTM design system integration with DynamicResource bindings
-/// - Basic selection capabilities
-/// - Theme-aware styling with proper contrast ratios
-/// 
-/// Future enhancements will include sorting, filtering, column management, 
-/// and settings persistence following the established MTM patterns.
-/// </summary>
-public partial class CustomDataGrid : UserControl
+namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 {
-    #region Dependency Properties
-
     /// <summary>
-    /// Gets or sets the data source for the grid.
-    /// Should be an ObservableCollection or IEnumerable for proper binding.
+    /// CustomDataGrid control for MTM WIP Application
+    /// Provides high-performance data grid with perfect header-data alignment
+    /// Follows MTM design system and MVVM Community Toolkit patterns
     /// </summary>
-    public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
-        AvaloniaProperty.Register<CustomDataGrid, IEnumerable?>(nameof(ItemsSource), null, defaultBindingMode: BindingMode.OneWay);
-
-    /// <summary>
-    /// Gets or sets the column definitions for the grid.
-    /// </summary>
-    public static readonly StyledProperty<ObservableCollection<CustomDataGridColumn>> ColumnsProperty =
-        AvaloniaProperty.Register<CustomDataGrid, ObservableCollection<CustomDataGridColumn>>(
-            nameof(Columns), 
-            new ObservableCollection<CustomDataGridColumn>(),
-            defaultBindingMode: BindingMode.OneWay);
-
-    /// <summary>
-    /// Gets or sets the currently selected item.
-    /// </summary>
-    public static readonly StyledProperty<object?> SelectedItemProperty =
-        AvaloniaProperty.Register<CustomDataGrid, object?>(nameof(SelectedItem), null, defaultBindingMode: BindingMode.TwoWay);
-
-    /// <summary>
-    /// Gets or sets whether multiple items can be selected.
-    /// </summary>
-    public static readonly StyledProperty<bool> IsMultiSelectEnabledProperty =
-        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsMultiSelectEnabled), false);
-
-    /// <summary>
-    /// Gets or sets the collection of selected items for multi-selection.
-    /// </summary>
-    public static readonly StyledProperty<ObservableCollection<object>?> SelectedItemsProperty =
-        AvaloniaProperty.Register<CustomDataGrid, ObservableCollection<object>?>(nameof(SelectedItems), null, defaultBindingMode: BindingMode.TwoWay);
-
-    /// <summary>
-    /// Gets or sets the command to execute when deleting an item.
-    /// </summary>
-    public static readonly StyledProperty<System.Windows.Input.ICommand?> DeleteItemCommandProperty =
-        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(DeleteItemCommand), null);
-
-    /// <summary>
-    /// Gets or sets the command to execute when editing an item.
-    /// </summary>
-    public static readonly StyledProperty<System.Windows.Input.ICommand?> EditItemCommandProperty =
-        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(EditItemCommand), null);
-
-    /// <summary>
-    /// Gets or sets the command to execute when duplicating an item.
-    /// </summary>
-    public static readonly StyledProperty<System.Windows.Input.ICommand?> DuplicateItemCommandProperty =
-        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(DuplicateItemCommand), null);
-
-    /// <summary>
-    /// Gets or sets the command to execute when viewing item details.
-    /// </summary>
-    public static readonly StyledProperty<System.Windows.Input.ICommand?> ViewDetailsCommandProperty =
-        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(ViewDetailsCommand), null);
-
-    /// <summary>
-    /// Gets or sets the command to execute when reading/editing item notes.
-    /// </summary>
-    public static readonly StyledProperty<System.Windows.Input.ICommand?> ReadNoteCommandProperty =
-        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(ReadNoteCommand), null);
-
-    /// <summary>
-    /// Gets or sets the row height for data rows.
-    /// </summary>
-    public static readonly StyledProperty<double> RowHeightProperty =
-        AvaloniaProperty.Register<CustomDataGrid, double>(nameof(RowHeight), 28.0);
-
-    /// <summary>
-    /// Gets or sets whether column reordering is enabled.
-    /// Phase 3 feature for drag-and-drop column reordering.
-    /// </summary>
-    public static readonly StyledProperty<bool> IsColumnReorderingEnabledProperty =
-        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsColumnReorderingEnabled), true);
-
-    /// <summary>
-    /// Gets or sets whether column resizing is enabled.
-    /// Phase 3 feature for interactive column width adjustment.
-    /// </summary>
-    public static readonly StyledProperty<bool> IsColumnResizingEnabledProperty =
-        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsColumnResizingEnabled), true);
-
-    /// <summary>
-    /// Gets or sets whether the column management panel is visible.
-    /// Phase 3 feature for advanced column management UI.
-    /// </summary>
-    public static readonly StyledProperty<bool> IsColumnManagementVisibleProperty =
-        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsColumnManagementVisible), false);
-
-    /// <summary>
-    /// Gets or sets the command to execute when toggling column visibility.
-    /// Phase 3 feature for column show/hide operations.
-    /// </summary>
-    public static readonly StyledProperty<System.Windows.Input.ICommand?> ColumnVisibilityCommandProperty =
-        AvaloniaProperty.Register<CustomDataGrid, System.Windows.Input.ICommand?>(nameof(ColumnVisibilityCommand), null);
-
-    /// <summary>
-    /// Gets or sets whether the filter panel is visible.
-    /// Phase 5 feature for advanced filtering and search capabilities.
-    /// </summary>
-    public static readonly StyledProperty<bool> IsFilterPanelVisibleProperty =
-        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsFilterPanelVisible), false);
-
-    /// <summary>
-    /// Gets or sets whether filtering is enabled for this grid.
-    /// Phase 5 feature for data filtering capabilities.
-    /// </summary>
-    public static readonly StyledProperty<bool> IsFilteringEnabledProperty =
-        AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsFilteringEnabled), true);
-
-    /// <summary>
-    /// Gets or sets the current filter configuration.
-    /// Phase 5 feature for managing active filters and search criteria.
-    /// </summary>
-    public static readonly StyledProperty<FilterConfiguration?> FilterConfigurationProperty =
-        AvaloniaProperty.Register<CustomDataGrid, FilterConfiguration?>(nameof(FilterConfiguration), null, defaultBindingMode: BindingMode.TwoWay);
-
-    /// <summary>
-    /// Gets or sets the filtered items source (items that match current filters).
-    /// Phase 5 feature for displaying filtered results.
-    /// </summary>
-    public static readonly StyledProperty<IEnumerable?> FilteredItemsSourceProperty =
-        AvaloniaProperty.Register<CustomDataGrid, IEnumerable?>(nameof(FilteredItemsSource), null, defaultBindingMode: BindingMode.OneWay);
-
-    #endregion
-
-    #region Properties
-
-    public IEnumerable? ItemsSource
+    public partial class CustomDataGrid : UserControl
     {
-        get => GetValue(ItemsSourceProperty);
-        set => SetValue(ItemsSourceProperty, value);
-    }
+        private readonly ILogger<CustomDataGrid> _logger;
 
-    public ObservableCollection<CustomDataGridColumn> Columns
-    {
-        get => GetValue(ColumnsProperty);
-        set => SetValue(ColumnsProperty, value);
-    }
+        #region Dependency Properties
 
-    public object? SelectedItem
-    {
-        get => GetValue(SelectedItemProperty);
-        set => SetValue(SelectedItemProperty, value);
-    }
+        /// <summary>
+        /// Gets or sets the items source for the data grid
+        /// </summary>
+        public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
+            AvaloniaProperty.Register<CustomDataGrid, IEnumerable?>(nameof(ItemsSource));
 
-    public ObservableCollection<object>? SelectedItems
-    {
-        get => GetValue(SelectedItemsProperty);
-        set => SetValue(SelectedItemsProperty, value);
-    }
+        /// <summary>
+        /// Gets or sets whether multi-selection is enabled
+        /// </summary>
+        public static readonly StyledProperty<bool> IsMultiSelectEnabledProperty =
+            AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsMultiSelectEnabled), true);
 
-    public bool IsMultiSelectEnabled
-    {
-        get => GetValue(IsMultiSelectEnabledProperty);
-        set => SetValue(IsMultiSelectEnabledProperty, value);
-    }
+        /// <summary>
+        /// Command for reading notes of an item
+        /// </summary>
+        public static readonly StyledProperty<ICommand?> ReadNoteCommandProperty =
+            AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(ReadNoteCommand));
 
-    public double RowHeight
-    {
-        get => GetValue(RowHeightProperty);
-        set => SetValue(RowHeightProperty, value);
-    }
+        /// <summary>
+        /// Command for deleting an item
+        /// </summary>
+        public static readonly StyledProperty<ICommand?> DeleteItemCommandProperty =
+            AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(DeleteItemCommand));
 
-    public System.Windows.Input.ICommand? DeleteItemCommand
-    {
-        get => GetValue(DeleteItemCommandProperty);
-        set => SetValue(DeleteItemCommandProperty, value);
-    }
+        /// <summary>
+        /// Command for editing an item
+        /// </summary>
+        public static readonly StyledProperty<ICommand?> EditItemCommandProperty =
+            AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(EditItemCommand));
 
-    public System.Windows.Input.ICommand? EditItemCommand
-    {
-        get => GetValue(EditItemCommandProperty);
-        set => SetValue(EditItemCommandProperty, value);
-    }
+        /// <summary>
+        /// Command for viewing item details
+        /// </summary>
+        public static readonly StyledProperty<ICommand?> ViewDetailsCommandProperty =
+            AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(ViewDetailsCommand));
 
-    public System.Windows.Input.ICommand? DuplicateItemCommand
-    {
-        get => GetValue(DuplicateItemCommandProperty);
-        set => SetValue(DuplicateItemCommandProperty, value);
-    }
+        /// <summary>
+        /// Gets or sets the selected item
+        /// </summary>
+        public static readonly StyledProperty<object?> SelectedItemProperty =
+            AvaloniaProperty.Register<CustomDataGrid, object?>(nameof(SelectedItem));
 
-    public System.Windows.Input.ICommand? ViewDetailsCommand
-    {
-        get => GetValue(ViewDetailsCommandProperty);
-        set => SetValue(ViewDetailsCommandProperty, value);
-    }
+        #endregion
 
-    public System.Windows.Input.ICommand? ReadNoteCommand
-    {
-        get => GetValue(ReadNoteCommandProperty);
-        set => SetValue(ReadNoteCommandProperty, value);
-    }
+        #region Public Properties
 
-    public bool IsColumnReorderingEnabled
-    {
-        get => GetValue(IsColumnReorderingEnabledProperty);
-        set => SetValue(IsColumnReorderingEnabledProperty, value);
-    }
-
-    public bool IsColumnResizingEnabled
-    {
-        get => GetValue(IsColumnResizingEnabledProperty);
-        set => SetValue(IsColumnResizingEnabledProperty, value);
-    }
-
-    public bool IsColumnManagementVisible
-    {
-        get => GetValue(IsColumnManagementVisibleProperty);
-        set => SetValue(IsColumnManagementVisibleProperty, value);
-    }
-
-    public System.Windows.Input.ICommand? ColumnVisibilityCommand
-    {
-        get => GetValue(ColumnVisibilityCommandProperty);
-        set => SetValue(ColumnVisibilityCommandProperty, value);
-    }
-
-    public bool IsFilterPanelVisible
-    {
-        get => GetValue(IsFilterPanelVisibleProperty);
-        set => SetValue(IsFilterPanelVisibleProperty, value);
-    }
-
-    public bool IsFilteringEnabled
-    {
-        get => GetValue(IsFilteringEnabledProperty);
-        set => SetValue(IsFilteringEnabledProperty, value);
-    }
-
-    public FilterConfiguration? FilterConfiguration
-    {
-        get => GetValue(FilterConfigurationProperty);
-        set => SetValue(FilterConfigurationProperty, value);
-    }
-
-    public IEnumerable? FilteredItemsSource
-    {
-        get => GetValue(FilteredItemsSourceProperty);
-        private set => SetValue(FilteredItemsSourceProperty, value);
-    }
-
-    /// <summary>
-    /// Gets the collection of visible columns (filtered from Columns where IsVisible = true).
-    /// </summary>
-    public ObservableCollection<CustomDataGridColumn> VisibleColumns { get; private set; }
-
-    #endregion
-
-    #region Fields
-
-    private ListBox? _dataListBox;
-    private ScrollViewer? _dataScrollViewer;
-    private ItemsControl? _headerItemsControl;
-    private CheckBox? _selectAllCheckBox;
-    private Grid? _columnManagementPanelHost;
-    private Border? _columnManagementContainer;
-    private ColumnManagementPanel? _columnManagementPanel;
-    private Grid? _filterPanelHost;
-    private Border? _filterPanelContainer;
-    private FilterPanel? _filterPanel;
-    private ViewModels.FilterPanelViewModel? _filterPanelViewModel;
-    private readonly ILogger? _logger;
-
-    #endregion
-
-    #region Constructor
-
-    /// <summary>
-    /// Initializes a new instance of the CustomDataGrid control.
-    /// Sets up the visual tree and ensures proper initialization following
-    /// MTM patterns with minimal code-behind.
-    /// </summary>
-    public CustomDataGrid()
-    {
-        // Design-time safe logger creation
-        try
+        /// <summary>
+        /// Gets or sets the items source for the data grid
+        /// </summary>
+        public IEnumerable? ItemsSource
         {
-            // For now, use null logger - DI integration will be handled by consumers
-            _logger = null;
-        }
-        catch
-        {
-            _logger = null; // Graceful fallback for design-time
+            get => GetValue(ItemsSourceProperty);
+            set => SetValue(ItemsSourceProperty, value);
         }
 
-        // Initialize SelectedItems if null
-        if (SelectedItems == null)
+        /// <summary>
+        /// Gets or sets whether multi-selection is enabled
+        /// </summary>
+        public bool IsMultiSelectEnabled
         {
-            SelectedItems = new ObservableCollection<object>();
+            get => GetValue(IsMultiSelectEnabledProperty);
+            set => SetValue(IsMultiSelectEnabledProperty, value);
         }
 
-        VisibleColumns = new ObservableCollection<CustomDataGridColumn>();
-        
-        InitializeComponent();
-        
-        // Set up property change handlers
-        PropertyChanged += OnPropertyChanged;
-        
-        // Initialize columns collection change handler
-        Columns.CollectionChanged += OnColumnsCollectionChanged;
-        
-        _logger?.LogDebug("CustomDataGrid initialized successfully");
-    }
-
-    #endregion
-
-    #region Initialization
-
-    private void InitializeComponent()
-    {
-        Avalonia.Markup.Xaml.AvaloniaXamlLoader.Load(this);
-        
-        // Get references to named controls
-        _dataListBox = this.FindControl<ListBox>("DataListBox");
-        _dataScrollViewer = this.FindControl<ScrollViewer>("DataScrollViewer");
-        _headerItemsControl = this.FindControl<ItemsControl>("HeaderItemsControl");
-        _selectAllCheckBox = this.FindControl<CheckBox>("SelectAllCheckBox");
-        _columnManagementPanelHost = this.FindControl<Grid>("ColumnManagementPanelHost");
-        _columnManagementContainer = this.FindControl<Border>("ColumnManagementContainer");
-        _filterPanelHost = this.FindControl<Grid>("FilterPanelHost");
-        _filterPanelContainer = this.FindControl<Border>("FilterPanelContainer");
-        
-        // Set up ListBox selection mode based on IsMultiSelectEnabled
-        UpdateSelectionMode();
-        
-        // Set up ListBox selection changed event
-        if (_dataListBox != null)
+        /// <summary>
+        /// Gets or sets the command for reading notes of an item
+        /// </summary>
+        public ICommand? ReadNoteCommand
         {
-            _dataListBox.SelectionChanged += OnListBoxSelectionChanged;
+            get => GetValue(ReadNoteCommandProperty);
+            set => SetValue(ReadNoteCommandProperty, value);
         }
-        
-        // Initialize column management panel
-        InitializeColumnManagementPanel();
-        
-        // Initialize filter panel
-        InitializeFilterPanel();
-        
-        _logger?.LogDebug("CustomDataGrid components initialized");
-    }
 
-    /// <summary>
-    /// Initializes the column management panel for Phase 3 features.
-    /// Sets up the panel UI and binds to column management events.
-    /// </summary>
-    private void InitializeColumnManagementPanel()
-    {
-        try
+        /// <summary>
+        /// Gets or sets the command for deleting an item
+        /// </summary>
+        public ICommand? DeleteItemCommand
         {
-            if (_columnManagementPanelHost != null)
-            {
-                // Create the column management panel
-                _columnManagementPanel = new ColumnManagementPanel
-                {
-                    Columns = Columns,
-                    SavedConfigurations = new ObservableCollection<ColumnConfiguration>(), // Will be populated by service
-                    Margin = new Thickness(0)
-                };
-
-                // Subscribe to panel events
-                _columnManagementPanel.CloseRequested += OnColumnManagementCloseRequested;
-                _columnManagementPanel.ColumnsModified += OnColumnManagementColumnsModified;
-                _columnManagementPanel.ConfigurationSaveRequested += OnColumnManagementConfigurationSaveRequested;
-                _columnManagementPanel.ConfigurationLoadRequested += OnColumnManagementConfigurationLoadRequested;
-
-                // Add panel to host grid
-                _columnManagementPanelHost.Children.Add(_columnManagementPanel);
-
-                _logger?.LogDebug("Column management panel initialized");
-            }
+            get => GetValue(DeleteItemCommandProperty);
+            set => SetValue(DeleteItemCommandProperty, value);
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Gets or sets the command for editing an item
+        /// </summary>
+        public ICommand? EditItemCommand
         {
-            _logger?.LogError(ex, "Error initializing column management panel");
+            get => GetValue(EditItemCommandProperty);
+            set => SetValue(EditItemCommandProperty, value);
         }
-    }
 
-    /// <summary>
-    /// Initializes the filter panel for Phase 5 features.
-    /// Sets up the panel UI and binds to filter events.
-    /// </summary>
-    private void InitializeFilterPanel()
-    {
-        try
+        /// <summary>
+        /// Gets or sets the command for viewing item details
+        /// </summary>
+        public ICommand? ViewDetailsCommand
         {
-            if (_filterPanelHost != null)
-            {
-                // Create the filter panel ViewModel first (we'll need to use DI here in a real implementation)
-                _filterPanelViewModel = new ViewModels.FilterPanelViewModel(
-                    Microsoft.Extensions.Logging.Abstractions.NullLogger<ViewModels.FilterPanelViewModel>.Instance);
-
-                // Create the filter panel
-                _filterPanel = new FilterPanel
-                {
-                    DataContext = _filterPanelViewModel,
-                    Margin = new Thickness(0)
-                };
-
-                // Subscribe to panel events
-                _filterPanelViewModel.FiltersChanged += OnFiltersChanged;
-                _filterPanelViewModel.CloseRequested += OnFilterPanelCloseRequested;
-
-                // Add panel to host grid
-                _filterPanelHost.Children.Add(_filterPanel);
-
-                // Initialize filter configuration if not already set
-                if (FilterConfiguration == null)
-                {
-                    FilterConfiguration = new FilterConfiguration();
-                }
-
-                _logger?.LogDebug("Filter panel initialized");
-            }
+            get => GetValue(ViewDetailsCommandProperty);
+            set => SetValue(ViewDetailsCommandProperty, value);
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Gets or sets the selected item
+        /// </summary>
+        public object? SelectedItem
         {
-            _logger?.LogError(ex, "Error initializing filter panel");
+            get => GetValue(SelectedItemProperty);
+            set => SetValue(SelectedItemProperty, value);
         }
-    }
 
-    #endregion
+        #endregion
 
-    #region Event Handlers
+        #region Events
 
-    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-    {
-        try
+        /// <summary>
+        /// Event raised when selection changes
+        /// </summary>
+        public event EventHandler<SelectionChangedEventArgs>? SelectionChanged;
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the CustomDataGrid
+        /// </summary>
+        public CustomDataGrid()
         {
-            if (e.Property == ColumnsProperty)
-            {
-                RefreshVisibleColumns();
-                _logger?.LogDebug("Columns property changed, refreshed visible columns");
-            }
-            else if (e.Property == ItemsSourceProperty)
-            {
-                _logger?.LogDebug("ItemsSource changed, item count: {Count}", 
-                    (ItemsSource as ICollection)?.Count ?? 0);
-            }
-            else if (e.Property == IsMultiSelectEnabledProperty)
-            {
-                UpdateSelectionMode();
-                _logger?.LogDebug("Multi-select mode changed to: {IsEnabled}", IsMultiSelectEnabled);
-            }
-            else if (e.Property == SelectedItemProperty)
-            {
-                SynchronizeSelectedItemWithListBox();
-                _logger?.LogDebug("SelectedItem changed: {Item}", SelectedItem?.ToString() ?? "null");
-            }
-            else if (e.Property == SelectedItemsProperty)
-            {
-                UpdateSelectAllCheckBoxState();
-                _logger?.LogDebug("SelectedItems changed, count: {Count}", SelectedItems?.Count ?? 0);
-            }
-            else if (e.Property == IsColumnManagementVisibleProperty)
-            {
-                UpdateColumnManagementVisibility();
-                _logger?.LogDebug("Column management visibility changed: {IsVisible}", IsColumnManagementVisible);
-            }
-            else if (e.Property == IsFilterPanelVisibleProperty)
-            {
-                UpdateFilterPanelVisibility();
-                ApplyFilters(); // Apply filters when panel visibility changes
-                _logger?.LogDebug("Filter panel visibility changed: {IsVisible}", IsFilterPanelVisible);
-            }
-            else if (e.Property == FilterConfigurationProperty)
-            {
-                ApplyFilters();
-                _logger?.LogDebug("Filter configuration changed, applying filters");
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling property change for {PropertyName}", e.Property.Name);
-        }
-    }
+            // Use null logger for now - can be injected later if needed
+            _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<CustomDataGrid>.Instance;
 
-    private void OnColumnsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        try
-        {
-            RefreshVisibleColumns();
+            InitializeComponent();
             
-            // Subscribe to property changes on new columns
-            if (e.NewItems != null)
+            // Subscribe to ListBox selection changes
+            if (DataListBox != null)
             {
-                foreach (CustomDataGridColumn column in e.NewItems)
+                DataListBox.SelectionChanged += OnDataListBoxSelectionChanged;
+            }
+            
+            // Initialize button states
+            UpdateActionButtonStates();
+            
+            _logger.LogDebug("CustomDataGrid initialized");
+        }
+
+        #endregion
+
+        #region Property Change Handlers
+
+        /// <summary>
+        /// Handles property changes
+        /// </summary>
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+        {
+            base.OnPropertyChanged(change);
+
+            if (change.Property == ItemsSourceProperty)
+            {
+                HandleItemsSourceChanged(change.OldValue as IEnumerable, change.NewValue as IEnumerable);
+            }
+            else if (change.Property == IsMultiSelectEnabledProperty)
+            {
+                HandleMultiSelectEnabledChanged((bool)change.NewValue!);
+            }
+        }
+
+        /// <summary>
+        /// Handles changes to the ItemsSource property
+        /// </summary>
+        private void HandleItemsSourceChanged(IEnumerable? oldValue, IEnumerable? newValue)
+        {
+            _logger.LogDebug("ItemsSource changed from {OldType} to {NewType}", 
+                oldValue?.GetType().Name ?? "null", 
+                newValue?.GetType().Name ?? "null");
+
+            // Unsubscribe from old collection change notifications
+            if (oldValue is INotifyCollectionChanged oldCollection)
+            {
+                oldCollection.CollectionChanged -= OnItemsCollectionChanged;
+            }
+
+            // Subscribe to new collection change notifications
+            if (newValue is INotifyCollectionChanged newCollection)
+            {
+                newCollection.CollectionChanged += OnItemsCollectionChanged;
+            }
+
+            // Update UI state
+            UpdateSelectAllState();
+            UpdateActionButtonStates();
+            UpdateSelectionInfoText();
+
+            // Log item count for debugging
+            if (newValue != null)
+            {
+                var count = newValue.Cast<object>().Count();
+                _logger.LogInformation("Loaded {ItemCount} items into CustomDataGrid", count);
+            }
+        }
+
+        /// <summary>
+        /// Handles changes to the IsMultiSelectEnabled property
+        /// </summary>
+        private void HandleMultiSelectEnabledChanged(bool isEnabled)
+        {
+            _logger.LogDebug("Multi-select enabled changed to: {IsEnabled}", isEnabled);
+            
+            if (DataListBox != null)
+            {
+                DataListBox.SelectionMode = isEnabled ? SelectionMode.Multiple : SelectionMode.Single;
+            }
+
+            // Update select all checkbox visibility
+            if (SelectAllCheckBox != null)
+            {
+                SelectAllCheckBox.IsVisible = isEnabled;
+            }
+        }
+
+        /// <summary>
+        /// Handles collection change notifications from the items source
+        /// </summary>
+        private void OnItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            _logger.LogTrace("Items collection changed: {Action}", e.Action);
+            
+            // Update select all state when collection changes
+            UpdateSelectAllState();
+
+            // Notify parent of collection change
+            var itemCount = ItemsSource?.Cast<object>().Count() ?? 0;
+            _logger.LogDebug("Collection changed, new item count: {ItemCount}", itemCount);
+        }
+
+        #endregion
+
+        #region Selection Management
+
+        /// <summary>
+        /// Handles ListBox selection changes for action button state management
+        /// </summary>
+        private void OnDataListBoxSelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
+        {
+            _logger.LogDebug("DataListBox selection changed: {SelectedCount} items selected", 
+                DataListBox?.SelectedItems?.Count ?? 0);
+
+            // Update action button states based on selection
+            UpdateActionButtonStates();
+            
+            // Update selection info text
+            UpdateSelectionInfoText();
+
+            // Update SelectedItem property
+            SelectedItem = DataListBox?.SelectedItem;
+
+            // Raise selection changed event
+            var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
+            SelectionChanged?.Invoke(this, new SelectionChangedEventArgs 
+            { 
+                SelectedItems = selectedItems,
+                SelectionMode = "ListBoxSelection"
+            });
+        }
+
+        /// <summary>
+        /// Updates the state of action buttons based on current selection
+        /// </summary>
+        private void UpdateActionButtonStates()
+        {
+            var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
+            var selectedCount = selectedItems.Count;
+            var hasSelection = selectedCount > 0;
+            var singleSelection = selectedCount == 1;
+
+            _logger.LogTrace("Updating action button states: {SelectedCount} items selected", selectedCount);
+
+            // Enable/disable buttons based on selection
+            if (EditButton != null)
+                EditButton.IsEnabled = singleSelection; // Edit only works on single selection
+
+            if (ViewDetailsButton != null)
+                ViewDetailsButton.IsEnabled = singleSelection; // View details only works on single selection
+
+            if (DeleteButton != null)
+                DeleteButton.IsEnabled = hasSelection; // Delete works on any selection
+
+            // ReadNote button - only enabled if single selection and item has notes
+            if (ReadNoteButton != null)
+            {
+                var canReadNote = false;
+                if (singleSelection)
                 {
-                    column.PropertyChanged += OnColumnPropertyChanged;
+                    var selectedItem = selectedItems.First();
+                    var hasNotesProperty = selectedItem.GetType().GetProperty("HasNotes");
+                    if (hasNotesProperty != null)
+                    {
+                        canReadNote = hasNotesProperty.GetValue(selectedItem) as bool? == true;
+                    }
+                }
+                ReadNoteButton.IsEnabled = canReadNote;
+            }
+
+            // Update command parameters with selected items
+            UpdateCommandParameters();
+        }
+
+        /// <summary>
+        /// Updates the command parameters to use selected items from ListBox
+        /// </summary>
+        private void UpdateCommandParameters()
+        {
+            var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
+            var selectedItem = selectedItems.FirstOrDefault();
+
+            _logger.LogTrace("Updating command parameters for {SelectedCount} selected items", selectedItems.Count);
+
+            // Update action button command parameters to use selected item(s)
+            if (ReadNoteButton != null && ReadNoteCommand != null && selectedItem != null)
+            {
+                ReadNoteButton.CommandParameter = selectedItem;
+            }
+
+            if (EditButton != null && EditItemCommand != null && selectedItem != null)
+            {
+                EditButton.CommandParameter = selectedItem;
+            }
+
+            if (ViewDetailsButton != null && ViewDetailsCommand != null && selectedItem != null)
+            {
+                ViewDetailsButton.CommandParameter = selectedItem;
+            }
+
+            if (DeleteButton != null && DeleteItemCommand != null)
+            {
+                // For delete, always pass the single selected item (not a collection)
+                // The DeleteSingleItemCommand expects a single InventoryItem, not a collection
+                DeleteButton.CommandParameter = selectedItem;
+            }
+        }
+
+        /// <summary>
+        /// Updates the selection info text display
+        /// </summary>
+        private void UpdateSelectionInfoText()
+        {
+            if (SelectionInfoText == null)
+                return;
+
+            var selectedCount = DataListBox?.SelectedItems?.Count ?? 0;
+            var totalCount = ItemsSource?.Cast<object>().Count() ?? 0;
+
+            SelectionInfoText.Text = selectedCount switch
+            {
+                0 => "No items selected",
+                1 => "1 item selected",
+                _ => $"{selectedCount} items selected"
+            };
+
+            if (totalCount > 0)
+            {
+                SelectionInfoText.Text += $" of {totalCount}";
+            }
+
+            _logger.LogTrace("Selection info updated: {SelectionText}", SelectionInfoText.Text);
+        }
+
+        /// <summary>
+        /// Handles the Select All checkbox click
+        /// </summary>
+        private void OnSelectAllClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is not CheckBox selectAllCheckBox || ItemsSource == null)
+                return;
+
+            bool selectAll = selectAllCheckBox.IsChecked == true;
+            var selectedItems = new List<object>();
+
+            _logger.LogDebug("Select All clicked: {SelectAll}", selectAll);
+
+            // Update selection state for all items that support it
+            foreach (var item in ItemsSource)
+            {
+                if (item is INotifyPropertyChanged selectable)
+                {
+                    // Try to set IsSelected property via reflection for dynamic data
+                    var isSelectedProperty = item.GetType().GetProperty("IsSelected");
+                    if (isSelectedProperty != null && isSelectedProperty.CanWrite)
+                    {
+                        isSelectedProperty.SetValue(item, selectAll);
+                        
+                        if (selectAll)
+                        {
+                            selectedItems.Add(item);
+                        }
+                    }
                 }
             }
 
-            // Unsubscribe from old columns
-            if (e.OldItems != null)
+            // Notify parent of selection change
+            var eventArgs = new SelectionChangedEventArgs
             {
-                foreach (CustomDataGridColumn column in e.OldItems)
+                SelectedItems = selectedItems,
+                SelectionMode = selectAll ? "SelectAll" : "DeselectAll"
+            };
+
+            SelectionChanged?.Invoke(this, eventArgs);
+            
+            _logger.LogInformation("Selection changed: {SelectedCount} items {Action}", 
+                selectedItems.Count, selectAll ? "selected" : "deselected");
+        }
+
+        /// <summary>
+        /// Updates the state of the Select All checkbox based on current selection
+        /// </summary>
+        private void UpdateSelectAllState()
+        {
+            if (SelectAllCheckBox == null || ItemsSource == null)
+                return;
+
+            var items = ItemsSource.Cast<object>().ToList();
+            if (items.Count == 0)
+            {
+                SelectAllCheckBox.IsChecked = false;
+                return;
+            }
+
+            // Count selected items
+            int selectedCount = 0;
+            foreach (var item in items)
+            {
+                var isSelectedProperty = item.GetType().GetProperty("IsSelected");
+                if (isSelectedProperty != null)
                 {
-                    column.PropertyChanged -= OnColumnPropertyChanged;
+                    var isSelected = isSelectedProperty.GetValue(item) as bool?;
+                    if (isSelected == true)
+                    {
+                        selectedCount++;
+                    }
                 }
             }
 
-            _logger?.LogDebug("Columns collection changed, visible columns updated");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling columns collection change");
-        }
-    }
-
-    private void OnColumnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        try
-        {
-            if (e.PropertyName == nameof(CustomDataGridColumn.IsVisible))
-            {
-                RefreshVisibleColumns();
-                _logger?.LogDebug("Column visibility changed, refreshed visible columns");
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling column property change");
-        }
-    }
-
-    /// <summary>
-    /// Handles the Select All checkbox click event.
-    /// </summary>
-    public void OnSelectAllClick(object? sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (!IsMultiSelectEnabled || _selectAllCheckBox == null || SelectedItems == null)
-                return;
-
-            if (_selectAllCheckBox.IsChecked == true)
-            {
-                SelectAllItems();
-            }
-            else
-            {
-                ClearSelection();
-            }
-
-            _logger?.LogDebug("Select All clicked, new selection count: {Count}", SelectedItems.Count);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling Select All click");
-        }
-    }
-
-    /// <summary>
-    /// Handles the toggle column management button click event.
-    /// Phase 3 feature for showing/hiding the column management panel.
-    /// </summary>
-    public void OnToggleColumnManagement(object? sender, RoutedEventArgs e)
-    {
-        try
-        {
-            IsColumnManagementVisible = !IsColumnManagementVisible;
-            _logger?.LogDebug("Column management toggled: {IsVisible}", IsColumnManagementVisible);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error toggling column management");
-        }
-    }
-
-    /// <summary>
-    /// Handles ListBox selection changed to update the SelectedItem property.
-    /// </summary>
-    private void OnListBoxSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        try
-        {
-            if (_dataListBox == null)
-                return;
-
-            // Update the SelectedItem property when ListBox selection changes
-            SelectedItem = _dataListBox.SelectedItem;
-
-            _logger?.LogDebug("ListBox selection changed: {Item}", SelectedItem?.ToString() ?? "null");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling ListBox selection change");
-        }
-    }
-
-    #endregion
-
-    #region Phase 3 - Column Management Event Handlers
-
-    /// <summary>
-    /// Handles the close request from the column management panel.
-    /// </summary>
-    private void OnColumnManagementCloseRequested(object? sender, EventArgs e)
-    {
-        IsColumnManagementVisible = false;
-    }
-
-    /// <summary>
-    /// Handles columns modified event from the management panel.
-    /// </summary>
-    private void OnColumnManagementColumnsModified(object? sender, EventArgs e)
-    {
-        try
-        {
-            RefreshGrid();
-            _logger?.LogDebug("Grid refreshed due to column modifications");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling column modifications");
-        }
-    }
-
-    /// <summary>
-    /// Handles configuration save requests from the management panel.
-    /// </summary>
-    private void OnColumnManagementConfigurationSaveRequested(object? sender, ColumnConfiguration configuration)
-    {
-        try
-        {
-            // In a real implementation, this would use a service to save the configuration
-            _logger?.LogInformation("Configuration save requested: {ConfigName}", configuration.DisplayName);
-            
-            // For now, just add it to the panel's saved configurations if it doesn't exist
-            if (_columnManagementPanel?.SavedConfigurations != null)
-            {
-                var existing = _columnManagementPanel.SavedConfigurations
-                    .FirstOrDefault(c => c.ConfigurationId == configuration.ConfigurationId);
-                    
-                if (existing == null)
-                {
-                    _columnManagementPanel.SavedConfigurations.Add(configuration);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling configuration save request");
-        }
-    }
-
-    /// <summary>
-    /// Handles configuration load requests from the management panel.
-    /// </summary>
-    private void OnColumnManagementConfigurationLoadRequested(object? sender, ColumnConfiguration configuration)
-    {
-        try
-        {
-            _logger?.LogInformation("Configuration load requested: {ConfigName}", configuration.DisplayName);
-            
-            // Apply the configuration to the current columns
-            _columnManagementPanel?.ApplyConfiguration(configuration);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling configuration load request");
-        }
-    }
-
-    /// <summary>
-    /// Handles filter changes from the filter panel.
-    /// </summary>
-    private void OnFiltersChanged(object? sender, ViewModels.FilterChangedEventArgs e)
-    {
-        try
-        {
-            _logger?.LogDebug("Filters changed: {HasFilters}", e.HasActiveFilters);
-            
-            // Update the filter configuration
-            if (FilterConfiguration != null)
-            {
-                FilterConfiguration.GlobalSearchText = e.GlobalSearchText;
-                FilterConfiguration.IsGlobalSearchCaseSensitive = e.IsGlobalSearchCaseSensitive;
-                FilterConfiguration.IsActive = e.HasActiveFilters;
-                FilterConfiguration.UpdateLastModified();
-            }
-            
-            // Apply the filters
-            ApplyFilters();
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling filter changes");
-        }
-    }
-
-    /// <summary>
-    /// Handles close requests from the filter panel.
-    /// </summary>
-    private void OnFilterPanelCloseRequested(object? sender, EventArgs e)
-    {
-        try
-        {
-            _logger?.LogDebug("Filter panel close requested");
-            IsFilterPanelVisible = false;
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling filter panel close request");
-        }
-    }
-
-    #endregion
-
-    #region Public Methods
-
-    /// <summary>
-    /// Refreshes the grid layout and data display.
-    /// Call this method after making programmatic changes to data or columns.
-    /// </summary>
-    public void RefreshGrid()
-    {
-        try
-        {
-            RefreshVisibleColumns();
-            InvalidateVisual();
-            _logger?.LogDebug("Grid refreshed successfully");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error refreshing grid");
-        }
-    }
-
-    /// <summary>
-    /// Scrolls to make the specified item visible.
-    /// </summary>
-    /// <param name="item">The item to scroll to</param>
-    public void ScrollToItem(object item)
-    {
-        try
-        {
-            // Implementation for scrolling to specific item using ListBox
-            _dataListBox?.ScrollIntoView(item);
-            _logger?.LogDebug("Scroll to item requested");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error scrolling to item");
-        }
-    }
-
-    /// <summary>
-    /// Selects all items in the grid.
-    /// Only works when IsMultiSelectEnabled is true.
-    /// </summary>
-    public void SelectAllItems()
-    {
-        try
-        {
-            if (!IsMultiSelectEnabled || SelectedItems == null || ItemsSource == null)
-                return;
-
-            SelectedItems.Clear();
-            foreach (var item in ItemsSource.Cast<object>())
-            {
-                SelectedItems.Add(item);
-            }
-
-            UpdateSelectAllCheckBoxState();
-            _logger?.LogDebug("All items selected, count: {Count}", SelectedItems.Count);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error selecting all items");
-        }
-    }
-
-    /// <summary>
-    /// Clears the current selection.
-    /// </summary>
-    public void ClearSelection()
-    {
-        try
-        {
-            SelectedItem = null;
-            SelectedItems?.Clear();
-            UpdateSelectAllCheckBoxState();
-            _logger?.LogDebug("Selection cleared");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error clearing selection");
-        }
-    }
-
-    /// <summary>
-    /// Gets the number of selected items.
-    /// </summary>
-    public int GetSelectedCount()
-    {
-        return IsMultiSelectEnabled ? (SelectedItems?.Count ?? 0) : (SelectedItem != null ? 1 : 0);
-    }
-
-    #endregion
-
-    #region Private Methods
-
-    private void RefreshVisibleColumns()
-    {
-        try
-        {
-            VisibleColumns.Clear();
-            
-            foreach (var column in Columns.Where(c => c.IsVisible))
-            {
-                VisibleColumns.Add(column);
-            }
-
-            _logger?.LogDebug("Visible columns refreshed, count: {Count}", VisibleColumns.Count);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error refreshing visible columns");
-        }
-    }
-
-    /// <summary>
-    /// Updates the ListBox selection mode based on IsMultiSelectEnabled property.
-    /// </summary>
-    private void UpdateSelectionMode()
-    {
-        try
-        {
-            if (_dataListBox != null)
-            {
-                _dataListBox.SelectionMode = IsMultiSelectEnabled 
-                    ? Avalonia.Controls.SelectionMode.Multiple 
-                    : Avalonia.Controls.SelectionMode.Single;
-                
-                _logger?.LogDebug("Selection mode updated to: {Mode}", _dataListBox.SelectionMode);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error updating selection mode");
-        }
-    }
-
-    /// <summary>
-    /// Updates the visibility of the column management panel.
-    /// Phase 3 feature for toggling the management UI.
-    /// </summary>
-    private void UpdateColumnManagementVisibility()
-    {
-        try
-        {
-            if (_columnManagementContainer != null)
-            {
-                _columnManagementContainer.IsVisible = IsColumnManagementVisible;
-                
-                // Update the columns binding in the management panel
-                if (_columnManagementPanel != null && IsColumnManagementVisible)
-                {
-                    _columnManagementPanel.Columns = Columns;
-                }
-                
-                _logger?.LogDebug("Column management visibility updated: {IsVisible}", IsColumnManagementVisible);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error updating column management visibility");
-        }
-    }
-
-    /// <summary>
-    /// Updates the visibility of the filter panel.
-    /// Phase 5 feature for toggling the filtering UI.
-    /// </summary>
-    private void UpdateFilterPanelVisibility()
-    {
-        try
-        {
-            if (_filterPanelContainer != null)
-            {
-                _filterPanelContainer.IsVisible = IsFilterPanelVisible;
-                
-                // Initialize or update filter panel when shown
-                if (_filterPanel != null && _filterPanelViewModel != null && IsFilterPanelVisible)
-                {
-                    _filterPanelViewModel.InitializeFromColumns(Columns);
-                }
-                
-                _logger?.LogDebug("Filter panel visibility updated: {IsVisible}", IsFilterPanelVisible);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error updating filter panel visibility");
-        }
-    }
-
-    /// <summary>
-    /// Applies the current filter configuration to the data source.
-    /// Phase 5 feature for filtering data based on search criteria and column filters.
-    /// </summary>
-    private void ApplyFilters()
-    {
-        try
-        {
-            if (!IsFilteringEnabled || ItemsSource == null)
-            {
-                FilteredItemsSource = ItemsSource;
-                return;
-            }
-
-            var sourceItems = ItemsSource.Cast<object>().ToList();
-            
-            // If no filters are active, show all items
-            if (FilterConfiguration == null || !HasActiveFilters())
-            {
-                FilteredItemsSource = sourceItems;
-                UpdateFilterStatistics(sourceItems.Count, sourceItems.Count);
-                return;
-            }
-
-            // Apply filters
-            var filteredItems = sourceItems.Where(item => FilterConfiguration.MatchesFilters(item)).ToList();
-            
-            FilteredItemsSource = filteredItems;
-            UpdateFilterStatistics(sourceItems.Count, filteredItems.Count);
-            
-            _logger?.LogDebug("Applied filters: {FilteredCount}/{TotalCount} items visible", 
-                filteredItems.Count, sourceItems.Count);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error applying filters");
-            // On error, show all items
-            FilteredItemsSource = ItemsSource;
-        }
-    }
-
-    /// <summary>
-    /// Checks if there are any active filters.
-    /// </summary>
-    private bool HasActiveFilters()
-    {
-        return FilterConfiguration?.HasActiveFilters == true;
-    }
-
-    /// <summary>
-    /// Updates filter statistics in the filter panel.
-    /// </summary>
-    private void UpdateFilterStatistics(int totalCount, int filteredCount)
-    {
-        try
-        {
-            if (_filterPanelViewModel != null)
-            {
-                _filterPanelViewModel.UpdateFilterStatistics(totalCount, filteredCount);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error updating filter statistics");
-        }
-    }
-
-    /// <summary>
-    /// Synchronizes the SelectedItem property with the internal ListBox selection.
-    /// </summary>
-    private void SynchronizeSelectedItemWithListBox()
-    {
-        try
-        {
-            if (_dataListBox == null)
-                return;
-
-            // Set the ListBox's selected item to match the property
-            _dataListBox.SelectedItem = SelectedItem;
-
-            _logger?.LogDebug("Synchronized SelectedItem with ListBox: {Item}", SelectedItem?.ToString() ?? "null");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error synchronizing SelectedItem with ListBox");
-        }
-    }
-
-    /// <summary>
-    /// Updates the state of the Select All checkbox based on current selection.
-    /// </summary>
-    private void UpdateSelectAllCheckBoxState()
-    {
-        try
-        {
-            if (_selectAllCheckBox == null || !IsMultiSelectEnabled || ItemsSource == null)
-                return;
-
-            var totalItems = ItemsSource.Cast<object>().Count();
-            var selectedCount = SelectedItems?.Count ?? 0;
-
+            // Update checkbox state
             if (selectedCount == 0)
             {
-                _selectAllCheckBox.IsChecked = false;
+                SelectAllCheckBox.IsChecked = false;
             }
-            else if (selectedCount == totalItems)
+            else if (selectedCount == items.Count)
             {
-                _selectAllCheckBox.IsChecked = true;
+                SelectAllCheckBox.IsChecked = true;
             }
             else
             {
-                _selectAllCheckBox.IsChecked = null; // Indeterminate state
+                SelectAllCheckBox.IsChecked = null; // Indeterminate state
             }
 
-            _logger?.LogDebug("Select All checkbox state updated: {State}", _selectAllCheckBox.IsChecked);
+            _logger.LogTrace("Updated Select All state: {SelectedCount}/{TotalCount}", selectedCount, items.Count);
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Gets the currently selected items
+        /// </summary>
+        public List<object> GetSelectedItems()
         {
-            _logger?.LogError(ex, "Error updating Select All checkbox state");
-        }
-    }
+            var selectedItems = new List<object>();
 
-    #endregion
-
-    #region Cleanup
-
-    /// <summary>
-    /// Clean up resources when the control is detached from visual tree.
-    /// Following MTM pattern for proper resource disposal.
-    /// </summary>
-    protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
-    {
-        try
-        {
-            // Unsubscribe from events to prevent memory leaks
-            PropertyChanged -= OnPropertyChanged;
-            Columns.CollectionChanged -= OnColumnsCollectionChanged;
-            
-            if (_dataListBox != null)
+            if (ItemsSource != null)
             {
-                _dataListBox.SelectionChanged -= OnListBoxSelectionChanged;
+                foreach (var item in ItemsSource)
+                {
+                    var isSelectedProperty = item.GetType().GetProperty("IsSelected");
+                    if (isSelectedProperty != null)
+                    {
+                        var isSelected = isSelectedProperty.GetValue(item) as bool?;
+                        if (isSelected == true)
+                        {
+                            selectedItems.Add(item);
+                        }
+                    }
+                }
             }
+
+            return selectedItems;
+        }
+
+        /// <summary>
+        /// Gets the count of selected items
+        /// </summary>
+        public int GetSelectedItemCount()
+        {
+            return GetSelectedItems().Count;
+        }
+
+        #endregion
+
+        #region Event Handlers (Future Features)
+
+        /// <summary>
+        /// Handles the column management toggle (Phase 3 - Currently disabled)
+        /// </summary>
+        private void OnToggleColumnManagement(object sender, RoutedEventArgs e)
+        {
+            _logger.LogDebug("Column management toggle clicked (Phase 3 - Not implemented)");
             
-            foreach (var column in Columns)
+            // Phase 3 implementation:
+            // - Toggle ColumnManagementContainer visibility
+            // - Animate panel slide in/out
+            // - Load column management UI
+        }
+
+        #endregion
+
+        #region Validation and Error Handling
+
+        /// <summary>
+        /// Validates that a command parameter is of the expected type
+        /// </summary>
+        private static bool ValidateCommandParameter<T>(object? parameter, out T? validParameter) where T : class
+        {
+            validParameter = parameter as T;
+            return validParameter != null;
+        }
+
+        /// <summary>
+        /// Logs command execution for debugging
+        /// </summary>
+        private void LogCommandExecution(string commandName, object? parameter)
+        {
+            var parameterType = parameter?.GetType().Name ?? "null";
+            _logger.LogDebug("Command executed: {CommandName} with parameter type: {ParameterType}", 
+                commandName, parameterType);
+        }
+
+        #endregion
+
+        #region Cleanup
+
+        /// <summary>
+        /// Performs cleanup when the control is detached from the visual tree
+        /// </summary>
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            _logger.LogDebug("CustomDataGrid detached from visual tree, performing cleanup");
+
+            // Unsubscribe from collection change notifications
+            if (ItemsSource is INotifyCollectionChanged collection)
             {
-                column.PropertyChanged -= OnColumnPropertyChanged;
+                collection.CollectionChanged -= OnItemsCollectionChanged;
             }
-            
-            _logger?.LogDebug("CustomDataGrid cleanup completed");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error during CustomDataGrid cleanup");
-        }
-        finally
-        {
+
             base.OnDetachedFromVisualTree(e);
         }
+
+        #endregion
+    }
+
+    #region Event Arguments
+
+    /// <summary>
+    /// Event arguments for selection changed events
+    /// </summary>
+    public class SelectionChangedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Gets or sets the list of selected items
+        /// </summary>
+        public List<object> SelectedItems { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets the selection mode (SelectAll, DeselectAll, etc.)
+        /// </summary>
+        public string SelectionMode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets the count of selected items
+        /// </summary>
+        public int SelectedCount => SelectedItems.Count;
+
+        /// <summary>
+        /// Gets or sets the timestamp of the selection change
+        /// </summary>
+        public DateTime Timestamp { get; set; } = DateTime.Now;
     }
 
     #endregion

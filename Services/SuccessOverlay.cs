@@ -25,13 +25,15 @@ public interface ISuccessOverlayService
     /// <param name="iconKind">Material icon to display</param>
     /// <param name="duration">Display duration in milliseconds</param>
     /// <param name="onDismissed">Callback when overlay is dismissed</param>
+    /// <param name="isError">True if this is an error overlay, false for success</param>
     Task ShowSuccessOverlayAsync(
         Control targetControl,
         string message,
         string? details = null,
         string iconKind = "CheckCircle",
         int duration = 2000,
-        Action? onDismissed = null);
+        Action? onDismissed = null,
+        bool isError = false);
 
     /// <summary>
     /// Shows success overlay using MainView integration (preferred method)
@@ -41,12 +43,14 @@ public interface ISuccessOverlayService
     /// <param name="details">Optional details about the success</param>
     /// <param name="iconKind">Material icon kind to display</param>
     /// <param name="duration">Display duration in milliseconds</param>
+    /// <param name="isError">True if this is an error overlay, false for success</param>
     Task ShowSuccessOverlayInMainViewAsync(
         Control? sourceControl,
         string message,
         string? details = null,
         string iconKind = "CheckCircle",
-        int duration = 3000);
+        int duration = 3000,
+        bool isError = false);
 }
 
 /// <summary>
@@ -76,13 +80,15 @@ public class SuccessOverlayService : ISuccessOverlayService
     /// <param name="iconKind">Material icon kind to display</param>
     /// <param name="duration">Display duration in milliseconds</param>
     /// <param name="onDismissed">Callback when overlay is dismissed</param>
+    /// <param name="isError">True if this is an error overlay, false for success</param>
     public async Task ShowSuccessOverlayAsync(
         Control targetControl,
         string message,
         string? details = null,
         string iconKind = "CheckCircle",
         int duration = 2000,
-        Action? onDismissed = null)
+        Action? onDismissed = null,
+        bool isError = false)
     {
         try
         {
@@ -100,7 +106,7 @@ public class SuccessOverlayService : ISuccessOverlayService
 
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                await ShowOverlayInternalAsync(targetControl, message, details, iconKind, duration, onDismissed);
+                await ShowOverlayInternalAsync(targetControl, message, details, iconKind, duration, onDismissed, isError);
             });
         }
         catch (Exception ex)
@@ -118,12 +124,14 @@ public class SuccessOverlayService : ISuccessOverlayService
     /// <param name="details">Optional details about the success</param>
     /// <param name="iconKind">Material icon kind to display</param>
     /// <param name="duration">Display duration in milliseconds</param>
+    /// <param name="isError">True if this is an error overlay, false for success</param>
     public async Task ShowSuccessOverlayInMainViewAsync(
         Control? sourceControl,
         string message,
         string? details = null,
         string iconKind = "CheckCircle",
-        int duration = 3000)
+        int duration = 3000,
+        bool isError = false)
     {
         try
         {
@@ -206,7 +214,7 @@ public class SuccessOverlayService : ISuccessOverlayService
                 _logger.LogInformation("Success overlay displayed in MainView: {Message}", message);
 
                 // Start success animation - overlay will auto-dismiss and handle focus independently
-                await viewModel.ShowSuccessAsync(message, details, iconKind, duration);
+                await viewModel.ShowSuccessAsync(message, details, iconKind, duration, isError);
                 _logger.LogDebug("Success overlay animation started - continuing independently");
             });
         }
@@ -225,7 +233,8 @@ public class SuccessOverlayService : ISuccessOverlayService
         string? details,
         string iconKind,
         int duration,
-        Action? onDismissed)
+        Action? onDismissed,
+        bool isError = false)
     {
         try
         {
@@ -267,7 +276,7 @@ public class SuccessOverlayService : ISuccessOverlayService
             AddOverlayToContainer(overlayContainer, overlayView);
 
             // Start the success animation
-            await viewModel.ShowSuccessAsync(message, details, iconKind, duration);
+            await viewModel.ShowSuccessAsync(message, details, iconKind, duration, isError);
 
             _logger.LogDebug("Success overlay setup completed");
         }

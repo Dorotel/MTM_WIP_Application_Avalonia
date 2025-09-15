@@ -38,6 +38,12 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
         [ObservableProperty]
         private string location = string.Empty;
         
+        [ObservableProperty]
+        private string batchNumber = string.Empty;
+        
+        [ObservableProperty]
+        private string currentUser = string.Empty;
+        
         private int _inventoryId;
 
         public event EventHandler<NoteEditorResult>? NoteEditCompleted;
@@ -60,6 +66,8 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
             Operation = item.Operation ?? string.Empty;
             Location = item.Location;
             NoteText = item.Notes ?? string.Empty;
+            BatchNumber = item.BatchNumber ?? string.Empty;
+            CurrentUser = item.User ?? "SYSTEM"; 
             IsReadOnly = readOnly;
         }
 
@@ -76,10 +84,32 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
             Operation = operation ?? string.Empty;
             Location = location ?? string.Empty;
             NoteText = noteText ?? string.Empty;
+            BatchNumber = string.Empty; // This needs to be passed as parameter in future
+            CurrentUser = "SYSTEM"; // This should be injected from user context service
             IsReadOnly = isReadOnly;
             
             _logger.LogInformation("🔧 NoteEditor InitializeAsync completed - Properties set: PartId='{PartId}', Operation='{Operation}', Location='{Location}', NoteText='{NoteText}'", 
                 PartId, Operation, Location, NoteText);
+            
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Async initialization with complete parameters including batch number and user.
+        /// </summary>
+        public Task InitializeAsync(int inventoryId, string partId, string operation, string location, string noteText, string batchNumber, string user, bool isReadOnly = false)
+        {
+            _logger.LogInformation("🔧 NoteEditor InitializeAsync (full) called - InventoryId: {InventoryId}, PartId: '{PartId}', BatchNumber: '{BatchNumber}', User: '{User}'", 
+                inventoryId, partId, batchNumber, user);
+            
+            _inventoryId = inventoryId;
+            PartId = partId ?? string.Empty;
+            Operation = operation ?? string.Empty;
+            Location = location ?? string.Empty;
+            NoteText = noteText ?? string.Empty;
+            BatchNumber = batchNumber ?? string.Empty;
+            CurrentUser = user ?? "SYSTEM";
+            IsReadOnly = isReadOnly;
             
             return Task.CompletedTask;
         }
@@ -148,22 +178,32 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
         {
             try
             {
+                // Critical fix: Use correct parameter names that match the stored procedure
                 var parameters = new Dictionary<string, object>
                 {
-                    ["p_InventoryId"] = inventoryId,
-                    ["p_Notes"] = noteText ?? string.Empty
+                    ["p_ID"] = inventoryId,                    // Matches stored procedure parameter
+                    ["p_PartID"] = PartId,                     // Required parameter
+                    ["p_BatchNumber"] = BatchNumber,           // Required parameter  
+                    ["p_Notes"] = noteText ?? string.Empty,   // The notes to update
+                    ["p_User"] = CurrentUser                   // Required parameter
                 };
+
+                _logger.LogInformation("🔧 Calling stored procedure with parameters: ID={ID}, PartID='{PartID}', BatchNumber='{BatchNumber}', User='{User}'", 
+                    inventoryId, PartId, BatchNumber, CurrentUser);
 
                 var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
                     _databaseService.GetConnectionString(),
-                    "inv_inventory_Update_Note",
+                    "inv_inventory_Update_Notes",
                     parameters
                 );
+
+                _logger.LogInformation("🔧 Stored procedure result: Status={Status}, Message='{Message}'", 
+                    result.Status, result.Message);
 
                 // MTM Status Pattern: 1 = Success, 0 = No change, -1 = Error
                 if (result.Status >= 0)
                 {
-                    return (true, "Note updated successfully");
+                    return (true, result.Message ?? "Note updated successfully");
                 }
                 else
                 {

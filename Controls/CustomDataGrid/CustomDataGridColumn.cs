@@ -1,594 +1,621 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Windows.Input;
+using Avalonia;
 using Avalonia.Data;
-using Avalonia.Data.Converters;
-using Avalonia.Markup.Xaml.Templates;
 
-namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
-
-/// <summary>
-/// Defines a column in the CustomDataGrid control.
-/// Provides configuration for display, binding, and behavior of individual columns
-/// following MTM design patterns and MVVM Community Toolkit integration.
-/// </summary>
-public class CustomDataGridColumn : INotifyPropertyChanged
+namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 {
-    private string _propertyName = string.Empty;
-    private string _displayName = string.Empty;
-    private Type _dataType = typeof(string);
-    private bool _isVisible = true;
-    private double _width = double.NaN; // Auto width by default
-    private bool _canSort = true;
-    private bool _canFilter = true;
-    private bool _canResize = true;
-    private int _displayOrder = 0;
-    private bool _isDragging = false;
-    private bool _isResizing = false;
-    private double _minWidth = 30;
-    private double _maxWidth = double.MaxValue;
-    
-    // Phase 4: Enhanced drag-and-drop and resize state management
-    private Avalonia.Point _dragStartPosition = new(0, 0);
-    private double _dragOffset = 0;
-    private double _resizeStartWidth = 0;
-    private bool _isDragValid = false;
-    private int _originalDisplayOrder = 0;
-    private DataTemplate? _cellTemplate;
-    private IValueConverter? _cellConverter;
-    private string? _stringFormat;
-
     /// <summary>
-    /// Gets or sets the property name to bind to in the data source.
+    /// Represents a column in the CustomDataGrid control
+    /// Provides column definition, data binding, and display configuration
+    /// Follows MTM architecture patterns with proper validation and event handling
     /// </summary>
-    public string PropertyName
+    public class CustomDataGridColumn : INotifyPropertyChanged
     {
-        get => _propertyName;
-        set
+        #region Private Fields
+
+        private string _propertyName = string.Empty;
+        private string _displayName = string.Empty;
+        private Type _dataType = typeof(string);
+        private double _width = double.NaN;
+        private bool _isVisible = true;
+        private bool _canSort = true;
+        private bool _canResize = true;
+        private bool _canFilter = true;
+        private string? _stringFormat;
+        private ColumnAlignment _alignment = ColumnAlignment.Left;
+        private object? _defaultValue;
+        private string? _converterParameter;
+        private ICommand? _cellCommand;
+        private bool _isReadOnly = false;
+        private double _minWidth = 20;
+        private double _maxWidth = double.PositiveInfinity;
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets the property name for data binding
+        /// </summary>
+        public string PropertyName
         {
-            if (_propertyName != value)
-            {
-                _propertyName = value;
-                OnPropertyChanged(nameof(PropertyName));
-            }
+            get => _propertyName;
+            set => SetProperty(ref _propertyName, value ?? string.Empty);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets the display name shown in the column header.
-    /// </summary>
-    public string DisplayName
-    {
-        get => _displayName;
-        set
+        /// <summary>
+        /// Gets or sets the display name shown in the column header
+        /// </summary>
+        public string DisplayName
         {
-            if (_displayName != value)
-            {
-                _displayName = value;
-                OnPropertyChanged(nameof(DisplayName));
-            }
+            get => _displayName;
+            set => SetProperty(ref _displayName, value ?? string.Empty);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets the expected data type for this column.
-    /// Used for formatting, sorting, and filtering logic.
-    /// </summary>
-    public Type DataType
-    {
-        get => _dataType;
-        set
+        /// <summary>
+        /// Gets or sets the data type for this column
+        /// </summary>
+        public Type DataType
         {
-            if (_dataType != value)
-            {
-                _dataType = value;
-                OnPropertyChanged(nameof(DataType));
-            }
+            get => _dataType;
+            set => SetProperty(ref _dataType, value ?? typeof(string));
         }
-    }
 
-    /// <summary>
-    /// Gets or sets whether this column is visible in the grid.
-    /// </summary>
-    public bool IsVisible
-    {
-        get => _isVisible;
-        set
+        /// <summary>
+        /// Gets or sets the column width (NaN for auto-sizing)
+        /// </summary>
+        public double Width
         {
-            if (_isVisible != value)
-            {
-                _isVisible = value;
-                OnPropertyChanged(nameof(IsVisible));
-            }
+            get => _width;
+            set => SetProperty(ref _width, value);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets the width of the column.
-    /// Use double.NaN for auto-sizing, specific values for fixed width.
-    /// </summary>
-    public double Width
-    {
-        get => _width;
-        set
+        /// <summary>
+        /// Gets or sets whether this column is visible
+        /// </summary>
+        public bool IsVisible
         {
-            if (!_width.Equals(value))
-            {
-                _width = value;
-                OnPropertyChanged(nameof(Width));
-            }
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets whether this column can be sorted by clicking the header.
-    /// </summary>
-    public bool CanSort
-    {
-        get => _canSort;
-        set
+        /// <summary>
+        /// Gets or sets whether this column can be sorted
+        /// </summary>
+        public bool CanSort
         {
-            if (_canSort != value)
-            {
-                _canSort = value;
-                OnPropertyChanged(nameof(CanSort));
-            }
+            get => _canSort;
+            set => SetProperty(ref _canSort, value);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets whether this column can have filters applied.
-    /// </summary>
-    public bool CanFilter
-    {
-        get => _canFilter;
-        set
+        /// <summary>
+        /// Gets or sets whether this column can be resized
+        /// </summary>
+        public bool CanResize
         {
-            if (_canFilter != value)
-            {
-                _canFilter = value;
-                OnPropertyChanged(nameof(CanFilter));
-            }
+            get => _canResize;
+            set => SetProperty(ref _canResize, value);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets whether this column can be resized by the user.
-    /// </summary>
-    public bool CanResize
-    {
-        get => _canResize;
-        set
+        /// <summary>
+        /// Gets or sets whether this column can be filtered
+        /// </summary>
+        public bool CanFilter
         {
-            if (_canResize != value)
-            {
-                _canResize = value;
-                OnPropertyChanged(nameof(CanResize));
-            }
+            get => _canFilter;
+            set => SetProperty(ref _canFilter, value);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets the display order of this column in the grid.
-    /// Lower values appear first (left-most). Used for column reordering.
-    /// </summary>
-    public int DisplayOrder
-    {
-        get => _displayOrder;
-        set
+        /// <summary>
+        /// Gets or sets the string format for displaying values
+        /// </summary>
+        public string? StringFormat
         {
-            if (_displayOrder != value)
-            {
-                _displayOrder = value;
-                OnPropertyChanged(nameof(DisplayOrder));
-            }
+            get => _stringFormat;
+            set => SetProperty(ref _stringFormat, value);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets whether this column is currently being dragged.
-    /// Used internally for drag-and-drop reordering UI feedback.
-    /// </summary>
-    public bool IsDragging
-    {
-        get => _isDragging;
-        set
+        /// <summary>
+        /// Gets or sets the column content alignment
+        /// </summary>
+        public ColumnAlignment Alignment
         {
-            if (_isDragging != value)
-            {
-                _isDragging = value;
-                OnPropertyChanged(nameof(IsDragging));
-            }
+            get => _alignment;
+            set => SetProperty(ref _alignment, value);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets whether this column is currently being resized.
-    /// Used internally for resize operation UI feedback.
-    /// </summary>
-    public bool IsResizing
-    {
-        get => _isResizing;
-        set
+        /// <summary>
+        /// Gets or sets the default value for new items in this column
+        /// </summary>
+        public object? DefaultValue
         {
-            if (_isResizing != value)
-            {
-                _isResizing = value;
-                OnPropertyChanged(nameof(IsResizing));
-            }
+            get => _defaultValue;
+            set => SetProperty(ref _defaultValue, value);
         }
-    }
 
-    /// <summary>
-    /// Gets or sets the minimum width for this column in pixels.
-    /// Prevents user from resizing column below this value.
-    /// </summary>
-    public double MinWidth
-    {
-        get => _minWidth;
-        set
+        /// <summary>
+        /// Gets or sets the converter parameter
+        /// </summary>
+        public string? ConverterParameter
         {
-            if (!_minWidth.Equals(value) && value >= 0)
+            get => _converterParameter;
+            set => SetProperty(ref _converterParameter, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the command to execute when a cell is clicked
+        /// </summary>
+        public ICommand? CellCommand
+        {
+            get => _cellCommand;
+            set => SetProperty(ref _cellCommand, value);
+        }
+
+        /// <summary>
+        /// Gets or sets whether this column is read-only
+        /// </summary>
+        public bool IsReadOnly
+        {
+            get => _isReadOnly;
+            set => SetProperty(ref _isReadOnly, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the minimum width for this column
+        /// </summary>
+        public double MinWidth
+        {
+            get => _minWidth;
+            set => SetProperty(ref _minWidth, Math.Max(0, value));
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum width for this column
+        /// </summary>
+        public double MaxWidth
+        {
+            get => _maxWidth;
+            set => SetProperty(ref _maxWidth, Math.Max(0, value));
+        }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of CustomDataGridColumn
+        /// </summary>
+        public CustomDataGridColumn()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance with basic column information
+        /// </summary>
+        /// <param name="propertyName">The property name for data binding</param>
+        /// <param name="displayName">The display name for the column header</param>
+        public CustomDataGridColumn(string propertyName, string displayName)
+        {
+            PropertyName = propertyName;
+            DisplayName = displayName;
+        }
+
+        /// <summary>
+        /// Initializes a new instance with full column configuration
+        /// </summary>
+        /// <param name="propertyName">The property name for data binding</param>
+        /// <param name="displayName">The display name for the column header</param>
+        /// <param name="dataType">The data type for the column</param>
+        /// <param name="width">The column width</param>
+        public CustomDataGridColumn(string propertyName, string displayName, Type dataType, double width)
+        {
+            PropertyName = propertyName;
+            DisplayName = displayName;
+            DataType = dataType;
+            Width = width;
+        }
+
+        #endregion
+
+        #region Factory Methods
+
+        /// <summary>
+        /// Creates a standard MTM column configuration
+        /// </summary>
+        /// <param name="columnType">The type of MTM column to create</param>
+        /// <returns>Configured CustomDataGridColumn instance</returns>
+        public static CustomDataGridColumn CreateMTMColumn(MTMColumnType columnType)
+        {
+            return columnType switch
             {
-                _minWidth = Math.Max(0, value);
-                OnPropertyChanged(nameof(MinWidth));
-                
-                // Ensure current width respects min width
-                if (!double.IsNaN(Width) && Width < _minWidth)
+                MTMColumnType.Selection => new CustomDataGridColumn("IsSelected", "")
                 {
-                    Width = _minWidth;
-                }
-            }
-        }
-    }
+                    DataType = typeof(bool),
+                    Width = 40,
+                    CanSort = false,
+                    CanResize = false,
+                    CanFilter = false,
+                    Alignment = ColumnAlignment.Center,
+                    IsReadOnly = false
+                },
 
-    /// <summary>
-    /// Gets or sets the maximum width for this column in pixels.
-    /// Prevents user from resizing column above this value.
-    /// </summary>
-    public double MaxWidth
-    {
-        get => _maxWidth;
-        set
-        {
-            if (!_maxWidth.Equals(value) && value > 0)
-            {
-                _maxWidth = Math.Max(_minWidth, value);
-                OnPropertyChanged(nameof(MaxWidth));
-                
-                // Ensure current width respects max width
-                if (!double.IsNaN(Width) && Width > _maxWidth)
+                MTMColumnType.PartID => new CustomDataGridColumn("PartId", "Part ID")
                 {
-                    Width = _maxWidth;
+                    DataType = typeof(string),
+                    Width = 150,
+                    Alignment = ColumnAlignment.Left,
+                    CanSort = true,
+                    CanFilter = true
+                },
+
+                MTMColumnType.Operation => new CustomDataGridColumn("Operation", "Operation")
+                {
+                    DataType = typeof(string),
+                    Width = 100,
+                    Alignment = ColumnAlignment.Center,
+                    CanSort = true,
+                    CanFilter = true
+                },
+
+                MTMColumnType.Location => new CustomDataGridColumn("Location", "Location")
+                {
+                    DataType = typeof(string),
+                    Width = 120,
+                    Alignment = ColumnAlignment.Left,
+                    CanSort = true,
+                    CanFilter = true
+                },
+
+                MTMColumnType.Quantity => new CustomDataGridColumn("Quantity", "Quantity")
+                {
+                    DataType = typeof(int),
+                    Width = 100,
+                    Alignment = ColumnAlignment.Right,
+                    StringFormat = "N0",
+                    CanSort = true,
+                    CanFilter = true
+                },
+
+                MTMColumnType.LastUpdated => new CustomDataGridColumn("LastUpdated", "Last Updated")
+                {
+                    DataType = typeof(DateTime),
+                    Width = 180,
+                    Alignment = ColumnAlignment.Center,
+                    StringFormat = "MM/dd/yyyy HH:mm",
+                    CanSort = true,
+                    CanFilter = true,
+                    IsReadOnly = true
+                },
+
+                MTMColumnType.Notes => new CustomDataGridColumn("HasNotes", "Notes")
+                {
+                    DataType = typeof(bool),
+                    Width = 80,
+                    Alignment = ColumnAlignment.Center,
+                    CanSort = false,
+                    CanFilter = false,
+                    IsReadOnly = true
+                },
+
+                MTMColumnType.Actions => new CustomDataGridColumn("", "Actions")
+                {
+                    DataType = typeof(object),
+                    Width = 100,
+                    CanSort = false,
+                    CanResize = false,
+                    CanFilter = false,
+                    Alignment = ColumnAlignment.Center,
+                    IsReadOnly = true
+                },
+
+                MTMColumnType.Management => new CustomDataGridColumn("", "")
+                {
+                    DataType = typeof(object),
+                    Width = 40,
+                    CanSort = false,
+                    CanResize = false,
+                    CanFilter = false,
+                    Alignment = ColumnAlignment.Center,
+                    IsReadOnly = true
+                },
+
+                _ => new CustomDataGridColumn("Unknown", "Unknown")
+                {
+                    DataType = typeof(string),
+                    Width = 100
                 }
-            }
+            };
         }
-    }
 
-    /// <summary>
-    /// Gets or sets a custom data template for rendering cells in this column.
-    /// If null, uses default string representation.
-    /// </summary>
-    public DataTemplate? CellTemplate
-    {
-        get => _cellTemplate;
-        set
+        /// <summary>
+        /// Creates a text column with standard settings
+        /// </summary>
+        /// <param name="propertyName">Property name for binding</param>
+        /// <param name="displayName">Display name for header</param>
+        /// <param name="width">Column width</param>
+        /// <param name="alignment">Text alignment</param>
+        /// <returns>Configured text column</returns>
+        public static CustomDataGridColumn CreateTextColumn(string propertyName, string displayName, 
+            double width = 100, ColumnAlignment alignment = ColumnAlignment.Left)
         {
-            if (_cellTemplate != value)
+            return new CustomDataGridColumn(propertyName, displayName, typeof(string), width)
             {
-                _cellTemplate = value;
-                OnPropertyChanged(nameof(CellTemplate));
-            }
+                Alignment = alignment
+            };
         }
-    }
 
-    /// <summary>
-    /// Gets or sets a value converter for transforming data in this column.
-    /// </summary>
-    public IValueConverter? CellConverter
-    {
-        get => _cellConverter;
-        set
+        /// <summary>
+        /// Creates a numeric column with standard settings
+        /// </summary>
+        /// <param name="propertyName">Property name for binding</param>
+        /// <param name="displayName">Display name for header</param>
+        /// <param name="width">Column width</param>
+        /// <param name="format">Number format string</param>
+        /// <returns>Configured numeric column</returns>
+        public static CustomDataGridColumn CreateNumericColumn(string propertyName, string displayName, 
+            double width = 100, string format = "N0")
         {
-            if (_cellConverter != value)
+            return new CustomDataGridColumn(propertyName, displayName, typeof(decimal), width)
             {
-                _cellConverter = value;
-                OnPropertyChanged(nameof(CellConverter));
-            }
+                Alignment = ColumnAlignment.Right,
+                StringFormat = format
+            };
         }
-    }
 
-    /// <summary>
-    /// Gets or sets the drag start position for drag-and-drop operations.
-    /// Phase 4 feature for visual column reordering.
-    /// </summary>
-    public Avalonia.Point DragStartPosition
-    {
-        get => _dragStartPosition;
-        set
+        /// <summary>
+        /// Creates a date column with standard settings
+        /// </summary>
+        /// <param name="propertyName">Property name for binding</param>
+        /// <param name="displayName">Display name for header</param>
+        /// <param name="width">Column width</param>
+        /// <param name="format">Date format string</param>
+        /// <returns>Configured date column</returns>
+        public static CustomDataGridColumn CreateDateColumn(string propertyName, string displayName, 
+            double width = 120, string format = "MM/dd/yyyy")
         {
-            if (!_dragStartPosition.Equals(value))
+            return new CustomDataGridColumn(propertyName, displayName, typeof(DateTime), width)
             {
-                _dragStartPosition = value;
-                OnPropertyChanged(nameof(DragStartPosition));
-            }
+                Alignment = ColumnAlignment.Center,
+                StringFormat = format
+            };
         }
-    }
 
-    /// <summary>
-    /// Gets or sets the current drag offset for visual feedback.
-    /// Phase 4 feature for drag-and-drop positioning.
-    /// </summary>
-    public double DragOffset
-    {
-        get => _dragOffset;
-        set
+        /// <summary>
+        /// Creates a boolean column with checkbox display
+        /// </summary>
+        /// <param name="propertyName">Property name for binding</param>
+        /// <param name="displayName">Display name for header</param>
+        /// <param name="width">Column width</param>
+        /// <returns>Configured boolean column</returns>
+        public static CustomDataGridColumn CreateBooleanColumn(string propertyName, string displayName, 
+            double width = 80)
         {
-            if (!_dragOffset.Equals(value))
+            return new CustomDataGridColumn(propertyName, displayName, typeof(bool), width)
             {
-                _dragOffset = value;
-                OnPropertyChanged(nameof(DragOffset));
-            }
+                Alignment = ColumnAlignment.Center,
+                CanFilter = false
+            };
         }
-    }
 
-    /// <summary>
-    /// Gets or sets the starting width when a resize operation begins.
-    /// Phase 4 feature for interactive column resizing.
-    /// </summary>
-    public double ResizeStartWidth
-    {
-        get => _resizeStartWidth;
-        set
+        #endregion
+
+        #region Validation Methods
+
+        /// <summary>
+        /// Validates the column configuration
+        /// </summary>
+        /// <returns>True if the column is valid, false otherwise</returns>
+        public bool IsValid()
         {
-            if (!_resizeStartWidth.Equals(value))
+            // Property name is required for data binding columns
+            if (string.IsNullOrWhiteSpace(PropertyName) && CanSort)
+                return false;
+
+            // Display name should be provided (can be empty for special columns)
+            if (DisplayName == null)
+                return false;
+
+            // Width validation
+            if (Width <= 0 && !double.IsNaN(Width))
+                return false;
+
+            // Min/Max width validation
+            if (MinWidth > MaxWidth)
+                return false;
+
+            if (!double.IsNaN(Width) && (Width < MinWidth || Width > MaxWidth))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Gets validation errors for the current configuration
+        /// </summary>
+        /// <returns>Array of validation error messages</returns>
+        public string[] GetValidationErrors()
+        {
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(PropertyName) && CanSort)
+                errors.Add("PropertyName is required for sortable columns");
+
+            if (DisplayName == null)
+                errors.Add("DisplayName cannot be null");
+
+            if (Width <= 0 && !double.IsNaN(Width))
+                errors.Add("Width must be positive or NaN for auto-sizing");
+
+            if (MinWidth > MaxWidth)
+                errors.Add("MinWidth cannot be greater than MaxWidth");
+
+            if (!double.IsNaN(Width) && Width < MinWidth)
+                errors.Add($"Width ({Width}) cannot be less than MinWidth ({MinWidth})");
+
+            if (!double.IsNaN(Width) && Width > MaxWidth)
+                errors.Add($"Width ({Width}) cannot be greater than MaxWidth ({MaxWidth})");
+
+            return errors.ToArray();
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        /// <summary>
+        /// Creates a deep copy of this column
+        /// </summary>
+        /// <returns>New CustomDataGridColumn with copied values</returns>
+        public CustomDataGridColumn Clone()
+        {
+            return new CustomDataGridColumn
             {
-                _resizeStartWidth = value;
-                OnPropertyChanged(nameof(ResizeStartWidth));
-            }
+                PropertyName = PropertyName,
+                DisplayName = DisplayName,
+                DataType = DataType,
+                Width = Width,
+                IsVisible = IsVisible,
+                CanSort = CanSort,
+                CanResize = CanResize,
+                CanFilter = CanFilter,
+                StringFormat = StringFormat,
+                Alignment = Alignment,
+                DefaultValue = DefaultValue,
+                ConverterParameter = ConverterParameter,
+                CellCommand = CellCommand,
+                IsReadOnly = IsReadOnly,
+                MinWidth = MinWidth,
+                MaxWidth = MaxWidth
+            };
         }
-    }
 
-    /// <summary>
-    /// Gets or sets whether the current drag operation is valid.
-    /// Phase 4 feature for drag-and-drop validation.
-    /// </summary>
-    public bool IsDragValid
-    {
-        get => _isDragValid;
-        set
+        /// <summary>
+        /// Gets the effective width for this column
+        /// </summary>
+        /// <param name="availableWidth">Available width for auto-sizing</param>
+        /// <returns>The effective width to use</returns>
+        public double GetEffectiveWidth(double availableWidth = double.NaN)
         {
-            if (_isDragValid != value)
+            if (double.IsNaN(Width))
             {
-                _isDragValid = value;
-                OnPropertyChanged(nameof(IsDragValid));
+                // Auto-sizing logic
+                if (!double.IsNaN(availableWidth))
+                {
+                    var autoWidth = Math.Max(MinWidth, Math.Min(MaxWidth, availableWidth));
+                    return autoWidth;
+                }
+                return MinWidth;
             }
-        }
-    }
 
-    /// <summary>
-    /// Gets or sets a string format for displaying values in this column.
-    /// Only applies when CellTemplate is null.
-    /// </summary>
-    public string? StringFormat
-    {
-        get => _stringFormat;
-        set
+            // Fixed width - ensure it's within bounds
+            return Math.Max(MinWidth, Math.Min(MaxWidth, Width));
+        }
+
+        /// <summary>
+        /// Returns whether this column represents a special UI column (actions, selection, etc.)
+        /// </summary>
+        public bool IsSpecialColumn()
         {
-            if (_stringFormat != value)
+            return string.IsNullOrEmpty(PropertyName) || 
+                   PropertyName.Equals("IsSelected", StringComparison.OrdinalIgnoreCase) ||
+                   PropertyName.Equals("HasNotes", StringComparison.OrdinalIgnoreCase) ||
+                   DisplayName.Equals("Actions", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Sets the width of this column
+        /// </summary>
+        /// <param name="width">The width to set</param>
+        public void SetWidth(double width)
+        {
+            Width = width;
+        }
+
+        #endregion
+
+        #region INotifyPropertyChanged Implementation
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetProperty<T>(ref T backingStore, T value, 
+            [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(backingStore, value))
+                return false;
+
+            backingStore = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        #endregion
+
+        #region Override Methods
+
+        /// <summary>
+        /// Returns a string representation of this column
+        /// </summary>
+        public override string ToString()
+        {
+            return $"{DisplayName} ({PropertyName}) - Width: {Width}, Type: {DataType.Name}";
+        }
+
+        /// <summary>
+        /// Determines equality based on PropertyName
+        /// </summary>
+        public override bool Equals(object? obj)
+        {
+            if (obj is CustomDataGridColumn other)
             {
-                _stringFormat = value;
-                OnPropertyChanged(nameof(StringFormat));
+                return string.Equals(PropertyName, other.PropertyName, StringComparison.OrdinalIgnoreCase);
             }
-        }
-    }
-
-    /// <summary>
-    /// Gets the effective display width for this column.
-    /// Returns actual width or a default if auto-sized.
-    /// Ensures the value is within MinWidth and MaxWidth constraints.
-    /// </summary>
-    public double EffectiveWidth 
-    {
-        get
-        {
-            var effectiveWidth = double.IsNaN(Width) ? 100 : Width;
-            effectiveWidth = Math.Max(MinWidth, effectiveWidth);
-            effectiveWidth = Math.Min(MaxWidth, effectiveWidth);
-            return effectiveWidth;
-        }
-    }
-
-    /// <summary>
-    /// Gets whether this column can be reordered via drag-and-drop.
-    /// Based on whether the column allows reordering (can be extended in future).
-    /// </summary>
-    public bool CanReorder => true; // For now, all columns can be reordered
-
-    /// <summary>
-    /// Gets whether this column width is automatically sized.
-    /// </summary>
-    public bool IsAutoWidth => double.IsNaN(Width);
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    /// <summary>
-    /// Sets the width of this column with constraint validation.
-    /// Ensures the new width is within MinWidth and MaxWidth bounds.
-    /// </summary>
-    /// <param name="newWidth">The desired width</param>
-    /// <param name="respectConstraints">Whether to enforce min/max width constraints</param>
-    public void SetWidth(double newWidth, bool respectConstraints = true)
-    {
-        if (respectConstraints)
-        {
-            newWidth = Math.Max(MinWidth, newWidth);
-            newWidth = Math.Min(MaxWidth, newWidth);
-        }
-        
-        Width = newWidth;
-    }
-
-    /// <summary>
-    /// Moves this column to a new display order position.
-    /// </summary>
-    /// <param name="newOrder">The new display order</param>
-    public void MoveTo(int newOrder)
-    {
-        DisplayOrder = Math.Max(0, newOrder);
-    }
-
-    /// <summary>
-    /// Creates a copy of this column with the same settings.
-    /// </summary>
-    /// <returns>New CustomDataGridColumn instance with copied properties</returns>
-    public CustomDataGridColumn Clone()
-    {
-        return new CustomDataGridColumn
-        {
-            PropertyName = PropertyName,
-            DisplayName = DisplayName,
-            DataType = DataType,
-            IsVisible = IsVisible,
-            Width = Width,
-            CanSort = CanSort,
-            CanFilter = CanFilter,
-            CanResize = CanResize,
-            DisplayOrder = DisplayOrder,
-            MinWidth = MinWidth,
-            MaxWidth = MaxWidth,
-            CellTemplate = CellTemplate,
-            CellConverter = CellConverter,
-            StringFormat = StringFormat
-        };
-    }
-
-    #region Phase 4: Drag-and-Drop Operations
-
-    /// <summary>
-    /// Starts a drag operation for this column.
-    /// Phase 4 feature for visual column reordering.
-    /// </summary>
-    /// <param name="startPosition">The starting position of the drag</param>
-    public void StartDrag(Avalonia.Point startPosition)
-    {
-        DragStartPosition = startPosition;
-        _originalDisplayOrder = DisplayOrder;
-        IsDragging = true;
-        IsDragValid = true;
-        DragOffset = 0;
-        
-        OnPropertyChanged(nameof(IsDragging));
-    }
-
-    /// <summary>
-    /// Updates the drag position and validates the drag operation.
-    /// Phase 4 feature for drag-and-drop feedback.
-    /// </summary>
-    /// <param name="currentPosition">Current drag position</param>
-    /// <returns>True if the drag is valid and should continue</returns>
-    public bool UpdateDrag(Avalonia.Point currentPosition)
-    {
-        if (!IsDragging) return false;
-
-        var deltaX = currentPosition.X - DragStartPosition.X;
-        var deltaY = currentPosition.Y - DragStartPosition.Y;
-        
-        DragOffset = deltaX;
-        
-        // Basic validation - can be enhanced with drop zone logic
-        IsDragValid = Math.Abs(deltaY) < 50; // Allow some vertical tolerance
-        
-        OnPropertyChanged(nameof(DragOffset));
-        OnPropertyChanged(nameof(IsDragValid));
-        
-        return IsDragValid;
-    }
-
-    /// <summary>
-    /// Completes or cancels the drag operation.
-    /// Phase 4 feature for drag-and-drop completion.
-    /// </summary>
-    /// <param name="commit">True to commit the drag, false to cancel</param>
-    public void CompleteDrag(bool commit = true)
-    {
-        if (!commit)
-        {
-            // Restore original order if drag was cancelled
-            DisplayOrder = _originalDisplayOrder;
-        }
-        
-        IsDragging = false;
-        IsDragValid = false;
-        DragOffset = 0;
-        DragStartPosition = new Avalonia.Point(0, 0);
-        
-        OnPropertyChanged(nameof(IsDragging));
-        OnPropertyChanged(nameof(IsDragValid));
-        OnPropertyChanged(nameof(DragOffset));
-        OnPropertyChanged(nameof(DisplayOrder));
-    }
-
-    #endregion
-
-    #region Phase 4: Interactive Resize Operations
-
-    /// <summary>
-    /// Starts a resize operation for this column.
-    /// Phase 4 feature for interactive column resizing.
-    /// </summary>
-    /// <param name="currentWidth">The current width of the column</param>
-    public void StartResize(double currentWidth)
-    {
-        ResizeStartWidth = double.IsNaN(currentWidth) ? EffectiveWidth : currentWidth;
-        IsResizing = true;
-        
-        OnPropertyChanged(nameof(IsResizing));
-        OnPropertyChanged(nameof(ResizeStartWidth));
-    }
-
-    /// <summary>
-    /// Updates the column width during a resize operation.
-    /// Phase 4 feature for interactive resizing with constraints.
-    /// </summary>
-    /// <param name="deltaWidth">The change in width from the start position</param>
-    /// <returns>True if the resize was applied, false if constrained</returns>
-    public bool UpdateResize(double deltaWidth)
-    {
-        if (!IsResizing) return false;
-        
-        var newWidth = ResizeStartWidth + deltaWidth;
-        var constrainedWidth = Math.Max(MinWidth, Math.Min(MaxWidth, newWidth));
-        
-        if (Math.Abs(constrainedWidth - newWidth) > 0.1)
-        {
-            // Hit a constraint
-            Width = constrainedWidth;
             return false;
         }
-        
-        Width = constrainedWidth;
-        return true;
+
+        /// <summary>
+        /// Gets hash code based on PropertyName
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return PropertyName?.GetHashCode(StringComparison.OrdinalIgnoreCase) ?? 0;
+        }
+
+        #endregion
     }
 
     /// <summary>
-    /// Completes the resize operation.
-    /// Phase 4 feature for resize completion.
+    /// Enumeration of column alignment options
     /// </summary>
-    public void CompleteResize()
+    public enum ColumnAlignment
     {
-        IsResizing = false;
-        OnPropertyChanged(nameof(IsResizing));
+        Left,
+        Center,
+        Right,
+        Stretch
     }
 
-    #endregion
-
-    public override string ToString()
+    /// <summary>
+    /// Enumeration of standard MTM column types
+    /// </summary>
+    public enum MTMColumnType
     {
-        return $"{DisplayName} ({PropertyName}) - Order: {DisplayOrder}, Width: {(double.IsNaN(Width) ? "Auto" : Width.ToString("F0"))}, Visible: {IsVisible}";
+        Selection,
+        PartID,
+        Operation,
+        Location,
+        Quantity,
+        LastUpdated,
+        Notes,
+        Actions,
+        Management
     }
 }

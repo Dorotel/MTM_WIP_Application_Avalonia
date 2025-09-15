@@ -367,3 +367,242 @@ public class QuickButtonsService : IQuickButtonsService
 9. **Interface Consistency**: Update both interfaces and all implementations together
 
 **These patterns prevent the most common pitfalls encountered in MTM WIP Application development.**
+
+---
+
+## 🎨 UI Alignment and Styling Pitfalls
+
+### **Issue: CustomDataGrid Header-Data Row Misalignment**
+**Symptoms**: Header columns don't align properly with data row columns, creating unprofessional appearance.
+
+**Root Cause**: Inconsistent height, padding, and border settings between header cells and data cells.
+
+**Solution Pattern**:
+```xml
+<!-- ❌ WRONG: Different heights and padding between header and data -->
+<Style Selector="Border.checkbox-header-cell">
+  <Setter Property="MinHeight" Value="36" />
+  <Setter Property="MaxHeight" Value="36" />
+  <Setter Property="Padding" Value="4" />
+</Style>
+
+<Style Selector="Border.checkbox-cell">
+  <Setter Property="MinHeight" Value="32" />  <!-- WRONG - different height -->
+  <Setter Property="MaxHeight" Value="32" />
+  <Setter Property="Padding" Value="4" />
+</Style>
+
+<!-- ✅ CORRECT: Consistent heights and padding -->
+<Style Selector="Border.checkbox-header-cell">
+  <Setter Property="MinHeight" Value="36" />
+  <Setter Property="MaxHeight" Value="36" />
+  <Setter Property="Padding" Value="8" />
+</Style>
+
+<Style Selector="Border.checkbox-cell">
+  <Setter Property="MinHeight" Value="36" />  <!-- CORRECT - same height -->
+  <Setter Property="MaxHeight" Value="36" />
+  <Setter Property="Padding" Value="8" />    <!-- CORRECT - same padding -->
+</Style>
+
+<!-- CRITICAL: Grid column definitions must be identical -->
+<Grid.ColumnDefinitions>
+  <!-- Header Grid -->
+  <ColumnDefinition Width="40" />      <!-- Selection -->
+  <ColumnDefinition Width="1.5*" />    <!-- Part ID -->
+  <ColumnDefinition Width="1*" />      <!-- Operation -->
+  <ColumnDefinition Width="1.2*" />    <!-- Location -->
+  <ColumnDefinition Width="1*" />      <!-- Quantity -->
+  <ColumnDefinition Width="1.8*" />    <!-- Last Updated -->
+  <ColumnDefinition Width="80" />      <!-- Notes -->
+  <ColumnDefinition Width="100" />     <!-- Actions -->
+  <ColumnDefinition Width="40" />      <!-- Management -->
+</Grid.ColumnDefinitions>
+
+<!-- Data Grid - MUST BE IDENTICAL -->
+<Grid.ColumnDefinitions>
+  <ColumnDefinition Width="40" />      <!-- Selection -->
+  <ColumnDefinition Width="1.5*" />    <!-- Part ID -->
+  <ColumnDefinition Width="1*" />      <!-- Operation -->
+  <ColumnDefinition Width="1.2*" />    <!-- Location -->
+  <ColumnDefinition Width="1*" />      <!-- Quantity -->
+  <ColumnDefinition Width="1.8*" />    <!-- Last Updated -->
+  <ColumnDefinition Width="80" />      <!-- Notes -->
+  <ColumnDefinition Width="100" />     <!-- Actions -->
+  <ColumnDefinition Width="40" />      <!-- Management -->
+</Grid.ColumnDefinitions>
+```
+
+**Prevention**: Always use identical MinHeight, MaxHeight, Padding, and Grid.ColumnDefinitions between header and data rows.
+
+---
+
+## 🔗 Model Property Binding Pitfalls
+
+### **Issue: Missing Properties Causing Binding Failures**
+**Symptoms**: XAML binding errors in logs, UI elements not displaying expected data or behavior.
+
+**Root Cause**: ViewModel models missing required properties that UI components expect to bind to.
+
+**Solution Pattern**:
+```csharp
+// ❌ WRONG: Incomplete model missing UI-required properties
+public class InventoryItem
+{
+    public string PartId { get; set; } = string.Empty;
+    public string Operation { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
+    // Missing IsSelected and HasNotes properties
+}
+
+// ✅ CORRECT: Complete model with all UI-binding properties
+public class InventoryItem : INotifyPropertyChanged
+{
+    private bool _isSelected;
+    
+    public string PartId { get; set; } = string.Empty;
+    public string Operation { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
+    
+    // CRITICAL: Add UI selection property with change notification
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (_isSelected != value)
+            {
+                _isSelected = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+            }
+        }
+    }
+    
+    // CRITICAL: Add computed property for conditional UI display
+    public bool HasNotes => !string.IsNullOrWhiteSpace(Notes);
+    
+    public event PropertyChangedEventHandler? PropertyChanged;
+}
+
+// CRITICAL: Use in XAML binding
+<CheckBox IsChecked="{Binding IsSelected}" />
+<materialIcons:MaterialIcon IsVisible="{Binding HasNotes}" Kind="Check" />
+```
+
+**Prevention**: Always implement ALL properties that UI components bind to, including computed properties for conditional display.
+
+---
+
+## 🧩 MVVM Community Toolkit Integration Pitfalls
+
+### **Issue: ObservableObject Attribute Conflicts with BaseViewModel**
+**Symptoms**: Compilation error "Cannot apply [ObservableObject] to type... as it already declares the INotifyPropertyChanged interface".
+
+**Root Cause**: BaseViewModel inherits from ObservableValidator which already implements INotifyPropertyChanged, conflicting with [ObservableObject] attribute.
+
+**Solution Pattern**:
+```csharp
+// ❌ WRONG: Using [ObservableObject] with BaseViewModel
+[ObservableObject]
+public partial class SomeViewModel : BaseViewModel  // ERROR - BaseViewModel already implements INotifyPropertyChanged
+{
+    [ObservableProperty]
+    private string _someProperty = string.Empty;
+}
+
+// ✅ CORRECT: Two valid approaches
+
+// Approach 1: Inherit from BaseViewModel (includes logging and validation)
+public partial class SomeViewModel : BaseViewModel
+{
+    [ObservableProperty]
+    private string _someProperty = string.Empty;
+    
+    public SomeViewModel(ILogger<SomeViewModel> logger) : base(logger) { }
+}
+
+// Approach 2: Use ObservableObject directly (for simple overlay ViewModels)
+[ObservableObject]
+public partial class SimpleOverlayViewModel
+{
+    [ObservableProperty]
+    private string _someProperty = string.Empty;
+}
+```
+
+**Prevention**: Never use [ObservableObject] attribute when inheriting from BaseViewModel. Choose the appropriate base class based on whether you need logging and validation features.
+
+---
+
+## 📦 ContentPresenter DataTemplate Pitfalls
+
+### **Issue: Complex DataTemplate Binding Causing Casting Errors**
+**Symptoms**: Runtime casting errors between different ViewModel types in ContentPresenter.
+
+**Root Cause**: Unnecessary complexity in ContentPresenter DataTemplate structure when simple direct binding would work.
+
+**Solution Pattern**:
+```xml
+<!-- ❌ WRONG: Complex ContentPresenter DataTemplate -->
+<ContentPresenter Content="{Binding NoteEditorViewModel}">
+  <ContentPresenter.ContentTemplate>
+    <DataTemplate>
+      <views:NoteEditorView DataContext="{Binding}" />
+    </DataTemplate>
+  </ContentPresenter.ContentTemplate>
+</ContentPresenter>
+
+<!-- ✅ CORRECT: Direct UserControl with DataContext binding -->
+<views:NoteEditorView DataContext="{Binding NoteEditorViewModel}" />
+```
+
+**Prevention**: Use direct UserControl references with DataContext binding instead of complex ContentPresenter DataTemplates when possible.
+
+---
+
+## 🎯 Conditional UI Display Pitfalls
+
+### **Issue: Hardcoded UI Visibility Instead of Property-Based Logic**
+**Symptoms**: UI elements always visible regardless of data state, poor user experience.
+
+**Root Cause**: Not implementing computed properties for conditional display logic.
+
+**Solution Pattern**:
+```csharp
+// ❌ WRONG: No conditional logic for notes checkmark
+<materialIcons:MaterialIcon Kind="Check" />  <!-- Always visible -->
+
+// ✅ CORRECT: Property-based conditional display
+// In InventoryItem model:
+public bool HasNotes => !string.IsNullOrWhiteSpace(Notes);
+
+// In XAML:
+<materialIcons:MaterialIcon Kind="Check" 
+                            IsVisible="{Binding HasNotes}"
+                            ToolTip.Tip="Item has notes - click Read Note button to view/edit" />
+```
+
+**Prevention**: Always implement computed properties for conditional UI display based on business logic requirements.
+
+---
+
+## 🔧 Service Error Handling Pitfalls
+
+### **Issue: Incorrect ErrorHandling.HandleErrorAsync Method Signatures**
+**Symptoms**: Compilation errors when calling error handling service methods.
+
+**Root Cause**: Missing required parameters in HandleErrorAsync calls.
+
+**Solution Pattern**:
+```csharp
+// ❌ WRONG: Missing userId parameter
+await Services.ErrorHandling.HandleErrorAsync(ex, "Operation failed");
+
+// ✅ CORRECT: Include all required parameters
+await Services.ErrorHandling.HandleErrorAsync(ex, "Operation failed", Environment.UserName);
+
+// ✅ CORRECT: With user context when available
+await Services.ErrorHandling.HandleErrorAsync(ex, "Operation failed", _applicationState.CurrentUser);
+```
+
+**Prevention**: Always check HandleErrorAsync method signature and include all required parameters including userId.

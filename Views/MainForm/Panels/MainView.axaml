@@ -59,18 +59,18 @@
               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
               HorizontalAlignment="Left">
           <MenuItem Header="_File" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}">
-            <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
+            <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
             <Separator/>
-            <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+            <MenuItem Header="E_xit" Command="{Binding ExitCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
           </MenuItem>
           <MenuItem Header="_View" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}">
-            <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
+            <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
           </MenuItem>
           <!-- Development builds only -->
           <MenuItem Header="_Help" 
                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                     IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
-            <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
+            <MenuItem Header="_About" Command="{Binding OpenAboutCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
           </MenuItem>
         </Menu>
         
@@ -103,7 +103,7 @@
                 HorizontalAlignment="Left">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <TextBlock Text="Progress:" 
-                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
                        FontSize="10"
                        FontWeight="Medium"/>
             <ProgressBar Minimum="0" Maximum="100"
@@ -128,7 +128,7 @@
                 MinWidth="120"
                 HorizontalAlignment="Right">
           <TextBlock Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
-                     Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                      FontSize="12"
                      FontWeight="SemiBold"
                      VerticalAlignment="Center"
@@ -191,12 +191,14 @@
                   <TextBlock Text="📦" 
                              FontSize="14" 
                              HorizontalAlignment="Center" 
-                             VerticalAlignment="Center"/>
+                             VerticalAlignment="Center"
+                             Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                 </Border>
                 <TextBlock Text="Inventory" 
                            FontSize="15" 
                            FontWeight="SemiBold"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
               </StackPanel>
             </TabItem.Header>
             <!-- Content container that stretches to fill all available space -->
@@ -219,12 +221,14 @@
                   <TextBlock Text="🗑️" 
                              FontSize="14" 
                              HorizontalAlignment="Center" 
-                             VerticalAlignment="Center"/>
+                             VerticalAlignment="Center"
+                             Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                 </Border>
                 <TextBlock Text="Remove" 
                            FontSize="15" 
                            FontWeight="SemiBold"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
               </StackPanel>
             </TabItem.Header>
             <!-- Content container that stretches to fill all available space -->
@@ -247,12 +251,14 @@
                   <TextBlock Text="🔄" 
                              FontSize="14" 
                              HorizontalAlignment="Center" 
-                             VerticalAlignment="Center"/>
+                             VerticalAlignment="Center"
+                             Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                 </Border>
                 <TextBlock Text="Transfer" 
                            FontSize="15" 
                            FontWeight="SemiBold"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
               </StackPanel>
             </TabItem.Header>
             <!-- Content container that stretches to fill all available space -->
