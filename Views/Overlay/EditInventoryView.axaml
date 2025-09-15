@@ -220,12 +220,12 @@
           </Border>
 
           <!-- Form Fields -->
-          <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="16">
+          <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="20">
 
             <!-- Part ID Field -->
-            <Grid ColumnDefinitions="100,*,Auto" ColumnSpacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" />
+            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <materialIcons:MaterialIcon Kind="Identifier" Width="16" Height="16" />
                 <TextBlock Text="Part ID:" Classes="field-label" />
               </StackPanel>
               
@@ -240,16 +240,16 @@
               
               <materialIcons:MaterialIcon Grid.Column="2" 
                                           Kind="CheckCircle" 
-                                          Width="16" Height="16"
+                                          Width="18" Height="18"
                                           Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
                                           IsVisible="{Binding IsPartIdValid}"
                                           ToolTip.Tip="Valid Part ID" />
             </Grid>
 
             <!-- Location Field -->
-            <Grid ColumnDefinitions="100,*,Auto" ColumnSpacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="MapMarker" Width="14" Height="14" />
+            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <materialIcons:MaterialIcon Kind="MapMarker" Width="16" Height="16" />
                 <TextBlock Text="Location:" Classes="field-label" />
               </StackPanel>
               
@@ -264,16 +264,16 @@
               
               <materialIcons:MaterialIcon Grid.Column="2" 
                                           Kind="CheckCircle" 
-                                          Width="16" Height="16"
+                                          Width="18" Height="18"
                                           Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
                                           IsVisible="{Binding IsLocationValid}"
                                           ToolTip.Tip="Valid Location" />
             </Grid>
 
             <!-- Operation Field -->
-            <Grid ColumnDefinitions="100,*,Auto" ColumnSpacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" />
+            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <materialIcons:MaterialIcon Kind="Cog" Width="16" Height="16" />
                 <TextBlock Text="Operation:" Classes="field-label" />
               </StackPanel>
               
@@ -288,16 +288,16 @@
               
               <materialIcons:MaterialIcon Grid.Column="2" 
                                           Kind="CheckCircle" 
-                                          Width="16" Height="16"
+                                          Width="18" Height="18"
                                           Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
                                           IsVisible="{Binding IsOperationValid}"
                                           ToolTip.Tip="Valid Operation" />
             </Grid>
 
             <!-- Quantity Field -->
-            <Grid ColumnDefinitions="100,*,Auto" ColumnSpacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Counter" Width="14" Height="14" />
+            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <materialIcons:MaterialIcon Kind="Counter" Width="16" Height="16" />
                 <TextBlock Text="Quantity:" Classes="field-label" />
               </StackPanel>
               
@@ -309,16 +309,16 @@
               
               <materialIcons:MaterialIcon Grid.Column="2" 
                                           Kind="CheckCircle" 
-                                          Width="16" Height="16"
+                                          Width="18" Height="18"
                                           Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
                                           IsVisible="{Binding IsQuantityValid}"
                                           ToolTip.Tip="Valid Quantity" />
             </Grid>
 
             <!-- Item Type Field -->
-            <Grid ColumnDefinitions="100,*,Auto" ColumnSpacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Category" Width="14" Height="14" />
+            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <materialIcons:MaterialIcon Kind="Category" Width="16" Height="16" />
                 <TextBlock Text="Item Type:" Classes="field-label" />
               </StackPanel>
               
@@ -330,16 +330,16 @@
               
               <materialIcons:MaterialIcon Grid.Column="2" 
                                           Kind="CheckCircle" 
-                                          Width="16" Height="16"
+                                          Width="18" Height="18"
                                           Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
                                           IsVisible="{Binding IsItemTypeValid}"
                                           ToolTip.Tip="Valid Item Type" />
             </Grid>
 
             <!-- Batch Number Field -->
-            <Grid ColumnDefinitions="100,*,Auto" ColumnSpacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Barcode" Width="14" Height="14" />
+            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <materialIcons:MaterialIcon Kind="Barcode" Width="16" Height="16" />
                 <TextBlock Text="Batch #:" Classes="field-label" />
               </StackPanel>
               
@@ -350,15 +350,15 @@
               
               <materialIcons:MaterialIcon Grid.Column="2" 
                                           Kind="Information" 
-                                          Width="16" Height="16"
+                                          Width="18" Height="18"
                                           Foreground="{DynamicResource MTM_Shared_Logic.InfoBrush}"
                                           ToolTip.Tip="Batch number is optional" />
             </Grid>
 
             <!-- Notes Field -->
-            <Grid ColumnDefinitions="100,*" ColumnSpacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Top" Margin="0,4,0,0">
-                <materialIcons:MaterialIcon Kind="NoteText" Width="14" Height="14" />
+            <Grid ColumnDefinitions="130,*" ColumnSpacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Top" Margin="0,6,0,0">
+                <materialIcons:MaterialIcon Kind="NoteText" Width="16" Height="16" />
                 <TextBlock Text="Notes:" Classes="field-label" />
               </StackPanel>
               
@@ -376,9 +376,9 @@
             </Grid>
 
             <!-- User Field (Read-Only) -->
-            <Grid ColumnDefinitions="100,*,Auto" ColumnSpacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Account" Width="14" Height="14" />
+            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <materialIcons:MaterialIcon Kind="Account" Width="16" Height="16" />
                 <TextBlock Text="User:" Classes="field-label" />
               </StackPanel>
               
@@ -390,24 +390,24 @@
               
               <materialIcons:MaterialIcon Grid.Column="2" 
                                           Kind="Lock" 
-                                          Width="16" Height="16"
+                                          Width="18" Height="18"
                                           Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
                                           ToolTip.Tip="Read-only field" />
             </Grid>
 
             <!-- Timestamps (Read-Only) -->
-            <Grid ColumnDefinitions="100,*" ColumnSpacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Top" Margin="0,4,0,0">
-                <materialIcons:MaterialIcon Kind="Clock" Width="14" Height="14" />
+            <Grid ColumnDefinitions="130,*" ColumnSpacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Top" Margin="0,6,0,0">
+                <materialIcons:MaterialIcon Kind="Clock" Width="16" Height="16" />
                 <TextBlock Text="Timestamps:" Classes="field-label" />
               </StackPanel>
               
-              <StackPanel Grid.Column="1" Spacing="4">
+              <StackPanel Grid.Column="1" Spacing="6">
                 <TextBlock Text="{Binding EditModel.ReceiveDate, StringFormat='Created: {0:MM/dd/yyyy HH:mm}'}"
-                           FontSize="11"
+                           FontSize="12"
                            Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
                 <TextBlock Text="{Binding EditModel.LastUpdated, StringFormat='Last Updated: {0:MM/dd/yyyy HH:mm}'}"
-                           FontSize="11"
+                           FontSize="12"
                            Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
               </StackPanel>
             </Grid>
