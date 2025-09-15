@@ -454,7 +454,7 @@
                   Cursor="Hand"
                   IsEnabled="False"
                   Command="{Binding EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                  ToolTip.Tip="Edit selected item" />
+                  ToolTip.Tip="Edit selected inventory item (all fields including Part ID, Location, Operation, Quantity, Notes, etc.)" />
 
           <!-- View Details Button -->
           <Button x:Name="ViewDetailsButton"

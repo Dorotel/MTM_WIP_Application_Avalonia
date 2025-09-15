@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
+namespace MTM_WIP_Application_Avalonia.Models.CustomDataGrid
 {
     /// <summary>
     /// Base class for items that can be selected in the CustomDataGrid
@@ -216,10 +216,9 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         {
             // If data implements INotifyPropertyChanged, we could subscribe to its changes
             // This allows the selectable wrapper to react to changes in the wrapped data
-            if (newData is INotifyPropertyChanged notifyPropertyChanged)
+            if (newData is INotifyPropertyChanged)
             {
-                // Could add subscription logic here if needed
-                // notifyPropertyChanged.PropertyChanged += OnWrappedDataPropertyChanged;
+                // Future enhancement: Add subscription logic here if needed
             }
         }
 

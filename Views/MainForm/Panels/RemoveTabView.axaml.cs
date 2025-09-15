@@ -4,6 +4,7 @@ using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Views;
 using MTM_WIP_Application_Avalonia.Models;
+using API.ViewModels.MainForm;
 using System;
 using System.Threading.Tasks;
 using Avalonia.Threading;

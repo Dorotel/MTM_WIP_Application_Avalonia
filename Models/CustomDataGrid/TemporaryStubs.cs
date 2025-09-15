@@ -1,7 +1,7 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
+namespace MTM_WIP_Application_Avalonia.Models.CustomDataGrid
 {
     /// <summary>
     /// Temporary stub class for ColumnFilter to fix compilation errors

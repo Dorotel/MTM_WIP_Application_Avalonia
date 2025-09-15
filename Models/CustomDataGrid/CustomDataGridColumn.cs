@@ -6,7 +6,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Data;
 
-namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
+namespace MTM_WIP_Application_Avalonia.Models.CustomDataGrid
 {
     /// <summary>
     /// Represents a column in the CustomDataGrid control

@@ -4,7 +4,7 @@ namespace MTM_WIP_Application_Avalonia.Models;
 
 /// <summary>
 /// Event arguments for when an inventory item is successfully saved.
-/// Contains the data needed to add the item to QuickButtons.
+/// Contains the data needed to add the item to QuickButtons and the saved inventory item.
 /// </summary>
 public class InventorySavedEventArgs : EventArgs
 {
@@ -34,6 +34,11 @@ public class InventorySavedEventArgs : EventArgs
     public string Notes { get; set; } = string.Empty;
 
     /// <summary>
+    /// The complete saved inventory item (for comprehensive editing scenarios).
+    /// </summary>
+    public InventoryItem? SavedItem { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of the InventorySavedEventArgs class.
     /// </summary>
     public InventorySavedEventArgs()
@@ -55,5 +60,19 @@ public class InventorySavedEventArgs : EventArgs
         Quantity = quantity;
         Location = location;
         Notes = notes;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the InventorySavedEventArgs class with an inventory item.
+    /// </summary>
+    /// <param name="savedItem">The saved inventory item</param>
+    public InventorySavedEventArgs(InventoryItem savedItem)
+    {
+        SavedItem = savedItem ?? throw new ArgumentNullException(nameof(savedItem));
+        PartId = savedItem.PartId;
+        Operation = savedItem.Operation ?? string.Empty;
+        Quantity = savedItem.Quantity;
+        Location = savedItem.Location;
+        Notes = savedItem.Notes ?? string.Empty;
     }
 }

@@ -3,18 +3,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             xmlns:apivm="using:API.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              xmlns:customDataGrid="using:MTM_WIP_Application_Avalonia.Controls.CustomDataGrid"
              xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              xmlns:interactions="using:Avalonia.Xaml.Interactions.Core"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
+             xmlns:overlayViews="using:MTM_WIP_Application_Avalonia.Views.Overlay"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="600"
              x:Class="MTM_WIP_Application_Avalonia.Views.RemoveTabView"
              x:CompileBindings="True"
-             x:DataType="vm:RemoveItemViewModel">
+             x:DataType="apivm:RemoveItemViewModel">
 
   <UserControl.KeyBindings>
     <KeyBinding Gesture="F5" Command="{Binding SearchCommand}" />
@@ -146,6 +148,7 @@
                                          SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                          DeleteItemCommand="{Binding DeleteSingleItemCommand}"
                                          ReadNoteCommand="{Binding ReadNoteCommand}"
+                                         EditItemCommand="{Binding EditItemCommand}"
                                          IsVisible="{Binding HasInventoryItems}"
                                          Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
                                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" 
@@ -264,6 +267,25 @@
               BoxShadow="0 8 32 8 #40000000">
         <!-- Direct reference to NoteEditorView with proper DataContext -->
         <views:NoteEditorView DataContext="{Binding NoteEditorViewModel}" />
+      </Border>
+    </Border>
+
+    <!-- Edit Inventory Dialog Overlay - comprehensive inventory editing -->
+    <Border x:Name="EditInventoryDialogOverlay" 
+            IsVisible="{Binding IsEditDialogVisible}" 
+            Background="#CC000000">
+      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+              BorderThickness="2"
+              CornerRadius="8"
+              MaxWidth="650"
+              MaxHeight="750"
+              Margin="30"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              BoxShadow="0 12 48 12 #60000000">
+        <!-- Reference to EditInventoryView with proper DataContext -->
+        <overlayViews:EditInventoryView DataContext="{Binding EditDialogViewModel}" />
       </Border>
     </Border>
     
