@@ -4,9 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
+             xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.SuccessOverlayView"
              x:CompileBindings="True" x:DataType="vm:SuccessOverlayViewModel">
+
+  <UserControl.Resources>
+    <converters:ColorToBoxShadowConverter x:Key="ColorToBoxShadowConverter"/>
+  </UserControl.Resources>
 
   <UserControl.Styles>
     <!-- Success Overlay Styles -->
@@ -15,12 +20,30 @@
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
       <Setter Property="BorderThickness" Value="2" />
       <Setter Property="CornerRadius" Value="12" />
-      <Setter Property="BoxShadow" Value="0 8 24 #26000000" />
+      <Setter Property="BoxShadow" Value="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,24,0'}" />
+    </Style>
+
+    <!-- Error Overlay Styles -->
+    <Style Selector="Border.error-overlay">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="BoxShadow" Value="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,24,0'}" />
     </Style>
 
     <!-- Success Icon Styling -->
     <Style Selector="materialIcons|MaterialIcon.success-icon">
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="Width" Value="48" />
+      <Setter Property="Height" Value="48" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Error Icon Styling -->
+    <Style Selector="materialIcons|MaterialIcon.error-icon">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
       <Setter Property="Width" Value="48" />
       <Setter Property="Height" Value="48" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -37,6 +60,27 @@
       <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
+    <!-- Error Message Styling -->
+    <Style Selector="TextBlock.error-title">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="FontSize" Value="18" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- Error Details Styling -->
+    <Style Selector="TextBlock.error-details">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="Opacity" Value="0.8" />
+    </Style>
+
     <!-- Success Details Styling -->
     <Style Selector="TextBlock.success-details">
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
@@ -48,6 +92,15 @@
       <Setter Property="Opacity" Value="0.8" />
     </Style>
 
+    <!-- Error Progress Bar Styling -->
+    <Style Selector="ProgressBar.error-progress">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="Height" Value="3" />
+      <Setter Property="CornerRadius" Value="2" />
+      <Setter Property="Margin" Value="0,8,0,0" />
+    </Style>
+
     <!-- Progress Bar Styling -->
     <Style Selector="ProgressBar.success-progress">
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
@@ -55,6 +108,40 @@
       <Setter Property="Height" Value="3" />
       <Setter Property="CornerRadius" Value="2" />
       <Setter Property="Margin" Value="0,8,0,0" />
+    </Style>
+
+    <!-- Error Action Button Styling -->
+    <Style Selector="Button.error-action">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="Padding" Value="16,8" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Margin" Value="4" />
+      <Setter Property="MinWidth" Value="120" />
+    </Style>
+
+    <Style Selector="Button.error-action:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorDarkBrush}" />
+    </Style>
+
+    <!-- Continue Button Styling -->
+    <Style Selector="Button.continue-action">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="Padding" Value="16,8" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Margin" Value="4" />
+      <Setter Property="MinWidth" Value="120" />
+    </Style>
+
+    <Style Selector="Button.continue-action:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}" />
     </Style>
 
     <!-- Dismiss Button Styling -->
@@ -96,44 +183,50 @@
   <Grid x:Name="OverlayContainer" 
         Background="rgba(0,0,0,0.3)"
         HorizontalAlignment="Stretch" 
-        VerticalAlignment="Stretch">
+        VerticalAlignment="Stretch"
+        Focusable="True">
 
-    <!-- Success Message Card -->
-    <Border x:Name="SuccessCard"
-            Classes="success-overlay"
-            MaxWidth="400"
-            MinWidth="300" 
+    <!-- Success/Error Message Card -->
+    <Border x:Name="OverlayCard"
+            Classes.success-overlay="{Binding !IsError}"
+            Classes.error-overlay="{Binding IsError}"
+            MaxWidth="450"
+            MinWidth="320" 
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Padding="32,24">
       
-      <Grid x:Name="ContentGrid" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="16">
+      <Grid x:Name="ContentGrid" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="12">
         
-        <!-- Success Icon -->
+        <!-- Success/Error Icon -->
         <materialIcons:MaterialIcon Grid.Row="0" 
-                                   Classes="success-icon"
+                                   Classes.success-icon="{Binding !IsError}"
+                                   Classes.error-icon="{Binding IsError}"
                                    Kind="{Binding IconKind}" />
         
-        <!-- Success Message -->
+        <!-- Success/Error Message -->
         <TextBlock Grid.Row="1"
-                   Classes="success-title"
+                   Classes.success-title="{Binding !IsError}"
+                   Classes.error-title="{Binding IsError}"
                    Text="{Binding Message}" />
         
-        <!-- Success Details (optional) -->
+        <!-- Success/Error Details (optional) -->
         <TextBlock Grid.Row="2"
-                   Classes="success-details"
+                   Classes.success-details="{Binding !IsError}"
+                   Classes.error-details="{Binding IsError}"
                    Text="{Binding Details}"
                    IsVisible="{Binding ShowDetails}" />
         
         <!-- Progress Bar (animated) -->
         <ProgressBar Grid.Row="3"
-                     Classes="success-progress"
+                     Classes.success-progress="{Binding !IsError}"
+                     Classes.error-progress="{Binding IsError}"
                      Value="{Binding Progress}"
                      Minimum="0"
                      Maximum="1"
                      IsVisible="{Binding IsAnimating}" />
         
-        <!-- Auto-dismiss indicator -->
+        <!-- Auto-dismiss indicator (Success only) -->
         <TextBlock Grid.Row="4"
                    Text="Dismissing automatically..."
                    FontSize="10"
@@ -141,14 +234,47 @@
                    HorizontalAlignment="Center"
                    Opacity="0.6"
                    IsVisible="{Binding IsAnimating}" />
+
+        <!-- Emergency keyboard shortcuts hint (Error only) -->
+        <TextBlock Grid.Row="5"
+                   Text="Emergency shutdown in 30s if unresponsive • Ctrl+Alt+Q (Exit) • Ctrl+Alt+C (Continue)"
+                   FontSize="8"
+                   Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                   HorizontalAlignment="Center"
+                   Opacity="0.6"
+                   FontStyle="Italic"
+                   TextWrapping="Wrap"
+                   Margin="0,2,0,4"
+                   IsVisible="{Binding IsError}" />
         
-        <!-- Manual Dismiss Button -->
-        <Button Grid.Row="5"
-                Classes="dismiss-button" 
-                Content="✕ Dismiss"
-                Command="{Binding DismissCommand}"
-                HorizontalAlignment="Center"
-                ToolTip.Tip="Click to dismiss immediately" />
+        <!-- Button Panel - Conditional based on IsError -->
+        <StackPanel Grid.Row="6" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Center"
+                    Spacing="8"
+                    Margin="0,8,0,0">
+          
+          <!-- Success: Manual Dismiss Button -->
+          <Button Classes="dismiss-button" 
+                  Content="✕ Dismiss"
+                  Command="{Binding DismissCommand}"
+                  ToolTip.Tip="Click to dismiss immediately"
+                  IsVisible="{Binding !IsError}" />
+          
+          <!-- Error: Exit Application and Continue Buttons -->
+          <Button Classes="error-action" 
+                  Content="🚪 Exit Application"
+                  Command="{Binding ExitApplicationCommand}"
+                  ToolTip.Tip="Close the application if it continues to have issues (Emergency: Ctrl+Alt+Q)"
+                  IsVisible="{Binding IsError}" />
+          
+          <Button Classes="continue-action" 
+                  Content="↻ Continue"
+                  Command="{Binding ContinueCommand}"
+                  ToolTip.Tip="Continue using the application (Emergency: Ctrl+Alt+C)"
+                  IsVisible="{Binding IsError}" />
+          
+        </StackPanel>
         
       </Grid>
     </Border>

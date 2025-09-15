@@ -30,6 +30,10 @@ public interface IDatabaseService
     Task<bool> TransferPartAsync(string batchNumber, string partId, string operation, string newLocation);
     Task<bool> TransferQuantityAsync(string batchNumber, string partId, string operation, int transferQuantity, int originalQuantity, string newLocation, string user);
     
+    // Note editing operations
+    Task<StoredProcedureResult> UpdateInventoryNotesAsync(int inventoryId, string partId, string batchNumber, string notes, string user);
+    Task<DataTable> GetInventoryByIdAsync(int inventoryId);
+    
     // Master Data Operations - Parts
     Task<StoredProcedureResult> AddPartAsync(string partId, string customer, string description, string issuedBy, string itemType);
     Task<StoredProcedureResult> UpdatePartAsync(int id, string partId, string customer, string description, string issuedBy, string itemType);
@@ -613,6 +617,51 @@ public class DatabaseService : IDatabaseService
         );
 
         return result.IsSuccess;
+    }
+
+    /// <summary>
+    /// Updates notes for an inventory item using inv_inventory_Update_Notes stored procedure.
+    /// </summary>
+    public async Task<StoredProcedureResult> UpdateInventoryNotesAsync(int inventoryId, string partId, string batchNumber, string notes, string user)
+    {
+        _logger.LogInformation("Updating notes for inventory ID={InventoryId}, PartID={PartId}, BatchNumber={BatchNumber}, User={User}", 
+            inventoryId, partId, batchNumber, user);
+
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ID"] = inventoryId,
+            ["p_PartID"] = partId,
+            ["p_BatchNumber"] = batchNumber,
+            ["p_Notes"] = notes ?? string.Empty,
+            ["p_User"] = user
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Update_Notes",
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Gets inventory item by ID using inv_inventory_Get_ByID stored procedure.
+    /// </summary>
+    public async Task<DataTable> GetInventoryByIdAsync(int inventoryId)
+    {
+        _logger.LogDebug("Getting inventory item by ID: {InventoryId}", inventoryId);
+
+        var parameters = new Dictionary<string, object>
+        {
+            ["p_ID"] = inventoryId
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            _connectionString,
+            "inv_inventory_Get_ByID",
+            parameters
+        );
+
+        return result.Data ?? new DataTable();
     }
 
     #endregion

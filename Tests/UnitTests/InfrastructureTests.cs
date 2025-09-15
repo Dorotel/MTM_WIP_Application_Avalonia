@@ -6,7 +6,7 @@ namespace MTM.Tests.UnitTests;
 /// Basic test to verify test infrastructure is working
 /// </summary>
 [TestFixture]
-[Category("Unit")]
+[NUnit.Framework.Category("Unit")]
 public class InfrastructureTests
 {
     [Test]

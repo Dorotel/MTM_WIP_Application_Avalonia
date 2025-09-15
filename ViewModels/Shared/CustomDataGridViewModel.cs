@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
+using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Shared;
 

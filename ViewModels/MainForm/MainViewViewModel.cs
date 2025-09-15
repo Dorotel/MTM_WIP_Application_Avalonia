@@ -12,6 +12,7 @@ using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
+using API.ViewModels.MainForm;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -440,33 +441,20 @@ public partial class MainViewViewModel : BaseViewModel
                 // Add a small delay to ensure database transaction is fully committed
                 await Task.Delay(500);
                 
-                // CRITICAL: Add the new transaction to QuickButtons with proper position logic
+                // FIXED: Use only the service method which handles both QuickButton addition and SessionTransaction
+                // The service will fire SessionTransactionAdded event which will automatically handle the session history
                 await QuickButtonsViewModel.AddQuickButtonFromOperationAsync(
                     e.PartId, 
                     e.Operation ?? "Unknown", 
                     e.Quantity
                 );
                 
-                // Refresh QuickButtons to show the latest transaction
-                await QuickButtonsViewModel.LoadLast10TransactionsAsync();
-                
-                // Add to session transaction history (in-memory, current session only)
-                QuickButtonsViewModel.AddSessionTransaction(
-                    partId: e.PartId,
-                    operation: e.Operation ?? "Unknown",
-                    location: e.Location ?? "Unknown",
-                    quantity: e.Quantity,
-                    transactionType: DetermineTransactionType(e),
-                    user: _applicationState.CurrentUser ?? Environment.UserName,
-                    notes: e.Notes ?? ""
-                );
-                
-                Logger.LogInformation("Updated QuickButtons and added session transaction: Part={PartId}, Quantity={Quantity}, Operation={Operation}", 
+                Logger.LogInformation("Updated QuickButtons via service: Part={PartId}, Quantity={Quantity}, Operation={Operation}", 
                     e.PartId, e.Quantity, e.Operation);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to update QuickButtons and session history after inventory save");
+                Logger.LogError(ex, "Failed to update QuickButtons after inventory save");
             }
         });
     }

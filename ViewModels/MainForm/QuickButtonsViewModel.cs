@@ -99,6 +99,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
 
         // Subscribe to service events
         _quickButtonsService.QuickButtonsChanged += OnQuickButtonsChanged;
+        _quickButtonsService.SessionTransactionAdded += OnSessionTransactionAdded;
 
         // Handle collection changes to update count
         QuickButtons.CollectionChanged += (sender, e) =>
@@ -424,7 +425,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
                     Operation = transaction.Operation ?? string.Empty, // Ensure not null and not "EMPTY"
                     Quantity = transaction.Quantity,
                     DisplayText = string.IsNullOrEmpty(transaction.PartId) ? "Empty Slot" : transaction.PartId,
-                    SubText = string.IsNullOrEmpty(transaction.PartId) ? "Click to assign" : $"{transaction.Operation} - {transaction.Quantity} parts",
+                    SubText = string.IsNullOrEmpty(transaction.PartId) ? "Click to assign" : string.Empty,
                     ToolTipText = string.IsNullOrEmpty(transaction.PartId) ? 
                         $"Empty slot {i + 1} - Click to assign a quick action." :
                         $"Position {i + 1}: Click to populate Part ID: {transaction.PartId}, Operation: {transaction.Operation}, Quantity: {transaction.Quantity} in the active tab. Right-click for move and remove options."
@@ -801,7 +802,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 
                 // Update the display properties to reflect the saved data
                 button.DisplayText = button.PartId;
-                button.SubText = $"{button.Quantity} parts.";
+                button.SubText = string.Empty;
                 button.ToolTipText = $"Position {button.Position}: Click to populate Part ID: {button.PartId}, Operation: {button.Operation}, Quantity: {button.Quantity} in the active tab. Right-click for move and remove options.";
             }
             else
@@ -851,6 +852,36 @@ public partial class QuickButtonsViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error handling quick buttons change event");
+        }
+    }
+
+    /// <summary>
+    /// Handles session transaction added events from QuickButtonsService
+    /// </summary>
+    private void OnSessionTransactionAdded(object? sender, SessionTransactionEventArgs e)
+    {
+        try
+        {
+            if (e.UserId == _applicationState.CurrentUser)
+            {
+                Logger.LogInformation("Adding session transaction for current user: {PartId}, {Operation}, {TransactionType}", 
+                    e.PartId, e.Operation, e.TransactionType);
+                
+                // Call AddSessionTransaction to add to the session history
+                AddSessionTransaction(
+                    e.PartId,
+                    e.Operation,
+                    e.Location,
+                    e.Quantity,
+                    e.TransactionType,
+                    e.UserId,
+                    e.Notes
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling session transaction added event");
         }
     }
 

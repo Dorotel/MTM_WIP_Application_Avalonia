@@ -1,0 +1,419 @@
+using NUnit.Framework;
+using Moq;
+using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Models;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Data;
+
+namespace MTM.Tests.IntegrationTests
+{
+    [TestFixture]
+    [NUnit.Framework.Category("Integration")]
+    [NUnit.Framework.Category("ManufacturingWorkflow")]
+    public class ManufacturingWorkflowIntegrationTests
+    {
+        private Mock<IDatabaseService> _mockDatabaseService;
+        private Mock<ILogger> _mockLogger;
+        private Mock<IConfigurationService> _mockConfigurationService;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _mockDatabaseService = new Mock<IDatabaseService>();
+            _mockLogger = new Mock<ILogger>();
+            _mockConfigurationService = new Mock<IConfigurationService>();
+
+            // Setup successful database responses by default
+            _mockDatabaseService.Setup(s => s.ExecuteStoredProcedureAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()))
+                .ReturnsAsync(new DatabaseResult { Status = 1, Message = "Success" });
+        }
+
+        [Test]
+        public async Task CompleteManufacturingWorkflow_From90To130_ShouldExecuteAllSteps()
+        {
+            // Arrange - Complete manufacturing workflow from receiving (90) to shipping (130)
+            var partId = "WORKFLOW_PART_001";
+            var quantity = 100;
+            var location = "MANUFACTURING_LINE_A";
+            var user = "WorkflowTestUser";
+
+            var workflowSteps = new[]
+            {
+                new { FromOperation = "90", ToOperation = "100", Description = "Receiving to First Operation" },
+                new { FromOperation = "100", ToOperation = "110", Description = "First to Second Operation" },
+                new { FromOperation = "110", ToOperation = "120", Description = "Second to Final Operation" },
+                new { FromOperation = "120", ToOperation = "130", Description = "Final to Shipping" }
+            };
+
+            // Setup database responses for each step
+            foreach (var step in workflowSteps)
+            {
+                _mockDatabaseService.Setup(s => s.ExecuteStoredProcedureAsync(
+                    "inv_inventory_Transfer_Between_Operations",
+                    It.Is<Dictionary<string, object>>(p =>
+                        p["p_PartID"].ToString() == partId &&
+                        p["p_FromOperationNumber"].ToString() == step.FromOperation &&
+                        p["p_ToOperationNumber"].ToString() == step.ToOperation)))
+                    .ReturnsAsync(new DatabaseResult { Status = 1, Message = "Success" });
+            }
+
+            // Act - Execute complete workflow
+            var results = new List<DatabaseResult>();
+            foreach (var step in workflowSteps)
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_PartID"] = partId,
+                    ["p_FromOperationNumber"] = step.FromOperation,
+                    ["p_ToOperationNumber"] = step.ToOperation,
+                    ["p_Quantity"] = quantity,
+                    ["p_FromLocation"] = location,
+                    ["p_ToLocation"] = location,
+                    ["p_User"] = user
+                };
+
+                var result = await _mockDatabaseService.Object.ExecuteStoredProcedureAsync(
+                    "inv_inventory_Transfer_Between_Operations", parameters);
+                results.Add(result);
+            }
+
+            // Assert - All workflow steps completed successfully
+            Assert.That(results.Count, Is.EqualTo(4), "Should execute all 4 manufacturing workflow steps");
+            Assert.That(results.All(r => r.Status == 1), Is.True, "All workflow steps should succeed");
+
+            // Verify each step was called correctly
+            foreach (var step in workflowSteps)
+            {
+                _mockDatabaseService.Verify(s => s.ExecuteStoredProcedureAsync(
+                    "inv_inventory_Transfer_Between_Operations",
+                    It.Is<Dictionary<string, object>>(p =>
+                        p["p_PartID"].ToString() == partId &&
+                        p["p_FromOperationNumber"].ToString() == step.FromOperation &&
+                        p["p_ToOperationNumber"].ToString() == step.ToOperation)),
+                    Times.Once, $"Workflow step {step.Description} should be executed once");
+            }
+        }
+
+        [Test]
+        public async Task ManufacturingWorkflow_WithQualityCheck_ShouldHandleQualityGates()
+        {
+            // Arrange - Manufacturing workflow with quality checks at each operation
+            var partId = "QUALITY_PART_001";
+            var initialQuantity = 100;
+            var user = "QualityTestUser";
+
+            var qualityWorkflow = new[]
+            {
+                new { Operation = "90", Description = "Receiving Inspection", PassRate = 0.98, ExpectedPass = 98 },
+                new { Operation = "100", Description = "First Op Quality Check", PassRate = 0.95, ExpectedPass = 93 },
+                new { Operation = "110", Description = "Second Op Quality Check", PassRate = 0.97, ExpectedPass = 90 },
+                new { Operation = "120", Description = "Final Inspection", PassRate = 0.99, ExpectedPass = 89 }
+            };
+
+            // Setup database responses for quality checks
+            foreach (var step in qualityWorkflow)
+            {
+                var qualityData = new DataTable();
+                qualityData.Columns.Add("PassedQuantity", typeof(int));
+                qualityData.Columns.Add("FailedQuantity", typeof(int));
+                qualityData.Rows.Add(step.ExpectedPass, initialQuantity - step.ExpectedPass);
+
+                _mockDatabaseService.Setup(s => s.ExecuteStoredProcedureAsync(
+                    "qc_quality_Check_Operation",
+                    It.Is<Dictionary<string, object>>(p =>
+                        p["p_PartID"].ToString() == partId &&
+                        p["p_OperationNumber"].ToString() == step.Operation)))
+                    .ReturnsAsync(new DatabaseResult 
+                    { 
+                        Status = 1, 
+                        Data = qualityData, 
+                        Message = "Quality check completed" 
+                    });
+            }
+
+            // Act - Execute quality workflow
+            var qualityResults = new List<QualityCheckResult>();
+            foreach (var step in qualityWorkflow)
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_PartID"] = partId,
+                    ["p_OperationNumber"] = step.Operation,
+                    ["p_InspectedQuantity"] = initialQuantity,
+                    ["p_User"] = user
+                };
+
+                var result = await _mockDatabaseService.Object.ExecuteStoredProcedureAsync(
+                    "qc_quality_Check_Operation", parameters);
+
+                if (result.Status == 1 && result.Data.Rows.Count > 0)
+                {
+                    var row = result.Data.Rows[0];
+                    qualityResults.Add(new QualityCheckResult
+                    {
+                        Operation = step.Operation,
+                        PassedQuantity = Convert.ToInt32(row["PassedQuantity"]),
+                        FailedQuantity = Convert.ToInt32(row["FailedQuantity"]),
+                        Description = step.Description
+                    });
+                }
+            }
+
+            // Assert - Quality workflow completed correctly
+            Assert.That(qualityResults.Count, Is.EqualTo(4), "Should complete all quality checks");
+            Assert.That(qualityResults.All(r => r.PassedQuantity > 0), Is.True, "All operations should have some passed quantities");
+            
+            // Verify quality cascade effect (quantities should decrease through process)
+            for (int i = 1; i < qualityResults.Count; i++)
+            {
+                Assert.That(qualityResults[i].PassedQuantity, Is.LessThanOrEqualTo(qualityResults[i - 1].PassedQuantity),
+                    $"Operation {qualityResults[i].Operation} should not have more passed parts than previous operation");
+            }
+        }
+
+        [Test]
+        public async Task ManufacturingWorkflow_MultiPartBatch_ShouldProcessConcurrently()
+        {
+            // Arrange - Multiple parts going through manufacturing workflow concurrently
+            var batchParts = new[]
+            {
+                new { PartId = "BATCH_PART_001", Quantity = 50 },
+                new { PartId = "BATCH_PART_002", Quantity = 75 },
+                new { PartId = "BATCH_PART_003", Quantity = 100 },
+                new { PartId = "BATCH_PART_004", Quantity = 25 },
+                new { PartId = "BATCH_PART_005", Quantity = 60 }
+            };
+
+            var operation = "100"; // First manufacturing operation
+            var location = "BATCH_PROCESSING_LINE";
+            var user = "BatchTestUser";
+
+            // Setup database responses for batch processing
+            foreach (var part in batchParts)
+            {
+                _mockDatabaseService.Setup(s => s.ExecuteStoredProcedureAsync(
+                    "inv_inventory_Add_Item",
+                    It.Is<Dictionary<string, object>>(p =>
+                        p["p_PartID"].ToString() == part.PartId &&
+                        Convert.ToInt32(p["p_Quantity"]) == part.Quantity)))
+                    .ReturnsAsync(new DatabaseResult { Status = 1, Message = "Batch item added" });
+            }
+
+            // Act - Process batch concurrently
+            var batchTasks = batchParts.Select(async part =>
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_PartID"] = part.PartId,
+                    ["p_OperationNumber"] = operation,
+                    ["p_Quantity"] = part.Quantity,
+                    ["p_Location"] = location,
+                    ["p_User"] = user
+                };
+
+                return await _mockDatabaseService.Object.ExecuteStoredProcedureAsync(
+                    "inv_inventory_Add_Item", parameters);
+            });
+
+            var batchResults = await Task.WhenAll(batchTasks);
+
+            // Assert - All batch parts processed successfully
+            Assert.That(batchResults.Length, Is.EqualTo(5), "Should process all 5 batch parts");
+            Assert.That(batchResults.All(r => r.Status == 1), Is.True, "All batch parts should be processed successfully");
+
+            // Verify each part was processed
+            foreach (var part in batchParts)
+            {
+                _mockDatabaseService.Verify(s => s.ExecuteStoredProcedureAsync(
+                    "inv_inventory_Add_Item",
+                    It.Is<Dictionary<string, object>>(p =>
+                        p["p_PartID"].ToString() == part.PartId &&
+                        Convert.ToInt32(p["p_Quantity"]) == part.Quantity)),
+                    Times.Once, $"Part {part.PartId} should be processed once");
+            }
+        }
+
+        [Test]
+        public async Task ManufacturingWorkflow_WorkOrderTracking_ShouldMaintainTraceability()
+        {
+            // Arrange - Manufacturing workflow with work order tracking
+            var workOrder = "WO_2025_001";
+            var partId = "TRACED_PART_001";
+            var batchNumber = "BATCH_2025_A01";
+            var quantity = 200;
+
+            var traceabilityOperations = new[] { "90", "100", "110", "120" };
+
+            // Setup database responses for work order tracking
+            foreach (var operation in traceabilityOperations)
+            {
+                var traceabilityData = new DataTable();
+                traceabilityData.Columns.Add("WorkOrder", typeof(string));
+                traceabilityData.Columns.Add("PartID", typeof(string));
+                traceabilityData.Columns.Add("BatchNumber", typeof(string));
+                traceabilityData.Columns.Add("OperationNumber", typeof(string));
+                traceabilityData.Columns.Add("ProcessedQuantity", typeof(int));
+                traceabilityData.Columns.Add("Timestamp", typeof(DateTime));
+
+                traceabilityData.Rows.Add(workOrder, partId, batchNumber, operation, quantity, DateTime.Now);
+
+                _mockDatabaseService.Setup(s => s.ExecuteStoredProcedureAsync(
+                    "trace_workorder_Record_Operation",
+                    It.Is<Dictionary<string, object>>(p =>
+                        p["p_WorkOrder"].ToString() == workOrder &&
+                        p["p_OperationNumber"].ToString() == operation)))
+                    .ReturnsAsync(new DatabaseResult 
+                    { 
+                        Status = 1, 
+                        Data = traceabilityData, 
+                        Message = "Traceability recorded" 
+                    });
+            }
+
+            // Act - Record traceability for each operation
+            var traceabilityResults = new List<TraceabilityRecord>();
+            foreach (var operation in traceabilityOperations)
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_WorkOrder"] = workOrder,
+                    ["p_PartID"] = partId,
+                    ["p_BatchNumber"] = batchNumber,
+                    ["p_OperationNumber"] = operation,
+                    ["p_ProcessedQuantity"] = quantity,
+                    ["p_User"] = "TraceabilityTestUser"
+                };
+
+                var result = await _mockDatabaseService.Object.ExecuteStoredProcedureAsync(
+                    "trace_workorder_Record_Operation", parameters);
+
+                if (result.Status == 1 && result.Data.Rows.Count > 0)
+                {
+                    var row = result.Data.Rows[0];
+                    traceabilityResults.Add(new TraceabilityRecord
+                    {
+                        WorkOrder = row["WorkOrder"].ToString(),
+                        PartId = row["PartID"].ToString(),
+                        BatchNumber = row["BatchNumber"].ToString(),
+                        Operation = row["OperationNumber"].ToString(),
+                        ProcessedQuantity = Convert.ToInt32(row["ProcessedQuantity"]),
+                        Timestamp = Convert.ToDateTime(row["Timestamp"])
+                    });
+                }
+            }
+
+            // Assert - Complete traceability chain established
+            Assert.That(traceabilityResults.Count, Is.EqualTo(4), "Should record traceability for all 4 operations");
+            Assert.That(traceabilityResults.All(r => r.WorkOrder == workOrder), Is.True, "All records should have same work order");
+            Assert.That(traceabilityResults.All(r => r.PartId == partId), Is.True, "All records should have same part ID");
+            Assert.That(traceabilityResults.All(r => r.BatchNumber == batchNumber), Is.True, "All records should have same batch number");
+            
+            // Verify traceability sequence
+            var expectedOperations = new[] { "90", "100", "110", "120" };
+            var actualOperations = traceabilityResults.Select(r => r.Operation).ToArray();
+            Assert.That(actualOperations, Is.EqualTo(expectedOperations), "Operations should be recorded in correct sequence");
+        }
+
+        [Test]
+        public async Task ManufacturingWorkflow_InventoryLevel_ShouldMaintainAccuracy()
+        {
+            // Arrange - Verify inventory levels are maintained accurately throughout workflow
+            var partId = "INVENTORY_TRACKING_001";
+            var initialQuantity = 1000;
+            var consumedQuantity = 250;
+            var operations = new[] { "90", "100", "110", "120" };
+
+            // Setup inventory level responses
+            foreach (var operation in operations)
+            {
+                var inventoryData = new DataTable();
+                inventoryData.Columns.Add("CurrentQuantity", typeof(int));
+                inventoryData.Columns.Add("OperationNumber", typeof(string));
+                inventoryData.Rows.Add(initialQuantity - (Array.IndexOf(operations, operation) * consumedQuantity), operation);
+
+                _mockDatabaseService.Setup(s => s.ExecuteStoredProcedureAsync(
+                    "inv_inventory_Get_CurrentQty_ByPartIDandOperation",
+                    It.Is<Dictionary<string, object>>(p =>
+                        p["p_PartID"].ToString() == partId &&
+                        p["p_OperationNumber"].ToString() == operation)))
+                    .ReturnsAsync(new DatabaseResult 
+                    { 
+                        Status = 1, 
+                        Data = inventoryData, 
+                        Message = "Current quantity retrieved" 
+                    });
+            }
+
+            // Act - Check inventory levels at each operation
+            var inventoryLevels = new List<InventoryLevel>();
+            foreach (var operation in operations)
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    ["p_PartID"] = partId,
+                    ["p_OperationNumber"] = operation
+                };
+
+                var result = await _mockDatabaseService.Object.ExecuteStoredProcedureAsync(
+                    "inv_inventory_Get_CurrentQty_ByPartIDandOperation", parameters);
+
+                if (result.Status == 1 && result.Data.Rows.Count > 0)
+                {
+                    var row = result.Data.Rows[0];
+                    inventoryLevels.Add(new InventoryLevel
+                    {
+                        Operation = row["OperationNumber"].ToString(),
+                        CurrentQuantity = Convert.ToInt32(row["CurrentQuantity"])
+                    });
+                }
+            }
+
+            // Assert - Inventory levels decrease correctly through workflow
+            Assert.That(inventoryLevels.Count, Is.EqualTo(4), "Should track inventory at all 4 operations");
+            
+            // Verify inventory decreases at each step
+            for (int i = 1; i < inventoryLevels.Count; i++)
+            {
+                Assert.That(inventoryLevels[i].CurrentQuantity, Is.LessThan(inventoryLevels[i - 1].CurrentQuantity),
+                    $"Operation {inventoryLevels[i].Operation} should have less inventory than previous operation");
+            }
+
+            // Verify final inventory level
+            var finalLevel = inventoryLevels.Last();
+            var expectedFinalQuantity = initialQuantity - (operations.Length - 1) * consumedQuantity;
+            Assert.That(finalLevel.CurrentQuantity, Is.EqualTo(expectedFinalQuantity), 
+                "Final inventory quantity should match expected consumption calculation");
+        }
+
+        // Helper classes for test data
+        private class QualityCheckResult
+        {
+            public string Operation { get; set; } = "";
+            public int PassedQuantity { get; set; }
+            public int FailedQuantity { get; set; }
+            public string Description { get; set; } = "";
+        }
+
+        private class TraceabilityRecord
+        {
+            public string WorkOrder { get; set; } = "";
+            public string PartId { get; set; } = "";
+            public string BatchNumber { get; set; } = "";
+            public string Operation { get; set; } = "";
+            public int ProcessedQuantity { get; set; }
+            public DateTime Timestamp { get; set; }
+        }
+
+        private class InventoryLevel
+        {
+            public string Operation { get; set; } = "";
+            public int CurrentQuantity { get; set; }
+        }
+    }
+}

@@ -29,6 +29,7 @@ public interface IQuickButtonsService
     Task<bool> ReorderQuickButtonsAsync(string userId, List<QuickButtonData> reorderedButtons);
     Task<bool> AddQuickButtonFromOperationAsync(string userId, string partId, string operation, int quantity, string? notes = null);
     Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity);
+    Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity, string transactionType);
     Task<bool> CreateQuickButtonAsync(string partId, string operation, string location, int quantity, string? notes = null);
     Task<bool> ExportQuickButtonsAsync(string userId, string fileName = "");
     Task<bool> ImportQuickButtonsAsync(string userId, string filePath);
@@ -46,6 +47,7 @@ public interface IQuickButtonsService
     
     List<QuickButtonData> GetQuickButtons();
     event EventHandler<QuickButtonsChangedEventArgs>? QuickButtonsChanged;
+    event EventHandler<SessionTransactionEventArgs>? SessionTransactionAdded;
 }
 
 /// <summary>
@@ -86,6 +88,7 @@ public class QuickButtonsService : IQuickButtonsService
     private const string DefaultItemType = "WIP"; // Align with stored procedure expectation
 
     public event EventHandler<QuickButtonsChangedEventArgs>? QuickButtonsChanged;
+    public event EventHandler<SessionTransactionEventArgs>? SessionTransactionAdded;
 
     public QuickButtonsService(
         IDatabaseService databaseService,
@@ -630,6 +633,16 @@ public class QuickButtonsService : IQuickButtonsService
     /// </summary>
     public async Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity)
     {
+        // Default to IN transaction type for backward compatibility
+        return await AddTransactionToLast10Async(userId, partId, operation, quantity, "IN");
+    }
+
+    /// <summary>
+    /// Adds a transaction to the user's last 10 transactions for quick button creation.
+    /// Called automatically when inventory operations are completed with specified transaction type.
+    /// </summary>
+    public async Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity, string transactionType)
+    {
         try
         {
             _logger.LogDebug("Adding transaction to last 10 for user: {UserId}, Part: {PartId}, Operation: {Operation}, Quantity: {Quantity}", 
@@ -637,7 +650,7 @@ public class QuickButtonsService : IQuickButtonsService
 
             var parameters = new Dictionary<string, object>
             {
-                ["p_TransactionType"] = "IN", // Default transaction type based on user intent
+                ["p_TransactionType"] = transactionType, // Use provided transaction type
                 ["p_BatchNumber"] = DateTime.Now.ToString("yyyyMMddHHmmss"), // Generate batch number
                 ["p_PartID"] = partId,
                 ["p_FromLocation"] = string.Empty, // Use empty string instead of DBNull
@@ -678,6 +691,18 @@ public class QuickButtonsService : IQuickButtonsService
                         Operation = operation,
                         Quantity = quantity
                     }
+                });
+
+                // Raise event to notify QuickButtonsViewModel to add session transaction
+                SessionTransactionAdded?.Invoke(this, new SessionTransactionEventArgs
+                {
+                    UserId = userId,
+                    PartId = partId,
+                    Operation = operation,
+                    Location = "Various", // For removal operations, location is not specific
+                    Quantity = quantity,
+                    TransactionType = transactionType,
+                    Notes = $"Transaction logged via {transactionType} operation"
                 });
 
                 return true;
@@ -1570,6 +1595,20 @@ public class QuickButtonsChangedEventArgs : EventArgs
     public string UserId { get; set; } = string.Empty;
     public QuickButtonChangeType ChangeType { get; set; }
     public QuickButtonData? AffectedButton { get; set; }
+}
+
+/// <summary>
+/// Event arguments for session transaction notifications to update real-time history
+/// </summary>
+public class SessionTransactionEventArgs : EventArgs
+{
+    public string UserId { get; set; } = string.Empty;
+    public string PartId { get; set; } = string.Empty;
+    public string Operation { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public string TransactionType { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
 }
 
 /// <summary>

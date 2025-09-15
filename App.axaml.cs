@@ -13,6 +13,7 @@ using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Views;
+using CommunityToolkit.Mvvm.Input;
 
 
 
@@ -40,6 +41,9 @@ public partial class App : Application
         try
         {
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] App.Initialize() started");
+            
+            // Set up global exception handlers for emergency shutdown
+            SetupGlobalExceptionHandlers();
             
             // Load XAML with proper error handling
             AvaloniaXamlLoader.Load(this);
@@ -443,6 +447,184 @@ public partial class App : Application
         {
             // Safe fallback if Design class isn't available
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Sets up global exception handlers for emergency shutdown capability
+    /// when UI becomes unresponsive or critical errors occur
+    /// </summary>
+    private void SetupGlobalExceptionHandlers()
+    {
+        try
+        {
+            // Handle unhandled exceptions in the current AppDomain
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            
+            // Handle unobserved task exceptions
+            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+            
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Global exception handlers configured for emergency shutdown");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Error setting up global exception handlers: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Handles unhandled exceptions with emergency shutdown capability
+    /// </summary>
+    private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        try
+        {
+            var exception = e.ExceptionObject as Exception;
+            var message = exception?.Message ?? "Unknown critical error";
+            
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] CRITICAL: Unhandled exception occurred - {message}");
+            _logger?.LogCritical(exception, "Unhandled exception occurred - attempting emergency shutdown");
+
+            // Try to show emergency error overlay if possible
+            await TryShowEmergencyErrorOverlay(message, exception?.ToString() ?? "No details available");
+        }
+        catch (Exception emergencyEx)
+        {
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Emergency error handling failed: {emergencyEx.Message}");
+        }
+        finally
+        {
+            // If it's terminating, force shutdown
+            if (e.IsTerminating)
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] AppDomain is terminating - forcing immediate shutdown");
+                Environment.Exit(1);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles unobserved task exceptions
+    /// </summary>
+    private async void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+    {
+        try
+        {
+            var message = e.Exception.InnerException?.Message ?? e.Exception.Message;
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] WARNING: Unobserved task exception - {message}");
+            _logger?.LogError(e.Exception, "Unobserved task exception occurred");
+
+            // Try to show emergency error overlay for severe task exceptions
+            if (e.Exception.InnerExceptions.Count > 3) // Multiple exceptions might indicate system instability
+            {
+                await TryShowEmergencyErrorOverlay("Multiple Task Failures", 
+                    $"Multiple background tasks have failed. The application may be unstable.\n\n{message}");
+            }
+            
+            // Mark as observed to prevent app termination
+            e.SetObserved();
+        }
+        catch (Exception emergencyEx)
+        {
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Emergency task exception handling failed: {emergencyEx.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Attempts to show an emergency error overlay with shutdown options
+    /// </summary>
+    private async Task TryShowEmergencyErrorOverlay(string message, string details)
+    {
+        try
+        {
+            // Try to get the success overlay service for emergency display
+            var overlayService = Program.GetService<Services.ISuccessOverlayService>();
+            if (overlayService != null)
+            {
+                await overlayService.ShowSuccessOverlayInMainViewAsync(
+                    null, // sourceControl
+                    $"Critical Error: {message}",
+                    $"Emergency shutdown available.\n\n{details}",
+                    "AlertCircle", // Error icon
+                    0, // No auto-dismiss for critical errors
+                    true // isError = true (shows Exit/Continue buttons)
+                );
+                
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Emergency error overlay displayed");
+            }
+            else
+            {
+                // Fallback: Try direct UI thread emergency dialog
+                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                {
+                    // Create simple emergency dialog
+                    var dialog = new Window
+                    {
+                        Title = "Critical Error - Emergency Shutdown",
+                        Width = 400,
+                        Height = 200,
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    };
+
+                    var exitButton = new Button 
+                    { 
+                        Content = "Exit Application",
+                        Margin = new Avalonia.Thickness(4)
+                    };
+                    exitButton.Click += (_, _) => Environment.Exit(1);
+
+                    var continueButton = new Button 
+                    { 
+                        Content = "Continue",
+                        Margin = new Avalonia.Thickness(4)
+                    };
+                    continueButton.Click += (_, _) => dialog.Close();
+
+                    dialog.Content = new StackPanel
+                    {
+                        Spacing = 16,
+                        Margin = new Avalonia.Thickness(16),
+                        Children = 
+                        {
+                            new TextBlock { Text = $"Critical Error: {message}", FontWeight = Avalonia.Media.FontWeight.Bold },
+                            new TextBlock { Text = details, TextWrapping = Avalonia.Media.TextWrapping.Wrap },
+                            new StackPanel
+                            {
+                                Orientation = Avalonia.Layout.Orientation.Horizontal,
+                                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                                Spacing = 8,
+                                Children = { exitButton, continueButton }
+                            }
+                        }
+                    };
+                    
+                    // Try to show as dialog with main window, fallback to Show() if dialog fails
+                    try
+                    {
+                        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
+                        {
+                            await dialog.ShowDialog(desktop.MainWindow);
+                        }
+                        else
+                        {
+                            dialog.Show();
+                        }
+                    }
+                    catch
+                    {
+                        dialog.Show(); // Fallback to non-modal
+                    }
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Failed to show emergency error overlay: {ex.Message}");
+            
+            // Last resort: Console prompt for emergency action
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] EMERGENCY: Press Ctrl+C to terminate or wait 10 seconds for automatic shutdown");
+            await Task.Delay(10000);
+            Environment.Exit(1);
         }
     }
 }

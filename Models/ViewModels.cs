@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace MTM_WIP_Application_Avalonia.Models;
 
@@ -11,8 +12,9 @@ namespace MTM_WIP_Application_Avalonia.Models;
 /// Comprehensive inventory item model matching all database columns.
 /// Users can choose which columns to show/hide in the DataGrid.
 /// </summary>
-public class InventoryItem
+public class InventoryItem : INotifyPropertyChanged
 {
+    private bool _isSelected;
     // Core identification
     public int Id { get; set; }
     public string PartId { get; set; } = string.Empty;
@@ -42,10 +44,35 @@ public class InventoryItem
     public string Vendor { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Gets or sets whether this inventory item is selected in the UI.
+    /// Used for multi-selection scenarios in CustomDataGrid.
+    /// </summary>
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (_isSelected != value)
+            {
+                _isSelected = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets whether this inventory item has notes.
+    /// Used for displaying note indicator in the UI.
+    /// </summary>
+    public bool HasNotes => !string.IsNullOrWhiteSpace(Notes);
+
     // Display properties
     public string DisplayText => $"({Operation}) - [{PartId} x {Quantity}]";
     public string ShortDescription => $"{PartId} ({Quantity})";
     public string FullDescription => $"{PartId} - {Location} - Op: {Operation} - Qty: {Quantity}";
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 }
 
 /// <summary>

@@ -2,6 +2,7 @@
 
 <!-- COPILOT AUTO-INCLUDE SYSTEM -->
 <!-- When this file is referenced via #file:copilot-instructions.md, -->
+
 <!-- automatically include all related instruction files for comprehensive AI assistance: -->
 
 <!-- Core Manufacturing Application Instructions -->
@@ -43,6 +44,7 @@
 <!-- #file:.github/copilot/context/mtm-database-procedures.md -->
 
 <!-- Development Templates and Patterns -->
+
 <!-- #file:.github/copilot/templates/mtm-feature-request.md -->
 <!-- #file:.github/copilot/templates/mtm-ui-component.md -->
 <!-- #file:.github/copilot/templates/mtm-viewmodel-creation.md -->

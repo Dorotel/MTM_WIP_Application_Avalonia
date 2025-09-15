@@ -1,3 +1,5 @@
+
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -5,17 +7,22 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
+using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
+using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.Views;
 using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Threading;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace MTM_WIP_Application_Avalonia.ViewModels;
+namespace API.ViewModels.MainForm;
 
 /// <summary>
 /// ViewModel for the inventory removal interface (Control_RemoveTab).
@@ -33,6 +40,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     private readonly IRemoveService _removeService;
     private readonly IPrintService? _printService;
     private readonly INavigationService? _navigationService;
+    private readonly IServiceProvider _serviceProvider;
 
 
     #region Observable Collections (InventoryTabView Pattern)
@@ -162,6 +170,42 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     #endregion
 
+    #region Note Editor Properties
+
+    /// <summary>
+    /// Indicates if the note editor overlay is currently visible
+    /// </summary>
+    [ObservableProperty]
+    private bool _isNoteEditorVisible;
+
+    /// <summary>
+    /// Currently selected inventory item for note editing
+    /// </summary>
+    [ObservableProperty]
+    private InventoryItem? _noteEditorItem;
+
+    /// <summary>
+    /// Note editor view model instance
+    /// </summary>
+    [ObservableProperty]
+    private NoteEditorViewModel? _noteEditorViewModel;
+
+    /// <summary>
+    /// Current edit dialog ViewModel instance for comprehensive inventory editing.
+    /// Used for managing the EditInventoryView dialog lifecycle and data binding.
+    /// </summary>
+    [ObservableProperty]
+    private EditInventoryViewModel? _editDialogViewModel;
+
+    /// <summary>
+    /// Controls the visibility of the edit dialog overlay.
+    /// Used by the UI to show/hide the comprehensive inventory edit dialog.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isEditDialogVisible;
+
+    #endregion
+
     #region Undo Functionality
 
 
@@ -201,6 +245,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         ISuccessOverlayService successOverlayService,
         IQuickButtonsService quickButtonsService,
         IRemoveService removeService,
+        IServiceProvider serviceProvider,
         ILogger<RemoveItemViewModel> logger,
         IPrintService? printService = null,
         INavigationService? navigationService = null)
@@ -212,6 +257,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         _successOverlayService = successOverlayService ?? throw new ArgumentNullException(nameof(successOverlayService));
         _quickButtonsService = quickButtonsService ?? throw new ArgumentNullException(nameof(quickButtonsService));
         _removeService = removeService ?? throw new ArgumentNullException(nameof(removeService));
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _printService = printService;
         _navigationService = navigationService;
 
@@ -338,13 +384,13 @@ public partial class RemoveItemViewModel : BaseViewModel
                         Logger.LogDebug("Adding {Count} items to InventoryItems collection", result.Value.Count);
                         foreach (var item in result.Value)
                         {
-                            Logger.LogDebug("Adding item - ID: {ID}, PartID: {PartID}, Location: {Location}, Operation: {Operation}, Quantity: {Quantity}", 
+                            Logger.LogDebug("Adding item - ID: {ID}, PartID: {PartID}, Location: {Location}, Operation: {Operation}, Quantity: {Quantity}",
                                 item.Id, item.PartId, item.Location, item.Operation, item.Quantity);
                             InventoryItems.Add(item);
                         }
                         Logger.LogDebug("InventoryItems collection now has {Count} items", InventoryItems.Count);
                     }
-                    
+
                     // Manually trigger HasInventoryItems property change notification
                     OnPropertyChanged(nameof(HasInventoryItems));
                     Logger.LogDebug("HasInventoryItems property changed, value: {HasItems}", HasInventoryItems);
@@ -373,7 +419,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogInformation("Resetting search criteria and refreshing data via RemoveService");
+            Logger.LogInformation("Resetting search criteria and clearing CustomDataGrid via RemoveService");
 
             // Clear search criteria
             SelectedPart = null;
@@ -381,7 +427,15 @@ public partial class RemoveItemViewModel : BaseViewModel
             PartText = string.Empty;
             OperationText = string.Empty;
 
-            // Use RemoveService to refresh inventory data
+            // Clear the InventoryItems collection to reset CustomDataGrid display
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                InventoryItems.Clear();
+                SelectedItems.Clear();
+                SelectedItem = null;
+            });
+
+            // Use RemoveService to refresh inventory data (clears RemoveService collection too)
             var result = await _removeService.RefreshInventoryAsync().ConfigureAwait(false);
 
             if (result.IsSuccess)
@@ -397,11 +451,15 @@ public partial class RemoveItemViewModel : BaseViewModel
             // Reload master data
             await LoadData().ConfigureAwait(false);
 
-            Logger.LogInformation("Search criteria reset and data refreshed successfully");
+            // Manually trigger property change notifications
+            OnPropertyChanged(nameof(HasInventoryItems));
+            OnPropertyChanged(nameof(CanDelete));
+
+            Logger.LogInformation("Search criteria reset and CustomDataGrid cleared successfully");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to reset search criteria and refresh data");
+            Logger.LogError(ex, "Failed to reset search criteria and clear CustomDataGrid");
             throw new ApplicationException("Failed to reset inventory data", ex);
         }
     }
@@ -433,9 +491,16 @@ public partial class RemoveItemViewModel : BaseViewModel
             {
                 var removalResult = result.Value!;
 
-                // Clear selection since items were deleted
+                // Remove deleted items from ViewModel's collection and clear selection
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
+                    // Remove successfully deleted items from the InventoryItems collection
+                    foreach (var removedItem in removalResult.SuccessfulRemovals)
+                    {
+                        InventoryItems.Remove(removedItem);
+                    }
+
+                    // Clear selection since items were deleted
                     SelectedItems.Clear();
                     SelectedItem = null;
                 });
@@ -554,6 +619,159 @@ public partial class RemoveItemViewModel : BaseViewModel
     }
 
     /// <summary>
+    /// Deletes a single inventory item from DataGrid action button.
+    /// Used by CustomDataGrid DeleteItemCommand for individual row delete operations.
+    /// </summary>
+    [RelayCommand]
+    private async Task DeleteSingleItem(InventoryItem? item)
+    {
+        if (item == null)
+        {
+            Logger.LogWarning("DeleteSingleItem called with null item");
+            return;
+        }
+
+        try
+        {
+            Logger.LogInformation("Initiating single item delete operation via RemoveService for item: {PartId}", item.PartId);
+
+            // Add timeout to prevent UI freeze
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // 30 second timeout
+
+            // Delegate to RemoveService for business logic with timeout
+            var removeTask = _removeService.RemoveInventoryItemAsync(
+                item,
+                _applicationState.CurrentUser,
+                "Removed via CustomDataGrid action button"
+            );
+
+            var result = await removeTask.ConfigureAwait(false);
+
+            if (result.IsSuccess)
+            {
+                var removalResult = result.Value!;
+
+                // Remove the item from ViewModel's collection on UI thread
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    InventoryItems.Remove(item);
+
+                    // Also remove from selected items if it was selected
+                    if (SelectedItems.Contains(item))
+                    {
+                        SelectedItems.Remove(item);
+                    }
+
+                    // Clear selected item if it was the one deleted
+                    if (SelectedItem == item)
+                    {
+                        SelectedItem = null;
+                    }
+                });
+
+                // Show success overlay for successful operation
+                if (removalResult.HasSuccesses)
+                {
+                    var message = "Successfully removed inventory item";
+                    var details = $"Part ID: {item.PartId}\nOperation: {item.Operation}\nLocation: {item.Location}\nQuantity: {item.Quantity}";
+
+                    // Trigger success overlay if service is available
+                    if (_successOverlayService != null)
+                    {
+                        await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                            null, // sourceControl - will find MainView
+                            message,
+                            details,
+                            "CheckCircle",
+                            4000 // 4 seconds for removal confirmation
+                        );
+                    }
+
+                    Logger.LogInformation("Single item delete operation completed successfully via RemoveService");
+                }
+
+                // Update UI state - ViewModel collection updated, notify property changes
+                OnPropertyChanged(nameof(HasInventoryItems));
+                OnPropertyChanged(nameof(CanDelete));
+                OnPropertyChanged(nameof(HasUndoItems));
+                OnPropertyChanged(nameof(CanUndo));
+            }
+            else
+            {
+                Logger.LogError("Single item delete operation failed: {Message}", result.Message);
+
+                // Handle delete failure gracefully without throwing
+                await ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"Delete operation failed: {result.Message}"),
+                    $"Failed to delete inventory item {item.PartId}",
+                    _applicationState.CurrentUser
+                ).ConfigureAwait(false);
+
+                // Show error overlay to user
+                if (_successOverlayService != null)
+                {
+                    await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                        null,
+                        "Delete Failed",
+                        $"Could not delete {item.PartId}: {result.Message}",
+                        "AlertCircle", // Error icon
+                        5000, // 5 seconds
+                        true // isError = true
+                    );
+                }
+
+                return; // Exit without throwing
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Logger.LogWarning("Delete operation timed out for item: {PartId}", item.PartId);
+
+            await ErrorHandling.HandleErrorAsync(
+                new TimeoutException("Delete operation timed out after 30 seconds"),
+                $"Delete timeout for item {item.PartId}",
+                _applicationState.CurrentUser
+            ).ConfigureAwait(false);
+
+            // Show timeout error overlay
+            if (_successOverlayService != null)
+            {
+                await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                    null,
+                    "Delete Timeout",
+                    $"Delete operation for {item.PartId} timed out. Please try again.",
+                    "ClockAlert", // Timeout icon
+                    5000, // 5 seconds
+                    true // isError = true
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected error during single item deletion for {PartId}", item.PartId);
+
+            // Don't throw - handle gracefully with user notification
+            await ErrorHandling.HandleErrorAsync(ex,
+                $"Failed to delete inventory item {item.PartId}",
+                _applicationState.CurrentUser
+            ).ConfigureAwait(false);
+
+            // Show error overlay to user using success overlay with error icon
+            if (_successOverlayService != null)
+            {
+                await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                    null,
+                    "Delete Error",
+                    $"Unexpected error deleting {item.PartId}: {ex.Message}",
+                    "AlertCircle", // Error icon
+                    5000, // 5 seconds
+                    true // isError = true
+                );
+            }
+        }
+    }
+
+    /// <summary>
     /// Prints current inventory view with formatted output using Print Service
     /// </summary>
     [RelayCommand(CanExecute = nameof(HasInventoryItems))]
@@ -574,7 +792,7 @@ public partial class RemoveItemViewModel : BaseViewModel
             var dataTable = ConvertInventoryToDataTable(InventoryItems);
 
             // Get or create PrintViewModel
-            var printViewModel = Program.GetOptionalService<PrintViewModel>();
+            var printViewModel = _serviceProvider.GetService<PrintViewModel>();
             if (printViewModel == null)
             {
                 Logger.LogError("PrintViewModel not available from DI container");
@@ -588,7 +806,7 @@ public partial class RemoveItemViewModel : BaseViewModel
             printViewModel.OriginalViewContext = this; // Store current context for navigation back
 
             // Create and navigate to PrintView
-            var printView = new Views.PrintView
+            var printView = new PrintView
             {
                 DataContext = printViewModel
             };
@@ -604,7 +822,245 @@ public partial class RemoveItemViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error initiating print operation");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
+            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
+        }
+    }
+
+    /// <summary>
+    /// Opens the note editor overlay for the specified inventory item.
+    /// Used by CustomDataGrid ReadNoteCommand for individual row note editing.
+    /// </summary>
+    [RelayCommand]
+    private async Task ReadNote(InventoryItem? item)
+    {
+        if (item == null)
+        {
+            Logger.LogWarning("ReadNote called with null item");
+            return;
+        }
+
+        try
+        {
+            Logger.LogInformation("Opening note editor for item: PartID={PartId}, Operation={Operation}, Location={Location}",
+                item.PartId, item.Operation, item.Location);
+
+            // Store the item being edited
+            NoteEditorItem = item;
+
+            // Create and configure note editor ViewModel
+            var noteEditorViewModel = _serviceProvider.GetService<NoteEditorViewModel>();
+            if (noteEditorViewModel == null)
+            {
+                Logger.LogError("NoteEditorViewModel not available from DI container");
+                await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException("Note editor not available"),
+                    "Note Editor Error",
+                    _applicationState.CurrentUser);
+                return;
+            }
+
+            // Initialize with inventory item data - using full parameter version for proper stored procedure call
+            await noteEditorViewModel.InitializeAsync(
+                item.Id,
+                item.PartId ?? string.Empty,
+                item.Operation ?? string.Empty,
+                item.Location ?? string.Empty,
+                item.Notes ?? string.Empty,
+                item.BatchNumber ?? string.Empty,
+                item.User ?? "SYSTEM",
+                isReadOnly: false // Allow editing by default
+            );
+
+            // Subscribe to note edit completion event
+            noteEditorViewModel.NoteEditCompleted -= OnNoteEditCompleted;
+            noteEditorViewModel.NoteEditCompleted += OnNoteEditCompleted;
+
+            // Set the ViewModel and show the overlay
+            NoteEditorViewModel = noteEditorViewModel;
+            IsNoteEditorVisible = true;
+
+            Logger.LogInformation("Note editor overlay opened successfully for {PartId}", item.PartId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to open note editor for item: {PartId}", item?.PartId);
+            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Note Editor Error", _applicationState.CurrentUser);
+        }
+    }
+
+    /// <summary>
+    /// Handles note edit completion from the NoteEditorViewModel
+    /// </summary>
+    private async void OnNoteEditCompleted(object? sender, NoteEditorResult e)
+    {
+        try
+        {
+            Logger.LogInformation("Note edit completed for inventory ID={InventoryId}, Success={Success}",
+                e.InventoryId, e.Success);
+
+            if (e.Success && NoteEditorItem != null)
+            {
+                // Update the inventory item's Notes property
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    if (NoteEditorItem != null)
+                    {
+                        NoteEditorItem.Notes = e.UpdatedNote ?? string.Empty;
+                        Logger.LogDebug("Updated inventory item notes for {PartId}", NoteEditorItem.PartId);
+                    }
+                });
+
+                // Optionally refresh the search results to show updated data from database
+                if (!string.IsNullOrWhiteSpace(SelectedPart))
+                {
+                    Logger.LogDebug("Refreshing search results to reflect database changes");
+                    await Search().ConfigureAwait(false);
+                }
+            }
+            else if (!e.Success)
+            {
+                Logger.LogWarning("Note edit was cancelled or failed for inventory ID={InventoryId}", e.InventoryId);
+            }
+
+            // Close the overlay
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                IsNoteEditorVisible = false;
+                NoteEditorItem = null;
+                NoteEditorViewModel = null;
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling note edit completion");
+            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Note Editor Error", _applicationState.CurrentUser);
+        }
+    }
+
+    /// <summary>
+    /// Command to edit an inventory item with comprehensive editing dialog.
+    /// Opens the EditInventoryView dialog for full field editing with validation.
+    /// </summary>
+    [RelayCommand]
+    private async Task EditItem(InventoryItem? item)
+    {
+        if (item == null)
+        {
+            Logger.LogWarning("EditItem called with null item");
+            return;
+        }
+
+        try
+        {
+            Logger.LogInformation("Opening comprehensive edit dialog for item: PartID={PartId}, Operation={Operation}, Location={Location}",
+                item.PartId, item.Operation, item.Location);
+
+            // Get EditInventoryViewModel from DI container
+            var editViewModel = _serviceProvider.GetRequiredService<EditInventoryViewModel>();
+
+            // Initialize the dialog with the inventory item
+            await editViewModel.InitializeAsync(item.Id);
+
+            // Subscribe to dialog events
+            editViewModel.DialogClosed -= OnEditDialogClosed;
+            editViewModel.DialogClosed += OnEditDialogClosed;
+            editViewModel.InventorySaved -= OnInventoryItemSaved;
+            editViewModel.InventorySaved += OnInventoryItemSaved;
+
+            // Show the edit dialog (this would typically be handled by a dialog service)
+            // For now, we'll implement a simple property-based approach
+            EditDialogViewModel = editViewModel;
+            IsEditDialogVisible = true;
+
+            Logger.LogInformation("Edit dialog opened successfully for {PartId}", item.PartId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to open edit dialog for item: {PartId}", item?.PartId);
+            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Edit Dialog Error", _applicationState.CurrentUser);
+        }
+    }
+
+    /// <summary>
+    /// Handles edit dialog closure event.
+    /// </summary>
+    private void OnEditDialogClosed(object? sender, EventArgs e)
+    {
+        try
+        {
+            Logger.LogInformation("Edit dialog closed");
+
+            // Clean up dialog
+            if (EditDialogViewModel != null)
+            {
+                EditDialogViewModel.DialogClosed -= OnEditDialogClosed;
+                EditDialogViewModel.InventorySaved -= OnInventoryItemSaved;
+            }
+
+            EditDialogViewModel = null;
+            IsEditDialogVisible = false;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling edit dialog closure");
+        }
+    }
+
+    /// <summary>
+    /// Handles successful inventory item save event.
+    /// Refreshes the data grid to show updated information.
+    /// </summary>
+    private async void OnInventoryItemSaved(object? sender, InventorySavedEventArgs e)
+    {
+        try
+        {
+            var partId = e.SavedItem?.PartId ?? "Unknown";
+            Logger.LogInformation("Inventory item saved successfully: {PartId}, refreshing data", partId);
+
+            // Refresh the current search to show updated data
+            await RefreshCurrentData();
+
+            // Show success message using the correct service method signature
+            await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                null, // Control parameter - not needed for this usage
+                $"Successfully updated inventory item: {e.SavedItem?.PartId ?? e.PartId}",
+                "Item details updated successfully",
+                "CheckCircle", // Icon kind
+                2500 // Duration in milliseconds
+            );
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling inventory item save completion");
+            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Data Refresh Error", _applicationState.CurrentUser);
+        }
+    }
+
+    /// <summary>
+    /// Refreshes the current inventory data to reflect any changes.
+    /// </summary>
+    private async Task RefreshCurrentData()
+    {
+        try
+        {
+            // If we have current search criteria, re-run the search
+            if (!string.IsNullOrWhiteSpace(SelectedPart) || !string.IsNullOrWhiteSpace(SelectedOperation))
+            {
+                Logger.LogDebug("Refreshing search results with current criteria");
+                await Search();
+            }
+            else
+            {
+                Logger.LogDebug("No active search criteria, clearing results");
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    InventoryItems.Clear();
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to refresh inventory data");
         }
     }
 
@@ -821,7 +1277,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         Logger.LogError(ex, "Error in RemoveItemViewModel operation");
 
         // Present user-friendly error message via centralized error service
-        _ = Services.ErrorHandling.HandleErrorAsync(ex, "Remove Operation", _applicationState.CurrentUser);
+        _ = MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Remove Operation", _applicationState.CurrentUser);
 
         // Update UI state to reflect error
         // Note: StatusMessage property may need to be added to this ViewModel for UI feedback
@@ -1019,4 +1475,5 @@ public partial class RemoveItemViewModel : BaseViewModel
     }
 
     #endregion
-}
+    }
+

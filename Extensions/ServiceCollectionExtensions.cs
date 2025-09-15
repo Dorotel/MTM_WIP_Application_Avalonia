@@ -10,6 +10,7 @@ using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Services;
+using API.ViewModels.MainForm;
 
 namespace MTM_WIP_Application_Avalonia.Extensions;
 
@@ -83,6 +84,9 @@ public static class ServiceCollectionExtensions
         // Register File Selection service - singleton for unified file operations across application
         services.TryAddSingleton<IFileSelectionService, FileSelectionService>();
         
+        // Register Inventory Editing service - singleton for comprehensive inventory editing operations
+        services.TryAddSingleton<IInventoryEditingService, InventoryEditingService>();
+        
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
         services.TryAddTransient<MainViewViewModel>();
@@ -102,6 +106,9 @@ public static class ServiceCollectionExtensions
         
         // Overlay ViewModels  
         services.TryAddTransient<NewQuickButtonOverlayViewModel>();
+        services.TryAddTransient<NoteEditorViewModel>();
+        services.TryAddTransient<ConfirmationOverlayViewModel>();
+        services.TryAddTransient<EditInventoryViewModel>();
         
         // SettingsForm ViewModels
         services.TryAddTransient<SettingsViewModel>();

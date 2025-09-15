@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace MTM_Shared_Logic.Models
@@ -83,12 +84,15 @@ namespace MTM_Shared_Logic.Models
     /// Maps to inv_inventory table.
     /// Operations are stored as string numbers (e.g., "90", "100", "110").
     /// </summary>
-    public class InventoryItem
+    public class InventoryItem : INotifyPropertyChanged
     {
+        private bool _isSelected;
+        
         public int ID { get; set; }
         public string PartID { get; set; } = string.Empty;
         
-        // Add PartId property for compatibility
+        // Add compatibility properties
+        public int Id => ID; // For compatibility
         public string PartId => PartID;
         
         public string Location { get; set; } = string.Empty;
@@ -110,10 +114,35 @@ namespace MTM_Shared_Logic.Models
         public string? Notes { get; set; }
 
         /// <summary>
+        /// Gets or sets whether this inventory item is selected in the UI.
+        /// Used for multi-selection scenarios in CustomDataGrid.
+        /// </summary>
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (_isSelected != value)
+                {
+                    _isSelected = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets whether this inventory item has notes.
+        /// Used for displaying note indicator in the UI.
+        /// </summary>
+        public bool HasNotes => !string.IsNullOrWhiteSpace(Notes);
+
+        /// <summary>
         /// Gets the display text for the inventory item in lists.
         /// Format: (Operation) - [PartID x Quantity]
         /// </summary>
         public string DisplayText => $"({Operation}) - [{PartID} x {Quantity}]";
+
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 
     /// <summary>

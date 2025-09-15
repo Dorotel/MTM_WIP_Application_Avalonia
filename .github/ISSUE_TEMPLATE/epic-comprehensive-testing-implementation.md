@@ -478,6 +478,101 @@ When complete, the MTM application will have:
 
 ---
 
+## 📊 Progress Reporting Requirements
+
+All progress updates during testing implementation must use a simple, standardized format for maximum clarity and efficiency:
+
+### Required Update Report Format
+```
+## Testing Implementation Progress Report
+
+**Progress**: [Completed Tests] / [Total Tests] ([Percentage]%)
+**Current Phase**: [Phase Number] - [Phase Name]  
+**Current Task**: [Current Testing Task] - [Brief Task Description]
+
+**Implementation Plan Updated**: ✅ Tasks [Start-Number] through [End-Number] marked complete
+**Task Status**: [Number] testing tasks updated with completion dates
+
+**Relevant Notes**: 
+- [Key testing observation or issue encountered]
+- [Important testing decision made or pattern discovered]
+- [Any testing blockers or dependencies identified]
+
+**Completed Test Files This Session**:
+- [Full test file path] - [Brief description of test coverage]
+- [Full test file path] - [Brief description of test coverage]
+- [Additional test files as applicable]
+
+**Next Actions**: 
+- [Immediate next testing task to be executed]
+- [Any test infrastructure preparation needed]
+- Update testing progress tracking for next batch of tests
+```
+
+### Testing Progress Standards
+- Updates required every 5 completed testing tasks (at each checkpoint)
+- Keep test descriptions concise and actionable
+- Focus on concrete testing progress rather than process details
+- Highlight any test failures, coverage gaps, or unexpected testing discoveries
+
+## Agent-Driven Testing Implementation Prompt
+
+When executing this testing epic as an agent-driven implementation, use the following prompt for systematic execution:
+
+```prompt
+# MTM Testing Infrastructure Implementation - Phase 2 Execution
+
+## Context
+You are executing the MTM Comprehensive Testing Infrastructure Implementation - Phase 2. This is a comprehensive testing project covering 5 testing tiers (Unit, Integration, UI, Database, Performance) plus Cross-Platform validation for the MTM WIP Application.
+
+## Your Testing Mission
+Execute testing tasks systematically following the epic implementation plan. You must:
+
+1. **Follow the exact testing tier sequence** outlined in the implementation phases
+2. **Provide testing progress reports** every 5 completed tasks using the standardized format
+3. **Create comprehensive test files** for all ViewModels, Services, Views, and stored procedures
+4. **Validate test coverage and quality** before proceeding to next testing tier
+5. **Maintain testing standards** and MTM architecture compliance throughout
+
+## Critical Testing Requirements
+- **Follow MTM patterns** - MVVM Community Toolkit, stored procedures only, Avalonia syntax
+- **Achieve 95%+ code coverage** on ViewModels and Services
+- **Test all 45+ stored procedures** for performance and integrity
+- **Implement cross-platform testing** for Windows, macOS, Linux, Android
+- **Maintain manufacturing domain context** in all test scenarios
+- **Update progress tracking** in real-time to avoid duplicate testing efforts
+
+## Testing Execution Process
+1. **Read the full testing epic** to understand scope and coverage requirements
+2. **Check existing test completion status** before starting any test development
+3. **Start with Phase 2A, Tier 1** - Unit testing for ViewModels and Services
+4. **Execute testing tiers sequentially** within each phase
+5. **IMMEDIATELY update progress tracking** when tests are completed
+6. **Report testing progress** at each checkpoint (every 5 testing tasks)
+7. **Validate test quality and coverage** before marking tasks as complete
+8. **Update the epic documentation** with completion dates and test metrics
+
+## Testing Success Metrics
+- **500+ comprehensive tests** across all 5 testing tiers
+- **95%+ code coverage** on critical manufacturing workflows
+- **<200ms response time** validation for all manufacturing operations
+- **100% cross-platform compatibility** on Windows, macOS, Linux
+- **Zero false positive test failures** in automated test runs
+- **All 45+ stored procedures** performance validated
+
+## Testing Emergency Protocols
+- If any test tier encounters critical failures, document in progress report
+- If testing framework compatibility issues arise, pause and investigate
+- If manufacturing workflow tests fail, validate against actual business logic
+- If cross-platform tests fail, isolate platform-specific issues
+
+**Start Testing Execution**: Begin with Phase 2A, Task 1 (Unit Test Implementation) and provide your first testing progress report after completing the first 5 unit test files.
+```
+
+This prompt should be used to initialize any agent that will continue this testing implementation work.
+
+---
+
 ## 🎯 Next Steps After Epic Creation
 
 1. **Create Epic Issue**: Use this documentation to create the comprehensive Epic issue
@@ -495,3 +590,7 @@ When complete, the MTM application will have:
 ---
 
 *This Epic represents Phase 2 of the comprehensive testing infrastructure implementation. Phase 1 (documentation and templates) has been completed in PR #76.*
+
+---
+
+*This testing epic documentation was generated and updated by GitHub Copilot AI agent on September 14, 2025.*
