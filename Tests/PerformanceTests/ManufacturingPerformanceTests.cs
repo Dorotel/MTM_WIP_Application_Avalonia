@@ -62,6 +62,13 @@ namespace MTM.Tests.PerformanceTests
             var mockNavigation = new Mock<INavigationService>();
             services.AddSingleton(mockNavigation.Object);
 
+            // Add overlay services required by ViewModels
+            var mockSuggestionOverlay = new Mock<ISuggestionOverlayService>();
+            services.AddSingleton(mockSuggestionOverlay.Object);
+
+            var mockSuccessOverlay = new Mock<ISuccessOverlayService>();
+            services.AddSingleton(mockSuccessOverlay.Object);
+
             // Add real services for performance testing
             services.AddScoped<IDatabaseService, DatabaseService>();
             services.AddScoped<IMasterDataService, MasterDataService>();
@@ -245,7 +252,9 @@ namespace MTM.Tests.PerformanceTests
             var mockNavigation = _serviceProvider.GetRequiredService<INavigationService>();
             var mockDatabase = _serviceProvider.GetRequiredService<IDatabaseService>();
             var mockConfig = _serviceProvider.GetRequiredService<IConfigurationService>();
+            var mockSuggestionOverlay = _serviceProvider.GetRequiredService<ISuggestionOverlayService>();
             var mockMasterData = _serviceProvider.GetRequiredService<IMasterDataService>();
+            var mockSuccessOverlay = _serviceProvider.GetRequiredService<ISuccessOverlayService>();
 
             // Act - Create multiple ViewModels  
             for (int i = 0; i < viewModelCount; i++)
@@ -255,9 +264,9 @@ namespace MTM.Tests.PerformanceTests
                     mockNavigation,             // INavigationService
                     mockDatabase,               // IDatabaseService
                     mockConfig,                 // IConfigurationService
-                    null!,                      // ISuggestionOverlayService
+                    mockSuggestionOverlay,      // ISuggestionOverlayService
                     mockMasterData,             // IMasterDataService
-                    null                        // ISuccessOverlayService (optional)
+                    mockSuccessOverlay          // ISuccessOverlayService
                 );
                 
                 viewModels.Add(viewModel);
