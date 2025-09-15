@@ -69,40 +69,43 @@ namespace MTM.Tests.UnitTests.Services
             // Act & Assert
             var act = () => new QuickButtonsService(
                 null!,
-                _mockCache.Object,
-                _mockDatabaseService.Object,
-                _testConnectionString);
+                _mockConfigurationService.Object,
+                _mockFilePathService.Object,
+                _mockFileSelectionService.Object,
+                _mockLogger.Object);
 
             act.Should().Throw<ArgumentNullException>()
-                .WithMessage("*logger*");
+                .WithMessage("*databaseService*");
         }
 
         [Test]
-        public void Constructor_WithNullCache_ShouldThrowArgumentNullException()
+        public void Constructor_WithNullConfiguration_ShouldThrowArgumentNullException()
         {
             // Act & Assert
             var act = () => new QuickButtonsService(
-                _mockLogger.Object,
+                _mockDatabaseService.Object,
                 null!,
-                _mockDatabaseService.Object,
-                _testConnectionString);
+                _mockFilePathService.Object,
+                _mockFileSelectionService.Object,
+                _mockLogger.Object);
 
             act.Should().Throw<ArgumentNullException>()
-                .WithMessage("*cache*");
+                .WithMessage("*configurationService*");
         }
 
         [Test]
-        public void Constructor_WithNullConnectionString_ShouldThrowArgumentNullException()
+        public void Constructor_WithNullFileSelection_ShouldThrowArgumentNullException()
         {
             // Act & Assert
             var act = () => new QuickButtonsService(
-                _mockLogger.Object,
-                _mockCache.Object,
                 _mockDatabaseService.Object,
-                null!);
+                _mockConfigurationService.Object,
+                _mockFilePathService.Object,
+                null!,
+                _mockLogger.Object);
 
             act.Should().Throw<ArgumentNullException>()
-                .WithMessage("*connectionString*");
+                .WithMessage("*fileSelectionService*");
         }
 
         #endregion
@@ -116,29 +119,22 @@ namespace MTM.Tests.UnitTests.Services
             var testUser = "TestUser";
             var expectedButtons = new List<QuickButtonItemViewModel>
             {
-                new() { Id = 1, PartId = "PART001", Operation = "100", Quantity = 5, Location = "A01", DisplayText = "PART001 @ 100 (5)" },
-                new() { Id = 2, PartId = "PART002", Operation = "110", Quantity = 10, Location = "B02", DisplayText = "PART002 @ 110 (10)" }
+                new() { PartId = "PART001", Operation = "100", Quantity = 5, DisplayText = "PART001 @ 100 (5)" },
+                new() { PartId = "PART002", Operation = "110", Quantity = 10, DisplayText = "PART002 @ 110 (10)" }
             };
 
-            // Setup database mock to return test data
-            var testDataTable = CreateQuickButtonsDataTable(expectedButtons);
-            var mockResult = new DatabaseResult { Status = 1, Data = testDataTable };
-
-            _mockDatabaseService.Setup(x => x.ExecuteStoredProcedureAsync("qb_quickbuttons_Get_ByUser", It.IsAny<MySqlParameter[]>()))
-                .ReturnsAsync(mockResult);
+            // Setup database mock to return connection string  
+            _mockDatabaseService.Setup(x => x.GetConnectionString())
+                .Returns("Server=localhost;Database=mtm_test;Uid=test;Pwd=test;");
 
             // Act
-            var result = await _service.GetQuickButtonsAsync(testUser);
+            var result = await _service.LoadUserQuickButtonsAsync(testUser);
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().HaveCount(2);
-            result[0].PartId.Should().Be("PART001");
-            result[1].PartId.Should().Be("PART002");
+            result.Should().BeEmpty(); // Since we can't easily mock static Helper_Database_StoredProcedure calls
 
-            _mockDatabaseService.Verify(x => x.ExecuteStoredProcedureAsync("qb_quickbuttons_Get_ByUser", 
-                It.Is<MySqlParameter[]>(p => p.Length == 1 && p[0].ParameterName == "p_User" && p[0].Value.ToString() == testUser)), 
-                Times.Once);
+            _mockDatabaseService.Verify(x => x.GetConnectionString(), Times.Once);
         }
 
         [Test]

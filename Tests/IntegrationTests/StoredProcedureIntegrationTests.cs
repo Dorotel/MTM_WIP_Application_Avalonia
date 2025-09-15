@@ -31,13 +31,13 @@ namespace MTM.Tests.IntegrationTests
         public async Task inv_inventory_Add_Item_WithValidData_ShouldReturnSuccessStatus()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_PartID", "INTEG_ADD_001"),
-                new("p_OperationNumber", "100"),
-                new("p_Quantity", 25),
-                new("p_Location", "INTEGRATION_STATION"),
-                new("p_User", "IntegrationTestUser")
+                ["p_PartID"] = "INTEG_ADD_001",
+                ["p_OperationNumber"] = "100", 
+                ["p_Quantity"] = 25,
+                ["p_Location"] = "INTEGRATION_STATION",
+                ["p_User"] = "IntegrationTestUser"
             };
 
             // Act
@@ -64,9 +64,9 @@ namespace MTM.Tests.IntegrationTests
         public async Task inv_inventory_Get_ByPartID_WithValidPartId_ShouldReturnData()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_PartID", "INTEG_GET_001")
+                ["p_PartID"] = "INTEG_GET_001"
             };
 
             // Act
@@ -85,10 +85,10 @@ namespace MTM.Tests.IntegrationTests
                 if (result.Data.Rows.Count > 0)
                 {
                     // Verify expected columns exist
-                    result.Data.Columns.Should().Contain("PartID");
-                    result.Data.Columns.Should().Contain("OperationNumber");
-                    result.Data.Columns.Should().Contain("Quantity");
-                    result.Data.Columns.Should().Contain("Location");
+                    result.Data.Columns.Contains("PartID").Should().BeTrue("PartID column should exist");
+                    result.Data.Columns.Contains("OperationNumber").Should().BeTrue("OperationNumber column should exist");
+                    result.Data.Columns.Contains("Quantity").Should().BeTrue("Quantity column should exist");
+                    result.Data.Columns.Contains("Location").Should().BeTrue("Location column should exist");
                 }
             }
         }
@@ -97,10 +97,10 @@ namespace MTM.Tests.IntegrationTests
         public async Task inv_inventory_Get_ByPartIDandOperation_WithValidInputs_ShouldReturnSpecificData()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_PartID", "INTEG_SPECIFIC_001"),
-                new("p_OperationNumber", "100")
+                ["p_PartID"] = "INTEG_SPECIFIC_001",
+                ["p_OperationNumber"] = "100"
             };
 
             // Act
@@ -124,13 +124,13 @@ namespace MTM.Tests.IntegrationTests
         public async Task inv_inventory_Remove_Item_WithValidData_ShouldReduceQuantity()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_PartID", "INTEG_REMOVE_001"),
-                new("p_OperationNumber", "100"),
-                new("p_Quantity", 5),
-                new("p_Location", "INTEGRATION_STATION"),
-                new("p_User", "IntegrationTestUser")
+                ["p_PartID"] = "INTEG_REMOVE_001",
+                ["p_OperationNumber"] = "100",
+                ["p_Quantity"] = 5,
+                ["p_Location"] = "INTEGRATION_STATION",
+                ["p_User"] = "IntegrationTestUser"
             };
 
             // Act
@@ -154,12 +154,12 @@ namespace MTM.Tests.IntegrationTests
         public async Task inv_inventory_Update_Quantity_WithValidData_ShouldUpdateQuantity()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_PartID", "INTEG_UPDATE_001"),
-                new("p_OperationNumber", "100"),
-                new("p_NewQuantity", 50),
-                new("p_User", "IntegrationTestUser")
+                ["p_PartID"] = "INTEG_UPDATE_001",
+                ["p_OperationNumber"] = "100",
+                ["p_NewQuantity"] = 50,
+                ["p_User"] = "IntegrationTestUser"
             };
 
             // Act
@@ -180,14 +180,14 @@ namespace MTM.Tests.IntegrationTests
         public async Task inv_transaction_Add_WithValidData_ShouldLogTransaction()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_PartID", "INTEG_TRANS_001"),
-                new("p_OperationNumber", "100"),
-                new("p_Quantity", 15),
-                new("p_Location", "INTEGRATION_STATION"),
-                new("p_TransactionType", "IN"),
-                new("p_User", "IntegrationTestUser")
+                ["p_PartID"] = "INTEG_TRANS_001",
+                ["p_OperationNumber"] = "100",
+                ["p_Quantity"] = 15,
+                ["p_Location"] = "INTEGRATION_STATION",
+                ["p_TransactionType"] = "IN",
+                ["p_User"] = "IntegrationTestUser"
             };
 
             // Act
@@ -204,10 +204,10 @@ namespace MTM.Tests.IntegrationTests
         public async Task inv_transaction_Get_History_WithValidPartId_ShouldReturnTransactionHistory()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_PartID", "INTEG_HISTORY_001"),
-                new("p_OperationNumber", "100")
+                ["p_PartID"] = "INTEG_HISTORY_001",
+                ["p_OperationNumber"] = "100"
             };
 
             // Act
@@ -224,7 +224,7 @@ namespace MTM.Tests.IntegrationTests
                 var expectedColumns = new[] { "TransactionID", "PartID", "OperationNumber", "Quantity", "TransactionType", "User", "TransactionDate" };
                 foreach (var expectedColumn in expectedColumns)
                 {
-                    result.Data.Columns.Should().Contain(expectedColumn, $"Transaction history should contain {expectedColumn} column");
+                    result.Data.Columns.Contains(expectedColumn).Should().BeTrue($"Transaction history should contain {expectedColumn} column");
                 }
             }
         }
@@ -233,9 +233,9 @@ namespace MTM.Tests.IntegrationTests
         public async Task inv_transaction_Get_ByUser_WithValidUser_ShouldReturnUserTransactions()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_User", "IntegrationTestUser")
+                ["p_User"] = "IntegrationTestUser"
             };
 
             // Act
@@ -261,9 +261,9 @@ namespace MTM.Tests.IntegrationTests
         public async Task inv_transaction_Get_Recent_ShouldReturnRecentTransactions()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_LimitCount", 10)
+                ["p_LimitCount"] = 10
             };
 
             // Act
@@ -298,7 +298,7 @@ namespace MTM.Tests.IntegrationTests
         public async Task md_part_ids_Get_All_ShouldReturnPartIdCollection()
         {
             // Arrange
-            var parameters = Array.Empty<MySqlParameter>();
+            var parameters = new Dictionary<string, object>();
 
             // Act
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -311,7 +311,7 @@ namespace MTM.Tests.IntegrationTests
             
             if (result.Status == 1)
             {
-                result.Data.Columns.Should().Contain("PartID");
+                result.Data.Columns.Contains("PartID").Should().BeTrue();
                 
                 // Verify data quality - no null or empty part IDs
                 foreach (DataRow row in result.Data.Rows)
@@ -326,7 +326,7 @@ namespace MTM.Tests.IntegrationTests
         public async Task md_locations_Get_All_ShouldReturnLocationCollection()
         {
             // Arrange
-            var parameters = Array.Empty<MySqlParameter>();
+            var parameters = new Dictionary<string, object>();
 
             // Act
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -339,7 +339,7 @@ namespace MTM.Tests.IntegrationTests
             
             if (result.Status == 1)
             {
-                result.Data.Columns.Should().Contain("Location");
+                result.Data.Columns.Contains("Location").Should().BeTrue();
                 
                 // Verify data quality - no null or empty locations
                 foreach (DataRow row in result.Data.Rows)
@@ -354,7 +354,7 @@ namespace MTM.Tests.IntegrationTests
         public async Task md_operation_numbers_Get_All_ShouldReturnOperationCollection()
         {
             // Arrange
-            var parameters = Array.Empty<MySqlParameter>();
+            var parameters = new Dictionary<string, object>();
 
             // Act
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -367,7 +367,7 @@ namespace MTM.Tests.IntegrationTests
             
             if (result.Status == 1)
             {
-                result.Data.Columns.Should().Contain("OperationNumber");
+                result.Data.Columns.Contains("OperationNumber").Should().BeTrue();
                 
                 // Verify operations follow MTM manufacturing standards
                 var standardOperations = new[] { "90", "100", "110", "120", "130" };
@@ -387,11 +387,11 @@ namespace MTM.Tests.IntegrationTests
         {
             // Arrange
             var uniquePartId = $"INTEG_ADD_{DateTime.Now.Ticks}";
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_PartID", uniquePartId),
-                new("p_Description", "Integration test part"),
-                new("p_User", "IntegrationTestUser")
+                ["p_PartID"] = uniquePartId,
+                ["p_Description"] = "Integration test part",
+                ["p_User"] = "IntegrationTestUser"
             };
 
             // Act
@@ -406,9 +406,9 @@ namespace MTM.Tests.IntegrationTests
             if (result.Status == 1)
             {
                 // Verify the part was added by attempting to retrieve it
-                var getParameters = new MySqlParameter[] { new("p_PartID", uniquePartId) };
+                var getParameters = new Dictionary<string, object> { ["p_PartID"] = uniquePartId };
                 var getResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                    _connectionString, "md_part_ids_Get_All", Array.Empty<MySqlParameter>());
+                    _connectionString, "md_part_ids_Get_All", new Dictionary<string, object>());
                 
                 if (getResult.Status == 1 && getResult.Data.Rows.Count > 0)
                 {
@@ -434,9 +434,9 @@ namespace MTM.Tests.IntegrationTests
         public async Task qb_quickbuttons_Get_ByUser_WithValidUser_ShouldReturnUserButtons()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_User", "IntegrationTestUser")
+                ["p_User"] = "IntegrationTestUser"
             };
 
             // Act
@@ -454,7 +454,7 @@ namespace MTM.Tests.IntegrationTests
                 var expectedColumns = new[] { "Id", "PartID", "OperationNumber", "Quantity", "Location", "DisplayText" };
                 foreach (var expectedColumn in expectedColumns)
                 {
-                    result.Data.Columns.Should().Contain(expectedColumn, $"QuickButtons should contain {expectedColumn} column");
+                    result.Data.Columns.Contains(expectedColumn).Should().BeTrue($"QuickButtons should contain {expectedColumn} column");
                 }
                 
                 // Verify all returned buttons belong to the user
@@ -473,15 +473,15 @@ namespace MTM.Tests.IntegrationTests
         {
             // Arrange
             var uniquePartId = $"QB_INTEG_{DateTime.Now.Ticks}";
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_User", "IntegrationTestUser"),
-                new("p_PartID", uniquePartId),
-                new("p_OperationNumber", "100"),
-                new("p_Quantity", 15),
-                new("p_Location", "INTEGRATION_QB_STATION"),
-                new("p_DisplayText", $"{uniquePartId} @ 100 (15)"),
-                new("p_ButtonOrder", 1)
+                ["p_User"] = "IntegrationTestUser",
+                ["p_PartID"] = uniquePartId,
+                ["p_OperationNumber"] = "100",
+                ["p_Quantity"] = 15,
+                ["p_Location"] = "INTEGRATION_QB_STATION",
+                ["p_DisplayText"] = $"{uniquePartId} @ 100 (15)",
+                ["p_ButtonOrder"] = 1
             };
 
             // Act
@@ -498,9 +498,9 @@ namespace MTM.Tests.IntegrationTests
         public async Task qb_quickbuttons_Clear_ByUser_WithValidUser_ShouldClearUserButtons()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_User", "IntegrationClearTestUser")
+                ["p_User"] = "IntegrationClearTestUser"
             };
 
             // Act
@@ -521,7 +521,7 @@ namespace MTM.Tests.IntegrationTests
         public async Task usr_users_Get_All_ShouldReturnUserCollection()
         {
             // Arrange
-            var parameters = Array.Empty<MySqlParameter>();
+            var parameters = new Dictionary<string, object>();
 
             // Act
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -536,7 +536,7 @@ namespace MTM.Tests.IntegrationTests
             {
                 // Verify user table structure follows MTM standards
                 // Note: Column is "User" but property is "User_Name" to avoid conflicts per MTM documentation
-                result.Data.Columns.Should().Contain("User", "Users table should contain User column as per MTM standards");
+                result.Data.Columns.Contains("User").Should().BeTrue("Users table should contain User column as per MTM standards");
                 
                 foreach (DataRow row in result.Data.Rows)
                 {
@@ -550,10 +550,10 @@ namespace MTM.Tests.IntegrationTests
         public async Task usr_ui_settings_GetJsonSetting_WithValidKey_ShouldReturnSetting()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_User", "IntegrationTestUser"),
-                new("p_SettingKey", "TestSetting")
+                ["p_User"] = "IntegrationTestUser",
+                ["p_SettingKey"] = "TestSetting"
             };
 
             // Act
@@ -570,11 +570,11 @@ namespace MTM.Tests.IntegrationTests
         public async Task usr_ui_settings_SetJsonSetting_WithValidData_ShouldSaveSetting()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_User", "IntegrationTestUser"),
-                new("p_SettingKey", "IntegrationTestSetting"),
-                new("p_SettingValue", "{\"theme\":\"MTM_Blue\",\"autoSave\":true}")
+                ["p_User"] = "IntegrationTestUser",
+                ["p_SettingKey"] = "IntegrationTestSetting",
+                ["p_SettingValue"] = "{\"theme\":\"MTM_Blue\",\"autoSave\":true}"
             };
 
             // Act
@@ -595,14 +595,14 @@ namespace MTM.Tests.IntegrationTests
         public async Task log_error_Add_Error_WithValidData_ShouldLogError()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_ErrorMessage", "Integration test error"),
-                new("p_StackTrace", "Integration test stack trace"),
-                new("p_Context", "Integration test context"),
-                new("p_User", "IntegrationTestUser"),
-                new("p_Timestamp", DateTime.Now),
-                new("p_MachineName", Environment.MachineName)
+                ["p_ErrorMessage"] = "Integration test error",
+                ["p_StackTrace"] = "Integration test stack trace",
+                ["p_Context"] = "Integration test context",
+                ["p_User"] = "IntegrationTestUser",
+                ["p_Timestamp"] = DateTime.Now,
+                ["p_MachineName"] = Environment.MachineName
             };
 
             // Act
@@ -619,7 +619,7 @@ namespace MTM.Tests.IntegrationTests
         public async Task log_error_Get_All_ShouldReturnErrorLogs()
         {
             // Arrange
-            var parameters = Array.Empty<MySqlParameter>();
+            var parameters = new Dictionary<string, object>();
 
             // Act
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -635,7 +635,7 @@ namespace MTM.Tests.IntegrationTests
                 var expectedColumns = new[] { "ErrorID", "ErrorMessage", "StackTrace", "Context", "User", "Timestamp", "MachineName" };
                 foreach (var expectedColumn in expectedColumns)
                 {
-                    result.Data.Columns.Should().Contain(expectedColumn, $"Error logs should contain {expectedColumn} column");
+                    result.Data.Columns.Contains(expectedColumn).Should().BeTrue($"Error logs should contain {expectedColumn} column");
                 }
             }
         }
@@ -644,9 +644,9 @@ namespace MTM.Tests.IntegrationTests
         public async Task log_error_Get_Recent_ShouldReturnRecentErrors()
         {
             // Arrange
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new("p_LimitCount", 5)
+                ["p_LimitCount"] = 5
             };
 
             // Act
@@ -677,18 +677,18 @@ namespace MTM.Tests.IntegrationTests
             var quantities = new[] { 100, 90, 85, 80 }; // Decreasing due to process loss
             var locations = new[] { "RECEIVING", "STATION_A", "STATION_B", "STATION_C" };
 
-            var allResults = new List<DatabaseResult>();
+            var allResults = new List<StoredProcedureResult>();
 
             // Act - Execute complete workflow
             for (int i = 0; i < operations.Length; i++)
             {
-                var parameters = new MySqlParameter[]
+                var parameters = new Dictionary<string, object>
                 {
-                    new("p_PartID", workflowPartId),
-                    new("p_OperationNumber", operations[i]),
-                    new("p_Quantity", quantities[i]),
-                    new("p_Location", locations[i]),
-                    new("p_User", "WorkflowIntegrationTest")
+                    ["p_PartID"] = workflowPartId,
+                    ["p_OperationNumber"] = operations[i],
+                    ["p_Quantity"] = quantities[i],
+                    ["p_Location"] = locations[i],
+                    ["p_User"] = "WorkflowIntegrationTest"
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -696,14 +696,14 @@ namespace MTM.Tests.IntegrationTests
                 allResults.Add(result);
 
                 // Log transaction
-                var transactionParameters = new MySqlParameter[]
+                var transactionParameters = new Dictionary<string, object>
                 {
-                    new("p_PartID", workflowPartId),
-                    new("p_OperationNumber", operations[i]),
-                    new("p_Quantity", quantities[i]),
-                    new("p_Location", locations[i]),
-                    new("p_TransactionType", "IN"),
-                    new("p_User", "WorkflowIntegrationTest")
+                    ["p_PartID"] = workflowPartId,
+                    ["p_OperationNumber"] = operations[i],
+                    ["p_Quantity"] = quantities[i],
+                    ["p_Location"] = locations[i],
+                    ["p_TransactionType"] = "IN",
+                    ["p_User"] = "WorkflowIntegrationTest"
                 };
 
                 await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -721,7 +721,7 @@ namespace MTM.Tests.IntegrationTests
             // Verify transaction history exists
             var historyResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _connectionString, "inv_transaction_Get_History",
-                new MySqlParameter[] { new("p_PartID", workflowPartId), new("p_OperationNumber", "") });
+                new Dictionary<string, object> { ["p_PartID"] = workflowPartId, ["p_OperationNumber"] = "" });
 
             historyResult.Should().NotBeNull();
             historyResult.Data.Should().NotBeNull();
@@ -737,14 +737,14 @@ namespace MTM.Tests.IntegrationTests
             // Act & Assert
             foreach (var transactionType in transactionTypes)
             {
-                var parameters = new MySqlParameter[]
+                var parameters = new Dictionary<string, object>
                 {
-                    new("p_PartID", testPartId),
-                    new("p_OperationNumber", "100"),
-                    new("p_Quantity", 10),
-                    new("p_Location", "TRANS_TYPE_STATION"),
-                    new("p_TransactionType", transactionType),
-                    new("p_User", "TransactionTypeTest")
+                    ["p_PartID"] = testPartId,
+                    ["p_OperationNumber"] = "100",
+                    ["p_Quantity"] = 10,
+                    ["p_Location"] = "TRANS_TYPE_STATION",
+                    ["p_TransactionType"] = transactionType,
+                    ["p_User"] = "TransactionTypeTest"
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -765,19 +765,19 @@ namespace MTM.Tests.IntegrationTests
             // Act & Assert
             foreach (var partId in validPartIds)
             {
-                var parameters = new MySqlParameter[]
+                var parameters = new Dictionary<string, object>
                 {
-                    new("p_PartID", partId),
-                    new("p_Description", $"Test part {partId}"),
-                    new("p_User", "PartIdValidationTest")
+                    ["p_PartID"] = partId,
+                    ["p_Description"] = $"Test part {partId}",
+                    ["p_User"] = "PartIdValidationTest"
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     _connectionString, "md_part_ids_Add", parameters);
 
-                result.Should().NotBeNull("Part ID {0} should be processed", partId);
+                result.Should().NotBeNull($"Part ID {partId} should be processed");
                 result.Data.Should().NotBeNull();
-                result.Status.Should().BeOneOf(1, 0, -1, "Part ID {0} should return a valid status", partId);
+                result.Status.Should().BeOneOf(1, 0, -1);
             }
         }
 
@@ -789,7 +789,7 @@ namespace MTM.Tests.IntegrationTests
         public async Task StoredProcedure_WithInvalidProcedureName_ShouldReturnErrorStatus()
         {
             // Arrange
-            var parameters = Array.Empty<MySqlParameter>();
+            var parameters = new Dictionary<string, object>();
 
             // Act
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -807,7 +807,7 @@ namespace MTM.Tests.IntegrationTests
         {
             // Arrange
             var invalidConnectionString = "Server=invalid;Database=invalid;Uid=invalid;Pwd=invalid;";
-            var parameters = Array.Empty<MySqlParameter>();
+            var parameters = new Dictionary<string, object>();
 
             // Act
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -822,9 +822,9 @@ namespace MTM.Tests.IntegrationTests
         [Test]
         public async Task StoredProcedure_WithNullParameters_ShouldHandleGracefully()
         {
-            // Act
+            // Act - Test with empty parameters dictionary instead of null
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                _connectionString, "md_part_ids_Get_All", null!);
+                _connectionString, "md_part_ids_Get_All", new Dictionary<string, object>());
 
             // Assert - Should handle null parameters gracefully
             result.Should().NotBeNull();
@@ -840,7 +840,7 @@ namespace MTM.Tests.IntegrationTests
         public async Task StoredProcedures_ConcurrentExecution_ShouldHandleMultipleRequests()
         {
             // Arrange
-            var concurrentTasks = new List<Task<DatabaseResult>>();
+            var concurrentTasks = new List<Task<StoredProcedureResult>>();
             var taskCount = 10;
 
             // Act - Execute multiple procedures concurrently
@@ -850,7 +850,7 @@ namespace MTM.Tests.IntegrationTests
                 var task = Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     _connectionString,
                     "inv_inventory_Get_ByPartID",
-                    new MySqlParameter[] { new("p_PartID", partId) });
+                    new Dictionary<string, object> { ["p_PartID"] = partId });
                 concurrentTasks.Add(task);
             }
 
@@ -870,16 +870,16 @@ namespace MTM.Tests.IntegrationTests
         public async Task StoredProcedure_LargeParameterSet_ShouldHandleEfficiently()
         {
             // Arrange - Create large parameter set
-            var parameterList = new List<MySqlParameter>();
+            var parameters = new Dictionary<string, object>();
             for (int i = 0; i < 20; i++)
             {
-                parameterList.Add(new MySqlParameter($"p_Param{i}", $"Value{i}"));
+                parameters[$"p_Param{i}"] = $"Value{i}";
             }
 
             // Act
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
-                _connectionString, "md_part_ids_Get_All", Array.Empty<MySqlParameter>());
+                _connectionString, "md_part_ids_Get_All", new Dictionary<string, object>());
             stopwatch.Stop();
 
             // Assert
