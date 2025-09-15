@@ -2,41 +2,60 @@
 
 <!-- COPILOT AUTO-INCLUDE SYSTEM -->
 <!-- When this file is referenced via #file:copilot-instructions.md, -->
-<!-- automatically include all related instruction files: -->
+<!-- automatically include all related instruction files for comprehensive AI assistance: -->
 
-<!-- Core Instruction Files -->
+<!-- Core Manufacturing Application Instructions -->
 <!-- #file:.github/instructions/avalonia-ui-guidelines.instructions.md -->
 <!-- #file:.github/instructions/mvvm-community-toolkit.instructions.md -->
 <!-- #file:.github/instructions/mysql-database-patterns.instructions.md -->
 <!-- #file:.github/instructions/dotnet-architecture-good-practices.instructions.md -->
 <!-- #file:.github/instructions/service-architecture.instructions.md -->
 <!-- #file:.github/instructions/data-models.instructions.md -->
+<!-- #file:.github/instructions/application-configuration.instructions.md -->
+<!-- #file:.github/instructions/custom-controls.instructions.md -->
+<!-- #file:.github/instructions/avalonia-behaviors.instructions.md -->
+<!-- #file:.github/instructions/value-converters.instructions.md -->
+<!-- #file:.github/instructions/resource-management.instructions.md -->
 
-<!-- Testing Instructions -->  
+<!-- Advanced Manufacturing Integration -->
+<!-- #file:.github/instructions/advanced-manufacturing-workflows.instructions.md -->
+<!-- #file:.github/instructions/industry-40-integration.instructions.md -->
+<!-- #file:.github/instructions/manufacturing-kpi-dashboard-integration.instructions.md -->
+<!-- #file:.github/instructions/advanced-manufacturing-quality-assurance-framework.instructions.md -->
+<!-- #file:.github/instructions/enterprise-integration-patterns.instructions.md -->
+<!-- #file:.github/instructions/external-system-integration.instructions.md -->
+<!-- #file:.github/instructions/service-integration.instructions.md -->
+<!-- #file:.github/instructions/database-integration.instructions.md -->
+
+<!-- Comprehensive Testing Framework -->
 <!-- #file:.github/instructions/testing-standards.instructions.md -->
 <!-- #file:.github/instructions/unit-testing-patterns.instructions.md -->
 <!-- #file:.github/instructions/integration-testing-patterns.instructions.md -->
 <!-- #file:.github/instructions/database-testing-patterns.instructions.md -->
 <!-- #file:.github/instructions/ui-automation-standards.instructions.md -->
 <!-- #file:.github/instructions/cross-platform-testing-standards.instructions.md -->
+<!-- #file:.github/instructions/advanced-performance-testing-framework.instructions.md -->
 
-<!-- New Template and Pattern Files -->
+<!-- Manufacturing Domain Knowledge -->
+<!-- #file:.github/copilot/context/mtm-business-domain.md -->
+<!-- #file:.github/copilot/context/mtm-technology-stack.md -->
+<!-- #file:.github/copilot/context/mtm-architecture-patterns.md -->
+<!-- #file:.github/copilot/context/mtm-database-procedures.md -->
+
+<!-- Development Templates and Patterns -->
 <!-- #file:.github/copilot/templates/mtm-feature-request.md -->
 <!-- #file:.github/copilot/templates/mtm-ui-component.md -->
 <!-- #file:.github/copilot/templates/mtm-viewmodel-creation.md -->
 <!-- #file:.github/copilot/templates/mtm-database-operation.md -->
 <!-- #file:.github/copilot/templates/mtm-service-implementation.md -->
 
-<!-- Context Files -->
-<!-- #file:.github/copilot/context/mtm-business-domain.md -->
-<!-- #file:.github/copilot/context/mtm-technology-stack.md -->
-<!-- #file:.github/copilot/context/mtm-architecture-patterns.md -->
-<!-- #file:.github/copilot/context/mtm-database-procedures.md -->
-
-<!-- Pattern Files -->
+<!-- Advanced Development Patterns -->
 <!-- #file:.github/copilot/patterns/mtm-mvvm-community-toolkit.md -->
 <!-- #file:.github/copilot/patterns/mtm-stored-procedures-only.md -->
 <!-- #file:.github/copilot/patterns/mtm-avalonia-syntax.md -->
+
+<!-- Advanced GitHub Copilot Integration -->
+<!-- #file:.github/instructions/advanced-github-copilot-integration-scenarios.instructions.md -->
 
 **Generate code strictly following the established patterns found in this .NET 8 Avalonia MVVM application. Never introduce patterns not already present in the codebase.**
 
