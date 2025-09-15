@@ -7,6 +7,7 @@ using MySql.Data.MySqlClient;
 using System.Data;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 
 namespace MTM.Tests.IntegrationTests
 {

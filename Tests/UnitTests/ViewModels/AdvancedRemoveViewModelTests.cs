@@ -42,8 +42,8 @@ namespace MTM.Tests.UnitTests.ViewModels
 
             _viewModel = new AdvancedRemoveViewModel(
                 _mockLogger.Object,
-                _mockApplicationStateService.Object,
-                _mockConfigurationService.Object);
+                _mockConfigurationService.Object,
+                _mockApplicationStateService.Object);
         }
 
         [TearDown]

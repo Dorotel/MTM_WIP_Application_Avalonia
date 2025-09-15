@@ -10,6 +10,7 @@ using MySql.Data.MySqlClient;
 using System.Data;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System;
 
 namespace MTM.Tests.UnitTests.Services
 {
@@ -21,33 +22,36 @@ namespace MTM.Tests.UnitTests.Services
     {
         private QuickButtonsService _service = null!;
         private Mock<ILogger<QuickButtonsService>> _mockLogger = null!;
-        private Mock<IMemoryCache> _mockCache = null!;
         private Mock<IDatabaseService> _mockDatabaseService = null!;
-        private string _testConnectionString = null!;
+        private Mock<IConfigurationService> _mockConfigurationService = null!;
+        private Mock<IFilePathService> _mockFilePathService = null!;
+        private Mock<IFileSelectionService> _mockFileSelectionService = null!;
 
         [SetUp]
         public void SetUp()
         {
             _mockLogger = new Mock<ILogger<QuickButtonsService>>();
-            _mockCache = new Mock<IMemoryCache>();
             _mockDatabaseService = new Mock<IDatabaseService>();
-            _testConnectionString = "Server=localhost;Database=mtm_test;Uid=test;Pwd=test;";
+            _mockConfigurationService = new Mock<IConfigurationService>();
+            _mockFilePathService = new Mock<IFilePathService>();
+            _mockFileSelectionService = new Mock<IFileSelectionService>();
 
-            // Setup cache behavior
-            var cacheEntry = Mock.Of<ICacheEntry>();
-            _mockCache.Setup(x => x.CreateEntry(It.IsAny<object>())).Returns(cacheEntry);
+            // Setup configuration service
+            _mockConfigurationService.Setup(x => x.GetConnectionString())
+                .Returns("Server=localhost;Database=mtm_test;Uid=test;Pwd=test;");
 
             _service = new QuickButtonsService(
-                _mockLogger.Object,
-                _mockCache.Object,
                 _mockDatabaseService.Object,
-                _testConnectionString);
+                _mockConfigurationService.Object,
+                _mockFilePathService.Object,
+                _mockFileSelectionService.Object,
+                _mockLogger.Object);
         }
 
         [TearDown]
         public void TearDown()
         {
-            _service?.Dispose();
+            // No disposal needed for QuickButtonsService
         }
 
         #region Constructor Tests
