@@ -284,9 +284,24 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                                   "Enter or select a part number...";
 
     /// <summary>
-    /// Validation state for Operation field - checks if not empty
+    /// Validation state for Operation field - checks if not empty and valid manufacturing operation number
+    /// Valid operations are numeric strings like "90", "100", "110", "120", etc.
     /// </summary>
-    public bool IsOperationValid => !string.IsNullOrWhiteSpace(SelectedOperation);
+    public bool IsOperationValid => !string.IsNullOrWhiteSpace(SelectedOperation) && 
+                                   IsValidManufacturingOperation(SelectedOperation);
+
+    /// <summary>
+    /// Validates if an operation number follows MTM manufacturing standards
+    /// </summary>
+    private bool IsValidManufacturingOperation(string operation)
+    {
+        // Must be numeric and greater than 0
+        if (int.TryParse(operation, out int operationNumber))
+        {
+            return operationNumber > 0;
+        }
+        return false;
+    }
 
     /// <summary>
     /// Validation state for Operation field - checks if value exists in database
