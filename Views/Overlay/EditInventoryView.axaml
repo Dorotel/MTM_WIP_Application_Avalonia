@@ -143,8 +143,8 @@
     
     <Grid x:Name="MainContainer" 
           RowDefinitions="Auto,*,Auto" 
-          MaxWidth="500" 
-          MinWidth="450"
+          Width="600"
+          Height="720"
           Margin="16">
 
       <!-- Dialog Header -->
@@ -155,11 +155,11 @@
         
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Grid.Column="0" Spacing="4">
-            <TextBlock Text="Edit Inventory Item"
+            <TextBlock Text="Edit Inventory Item (Limited Access)"
                        FontSize="16"
                        FontWeight="Bold"
                        Foreground="White" />
-            <TextBlock Text="{Binding EditModel.PartId, StringFormat='Part: {0}'}"
+            <TextBlock Text="{Binding EditModel.PartId, StringFormat='Part: {0} - Only Quantity, Operation &amp; Notes editable'}"
                        FontSize="12"
                        Foreground="White"
                        Opacity="0.9" />
@@ -219,200 +219,296 @@
             </StackPanel>
           </Border>
 
+          <!-- Permission Error Display -->
+          <Border Grid.Row="0"
+                  Background="{DynamicResource MTM_Shared_Logic.WarningLightBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="12,8"
+                  Margin="0,8,0,0"
+                  IsVisible="{Binding !CanEditRecord}">
+            
+            <StackPanel Spacing="4">
+              <TextBlock Text="❌ Edit Permission Denied"
+                         FontWeight="SemiBold"
+                         FontSize="13"
+                         Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+              <TextBlock Text="{Binding PermissionErrorMessage}"
+                         FontSize="11"
+                         TextWrapping="Wrap"
+                         Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+              <TextBlock Text="Only the fields Quantity, Operation, and Notes can be edited, and only by the user who created this record."
+                         FontSize="10"
+                         FontStyle="Italic"
+                         TextWrapping="Wrap"
+                         Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                         Margin="0,4,0,0" />
+            </StackPanel>
+          </Border>
+
           <!-- Form Fields -->
-          <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="20">
+          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="16" Margin="0,8,0,8">
 
-            <!-- Part ID Field -->
-            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Identifier" Width="16" Height="16" />
-                <TextBlock Text="Part ID:" Classes="field-label" />
-              </StackPanel>
-              
-              <TextBox Grid.Column="1"
-                       Text="{Binding EditModel.PartId, Mode=TwoWay}"
-                       Classes="input-field"
-                       Classes.error="{Binding IsPartIdInvalid}"
-                       Classes.success="{Binding IsPartIdValid}"
-                       ToolTip.Tip="Part identifier - validated against master data"
-                       behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
-                       behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding AvailablePartIds}" />
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="CheckCircle" 
-                                          Width="18" Height="18"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
-                                          IsVisible="{Binding IsPartIdValid}"
-                                          ToolTip.Tip="Valid Part ID" />
-            </Grid>
+              <!-- Part ID Field (LOCKED - Display as TextBlock) -->
+              <Grid ColumnDefinitions="120,*,40" ColumnSpacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                  <materialIcons:MaterialIcon Kind="Identifier" Width="16" Height="16" />
+                  <TextBlock Text="Part ID:" Classes="field-label" />
+                </StackPanel>
+                
+                <Border Grid.Column="1" 
+                        Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="8,6"
+                        MinHeight="32">
+                  <TextBlock Text="{Binding EditModel.PartId}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                             FontWeight="SemiBold"
+                             VerticalAlignment="Center"
+                             ToolTip.Tip="Part identifier (LOCKED - cannot be edited)" />
+                </Border>
+                
+                <materialIcons:MaterialIcon Grid.Column="2" 
+                                            Kind="Lock" 
+                                            Width="18" Height="18"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
+                                            ToolTip.Tip="Field is locked" />
+              </Grid>
 
-            <!-- Location Field -->
-            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="MapMarker" Width="16" Height="16" />
-                <TextBlock Text="Location:" Classes="field-label" />
-              </StackPanel>
-              
-              <TextBox Grid.Column="1"
-                       Text="{Binding EditModel.Location, Mode=TwoWay}"
-                       Classes="input-field"
-                       Classes.error="{Binding IsLocationInvalid}"
-                       Classes.success="{Binding IsLocationValid}"
-                       ToolTip.Tip="Storage location - validated against master data"
-                       behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
-                       behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding AvailableLocations}" />
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="CheckCircle" 
-                                          Width="18" Height="18"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
-                                          IsVisible="{Binding IsLocationValid}"
-                                          ToolTip.Tip="Valid Location" />
-            </Grid>
+              <!-- Location Field (LOCKED - Display as TextBlock) -->
+              <Grid ColumnDefinitions="120,*,40" ColumnSpacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                  <materialIcons:MaterialIcon Kind="MapMarker" Width="16" Height="16" />
+                  <TextBlock Text="Location:" Classes="field-label" />
+                </StackPanel>
+                
+                <Border Grid.Column="1" 
+                        Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="8,6"
+                        MinHeight="32">
+                  <TextBlock Text="{Binding EditModel.Location}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                             FontWeight="SemiBold"
+                             VerticalAlignment="Center"
+                             ToolTip.Tip="Storage location (LOCKED - cannot be edited)" />
+                </Border>
+                
+                <materialIcons:MaterialIcon Grid.Column="2" 
+                                            Kind="Lock" 
+                                            Width="18" Height="18"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
+                                            ToolTip.Tip="Field is locked" />
+              </Grid>
 
-            <!-- Operation Field -->
-            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Cog" Width="16" Height="16" />
-                <TextBlock Text="Operation:" Classes="field-label" />
-              </StackPanel>
-              
-              <TextBox Grid.Column="1"
-                       Text="{Binding EditModel.Operation, Mode=TwoWay}"
-                       Classes="input-field"
-                       Classes.error="{Binding IsOperationInvalid}"
-                       Classes.success="{Binding IsOperationValid}"
-                       ToolTip.Tip="Operation number (e.g. 90, 100, 110) - validated against master data"
-                       behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True"
-                       behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding AvailableOperations}" />
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="CheckCircle" 
-                                          Width="18" Height="18"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
-                                          IsVisible="{Binding IsOperationValid}"
-                                          ToolTip.Tip="Valid Operation" />
-            </Grid>
+              <!-- Operation Field (EDITABLE) -->
+              <Grid ColumnDefinitions="120,*,40" ColumnSpacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                  <materialIcons:MaterialIcon Kind="Cog" Width="16" Height="16" />
+                  <TextBlock Text="Operation:" Classes="field-label" />
+                </StackPanel>
+                
+                <TextBox Grid.Column="1"
+                         Text="{Binding EditModel.Operation, Mode=TwoWay}"
+                         Classes="input-field"
+                         Classes.error="{Binding IsOperationInvalid}"
+                         Classes.success="{Binding IsOperationValid}"
+                         IsEnabled="{Binding CanEditRecord}"
+                         ToolTip.Tip="Operation number (e.g. 90, 100, 110) - EDITABLE if you own this record"
+                         behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="{Binding CanEditRecord}"
+                         behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding AvailableOperations}" />
+                
+                <materialIcons:MaterialIcon Grid.Column="2" 
+                                            Kind="CheckCircle" 
+                                            Width="18" Height="18"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                                            IsVisible="{Binding IsOperationValid}"
+                                            ToolTip.Tip="Valid Operation" />
+                <materialIcons:MaterialIcon Grid.Column="2" 
+                                            Kind="Lock" 
+                                            Width="18" Height="18"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
+                                            IsVisible="{Binding !CanEditRecord}"
+                                            ToolTip.Tip="Field is locked - you don't own this record" />
+              </Grid>
 
-            <!-- Quantity Field -->
-            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Counter" Width="16" Height="16" />
-                <TextBlock Text="Quantity:" Classes="field-label" />
-              </StackPanel>
-              
-              <TextBox Grid.Column="1"
-                       Text="{Binding EditModel.Quantity, Mode=TwoWay}"
-                       Classes="input-field"
-                       Classes.error="{Binding IsQuantityInvalid}"
-                       ToolTip.Tip="Item quantity - must be non-negative integer" />
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="CheckCircle" 
-                                          Width="18" Height="18"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
-                                          IsVisible="{Binding IsQuantityValid}"
-                                          ToolTip.Tip="Valid Quantity" />
-            </Grid>
+              <!-- Quantity Field (EDITABLE) -->
+              <Grid ColumnDefinitions="120,*,40" ColumnSpacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                  <materialIcons:MaterialIcon Kind="Counter" Width="16" Height="16" />
+                  <TextBlock Text="Quantity:" Classes="field-label" />
+                </StackPanel>
+                
+                <TextBox Grid.Column="1"
+                         Text="{Binding EditModel.Quantity, Mode=TwoWay}"
+                         Classes="input-field"
+                         Classes.error="{Binding IsQuantityInvalid}"
+                         IsEnabled="{Binding CanEditRecord}"
+                         ToolTip.Tip="Item quantity - EDITABLE if you own this record" />
+                
+                <materialIcons:MaterialIcon Grid.Column="2" 
+                                            Kind="CheckCircle" 
+                                            Width="18" Height="18"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                                            IsVisible="{Binding IsQuantityValid}"
+                                            ToolTip.Tip="Valid Quantity" />
+                <materialIcons:MaterialIcon Grid.Column="2" 
+                                            Kind="Lock" 
+                                            Width="18" Height="18"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
+                                            IsVisible="{Binding !CanEditRecord}"
+                                            ToolTip.Tip="Field is locked - you don't own this record" />
+              </Grid>
 
-            <!-- Item Type Field -->
-            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Category" Width="16" Height="16" />
-                <TextBlock Text="Item Type:" Classes="field-label" />
-              </StackPanel>
-              
-              <ComboBox Grid.Column="1"
-                        SelectedItem="{Binding EditModel.ItemType, Mode=TwoWay}"
-                        ItemsSource="{Binding AvailableItemTypes}"
-                        Classes="input-field"
-                        ToolTip.Tip="Type of inventory item" />
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="CheckCircle" 
-                                          Width="18" Height="18"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
-                                          IsVisible="{Binding IsItemTypeValid}"
-                                          ToolTip.Tip="Valid Item Type" />
-            </Grid>
+              <!-- Notes Field (EDITABLE) -->
+              <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Top" Margin="0,8,0,0">
+                  <materialIcons:MaterialIcon Kind="NoteText" Width="16" Height="16" />
+                  <TextBlock Text="Notes:" Classes="field-label" />
+                </StackPanel>
+                
+                <TextBox Grid.Column="1"
+                         Text="{Binding EditModel.Notes, Mode=TwoWay}"
+                         Classes="input-field"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         MinHeight="80"
+                         MaxHeight="120"
+                         VerticalContentAlignment="Top"
+                         IsEnabled="{Binding CanEditRecord}"
+                         ToolTip.Tip="Optional notes or comments - EDITABLE if you own this record" />
+              </Grid>
 
-            <!-- Batch Number Field -->
-            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Barcode" Width="16" Height="16" />
-                <TextBlock Text="Batch #:" Classes="field-label" />
-              </StackPanel>
-              
-              <TextBox Grid.Column="1"
-                       Text="{Binding EditModel.BatchNumber, Mode=TwoWay}"
-                       Classes="input-field"
-                       ToolTip.Tip="Batch number or identifier (optional)" />
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="Information" 
-                                          Width="18" Height="18"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.InfoBrush}"
-                                          ToolTip.Tip="Batch number is optional" />
-            </Grid>
+              <!-- Separator -->
+              <Border Height="1" 
+                      Background="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" 
+                      Margin="0,16" />
 
-            <!-- Notes Field -->
-            <Grid ColumnDefinitions="130,*" ColumnSpacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Top" Margin="0,6,0,0">
-                <materialIcons:MaterialIcon Kind="NoteText" Width="16" Height="16" />
-                <TextBlock Text="Notes:" Classes="field-label" />
-              </StackPanel>
-              
-              <TextBox Grid.Column="1"
-                       Text="{Binding EditModel.Notes, Mode=TwoWay}"
-                       Classes="input-field"
-                       AcceptsReturn="True"
-                       TextWrapping="Wrap"
-                       HorizontalAlignment="Stretch"
-                       VerticalAlignment="Stretch"
-                       MinHeight="80"
-                       MaxHeight="120"
-                       VerticalContentAlignment="Top"
-                       ToolTip.Tip="Optional notes or comments (max 1000 characters)" />
-            </Grid>
+              <!-- READ-ONLY INFORMATION SECTION -->
+              <TextBlock Text="Read-Only Information"
+                         FontSize="14"
+                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         Margin="0,0,0,12" />
 
-            <!-- User Field (Read-Only) -->
-            <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Account" Width="16" Height="16" />
-                <TextBlock Text="User:" Classes="field-label" />
-              </StackPanel>
-              
-              <TextBox Grid.Column="1"
-                       Text="{Binding EditModel.User}"
-                       Classes="input-field"
-                       IsReadOnly="True"
-                       ToolTip.Tip="User who last modified this item" />
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="Lock" 
-                                          Width="18" Height="18"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
-                                          ToolTip.Tip="Read-only field" />
-            </Grid>
+              <!-- Item Type Field (LOCKED - Display as TextBlock) -->
+              <Grid ColumnDefinitions="120,*,40" ColumnSpacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                  <materialIcons:MaterialIcon Kind="Category" Width="16" Height="16" />
+                  <TextBlock Text="Item Type:" Classes="field-label" />
+                </StackPanel>
+                
+                <Border Grid.Column="1" 
+                        Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="8,6"
+                        MinHeight="32">
+                  <TextBlock Text="{Binding EditModel.ItemType}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             VerticalAlignment="Center"
+                             ToolTip.Tip="Type of inventory item (LOCKED - cannot be edited)" />
+                </Border>
+                
+                <materialIcons:MaterialIcon Grid.Column="2" 
+                                            Kind="Lock" 
+                                            Width="18" Height="18"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
+                                            ToolTip.Tip="Field is locked" />
+              </Grid>
 
-            <!-- Timestamps (Read-Only) -->
-            <Grid ColumnDefinitions="130,*" ColumnSpacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Top" Margin="0,6,0,0">
-                <materialIcons:MaterialIcon Kind="Clock" Width="16" Height="16" />
-                <TextBlock Text="Timestamps:" Classes="field-label" />
-              </StackPanel>
-              
-              <StackPanel Grid.Column="1" Spacing="6">
-                <TextBlock Text="{Binding EditModel.ReceiveDate, StringFormat='Created: {0:MM/dd/yyyy HH:mm}'}"
-                           FontSize="12"
-                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
-                <TextBlock Text="{Binding EditModel.LastUpdated, StringFormat='Last Updated: {0:MM/dd/yyyy HH:mm}'}"
-                           FontSize="12"
-                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
-              </StackPanel>
-            </Grid>
+              <!-- Batch Number Field (LOCKED - Display as TextBlock) -->
+              <Grid ColumnDefinitions="120,*,40" ColumnSpacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                  <materialIcons:MaterialIcon Kind="Barcode" Width="16" Height="16" />
+                  <TextBlock Text="Batch #:" Classes="field-label" />
+                </StackPanel>
+                
+                <Border Grid.Column="1" 
+                        Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="8,6"
+                        MinHeight="32">
+                  <TextBlock Text="{Binding EditModel.BatchNumber}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             VerticalAlignment="Center"
+                             ToolTip.Tip="Batch number or identifier (LOCKED - cannot be edited)" />
+                </Border>
+                
+                <materialIcons:MaterialIcon Grid.Column="2" 
+                                            Kind="Lock" 
+                                            Width="18" Height="18"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
+                                            ToolTip.Tip="Field is locked" />
+              </Grid>
 
-          </Grid>
+              <!-- User Field (LOCKED - Display as TextBlock) -->
+              <Grid ColumnDefinitions="120,*,40" ColumnSpacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                  <materialIcons:MaterialIcon Kind="Account" Width="16" Height="16" />
+                  <TextBlock Text="User:" Classes="field-label" />
+                </StackPanel>
+                
+                <Border Grid.Column="1" 
+                        Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="8,6"
+                        MinHeight="32">
+                  <TextBlock Text="{Binding EditModel.User}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             VerticalAlignment="Center"
+                             ToolTip.Tip="User who created this item" />
+                </Border>
+                
+                <materialIcons:MaterialIcon Grid.Column="2" 
+                                            Kind="Lock" 
+                                            Width="18" Height="18"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
+                                            ToolTip.Tip="Read-only field" />
+              </Grid>
+
+              <!-- Timestamps (LOCKED - Display as TextBlocks) -->
+              <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Top" Margin="0,8,0,0">
+                  <materialIcons:MaterialIcon Kind="Clock" Width="16" Height="16" />
+                  <TextBlock Text="Timestamps:" Classes="field-label" />
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Spacing="6">
+                  <Border Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                          BorderThickness="1"
+                          CornerRadius="4"
+                          Padding="8,6">
+                    <TextBlock Text="{Binding EditModel.ReceiveDate, StringFormat='Created: {0:MM/dd/yyyy HH:mm}'}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                  </Border>
+                  <Border Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
+                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                          BorderThickness="1"
+                          CornerRadius="4"
+                          Padding="8,6">
+                    <TextBlock Text="{Binding EditModel.LastUpdated, StringFormat='Last Updated: {0:MM/dd/yyyy HH:mm}'}"
+                               Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                  </Border>
+                </StackPanel>
+              </Grid>
+
+            </StackPanel>
+          </ScrollViewer>
         </Grid>
       </Border>
 

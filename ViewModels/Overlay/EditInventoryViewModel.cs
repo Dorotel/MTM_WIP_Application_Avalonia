@@ -16,6 +16,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 /// <summary>
 /// ViewModel for the comprehensive inventory edit dialog.
 /// Provides editing capabilities for all inventory fields with validation and change tracking.
+/// Only allows editing if current user matches the record's user.
 /// </summary>
 public partial class EditInventoryViewModel : BaseViewModel
 {
@@ -30,6 +31,12 @@ public partial class EditInventoryViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool hasValidationErrors;
+    
+    [ObservableProperty]
+    private bool canEditRecord = false;
+    
+    [ObservableProperty]
+    private string permissionErrorMessage = string.Empty;
 
     [ObservableProperty]
     private ObservableCollection<string> availablePartIds = new();
@@ -72,14 +79,12 @@ public partial class EditInventoryViewModel : BaseViewModel
     private bool isItemTypeValid = true;
 
     // Computed properties
-    public bool CanSave => EditModel.HasChanges && 
+    public bool CanSave => CanEditRecord && 
+                          EditModel.HasChanges && 
                           !HasValidationErrors && 
                           !IsLoading &&
-                          IsPartIdValid && 
-                          IsLocationValid && 
                           IsOperationValid && 
-                          IsQuantityValid &&
-                          IsItemTypeValid;
+                          IsQuantityValid;
 
     // Events
     public event EventHandler? DialogClosed;
@@ -148,10 +153,84 @@ public partial class EditInventoryViewModel : BaseViewModel
             EditModel = inventoryItem;
             EditModel.ResetChangeTracking(); // Start fresh change tracking
 
-            // Perform initial validation
-            ValidateAllFields();
+            // Check if current user can edit this record
+            var currentUser = Environment.UserName.ToUpper();
+            var recordUser = EditModel.User?.ToUpper() ?? string.Empty;
             
-            Logger.LogInformation("Edit dialog initialized successfully for Part ID: {PartId}", EditModel.PartId);
+            CanEditRecord = currentUser == recordUser;
+            
+            if (!CanEditRecord)
+            {
+                PermissionErrorMessage = $"You can only edit records you created. This record was created by '{EditModel.User}' but you are '{currentUser}'.";
+                Logger.LogWarning("User {CurrentUser} attempted to edit record created by {RecordUser}", currentUser, EditModel.User);
+            }
+            else
+            {
+                PermissionErrorMessage = string.Empty;
+                Logger.LogInformation("User {CurrentUser} has permission to edit this record", currentUser);
+            }
+
+            // Perform initial validation (only for editable fields if user has permission)
+            if (CanEditRecord)
+            {
+                ValidateAllFields();
+            }
+            
+            Logger.LogInformation("Edit dialog initialized successfully for Part ID: {PartId}, CanEdit: {CanEdit}", EditModel.PartId, CanEditRecord);
+        }
+        catch (Exception ex)
+        {
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to initialize inventory edit dialog", "SYSTEM");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Initialize the dialog with a selected inventory item for editing.
+    /// This method accepts the InventoryItem directly from CustomDataGrid selection.
+    /// </summary>
+    /// <param name="inventoryItem">The selected inventory item to edit</param>
+    public async Task InitializeAsync(InventoryItem inventoryItem)
+    {
+        try
+        {
+            IsLoading = true;
+            Logger.LogInformation("Initializing edit dialog for selected inventory item: {PartId}", inventoryItem.PartId);
+
+            // Load master data first
+            await LoadMasterDataAsync();
+
+            // Initialize the edit model directly from the InventoryItem
+            EditModel = new EditInventoryModel(inventoryItem);
+            EditModel.ResetChangeTracking(); // Start fresh change tracking
+
+            // Check if current user can edit this record
+            var currentUser = Environment.UserName.ToUpper();
+            var recordUser = EditModel.User?.ToUpper() ?? string.Empty;
+            
+            CanEditRecord = currentUser == recordUser;
+            
+            if (!CanEditRecord)
+            {
+                PermissionErrorMessage = $"You can only edit records you created. This record was created by '{EditModel.User}' but you are '{currentUser}'.";
+                Logger.LogWarning("User {CurrentUser} attempted to edit record created by {RecordUser}", currentUser, EditModel.User);
+            }
+            else
+            {
+                PermissionErrorMessage = string.Empty;
+                Logger.LogInformation("User {CurrentUser} has permission to edit this record", currentUser);
+            }
+
+            // Perform initial validation (only for editable fields if user has permission)
+            if (CanEditRecord)
+            {
+                ValidateAllFields();
+            }
+            
+            Logger.LogInformation("Edit dialog initialized successfully for Part ID: {PartId}, CanEdit: {CanEdit}", EditModel.PartId, CanEditRecord);
         }
         catch (Exception ex)
         {
@@ -200,24 +279,15 @@ public partial class EditInventoryViewModel : BaseViewModel
 
     /// <summary>
     /// Validate a specific field when it changes.
+    /// Only validates editable fields (Operation, Quantity, Notes).
     /// </summary>
     /// <param name="fieldName">The name of the field to validate</param>
     private void ValidateField(string? fieldName)
     {
+        if (!CanEditRecord) return; // Don't validate if user can't edit
+        
         switch (fieldName)
         {
-            case nameof(EditModel.PartId):
-                IsPartIdValid = !string.IsNullOrWhiteSpace(EditModel.PartId) && 
-                               AvailablePartIds.Contains(EditModel.PartId);
-                IsPartIdInvalid = !IsPartIdValid;
-                break;
-
-            case nameof(EditModel.Location):
-                IsLocationValid = !string.IsNullOrWhiteSpace(EditModel.Location) && 
-                                 AvailableLocations.Contains(EditModel.Location);
-                IsLocationInvalid = !IsLocationValid;
-                break;
-
             case nameof(EditModel.Operation):
                 IsOperationValid = !string.IsNullOrWhiteSpace(EditModel.Operation) && 
                                   AvailableOperations.Contains(EditModel.Operation);
@@ -228,30 +298,22 @@ public partial class EditInventoryViewModel : BaseViewModel
                 IsQuantityValid = EditModel.Quantity >= 0;
                 IsQuantityInvalid = !IsQuantityValid;
                 break;
-
-            case nameof(EditModel.ItemType):
-                IsItemTypeValid = !string.IsNullOrWhiteSpace(EditModel.ItemType);
-                break;
         }
 
-        // Update overall validation status
-        var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
-        var validationContext = new ValidationContext(EditModel);
-        var isModelValid = Validator.TryValidateObject(EditModel, validationContext, validationResults, true);
-
-        HasValidationErrors = !isModelValid || IsPartIdInvalid || IsLocationInvalid || IsOperationInvalid || IsQuantityInvalid || !IsItemTypeValid;
+        // Update overall validation status (only for editable fields)
+        HasValidationErrors = IsOperationInvalid || IsQuantityInvalid;
     }
 
     /// <summary>
-    /// Validate all fields at once.
+    /// Validate all editable fields at once (Operation, Quantity, Notes).
     /// </summary>
     private void ValidateAllFields()
     {
-        ValidateField(nameof(EditModel.PartId));
-        ValidateField(nameof(EditModel.Location));
+        if (!CanEditRecord) return; // Don't validate if user can't edit
+        
         ValidateField(nameof(EditModel.Operation));
         ValidateField(nameof(EditModel.Quantity));
-        ValidateField(nameof(EditModel.ItemType));
+        // Notes don't need validation as they're optional
     }
 
     /// <summary>
@@ -307,6 +369,9 @@ public partial class EditInventoryViewModel : BaseViewModel
                     InventorySaved?.Invoke(this, new InventorySavedEventArgs(inventoryItem));
                 }
                 
+                // Cleanup ViewModel state before closing
+                Cleanup();
+                
                 // Close dialog
                 DialogClosed?.Invoke(this, EventArgs.Empty);
             }
@@ -359,6 +424,10 @@ public partial class EditInventoryViewModel : BaseViewModel
         try
         {
             Logger.LogInformation("Cancelling edit dialog for: {PartId}", EditModel.PartId);
+            
+            // Clean up the ViewModel state before closing
+            Cleanup();
+            
             DialogClosed?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
@@ -374,5 +443,49 @@ public partial class EditInventoryViewModel : BaseViewModel
     public bool HasUnsavedChanges()
     {
         return EditModel.HasChanges;
+    }
+
+    /// <summary>
+    /// Cleans up the ViewModel state when dialog is closed.
+    /// Resets all properties to default values to prevent data from persisting across dialog instances.
+    /// </summary>
+    public void Cleanup()
+    {
+        try
+        {
+            Logger.LogDebug("Cleaning up EditInventoryViewModel state");
+
+            // Reset loading states
+            IsLoading = false;
+            HasValidationErrors = false;
+            CanEditRecord = false;
+            PermissionErrorMessage = string.Empty;
+
+            // Reset validation states
+            IsPartIdValid = false;
+            IsPartIdInvalid = false;
+            IsLocationValid = false;
+            IsLocationInvalid = false;
+            IsOperationValid = false;
+            IsOperationInvalid = false;
+            IsQuantityValid = true;
+            IsQuantityInvalid = false;
+            IsItemTypeValid = true;
+
+            // Clear collections
+            AvailablePartIds.Clear();
+            AvailableLocations.Clear();
+            AvailableOperations.Clear();
+            AvailableItemTypes.Clear();
+
+            // Reset EditModel to default state
+            EditModel = new EditInventoryModel();
+
+            Logger.LogDebug("EditInventoryViewModel cleanup completed");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during EditInventoryViewModel cleanup");
+        }
     }
 }

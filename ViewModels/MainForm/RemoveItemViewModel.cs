@@ -958,8 +958,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             // Get EditInventoryViewModel from DI container
             var editViewModel = _serviceProvider.GetRequiredService<EditInventoryViewModel>();
 
-            // Initialize the dialog with the inventory item
-            await editViewModel.InitializeAsync(item.Id);
+            // Initialize the dialog with the inventory item directly
+            await editViewModel.InitializeAsync(item);
 
             // Subscribe to dialog events
             editViewModel.DialogClosed -= OnEditDialogClosed;
