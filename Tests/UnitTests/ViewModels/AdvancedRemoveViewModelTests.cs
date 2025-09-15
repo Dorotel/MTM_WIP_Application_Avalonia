@@ -3,9 +3,11 @@ using Moq;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Models;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace MTM.Tests.UnitTests.ViewModels
 {

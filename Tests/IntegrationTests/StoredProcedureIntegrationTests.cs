@@ -2,8 +2,11 @@ using NUnit.Framework;
 using FluentAssertions;
 using MTM_WIP_Application_Avalonia.Core;
 using MTM_WIP_Application_Avalonia.Models;
+using MTM_WIP_Application_Avalonia.Services;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Threading.Tasks;
+using System;
 
 namespace MTM.Tests.IntegrationTests
 {

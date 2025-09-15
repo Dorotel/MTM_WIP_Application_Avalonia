@@ -3,9 +3,13 @@ using Moq;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Models;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
 
 namespace MTM.Tests.UnitTests.ViewModels
 {
@@ -13,10 +17,10 @@ namespace MTM.Tests.UnitTests.ViewModels
     [Category("Unit")]
     [Category("ViewModels")]
     [Category("QuickButtons")]
-    public class QuickButtonsTabViewModelTests
+    public class QuickButtonsViewModelTests
     {
-        private QuickButtonsTabViewModel _viewModel = null!;
-        private Mock<ILogger<QuickButtonsTabViewModel>> _mockLogger = null!;
+        private QuickButtonsViewModel _viewModel = null!;
+        private Mock<ILogger<QuickButtonsViewModel>> _mockLogger = null!;
         private Mock<IQuickButtonsService> _mockQuickButtonsService = null!;
         private Mock<IApplicationStateService> _mockApplicationStateService = null!;
         private Mock<IMasterDataService> _mockMasterDataService = null!;

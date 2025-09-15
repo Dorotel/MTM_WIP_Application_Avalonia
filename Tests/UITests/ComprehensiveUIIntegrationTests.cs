@@ -6,12 +6,15 @@ using Avalonia.Headless;
 using Avalonia.Threading;
 using MTM_WIP_Application_Avalonia;
 using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System;
 
 namespace MTM.Tests.UITests
 {
@@ -24,7 +27,7 @@ namespace MTM.Tests.UITests
         private Application _app = null!;
         private IServiceProvider _serviceProvider = null!;
         private Mock<ILogger<InventoryTabViewModel>> _mockLogger = null!;
-        private Mock<IInventoryService> _mockInventoryService = null!;
+        private Mock<IDatabaseService> _mockDatabaseService = null!;
         private Mock<IMasterDataService> _mockMasterDataService = null!;
         private Mock<IApplicationStateService> _mockApplicationStateService = null!;
         private Mock<INavigationService> _mockNavigationService = null!;
@@ -34,7 +37,7 @@ namespace MTM.Tests.UITests
         {
             // Initialize mocks
             _mockLogger = new Mock<ILogger<InventoryTabViewModel>>();
-            _mockInventoryService = new Mock<IInventoryService>();
+            _mockDatabaseService = new Mock<IDatabaseService>();
             _mockMasterDataService = new Mock<IMasterDataService>();
             _mockApplicationStateService = new Mock<IApplicationStateService>();
             _mockNavigationService = new Mock<INavigationService>();
@@ -78,16 +81,16 @@ namespace MTM.Tests.UITests
             _mockMasterDataService.Setup(x => x.PartIds).Returns(new ObservableCollection<string>());
             _mockMasterDataService.Setup(x => x.Operations).Returns(new ObservableCollection<string>());
             _mockMasterDataService.Setup(x => x.Locations).Returns(new ObservableCollection<string>());
-            _mockInventoryService.Setup(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
+            _mockDatabaseService.Setup(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
-            _mockInventoryService.Setup(x => x.GetInventoryAsync(It.IsAny<string>(), It.IsAny<string>()))
+            _mockDatabaseService.Setup(x => x.GetInventoryAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<InventoryItem>());
         }
 
         private void ConfigureUITestServices(IServiceCollection services)
         {
             services.AddSingleton(_mockLogger.Object);
-            services.AddSingleton(_mockInventoryService.Object);
+            services.AddSingleton(_mockDatabaseService.Object);
             services.AddSingleton(_mockMasterDataService.Object);
             services.AddSingleton(_mockApplicationStateService.Object);
             services.AddSingleton(_mockNavigationService.Object);
@@ -101,7 +104,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -136,7 +139,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -157,7 +160,7 @@ namespace MTM.Tests.UITests
             initialIsLoading.Should().BeFalse("Initially should not be loading");
             afterExecutionIsLoading.Should().BeFalse("Should not be loading after completion");
 
-            _mockInventoryService.Verify(x => x.AddInventoryAsync("UI_COMMAND_001", "100", 15, "COMMAND_STATION"), Times.Once);
+            _mockDatabaseService.Verify(x => x.AddInventoryAsync("UI_COMMAND_001", "100", 15, "COMMAND_STATION"), Times.Once);
         }
 
         [Test]
@@ -166,7 +169,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -214,7 +217,7 @@ namespace MTM.Tests.UITests
 
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -246,7 +249,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -293,12 +296,12 @@ namespace MTM.Tests.UITests
         public async Task InventoryTabViewModel_ServiceError_ShouldDisplayUserFriendlyMessage()
         {
             // Arrange
-            _mockInventoryService.Setup(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
+            _mockDatabaseService.Setup(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
                 .ThrowsAsync(new InvalidOperationException("Database connection failed"));
 
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -323,7 +326,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -340,7 +343,7 @@ namespace MTM.Tests.UITests
 
             // Assert
             canExecuteBefore.Should().BeFalse("Command should not be executable with invalid data");
-            _mockInventoryService.Verify(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            _mockDatabaseService.Verify(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
 
         #endregion
@@ -353,14 +356,14 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel1 = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
 
             using var viewModel2 = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -400,7 +403,7 @@ namespace MTM.Tests.UITests
             {
                 var viewModel = new InventoryTabViewModel(
                     _mockLogger.Object,
-                    _mockInventoryService.Object,
+                    _mockDatabaseService.Object,
                     _mockMasterDataService.Object,
                     _mockApplicationStateService.Object,
                     _mockNavigationService.Object);
@@ -418,7 +421,7 @@ namespace MTM.Tests.UITests
             await Task.WhenAll(tasks);
 
             // Assert
-            _mockInventoryService.Verify(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()), 
+            _mockDatabaseService.Verify(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()), 
                 Times.Exactly(viewModelCount));
 
             // Cleanup
@@ -438,7 +441,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -483,7 +486,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -517,7 +520,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -527,7 +530,7 @@ namespace MTM.Tests.UITests
             var workflowQuantities = new[] { 100, 95, 90, 85 };
 
             var executedOperations = new List<(string PartId, string Operation, int Quantity, string Location)>();
-            _mockInventoryService.Setup(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
+            _mockDatabaseService.Setup(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
                 .Callback<string, string, int, string>((partId, operation, quantity, location) =>
                 {
                     executedOperations.Add((partId, operation, quantity, location));
@@ -564,7 +567,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -594,7 +597,7 @@ namespace MTM.Tests.UITests
             // Arrange
             using var viewModel = new InventoryTabViewModel(
                 _mockLogger.Object,
-                _mockInventoryService.Object,
+                _mockDatabaseService.Object,
                 _mockMasterDataService.Object,
                 _mockApplicationStateService.Object,
                 _mockNavigationService.Object);
@@ -633,7 +636,7 @@ namespace MTM.Tests.UITests
             {
                 var viewModel = new InventoryTabViewModel(
                     _mockLogger.Object,
-                    _mockInventoryService.Object,
+                    _mockDatabaseService.Object,
                     _mockMasterDataService.Object,
                     _mockApplicationStateService.Object,
                     _mockNavigationService.Object);
@@ -659,7 +662,7 @@ namespace MTM.Tests.UITests
             stopwatch.ElapsedMilliseconds.Should().BeLessThan(3000, 
                 $"{concurrentOperations} concurrent UI operations should complete within 3 seconds");
 
-            _mockInventoryService.Verify(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()), 
+            _mockDatabaseService.Verify(x => x.AddInventoryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()), 
                 Times.Exactly(concurrentOperations));
 
             // Cleanup

@@ -5,8 +5,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Models;
+using MTM_WIP_Application_Avalonia.ViewModels;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MTM.Tests.UnitTests.Services
 {
@@ -107,7 +110,7 @@ namespace MTM.Tests.UnitTests.Services
         {
             // Arrange
             var testUser = "TestUser";
-            var expectedButtons = new List<QuickButtonModel>
+            var expectedButtons = new List<QuickButtonItemViewModel>
             {
                 new() { Id = 1, PartId = "PART001", Operation = "100", Quantity = 5, Location = "A01", DisplayText = "PART001 @ 100 (5)" },
                 new() { Id = 2, PartId = "PART002", Operation = "110", Quantity = 10, Location = "B02", DisplayText = "PART002 @ 110 (10)" }
@@ -196,7 +199,7 @@ namespace MTM.Tests.UnitTests.Services
         public async Task SaveQuickButtonAsync_WithValidButton_ShouldReturnTrue()
         {
             // Arrange
-            var testButton = new QuickButtonModel
+            var testButton = new QuickButtonItemViewModel
             {
                 PartId = "PART001",
                 Operation = "100",
@@ -237,7 +240,7 @@ namespace MTM.Tests.UnitTests.Services
         public async Task SaveQuickButtonAsync_WithNullUser_ShouldThrowArgumentException()
         {
             // Arrange
-            var testButton = new QuickButtonModel { PartId = "PART001" };
+            var testButton = new QuickButtonItemViewModel { PartId = "PART001" };
 
             // Act & Assert
             var act = async () => await _service.SaveQuickButtonAsync(testButton, null!);
@@ -249,7 +252,7 @@ namespace MTM.Tests.UnitTests.Services
         public async Task SaveQuickButtonAsync_WhenDatabaseFails_ShouldReturnFalse()
         {
             // Arrange
-            var testButton = new QuickButtonModel { PartId = "PART001", Operation = "100" };
+            var testButton = new QuickButtonItemViewModel { PartId = "PART001", Operation = "100" };
             var testUser = "TestUser";
 
             var mockResult = new DatabaseResult { Status = -1, Message = "Save failed" };
@@ -271,7 +274,7 @@ namespace MTM.Tests.UnitTests.Services
         public async Task ExecuteQuickButtonAsync_WithValidButton_ShouldExecuteTransaction()
         {
             // Arrange
-            var testButton = new QuickButtonModel
+            var testButton = new QuickButtonItemViewModel
             {
                 PartId = "EXEC001",
                 Operation = "100",
@@ -320,7 +323,7 @@ namespace MTM.Tests.UnitTests.Services
         public async Task ExecuteQuickButtonAsync_WhenInventoryOperationFails_ShouldReturnFalse()
         {
             // Arrange
-            var testButton = new QuickButtonModel
+            var testButton = new QuickButtonItemViewModel
             {
                 PartId = "FAIL001",
                 Operation = "100",
@@ -447,7 +450,7 @@ namespace MTM.Tests.UnitTests.Services
             string partId, string operation, int quantity, string location, string transactionType, bool shouldBeValid)
         {
             // Arrange
-            var quickButton = new QuickButtonModel
+            var quickButton = new QuickButtonItemViewModel
             {
                 PartId = partId,
                 Operation = operation,
@@ -493,7 +496,7 @@ namespace MTM.Tests.UnitTests.Services
             // Act & Assert
             foreach (var operation in standardOperations)
             {
-                var quickButton = new QuickButtonModel
+                var quickButton = new QuickButtonItemViewModel
                 {
                     PartId = $"WORKFLOW_PART",
                     Operation = operation,
@@ -524,7 +527,7 @@ namespace MTM.Tests.UnitTests.Services
             // Act & Assert
             foreach (var transactionType in transactionTypes)
             {
-                var quickButton = new QuickButtonModel
+                var quickButton = new QuickButtonItemViewModel
                 {
                     PartId = "TRANS_TEST",
                     Operation = "100",
@@ -547,7 +550,7 @@ namespace MTM.Tests.UnitTests.Services
         {
             // Arrange
             var testUser = "CacheTestUser";
-            var expectedButtons = new List<QuickButtonModel>
+            var expectedButtons = new List<QuickButtonItemViewModel>
             {
                 new() { Id = 1, PartId = "CACHE001", Operation = "100", Quantity = 5 }
             };
@@ -590,12 +593,12 @@ namespace MTM.Tests.UnitTests.Services
         {
             // Arrange
             var testUser = "PerformanceTestUser";
-            var largeButtonList = new List<QuickButtonModel>();
+            var largeButtonList = new List<QuickButtonItemViewModel>();
 
             // Create 100 QuickButton entries
             for (int i = 1; i <= 100; i++)
             {
-                largeButtonList.Add(new QuickButtonModel
+                largeButtonList.Add(new QuickButtonItemViewModel
                 {
                     Id = i,
                     PartId = $"PERF{i:000}",
@@ -626,10 +629,10 @@ namespace MTM.Tests.UnitTests.Services
         public async Task ExecuteQuickButtonAsync_ConcurrentExecution_ShouldHandleMultipleRequests()
         {
             // Arrange
-            var testButtons = new List<QuickButtonModel>();
+            var testButtons = new List<QuickButtonItemViewModel>();
             for (int i = 1; i <= 10; i++)
             {
-                testButtons.Add(new QuickButtonModel
+                testButtons.Add(new QuickButtonItemViewModel
                 {
                     PartId = $"CONCURRENT{i:00}",
                     Operation = "100",
@@ -682,7 +685,7 @@ namespace MTM.Tests.UnitTests.Services
         public async Task SaveQuickButtonAsync_WhenDatabaseThrows_ShouldReturnFalseAndLog()
         {
             // Arrange
-            var testButton = new QuickButtonModel { PartId = "ERROR001", Operation = "100", Quantity = 5, Location = "A01" };
+            var testButton = new QuickButtonItemViewModel { PartId = "ERROR001", Operation = "100", Quantity = 5, Location = "A01" };
             var testUser = "ErrorTestUser";
 
             _mockDatabaseService.Setup(x => x.ExecuteStoredProcedureAsync("qb_quickbuttons_Save", It.IsAny<MySqlParameter[]>()))
@@ -729,7 +732,7 @@ namespace MTM.Tests.UnitTests.Services
 
         #region Helper Methods
 
-        private DataTable CreateQuickButtonsDataTable(IEnumerable<QuickButtonModel> buttons)
+        private DataTable CreateQuickButtonsDataTable(IEnumerable<QuickButtonItemViewModel> buttons)
         {
             var dataTable = new DataTable();
             dataTable.Columns.Add("Id", typeof(int));
