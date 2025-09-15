@@ -1146,6 +1146,674 @@ public class MockDatabaseHelper
 
 ---
 
+## 🚀 Advanced Database Integration Patterns
+
+### Advanced Stored Procedure Parameter Patterns
+
+#### Complex Parameter Handling for Manufacturing Operations
+```csharp
+// Advanced parameter builder for manufacturing batch operations
+public class AdvancedParameterBuilder
+{
+    public static MySqlParameter[] CreateBatchInventoryParameters(
+        IEnumerable<InventoryOperation> operations, 
+        string userId, 
+        string batchId)
+    {
+        var operationsJson = JsonSerializer.Serialize(operations, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false
+        });
+
+        return new MySqlParameter[]
+        {
+            new("p_BatchId", batchId) { MySqlDbType = MySqlDbType.VarChar, Size = 50 },
+            new("p_Operations", operationsJson) { MySqlDbType = MySqlDbType.JSON },
+            new("p_User", userId) { MySqlDbType = MySqlDbType.VarChar, Size = 100 },
+            new("p_Timestamp", DateTime.UtcNow) { MySqlDbType = MySqlDbType.DateTime },
+            new("p_ProcessingMode", "BATCH") { MySqlDbType = MySqlDbType.VarChar, Size = 20 },
+            // Output parameters for batch processing results
+            new("p_out_ProcessedCount", MySqlDbType.Int32) { Direction = ParameterDirection.Output },
+            new("p_out_ErrorCount", MySqlDbType.Int32) { Direction = ParameterDirection.Output },
+            new("p_out_BatchStatus", MySqlDbType.VarChar) 
+            { 
+                Direction = ParameterDirection.Output, 
+                Size = 50 
+            }
+        };
+    }
+
+    // Advanced parameter handling for manufacturing search operations
+    public static MySqlParameter[] CreateAdvancedSearchParameters(
+        ManufacturingSearchCriteria criteria)
+    {
+        var parameters = new List<MySqlParameter>
+        {
+            // Always include user context
+            new("p_User", criteria.UserId ?? Environment.UserName),
+            new("p_SearchId", Guid.NewGuid().ToString()),
+            new("p_SearchTimestamp", DateTime.UtcNow)
+        };
+
+        // Dynamic parameter building based on criteria
+        if (!string.IsNullOrWhiteSpace(criteria.PartId))
+        {
+            parameters.Add(new("p_PartID", criteria.PartId) 
+            { 
+                MySqlDbType = MySqlDbType.VarChar, 
+                Size = 50 
+            });
+        }
+        else
+        {
+            parameters.Add(new("p_PartID", DBNull.Value) 
+            { 
+                MySqlDbType = MySqlDbType.VarChar 
+            });
+        }
+
+        // Handle operation array parameters
+        if (criteria.Operations?.Any() == true)
+        {
+            var operationsJson = JsonSerializer.Serialize(criteria.Operations);
+            parameters.Add(new("p_Operations", operationsJson) 
+            { 
+                MySqlDbType = MySqlDbType.JSON 
+            });
+        }
+
+        // Date range handling with timezone considerations
+        parameters.Add(new("p_StartDate", criteria.StartDate?.ToUniversalTime() ?? DBNull.Value));
+        parameters.Add(new("p_EndDate", criteria.EndDate?.ToUniversalTime() ?? DBNull.Value));
+
+        // Manufacturing-specific parameters
+        parameters.Add(new("p_MinQuantity", criteria.MinQuantity ?? DBNull.Value));
+        parameters.Add(new("p_MaxQuantity", criteria.MaxQuantity ?? DBNull.Value));
+        parameters.Add(new("p_LocationPattern", criteria.LocationPattern ?? DBNull.Value));
+
+        return parameters.ToArray();
+    }
+}
+```
+
+#### Advanced Transaction Management for Manufacturing Workflows
+```csharp
+// Complex transaction handling for manufacturing operations
+public class ManufacturingTransactionManager
+{
+    private readonly string _connectionString;
+    private readonly ILogger _logger;
+    private readonly SemaphoreSlim _transactionSemaphore = new(5, 5); // Limit concurrent transactions
+
+    public async Task<ManufacturingOperationResult> ExecuteManufacturingWorkflowAsync(
+        ManufacturingWorkflow workflow)
+    {
+        await _transactionSemaphore.WaitAsync();
+        try
+        {
+            using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var transaction = await connection.BeginTransactionAsync();
+            try
+            {
+                var workflowResult = new ManufacturingOperationResult 
+                { 
+                    WorkflowId = workflow.Id,
+                    StartTime = DateTime.UtcNow
+                };
+
+                // Step 1: Validate manufacturing business rules
+                var validationResult = await ValidateWorkflowAsync(connection, transaction, workflow);
+                if (!validationResult.IsValid)
+                {
+                    await transaction.RollbackAsync();
+                    return ManufacturingOperationResult.ValidationFailed(validationResult.Errors);
+                }
+
+                // Step 2: Reserve inventory for the operation
+                var reservationResult = await ReserveInventoryAsync(connection, transaction, workflow);
+                if (!reservationResult.Success)
+                {
+                    await transaction.RollbackAsync();
+                    return ManufacturingOperationResult.ReservationFailed(reservationResult.ErrorMessage);
+                }
+
+                // Step 3: Execute the manufacturing operations in sequence
+                foreach (var operation in workflow.Operations)
+                {
+                    var operationResult = await ExecuteOperationAsync(connection, transaction, operation);
+                    if (!operationResult.Success)
+                    {
+                        await transaction.RollbackAsync();
+                        return ManufacturingOperationResult.OperationFailed(
+                            operation.Id, operationResult.ErrorMessage);
+                    }
+                    workflowResult.CompletedOperations.Add(operationResult);
+                }
+
+                // Step 4: Update manufacturing state and create audit records
+                await UpdateManufacturingStateAsync(connection, transaction, workflow, workflowResult);
+                
+                // Step 5: Create audit trail
+                await CreateAuditTrailAsync(connection, transaction, workflow, workflowResult);
+
+                await transaction.CommitAsync();
+                
+                workflowResult.Success = true;
+                workflowResult.EndTime = DateTime.UtcNow;
+                
+                _logger.LogInformation(
+                    "Manufacturing workflow completed successfully: {WorkflowId} in {Duration}ms",
+                    workflow.Id, 
+                    (workflowResult.EndTime - workflowResult.StartTime).TotalMilliseconds);
+
+                return workflowResult;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Manufacturing workflow failed: {WorkflowId}", workflow.Id);
+                throw;
+            }
+        }
+        finally
+        {
+            _transactionSemaphore.Release();
+        }
+    }
+
+    private async Task<ValidationResult> ValidateWorkflowAsync(
+        MySqlConnection connection, 
+        MySqlTransaction transaction, 
+        ManufacturingWorkflow workflow)
+    {
+        var parameters = new MySqlParameter[]
+        {
+            new("p_WorkflowId", workflow.Id),
+            new("p_WorkflowType", workflow.Type),
+            new("p_OperationsJson", JsonSerializer.Serialize(workflow.Operations)),
+            new("p_User", workflow.UserId),
+            new("p_out_IsValid", MySqlDbType.Bit) { Direction = ParameterDirection.Output },
+            new("p_out_ValidationErrors", MySqlDbType.JSON) { Direction = ParameterDirection.Output }
+        };
+
+        await Helper_Database_StoredProcedure.ExecuteStoredProcedureAsync(
+            connection, transaction, "mfg_workflow_Validate", parameters);
+
+        var isValid = Convert.ToBoolean(parameters.First(p => p.ParameterName == "p_out_IsValid").Value);
+        var errorsJson = parameters.First(p => p.ParameterName == "p_out_ValidationErrors").Value?.ToString();
+        
+        var errors = string.IsNullOrEmpty(errorsJson) 
+            ? new List<string>() 
+            : JsonSerializer.Deserialize<List<string>>(errorsJson);
+
+        return new ValidationResult { IsValid = isValid, Errors = errors };
+    }
+}
+```
+
+### Advanced Error Recovery and Retry Mechanisms
+
+#### Resilient Database Operations for Manufacturing
+```csharp
+public class ResilientDatabaseService
+{
+    private readonly string _connectionString;
+    private readonly ILogger _logger;
+    private readonly RetryPolicy _retryPolicy;
+
+    public ResilientDatabaseService(string connectionString, ILogger logger)
+    {
+        _connectionString = connectionString;
+        _logger = logger;
+        _retryPolicy = CreateManufacturingRetryPolicy();
+    }
+
+    // Advanced retry policy for manufacturing operations
+    private RetryPolicy CreateManufacturingRetryPolicy()
+    {
+        return new RetryPolicy
+        {
+            MaxRetries = 5,
+            BaseDelay = TimeSpan.FromMilliseconds(500),
+            MaxDelay = TimeSpan.FromSeconds(30),
+            BackoffType = BackoffType.ExponentialWithJitter,
+            RetriableExceptions = new[]
+            {
+                typeof(MySqlException), // Database connection issues
+                typeof(TimeoutException), // Query timeout
+                typeof(TaskCanceledException) // Network issues
+            },
+            NonRetriableExceptions = new[]
+            {
+                typeof(ManufacturingBusinessRuleException), // Business rule violations
+                typeof(ArgumentException), // Invalid parameters
+                typeof(UnauthorizedAccessException) // Security violations
+            }
+        };
+    }
+
+    public async Task<DatabaseResult> ExecuteWithRetryAsync<T>(
+        string procedureName,
+        MySqlParameter[] parameters,
+        Func<DatabaseResult, T> resultProcessor = null,
+        CancellationToken cancellationToken = default)
+    {
+        return await _retryPolicy.ExecuteAsync(async (attempt) =>
+        {
+            try
+            {
+                using var connection = new MySqlConnection(_connectionString);
+                
+                // Connection timeout handling for manufacturing environments
+                connection.ConnectionTimeout = Math.Min(30 + (attempt * 10), 120);
+                await connection.OpenAsync(cancellationToken);
+
+                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                    connection, procedureName, parameters, cancellationToken);
+
+                // Manufacturing-specific result validation
+                if (result.Status == -999) // Manufacturing system unavailable
+                {
+                    throw new ManufacturingSystemUnavailableException(result.Message);
+                }
+
+                if (result.Status == -1 && result.Message.Contains("deadlock", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Deadlocks are retriable in manufacturing scenarios
+                    throw new DatabaseDeadlockException(result.Message);
+                }
+
+                _logger.LogDebug(
+                    "Database operation succeeded on attempt {Attempt}: {Procedure}",
+                    attempt, procedureName);
+
+                return result;
+            }
+            catch (MySqlException ex) when (IsRetriableException(ex))
+            {
+                _logger.LogWarning(ex,
+                    "Retriable database error on attempt {Attempt}/{MaxAttempts} for {Procedure}: {Error}",
+                    attempt, _retryPolicy.MaxRetries, procedureName, ex.Message);
+
+                if (attempt == _retryPolicy.MaxRetries)
+                {
+                    _logger.LogError(ex,
+                        "Database operation failed after {MaxAttempts} attempts: {Procedure}",
+                        _retryPolicy.MaxRetries, procedureName);
+                }
+
+                throw;
+            }
+        }, cancellationToken);
+    }
+
+    private bool IsRetriableException(MySqlException ex)
+    {
+        // MySQL error codes that are retriable in manufacturing context
+        return ex.Number switch
+        {
+            1040 => true, // Too many connections
+            1205 => true, // Lock wait timeout
+            1213 => true, // Deadlock found
+            2002 => true, // Can't connect to server
+            2003 => true, // Can't connect to server on socket
+            2006 => true, // MySQL server has gone away
+            2013 => true, // Lost connection during query
+            _ => false
+        };
+    }
+}
+```
+
+### Advanced Performance Optimization Patterns
+
+#### Connection Pooling and Performance Monitoring
+```csharp
+public class OptimizedDatabaseService
+{
+    private readonly string _connectionString;
+    private readonly ILogger _logger;
+    private readonly IMetrics _metrics;
+    private readonly ConnectionPool _connectionPool;
+
+    public OptimizedDatabaseService(IConfiguration configuration, ILogger logger, IMetrics metrics)
+    {
+        _connectionString = BuildOptimizedConnectionString(configuration);
+        _logger = logger;
+        _metrics = metrics;
+        _connectionPool = new ConnectionPool(_connectionString, maxPoolSize: 20);
+    }
+
+    private string BuildOptimizedConnectionString(IConfiguration configuration)
+    {
+        var builder = new MySqlConnectionStringBuilder(
+            configuration.GetConnectionString("DefaultConnection"))
+        {
+            // Performance optimizations for manufacturing workloads
+            ConnectionTimeout = 30,
+            DefaultCommandTimeout = 120,
+            Pooling = true,
+            MinimumPoolSize = 5,
+            MaximumPoolSize = 50,
+            ConnectionLifeTime = 300, // 5 minutes
+            ConnectionReset = false,
+            UseCompression = false, // Disable for local networks
+            AllowBatch = true,
+            InteractiveSession = false,
+            
+            // Manufacturing-specific optimizations
+            UseAffectedRows = true,
+            RespectBinaryFlags = false,
+            TreatTinyAsBoolean = true,
+            ConvertZeroDateTime = true,
+            AllowZeroDateTime = true,
+            
+            // Security settings
+            SslMode = MySqlSslMode.Preferred,
+            CheckParameters = false // Disable for performance in trusted environment
+        };
+
+        return builder.ConnectionString;
+    }
+
+    // Batch processing for high-volume manufacturing operations
+    public async Task<BatchProcessingResult> ExecuteBatchOperationsAsync(
+        string procedureName,
+        IEnumerable<MySqlParameter[]> parameterSets,
+        int batchSize = 100,
+        CancellationToken cancellationToken = default)
+    {
+        var parametersList = parameterSets.ToList();
+        var result = new BatchProcessingResult
+        {
+            TotalOperations = parametersList.Count,
+            StartTime = DateTime.UtcNow
+        };
+
+        using var connection = await _connectionPool.GetConnectionAsync();
+        using var performanceTracker = _metrics.StartTimer("database.batch_operations");
+
+        try
+        {
+            // Process in optimized batches
+            for (int i = 0; i < parametersList.Count; i += batchSize)
+            {
+                var batch = parametersList.Skip(i).Take(batchSize);
+                var batchResults = await ProcessBatchAsync(
+                    connection, procedureName, batch, cancellationToken);
+
+                result.SuccessfulOperations += batchResults.SuccessCount;
+                result.FailedOperations += batchResults.FailureCount;
+                result.BatchResults.AddRange(batchResults.Results);
+
+                // Progress reporting for manufacturing operations
+                var progressPercentage = ((i + batchSize) * 100.0) / parametersList.Count;
+                _logger.LogInformation(
+                    "Batch processing progress: {Progress:F1}% ({Processed}/{Total})",
+                    progressPercentage, i + batchSize, parametersList.Count);
+
+                // Allow cancellation between batches
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            result.EndTime = DateTime.UtcNow;
+            result.Success = result.FailedOperations == 0;
+
+            // Performance metrics
+            _metrics.Gauge("database.batch_operations.total", result.TotalOperations);
+            _metrics.Gauge("database.batch_operations.success_rate", 
+                result.SuccessfulOperations / (double)result.TotalOperations);
+            _metrics.Gauge("database.batch_operations.duration_ms", 
+                (result.EndTime - result.StartTime).TotalMilliseconds);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Batch processing failed after processing {ProcessedCount}/{TotalCount} operations",
+                result.SuccessfulOperations + result.FailedOperations, result.TotalOperations);
+            throw;
+        }
+    }
+
+    // Query plan optimization for manufacturing reporting
+    public async Task<DataTable> ExecuteOptimizedReportQueryAsync(
+        string procedureName,
+        MySqlParameter[] parameters,
+        QueryOptimizationHints hints = null)
+    {
+        using var connection = await _connectionPool.GetConnectionAsync();
+        using var command = new MySqlCommand(procedureName, connection)
+        {
+            CommandType = CommandType.StoredProcedure,
+            CommandTimeout = hints?.TimeoutSeconds ?? 300 // Extended timeout for reports
+        };
+
+        // Add optimization hints for manufacturing reports
+        if (hints != null)
+        {
+            if (hints.UseIndex != null)
+            {
+                command.CommandText = $"CALL {procedureName}() /*+ USE INDEX({hints.UseIndex}) */";
+            }
+
+            if (hints.ForceJoinOrder)
+            {
+                command.CommandText = $"/*+ STRAIGHT_JOIN */ {command.CommandText}";
+            }
+
+            if (hints.MaxExecutionTime > 0)
+            {
+                command.CommandText = $"/*+ MAX_EXECUTION_TIME({hints.MaxExecutionTime}) */ {command.CommandText}";
+            }
+        }
+
+        command.Parameters.AddRange(parameters);
+
+        using var performanceTracker = _metrics.StartTimer($"database.report.{procedureName}");
+        
+        var adapter = new MySqlDataAdapter(command);
+        var dataTable = new DataTable();
+        
+        await Task.Run(() => adapter.Fill(dataTable)); // Offload to thread pool
+        
+        _metrics.Gauge($"database.report.{procedureName}.rows", dataTable.Rows.Count);
+        
+        return dataTable;
+    }
+}
+```
+
+### ❌ Database Anti-Patterns (Avoid These)
+
+#### Connection Management Anti-Patterns
+```csharp
+// ❌ WRONG: Creating connections without proper disposal
+public async Task<DataTable> GetInventoryDataBadAsync()
+{
+    var connection = new MySqlConnection(_connectionString);
+    connection.Open(); // Never disposed - memory leak!
+    
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        _connectionString, "inv_inventory_Get_All", Array.Empty<MySqlParameter>());
+    
+    return result.Data;
+}
+
+// ✅ CORRECT: Proper connection management
+public async Task<DataTable> GetInventoryDataGoodAsync()
+{
+    using var connection = new MySqlConnection(_connectionString);
+    await connection.OpenAsync();
+    
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        connection, "inv_inventory_Get_All", Array.Empty<MySqlParameter>());
+    
+    return result.Data;
+}
+```
+
+#### Transaction Scope Anti-Patterns
+```csharp
+// ❌ WRONG: Long-running transactions that lock manufacturing data
+public async Task ProcessLargeBatchBadAsync(List<InventoryOperation> operations)
+{
+    using var connection = new MySqlConnection(_connectionString);
+    await connection.OpenAsync();
+    
+    using var transaction = await connection.BeginTransactionAsync();
+    
+    // BAD: This locks tables for too long in manufacturing environment
+    foreach (var operation in operations) // Could be thousands of operations!
+    {
+        await ExecuteOperationAsync(connection, transaction, operation);
+        await Task.Delay(100); // Simulates slow processing - TERRIBLE!
+    }
+    
+    await transaction.CommitAsync(); // Holds locks for entire batch duration
+}
+
+// ✅ CORRECT: Process in smaller transaction batches
+public async Task ProcessLargeBatchGoodAsync(List<InventoryOperation> operations)
+{
+    const int batchSize = 50; // Keep transactions small
+    
+    for (int i = 0; i < operations.Count; i += batchSize)
+    {
+        var batch = operations.Skip(i).Take(batchSize);
+        
+        using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        
+        using var transaction = await connection.BeginTransactionAsync();
+        
+        foreach (var operation in batch)
+        {
+            await ExecuteOperationAsync(connection, transaction, operation);
+        }
+        
+        await transaction.CommitAsync(); // Short-lived transaction
+    }
+}
+```
+
+#### SQL Injection Vulnerabilities
+```csharp
+// ❌ WRONG: String concatenation creates SQL injection risk
+public async Task<DataTable> SearchInventoryBadAsync(string partId, string operation)
+{
+    // NEVER DO THIS - SQL injection vulnerability!
+    var sql = $"CALL inv_inventory_Search('{partId}', '{operation}')";
+    
+    using var connection = new MySqlConnection(_connectionString);
+    using var command = new MySqlCommand(sql, connection);
+    
+    // Attacker could inject: "'; DROP TABLE inventory; --"
+    var adapter = new MySqlDataAdapter(command);
+    var dataTable = new DataTable();
+    adapter.Fill(dataTable);
+    return dataTable;
+}
+
+// ✅ CORRECT: Always use parameterized queries through Helper class
+public async Task<DataTable> SearchInventoryGoodAsync(string partId, string operation)
+{
+    var parameters = new MySqlParameter[]
+    {
+        new("p_PartID", partId ?? string.Empty),
+        new("p_Operation", operation ?? string.Empty)
+    };
+    
+    // Safe: Parameters are properly escaped and typed
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        _connectionString, "inv_inventory_Search", parameters);
+    
+    return result.Data;
+}
+```
+
+## 🔧 Manufacturing Database Troubleshooting Guide
+
+### Common Database Issues in Manufacturing Context
+
+#### Issue: Database Connection Timeouts During Shift Changes
+**Symptoms**: Connection timeouts during peak manufacturing hours (shift changes)
+
+**Solution**: Implement connection pooling with proper sizing
+```csharp
+// Configure connection string for manufacturing load
+var connectionString = new MySqlConnectionStringBuilder
+{
+    Server = "manufacturing-db-server",
+    Database = "mtm_manufacturing",
+    UserID = "mtm_app",
+    Password = "secure_password",
+    
+    // Manufacturing-optimized settings
+    MinimumPoolSize = 10,  // Always keep connections ready
+    MaximumPoolSize = 100, // Handle peak shift loads
+    ConnectionLifeTime = 600, // 10 minutes for stability
+    ConnectionTimeout = 30,
+    DefaultCommandTimeout = 120 // Manufacturing operations can be slow
+}.ConnectionString;
+```
+
+#### Issue: Deadlocks During Concurrent Manufacturing Operations
+**Symptoms**: Multiple operators processing same parts simultaneously causing deadlocks
+
+**Solution**: Implement proper transaction ordering and retry logic
+```csharp
+// Always access tables in consistent order to prevent deadlocks
+public async Task TransferInventoryAsync(string partId, string fromOperation, string toOperation, int quantity)
+{
+    var parameters = new MySqlParameter[]
+    {
+        new("p_PartID", partId),
+        new("p_FromOperation", fromOperation),
+        new("p_ToOperation", toOperation), 
+        new("p_Quantity", quantity),
+        new("p_User", CurrentUser)
+    };
+    
+    // Stored procedure handles locking order: inventory -> transactions -> audit
+    var result = await ExecuteWithRetryAsync(
+        "inv_inventory_Transfer_WithLocking", 
+        parameters,
+        maxRetries: 5); // Retry deadlocks automatically
+}
+```
+
+#### Issue: Slow Performance on Manufacturing Reports  
+**Symptoms**: Daily/weekly reports taking too long, blocking operations
+
+**Solution**: Use dedicated read replicas and query optimization
+```csharp
+// Use read replica for reporting to avoid impacting operations
+public async Task<ManufacturingReport> GenerateShiftReportAsync(DateTime shiftStart, DateTime shiftEnd)
+{
+    var readOnlyConnectionString = _configuration.GetConnectionString("ReportingReplica");
+    
+    var parameters = new MySqlParameter[]
+    {
+        new("p_ShiftStart", shiftStart),
+        new("p_ShiftEnd", shiftEnd),
+        new("p_ReportType", "SHIFT_SUMMARY"),
+        new("p_MaxExecutionTimeMs", 300000) // 5 minute limit
+    };
+    
+    // Use reporting-optimized stored procedure
+    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+        readOnlyConnectionString, "rpt_shift_summary_optimized", parameters);
+        
+    return MapToManufacturingReport(result.Data);
+}
+```
+
+---
+
 ## 📚 Related Database Documentation
 
 - **.NET Architecture**: [Good Practices](./dotnet-architecture-good-practices.instructions.md)
