@@ -7,8 +7,8 @@ namespace MTM.Tests.UnitTests.Framework;
 /// Basic test to verify testing framework setup and demonstrate foundation
 /// </summary>
 [TestFixture]
-[Category("Unit")]
-[Category("Framework")]
+[NUnit.Framework.Category("Unit")]
+[NUnit.Framework.Category("Framework")]
 public class TestingFrameworkTests
 {
     [Test]

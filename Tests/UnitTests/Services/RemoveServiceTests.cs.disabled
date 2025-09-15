@@ -14,9 +14,9 @@ using System.Data;
 namespace MTM.Tests.UnitTests.Services
 {
     [TestFixture]
-    [Category("Unit")]
-    [Category("Service")]
-    [Category("RemoveService")]
+    [NUnit.Framework.Category("Unit")]
+    [NUnit.Framework.Category("Service")]
+    [NUnit.Framework.Category("RemoveService")]
     public class RemoveServiceTests
     {
         private RemoveService _service;

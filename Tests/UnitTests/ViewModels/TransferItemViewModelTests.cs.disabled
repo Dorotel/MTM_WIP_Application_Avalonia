@@ -13,9 +13,9 @@ using System.Linq;
 namespace MTM.Tests.UnitTests.ViewModels
 {
     [TestFixture]
-    [Category("Unit")]
-    [Category("ViewModel")]
-    [Category("TransferItem")]
+    [NUnit.Framework.Category("Unit")]
+    [NUnit.Framework.Category("ViewModel")]
+    [NUnit.Framework.Category("TransferItem")]
     public class TransferItemViewModelTests
     {
         private TransferItemViewModel _viewModel;

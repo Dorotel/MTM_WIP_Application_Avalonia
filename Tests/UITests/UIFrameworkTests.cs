@@ -16,8 +16,8 @@ namespace MTM.Tests.UITests;
 /// Foundation for comprehensive UI testing implementation
 /// </summary>
 [TestFixture]
-[Category("UI")]
-[Category("Framework")]
+[NUnit.Framework.Category("UI")]
+[NUnit.Framework.Category("Framework")]
 public class UIFrameworkTests
 {
     #region Avalonia Framework Tests

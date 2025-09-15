@@ -14,8 +14,8 @@ using System.Data;
 namespace MTM.Tests.IntegrationTests
 {
     [TestFixture]
-    [Category("Integration")]
-    [Category("ManufacturingWorkflow")]
+    [NUnit.Framework.Category("Integration")]
+    [NUnit.Framework.Category("ManufacturingWorkflow")]
     public class ManufacturingWorkflowIntegrationTests
     {
         private Mock<IDatabaseService> _mockDatabaseService;

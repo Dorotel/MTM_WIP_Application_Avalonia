@@ -12,9 +12,9 @@ using System.Collections.Generic;
 namespace MTM.Tests.IntegrationTests
 {
     [TestFixture]
-    [Category("Integration")]
-    [Category("Database")]
-    [Category("StoredProcedures")]
+    [NUnit.Framework.Category("Integration")]
+    [NUnit.Framework.Category("Database")]
+    [NUnit.Framework.Category("StoredProcedures")]
     public class StoredProcedureIntegrationTests
     {
         private string _connectionString = null!;

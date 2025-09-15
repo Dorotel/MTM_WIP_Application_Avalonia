@@ -19,9 +19,9 @@ namespace MTM.Tests.PerformanceTests
     /// Tests system performance under manufacturing-grade workloads
     /// </summary>
     [TestFixture]
-    [Category("Performance")]
-    [Category("Manufacturing")]
-    [Category("LoadTesting")]
+    [NUnit.Framework.Category("Performance")]
+    [NUnit.Framework.Category("Manufacturing")]
+    [NUnit.Framework.Category("LoadTesting")]
     public class ManufacturingPerformanceTests
     {
         #region Test Setup & Configuration

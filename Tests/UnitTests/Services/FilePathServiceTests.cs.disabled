@@ -14,9 +14,9 @@ using System.IO;
 namespace MTM.Tests.UnitTests.Services
 {
     [TestFixture]
-    [Category("Unit")]
-    [Category("Service")]
-    [Category("FilePathService")]
+    [NUnit.Framework.Category("Unit")]
+    [NUnit.Framework.Category("Service")]
+    [NUnit.Framework.Category("FilePathService")]
     public class FilePathServiceTests
     {
         private FilePathService _service;

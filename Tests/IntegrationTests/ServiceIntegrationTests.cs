@@ -15,9 +15,9 @@ namespace MTM.Tests.IntegrationTests
     /// Tests real service interactions with proper dependency resolution
     /// </summary>
     [TestFixture]
-    [Category("Integration")]
-    [Category("Services")]
-    [Category("DependencyInjection")]
+    [NUnit.Framework.Category("Integration")]
+    [NUnit.Framework.Category("Services")]
+    [NUnit.Framework.Category("DependencyInjection")]
     public class ServiceIntegrationTests
     {
         #region Test Setup & Service Configuration

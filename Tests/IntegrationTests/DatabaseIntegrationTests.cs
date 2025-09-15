@@ -14,8 +14,8 @@ namespace MTM.Tests.IntegrationTests;
 /// Validates manufacturing domain logic integration
 /// </summary>
 [TestFixture]
-[Category("Integration")]
-[Category("Database")]
+[NUnit.Framework.Category("Integration")]
+[NUnit.Framework.Category("Database")]
 public class DatabaseIntegrationTests
 {
     #region Test Setup and Configuration

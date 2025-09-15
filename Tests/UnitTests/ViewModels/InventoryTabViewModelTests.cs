@@ -18,8 +18,8 @@ namespace MTM.Tests.UnitTests.ViewModels;
 /// Validates manufacturing domain logic and business rules
 /// </summary>
 [TestFixture]
-[Category("Unit")]
-[Category("ViewModel")]
+[NUnit.Framework.Category("Unit")]
+[NUnit.Framework.Category("ViewModel")]
 public class InventoryTabViewModelTests
 {
     #region Test Setup and Mocks

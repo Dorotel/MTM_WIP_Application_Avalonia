@@ -12,14 +12,14 @@ namespace MTM.Tests.PerformanceTests;
 /// Validates performance patterns without external dependencies
 /// </summary>
 [TestFixture]
-[Category("Performance")]
-[Category("Framework")]
+[NUnit.Framework.Category("Performance")]
+[NUnit.Framework.Category("Framework")]
 public class PerformanceFrameworkTests
 {
     #region Memory Performance Tests
 
     [Test]
-    [Category("MemoryTest")]
+    [NUnit.Framework.Category("MemoryTest")]
     public async Task MemoryPerformance_ObjectCreation_ShouldNotLeak()
     {
         // Arrange
@@ -58,7 +58,7 @@ public class PerformanceFrameworkTests
     #region Performance Benchmark Tests
 
     [Test]
-    [Category("Benchmark")]
+    [NUnit.Framework.Category("Benchmark")]
     public async Task Performance_BasicOperations_ShouldMeetTimingRequirements()
     {
         // Arrange
@@ -126,7 +126,7 @@ public class PerformanceFrameworkTests
     #region Concurrent Operations Tests
 
     [Test]
-    [Category("ConcurrencyTest")]
+    [NUnit.Framework.Category("ConcurrencyTest")]
     public async Task ConcurrentOperations_MultipleThreads_ShouldHandleLoad()
     {
         // Arrange

@@ -15,8 +15,8 @@ namespace MTM.Tests.UnitTests.Services;
 /// Validates manufacturing domain data handling
 /// </summary>
 [TestFixture]
-[Category("Unit")]
-[Category("Service")]
+[NUnit.Framework.Category("Unit")]
+[NUnit.Framework.Category("Service")]
 public class MasterDataServiceTests
 {
     #region Test Setup and Mocks

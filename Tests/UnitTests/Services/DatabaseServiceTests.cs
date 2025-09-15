@@ -15,9 +15,9 @@ namespace MTM.Tests.UnitTests.Services
     /// Tests stored procedure execution patterns and MTM database access standards
     /// </summary>
     [TestFixture]
-    [Category("Unit")]
-    [Category("Service")]
-    [Category("Database")]
+    [NUnit.Framework.Category("Unit")]
+    [NUnit.Framework.Category("Service")]
+    [NUnit.Framework.Category("Database")]
     public class DatabaseServiceTests
     {
         #region Test Setup & Mocking

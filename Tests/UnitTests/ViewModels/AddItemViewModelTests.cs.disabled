@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using Moq;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
+using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Models;
 using System.Collections.ObjectModel;
@@ -13,9 +13,9 @@ using System.Linq;
 namespace MTM.Tests.UnitTests.ViewModels
 {
     [TestFixture]
-    [Category("Unit")]
-    [Category("ViewModel")]
-    [Category("AddItem")]
+    [NUnit.Framework.Category("Unit")]
+    [NUnit.Framework.Category("ViewModel")]
+    [NUnit.Framework.Category("AddItem")]
     public class AddItemViewModelTests
     {
         private AddItemViewModel _viewModel;
