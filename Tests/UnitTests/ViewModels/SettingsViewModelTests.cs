@@ -1,0 +1,484 @@
+using NUnit.Framework;
+using Moq;
+using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
+using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Models;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using System;
+using System.Linq;
+
+namespace MTM.Tests.UnitTests.ViewModels
+{
+    [TestFixture]
+    [Category("Unit")]
+    [Category("ViewModel")]
+    [Category("Settings")]
+    public class SettingsViewModelTests
+    {
+        private SettingsViewModel _viewModel;
+        private Mock<ILogger<SettingsViewModel>> _mockLogger;
+        private Mock<IConfigurationService> _mockConfigurationService;
+        private Mock<IThemeService> _mockThemeService;
+        private Mock<IFilePathService> _mockFilePathService;
+        private Mock<IApplicationStateService> _mockApplicationStateService;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _mockLogger = new Mock<ILogger<SettingsViewModel>>();
+            _mockConfigurationService = new Mock<IConfigurationService>();
+            _mockThemeService = new Mock<IThemeService>();
+            _mockFilePathService = new Mock<IFilePathService>();
+            _mockApplicationStateService = new Mock<IApplicationStateService>();
+
+            // Setup default return values
+            _mockThemeService.Setup(s => s.GetAvailableThemes())
+                .Returns(new[] { "MTM_Blue", "MTM_Green", "MTM_Red", "MTM_Dark" });
+            _mockThemeService.Setup(s => s.CurrentTheme)
+                .Returns("MTM_Blue");
+
+            _viewModel = new SettingsViewModel(
+                _mockLogger.Object,
+                _mockConfigurationService.Object,
+                _mockThemeService.Object,
+                _mockFilePathService.Object,
+                _mockApplicationStateService.Object
+            );
+        }
+
+        [Test]
+        public void Constructor_WithValidParameters_InitializesCorrectly()
+        {
+            // Assert
+            Assert.That(_viewModel, Is.Not.Null);
+            Assert.That(_viewModel.IsLoading, Is.False);
+            Assert.That(_viewModel.AvailableThemes, Is.Not.Null);
+            Assert.That(_viewModel.CurrentTheme, Is.EqualTo("MTM_Blue"));
+        }
+
+        [Test]
+        public void Constructor_WithNullLogger_ThrowsArgumentNullException()
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(
+                null,
+                _mockConfigurationService.Object,
+                _mockThemeService.Object,
+                _mockFilePathService.Object,
+                _mockApplicationStateService.Object
+            ));
+        }
+
+        [Test]
+        public void CurrentTheme_WhenSet_RaisesPropertyChanged()
+        {
+            // Arrange
+            var propertyChangedRaised = false;
+            _viewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SettingsViewModel.CurrentTheme))
+                    propertyChangedRaised = true;
+            };
+
+            // Act
+            _viewModel.CurrentTheme = "MTM_Green";
+
+            // Assert
+            Assert.That(propertyChangedRaised, Is.True);
+            Assert.That(_viewModel.CurrentTheme, Is.EqualTo("MTM_Green"));
+        }
+
+        [Test]
+        public void DefaultLocation_WhenSet_RaisesPropertyChanged()
+        {
+            // Arrange
+            var propertyChangedRaised = false;
+            _viewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SettingsViewModel.DefaultLocation))
+                    propertyChangedRaised = true;
+            };
+
+            // Act
+            _viewModel.DefaultLocation = "STATION_A";
+
+            // Assert
+            Assert.That(propertyChangedRaised, Is.True);
+            Assert.That(_viewModel.DefaultLocation, Is.EqualTo("STATION_A"));
+        }
+
+        [Test]
+        public void DefaultOperation_WhenSet_RaisesPropertyChanged()
+        {
+            // Arrange
+            var propertyChangedRaised = false;
+            _viewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SettingsViewModel.DefaultOperation))
+                    propertyChangedRaised = true;
+            };
+
+            // Act
+            _viewModel.DefaultOperation = "100";
+
+            // Assert
+            Assert.That(propertyChangedRaised, Is.True);
+            Assert.That(_viewModel.DefaultOperation, Is.EqualTo("100"));
+        }
+
+        [Test]
+        public void DefaultQuantity_WhenSet_RaisesPropertyChanged()
+        {
+            // Arrange
+            var propertyChangedRaised = false;
+            _viewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SettingsViewModel.DefaultQuantity))
+                    propertyChangedRaised = true;
+            };
+
+            // Act
+            _viewModel.DefaultQuantity = 10;
+
+            // Assert
+            Assert.That(propertyChangedRaised, Is.True);
+            Assert.That(_viewModel.DefaultQuantity, Is.EqualTo(10));
+        }
+
+        [Test]
+        public void EnableAutoSave_WhenSet_RaisesPropertyChanged()
+        {
+            // Arrange
+            var propertyChangedRaised = false;
+            _viewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SettingsViewModel.EnableAutoSave))
+                    propertyChangedRaised = true;
+            };
+
+            // Act
+            _viewModel.EnableAutoSave = true;
+
+            // Assert
+            Assert.That(propertyChangedRaised, Is.True);
+            Assert.That(_viewModel.EnableAutoSave, Is.True);
+        }
+
+        [Test]
+        public void AutoSaveInterval_WhenSet_RaisesPropertyChanged()
+        {
+            // Arrange
+            var propertyChangedRaised = false;
+            _viewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SettingsViewModel.AutoSaveInterval))
+                    propertyChangedRaised = true;
+            };
+
+            // Act
+            _viewModel.AutoSaveInterval = 10;
+
+            // Assert
+            Assert.That(propertyChangedRaised, Is.True);
+            Assert.That(_viewModel.AutoSaveInterval, Is.EqualTo(10));
+        }
+
+        [Test]
+        public void ShowAdvancedFeatures_WhenSet_RaisesPropertyChanged()
+        {
+            // Arrange
+            var propertyChangedRaised = false;
+            _viewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SettingsViewModel.ShowAdvancedFeatures))
+                    propertyChangedRaised = true;
+            };
+
+            // Act
+            _viewModel.ShowAdvancedFeatures = true;
+
+            // Assert
+            Assert.That(propertyChangedRaised, Is.True);
+            Assert.That(_viewModel.ShowAdvancedFeatures, Is.True);
+        }
+
+        [Test]
+        public async Task LoadSettingsAsync_LoadsAllSettingsFromConfiguration()
+        {
+            // Arrange
+            _mockConfigurationService.Setup(s => s.GetSettingAsync<string>("DefaultLocation"))
+                .ReturnsAsync("STATION_B");
+            _mockConfigurationService.Setup(s => s.GetSettingAsync<string>("DefaultOperation"))
+                .ReturnsAsync("110");
+            _mockConfigurationService.Setup(s => s.GetSettingAsync<int>("DefaultQuantity"))
+                .ReturnsAsync(5);
+            _mockConfigurationService.Setup(s => s.GetSettingAsync<bool>("EnableAutoSave"))
+                .ReturnsAsync(true);
+            _mockConfigurationService.Setup(s => s.GetSettingAsync<int>("AutoSaveInterval"))
+                .ReturnsAsync(15);
+            _mockConfigurationService.Setup(s => s.GetSettingAsync<bool>("ShowAdvancedFeatures"))
+                .ReturnsAsync(true);
+
+            // Act
+            await _viewModel.LoadSettingsAsync();
+
+            // Assert
+            Assert.That(_viewModel.DefaultLocation, Is.EqualTo("STATION_B"));
+            Assert.That(_viewModel.DefaultOperation, Is.EqualTo("110"));
+            Assert.That(_viewModel.DefaultQuantity, Is.EqualTo(5));
+            Assert.That(_viewModel.EnableAutoSave, Is.True);
+            Assert.That(_viewModel.AutoSaveInterval, Is.EqualTo(15));
+            Assert.That(_viewModel.ShowAdvancedFeatures, Is.True);
+        }
+
+        [Test]
+        public async Task SaveSettingsAsync_SavesAllSettingsToConfiguration()
+        {
+            // Arrange
+            _viewModel.DefaultLocation = "STATION_C";
+            _viewModel.DefaultOperation = "120";
+            _viewModel.DefaultQuantity = 3;
+            _viewModel.EnableAutoSave = false;
+            _viewModel.AutoSaveInterval = 20;
+            _viewModel.ShowAdvancedFeatures = false;
+
+            // Act
+            await _viewModel.SaveSettingsAsync();
+
+            // Assert
+            _mockConfigurationService.Verify(s => s.SetSettingAsync("DefaultLocation", "STATION_C"), Times.Once);
+            _mockConfigurationService.Verify(s => s.SetSettingAsync("DefaultOperation", "120"), Times.Once);
+            _mockConfigurationService.Verify(s => s.SetSettingAsync("DefaultQuantity", 3), Times.Once);
+            _mockConfigurationService.Verify(s => s.SetSettingAsync("EnableAutoSave", false), Times.Once);
+            _mockConfigurationService.Verify(s => s.SetSettingAsync("AutoSaveInterval", 20), Times.Once);
+            _mockConfigurationService.Verify(s => s.SetSettingAsync("ShowAdvancedFeatures", false), Times.Once);
+        }
+
+        [Test]
+        public async Task ChangeThemeAsync_CallsThemeService()
+        {
+            // Arrange
+            var newTheme = "MTM_Dark";
+
+            // Act
+            await _viewModel.ChangeThemeAsync(newTheme);
+
+            // Assert
+            _mockThemeService.Verify(s => s.ChangeThemeAsync(newTheme), Times.Once);
+            Assert.That(_viewModel.CurrentTheme, Is.EqualTo(newTheme));
+        }
+
+        [Test]
+        public async Task ResetToDefaultsAsync_ResetsAllSettingsToDefaultValues()
+        {
+            // Arrange
+            _viewModel.DefaultLocation = "CUSTOM_LOCATION";
+            _viewModel.DefaultOperation = "999";
+            _viewModel.DefaultQuantity = 99;
+            _viewModel.EnableAutoSave = false;
+            _viewModel.AutoSaveInterval = 999;
+            _viewModel.ShowAdvancedFeatures = true;
+
+            // Act
+            await _viewModel.ResetToDefaultsAsync();
+
+            // Assert
+            Assert.That(_viewModel.DefaultLocation, Is.Empty);
+            Assert.That(_viewModel.DefaultOperation, Is.EqualTo("90")); // Default to receiving
+            Assert.That(_viewModel.DefaultQuantity, Is.EqualTo(1));
+            Assert.That(_viewModel.EnableAutoSave, Is.True);
+            Assert.That(_viewModel.AutoSaveInterval, Is.EqualTo(5));
+            Assert.That(_viewModel.ShowAdvancedFeatures, Is.False);
+        }
+
+        [Test]
+        public async Task ValidateSettingsAsync_WithValidSettings_ReturnsTrue()
+        {
+            // Arrange
+            _viewModel.DefaultQuantity = 10;
+            _viewModel.AutoSaveInterval = 5;
+
+            // Act
+            var isValid = await _viewModel.ValidateSettingsAsync();
+
+            // Assert
+            Assert.That(isValid, Is.True);
+        }
+
+        [Test]
+        public async Task ValidateSettingsAsync_WithInvalidQuantity_ReturnsFalse()
+        {
+            // Arrange
+            _viewModel.DefaultQuantity = 0; // Invalid quantity
+            _viewModel.AutoSaveInterval = 5;
+
+            // Act
+            var isValid = await _viewModel.ValidateSettingsAsync();
+
+            // Assert
+            Assert.That(isValid, Is.False);
+        }
+
+        [Test]
+        public async Task ValidateSettingsAsync_WithInvalidAutoSaveInterval_ReturnsFalse()
+        {
+            // Arrange
+            _viewModel.DefaultQuantity = 10;
+            _viewModel.AutoSaveInterval = 0; // Invalid interval
+
+            // Act
+            var isValid = await _viewModel.ValidateSettingsAsync();
+
+            // Assert
+            Assert.That(isValid, Is.False);
+        }
+
+        [Test]
+        public async Task ExportSettingsAsync_CallsFilePathService()
+        {
+            // Arrange
+            var exportPath = @"/tmp/settings_backup.json";
+            _mockFilePathService.Setup(s => s.SaveFileDialogAsync(
+                It.IsAny<string>(), It.IsAny<string[]>()))
+                .ReturnsAsync(exportPath);
+
+            // Act
+            var result = await _viewModel.ExportSettingsAsync();
+
+            // Assert
+            Assert.That(result, Is.EqualTo(exportPath));
+            _mockFilePathService.Verify(s => s.SaveFileDialogAsync(
+                "Export Settings", It.Is<string[]>(ext => ext.Contains("*.json"))), Times.Once);
+        }
+
+        [Test]
+        public async Task ImportSettingsAsync_CallsFilePathService()
+        {
+            // Arrange
+            var importPath = @"/tmp/settings_import.json";
+            _mockFilePathService.Setup(s => s.OpenFileDialogAsync(
+                It.IsAny<string>(), It.IsAny<string[]>()))
+                .ReturnsAsync(importPath);
+
+            // Act
+            var result = await _viewModel.ImportSettingsAsync();
+
+            // Assert
+            Assert.That(result, Is.EqualTo(importPath));
+            _mockFilePathService.Verify(s => s.OpenFileDialogAsync(
+                "Import Settings", It.Is<string[]>(ext => ext.Contains("*.json"))), Times.Once);
+        }
+
+        [Test]
+        public async Task SaveSettingsAsync_WithFailure_LogsError()
+        {
+            // Arrange
+            _mockConfigurationService.Setup(s => s.SetSettingAsync(It.IsAny<string>(), It.IsAny<object>()))
+                .ThrowsAsync(new Exception("Configuration error"));
+
+            // Act
+            await _viewModel.SaveSettingsAsync();
+
+            // Assert
+            _mockLogger.Verify(
+                x => x.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to save settings")),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task LoadSettingsAsync_SetsLoadingState_DuringOperation()
+        {
+            // Arrange
+            var loadingStates = new List<bool>();
+            _viewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SettingsViewModel.IsLoading))
+                    loadingStates.Add(_viewModel.IsLoading);
+            };
+
+            _mockConfigurationService.Setup(s => s.GetSettingAsync<string>(It.IsAny<string>()))
+                .ReturnsAsync("test");
+            _mockConfigurationService.Setup(s => s.GetSettingAsync<int>(It.IsAny<string>()))
+                .ReturnsAsync(1);
+            _mockConfigurationService.Setup(s => s.GetSettingAsync<bool>(It.IsAny<string>()))
+                .ReturnsAsync(false);
+
+            // Act
+            await _viewModel.LoadSettingsAsync();
+
+            // Assert
+            Assert.That(loadingStates.Count, Is.GreaterThanOrEqualTo(2));
+            Assert.That(loadingStates.First(), Is.True, "Should set loading to true at start");
+            Assert.That(loadingStates.Last(), Is.False, "Should set loading to false at end");
+        }
+
+        [Test]
+        public void CanSaveSettings_WithValidData_ReturnsTrue()
+        {
+            // Arrange
+            _viewModel.DefaultQuantity = 5;
+            _viewModel.AutoSaveInterval = 10;
+            _viewModel.IsLoading = false;
+
+            // Act
+            var canSave = _viewModel.CanSaveSettings;
+
+            // Assert
+            Assert.That(canSave, Is.True);
+        }
+
+        [Test]
+        public void CanSaveSettings_WhenLoading_ReturnsFalse()
+        {
+            // Arrange
+            _viewModel.DefaultQuantity = 5;
+            _viewModel.AutoSaveInterval = 10;
+            _viewModel.IsLoading = true;
+
+            // Act
+            var canSave = _viewModel.CanSaveSettings;
+
+            // Assert
+            Assert.That(canSave, Is.False);
+        }
+
+        [Test]
+        public void HasUnsavedChanges_InitiallyReturnsFalse()
+        {
+            // Act & Assert
+            Assert.That(_viewModel.HasUnsavedChanges, Is.False);
+        }
+
+        [Test]
+        public void HasUnsavedChanges_AfterPropertyChange_ReturnsTrue()
+        {
+            // Act
+            _viewModel.DefaultLocation = "NEW_LOCATION";
+
+            // Assert
+            Assert.That(_viewModel.HasUnsavedChanges, Is.True);
+        }
+
+        [Test]
+        public async Task SaveSettingsAsync_ResetsUnsavedChanges()
+        {
+            // Arrange
+            _viewModel.DefaultLocation = "NEW_LOCATION";
+            Assert.That(_viewModel.HasUnsavedChanges, Is.True);
+
+            // Act
+            await _viewModel.SaveSettingsAsync();
+
+            // Assert
+            Assert.That(_viewModel.HasUnsavedChanges, Is.False);
+        }
+    }
+}

@@ -1,0 +1,478 @@
+using NUnit.Framework;
+using Moq;
+using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Models;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.IO;
+
+namespace MTM.Tests.UnitTests.Services
+{
+    [TestFixture]
+    [Category("Unit")]
+    [Category("Service")]
+    [Category("FilePathService")]
+    public class FilePathServiceTests
+    {
+        private FilePathService _service;
+        private Mock<ILogger<FilePathService>> _mockLogger;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _mockLogger = new Mock<ILogger<FilePathService>>();
+            _service = new FilePathService(_mockLogger.Object);
+        }
+
+        [Test]
+        public void Constructor_WithValidLogger_InitializesCorrectly()
+        {
+            // Assert
+            Assert.That(_service, Is.Not.Null);
+        }
+
+        [Test]
+        public void Constructor_WithNullLogger_ThrowsArgumentNullException()
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => new FilePathService(null));
+        }
+
+        [Test]
+        public void GetApplicationDataPath_ReturnsValidPath()
+        {
+            // Act
+            var path = _service.GetApplicationDataPath();
+
+            // Assert
+            Assert.That(path, Is.Not.Null.And.Not.Empty);
+            Assert.That(Path.IsPathRooted(path), Is.True);
+            Assert.That(path, Does.Contain("MTM_WIP_Application"));
+        }
+
+        [Test]
+        public void GetSettingsFilePath_ReturnsValidPath()
+        {
+            // Act
+            var path = _service.GetSettingsFilePath();
+
+            // Assert
+            Assert.That(path, Is.Not.Null.And.Not.Empty);
+            Assert.That(Path.IsPathRooted(path), Is.True);
+            Assert.That(path, Does.EndWith("settings.json"));
+        }
+
+        [Test]
+        public void GetLogsDirectoryPath_ReturnsValidPath()
+        {
+            // Act
+            var path = _service.GetLogsDirectoryPath();
+
+            // Assert
+            Assert.That(path, Is.Not.Null.And.Not.Empty);
+            Assert.That(Path.IsPathRooted(path), Is.True);
+            Assert.That(path, Does.Contain("Logs"));
+        }
+
+        [Test]
+        public void GetBackupDirectoryPath_ReturnsValidPath()
+        {
+            // Act
+            var path = _service.GetBackupDirectoryPath();
+
+            // Assert
+            Assert.That(path, Is.Not.Null.And.Not.Empty);
+            Assert.That(Path.IsPathRooted(path), Is.True);
+            Assert.That(path, Does.Contain("Backups"));
+        }
+
+        [Test]
+        public void GetExportsDirectoryPath_ReturnsValidPath()
+        {
+            // Act
+            var path = _service.GetExportsDirectoryPath();
+
+            // Assert
+            Assert.That(path, Is.Not.Null.And.Not.Empty);
+            Assert.That(Path.IsPathRooted(path), Is.True);
+            Assert.That(path, Does.Contain("Exports"));
+        }
+
+        [Test]
+        public void EnsureDirectoryExists_WithValidPath_CreatesDirectory()
+        {
+            // Arrange
+            var testDir = Path.Combine(Path.GetTempPath(), "MTMTest_" + Guid.NewGuid().ToString("N")[..8]);
+
+            try
+            {
+                // Act
+                var result = _service.EnsureDirectoryExists(testDir);
+
+                // Assert
+                Assert.That(result, Is.True);
+                Assert.That(Directory.Exists(testDir), Is.True);
+            }
+            finally
+            {
+                // Cleanup
+                if (Directory.Exists(testDir))
+                    Directory.Delete(testDir, true);
+            }
+        }
+
+        [Test]
+        public void EnsureDirectoryExists_WithExistingDirectory_ReturnsTrue()
+        {
+            // Arrange
+            var testDir = Path.GetTempPath(); // Already exists
+
+            // Act
+            var result = _service.EnsureDirectoryExists(testDir);
+
+            // Assert
+            Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public void EnsureDirectoryExists_WithInvalidPath_ReturnsFalse()
+        {
+            // Arrange
+            var invalidPath = "Z:\\NonExistentDrive\\Invalid\\Path";
+
+            // Act
+            var result = _service.EnsureDirectoryExists(invalidPath);
+
+            // Assert
+            Assert.That(result, Is.False);
+        }
+
+        [Test]
+        public void GetUniqueFileName_WithBaseName_ReturnsUniqueFileName()
+        {
+            // Arrange
+            var baseName = "test_export";
+            var extension = ".csv";
+            var directory = Path.GetTempPath();
+
+            // Act
+            var uniqueFileName = _service.GetUniqueFileName(directory, baseName, extension);
+
+            // Assert
+            Assert.That(uniqueFileName, Is.Not.Null.And.Not.Empty);
+            Assert.That(uniqueFileName, Does.StartWith(baseName));
+            Assert.That(uniqueFileName, Does.EndWith(extension));
+            Assert.That(File.Exists(Path.Combine(directory, uniqueFileName)), Is.False);
+        }
+
+        [Test]
+        public void GetUniqueFileName_WithExistingFile_ReturnsIncrementedName()
+        {
+            // Arrange
+            var baseName = "test_export";
+            var extension = ".csv";
+            var directory = Path.GetTempPath();
+            var existingFile = Path.Combine(directory, baseName + extension);
+
+            // Create the base file to force increment
+            File.WriteAllText(existingFile, "test");
+
+            try
+            {
+                // Act
+                var uniqueFileName = _service.GetUniqueFileName(directory, baseName, extension);
+
+                // Assert
+                Assert.That(uniqueFileName, Is.Not.EqualTo(baseName + extension));
+                Assert.That(uniqueFileName, Does.StartWith(baseName));
+                Assert.That(uniqueFileName, Does.EndWith(extension));
+                Assert.That(uniqueFileName, Does.Match(@"test_export_\d+\.csv"));
+            }
+            finally
+            {
+                // Cleanup
+                if (File.Exists(existingFile))
+                    File.Delete(existingFile);
+            }
+        }
+
+        [Test]
+        public void ValidateFileName_WithValidName_ReturnsTrue()
+        {
+            // Arrange
+            var validNames = new[] 
+            { 
+                "valid_file.txt", 
+                "ValidFile123.csv", 
+                "file-name_with.dots.extension",
+                "simple.pdf"
+            };
+
+            foreach (var fileName in validNames)
+            {
+                // Act
+                var isValid = _service.ValidateFileName(fileName);
+
+                // Assert
+                Assert.That(isValid, Is.True, $"File name '{fileName}' should be valid");
+            }
+        }
+
+        [Test]
+        public void ValidateFileName_WithInvalidName_ReturnsFalse()
+        {
+            // Arrange
+            var invalidNames = new[] 
+            { 
+                "invalid<file.txt",     // Invalid character
+                "invalid>file.txt",     // Invalid character
+                "invalid|file.txt",     // Invalid character
+                "invalid:file.txt",     // Invalid character
+                "invalid\"file.txt",    // Invalid character
+                "invalid?file.txt",     // Invalid character
+                "invalid*file.txt",     // Invalid character
+                "",                     // Empty string
+                "   ",                  // Only spaces
+                "CON.txt",             // Reserved name
+                "PRN.txt",             // Reserved name
+                "AUX.txt"              // Reserved name
+            };
+
+            foreach (var fileName in invalidNames)
+            {
+                // Act
+                var isValid = _service.ValidateFileName(fileName);
+
+                // Assert
+                Assert.That(isValid, Is.False, $"File name '{fileName}' should be invalid");
+            }
+        }
+
+        [Test]
+        public void SanitizeFileName_WithInvalidCharacters_ReturnsCleanedName()
+        {
+            // Arrange
+            var dirtyFileName = "Invalid<File>Name|With:Bad\"Chars?.txt";
+
+            // Act
+            var cleanedName = _service.SanitizeFileName(dirtyFileName);
+
+            // Assert
+            Assert.That(cleanedName, Is.Not.Null.And.Not.Empty);
+            Assert.That(cleanedName, Does.Not.Contain("<"));
+            Assert.That(cleanedName, Does.Not.Contain(">"));
+            Assert.That(cleanedName, Does.Not.Contain("|"));
+            Assert.That(cleanedName, Does.Not.Contain(":"));
+            Assert.That(cleanedName, Does.Not.Contain("\""));
+            Assert.That(cleanedName, Does.Not.Contain("?"));
+            Assert.That(cleanedName, Does.EndWith(".txt"));
+        }
+
+        [Test]
+        public void GetFileSize_WithExistingFile_ReturnsCorrectSize()
+        {
+            // Arrange
+            var testFile = Path.Combine(Path.GetTempPath(), "test_file_size.txt");
+            var testContent = "This is test content for file size calculation.";
+            File.WriteAllText(testFile, testContent);
+
+            try
+            {
+                // Act
+                var fileSize = _service.GetFileSize(testFile);
+
+                // Assert
+                Assert.That(fileSize, Is.GreaterThan(0));
+                Assert.That(fileSize, Is.EqualTo(testContent.Length));
+            }
+            finally
+            {
+                // Cleanup
+                if (File.Exists(testFile))
+                    File.Delete(testFile);
+            }
+        }
+
+        [Test]
+        public void GetFileSize_WithNonExistentFile_ReturnsZero()
+        {
+            // Arrange
+            var nonExistentFile = Path.Combine(Path.GetTempPath(), "non_existent_file.txt");
+
+            // Act
+            var fileSize = _service.GetFileSize(nonExistentFile);
+
+            // Assert
+            Assert.That(fileSize, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void FormatFileSize_WithBytesValue_ReturnsFormattedString()
+        {
+            // Test various file sizes
+            var testCases = new[]
+            {
+                new { Bytes = 512L, Expected = "512 B" },
+                new { Bytes = 1024L, Expected = "1.00 KB" },
+                new { Bytes = 1536L, Expected = "1.50 KB" },
+                new { Bytes = 1048576L, Expected = "1.00 MB" },
+                new { Bytes = 1073741824L, Expected = "1.00 GB" },
+                new { Bytes = 1099511627776L, Expected = "1.00 TB" }
+            };
+
+            foreach (var testCase in testCases)
+            {
+                // Act
+                var formatted = _service.FormatFileSize(testCase.Bytes);
+
+                // Assert
+                Assert.That(formatted, Is.EqualTo(testCase.Expected), 
+                    $"File size {testCase.Bytes} should format as {testCase.Expected}");
+            }
+        }
+
+        [Test]
+        public void IsFileInUse_WithFileNotInUse_ReturnsFalse()
+        {
+            // Arrange
+            var testFile = Path.Combine(Path.GetTempPath(), "test_file_not_in_use.txt");
+            File.WriteAllText(testFile, "test content");
+
+            try
+            {
+                // Act
+                var isInUse = _service.IsFileInUse(testFile);
+
+                // Assert
+                Assert.That(isInUse, Is.False);
+            }
+            finally
+            {
+                // Cleanup
+                if (File.Exists(testFile))
+                    File.Delete(testFile);
+            }
+        }
+
+        [Test]
+        public void IsFileInUse_WithNonExistentFile_ReturnsFalse()
+        {
+            // Arrange
+            var nonExistentFile = Path.Combine(Path.GetTempPath(), "non_existent_file.txt");
+
+            // Act
+            var isInUse = _service.IsFileInUse(nonExistentFile);
+
+            // Assert
+            Assert.That(isInUse, Is.False);
+        }
+
+        [Test]
+        public void GetRelativePath_WithValidPaths_ReturnsRelativePath()
+        {
+            // Arrange
+            var basePath = @"/home/user/documents";
+            var targetPath = @"/home/user/documents/projects/myproject/file.txt";
+
+            // Act
+            var relativePath = _service.GetRelativePath(basePath, targetPath);
+
+            // Assert
+            Assert.That(relativePath, Is.Not.Null.And.Not.Empty);
+            Assert.That(relativePath, Does.Not.StartWith("/"));
+            Assert.That(relativePath, Does.Contain("projects"));
+            Assert.That(relativePath, Does.EndWith("file.txt"));
+        }
+
+        [Test]
+        public void GetFileExtension_WithVariousFiles_ReturnsCorrectExtension()
+        {
+            // Test various file types
+            var testCases = new[]
+            {
+                new { FileName = "document.pdf", Expected = ".pdf" },
+                new { FileName = "spreadsheet.xlsx", Expected = ".xlsx" },
+                new { FileName = "image.PNG", Expected = ".PNG" }, // Case sensitive
+                new { FileName = "archive.tar.gz", Expected = ".gz" }, // Only last extension
+                new { FileName = "noextension", Expected = "" },
+                new { FileName = ".hidden", Expected = "" }, // Hidden file without extension
+                new { FileName = ".hidden.txt", Expected = ".txt" }
+            };
+
+            foreach (var testCase in testCases)
+            {
+                // Act
+                var extension = _service.GetFileExtension(testCase.FileName);
+
+                // Assert
+                Assert.That(extension, Is.EqualTo(testCase.Expected), 
+                    $"File '{testCase.FileName}' should have extension '{testCase.Expected}'");
+            }
+        }
+
+        [Test]
+        public void BackupFile_WithExistingFile_CreatesBackup()
+        {
+            // Arrange
+            var originalFile = Path.Combine(Path.GetTempPath(), "original_file.txt");
+            var testContent = "This is the original content";
+            File.WriteAllText(originalFile, testContent);
+
+            try
+            {
+                // Act
+                var backupPath = _service.BackupFile(originalFile);
+
+                // Assert
+                Assert.That(backupPath, Is.Not.Null.And.Not.Empty);
+                Assert.That(File.Exists(backupPath), Is.True);
+                Assert.That(File.ReadAllText(backupPath), Is.EqualTo(testContent));
+                Assert.That(backupPath, Does.Contain(".backup."));
+            }
+            finally
+            {
+                // Cleanup
+                if (File.Exists(originalFile))
+                    File.Delete(originalFile);
+                if (!string.IsNullOrEmpty(_service.BackupFile(originalFile)) && File.Exists(_service.BackupFile(originalFile)))
+                    File.Delete(_service.BackupFile(originalFile));
+            }
+        }
+
+        [Test]
+        public void CombinePath_WithMultipleSegments_ReturnsCorrectPath()
+        {
+            // Arrange
+            var segments = new[] { "root", "subfolder", "file.txt" };
+
+            // Act
+            var combinedPath = _service.CombinePath(segments);
+
+            // Assert
+            Assert.That(combinedPath, Is.Not.Null.And.Not.Empty);
+            Assert.That(combinedPath, Does.EndWith("file.txt"));
+            Assert.That(combinedPath, Does.Contain("root"));
+            Assert.That(combinedPath, Does.Contain("subfolder"));
+        }
+
+        [Test]
+        public void GetTemporaryFilePath_ReturnsUniqueTemporaryPath()
+        {
+            // Act
+            var tempPath1 = _service.GetTemporaryFilePath();
+            var tempPath2 = _service.GetTemporaryFilePath();
+
+            // Assert
+            Assert.That(tempPath1, Is.Not.Null.And.Not.Empty);
+            Assert.That(tempPath2, Is.Not.Null.And.Not.Empty);
+            Assert.That(tempPath1, Is.Not.EqualTo(tempPath2));
+            Assert.That(Path.IsPathRooted(tempPath1), Is.True);
+            Assert.That(Path.IsPathRooted(tempPath2), Is.True);
+        }
+    }
+}
