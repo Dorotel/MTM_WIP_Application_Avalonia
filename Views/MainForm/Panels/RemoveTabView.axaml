@@ -122,7 +122,7 @@
                   <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding SelectedPart, Mode=TwoWay}" Watermark="{Binding PartWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a part number to search" TabIndex="1" />
+                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding SelectedPart, Mode=TwoWay}" Watermark="{Binding PartWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a part number to search" TabIndex="1" IsEnabled="{Binding AreSearchFieldsEnabled}" />
               </Grid>
 
               <!-- Operation Field -->
@@ -131,7 +131,7 @@
                   <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter an operation number" TabIndex="2" />
+                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter an operation number" TabIndex="2" IsEnabled="{Binding AreSearchFieldsEnabled}" />
               </Grid>
 
             </Grid>
@@ -278,8 +278,8 @@
               BorderBrush="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
               BorderThickness="2"
               CornerRadius="8"
-              MaxWidth="650"
-              MaxHeight="750"
+              MaxWidth="800"
+              MaxHeight="850"
               Margin="30"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"

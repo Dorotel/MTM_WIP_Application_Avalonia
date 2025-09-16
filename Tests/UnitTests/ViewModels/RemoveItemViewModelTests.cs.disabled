@@ -3,11 +3,14 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 using MTM_WIP_Application_Avalonia.ViewModels;
+using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Models;
+using API.ViewModels.MainForm;
 
 namespace MTM.Tests.UnitTests.ViewModels
 {
@@ -33,6 +36,7 @@ namespace MTM.Tests.UnitTests.ViewModels
         private Mock<IQuickButtonsService> _mockQuickButtonsService;
         private Mock<IRemoveService> _mockRemoveService;
         private Mock<IPrintService> _mockPrintService;
+        private Mock<IServiceProvider> _mockServiceProvider;
 
         [SetUp]
         public void SetUp()
@@ -47,6 +51,7 @@ namespace MTM.Tests.UnitTests.ViewModels
             _mockRemoveService = new Mock<IRemoveService>();
             _mockPrintService = new Mock<IPrintService>();
             _mockNavigationService = new Mock<INavigationService>();
+            _mockServiceProvider = new Mock<IServiceProvider>();
 
             // Setup default mock behavior
             SetupDefaultMockBehavior();
@@ -59,6 +64,7 @@ namespace MTM.Tests.UnitTests.ViewModels
                 _mockSuccessOverlayService.Object,
                 _mockQuickButtonsService.Object,
                 _mockRemoveService.Object,
+                _mockServiceProvider.Object,
                 _mockLogger.Object,
                 _mockPrintService.Object,
                 _mockNavigationService.Object

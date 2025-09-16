@@ -302,6 +302,9 @@ public partial class EditInventoryViewModel : BaseViewModel
 
         // Update overall validation status (only for editable fields)
         HasValidationErrors = IsOperationInvalid || IsQuantityInvalid;
+        
+        // Notify that CanSave may have changed
+        OnPropertyChanged(nameof(CanSave));
     }
 
     /// <summary>
@@ -447,7 +450,7 @@ public partial class EditInventoryViewModel : BaseViewModel
 
     /// <summary>
     /// Cleans up the ViewModel state when dialog is closed.
-    /// Resets all properties to default values to prevent data from persisting across dialog instances.
+    /// Preserves updated data for CustomDataGrid updates while clearing UI state.
     /// </summary>
     public void Cleanup()
     {
@@ -455,10 +458,13 @@ public partial class EditInventoryViewModel : BaseViewModel
         {
             Logger.LogDebug("Cleaning up EditInventoryViewModel state");
 
-            // Reset loading states
+            // Preserve updated data by creating a snapshot before cleanup
+            var hasUpdatedData = EditModel.HasChanges;
+            var updatedItem = hasUpdatedData ? EditModel.ToInventoryItem() : null;
+
+            // Reset loading and UI states only
             IsLoading = false;
             HasValidationErrors = false;
-            CanEditRecord = false;
             PermissionErrorMessage = string.Empty;
 
             // Reset validation states
@@ -472,16 +478,13 @@ public partial class EditInventoryViewModel : BaseViewModel
             IsQuantityInvalid = false;
             IsItemTypeValid = true;
 
-            // Clear collections
-            AvailablePartIds.Clear();
-            AvailableLocations.Clear();
-            AvailableOperations.Clear();
-            AvailableItemTypes.Clear();
+            // Note: DO NOT clear master data collections as they are expensive to reload
+            // and should be reused across dialog instances for performance
+            
+            // Note: DO NOT reset EditModel here - it should only be reset when new data is loaded
+            // This preserves data for potential CustomDataGrid updates
 
-            // Reset EditModel to default state
-            EditModel = new EditInventoryModel();
-
-            Logger.LogDebug("EditInventoryViewModel cleanup completed");
+            Logger.LogDebug("EditInventoryViewModel cleanup completed - Data preserved for updates");
         }
         catch (Exception ex)
         {

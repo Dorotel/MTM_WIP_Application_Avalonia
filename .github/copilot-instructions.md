@@ -2,8 +2,14 @@
 
 <!-- COPILOT AUTO-INCLUDE SYSTEM -->
 <!-- When this file is referenced via #file:copilot-instructions.md, -->
+<!-- Reference: .github/copilot-instructions.md -->
 
-<!-- automatically include all related instruction files for comprehensive AI assistance: -->
+<!--
+Whenever you interact with me, I will automatically reference ALL the instruction files listed below.
+In each chat response, include a brief note that you're following the copilot-instructions.md requirements 
+and referencing all required files, but don't list them all to avoid screen clutter.
+Use this format: "**Referenced Files:** Following MTM copilot-instructions.md - all required instruction files, context files, templates, and patterns are automatically referenced for this response."
+-->
 
 <!-- Core Manufacturing Application Instructions -->
 <!-- #file:.github/instructions/avalonia-ui-guidelines.instructions.md -->
@@ -44,7 +50,6 @@
 <!-- #file:.github/copilot/context/mtm-database-procedures.md -->
 
 <!-- Development Templates and Patterns -->
-
 <!-- #file:.github/copilot/templates/mtm-feature-request.md -->
 <!-- #file:.github/copilot/templates/mtm-ui-component.md -->
 <!-- #file:.github/copilot/templates/mtm-viewmodel-creation.md -->
@@ -58,6 +63,49 @@
 
 <!-- Advanced GitHub Copilot Integration -->
 <!-- #file:.github/instructions/advanced-github-copilot-integration-scenarios.instructions.md -->
+
+<!--
+Referenced files in every chat response:
+- .github/instructions/avalonia-ui-guidelines.instructions.md
+- .github/instructions/mvvm-community-toolkit.instructions.md
+- .github/instructions/mysql-database-patterns.instructions.md
+- .github/instructions/dotnet-architecture-good-practices.instructions.md
+- .github/instructions/service-architecture.instructions.md
+- .github/instructions/data-models.instructions.md
+- .github/instructions/application-configuration.instructions.md
+- .github/instructions/custom-controls.instructions.md
+- .github/instructions/avalonia-behaviors.instructions.md
+- .github/instructions/value-converters.instructions.md
+- .github/instructions/resource-management.instructions.md
+- .github/instructions/advanced-manufacturing-workflows.instructions.md
+- .github/instructions/industry-40-integration.instructions.md
+- .github/instructions/manufacturing-kpi-dashboard-integration.instructions.md
+- .github/instructions/advanced-manufacturing-quality-assurance-framework.instructions.md
+- .github/instructions/enterprise-integration-patterns.instructions.md
+- .github/instructions/external-system-integration.instructions.md
+- .github/instructions/service-integration.instructions.md
+- .github/instructions/database-integration.instructions.md
+- .github/instructions/testing-standards.instructions.md
+- .github/instructions/unit-testing-patterns.instructions.md
+- .github/instructions/integration-testing-patterns.instructions.md
+- .github/instructions/database-testing-patterns.instructions.md
+- .github/instructions/ui-automation-standards.instructions.md
+- .github/instructions/cross-platform-testing-standards.instructions.md
+- .github/instructions/advanced-performance-testing-framework.instructions.md
+- .github/copilot/context/mtm-business-domain.md
+- .github/copilot/context/mtm-technology-stack.md
+- .github/copilot/context/mtm-architecture-patterns.md
+- .github/copilot/context/mtm-database-procedures.md
+- .github/copilot/templates/mtm-feature-request.md
+- .github/copilot/templates/mtm-ui-component.md
+- .github/copilot/templates/mtm-viewmodel-creation.md
+- .github/copilot/templates/mtm-database-operation.md
+- .github/copilot/templates/mtm-service-implementation.md
+- .github/copilot/patterns/mtm-mvvm-community-toolkit.md
+- .github/copilot/patterns/mtm-stored-procedures-only.md
+- .github/copilot/patterns/mtm-avalonia-syntax.md
+- .github/instructions/advanced-github-copilot-integration-scenarios.instructions.md
+-->
 
 **Generate code strictly following the established patterns found in this .NET 8 Avalonia MVVM application. Never introduce patterns not already present in the codebase.**
 

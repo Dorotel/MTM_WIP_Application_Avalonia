@@ -42,6 +42,8 @@ public partial class RemoveItemViewModel : BaseViewModel
     private readonly INavigationService? _navigationService;
     private readonly IServiceProvider _serviceProvider;
 
+    // ViewModel cache for EditInventoryView - maintains data between dialog openings
+    private readonly Dictionary<int, EditInventoryViewModel> _editViewModelCache = new();
 
     #region Observable Collections (InventoryTabView Pattern)
 
@@ -152,6 +154,11 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// Indicates if there are inventory items to display
     /// </summary>
     public bool HasInventoryItems => InventoryItems.Count > 0;
+
+    /// <summary>
+    /// Indicates if search fields should be enabled (when CustomDataGrid is empty)
+    /// </summary>
+    public bool AreSearchFieldsEnabled => !HasInventoryItems;
 
     /// <summary>
     /// Indicates if delete operation can be performed (items selected)
@@ -312,6 +319,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                 break;
             case nameof(InventoryItems):
                 OnPropertyChanged(nameof(HasInventoryItems));
+                OnPropertyChanged(nameof(AreSearchFieldsEnabled));
                 break;
             case nameof(SelectedPart):
                 PartText = SelectedPart ?? string.Empty;
@@ -393,6 +401,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
                     // Manually trigger HasInventoryItems property change notification
                     OnPropertyChanged(nameof(HasInventoryItems));
+                    OnPropertyChanged(nameof(AreSearchFieldsEnabled));
                     Logger.LogDebug("HasInventoryItems property changed, value: {HasItems}", HasInventoryItems);
                 });
 
@@ -504,6 +513,9 @@ public partial class RemoveItemViewModel : BaseViewModel
                     SelectedItems.Clear();
                     SelectedItem = null;
                 });
+
+                // Clean up cached ViewModels for removed items to prevent memory leaks
+                CleanupRemovedViewModels(removalResult.SuccessfulRemovals);
 
                 // Show success overlay for successful operations
                 if (removalResult.HasSuccesses)
@@ -668,6 +680,9 @@ public partial class RemoveItemViewModel : BaseViewModel
                         SelectedItem = null;
                     }
                 });
+
+                // Clean up cached ViewModel for removed item to prevent memory leaks
+                CleanupRemovedViewModels(new[] { item });
 
                 // Show success overlay for successful operation
                 if (removalResult.HasSuccesses)
@@ -940,6 +955,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Command to edit an inventory item with comprehensive editing dialog.
     /// Opens the EditInventoryView dialog for full field editing with validation.
+    /// Uses cached ViewModel instances per inventory item ID to preserve data across multiple openings.
     /// </summary>
     [RelayCommand]
     private async Task EditItem(InventoryItem? item)
@@ -952,27 +968,35 @@ public partial class RemoveItemViewModel : BaseViewModel
 
         try
         {
-            Logger.LogInformation("Opening comprehensive edit dialog for item: PartID={PartId}, Operation={Operation}, Location={Location}",
-                item.PartId, item.Operation, item.Location);
+            Logger.LogInformation("Opening comprehensive edit dialog for item: PartID={PartId}, Operation={Operation}, Location={Location}, ID={Id}",
+                item.PartId, item.Operation, item.Location, item.Id);
 
-            // Get EditInventoryViewModel from DI container
-            var editViewModel = _serviceProvider.GetRequiredService<EditInventoryViewModel>();
+            // Get or create EditInventoryViewModel from cache based on inventory item ID
+            EditInventoryViewModel editViewModel;
+            if (_editViewModelCache.TryGetValue(item.Id, out var cachedViewModel))
+            {
+                Logger.LogDebug("Using cached EditInventoryViewModel for inventory ID {Id}", item.Id);
+                editViewModel = cachedViewModel;
+            }
+            else
+            {
+                Logger.LogDebug("Creating new EditInventoryViewModel for inventory ID {Id}", item.Id);
+                editViewModel = _serviceProvider.GetRequiredService<EditInventoryViewModel>();
+                _editViewModelCache[item.Id] = editViewModel;
+                
+                // Initialize new ViewModel with the inventory item
+                await editViewModel.InitializeAsync(item);
+                
+                // Subscribe to dialog events (only for new ViewModels)
+                editViewModel.DialogClosed += OnEditDialogClosed;
+                editViewModel.InventorySaved += OnInventoryItemSaved;
+            }
 
-            // Initialize the dialog with the inventory item directly
-            await editViewModel.InitializeAsync(item);
-
-            // Subscribe to dialog events
-            editViewModel.DialogClosed -= OnEditDialogClosed;
-            editViewModel.DialogClosed += OnEditDialogClosed;
-            editViewModel.InventorySaved -= OnInventoryItemSaved;
-            editViewModel.InventorySaved += OnInventoryItemSaved;
-
-            // Show the edit dialog (this would typically be handled by a dialog service)
-            // For now, we'll implement a simple property-based approach
+            // Show the edit dialog using the cached (or newly created) ViewModel
             EditDialogViewModel = editViewModel;
             IsEditDialogVisible = true;
 
-            Logger.LogInformation("Edit dialog opened successfully for {PartId}", item.PartId);
+            Logger.LogInformation("Edit dialog opened successfully for {PartId} using cached ViewModel", item.PartId);
         }
         catch (Exception ex)
         {
@@ -983,6 +1007,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     /// <summary>
     /// Handles edit dialog closure event.
+    /// Preserves cached ViewModel instances for reuse across multiple dialog openings.
     /// </summary>
     private void OnEditDialogClosed(object? sender, EventArgs e)
     {
@@ -990,15 +1015,23 @@ public partial class RemoveItemViewModel : BaseViewModel
         {
             Logger.LogInformation("Edit dialog closed");
 
-            // Clean up dialog
+            // Clean up UI state but preserve ViewModel in cache
             if (EditDialogViewModel != null)
             {
-                EditDialogViewModel.DialogClosed -= OnEditDialogClosed;
-                EditDialogViewModel.InventorySaved -= OnInventoryItemSaved;
+                // Call cleanup to reset UI state while preserving data
+                EditDialogViewModel.Cleanup();
+                
+                // NOTE: Do NOT unsubscribe events or set ViewModel to null
+                // The ViewModel remains cached for reuse with preserved data
+                Logger.LogDebug("EditInventoryViewModel cleaned up but preserved in cache");
             }
 
+            // Hide the dialog overlay
             EditDialogViewModel = null;
             IsEditDialogVisible = false;
+            
+            // NOTE: Do NOT refresh data here - selective updates are handled by OnInventoryItemSaved()
+            Logger.LogDebug("Edit dialog closed successfully - search results preserved, ViewModel cached");
         }
         catch (Exception ex)
         {
@@ -1008,31 +1041,62 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     /// <summary>
     /// Handles successful inventory item save event.
-    /// Refreshes the data grid to show updated information.
+    /// Updates the specific edited row in CustomDataGrid instead of full data refresh.
     /// </summary>
     private async void OnInventoryItemSaved(object? sender, InventorySavedEventArgs e)
     {
         try
         {
             var partId = e.SavedItem?.PartId ?? "Unknown";
-            Logger.LogInformation("Inventory item saved successfully: {PartId}, refreshing data", partId);
+            Logger.LogInformation("Inventory item saved successfully: {PartId}, updating specific grid row", partId);
 
-            // Refresh the current search to show updated data
-            await RefreshCurrentData();
+            if (e.SavedItem != null)
+            {
+                // Find and update the specific item in the collection instead of full refresh
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    var existingItem = InventoryItems.FirstOrDefault(item => 
+                        item.PartId == e.SavedItem.PartId && 
+                        item.Operation == e.SavedItem.Operation &&
+                        item.Location == e.SavedItem.Location);
 
-            // Show success message using the correct service method signature
-            await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
-                null, // Control parameter - not needed for this usage
-                $"Successfully updated inventory item: {e.SavedItem?.PartId ?? e.PartId}",
-                "Item details updated successfully",
-                "CheckCircle", // Icon kind
-                2500 // Duration in milliseconds
-            );
+                    if (existingItem != null)
+                    {
+                        // Update the existing item's properties with saved data
+                        var index = InventoryItems.IndexOf(existingItem);
+                        if (index >= 0)
+                        {
+                            // Replace the item to trigger ObservableCollection notifications
+                            InventoryItems[index] = e.SavedItem;
+                            Logger.LogDebug("Updated InventoryItems collection at index {Index} with edited data", index);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Could not find item to update in InventoryItems collection: {PartId} {Operation} {Location}", 
+                            e.SavedItem.PartId, e.SavedItem.Operation, e.SavedItem.Location);
+                    }
+                });
+
+                // Show success message using the correct service method signature
+                await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                    null, // Control parameter - not needed for this usage
+                    $"Successfully updated inventory item: {e.SavedItem?.PartId ?? e.PartId}",
+                    "Item details updated successfully",
+                    "CheckCircle", // Icon kind
+                    2500 // Duration in milliseconds
+                );
+            }
+            else
+            {
+                Logger.LogWarning("SavedItem was null in InventorySavedEventArgs, falling back to full refresh");
+                await RefreshCurrentData();
+            }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error handling inventory item save completion");
-            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Data Refresh Error", _applicationState.CurrentUser);
+            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Data Update Error", _applicationState.CurrentUser);
         }
     }
 
@@ -1366,6 +1430,41 @@ public partial class RemoveItemViewModel : BaseViewModel
             inventoryItems.Count, dataTable.Columns.Count);
 
         return dataTable;
+    }
+
+    #endregion
+
+    #region SuggestionOverlay Integration Methods
+
+    /// <summary>
+    /// Cleans up cached EditInventoryViewModels for removed inventory items.
+    /// Prevents memory leaks by disposing ViewModels that are no longer needed.
+    /// </summary>
+    private void CleanupRemovedViewModels(IEnumerable<InventoryItem> removedItems)
+    {
+        try
+        {
+            foreach (var item in removedItems)
+            {
+                if (_editViewModelCache.TryGetValue(item.Id, out var cachedViewModel))
+                {
+                    Logger.LogDebug("Removing cached EditInventoryViewModel for inventory ID {Id}", item.Id);
+                    
+                    // Unsubscribe from events
+                    cachedViewModel.DialogClosed -= OnEditDialogClosed;
+                    cachedViewModel.InventorySaved -= OnInventoryItemSaved;
+                    
+                    // Remove from cache
+                    _editViewModelCache.Remove(item.Id);
+                }
+            }
+            
+            Logger.LogDebug("ViewModel cache cleanup completed. Cache size: {CacheSize}", _editViewModelCache.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during ViewModel cache cleanup");
+        }
     }
 
     #endregion

@@ -1549,7 +1549,7 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
 
         /// <summary>
-        /// Clears all input fields in the Remove tab
+        /// Clears all input fields in the Remove tab unless edit dialog is open
         /// </summary>
         private void ClearRemoveTabInputs()
         {
@@ -1557,6 +1557,14 @@ namespace MTM_WIP_Application_Avalonia.Views
             {
                 if (_viewModel?.RemoveItemViewModel != null)
                 {
+                    // CRITICAL: Preserve search inputs during edit dialog operations
+                    // Only clear inputs during actual tab switches, not within-tab operations
+                    if (_viewModel.RemoveItemViewModel.IsEditDialogVisible)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Preserving Remove tab inputs - edit dialog is open");
+                        return;
+                    }
+                    
                     _viewModel.RemoveItemViewModel.SelectedPart = null;
                     _viewModel.RemoveItemViewModel.SelectedOperation = null;
                     _viewModel.RemoveItemViewModel.PartText = string.Empty;
