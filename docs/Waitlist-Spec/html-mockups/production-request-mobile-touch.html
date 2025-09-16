@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -31,13 +32,14 @@
         }
 
         @keyframes slideUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(50px) scale(0.95); 
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
             }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1); 
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
             }
         }
 
@@ -446,7 +448,7 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
             }
-            
+
             .location-row {
                 grid-template-columns: 1fr;
             }
@@ -457,12 +459,30 @@
         }
 
         @keyframes vibrate {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-            20%, 40%, 60%, 80% { transform: translateX(2px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-2px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(2px);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="mobile-interface">
         <div class="mobile-header">
@@ -580,7 +600,7 @@
         function changeQuantity(delta) {
             currentQuantity = Math.max(1, Math.min(999, currentQuantity + delta));
             document.getElementById('quantity').textContent = currentQuantity;
-            
+
             // Haptic feedback simulation
             if ('vibrate' in navigator) {
                 navigator.vibrate(50);
@@ -590,21 +610,21 @@
         function submitTouchRequest() {
             const button = document.querySelector('.submit-touch');
             const originalText = button.innerHTML;
-            
+
             // Haptic feedback
             if ('vibrate' in navigator) {
                 navigator.vibrate([100, 50, 100]);
             }
-            
+
             // Check if locations are selected
             const fromSelected = document.getElementById('fromBtn').classList.contains('selected');
             const toSelected = document.getElementById('toBtn').classList.contains('selected');
-            
+
             if (!fromSelected || !toSelected) {
                 button.innerHTML = '❌ Select From & To Locations';
                 button.style.background = '#dc3545';
                 button.classList.add('vibrate');
-                
+
                 setTimeout(() => {
                     button.innerHTML = originalText;
                     button.style.background = 'linear-gradient(135deg, #17a2b8 0%, #20c997 100%)';
@@ -612,37 +632,37 @@
                 }, 2000);
                 return;
             }
-            
+
             // Simulate submission
             button.innerHTML = '🔄 Submitting...';
             button.disabled = true;
-            
+
             setTimeout(() => {
                 const requestId = 'WL-2024-' + Math.floor(Math.random() * 1000 + 1200);
                 button.innerHTML = `✅ Request ${requestId} Submitted!`;
                 button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
-                
+
                 // Success haptic
                 if ('vibrate' in navigator) {
                     navigator.vibrate([200, 100, 200]);
                 }
-                
+
                 setTimeout(() => {
                     // Reset form
                     currentQuantity = 1;
                     document.getElementById('quantity').textContent = currentQuantity;
                     document.getElementById('selectedPart').textContent = 'Select a part...';
-                    
+
                     // Reset priority
                     document.querySelectorAll('.touch-priority').forEach(p => p.classList.remove('selected'));
                     document.querySelector('.touch-priority.normal').classList.add('selected');
-                    
+
                     // Reset locations
                     document.getElementById('fromBtn').classList.remove('selected');
                     document.getElementById('toBtn').classList.remove('selected');
                     document.getElementById('fromBtn').querySelector('.button-text').innerHTML = '<strong>From</strong><br>Select location';
                     document.getElementById('toBtn').querySelector('.button-text').innerHTML = '<strong>To</strong><br>Select location';
-                    
+
                     button.innerHTML = originalText;
                     button.style.background = 'linear-gradient(135deg, #17a2b8 0%, #20c997 100%)';
                     button.disabled = false;
@@ -663,83 +683,83 @@
         }
 
         // Initialize dropdown functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const dropdown = document.getElementById('partDropdown');
             const options = document.getElementById('partOptions');
             const selectedPart = document.getElementById('selectedPart');
-            
-            dropdown.addEventListener('click', function() {
+
+            dropdown.addEventListener('click', function () {
                 const isOpen = options.style.display === 'block';
                 options.style.display = isOpen ? 'none' : 'block';
                 dropdown.classList.toggle('open', !isOpen);
-                
+
                 // Haptic feedback
                 if ('vibrate' in navigator) {
                     navigator.vibrate(30);
                 }
             });
-            
+
             // Handle option selection
-            options.addEventListener('click', function(e) {
+            options.addEventListener('click', function (e) {
                 if (e.target.classList.contains('dropdown-option')) {
                     selectedPart.textContent = e.target.textContent;
                     dropdown.classList.add('selected');
                     options.style.display = 'none';
                     dropdown.classList.remove('open');
-                    
+
                     // Haptic feedback
                     if ('vibrate' in navigator) {
                         navigator.vibrate(50);
                     }
                 }
             });
-            
+
             // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 if (!dropdown.contains(e.target)) {
                     options.style.display = 'none';
                     dropdown.classList.remove('open');
                 }
             });
-            
+
             // Priority selection
             const priorities = document.querySelectorAll('.touch-priority');
             priorities.forEach(priority => {
-                priority.addEventListener('click', function() {
+                priority.addEventListener('click', function () {
                     priorities.forEach(p => p.classList.remove('selected'));
                     this.classList.add('selected');
-                    
+
                     // Haptic feedback
                     if ('vibrate' in navigator) {
                         navigator.vibrate(50);
                     }
                 });
             });
-            
+
             // Location button functionality
             const fromBtn = document.getElementById('fromBtn');
             const toBtn = document.getElementById('toBtn');
-            
-            fromBtn.addEventListener('click', function() {
+
+            fromBtn.addEventListener('click', function () {
                 // Simulate location picker
                 const locations = ['Line 5 - Op 100', 'Warehouse A', 'Receiving Dock', 'Line 3 - Op 90'];
                 const selected = locations[Math.floor(Math.random() * locations.length)];
                 this.querySelector('.button-text').innerHTML = `<strong>From</strong><br>${selected}`;
                 this.classList.add('selected');
-                
+
                 // Haptic feedback
                 if ('vibrate' in navigator) {
                     navigator.vibrate(50);
                 }
             });
-            
-            toBtn.addEventListener('click', function() {
+
+            toBtn.addEventListener('click', function () {
                 // Simulate location picker
                 const locations = ['Quality Control', 'Shipping Area', 'Storage Rack B', 'Line 7 - Op 110'];
                 const selected = locations[Math.floor(Math.random() * locations.length)];
                 this.querySelector('.button-text').innerHTML = `<strong>To</strong><br>${selected}`;
                 this.classList.add('selected');
-                
+
                 // Haptic feedback
                 if ('vibrate' in navigator) {
                     navigator.vibrate(50);
@@ -748,4 +768,5 @@
         });
     </script>
 </body>
+
 </html>

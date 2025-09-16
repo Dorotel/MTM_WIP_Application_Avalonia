@@ -1,925 +1,928 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTM Handler Dashboard - Task Board</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-            padding: 20px;
-            overflow-x: auto;
-        }
-
-        .dashboard-header {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px 30px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(20px);
-        }
-
-        .handler-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .handler-avatar {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #FF6B35, #F7931E);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-        }
-
-        .handler-details h2 {
-            font-size: 24px;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-
-        .handler-status {
-            color: #28a745;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .dashboard-stats {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-number.active {
-            color: #FF6B35;
-        }
-
-        .stat-number.completed {
-            color: #28a745;
-        }
-
-        .stat-number.efficiency {
-            color: #0078D4;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #6c757d;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .task-board {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .task-column {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            min-height: 600px;
-        }
-
-        .column-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f1f3f4;
-        }
-
-        .column-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .task-count {
-            background: #e9ecef;
-            color: #6c757d;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .column-header.pending .task-count {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .column-header.active .task-count {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .column-header.completed .task-count {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .task-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .task-list::-webkit-scrollbar-track {
-            background: #f1f3f4;
-            border-radius: 3px;
-        }
-
-        .task-list::-webkit-scrollbar-thumb {
-            background: #c1c8cd;
-            border-radius: 3px;
-        }
-
-        .task-card {
-            background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
-            padding: 16px;
-            cursor: grab;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .task-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: #FF6B35;
-        }
-
-        .task-card:active {
-            cursor: grabbing;
-            transform: rotate(2deg) scale(1.02);
-        }
-
-        .task-card.dragging {
-            opacity: 0.8;
-            transform: rotate(5deg) scale(1.05);
-            z-index: 100;
-        }
-
-        .task-priority {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            border-radius: 0 0 0 12px;
-        }
-
-        .task-priority.high {
-            background: linear-gradient(180deg, #dc3545, #c82333);
-        }
-
-        .task-priority.medium {
-            background: linear-gradient(180deg, #FF6B35, #F7931E);
-        }
-
-        .task-priority.low {
-            background: linear-gradient(180deg, #28a745, #20c997);
-        }
-
-        .task-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .task-id {
-            font-size: 14px;
-            font-weight: bold;
-            color: #2c3e50;
-            font-family: 'Courier New', monospace;
-        }
-
-        .task-time {
-            font-size: 12px;
-            color: #6c757d;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .task-description {
-            font-size: 14px;
-            color: #495057;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .task-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-        }
-
-        .task-location {
-            color: #0078D4;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .task-quantity {
-            background: #f8f9fa;
-            color: #495057;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .task-actions {
-            margin-top: 12px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .task-btn {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .task-btn.primary {
-            background: linear-gradient(135deg, #FF6B35, #F7931E);
-            color: white;
-        }
-
-        .task-btn.primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
-        }
-
-        .task-btn.secondary {
-            background: #f8f9fa;
-            color: #6c757d;
-            border: 1px solid #e9ecef;
-        }
-
-        .task-btn.secondary:hover {
-            background: #e9ecef;
-            color: #495057;
-        }
-
-        .floating-actions {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 1000;
-        }
-
-        .fab {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .fab.primary {
-            background: linear-gradient(135deg, #FF6B35, #F7931E);
-            color: white;
-        }
-
-        .fab.secondary {
-            background: white;
-            color: #6c757d;
-            border: 2px solid #e9ecef;
-        }
-
-        .fab:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
-        }
-
-        .notification-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #28a745;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            z-index: 1001;
-            transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.23, 1, 0.320, 1);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-        }
-
-        .notification-toast.show {
-            transform: translateX(0);
-        }
-
-        .drop-zone {
-            min-height: 60px;
-            border: 2px dashed #dee2e6;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6c757d;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: scaleY(0);
-        }
-
-        .drop-zone.active {
-            opacity: 1;
-            transform: scaleY(1);
-            border-color: #FF6B35;
-            color: #FF6B35;
-            background: rgba(255, 107, 53, 0.05);
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .task-card {
-            animation: slideInLeft 0.5s ease-out;
-        }
-
-        .task-card:nth-child(even) {
-            animation-delay: 0.1s;
-        }
-
-        .task-card:nth-child(odd) {
-            animation-delay: 0.2s;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-header {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-
-            .dashboard-stats {
-                flex-wrap: wrap;
-                gap: 20px;
-                justify-content: center;
-            }
-
-            .task-board {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .task-column {
-                min-height: auto;
-            }
-
-            .floating-actions {
-                bottom: 20px;
-                right: 20px;
-            }
-
-            .fab {
-                width: 50px;
-                height: 50px;
-                font-size: 18px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MTM Handler Dashboard - Task Board</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    .dashboard-header {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px 30px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(20px);
+    }
+
+    .handler-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .handler-avatar {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #FF6B35, #F7931E);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    .handler-details h2 {
+      font-size: 24px;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .handler-status {
+      color: #28a745;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dashboard-stats {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-number.active {
+      color: #FF6B35;
+    }
+
+    .stat-number.completed {
+      color: #28a745;
+    }
+
+    .stat-number.efficiency {
+      color: #0078D4;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #6c757d;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .task-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .task-column {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      min-height: 600px;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f1f3f4;
+    }
+
+    .column-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #2c3e50;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .task-count {
+      background: #e9ecef;
+      color: #6c757d;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .column-header.pending .task-count {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .column-header.active .task-count {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .column-header.completed .task-count {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .task-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .task-list::-webkit-scrollbar-track {
+      background: #f1f3f4;
+      border-radius: 3px;
+    }
+
+    .task-list::-webkit-scrollbar-thumb {
+      background: #c1c8cd;
+      border-radius: 3px;
+    }
+
+    .task-card {
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 12px;
+      padding: 16px;
+      cursor: grab;
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .task-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      border-color: #FF6B35;
+    }
+
+    .task-card:active {
+      cursor: grabbing;
+      transform: rotate(2deg) scale(1.02);
+    }
+
+    .task-card.dragging {
+      opacity: 0.8;
+      transform: rotate(5deg) scale(1.05);
+      z-index: 100;
+    }
+
+    .task-priority {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      border-radius: 0 0 0 12px;
+    }
+
+    .task-priority.high {
+      background: linear-gradient(180deg, #dc3545, #c82333);
+    }
+
+    .task-priority.medium {
+      background: linear-gradient(180deg, #FF6B35, #F7931E);
+    }
+
+    .task-priority.low {
+      background: linear-gradient(180deg, #28a745, #20c997);
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .task-id {
+      font-size: 14px;
+      font-weight: bold;
+      color: #2c3e50;
+      font-family: 'Courier New', monospace;
+    }
+
+    .task-time {
+      font-size: 12px;
+      color: #6c757d;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .task-description {
+      font-size: 14px;
+      color: #495057;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .task-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .task-location {
+      color: #0078D4;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .task-quantity {
+      background: #f8f9fa;
+      color: #495057;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .task-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .task-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .task-btn.primary {
+      background: linear-gradient(135deg, #FF6B35, #F7931E);
+      color: white;
+    }
+
+    .task-btn.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    }
+
+    .task-btn.secondary {
+      background: #f8f9fa;
+      color: #6c757d;
+      border: 1px solid #e9ecef;
+    }
+
+    .task-btn.secondary:hover {
+      background: #e9ecef;
+      color: #495057;
+    }
+
+    .floating-actions {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1000;
+    }
+
+    .fab {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .fab.primary {
+      background: linear-gradient(135deg, #FF6B35, #F7931E);
+      color: white;
+    }
+
+    .fab.secondary {
+      background: white;
+      color: #6c757d;
+      border: 2px solid #e9ecef;
+    }
+
+    .fab:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .notification-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      z-index: 1001;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+    }
+
+    .notification-toast.show {
+      transform: translateX(0);
+    }
+
+    .drop-zone {
+      min-height: 60px;
+      border: 2px dashed #dee2e6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6c757d;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: scaleY(0);
+    }
+
+    .drop-zone.active {
+      opacity: 1;
+      transform: scaleY(1);
+      border-color: #FF6B35;
+      color: #FF6B35;
+      background: rgba(255, 107, 53, 0.05);
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .task-card {
+      animation: slideInLeft 0.5s ease-out;
+    }
+
+    .task-card:nth-child(even) {
+      animation-delay: 0.1s;
+    }
+
+    .task-card:nth-child(odd) {
+      animation-delay: 0.2s;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+
+      .dashboard-stats {
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .task-board {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .task-column {
+        min-height: auto;
+      }
+
+      .floating-actions {
+        bottom: 20px;
+        right: 20px;
+      }
+
+      .fab {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <div class="dashboard-header">
-        <div class="handler-info">
-            <div class="handler-avatar">MJ</div>
-            <div class="handler-details">
-                <h2>Mike Johnson - Handler Dashboard</h2>
-                <div class="handler-status">
-                    <span>🟢 Active</span>
-                    <span>•</span>
-                    <span>Shift: 6:00 AM - 2:00 PM</span>
-                </div>
-            </div>
+  <div class="dashboard-header">
+    <div class="handler-info">
+      <div class="handler-avatar">MJ</div>
+      <div class="handler-details">
+        <h2>Mike Johnson - Handler Dashboard</h2>
+        <div class="handler-status">
+          <span>🟢 Active</span>
+          <span>•</span>
+          <span>Shift: 6:00 AM - 2:00 PM</span>
         </div>
-        
-        <div class="dashboard-stats">
-            <div class="stat-item">
-                <div class="stat-number active">5</div>
-                <div class="stat-label">Active Tasks</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number completed">23</div>
-                <div class="stat-label">Completed Today</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number efficiency">94%</div>
-                <div class="stat-label">Efficiency</div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <div class="task-board">
-        <!-- Pending Tasks Column -->
-        <div class="task-column">
-            <div class="column-header pending">
-                <div class="column-title">
-                    📋 Pending Tasks
-                </div>
-                <div class="task-count">3</div>
-            </div>
-            <div class="task-list" id="pending-tasks">
-                <div class="task-card" draggable="true" data-task-id="WL-2024-1158">
-                    <div class="task-priority high"></div>
-                    <div class="task-header">
-                        <div class="task-id">WL-2024-1158</div>
-                        <div class="task-time">⏱️ 8 min ago</div>
-                    </div>
-                    <div class="task-description">Material pickup from Line 5 - Urgent production requirement</div>
-                    <div class="task-meta">
-                        <div class="task-location">📍 Line 5 Station A</div>
-                        <div class="task-quantity">Qty: 150</div>
-                    </div>
-                    <div class="task-actions">
-                        <button class="task-btn primary" onclick="acceptTask('WL-2024-1158')">Accept</button>
-                        <button class="task-btn secondary" onclick="viewDetails('WL-2024-1158')">Details</button>
-                    </div>
-                </div>
+    <div class="dashboard-stats">
+      <div class="stat-item">
+        <div class="stat-number active">5</div>
+        <div class="stat-label">Active Tasks</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number completed">23</div>
+        <div class="stat-label">Completed Today</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number efficiency">94%</div>
+        <div class="stat-label">Efficiency</div>
+      </div>
+    </div>
+  </div>
 
-                <div class="task-card" draggable="true" data-task-id="WL-2024-1159">
-                    <div class="task-priority medium"></div>
-                    <div class="task-header">
-                        <div class="task-id">WL-2024-1159</div>
-                        <div class="task-time">⏱️ 12 min ago</div>
-                    </div>
-                    <div class="task-description">Quality inspection materials needed at QC Station</div>
-                    <div class="task-meta">
-                        <div class="task-location">📍 QC Station B</div>
-                        <div class="task-quantity">Qty: 75</div>
-                    </div>
-                    <div class="task-actions">
-                        <button class="task-btn primary" onclick="acceptTask('WL-2024-1159')">Accept</button>
-                        <button class="task-btn secondary" onclick="viewDetails('WL-2024-1159')">Details</button>
-                    </div>
-                </div>
-
-                <div class="task-card" draggable="true" data-task-id="WL-2024-1160">
-                    <div class="task-priority low"></div>
-                    <div class="task-header">
-                        <div class="task-id">WL-2024-1160</div>
-                        <div class="task-time">⏱️ 18 min ago</div>
-                    </div>
-                    <div class="task-description">Maintenance supplies for Line 3 preventive maintenance</div>
-                    <div class="task-meta">
-                        <div class="task-location">📍 Line 3 Maintenance</div>
-                        <div class="task-quantity">Qty: 25</div>
-                    </div>
-                    <div class="task-actions">
-                        <button class="task-btn primary" onclick="acceptTask('WL-2024-1160')">Accept</button>
-                        <button class="task-btn secondary" onclick="viewDetails('WL-2024-1160')">Details</button>
-                    </div>
-                </div>
-            </div>
-            <div class="drop-zone" id="drop-pending">Drop tasks here to queue</div>
+  <div class="task-board">
+    <!-- Pending Tasks Column -->
+    <div class="task-column">
+      <div class="column-header pending">
+        <div class="column-title">
+          📋 Pending Tasks
+        </div>
+        <div class="task-count">3</div>
+      </div>
+      <div class="task-list" id="pending-tasks">
+        <div class="task-card" draggable="true" data-task-id="WL-2024-1158">
+          <div class="task-priority high"></div>
+          <div class="task-header">
+            <div class="task-id">WL-2024-1158</div>
+            <div class="task-time">⏱️ 8 min ago</div>
+          </div>
+          <div class="task-description">Material pickup from Line 5 - Urgent production requirement</div>
+          <div class="task-meta">
+            <div class="task-location">📍 Line 5 Station A</div>
+            <div class="task-quantity">Qty: 150</div>
+          </div>
+          <div class="task-actions">
+            <button class="task-btn primary" onclick="acceptTask('WL-2024-1158')">Accept</button>
+            <button class="task-btn secondary" onclick="viewDetails('WL-2024-1158')">Details</button>
+          </div>
         </div>
 
-        <!-- Active Tasks Column -->
-        <div class="task-column">
-            <div class="column-header active">
-                <div class="column-title">
-                    🚛 Active Tasks
-                </div>
-                <div class="task-count">2</div>
-            </div>
-            <div class="task-list" id="active-tasks">
-                <div class="task-card" draggable="true" data-task-id="WL-2024-1156">
-                    <div class="task-priority high"></div>
-                    <div class="task-header">
-                        <div class="task-id">WL-2024-1156</div>
-                        <div class="task-time">⏱️ En route - 5 min ETA</div>
-                    </div>
-                    <div class="task-description">Assembly components for Line 2 - Critical path item</div>
-                    <div class="task-meta">
-                        <div class="task-location">📍 Currently at Warehouse A</div>
-                        <div class="task-quantity">Qty: 200</div>
-                    </div>
-                    <div class="task-actions">
-                        <button class="task-btn primary" onclick="completeTask('WL-2024-1156')">Complete</button>
-                        <button class="task-btn secondary" onclick="updateLocation('WL-2024-1156')">Update Location</button>
-                    </div>
-                </div>
-
-                <div class="task-card" draggable="true" data-task-id="WL-2024-1157">
-                    <div class="task-priority medium"></div>
-                    <div class="task-header">
-                        <div class="task-id">WL-2024-1157</div>
-                        <div class="task-time">⏱️ Pickup complete - delivering</div>
-                    </div>
-                    <div class="task-description">Raw materials for Line 4 production run</div>
-                    <div class="task-meta">
-                        <div class="task-location">📍 En route to Line 4</div>
-                        <div class="task-quantity">Qty: 500</div>
-                    </div>
-                    <div class="task-actions">
-                        <button class="task-btn primary" onclick="completeTask('WL-2024-1157')">Complete</button>
-                        <button class="task-btn secondary" onclick="updateLocation('WL-2024-1157')">Update Location</button>
-                    </div>
-                </div>
-            </div>
-            <div class="drop-zone" id="drop-active">Drop tasks here to start</div>
+        <div class="task-card" draggable="true" data-task-id="WL-2024-1159">
+          <div class="task-priority medium"></div>
+          <div class="task-header">
+            <div class="task-id">WL-2024-1159</div>
+            <div class="task-time">⏱️ 12 min ago</div>
+          </div>
+          <div class="task-description">Quality inspection materials needed at QC Station</div>
+          <div class="task-meta">
+            <div class="task-location">📍 QC Station B</div>
+            <div class="task-quantity">Qty: 75</div>
+          </div>
+          <div class="task-actions">
+            <button class="task-btn primary" onclick="acceptTask('WL-2024-1159')">Accept</button>
+            <button class="task-btn secondary" onclick="viewDetails('WL-2024-1159')">Details</button>
+          </div>
         </div>
 
-        <!-- Completed Tasks Column -->
-        <div class="task-column">
-            <div class="column-header completed">
-                <div class="column-title">
-                    ✅ Completed Tasks
-                </div>
-                <div class="task-count">4</div>
-            </div>
-            <div class="task-list" id="completed-tasks">
-                <div class="task-card" data-task-id="WL-2024-1154">
-                    <div class="task-priority medium"></div>
-                    <div class="task-header">
-                        <div class="task-id">WL-2024-1154</div>
-                        <div class="task-time">✅ Completed at 1:45 PM</div>
-                    </div>
-                    <div class="task-description">Packaging materials for Line 6 finish operations</div>
-                    <div class="task-meta">
-                        <div class="task-location">📍 Line 6 Packaging</div>
-                        <div class="task-quantity">Qty: 100</div>
-                    </div>
-                </div>
-
-                <div class="task-card" data-task-id="WL-2024-1153">
-                    <div class="task-priority low"></div>
-                    <div class="task-header">
-                        <div class="task-id">WL-2024-1153</div>
-                        <div class="task-time">✅ Completed at 1:30 PM</div>
-                    </div>
-                    <div class="task-description">Safety equipment restocking for all stations</div>
-                    <div class="task-meta">
-                        <div class="task-location">📍 Multiple Locations</div>
-                        <div class="task-quantity">Qty: 50</div>
-                    </div>
-                </div>
-
-                <div class="task-card" data-task-id="WL-2024-1152">
-                    <div class="task-priority high"></div>
-                    <div class="task-header">
-                        <div class="task-id">WL-2024-1152</div>
-                        <div class="task-time">✅ Completed at 1:15 PM</div>
-                    </div>
-                    <div class="task-description">Emergency tooling replacement for Line 1</div>
-                    <div class="task-meta">
-                        <div class="task-location">📍 Line 1 Tool Crib</div>
-                        <div class="task-quantity">Qty: 15</div>
-                    </div>
-                </div>
-
-                <div class="task-card" data-task-id="WL-2024-1151">
-                    <div class="task-priority medium"></div>
-                    <div class="task-header">
-                        <div class="task-id">WL-2024-1151</div>
-                        <div class="task-time">✅ Completed at 12:50 PM</div>
-                    </div>
-                    <div class="task-description">Inspection gauges for quality control processes</div>
-                    <div class="task-meta">
-                        <div class="task-location">📍 QC Lab</div>
-                        <div class="task-quantity">Qty: 8</div>
-                    </div>
-                </div>
-            </div>
-            <div class="drop-zone" id="drop-completed">Drop completed tasks here</div>
+        <div class="task-card" draggable="true" data-task-id="WL-2024-1160">
+          <div class="task-priority low"></div>
+          <div class="task-header">
+            <div class="task-id">WL-2024-1160</div>
+            <div class="task-time">⏱️ 18 min ago</div>
+          </div>
+          <div class="task-description">Maintenance supplies for Line 3 preventive maintenance</div>
+          <div class="task-meta">
+            <div class="task-location">📍 Line 3 Maintenance</div>
+            <div class="task-quantity">Qty: 25</div>
+          </div>
+          <div class="task-actions">
+            <button class="task-btn primary" onclick="acceptTask('WL-2024-1160')">Accept</button>
+            <button class="task-btn secondary" onclick="viewDetails('WL-2024-1160')">Details</button>
+          </div>
         </div>
+      </div>
+      <div class="drop-zone" id="drop-pending">Drop tasks here to queue</div>
     </div>
 
-    <div class="floating-actions">
-        <button class="fab secondary" onclick="refreshTasks()" title="Refresh Tasks">
-            🔄
-        </button>
-        <button class="fab secondary" onclick="viewMap()" title="View Floor Map">
-            🗺️
-        </button>
-        <button class="fab primary" onclick="newTask()" title="Create New Task">
-            ➕
-        </button>
+    <!-- Active Tasks Column -->
+    <div class="task-column">
+      <div class="column-header active">
+        <div class="column-title">
+          🚛 Active Tasks
+        </div>
+        <div class="task-count">2</div>
+      </div>
+      <div class="task-list" id="active-tasks">
+        <div class="task-card" draggable="true" data-task-id="WL-2024-1156">
+          <div class="task-priority high"></div>
+          <div class="task-header">
+            <div class="task-id">WL-2024-1156</div>
+            <div class="task-time">⏱️ En route - 5 min ETA</div>
+          </div>
+          <div class="task-description">Assembly components for Line 2 - Critical path item</div>
+          <div class="task-meta">
+            <div class="task-location">📍 Currently at Warehouse A</div>
+            <div class="task-quantity">Qty: 200</div>
+          </div>
+          <div class="task-actions">
+            <button class="task-btn primary" onclick="completeTask('WL-2024-1156')">Complete</button>
+            <button class="task-btn secondary" onclick="updateLocation('WL-2024-1156')">Update Location</button>
+          </div>
+        </div>
+
+        <div class="task-card" draggable="true" data-task-id="WL-2024-1157">
+          <div class="task-priority medium"></div>
+          <div class="task-header">
+            <div class="task-id">WL-2024-1157</div>
+            <div class="task-time">⏱️ Pickup complete - delivering</div>
+          </div>
+          <div class="task-description">Raw materials for Line 4 production run</div>
+          <div class="task-meta">
+            <div class="task-location">📍 En route to Line 4</div>
+            <div class="task-quantity">Qty: 500</div>
+          </div>
+          <div class="task-actions">
+            <button class="task-btn primary" onclick="completeTask('WL-2024-1157')">Complete</button>
+            <button class="task-btn secondary" onclick="updateLocation('WL-2024-1157')">Update Location</button>
+          </div>
+        </div>
+      </div>
+      <div class="drop-zone" id="drop-active">Drop tasks here to start</div>
     </div>
 
-    <div class="notification-toast" id="notification"></div>
+    <!-- Completed Tasks Column -->
+    <div class="task-column">
+      <div class="column-header completed">
+        <div class="column-title">
+          ✅ Completed Tasks
+        </div>
+        <div class="task-count">4</div>
+      </div>
+      <div class="task-list" id="completed-tasks">
+        <div class="task-card" data-task-id="WL-2024-1154">
+          <div class="task-priority medium"></div>
+          <div class="task-header">
+            <div class="task-id">WL-2024-1154</div>
+            <div class="task-time">✅ Completed at 1:45 PM</div>
+          </div>
+          <div class="task-description">Packaging materials for Line 6 finish operations</div>
+          <div class="task-meta">
+            <div class="task-location">📍 Line 6 Packaging</div>
+            <div class="task-quantity">Qty: 100</div>
+          </div>
+        </div>
 
-    <script>
-        // Drag and Drop functionality
-        let draggedElement = null;
+        <div class="task-card" data-task-id="WL-2024-1153">
+          <div class="task-priority low"></div>
+          <div class="task-header">
+            <div class="task-id">WL-2024-1153</div>
+            <div class="task-time">✅ Completed at 1:30 PM</div>
+          </div>
+          <div class="task-description">Safety equipment restocking for all stations</div>
+          <div class="task-meta">
+            <div class="task-location">📍 Multiple Locations</div>
+            <div class="task-quantity">Qty: 50</div>
+          </div>
+        </div>
 
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeDragAndDrop();
-            simulateRealTimeUpdates();
-        });
+        <div class="task-card" data-task-id="WL-2024-1152">
+          <div class="task-priority high"></div>
+          <div class="task-header">
+            <div class="task-id">WL-2024-1152</div>
+            <div class="task-time">✅ Completed at 1:15 PM</div>
+          </div>
+          <div class="task-description">Emergency tooling replacement for Line 1</div>
+          <div class="task-meta">
+            <div class="task-location">📍 Line 1 Tool Crib</div>
+            <div class="task-quantity">Qty: 15</div>
+          </div>
+        </div>
 
-        function initializeDragAndDrop() {
-            const taskCards = document.querySelectorAll('.task-card');
-            const dropZones = document.querySelectorAll('.drop-zone');
+        <div class="task-card" data-task-id="WL-2024-1151">
+          <div class="task-priority medium"></div>
+          <div class="task-header">
+            <div class="task-id">WL-2024-1151</div>
+            <div class="task-time">✅ Completed at 12:50 PM</div>
+          </div>
+          <div class="task-description">Inspection gauges for quality control processes</div>
+          <div class="task-meta">
+            <div class="task-location">📍 QC Lab</div>
+            <div class="task-quantity">Qty: 8</div>
+          </div>
+        </div>
+      </div>
+      <div class="drop-zone" id="drop-completed">Drop completed tasks here</div>
+    </div>
+  </div>
 
-            taskCards.forEach(card => {
-                card.addEventListener('dragstart', handleDragStart);
-                card.addEventListener('dragend', handleDragEnd);
-            });
+  <div class="floating-actions">
+    <button class="fab secondary" onclick="refreshTasks()" title="Refresh Tasks">
+      🔄
+    </button>
+    <button class="fab secondary" onclick="viewMap()" title="View Floor Map">
+      🗺️
+    </button>
+    <button class="fab primary" onclick="newTask()" title="Create New Task">
+      ➕
+    </button>
+  </div>
 
-            dropZones.forEach(zone => {
-                zone.addEventListener('dragover', handleDragOver);
-                zone.addEventListener('dragenter', handleDragEnter);
-                zone.addEventListener('dragleave', handleDragLeave);
-                zone.addEventListener('drop', handleDrop);
-            });
-        }
+  <div class="notification-toast" id="notification"></div>
 
-        function handleDragStart(e) {
-            draggedElement = this;
-            this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', this.outerHTML);
-        }
+  <script>
+    // Drag and Drop functionality
+    let draggedElement = null;
 
-        function handleDragEnd(e) {
-            this.classList.remove('dragging');
-            draggedElement = null;
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+      initializeDragAndDrop();
+      simulateRealTimeUpdates();
+    });
 
-        function handleDragOver(e) {
-            if (e.preventDefault) {
-                e.preventDefault();
-            }
-            e.dataTransfer.dropEffect = 'move';
-            return false;
-        }
+    function initializeDragAndDrop() {
+      const taskCards = document.querySelectorAll('.task-card');
+      const dropZones = document.querySelectorAll('.drop-zone');
 
-        function handleDragEnter(e) {
-            this.classList.add('active');
-        }
+      taskCards.forEach(card => {
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+      });
 
-        function handleDragLeave(e) {
-            this.classList.remove('active');
-        }
+      dropZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('dragenter', handleDragEnter);
+        zone.addEventListener('dragleave', handleDragLeave);
+        zone.addEventListener('drop', handleDrop);
+      });
+    }
 
-        function handleDrop(e) {
-            if (e.stopPropagation) {
-                e.stopPropagation();
-            }
+    function handleDragStart(e) {
+      draggedElement = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', this.outerHTML);
+    }
 
-            this.classList.remove('active');
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      draggedElement = null;
+    }
 
-            if (draggedElement) {
-                const targetColumn = this.parentElement;
-                const sourceColumn = draggedElement.parentElement;
-                
-                // Move the task to the new column
-                targetColumn.querySelector('.task-list').appendChild(draggedElement);
-                
-                // Update task count
-                updateTaskCounts();
-                
-                // Show notification
-                const taskId = draggedElement.dataset.taskId;
-                const columnType = targetColumn.querySelector('.column-title').textContent.trim();
-                showNotification(`Task ${taskId} moved to ${columnType}`);
-                
-                // Update task actions based on new status
-                updateTaskActions(draggedElement, getColumnType(targetColumn));
-            }
+    function handleDragOver(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+    }
 
-            return false;
-        }
+    function handleDragEnter(e) {
+      this.classList.add('active');
+    }
 
-        function getColumnType(column) {
-            if (column.querySelector('.column-header.pending')) return 'pending';
-            if (column.querySelector('.column-header.active')) return 'active';
-            if (column.querySelector('.column-header.completed')) return 'completed';
-            return 'unknown';
-        }
+    function handleDragLeave(e) {
+      this.classList.remove('active');
+    }
 
-        function updateTaskActions(taskCard, columnType) {
-            const actionsDiv = taskCard.querySelector('.task-actions');
-            const taskId = taskCard.dataset.taskId;
+    function handleDrop(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
 
-            switch (columnType) {
-                case 'pending':
-                    actionsDiv.innerHTML = `
+      this.classList.remove('active');
+
+      if (draggedElement) {
+        const targetColumn = this.parentElement;
+        const sourceColumn = draggedElement.parentElement;
+
+        // Move the task to the new column
+        targetColumn.querySelector('.task-list').appendChild(draggedElement);
+
+        // Update task count
+        updateTaskCounts();
+
+        // Show notification
+        const taskId = draggedElement.dataset.taskId;
+        const columnType = targetColumn.querySelector('.column-title').textContent.trim();
+        showNotification(`Task ${taskId} moved to ${columnType}`);
+
+        // Update task actions based on new status
+        updateTaskActions(draggedElement, getColumnType(targetColumn));
+      }
+
+      return false;
+    }
+
+    function getColumnType(column) {
+      if (column.querySelector('.column-header.pending')) return 'pending';
+      if (column.querySelector('.column-header.active')) return 'active';
+      if (column.querySelector('.column-header.completed')) return 'completed';
+      return 'unknown';
+    }
+
+    function updateTaskActions(taskCard, columnType) {
+      const actionsDiv = taskCard.querySelector('.task-actions');
+      const taskId = taskCard.dataset.taskId;
+
+      switch (columnType) {
+        case 'pending':
+          actionsDiv.innerHTML = `
                         <button class="task-btn primary" onclick="acceptTask('${taskId}')">Accept</button>
                         <button class="task-btn secondary" onclick="viewDetails('${taskId}')">Details</button>
                     `;
-                    break;
-                case 'active':
-                    actionsDiv.innerHTML = `
+          break;
+        case 'active':
+          actionsDiv.innerHTML = `
                         <button class="task-btn primary" onclick="completeTask('${taskId}')">Complete</button>
                         <button class="task-btn secondary" onclick="updateLocation('${taskId}')">Update Location</button>
                     `;
-                    break;
-                case 'completed':
-                    actionsDiv.innerHTML = '';
-                    break;
-            }
-        }
+          break;
+        case 'completed':
+          actionsDiv.innerHTML = '';
+          break;
+      }
+    }
 
-        function updateTaskCounts() {
-            const pendingCount = document.querySelectorAll('#pending-tasks .task-card').length;
-            const activeCount = document.querySelectorAll('#active-tasks .task-card').length;
-            const completedCount = document.querySelectorAll('#completed-tasks .task-card').length;
+    function updateTaskCounts() {
+      const pendingCount = document.querySelectorAll('#pending-tasks .task-card').length;
+      const activeCount = document.querySelectorAll('#active-tasks .task-card').length;
+      const completedCount = document.querySelectorAll('#completed-tasks .task-card').length;
 
-            document.querySelector('.column-header.pending .task-count').textContent = pendingCount;
-            document.querySelector('.column-header.active .task-count').textContent = activeCount;
-            document.querySelector('.column-header.completed .task-count').textContent = completedCount;
+      document.querySelector('.column-header.pending .task-count').textContent = pendingCount;
+      document.querySelector('.column-header.active .task-count').textContent = activeCount;
+      document.querySelector('.column-header.completed .task-count').textContent = completedCount;
 
-            // Update dashboard stats
-            document.querySelector('.stat-number.active').textContent = activeCount;
-            document.querySelector('.stat-number.completed').textContent = completedCount + 19; // Base completed tasks
-        }
+      // Update dashboard stats
+      document.querySelector('.stat-number.active').textContent = activeCount;
+      document.querySelector('.stat-number.completed').textContent = completedCount + 19; // Base completed tasks
+    }
 
-        function acceptTask(taskId) {
-            const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
-            const activeColumn = document.querySelector('#active-tasks');
-            
-            activeColumn.appendChild(taskCard);
-            updateTaskActions(taskCard, 'active');
-            updateTaskCounts();
-            
-            showNotification(`Task ${taskId} accepted and started!`);
-        }
+    function acceptTask(taskId) {
+      const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+      const activeColumn = document.querySelector('#active-tasks');
 
-        function completeTask(taskId) {
-            const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
-            const completedColumn = document.querySelector('#completed-tasks');
-            
-            // Update task time to show completion
-            const timeElement = taskCard.querySelector('.task-time');
-            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            timeElement.innerHTML = `✅ Completed at ${currentTime}`;
-            
-            completedColumn.appendChild(taskCard);
-            updateTaskActions(taskCard, 'completed');
-            updateTaskCounts();
-            
-            showNotification(`Task ${taskId} completed successfully!`);
-            
-            // Add completion animation
-            taskCard.style.animation = 'none';
-            taskCard.style.transform = 'scale(1.05)';
-            taskCard.style.background = '#d4edda';
-            setTimeout(() => {
-                taskCard.style.transform = 'scale(1)';
-                taskCard.style.background = 'white';
-            }, 500);
-        }
+      activeColumn.appendChild(taskCard);
+      updateTaskActions(taskCard, 'active');
+      updateTaskCounts();
 
-        function viewDetails(taskId) {
-            showNotification(`Opening detailed view for task ${taskId}`);
-        }
+      showNotification(`Task ${taskId} accepted and started!`);
+    }
 
-        function updateLocation(taskId) {
-            showNotification(`Location updated for task ${taskId}`);
-        }
+    function completeTask(taskId) {
+      const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+      const completedColumn = document.querySelector('#completed-tasks');
 
-        function refreshTasks() {
-            showNotification('Refreshing task board...');
-            
-            // Animate refresh
-            const taskBoard = document.querySelector('.task-board');
-            taskBoard.style.opacity = '0.7';
-            taskBoard.style.transform = 'scale(0.98)';
-            
-            setTimeout(() => {
-                taskBoard.style.opacity = '1';
-                taskBoard.style.transform = 'scale(1)';
-                showNotification('Task board refreshed!');
-            }, 1000);
-        }
+      // Update task time to show completion
+      const timeElement = taskCard.querySelector('.task-time');
+      const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      timeElement.innerHTML = `✅ Completed at ${currentTime}`;
 
-        function viewMap() {
-            showNotification('Opening production floor map...');
-        }
+      completedColumn.appendChild(taskCard);
+      updateTaskActions(taskCard, 'completed');
+      updateTaskCounts();
 
-        function newTask() {
-            showNotification('Opening new task creation form...');
-        }
+      showNotification(`Task ${taskId} completed successfully!`);
 
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
+      // Add completion animation
+      taskCard.style.animation = 'none';
+      taskCard.style.transform = 'scale(1.05)';
+      taskCard.style.background = '#d4edda';
+      setTimeout(() => {
+        taskCard.style.transform = 'scale(1)';
+        taskCard.style.background = 'white';
+      }, 500);
+    }
 
-        function simulateRealTimeUpdates() {
-            // Simulate new task arrivals
-            setTimeout(() => {
-                addNewTask();
-            }, 15000);
-            
-            // Update task times periodically
-            setInterval(() => {
-                updateTaskTimes();
-            }, 60000);
-        }
+    function viewDetails(taskId) {
+      showNotification(`Opening detailed view for task ${taskId}`);
+    }
 
-        function addNewTask() {
-            const pendingTasksList = document.querySelector('#pending-tasks');
-            const newTaskId = 'WL-2024-' + (1160 + Math.floor(Math.random() * 100));
-            
-            const taskDescriptions = [
-                'Tool replacement needed for Line 7',
-                'Raw materials required for urgent batch',
-                'Quality samples for lab analysis',
-                'Maintenance parts for equipment service'
-            ];
-            
-            const locations = [
-                'Line 7 Tool Station',
-                'Line 2 Input',
-                'QC Laboratory',
-                'Maintenance Shop'
-            ];
-            
-            const randomDesc = taskDescriptions[Math.floor(Math.random() * taskDescriptions.length)];
-            const randomLocation = locations[Math.floor(Math.random() * locations.length)];
-            const randomQty = Math.floor(Math.random() * 200) + 10;
-            
-            const newTaskHtml = `
+    function updateLocation(taskId) {
+      showNotification(`Location updated for task ${taskId}`);
+    }
+
+    function refreshTasks() {
+      showNotification('Refreshing task board...');
+
+      // Animate refresh
+      const taskBoard = document.querySelector('.task-board');
+      taskBoard.style.opacity = '0.7';
+      taskBoard.style.transform = 'scale(0.98)';
+
+      setTimeout(() => {
+        taskBoard.style.opacity = '1';
+        taskBoard.style.transform = 'scale(1)';
+        showNotification('Task board refreshed!');
+      }, 1000);
+    }
+
+    function viewMap() {
+      showNotification('Opening production floor map...');
+    }
+
+    function newTask() {
+      showNotification('Opening new task creation form...');
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.classList.add('show');
+
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    function simulateRealTimeUpdates() {
+      // Simulate new task arrivals
+      setTimeout(() => {
+        addNewTask();
+      }, 15000);
+
+      // Update task times periodically
+      setInterval(() => {
+        updateTaskTimes();
+      }, 60000);
+    }
+
+    function addNewTask() {
+      const pendingTasksList = document.querySelector('#pending-tasks');
+      const newTaskId = 'WL-2024-' + (1160 + Math.floor(Math.random() * 100));
+
+      const taskDescriptions = [
+        'Tool replacement needed for Line 7',
+        'Raw materials required for urgent batch',
+        'Quality samples for lab analysis',
+        'Maintenance parts for equipment service'
+      ];
+
+      const locations = [
+        'Line 7 Tool Station',
+        'Line 2 Input',
+        'QC Laboratory',
+        'Maintenance Shop'
+      ];
+
+      const randomDesc = taskDescriptions[Math.floor(Math.random() * taskDescriptions.length)];
+      const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+      const randomQty = Math.floor(Math.random() * 200) + 10;
+
+      const newTaskHtml = `
                 <div class="task-card" draggable="true" data-task-id="${newTaskId}" style="animation: slideInLeft 0.5s ease-out;">
                     <div class="task-priority medium"></div>
                     <div class="task-header">
@@ -937,28 +940,29 @@
                     </div>
                 </div>
             `;
-            
-            pendingTasksList.insertAdjacentHTML('afterbegin', newTaskHtml);
-            
-            // Reinitialize drag and drop for new element
-            const newTask = pendingTasksList.firstElementChild;
-            newTask.addEventListener('dragstart', handleDragStart);
-            newTask.addEventListener('dragend', handleDragEnd);
-            
-            updateTaskCounts();
-            showNotification(`New task ${newTaskId} has been assigned to you!`);
-        }
 
-        function updateTaskTimes() {
-            const taskTimes = document.querySelectorAll('.task-time');
-            taskTimes.forEach(timeElement => {
-                const text = timeElement.textContent;
-                if (text.includes('min ago')) {
-                    const minutes = parseInt(text.match(/\d+/)[0]) + 1;
-                    timeElement.textContent = `⏱️ ${minutes} min ago`;
-                }
-            });
+      pendingTasksList.insertAdjacentHTML('afterbegin', newTaskHtml);
+
+      // Reinitialize drag and drop for new element
+      const newTask = pendingTasksList.firstElementChild;
+      newTask.addEventListener('dragstart', handleDragStart);
+      newTask.addEventListener('dragend', handleDragEnd);
+
+      updateTaskCounts();
+      showNotification(`New task ${newTaskId} has been assigned to you!`);
+    }
+
+    function updateTaskTimes() {
+      const taskTimes = document.querySelectorAll('.task-time');
+      taskTimes.forEach(timeElement => {
+        const text = timeElement.textContent;
+        if (text.includes('min ago')) {
+          const minutes = parseInt(text.match(/\d+/)[0]) + 1;
+          timeElement.textContent = `⏱️ ${minutes} min ago`;
         }
-    </script>
+      });
+    }
+  </script>
 </body>
+
 </html>

@@ -1,458 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTM Production Request - Card Style Interface</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MTM Production Request - Card Style Interface</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .card-interface {
-            max-width: 600px;
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            animation: slideUp 0.5s ease-out;
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+    .card-interface {
+      max-width: 600px;
+      width: 100%;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      animation: slideUp 0.5s ease-out;
+    }
 
-        .header-card {
-            background: linear-gradient(135deg, #0078D4 0%, #106EBE 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            position: relative;
-        }
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
 
-        .header-card::before {
-            content: "🏭";
-            position: absolute;
-            left: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 32px;
-        }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
 
-        .form-card {
-            padding: 40px;
-        }
+    .header-card {
+      background: linear-gradient(135deg, #0078D4 0%, #106EBE 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      position: relative;
+    }
 
-        .field-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #495057;
-            position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
+    .header-card::before {
+      content: "🏭";
+      position: absolute;
+      left: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 32px;
+    }
 
-        .field-card:hover {
-            border-color: #0078D4;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 120, 212, 0.1);
-        }
+    .form-card {
+      padding: 40px;
+    }
 
-        .field-card::before {
-            content: "📦";
-            position: absolute;
-            left: 25px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 24px;
-        }
+    .field-card {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #495057;
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
 
-        .field-card .content {
-            margin-left: 45px;
-        }
+    .field-card:hover {
+      border-color: #0078D4;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 120, 212, 0.1);
+    }
 
-        .location-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
+    .field-card::before {
+      content: "📦";
+      position: absolute;
+      left: 25px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+    }
 
-        .from-card, .to-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 25px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #495057;
-            position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-align: center;
-        }
+    .field-card .content {
+      margin-left: 45px;
+    }
 
-        .from-card:hover, .to-card:hover {
-            border-color: #0078D4;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 120, 212, 0.1);
-        }
+    .location-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
 
-        .from-card::before {
-            content: "📍";
-            display: block;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
+    .from-card,
+    .to-card {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 15px;
+      padding: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #495057;
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-align: center;
+    }
 
-        .to-card::before {
-            content: "🎯";
-            display: block;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
+    .from-card:hover,
+    .to-card:hover {
+      border-color: #0078D4;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 120, 212, 0.1);
+    }
 
-        .priority-cards {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
+    .from-card::before {
+      content: "📍";
+      display: block;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
 
-        .priority {
-            background: #f8f9fa;
-            border: 3px solid #e9ecef;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
+    .to-card::before {
+      content: "🎯";
+      display: block;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
 
-        .priority.emergency {
-            border-color: #dc3545;
-            color: #dc3545;
-        }
+    .priority-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
 
-        .priority.urgent {
-            border-color: #ffc107;
-            color: #856404;
-        }
+    .priority {
+      background: #f8f9fa;
+      border: 3px solid #e9ecef;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
 
-        .priority.normal {
-            border-color: #28a745;
-            color: #155724;
-        }
+    .priority.emergency {
+      border-color: #dc3545;
+      color: #dc3545;
+    }
 
-        .priority.low {
-            border-color: #17a2b8;
-            color: #0c5460;
-        }
+    .priority.urgent {
+      border-color: #ffc107;
+      color: #856404;
+    }
 
-        .priority.selected {
-            transform: scale(1.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
+    .priority.normal {
+      border-color: #28a745;
+      color: #155724;
+    }
 
-        .priority.emergency.selected {
-            background: #dc3545;
-            color: white;
-        }
+    .priority.low {
+      border-color: #17a2b8;
+      color: #0c5460;
+    }
 
-        .priority.urgent.selected {
-            background: #ffc107;
-            color: #856404;
-        }
+    .priority.selected {
+      transform: scale(1.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
 
-        .priority.normal.selected {
-            background: #28a745;
-            color: white;
-        }
+    .priority.emergency.selected {
+      background: #dc3545;
+      color: white;
+    }
 
-        .priority.low.selected {
-            background: #17a2b8;
-            color: white;
-        }
+    .priority.urgent.selected {
+      background: #ffc107;
+      color: #856404;
+    }
 
-        .priority::before {
-            display: block;
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
+    .priority.normal.selected {
+      background: #28a745;
+      color: white;
+    }
 
-        .priority.emergency::before { content: "🔴"; }
-        .priority.urgent::before { content: "🟡"; }
-        .priority.normal::before { content: "🟢"; }
-        .priority.low::before { content: "🔵"; }
+    .priority.low.selected {
+      background: #17a2b8;
+      color: white;
+    }
 
-        .submit-button {
-            width: 100%;
-            background: linear-gradient(135deg, #0078D4 0%, #106EBE 100%);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            padding: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
+    .priority::before {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
 
-        .submit-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 120, 212, 0.3);
-        }
+    .priority.emergency::before {
+      content: "🔴";
+    }
 
-        .submit-button::before {
-            content: "✅";
-            position: absolute;
-            left: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 24px;
-        }
+    .priority.urgent::before {
+      content: "🟡";
+    }
 
-        .erp-status {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+    .priority.normal::before {
+      content: "🟢";
+    }
 
-        .erp-status::before {
-            content: "🔗";
-            margin-right: 5px;
-        }
+    .priority.low::before {
+      content: "🔵";
+    }
 
-        .quantity-section {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+    .submit-button {
+      width: 100%;
+      background: linear-gradient(135deg, #0078D4 0%, #106EBE 100%);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      padding: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
 
-        .quantity-label {
-            font-size: 18px;
-            font-weight: 600;
-            color: #495057;
-            flex: 1;
-        }
+    .submit-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(0, 120, 212, 0.3);
+    }
 
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+    .submit-button::before {
+      content: "✅";
+      position: absolute;
+      left: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+    }
 
-        .quantity-btn {
-            width: 45px;
-            height: 45px;
-            border: 2px solid #0078D4;
-            background: white;
-            color: #0078D4;
-            border-radius: 50%;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    .erp-status {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
 
-        .quantity-btn:hover {
-            background: #0078D4;
-            color: white;
-            transform: scale(1.1);
-        }
+    .erp-status::before {
+      content: "🔗";
+      margin-right: 5px;
+    }
 
-        .quantity-display {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0078D4;
-            min-width: 50px;
-            text-align: center;
-        }
+    .quantity-section {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
 
-        .notes-section {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
+    .quantity-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #495057;
+      flex: 1;
+    }
 
-        .notes-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 15px;
-        }
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
 
-        .notes-input {
-            width: 100%;
-            border: none;
-            background: transparent;
-            font-size: 16px;
-            color: #495057;
-            resize: vertical;
-            min-height: 80px;
-            font-family: inherit;
-        }
+    .quantity-btn {
+      width: 45px;
+      height: 45px;
+      border: 2px solid #0078D4;
+      background: white;
+      color: #0078D4;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
 
-        .notes-input::placeholder {
-            color: #adb5bd;
-        }
+    .quantity-btn:hover {
+      background: #0078D4;
+      color: white;
+      transform: scale(1.1);
+    }
 
-        @media (max-width: 768px) {
-            .card-interface {
-                margin: 10px;
-                border-radius: 15px;
-            }
-            
-            .priority-cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .location-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    .quantity-display {
+      font-size: 24px;
+      font-weight: bold;
+      color: #0078D4;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    .notes-section {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .notes-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 15px;
+    }
+
+    .notes-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      color: #495057;
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+
+    .notes-input::placeholder {
+      color: #adb5bd;
+    }
+
+    @media (max-width: 768px) {
+      .card-interface {
+        margin: 10px;
+        border-radius: 15px;
+      }
+
+      .priority-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .location-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <div class="card-interface">
-        <div class="header-card">
-            MTM Production Request
-            <div class="erp-status">ERP Connected</div>
-        </div>
-        
-        <div class="form-card">
-            <div class="field-card">
-                <div class="content">
-                    <strong>Part Number:</strong> ABC-123 Widget Assembly<br>
-                    <small style="color: #6c757d; margin-left: 45px;">156 units available in inventory</small>
-                </div>
-            </div>
-
-            <div class="quantity-section">
-                <div class="quantity-label">📊 Quantity Needed:</div>
-                <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="changeQuantity(-1)">−</button>
-                    <div class="quantity-display" id="quantity">25</div>
-                    <button class="quantity-btn" onclick="changeQuantity(1)">+</button>
-                </div>
-            </div>
-
-            <div class="location-grid">
-                <div class="from-card">
-                    <strong>From Location</strong><br>
-                    Line 5 - Operation 100
-                </div>
-                <div class="to-card">
-                    <strong>To Location</strong><br>
-                    Quality Control Station
-                </div>
-            </div>
-
-            <div class="notes-section">
-                <div class="notes-label">📝 Special Instructions (Optional):</div>
-                <textarea class="notes-input" placeholder="Enter any special handling instructions or notes for the material handler..."></textarea>
-            </div>
-
-            <div class="priority-cards">
-                <div class="priority emergency">
-                    <div>Emergency</div>
-                    <small>Line Down</small>
-                </div>
-                <div class="priority urgent selected">
-                    <div>Urgent</div>
-                    <small>< 30 min</small>
-                </div>
-                <div class="priority normal">
-                    <div>Normal</div>
-                    <small>< 2 hours</small>
-                </div>
-                <div class="priority low">
-                    <div>Low</div>
-                    <small>End of shift</small>
-                </div>
-            </div>
-
-            <button class="submit-button" onclick="submitRequest()">
-                Submit Material Request
-            </button>
-        </div>
+  <div class="card-interface">
+    <div class="header-card">
+      MTM Production Request
+      <div class="erp-status">ERP Connected</div>
     </div>
 
-    <script>
-        let currentQuantity = 25;
+    <div class="form-card">
+      <div class="field-card">
+        <div class="content">
+          <strong>Part Number:</strong> ABC-123 Widget Assembly<br>
+          <small style="color: #6c757d; margin-left: 45px;">156 units available in inventory</small>
+        </div>
+      </div>
 
-        function changeQuantity(delta) {
-            currentQuantity = Math.max(1, currentQuantity + delta);
-            document.getElementById('quantity').textContent = currentQuantity;
-        }
+      <div class="quantity-section">
+        <div class="quantity-label">📊 Quantity Needed:</div>
+        <div class="quantity-controls">
+          <button class="quantity-btn" onclick="changeQuantity(-1)">−</button>
+          <div class="quantity-display" id="quantity">25</div>
+          <button class="quantity-btn" onclick="changeQuantity(1)">+</button>
+        </div>
+      </div>
 
-        function submitRequest() {
-            // Simulate form submission with animation
-            const button = document.querySelector('.submit-button');
-            button.style.transform = 'scale(0.95)';
-            button.innerHTML = '🔄 Submitting Request...';
-            
-            setTimeout(() => {
-                button.innerHTML = '✅ Request Submitted Successfully!';
-                button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
-                
-                setTimeout(() => {
-                    // Reset form
-                    button.innerHTML = 'Submit Material Request';
-                    button.style.background = 'linear-gradient(135deg, #0078D4 0%, #106EBE 100%)';
-                    button.style.transform = 'translateY(0)';
-                }, 2000);
-            }, 1000);
-        }
+      <div class="location-grid">
+        <div class="from-card">
+          <strong>From Location</strong><br>
+          Line 5 - Operation 100
+        </div>
+        <div class="to-card">
+          <strong>To Location</strong><br>
+          Quality Control Station
+        </div>
+      </div>
 
-        // Priority selection functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const priorities = document.querySelectorAll('.priority');
-            priorities.forEach(priority => {
-                priority.addEventListener('click', function() {
-                    priorities.forEach(p => p.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
+      <div class="notes-section">
+        <div class="notes-label">📝 Special Instructions (Optional):</div>
+        <textarea class="notes-input"
+          placeholder="Enter any special handling instructions or notes for the material handler..."></textarea>
+      </div>
+
+      <div class="priority-cards">
+        <div class="priority emergency">
+          <div>Emergency</div>
+          <small>Line Down</small>
+        </div>
+        <div class="priority urgent selected">
+          <div>Urgent</div>
+          <small>
+            < 30 min</small>
+        </div>
+        <div class="priority normal">
+          <div>Normal</div>
+          <small>
+            < 2 hours</small>
+        </div>
+        <div class="priority low">
+          <div>Low</div>
+          <small>End of shift</small>
+        </div>
+      </div>
+
+      <button class="submit-button" onclick="submitRequest()">
+        Submit Material Request
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let currentQuantity = 25;
+
+    function changeQuantity(delta) {
+      currentQuantity = Math.max(1, currentQuantity + delta);
+      document.getElementById('quantity').textContent = currentQuantity;
+    }
+
+    function submitRequest() {
+      // Simulate form submission with animation
+      const button = document.querySelector('.submit-button');
+      button.style.transform = 'scale(0.95)';
+      button.innerHTML = '🔄 Submitting Request...';
+
+      setTimeout(() => {
+        button.innerHTML = '✅ Request Submitted Successfully!';
+        button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+
+        setTimeout(() => {
+          // Reset form
+          button.innerHTML = 'Submit Material Request';
+          button.style.background = 'linear-gradient(135deg, #0078D4 0%, #106EBE 100%)';
+          button.style.transform = 'translateY(0)';
+        }, 2000);
+      }, 1000);
+    }
+
+    // Priority selection functionality
+    document.addEventListener('DOMContentLoaded', function () {
+      const priorities = document.querySelectorAll('.priority');
+      priorities.forEach(priority => {
+        priority.addEventListener('click', function () {
+          priorities.forEach(p => p.classList.remove('selected'));
+          this.classList.add('selected');
         });
-    </script>
+      });
+    });
+  </script>
 </body>
+
 </html>

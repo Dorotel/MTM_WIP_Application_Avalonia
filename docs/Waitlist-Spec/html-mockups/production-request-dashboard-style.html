@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f1f3f5;
@@ -29,13 +30,14 @@
         }
 
         @keyframes fadeInUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(30px); 
+            from {
+                opacity: 0;
+                transform: translateY(30px);
             }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
@@ -415,30 +417,31 @@
             .main-content {
                 grid-template-columns: 1fr;
             }
-            
+
             .left-info {
                 border-right: none;
                 border-bottom: 1px solid #e9ecef;
             }
-            
+
             .compact-form {
                 grid-template-columns: 1fr;
             }
-            
+
             .form-field {
                 grid-column: span 1;
             }
-            
+
             .form-field.full-width {
                 grid-column: span 1;
             }
-            
+
             .submit-section {
                 grid-column: span 1;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard-request">
         <div class="dashboard-header">
@@ -527,7 +530,7 @@
 
             <div class="right-form">
                 <div class="form-title">Submit New Material Request</div>
-                
+
                 <form class="compact-form">
                     <div class="form-field">
                         <label for="partNumber">Part Number</label>
@@ -584,8 +587,8 @@
 
                     <div class="form-field full-width">
                         <label for="specialInstructions">Special Instructions (Optional)</label>
-                        <textarea id="specialInstructions" class="form-control" rows="3" 
-                                placeholder="Enter any special handling instructions..."></textarea>
+                        <textarea id="specialInstructions" class="form-control" rows="3"
+                            placeholder="Enter any special handling instructions..."></textarea>
                     </div>
 
                     <div class="submit-section">
@@ -605,36 +608,36 @@
         function submitDashboardRequest() {
             const button = document.querySelector('.submit-btn');
             const originalText = button.innerHTML;
-            
+
             // Validate required fields
             const part = document.getElementById('partNumber').value;
             const from = document.getElementById('fromLocation').value;
             const to = document.getElementById('toLocation').value;
-            
+
             if (!part || !from || !to) {
                 button.innerHTML = '❌ Please complete all required fields';
                 button.style.background = '#dc3545';
-                
+
                 setTimeout(() => {
                     button.innerHTML = originalText;
                     button.style.background = 'linear-gradient(135deg, #6F42C1 0%, #8E44AD 100%)';
                 }, 2500);
                 return;
             }
-            
+
             // Simulate submission
             button.innerHTML = '🔄 Processing Request...';
             button.disabled = true;
-            
+
             setTimeout(() => {
                 const requestId = 'WL-2024-' + Math.floor(Math.random() * 1000 + 1158);
                 button.innerHTML = `✅ Request ${requestId} Submitted Successfully!`;
                 button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
-                
+
                 // Update queue count
                 const queueElement = document.querySelector('.status-bar .status-item:nth-child(2) .status-value');
                 queueElement.textContent = '8 in Queue';
-                
+
                 setTimeout(() => {
                     // Reset form
                     document.getElementById('partNumber').selectedIndex = 0;
@@ -642,11 +645,11 @@
                     document.getElementById('toLocation').selectedIndex = 0;
                     document.getElementById('quantity').value = '1';
                     document.getElementById('specialInstructions').value = '';
-                    
+
                     // Reset priority
                     document.querySelectorAll('.priority-btn').forEach(btn => btn.classList.remove('selected'));
                     document.querySelector('.priority-btn.normal').classList.add('selected');
-                    
+
                     button.innerHTML = originalText;
                     button.style.background = 'linear-gradient(135deg, #6F42C1 0%, #8E44AD 100%)';
                     button.disabled = false;
@@ -655,10 +658,10 @@
         }
 
         // Priority selector functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const priorityBtns = document.querySelectorAll('.priority-btn');
             priorityBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     priorityBtns.forEach(b => b.classList.remove('selected'));
                     this.classList.add('selected');
                 });
@@ -667,18 +670,19 @@
             // Auto-update timestamp
             function updateTime() {
                 const now = new Date();
-                const timeStr = now.toLocaleString('en-US', { 
-                    weekday: 'long', 
-                    month: 'long', 
-                    day: 'numeric', 
-                    hour: 'numeric', 
+                const timeStr = now.toLocaleString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
                     minute: '2-digit'
                 });
                 document.querySelector('.header-time').textContent = timeStr;
             }
-            
+
             setInterval(updateTime, 60000); // Update every minute
         });
     </script>
 </body>
+
 </html>

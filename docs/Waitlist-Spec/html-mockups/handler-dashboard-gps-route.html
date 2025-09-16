@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0f4c75 0%, #3282b8 50%, #bbe1fa 100%);
@@ -118,10 +119,10 @@
         .floor-map {
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, #f8f9fa 25%, transparent 25%), 
-                        linear-gradient(-45deg, #f8f9fa 25%, transparent 25%), 
-                        linear-gradient(45deg, transparent 75%, #f8f9fa 75%), 
-                        linear-gradient(-45deg, transparent 75%, #f8f9fa 75%);
+            background: linear-gradient(45deg, #f8f9fa 25%, transparent 25%),
+                linear-gradient(-45deg, #f8f9fa 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f8f9fa 75%),
+                linear-gradient(-45deg, transparent 75%, #f8f9fa 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
             position: relative;
@@ -149,16 +150,74 @@
             z-index: 10;
         }
 
-        .line-1 { top: 10%; left: 15%; width: 200px; height: 60px; }
-        .line-2 { top: 25%; left: 45%; width: 180px; height: 60px; }
-        .line-3 { top: 40%; left: 20%; width: 160px; height: 60px; }
-        .line-4 { top: 55%; left: 50%; width: 200px; height: 60px; }
-        .line-5 { top: 70%; left: 10%; width: 180px; height: 60px; }
-        .line-6 { top: 85%; left: 40%; width: 160px; height: 60px; }
+        .line-1 {
+            top: 10%;
+            left: 15%;
+            width: 200px;
+            height: 60px;
+        }
 
-        .warehouse { top: 10%; right: 10%; width: 120px; height: 80px; background: #17a2b8; color: white; }
-        .qc-station { top: 40%; right: 15%; width: 100px; height: 60px; background: #28a745; color: white; }
-        .maintenance { bottom: 10%; right: 20%; width: 120px; height: 60px; background: #6f42c1; color: white; }
+        .line-2 {
+            top: 25%;
+            left: 45%;
+            width: 180px;
+            height: 60px;
+        }
+
+        .line-3 {
+            top: 40%;
+            left: 20%;
+            width: 160px;
+            height: 60px;
+        }
+
+        .line-4 {
+            top: 55%;
+            left: 50%;
+            width: 200px;
+            height: 60px;
+        }
+
+        .line-5 {
+            top: 70%;
+            left: 10%;
+            width: 180px;
+            height: 60px;
+        }
+
+        .line-6 {
+            top: 85%;
+            left: 40%;
+            width: 160px;
+            height: 60px;
+        }
+
+        .warehouse {
+            top: 10%;
+            right: 10%;
+            width: 120px;
+            height: 80px;
+            background: #17a2b8;
+            color: white;
+        }
+
+        .qc-station {
+            top: 40%;
+            right: 15%;
+            width: 100px;
+            height: 60px;
+            background: #28a745;
+            color: white;
+        }
+
+        .maintenance {
+            bottom: 10%;
+            right: 20%;
+            width: 120px;
+            height: 60px;
+            background: #6f42c1;
+            color: white;
+        }
 
         .route-path {
             position: absolute;
@@ -171,8 +230,13 @@
         }
 
         @keyframes routeAnimation {
-            0% { stroke-dashoffset: 0; }
-            100% { stroke-dashoffset: -30; }
+            0% {
+                stroke-dashoffset: 0;
+            }
+
+            100% {
+                stroke-dashoffset: -30;
+            }
         }
 
         .location-marker {
@@ -193,11 +257,14 @@
         }
 
         @keyframes locationPulse {
-            0%, 100% { 
+
+            0%,
+            100% {
                 transform: scale(1);
                 box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4), 0 0 0 0 rgba(40, 167, 69, 0.3);
             }
-            50% { 
+
+            50% {
                 transform: scale(1.1);
                 box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5), 0 0 0 15px rgba(40, 167, 69, 0.1);
             }
@@ -226,18 +293,28 @@
         }
 
         @keyframes destinationPulse {
-            0%, 100% { 
+
+            0%,
+            100% {
                 transform: scale(1);
                 box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
             }
-            50% { 
+
+            50% {
                 transform: scale(1.15);
                 box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
             }
         }
 
-        .destination-1 { top: 12%; left: 18%; }
-        .destination-2 { top: 42%; left: 23%; }
+        .destination-1 {
+            top: 12%;
+            left: 18%;
+        }
+
+        .destination-2 {
+            top: 42%;
+            left: 23%;
+        }
 
         .route-info-panel {
             position: absolute;
@@ -526,6 +603,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="gps-dashboard">
         <div class="gps-header">
@@ -540,7 +618,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="gps-controls">
                 <button class="control-btn active" onclick="toggleRouteView()">
                     🗺️ Route View
@@ -584,7 +662,7 @@
                     <div class="route-title">
                         🧭 Active Route
                     </div>
-                    
+
                     <div class="route-step">
                         <div class="step-number completed">1</div>
                         <div class="step-details">
@@ -593,7 +671,7 @@
                         </div>
                         <div class="step-eta">✓ Done</div>
                     </div>
-                    
+
                     <div class="route-step">
                         <div class="step-number current">2</div>
                         <div class="step-details">
@@ -602,7 +680,7 @@
                         </div>
                         <div class="step-eta">3 min</div>
                     </div>
-                    
+
                     <div class="route-step">
                         <div class="step-number">3</div>
                         <div class="step-details">
@@ -611,7 +689,7 @@
                         </div>
                         <div class="step-eta">8 min</div>
                     </div>
-                    
+
                     <div class="route-step">
                         <div class="step-number">4</div>
                         <div class="step-details">
@@ -640,7 +718,8 @@
             </div>
 
             <!-- Task Popup -->
-            <div class="task-popup" id="task-popup" style="top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);">
+            <div class="task-popup" id="task-popup"
+                style="top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);">
                 <div class="popup-header">
                     <div class="popup-title">Task Details</div>
                     <button class="popup-close" onclick="closePopup()">×</button>
@@ -700,8 +779,8 @@
         function updateControlButtons() {
             const buttons = document.querySelectorAll('.control-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
-            
-            switch(currentView) {
+
+            switch (currentView) {
                 case 'route':
                     buttons[0].classList.add('active');
                     break;
@@ -757,7 +836,7 @@
         function startNavigation() {
             closePopup();
             showNotification('🧭 Navigation started to selected location');
-            
+
             // Animate route update
             const routePath = document.querySelector('.route-path');
             routePath.style.strokeDasharray = '5, 5';
@@ -766,7 +845,7 @@
 
         function recenterMap() {
             showNotification('🎯 Map centered on current location');
-            
+
             const currentMarker = document.querySelector('.current-location');
             currentMarker.style.animation = 'none';
             setTimeout(() => {
@@ -794,14 +873,14 @@
 
         function optimizeRoute() {
             showNotification('⚡ Optimizing route for maximum efficiency...');
-            
+
             // Animate route optimization
             const routePath = document.querySelector('.route-path');
             const routeSteps = document.querySelectorAll('.route-step');
-            
+
             routePath.style.stroke = '#28a745';
             routePath.style.animation = 'routeAnimation 0.5s ease-in-out infinite';
-            
+
             setTimeout(() => {
                 routePath.style.stroke = '#FF6B35';
                 updateRouteETAs();
@@ -836,7 +915,7 @@
             `;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.remove();
             }, 3000);
@@ -862,33 +941,33 @@
         function simulateLocationUpdates() {
             const currentLocation = document.querySelector('.current-location');
             const routeSteps = document.querySelectorAll('.route-step');
-            
+
             setTimeout(() => {
                 // Move to next step
                 currentLocation.style.top = '12%';
                 currentLocation.style.left = '18%';
-                
+
                 // Update route step status
                 routeSteps[1].querySelector('.step-number').classList.remove('current');
                 routeSteps[1].querySelector('.step-number').classList.add('completed');
                 routeSteps[1].querySelector('.step-number').textContent = '✓';
                 routeSteps[1].querySelector('.step-eta').textContent = '✓ Done';
-                
+
                 routeSteps[2].querySelector('.step-number').classList.add('current');
-                
+
                 // Update stats
                 document.querySelector('.stat-value.distance').textContent = '2.6';
                 document.querySelector('.stat-value.time').textContent = '52';
                 document.querySelector('.stat-value.tasks').textContent = '9';
-                
+
                 showNotification('📍 Arrived at Line 1 Station - Task completed!');
             }, 10000);
         }
 
         // Start simulation
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             simulateLocationUpdates();
-            
+
             // Update time stats periodically
             setInterval(() => {
                 const timeElement = document.querySelector('.stat-value.time');
@@ -899,16 +978,17 @@
 
         // Handle production line interactions
         document.querySelectorAll('.production-line').forEach(line => {
-            line.addEventListener('mouseenter', function() {
+            line.addEventListener('mouseenter', function () {
                 this.style.transform = 'scale(1.05)';
                 this.style.zIndex = '10';
             });
-            
-            line.addEventListener('mouseleave', function() {
+
+            line.addEventListener('mouseleave', function () {
                 this.style.transform = 'scale(1)';
                 this.style.zIndex = '1';
             });
         });
     </script>
 </body>
+
 </html>

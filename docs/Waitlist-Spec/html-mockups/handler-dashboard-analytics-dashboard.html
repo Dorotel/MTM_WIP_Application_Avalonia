@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -23,7 +24,7 @@
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-areas: 
+            grid-template-areas:
                 "header header header header"
                 "kpi-1 kpi-2 kpi-3 kpi-4"
                 "chart-1 chart-1 chart-2 chart-2"
@@ -153,10 +154,21 @@
             left: 0;
         }
 
-        .kpi-1 { grid-area: kpi-1; }
-        .kpi-2 { grid-area: kpi-2; }
-        .kpi-3 { grid-area: kpi-3; }
-        .kpi-4 { grid-area: kpi-4; }
+        .kpi-1 {
+            grid-area: kpi-1;
+        }
+
+        .kpi-2 {
+            grid-area: kpi-2;
+        }
+
+        .kpi-3 {
+            grid-area: kpi-3;
+        }
+
+        .kpi-4 {
+            grid-area: kpi-4;
+        }
 
         .kpi-icon {
             font-size: 40px;
@@ -219,8 +231,13 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .chart-1 { grid-area: chart-1; }
-        .chart-2 { grid-area: chart-2; }
+        .chart-1 {
+            grid-area: chart-1;
+        }
+
+        .chart-2 {
+            grid-area: chart-2;
+        }
 
         .chart-title {
             font-size: 18px;
@@ -254,8 +271,13 @@
         }
 
         @keyframes barGrow {
-            from { height: 0; }
-            to { height: var(--bar-height); }
+            from {
+                height: 0;
+            }
+
+            to {
+                height: var(--bar-height);
+            }
         }
 
         .chart-bar:hover {
@@ -528,10 +550,8 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: conic-gradient(
-                #28a745 0deg 340deg,
-                #e9ecef 340deg 360deg
-            );
+            background: conic-gradient(#28a745 0deg 340deg,
+                    #e9ecef 340deg 360deg);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -563,7 +583,7 @@
 
         @media (max-width: 1200px) {
             .analytics-container {
-                grid-template-areas: 
+                grid-template-areas:
                     "header header"
                     "kpi-1 kpi-2"
                     "kpi-3 kpi-4"
@@ -580,7 +600,7 @@
 
         @media (max-width: 768px) {
             .analytics-container {
-                grid-template-areas: 
+                grid-template-areas:
                     "header"
                     "kpi-1"
                     "kpi-2"
@@ -609,6 +629,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="analytics-container">
         <div class="dashboard-header">
@@ -623,7 +644,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="time-period-selector">
                 <button class="period-btn" onclick="setPeriod('today')">Today</button>
                 <button class="period-btn active" onclick="setPeriod('week')">This Week</button>
@@ -687,15 +708,12 @@
             <div class="chart-title">🎯 Task Type Distribution</div>
             <div class="donut-chart">
                 <svg viewBox="0 0 100 100">
-                    <circle class="donut-segment" cx="50" cy="50" r="35" 
-                            stroke="#FF6B35" stroke-dasharray="131.95 0" 
-                            stroke-dashoffset="0"></circle>
-                    <circle class="donut-segment" cx="50" cy="50" r="35" 
-                            stroke="#28a745" stroke-dasharray="65.97 65.98" 
-                            stroke-dashoffset="-131.95"></circle>
-                    <circle class="donut-segment" cx="50" cy="50" r="35" 
-                            stroke="#0078D4" stroke-dasharray="43.98 87.97" 
-                            stroke-dashoffset="-197.92"></circle>
+                    <circle class="donut-segment" cx="50" cy="50" r="35" stroke="#FF6B35" stroke-dasharray="131.95 0"
+                        stroke-dashoffset="0"></circle>
+                    <circle class="donut-segment" cx="50" cy="50" r="35" stroke="#28a745" stroke-dasharray="65.97 65.98"
+                        stroke-dashoffset="-131.95"></circle>
+                    <circle class="donut-segment" cx="50" cy="50" r="35" stroke="#0078D4" stroke-dasharray="43.98 87.97"
+                        stroke-dashoffset="-197.92"></circle>
                 </svg>
                 <div class="donut-center">
                     <div class="donut-percentage">127</div>
@@ -819,7 +837,7 @@
         function updatePeriodButtons() {
             const buttons = document.querySelectorAll('.period-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
-            
+
             const periodMap = {
                 'today': 0,
                 'week': 1,
@@ -851,7 +869,7 @@
             };
 
             const data = analyticsData[period];
-            
+
             // Update KPI values with animation
             animateValue('.kpi-value.tasks', parseInt(document.querySelector('.kpi-value.tasks').textContent), data.tasks);
             animateValue('.kpi-value.efficiency', parseInt(document.querySelector('.kpi-value.efficiency').textContent), data.efficiency, '%');
@@ -865,26 +883,26 @@
             const element = document.querySelector(selector);
             const duration = 1000;
             const startTime = performance.now();
-            
+
             function updateValue(currentTime) {
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 // Easing function for smooth animation
                 const easeOutQuad = 1 - (1 - progress) * (1 - progress);
                 const current = start + (end - start) * easeOutQuad;
-                
+
                 if (Number.isInteger(end)) {
                     element.textContent = Math.round(current) + suffix;
                 } else {
                     element.textContent = current.toFixed(1) + suffix;
                 }
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(updateValue);
                 }
             }
-            
+
             requestAnimationFrame(updateValue);
         }
 
@@ -905,7 +923,7 @@
             `;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.style.animation = 'slideOutRight 0.5s cubic-bezier(0.23, 1, 0.320, 1)';
                 setTimeout(() => notification.remove(), 500);
@@ -945,10 +963,10 @@
                 const gaugeValue = document.querySelector('.gauge-value');
                 const currentEfficiency = parseInt(gaugeValue.textContent);
                 const newEfficiency = Math.min(currentEfficiency + Math.floor(Math.random() * 3), 98);
-                
+
                 if (newEfficiency !== currentEfficiency) {
                     gaugeValue.textContent = newEfficiency + '%';
-                    
+
                     // Update gauge visual
                     const gaugeBg = document.querySelector('.gauge-bg');
                     const degrees = (newEfficiency / 100) * 340;
@@ -963,7 +981,7 @@
                     const taskValue = document.querySelector('.kpi-value.tasks');
                     const currentTasks = parseInt(taskValue.textContent);
                     taskValue.textContent = currentTasks + 1;
-                    
+
                     // Flash effect
                     taskValue.style.animation = 'none';
                     taskValue.style.transform = 'scale(1.1)';
@@ -977,17 +995,17 @@
         }
 
         // Initialize real-time updates
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             simulateRealTimeUpdates();
-            
+
             // Add hover effects to chart bars
             const chartBars = document.querySelectorAll('.chart-bar');
             chartBars.forEach((bar, index) => {
-                bar.addEventListener('mouseenter', function() {
+                bar.addEventListener('mouseenter', function () {
                     this.style.filter = 'brightness(1.1) drop-shadow(0 6px 20px rgba(255, 107, 53, 0.4))';
                 });
-                
-                bar.addEventListener('mouseleave', function() {
+
+                bar.addEventListener('mouseleave', function () {
                     this.style.filter = 'none';
                 });
             });
@@ -995,7 +1013,7 @@
             // Add click handlers for activity blocks
             const activityBlocks = document.querySelectorAll('.activity-block');
             activityBlocks.forEach(block => {
-                block.addEventListener('click', function() {
+                block.addEventListener('click', function () {
                     const title = this.getAttribute('title');
                     showNotification(`Activity: ${title}`);
                 });
@@ -1007,7 +1025,7 @@
             const efficiency = parseInt(document.querySelector('.kpi-value.efficiency').textContent);
             const speed = parseFloat(document.querySelector('.metric-value.speed').textContent);
             const accuracy = parseInt(document.querySelector('.metric-value.accuracy').textContent);
-            
+
             const performanceScore = Math.round((efficiency + accuracy + (speed * 10)) / 3);
             document.querySelector('.profile-status').innerHTML = `
                 <span>🟢 Active</span>
@@ -1020,4 +1038,5 @@
         setInterval(updatePerformanceScore, 10000);
     </script>
 </body>
+
 </html>

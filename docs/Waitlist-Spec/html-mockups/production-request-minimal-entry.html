@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f8f9fa;
@@ -32,8 +33,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .quick-entry h2 {
@@ -255,12 +263,12 @@
             .inline-fields {
                 grid-template-columns: 1fr;
             }
-            
+
             .priority-strip {
                 flex-wrap: wrap;
                 gap: 15px;
             }
-            
+
             .quick-stats {
                 flex-direction: column;
                 gap: 10px;
@@ -268,6 +276,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="quick-entry">
         <h2>⚡ Quick Material Request</h2>
@@ -327,7 +336,7 @@
             <div class="priority-option" data-priority="normal" title="Normal - Within 2 hours">🟢</div>
             <div class="priority-option" data-priority="low" title="Low Priority - End of shift">🔵</div>
         </div>
-        
+
         <div class="priority-labels">
             <div class="priority-label">Emergency</div>
             <div class="priority-label">Urgent</div>
@@ -359,41 +368,41 @@
         function submitQuickRequest() {
             const button = document.querySelector('.submit-large');
             const originalText = button.innerHTML;
-            
+
             // Validate form
             const part = document.getElementById('partSelect').value;
             const from = document.getElementById('fromLocation').value;
             const to = document.getElementById('toLocation').value;
-            
+
             if (!part || !from || !to) {
                 button.innerHTML = '❌ Please fill all fields';
                 button.style.background = '#dc3545';
-                
+
                 setTimeout(() => {
                     button.innerHTML = originalText;
                     button.style.background = '#28a745';
                 }, 2000);
                 return;
             }
-            
+
             // Simulate submission
             button.innerHTML = '🔄 Submitting...';
             button.disabled = true;
-            
+
             setTimeout(() => {
                 button.innerHTML = '✅ Request WL-2024-' + Math.floor(Math.random() * 1000 + 1000) + ' Submitted!';
                 button.style.background = '#20c997';
-                
+
                 setTimeout(() => {
                     // Reset form
                     document.getElementById('partSelect').selectedIndex = 0;
                     document.getElementById('fromLocation').selectedIndex = 0;
                     document.getElementById('toLocation').selectedIndex = 0;
-                    
+
                     button.innerHTML = originalText;
                     button.style.background = '#28a745';
                     button.disabled = false;
-                    
+
                     // Reset priority to normal
                     document.querySelectorAll('.priority-option').forEach(p => p.classList.remove('selected'));
                     document.querySelector('[data-priority="normal"]').classList.add('selected');
@@ -402,10 +411,10 @@
         }
 
         // Priority selection
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const priorities = document.querySelectorAll('.priority-option');
             priorities.forEach(priority => {
-                priority.addEventListener('click', function() {
+                priority.addEventListener('click', function () {
                     priorities.forEach(p => p.classList.remove('selected'));
                     this.classList.add('selected');
                 });
@@ -413,4 +422,5 @@
         });
     </script>
 </body>
+
 </html>

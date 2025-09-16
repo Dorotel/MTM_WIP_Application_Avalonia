@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
@@ -308,8 +309,13 @@
         }
 
         @keyframes currentTimeGlow {
-            from { box-shadow: 0 0 8px rgba(220, 53, 69, 0.5); }
-            to { box-shadow: 0 0 15px rgba(220, 53, 69, 0.8); }
+            from {
+                box-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+            }
+
+            to {
+                box-shadow: 0 0 15px rgba(220, 53, 69, 0.8);
+            }
         }
 
         .current-time-label {
@@ -481,6 +487,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="schedule-container">
         <div class="schedule-header">
@@ -495,13 +502,13 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="schedule-controls">
                 <div class="time-display">
                     <div class="current-time" id="current-time">10:24 AM</div>
                     <div class="current-date" id="current-date">Monday, Sep 16, 2025</div>
                 </div>
-                
+
                 <div class="view-controls">
                     <button class="view-btn active" onclick="setView('day')">Day</button>
                     <button class="view-btn" onclick="setView('week')">Week</button>
@@ -517,7 +524,7 @@
                     <div class="current-period">Today - September 16, 2025</div>
                     <button class="nav-btn" onclick="nextPeriod()">›</button>
                 </div>
-                
+
                 <div class="timeline-grid-header">
                     <div class="hour-header" style="background: #f8f9fa;"></div>
                     <div class="hour-header">6 AM</div>
@@ -559,9 +566,9 @@
                     <!-- Time slots for each hour -->
                     <!-- 6 AM -->
                     <div class="time-slot">
-                        <div class="task-block pickup" data-task="WL-2024-1150" 
-                             onmouseenter="showTooltip(event, 'Shift Start Pickup', 'Material collection from Warehouse A for Line 1')"
-                             onmouseleave="hideTooltip()">
+                        <div class="task-block pickup" data-task="WL-2024-1150"
+                            onmouseenter="showTooltip(event, 'Shift Start Pickup', 'Material collection from Warehouse A for Line 1')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Shift Start</div>
                             <div class="task-details">Warehouse A</div>
                         </div>
@@ -574,16 +581,16 @@
                     <!-- 7 AM -->
                     <div class="time-slot">
                         <div class="task-block pickup" data-task="WL-2024-1151"
-                             onmouseenter="showTooltip(event, 'Component Pickup', 'Electronic components for Line 2 assembly process')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Component Pickup', 'Electronic components for Line 2 assembly process')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Components</div>
                             <div class="task-details">Line 2</div>
                         </div>
                     </div>
                     <div class="time-slot">
                         <div class="task-block delivery" data-task="WL-2024-1150"
-                             onmouseenter="showTooltip(event, 'Material Delivery', 'Delivering warehouse materials to Line 1 production')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Material Delivery', 'Delivering warehouse materials to Line 1 production')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Materials</div>
                             <div class="task-details">Line 1</div>
                         </div>
@@ -598,8 +605,8 @@
                     <div class="time-slot"></div>
                     <div class="time-slot">
                         <div class="task-block delivery" data-task="WL-2024-1151"
-                             onmouseenter="showTooltip(event, 'Component Delivery', 'Electronic component delivery to Line 2')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Component Delivery', 'Electronic component delivery to Line 2')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Components</div>
                             <div class="task-details">Line 2</div>
                         </div>
@@ -613,8 +620,8 @@
                     <!-- 9 AM -->
                     <div class="time-slot">
                         <div class="task-block pickup" data-task="WL-2024-1152"
-                             onmouseenter="showTooltip(event, 'Tool Pickup', 'Precision tools needed for Line 3 operations')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Tool Pickup', 'Precision tools needed for Line 3 operations')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Tools</div>
                             <div class="task-details">Tool Crib</div>
                         </div>
@@ -630,8 +637,8 @@
                     <div class="time-slot"></div>
                     <div class="time-slot">
                         <div class="task-block delivery" data-task="WL-2024-1152"
-                             onmouseenter="showTooltip(event, 'Tool Delivery', 'Precision tool delivery to Line 3')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Tool Delivery', 'Precision tool delivery to Line 3')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Tools</div>
                             <div class="task-details">Line 3</div>
                         </div>
@@ -639,8 +646,8 @@
                     <div class="time-slot"></div>
                     <div class="time-slot">
                         <div class="task-block break"
-                             onmouseenter="showTooltip(event, 'Morning Break', '15-minute scheduled break period')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Morning Break', '15-minute scheduled break period')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Break</div>
                             <div class="task-details">15 min</div>
                         </div>
@@ -650,8 +657,8 @@
                     <!-- 11 AM -->
                     <div class="time-slot">
                         <div class="task-block pickup" data-task="WL-2024-1153"
-                             onmouseenter="showTooltip(event, 'Safety Pickup', 'Safety equipment and PPE restock materials')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Safety Pickup', 'Safety equipment and PPE restock materials')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Safety Gear</div>
                             <div class="task-details">Safety Store</div>
                         </div>
@@ -667,8 +674,8 @@
                     <div class="time-slot"></div>
                     <div class="time-slot">
                         <div class="task-block delivery" data-task="WL-2024-1153"
-                             onmouseenter="showTooltip(event, 'Safety Delivery', 'Safety equipment distribution to multiple stations')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Safety Delivery', 'Safety equipment distribution to multiple stations')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Safety Gear</div>
                             <div class="task-details">All Lines</div>
                         </div>
@@ -676,8 +683,8 @@
                     <div class="time-slot"></div>
                     <div class="time-slot">
                         <div class="task-block break"
-                             onmouseenter="showTooltip(event, 'Lunch Break', '30-minute lunch break period')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Lunch Break', '30-minute lunch break period')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Lunch</div>
                             <div class="task-details">30 min</div>
                         </div>
@@ -687,8 +694,8 @@
                     <!-- 1 PM -->
                     <div class="time-slot">
                         <div class="task-block pickup" data-task="WL-2024-1154"
-                             onmouseenter="showTooltip(event, 'Quality Pickup', 'Quality control samples and inspection materials')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Quality Pickup', 'Quality control samples and inspection materials')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">QC Materials</div>
                             <div class="task-details">QC Lab</div>
                         </div>
@@ -696,8 +703,8 @@
                     <div class="time-slot"></div>
                     <div class="time-slot">
                         <div class="task-block maintenance" data-task="MAINT-001"
-                             onmouseenter="showTooltip(event, 'Cart Maintenance', 'Scheduled maintenance on material handling cart')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'Cart Maintenance', 'Scheduled maintenance on material handling cart')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">Cart Check</div>
                             <div class="task-details">Routine</div>
                         </div>
@@ -711,8 +718,8 @@
                     <div class="time-slot"></div>
                     <div class="time-slot">
                         <div class="task-block delivery" data-task="WL-2024-1154"
-                             onmouseenter="showTooltip(event, 'QC Delivery', 'Quality control materials to inspection stations')"
-                             onmouseleave="hideTooltip()">
+                            onmouseenter="showTooltip(event, 'QC Delivery', 'Quality control materials to inspection stations')"
+                            onmouseleave="hideTooltip()">
                             <div class="task-title">QC Materials</div>
                             <div class="task-details">Inspection</div>
                         </div>
@@ -728,19 +735,19 @@
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
-                    
+
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
-                    
+
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
-                    
+
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
                     <div class="time-slot" style="opacity: 0.5;"></div>
@@ -863,24 +870,24 @@
 
         function updateTime() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const dateString = now.toLocaleDateString([], {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
             });
-            
+
             document.getElementById('current-time').textContent = timeString;
             document.getElementById('current-date').textContent = dateString;
-            
+
             // Update current time indicator position
             const hour = now.getHours();
             const minute = now.getMinutes();
             const totalMinutes = (hour * 60) + minute;
             const startOfDay = 6 * 60; // 6 AM in minutes
             const pixelsPerMinute = 1440 / (24 * 60); // Total width divided by minutes in day
-            
+
             if (totalMinutes >= startOfDay) {
                 const position = 80 + ((totalMinutes - startOfDay) * pixelsPerMinute);
                 const indicator = document.querySelector('.current-time-indicator');
@@ -892,10 +899,10 @@
             currentView = view;
             const buttons = document.querySelectorAll('.view-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
-            
+
             const viewMap = { 'day': 0, 'week': 1, 'month': 2 };
             buttons[viewMap[view]].classList.add('active');
-            
+
             showNotification(`Switched to ${view} view`);
         }
 
@@ -911,14 +918,14 @@
             const tooltip = document.getElementById('task-tooltip');
             const titleElement = document.getElementById('tooltip-title');
             const detailsElement = document.getElementById('tooltip-details');
-            
+
             titleElement.textContent = title;
             detailsElement.textContent = details;
-            
+
             const rect = event.target.getBoundingClientRect();
             tooltip.style.left = `${rect.left + rect.width + 10}px`;
             tooltip.style.top = `${rect.top - 10}px`;
-            
+
             tooltip.classList.add('show');
         }
 
@@ -958,7 +965,7 @@
             `;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.style.animation = 'slideOutUp 0.5s cubic-bezier(0.23, 1, 0.320, 1)';
                 setTimeout(() => notification.remove(), 500);
@@ -992,14 +999,14 @@
         document.head.appendChild(style);
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             updateTime();
             setInterval(updateTime, 60000); // Update every minute
-            
+
             // Add click handlers to task blocks
             const taskBlocks = document.querySelectorAll('.task-block');
             taskBlocks.forEach(block => {
-                block.addEventListener('click', function() {
+                block.addEventListener('click', function () {
                     const taskId = this.dataset.task;
                     if (taskId) {
                         showNotification(`Opening details for ${taskId}`);
@@ -1016,7 +1023,7 @@
         function simulateScheduleChange() {
             // Add a new urgent task
             const pickupRow = document.querySelector('.timeline-grid .time-slot:nth-child(27)'); // 11 AM pickup slot
-            
+
             const urgentTask = document.createElement('div');
             urgentTask.className = 'task-block pickup';
             urgentTask.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
@@ -1025,16 +1032,16 @@
                 <div class="task-details">Line 4</div>
             `;
             urgentTask.setAttribute('data-task', 'WL-2024-1155');
-            urgentTask.addEventListener('mouseenter', function(e) {
+            urgentTask.addEventListener('mouseenter', function (e) {
                 showTooltip(e, 'Urgent Material Request', 'Critical shortage on Line 4 - immediate pickup required');
             });
             urgentTask.addEventListener('mouseleave', hideTooltip);
-            urgentTask.addEventListener('click', function() {
+            urgentTask.addEventListener('click', function () {
                 showNotification('Opening urgent task WL-2024-1155');
             });
-            
+
             pickupRow.appendChild(urgentTask);
-            
+
             // Animate the new task
             urgentTask.style.animation = 'none';
             urgentTask.style.transform = 'scale(0)';
@@ -1042,13 +1049,14 @@
                 urgentTask.style.transform = 'scale(1)';
                 urgentTask.style.transition = 'transform 0.5s cubic-bezier(0.23, 1, 0.320, 1)';
             }, 100);
-            
+
             showNotification('🚨 New urgent task assigned to your schedule!');
-            
+
             // Update summary
             const taskCount = document.querySelector('.summary-number.tasks');
             taskCount.textContent = parseInt(taskCount.textContent) + 1;
         }
     </script>
 </body>
+
 </html>
