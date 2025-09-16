@@ -1,0 +1,38 @@
+{
+  "recommendations": [
+    // GitHub Copilot and AI assistance
+    "github.copilot",
+    "github.copilot-chat",
+    
+    // C# and .NET development
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.vscode-dotnet-runtime",
+    
+    // Avalonia UI development
+    "avalonia.avalonia",
+    
+    // Database tools for MySQL
+    "ms-mssql.mssql",
+    "formulahendry.auto-rename-tag",
+    
+    // Code quality and formatting
+    "editorconfig.editorconfig",
+    "davidanson.vscode-markdownlint",
+    
+    // Git and collaboration
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    
+    // Project management
+    "ms-vscode.vscode-json",
+    "redhat.vscode-yaml",
+    
+    // Testing and debugging
+    "ms-dotnettools.vscode-dotnet-unit-test-runner",
+    
+    // Productivity
+    "ms-vscode.powershell",
+    "ms-vscode-remote.remote-containers"
+  ]
+}

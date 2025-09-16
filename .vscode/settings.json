@@ -2,5 +2,51 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "john-koll",
         "projectKey": "Dorotel_MTM_WIP_Application_Avalonia"
+    },
+    // GitHub Copilot and AI assistance configuration
+    "github.copilot.enable": {
+        "*": true,
+        "markdown": true,
+        "plaintext": false
+    },
+    "chat.modeFilesLocations": {
+        "chatmodes": true
+    },
+    "chat.promptFilesLocations": {
+        "prompts": true,
+        ".github/prompts": true
+    },
+    "chat.instructionsFilesLocations": {
+        "instructions": true,
+        ".github/instructions": true
+    },
+    // File formatting and line endings
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false,
+        "editor.formatOnSave": true,
+        "editor.wordWrap": "on"
+    },
+    // Editor configuration
+    "editor.rulers": [100, 120],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit"
+    },
+    // File associations for MTM project
+    "files.associations": {
+        "*.axaml": "xml",
+        "*.instructions.md": "markdown",
+        "*.prompt.md": "markdown",
+        "*.chatmode.md": "markdown"
+    },
+    // C# and .NET settings
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+    "csharp.semanticHighlighting.enabled": true,
+    // Manufacturing-specific settings
+    "emmet.includeLanguages": {
+        "axaml": "xml"
     }
 }
