@@ -1,0 +1,114 @@
+name: Check Line Endings
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  check-line-endings:
+    name: Validate File Line Endings
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Check for CRLF line endings in text files
+      run: |
+        echo "🔍 Checking for CRLF line endings in text files..."
+        
+        # Files that should have LF line endings (Unix-style)
+        LF_FILES=$(find . -type f \
+          -name "*.md" \
+          -o -name "*.json" \
+          -o -name "*.yml" \
+          -o -name "*.yaml" \
+          -o -name "*.js" \
+          -o -name "*.ts" \
+          -o -name "*.html" \
+          -o -name "*.css" \
+          -o -name "*.sh" \
+          | grep -v node_modules \
+          | grep -v .git \
+          | head -50)
+        
+        CRLF_COUNT=0
+        
+        for file in $LF_FILES; do
+          if [ -f "$file" ]; then
+            if file "$file" | grep -q "CRLF"; then
+              echo "❌ CRLF line endings detected in: $file"
+              CRLF_COUNT=$((CRLF_COUNT + 1))
+            fi
+          fi
+        done
+        
+        # Files that should have CRLF line endings (Windows-style)
+        CRLF_FILES=$(find . -type f \
+          -name "*.bat" \
+          -o -name "*.cmd" \
+          | grep -v node_modules \
+          | grep -v .git)
+        
+        LF_IN_WINDOWS_COUNT=0
+        
+        for file in $CRLF_FILES; do
+          if [ -f "$file" ]; then
+            if ! file "$file" | grep -q "CRLF"; then
+              echo "❌ Missing CRLF line endings in Windows file: $file"
+              LF_IN_WINDOWS_COUNT=$((LF_IN_WINDOWS_COUNT + 1))
+            fi
+          fi
+        done
+        
+        echo "📊 Summary:"
+        echo "  - Files with incorrect CRLF line endings: $CRLF_COUNT"
+        echo "  - Windows files with incorrect LF line endings: $LF_IN_WINDOWS_COUNT"
+        
+        if [ $CRLF_COUNT -gt 0 ] || [ $LF_IN_WINDOWS_COUNT -gt 0 ]; then
+          echo ""
+          echo "🔧 To fix line ending issues:"
+          echo "  1. Configure your editor to use LF line endings for text files"
+          echo "  2. Configure your editor to use CRLF line endings for .bat/.cmd files"
+          echo "  3. Run: git config core.autocrlf input"
+          echo "  4. Commit the corrected files"
+          exit 1
+        else
+          echo "✅ All files have correct line endings!"
+        fi
+
+    - name: Check for mixed line endings within files
+      run: |
+        echo "🔍 Checking for mixed line endings within individual files..."
+        
+        MIXED_COUNT=0
+        
+        # Check text files for mixed line endings
+        find . -type f \( -name "*.cs" -o -name "*.axaml" -o -name "*.json" -o -name "*.md" \) \
+          | grep -v node_modules \
+          | grep -v .git \
+          | head -20 | while read file; do
+          
+          if [ -f "$file" ]; then
+            # Count different types of line endings
+            CRLF_LINES=$(grep -c $'\r$' "$file" 2>/dev/null || echo 0)
+            LF_ONLY_LINES=$(grep -c $'[^\r]$' "$file" 2>/dev/null || echo 0)
+            
+            # If file has both types, it has mixed line endings
+            if [ "$CRLF_LINES" -gt 0 ] && [ "$LF_ONLY_LINES" -gt 0 ]; then
+              echo "❌ Mixed line endings in: $file (CRLF: $CRLF_LINES, LF: $LF_ONLY_LINES)"
+              MIXED_COUNT=$((MIXED_COUNT + 1))
+            fi
+          fi
+        done
+        
+        if [ $MIXED_COUNT -gt 0 ]; then
+          echo "🔧 Files with mixed line endings detected. Please standardize line endings."
+          exit 1
+        else
+          echo "✅ No mixed line endings detected!"
+        fi
