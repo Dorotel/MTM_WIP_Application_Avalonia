@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>12.0</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>MTM.UniversalFramework.Avalonia</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>MTM Universal Framework</Authors>
+    <Description>Cross-platform Avalonia UI controls and patterns optimized for Windows and Android</Description>
+    <PackageTags>avalonia;ui;cross-platform;controls;windows;android</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Android" Version="11.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../MTM.Core/MTM.Core.csproj" />
+    <ProjectReference Include="../MTM.MVVM/MTM.MVVM.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Themes\**\*.axaml" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,115 @@
+<ResourceDictionary 
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Universal Blue Theme - Windows 11 Inspired -->
+  <!-- Primary Colors -->
+  <Color x:Key="Universal_Primary">#0078D4</Color>
+  <Color x:Key="Universal_PrimaryLight">#106EBE</Color>
+  <Color x:Key="Universal_PrimaryDark">#005A9E</Color>
+  
+  <!-- Background Colors -->
+  <Color x:Key="Universal_Background">#FAFAFA</Color>
+  <Color x:Key="Universal_Surface">#FFFFFF</Color>
+  <Color x:Key="Universal_Card">#F3F2F1</Color>
+  
+  <!-- Text Colors -->
+  <Color x:Key="Universal_TextPrimary">#323130</Color>
+  <Color x:Key="Universal_TextSecondary">#605E5C</Color>
+  <Color x:Key="Universal_TextDisabled">#8A8886</Color>
+  
+  <!-- Status Colors -->
+  <Color x:Key="Universal_Success">#4CAF50</Color>
+  <Color x:Key="Universal_Warning">#FF9800</Color>
+  <Color x:Key="Universal_Error">#F44336</Color>
+  <Color x:Key="Universal_Info">#2196F3</Color>
+  
+  <!-- Brush Resources -->
+  <SolidColorBrush x:Key="Universal_PrimaryBrush" Color="{StaticResource Universal_Primary}"/>
+  <SolidColorBrush x:Key="Universal_PrimaryLightBrush" Color="{StaticResource Universal_PrimaryLight}"/>
+  <SolidColorBrush x:Key="Universal_PrimaryDarkBrush" Color="{StaticResource Universal_PrimaryDark}"/>
+  
+  <SolidColorBrush x:Key="Universal_BackgroundBrush" Color="{StaticResource Universal_Background}"/>
+  <SolidColorBrush x:Key="Universal_SurfaceBrush" Color="{StaticResource Universal_Surface}"/>
+  <SolidColorBrush x:Key="Universal_CardBrush" Color="{StaticResource Universal_Card}"/>
+  
+  <SolidColorBrush x:Key="Universal_TextPrimaryBrush" Color="{StaticResource Universal_TextPrimary}"/>
+  <SolidColorBrush x:Key="Universal_TextSecondaryBrush" Color="{StaticResource Universal_TextSecondary}"/>
+  <SolidColorBrush x:Key="Universal_TextDisabledBrush" Color="{StaticResource Universal_TextDisabled}"/>
+  
+  <SolidColorBrush x:Key="Universal_SuccessBrush" Color="{StaticResource Universal_Success}"/>
+  <SolidColorBrush x:Key="Universal_WarningBrush" Color="{StaticResource Universal_Warning}"/>
+  <SolidColorBrush x:Key="Universal_ErrorBrush" Color="{StaticResource Universal_Error}"/>
+  <SolidColorBrush x:Key="Universal_InfoBrush" Color="{StaticResource Universal_Info}"/>
+  
+  <!-- Border and Separator -->
+  <SolidColorBrush x:Key="Universal_BorderBrush" Color="#E1DFDD"/>
+  <SolidColorBrush x:Key="Universal_SeparatorBrush" Color="#EDEBE9"/>
+  
+  <!-- Button Styles -->
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="{StaticResource Universal_PrimaryBrush}"/>
+    <Setter Property="Foreground" Value="White"/>
+    <Setter Property="BorderBrush" Value="{StaticResource Universal_PrimaryBrush}"/>
+    <Setter Property="Padding" Value="16,8"/>
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="FontWeight" Value="Medium"/>
+  </Style>
+  
+  <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource Universal_PrimaryLightBrush}"/>
+  </Style>
+  
+  <Style Selector="Button.secondary">
+    <Setter Property="Background" Value="{StaticResource Universal_SurfaceBrush}"/>
+    <Setter Property="Foreground" Value="{StaticResource Universal_PrimaryBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource Universal_PrimaryBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="16,8"/>
+    <Setter Property="CornerRadius" Value="4"/>
+  </Style>
+  
+  <!-- Card Styles -->
+  <Style Selector="Border.universal-card">
+    <Setter Property="Background" Value="{StaticResource Universal_SurfaceBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource Universal_BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="Padding" Value="16"/>
+    <Setter Property="Margin" Value="8"/>
+  </Style>
+  
+  <Style Selector="Border.universal-card.elevated">
+    <Setter Property="BoxShadow" Value="0 2 8 0 #10000000"/>
+  </Style>
+  
+  <Style Selector="Border.universal-card.selected">
+    <Setter Property="BorderBrush" Value="{StaticResource Universal_PrimaryBrush}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+  </Style>
+  
+  <!-- Input Styles -->
+  <Style Selector="TextBox">
+    <Setter Property="Background" Value="{StaticResource Universal_SurfaceBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource Universal_BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="Padding" Value="12,8"/>
+    <Setter Property="FontSize" Value="14"/>
+  </Style>
+  
+  <Style Selector="TextBox:focus">
+    <Setter Property="BorderBrush" Value="{StaticResource Universal_PrimaryBrush}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+  </Style>
+  
+  <!-- Layout Helpers -->
+  <Thickness x:Key="Universal_SmallSpacing">8</Thickness>
+  <Thickness x:Key="Universal_MediumSpacing">16</Thickness>
+  <Thickness x:Key="Universal_LargeSpacing">24</Thickness>
+  
+  <CornerRadius x:Key="Universal_SmallRadius">4</CornerRadius>
+  <CornerRadius x:Key="Universal_MediumRadius">8</CornerRadius>
+  <CornerRadius x:Key="Universal_LargeRadius">12</CornerRadius>
+  
+</ResourceDictionary>

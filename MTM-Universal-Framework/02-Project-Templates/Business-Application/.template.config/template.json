@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "MTM Universal Framework",
+  "classifications": ["Application", "Cross-platform", "Avalonia", "MVVM"],
+  "identity": "MTM.UniversalFramework.BusinessApp",
+  "name": "MTM Universal Business Application",
+  "shortName": "mtm-business-app",
+  "sourceName": "MTMBusinessApp",
+  "description": "Cross-platform business application using MTM Universal Framework with Avalonia UI",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "description": "The target framework for the project",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net8.0",
+          "description": ".NET 8"
+        }
+      ],
+      "defaultValue": "net8.0"
+    },
+    "IncludeAndroid": {
+      "type": "parameter",
+      "description": "Include Android target",
+      "datatype": "bool",
+      "defaultValue": "true"
+    },
+    "IncludeDesktop": {
+      "type": "parameter", 
+      "description": "Include Desktop targets (Windows, macOS, Linux)",
+      "datatype": "bool",
+      "defaultValue": "true"
+    },
+    "BusinessDomain": {
+      "type": "parameter",
+      "description": "Primary business domain for the application",
+      "datatype": "string",
+      "defaultValue": "Business"
+    }
+  },
+  "sources": [
+    {
+      "source": "./",
+      "target": "./"
+    }
+  ]
+}

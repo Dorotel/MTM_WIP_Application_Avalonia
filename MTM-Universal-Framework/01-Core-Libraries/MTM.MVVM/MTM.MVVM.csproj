@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>12.0</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>MTM.UniversalFramework.MVVM</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>MTM Universal Framework</Authors>
+    <Description>Cross-platform MVVM foundation with Community Toolkit integration for enterprise applications</Description>
+    <PackageTags>mvvm;avalonia;cross-platform;enterprise;community-toolkit</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../MTM.Core/MTM.Core.csproj" />
+  </ItemGroup>
+
+</Project>
