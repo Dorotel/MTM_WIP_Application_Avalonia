@@ -38,12 +38,6 @@ public static class Program
 
         try
         {
-            // Handle testing command-line arguments before UI startup
-            if (await HandleTestingArgumentsAsync(args))
-            {
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Testing completed, exiting...");
-                return;
-            }
             // Phase 2: Configure services using ApplicationStartup infrastructure
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring services using ApplicationStartup...");
             var configureResult = await ConfigureServicesAsync();
@@ -152,7 +146,7 @@ public static class Program
 
         try
         {
-            // Check if application is already initialized from startup tests
+            // Check if application is already initialized from ApplicationStartup
             if (ApplicationStartup.IsInitialized)
             {
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Application already initialized, using existing service provider");
@@ -241,166 +235,6 @@ public static class Program
         }
 
         await Task.Delay(100); // Allow logging to complete
-    }
-
-    /// <summary>
-    /// Handles testing command-line arguments for cross-platform validation
-    /// </summary>
-    /// <param name="args">Command line arguments</param>
-    /// <returns>True if testing was performed and app should exit, false to continue normal startup</returns>
-    private static async Task<bool> HandleTestingArgumentsAsync(string[] args)
-    {
-        if (args.Length == 0) return false;
-
-        try
-        {
-            foreach (var arg in args)
-            {
-                switch (arg.ToLowerInvariant())
-                {
-                    case "--run-cross-platform-tests":
-                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Running cross-platform support tests...");
-                        // Note: Cross-platform tests moved to separate test project
-                        // var result = await MTM.Tests.CrossPlatformSupportTests.ValidateCrossPlatformSupport();
-                        Console.WriteLine("Cross-platform tests now available via: dotnet test Tests/MTM.Tests.csproj --filter Category=CrossPlatform");
-                        Environment.ExitCode = 0;
-                        return true;
-
-                    case "--show-platform-info":
-                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Platform Information:");
-                        Console.WriteLine($"  OS: {Environment.OSVersion}");
-                        Console.WriteLine($"  Platform: {Environment.OSVersion.Platform}");
-                        Console.WriteLine($"  Is Windows: {OperatingSystem.IsWindows()}");
-                        Console.WriteLine($"  Is macOS: {OperatingSystem.IsMacOS()}");
-                        Console.WriteLine($"  Is Linux: {OperatingSystem.IsLinux()}");
-                        Console.WriteLine($"  Is Android: {OperatingSystem.IsAndroid()}");
-                        Console.WriteLine($"  Is iOS: {OperatingSystem.IsIOS()}");
-                        Console.WriteLine($"  Runtime: {Environment.Version}");
-                        Console.WriteLine($"  Working Directory: {Environment.CurrentDirectory}");
-                        Console.WriteLine($"  User Interactive: {Environment.UserInteractive}");
-                        Console.WriteLine($"  Documents Folder: {Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}");
-                        return true;
-
-                    case "--test-documents-folder":
-                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Testing Documents folder access...");
-                        var documentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                        Console.WriteLine($"  Documents folder: {documentsFolder}");
-                        Console.WriteLine($"  Exists: {Directory.Exists(documentsFolder)}");
-                        if (Directory.Exists(documentsFolder))
-                        {
-                            Console.WriteLine($"  Can read: {Directory.EnumerateFiles(documentsFolder).Any() || Directory.EnumerateDirectories(documentsFolder).Any()}");
-                        }
-                        return true;
-                }
-
-                // Handle arguments with values
-                if (arg.StartsWith("--test-file-validation=", StringComparison.OrdinalIgnoreCase))
-                {
-                    var filePath = arg.Substring("--test-file-validation=".Length);
-                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Testing file validation for: {filePath}");
-                    Console.WriteLine($"  File exists: {File.Exists(filePath)}");
-                    return true;
-                }
-
-                if (arg.StartsWith("--test-file-access=", StringComparison.OrdinalIgnoreCase))
-                {
-                    var filePath = arg.Substring("--test-file-access=".Length);
-                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Testing file access for: {filePath}");
-                    Console.WriteLine($"  File exists: {File.Exists(filePath)}");
-                    if (File.Exists(filePath))
-                    {
-                        try
-                        {
-                            var content = await File.ReadAllTextAsync(filePath);
-                            Console.WriteLine($"  Can read: True");
-                            Console.WriteLine($"  Content length: {content.Length} chars");
-                            Console.WriteLine($"  Content preview: {content.Substring(0, Math.Min(100, content.Length))}...");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"  Can read: False - {ex.Message}");
-                        }
-                    }
-                    return true;
-                }
-
-                if (arg.StartsWith("--test-readonly-access=", StringComparison.OrdinalIgnoreCase))
-                {
-                    var filePath = arg.Substring("--test-readonly-access=".Length);
-                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Testing readonly file access for: {filePath}");
-                    if (File.Exists(filePath))
-                    {
-                        var fileInfo = new FileInfo(filePath);
-                        Console.WriteLine($"  Is read-only: {fileInfo.IsReadOnly}");
-                        Console.WriteLine($"  Attributes: {fileInfo.Attributes}");
-                        
-                        try
-                        {
-                            var content = await File.ReadAllTextAsync(filePath);
-                            Console.WriteLine($"  Can read: True");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"  Can read: False - {ex.Message}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"  File does not exist");
-                    }
-                    return true;
-                }
-
-                if (arg.StartsWith("--test-file-permissions=", StringComparison.OrdinalIgnoreCase))
-                {
-                    var filePath = arg.Substring("--test-file-permissions=".Length);
-                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Testing file permissions for: {filePath}");
-                    if (File.Exists(filePath))
-                    {
-                        var fileInfo = new FileInfo(filePath);
-                        Console.WriteLine($"  File exists: True");
-                        Console.WriteLine($"  Size: {fileInfo.Length} bytes");
-                        Console.WriteLine($"  Created: {fileInfo.CreationTime}");
-                        Console.WriteLine($"  Modified: {fileInfo.LastWriteTime}");
-                        Console.WriteLine($"  Attributes: {fileInfo.Attributes}");
-                        
-                        // Test different access types
-                        try
-                        {
-                            using var readStream = File.OpenRead(filePath);
-                            Console.WriteLine($"  Read access: True");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"  Read access: False - {ex.Message}");
-                        }
-
-                        try
-                        {
-                            using var writeStream = File.OpenWrite(filePath);
-                            Console.WriteLine($"  Write access: True");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"  Write access: False - {ex.Message}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"  File does not exist");
-                    }
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Error in testing arguments: {ex.Message}");
-            Environment.ExitCode = 1;
-            return true;
-        }
     }
 
     // Service resolution methods with null checking
