@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Production Request - Dashboard Overview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f1f3f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-request {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #6F42C1 0%, #8E44AD 100%);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header-time {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .status-bar {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .status-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-icon {
+            font-size: 20px;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+        }
+
+        .status-icon.connected {
+            background: #28a745;
+        }
+
+        .status-icon.queue {
+            background: #6F42C1;
+        }
+
+        .status-icon.handlers {
+            background: #17a2b8;
+        }
+
+        .status-icon.performance {
+            background: #fd7e14;
+        }
+
+        .status-info {
+            flex: 1;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .status-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: 500px;
+        }
+
+        .left-info {
+            background: #f8f9fa;
+            padding: 30px;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .info-section {
+            margin-bottom: 30px;
+        }
+
+        .info-section h3 {
+            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .work-order-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+        }
+
+        .work-order-id {
+            font-size: 16px;
+            font-weight: bold;
+            color: #6F42C1;
+            margin-bottom: 8px;
+        }
+
+        .work-order-status {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .part-info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .part-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .part-availability {
+            font-size: 14px;
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .part-details {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .right-form {
+            padding: 30px;
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 25px;
+        }
+
+        .compact-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-field {
+            grid-column: span 1;
+        }
+
+        .form-field.full-width {
+            grid-column: span 2;
+        }
+
+        .form-field label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6F42C1;
+            box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.1);
+        }
+
+        .priority-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .priority-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .priority-btn.emergency {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .priority-btn.urgent {
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .priority-btn.normal {
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .priority-btn.low {
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .priority-btn.selected {
+            transform: scale(1.05);
+        }
+
+        .priority-btn.emergency.selected {
+            background: #dc3545;
+            color: white;
+        }
+
+        .priority-btn.urgent.selected {
+            background: #ffc107;
+            color: #856404;
+        }
+
+        .priority-btn.normal.selected {
+            background: #28a745;
+            color: white;
+        }
+
+        .priority-btn.low.selected {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .submit-section {
+            margin-top: 30px;
+            grid-column: span 2;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #6F42C1 0%, #8E44AD 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(111, 66, 193, 0.3);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .recent-requests {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .recent-requests h4 {
+            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .request-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .request-item:last-child {
+            border-bottom: none;
+        }
+
+        .request-info {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .request-status {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .request-status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .request-status.in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .request-status.pending {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .left-info {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .compact-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-field {
+                grid-column: span 1;
+            }
+            
+            .form-field.full-width {
+                grid-column: span 1;
+            }
+            
+            .submit-section {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-request">
+        <div class="dashboard-header">
+            <div class="header-title">🏭 MTM Production Request Dashboard</div>
+            <div class="header-time">Monday, September 16, 2:45 PM</div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-icon connected">🔗</div>
+                <div class="status-info">
+                    <div class="status-label">ERP Connection</div>
+                    <div class="status-value">Connected</div>
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-icon queue">📊</div>
+                <div class="status-info">
+                    <div class="status-label">Active Requests</div>
+                    <div class="status-value">7 in Queue</div>
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-icon handlers">👥</div>
+                <div class="status-info">
+                    <div class="status-label">Material Handlers</div>
+                    <div class="status-value">4 Available</div>
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-icon performance">⚡</div>
+                <div class="status-info">
+                    <div class="status-label">Avg Response</div>
+                    <div class="status-value">12 minutes</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-info">
+                <div class="info-section">
+                    <h3>Work Order Context</h3>
+                    <div class="work-order-card">
+                        <div class="work-order-id">WO-2024-15678</div>
+                        <div class="work-order-status">Active</div>
+                        <div style="margin-top: 12px; font-size: 13px; color: #6c757d;">
+                            Widget Assembly Line 5<br>
+                            Started: 8:30 AM<br>
+                            Due: 4:00 PM Today
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>Part Information</h3>
+                    <div class="part-info-card">
+                        <div class="part-number">ABC-123 Widget Assembly</div>
+                        <div class="part-availability">156 units available</div>
+                        <div class="part-details">
+                            <strong>Last Updated:</strong> 2:30 PM<br>
+                            <strong>Location:</strong> Warehouse A, Rack 5<br>
+                            <strong>Reorder Point:</strong> 50 units<br>
+                            <strong>Lead Time:</strong> 3 days
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>Recent Requests</h3>
+                    <div class="recent-requests">
+                        <div class="request-item">
+                            <div class="request-info">WL-1152 - Line 3 to QC</div>
+                            <div class="request-status completed">Completed</div>
+                        </div>
+                        <div class="request-item">
+                            <div class="request-info">WL-1154 - Tool delivery</div>
+                            <div class="request-status in-progress">In Progress</div>
+                        </div>
+                        <div class="request-item">
+                            <div class="request-info">WL-1156 - Storage move</div>
+                            <div class="request-status pending">Pending</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-form">
+                <div class="form-title">Submit New Material Request</div>
+                
+                <form class="compact-form">
+                    <div class="form-field">
+                        <label for="partNumber">Part Number</label>
+                        <select id="partNumber" class="form-control">
+                            <option value="">Select part...</option>
+                            <option value="ABC-123" selected>ABC-123 Widget Assembly</option>
+                            <option value="DEF-456">DEF-456 Motor Housing</option>
+                            <option value="GHI-789">GHI-789 Control Panel</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="quantity">Quantity Needed</label>
+                        <input type="number" id="quantity" class="form-control" value="25" min="1">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="fromLocation">From Location</label>
+                        <select id="fromLocation" class="form-control">
+                            <option value="">Select source...</option>
+                            <option value="line5-op100" selected>Line 5 - Operation 100</option>
+                            <option value="warehouse-a">Warehouse A</option>
+                            <option value="receiving">Receiving Dock</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="toLocation">To Location</label>
+                        <select id="toLocation" class="form-control">
+                            <option value="">Select destination...</option>
+                            <option value="quality-control" selected>Quality Control Station</option>
+                            <option value="shipping">Shipping Area</option>
+                            <option value="line7-op110">Line 7 - Operation 110</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label>Request Priority</label>
+                        <div class="priority-selector">
+                            <div class="priority-btn emergency" data-priority="emergency">
+                                🔴<br>Emergency
+                            </div>
+                            <div class="priority-btn urgent selected" data-priority="urgent">
+                                🟡<br>Urgent
+                            </div>
+                            <div class="priority-btn normal" data-priority="normal">
+                                🟢<br>Normal
+                            </div>
+                            <div class="priority-btn low" data-priority="low">
+                                🔵<br>Low
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="specialInstructions">Special Instructions (Optional)</label>
+                        <textarea id="specialInstructions" class="form-control" rows="3" 
+                                placeholder="Enter any special handling instructions..."></textarea>
+                    </div>
+
+                    <div class="submit-section">
+                        <button type="button" class="submit-btn" onclick="submitDashboardRequest()">
+                            ✅ Submit Material Request
+                        </button>
+                        <div style="text-align: center; margin-top: 15px; font-size: 14px; color: #6c757d;">
+                            <strong>Estimated Response Time:</strong> 15 minutes based on current queue
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function submitDashboardRequest() {
+            const button = document.querySelector('.submit-btn');
+            const originalText = button.innerHTML;
+            
+            // Validate required fields
+            const part = document.getElementById('partNumber').value;
+            const from = document.getElementById('fromLocation').value;
+            const to = document.getElementById('toLocation').value;
+            
+            if (!part || !from || !to) {
+                button.innerHTML = '❌ Please complete all required fields';
+                button.style.background = '#dc3545';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = 'linear-gradient(135deg, #6F42C1 0%, #8E44AD 100%)';
+                }, 2500);
+                return;
+            }
+            
+            // Simulate submission
+            button.innerHTML = '🔄 Processing Request...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                const requestId = 'WL-2024-' + Math.floor(Math.random() * 1000 + 1158);
+                button.innerHTML = `✅ Request ${requestId} Submitted Successfully!`;
+                button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                
+                // Update queue count
+                const queueElement = document.querySelector('.status-bar .status-item:nth-child(2) .status-value');
+                queueElement.textContent = '8 in Queue';
+                
+                setTimeout(() => {
+                    // Reset form
+                    document.getElementById('partNumber').selectedIndex = 0;
+                    document.getElementById('fromLocation').selectedIndex = 0;
+                    document.getElementById('toLocation').selectedIndex = 0;
+                    document.getElementById('quantity').value = '1';
+                    document.getElementById('specialInstructions').value = '';
+                    
+                    // Reset priority
+                    document.querySelectorAll('.priority-btn').forEach(btn => btn.classList.remove('selected'));
+                    document.querySelector('.priority-btn.normal').classList.add('selected');
+                    
+                    button.innerHTML = originalText;
+                    button.style.background = 'linear-gradient(135deg, #6F42C1 0%, #8E44AD 100%)';
+                    button.disabled = false;
+                }, 3000);
+            }, 1200);
+        }
+
+        // Priority selector functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const priorityBtns = document.querySelectorAll('.priority-btn');
+            priorityBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    priorityBtns.forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            // Auto-update timestamp
+            function updateTime() {
+                const now = new Date();
+                const timeStr = now.toLocaleString('en-US', { 
+                    weekday: 'long', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    hour: 'numeric', 
+                    minute: '2-digit'
+                });
+                document.querySelector('.header-time').textContent = timeStr;
+            }
+            
+            setInterval(updateTime, 60000); // Update every minute
+        });
+    </script>
+</body>
+</html>

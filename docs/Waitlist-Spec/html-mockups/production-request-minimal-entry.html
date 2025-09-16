@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Production Request - Minimal Quick Entry</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .quick-entry {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 35px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quick-entry h2 {
+            color: #28a745;
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 15px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            color: #495057;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+        }
+
+        .inline-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .priority-strip {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .priority-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .priority-option:hover {
+            transform: scale(1.15);
+        }
+
+        .priority-option.selected {
+            transform: scale(1.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .priority-option[data-priority="emergency"] {
+            background: #dc3545;
+            border-color: #c82333;
+        }
+
+        .priority-option[data-priority="urgent"] {
+            background: #ffc107;
+            border-color: #e0a800;
+        }
+
+        .priority-option[data-priority="normal"] {
+            background: #28a745;
+            border-color: #228e3b;
+        }
+
+        .priority-option[data-priority="low"] {
+            background: #17a2b8;
+            border-color: #138496;
+        }
+
+        .priority-option.selected::after {
+            content: "";
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #495057;
+        }
+
+        .priority-labels {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .priority-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6c757d;
+            text-align: center;
+            flex: 1;
+        }
+
+        .submit-large {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-large::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-large:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .submit-large:hover::before {
+            left: 100%;
+        }
+
+        .speed-indicators {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e8;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .speed-metric {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #155724;
+        }
+
+        .speed-metric .icon {
+            font-size: 16px;
+        }
+
+        .quick-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #28a745;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .inline-fields {
+                grid-template-columns: 1fr;
+            }
+            
+            .priority-strip {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .quick-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quick-entry">
+        <h2>⚡ Quick Material Request</h2>
+
+        <div class="quick-stats">
+            <div class="stat">
+                <span class="stat-number">3</span>
+                <div class="stat-label">Handlers Active</div>
+            </div>
+            <div class="stat">
+                <span class="stat-number">7</span>
+                <div class="stat-label">Queue Length</div>
+            </div>
+            <div class="stat">
+                <span class="stat-number">12m</span>
+                <div class="stat-label">Avg Response</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="partSelect">Part Number:</label>
+            <select id="partSelect" class="form-select">
+                <option value="">Select a part...</option>
+                <option value="ABC-123" selected>ABC-123 Widget Assembly (156 available)</option>
+                <option value="DEF-456">DEF-456 Motor Housing (89 available)</option>
+                <option value="GHI-789">GHI-789 Control Panel (23 available)</option>
+                <option value="JKL-012">JKL-012 Sensor Module (67 available)</option>
+            </select>
+        </div>
+
+        <div class="inline-fields">
+            <div class="form-group">
+                <label for="fromLocation">From Location:</label>
+                <select id="fromLocation" class="form-select">
+                    <option value="">From...</option>
+                    <option value="line5-op100" selected>Line 5 - Op 100</option>
+                    <option value="line3-op90">Line 3 - Op 90</option>
+                    <option value="warehouse-a">Warehouse A</option>
+                    <option value="receiving">Receiving Area</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="toLocation">To Location:</label>
+                <select id="toLocation" class="form-select">
+                    <option value="">To...</option>
+                    <option value="quality-control" selected>Quality Control</option>
+                    <option value="shipping">Shipping Area</option>
+                    <option value="line7-op110">Line 7 - Op 110</option>
+                    <option value="storage-b">Storage Rack B</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="priority-strip">
+            <div class="priority-option" data-priority="emergency" title="Emergency - Line Down">🔴</div>
+            <div class="priority-option selected" data-priority="urgent" title="Urgent - Within 30 minutes">🟡</div>
+            <div class="priority-option" data-priority="normal" title="Normal - Within 2 hours">🟢</div>
+            <div class="priority-option" data-priority="low" title="Low Priority - End of shift">🔵</div>
+        </div>
+        
+        <div class="priority-labels">
+            <div class="priority-label">Emergency</div>
+            <div class="priority-label">Urgent</div>
+            <div class="priority-label">Normal</div>
+            <div class="priority-label">Low</div>
+        </div>
+
+        <button class="submit-large" onclick="submitQuickRequest()">
+            ✅ Submit Request
+        </button>
+
+        <div class="speed-indicators">
+            <div class="speed-metric">
+                <span class="icon">⚡</span>
+                <span>Quick Entry: <strong>15 seconds</strong></span>
+            </div>
+            <div class="speed-metric">
+                <span class="icon">🎯</span>
+                <span>Auto-routing enabled</span>
+            </div>
+            <div class="speed-metric">
+                <span class="icon">📱</span>
+                <span>SMS notifications</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function submitQuickRequest() {
+            const button = document.querySelector('.submit-large');
+            const originalText = button.innerHTML;
+            
+            // Validate form
+            const part = document.getElementById('partSelect').value;
+            const from = document.getElementById('fromLocation').value;
+            const to = document.getElementById('toLocation').value;
+            
+            if (!part || !from || !to) {
+                button.innerHTML = '❌ Please fill all fields';
+                button.style.background = '#dc3545';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = '#28a745';
+                }, 2000);
+                return;
+            }
+            
+            // Simulate submission
+            button.innerHTML = '🔄 Submitting...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = '✅ Request WL-2024-' + Math.floor(Math.random() * 1000 + 1000) + ' Submitted!';
+                button.style.background = '#20c997';
+                
+                setTimeout(() => {
+                    // Reset form
+                    document.getElementById('partSelect').selectedIndex = 0;
+                    document.getElementById('fromLocation').selectedIndex = 0;
+                    document.getElementById('toLocation').selectedIndex = 0;
+                    
+                    button.innerHTML = originalText;
+                    button.style.background = '#28a745';
+                    button.disabled = false;
+                    
+                    // Reset priority to normal
+                    document.querySelectorAll('.priority-option').forEach(p => p.classList.remove('selected'));
+                    document.querySelector('[data-priority="normal"]').classList.add('selected');
+                }, 3000);
+            }, 1000);
+        }
+
+        // Priority selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const priorities = document.querySelectorAll('.priority-option');
+            priorities.forEach(priority => {
+                priority.addEventListener('click', function() {
+                    priorities.forEach(p => p.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

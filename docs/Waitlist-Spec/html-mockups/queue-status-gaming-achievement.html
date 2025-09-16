@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Queue Status - Gaming Achievement</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 120, 212, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(40, 167, 69, 0.1) 0%, transparent 50%);
+            animation: backgroundShift 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-20px, -10px) scale(1.02); }
+            66% { transform: translate(10px, -20px) scale(0.98); }
+        }
+
+        .gaming-card {
+            max-width: 500px;
+            width: 100%;
+            background: linear-gradient(145deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 25px;
+            box-shadow: 
+                0 25px 80px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+            animation: gameCardEntrance 1.2s cubic-bezier(0.23, 1, 0.320, 1);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .gaming-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 107, 53, 0.3) 0%, 
+                rgba(0, 120, 212, 0.3) 50%, 
+                rgba(40, 167, 69, 0.3) 100%);
+            border-radius: 25px;
+            padding: 2px;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
+        @keyframes gameCardEntrance {
+            0% { 
+                opacity: 0;
+                transform: translateY(60px) rotateX(15deg) scale(0.9);
+                filter: blur(10px);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-10px) rotateX(-2deg) scale(1.02);
+                filter: blur(2px);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg) scale(1);
+                filter: blur(0px);
+            }
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            padding: 25px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.05) 10px,
+                rgba(255, 255, 255, 0.05) 20px
+            );
+            animation: headerPattern 15s linear infinite;
+        }
+
+        @keyframes headerPattern {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .quest-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .quest-id {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Courier New', monospace;
+            position: relative;
+            z-index: 1;
+        }
+
+        .level-badge {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .achievement-container {
+            padding: 30px;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .current-achievement {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .current-achievement::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            border-radius: 15px;
+            padding: 2px;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            animation: achievementGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes achievementGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5); }
+        }
+
+        .achievement-details {
+            flex: 1;
+        }
+
+        .achievement-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        .progress-section {
+            margin-top: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .progress-stats {
+            font-size: 14px;
+            color: #FF6B35;
+            font-weight: bold;
+        }
+
+        .progress-bar-container {
+            height: 12px;
+            background: #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B35, #F7931E, #28a745);
+            border-radius: 6px;
+            transition: width 1s cubic-bezier(0.23, 1, 0.320, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+            animation: progressShine 2s ease-in-out infinite;
+        }
+
+        @keyframes progressShine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+
+        .milestone-timeline {
+            margin-top: 25px;
+        }
+
+        .milestone-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .milestones {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 0 10px;
+        }
+
+        .milestone-line {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 3px;
+            background: #dee2e6;
+            border-radius: 2px;
+        }
+
+        .milestone-progress {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            height: 3px;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 2px;
+            width: 60%;
+            animation: milestoneProgress 2s ease-out;
+        }
+
+        @keyframes milestoneProgress {
+            from { width: 0%; }
+            to { width: 60%; }
+        }
+
+        .milestone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .milestone-marker {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-bottom: 8px;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+
+        .milestone.completed .milestone-marker {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .milestone.current .milestone-marker {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            animation: currentMilestone 2s ease-in-out infinite;
+        }
+
+        .milestone.upcoming .milestone-marker {
+            background: #f8f9fa;
+            color: #6c757d;
+            border-color: #dee2e6;
+        }
+
+        @keyframes currentMilestone {
+            0%, 100% { 
+                transform: scale(1.1);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 0 rgba(255, 107, 53, 0.4);
+            }
+            50% { 
+                transform: scale(1.2);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 0 10px rgba(255, 107, 53, 0.2);
+            }
+        }
+
+        .milestone-label {
+            font-size: 11px;
+            text-align: center;
+            color: #6c757d;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .milestone.completed .milestone-label {
+            color: #28a745;
+        }
+
+        .milestone.current .milestone-label {
+            color: #FF6B35;
+            font-weight: bold;
+        }
+
+        .rewards-section {
+            background: white;
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+
+        .rewards-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reward-items {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .reward-item {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #495057;
+            border: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .reward-item:hover {
+            background: #FF6B35;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .handler-info {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .handler-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #0078D4, #106EBE);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 120, 212, 0.3);
+        }
+
+        .handler-details {
+            flex: 1;
+        }
+
+        .handler-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 4px;
+        }
+
+        .handler-status {
+            font-size: 14px;
+            color: #28a745;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-buttons {
+            background: #f8f9fa;
+            padding: 25px 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .action-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: white;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+
+        .action-btn.secondary:hover {
+            color: #495057;
+            border-color: #adb5bd;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .milestones {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+                padding-left: 25px;
+            }
+            
+            .milestone-line {
+                width: 3px;
+                height: calc(100% - 40px);
+                left: 20px;
+                top: 20px;
+                right: auto;
+                bottom: auto;
+            }
+            
+            .milestone-progress {
+                width: 3px;
+                height: 60%;
+                left: 20px;
+                right: auto;
+            }
+            
+            .milestone {
+                flex-direction: row;
+                align-items: center;
+                gap: 15px;
+                margin-left: 25px;
+            }
+            
+            .milestone-marker {
+                margin-bottom: 0;
+                margin-right: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gaming-card">
+        <div class="card-header">
+            <div class="level-badge">🏆 Level 3</div>
+            <div class="quest-title">🎯 Material Request Quest</div>
+            <div class="quest-id">QUEST_ID: WL-2024-1158</div>
+        </div>
+
+        <div class="achievement-container">
+            <div class="current-achievement">
+                <div class="achievement-header">
+                    <div class="achievement-icon">🚛</div>
+                    <div class="achievement-details">
+                        <div class="achievement-name">Handler En Route</div>
+                        <div class="achievement-desc">Your material request has been assigned to Mike Johnson and is now being processed</div>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Quest Progress</span>
+                        <span class="progress-stats">60% Complete • 12 min ETA</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 60%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="milestone-timeline">
+                <div class="milestone-title">
+                    📍 Quest Checkpoints
+                </div>
+                <div class="milestones">
+                    <div class="milestone-line"></div>
+                    <div class="milestone-progress"></div>
+                    
+                    <div class="milestone completed">
+                        <div class="milestone-marker">✓</div>
+                        <div class="milestone-label">Quest<br>Submitted</div>
+                    </div>
+                    
+                    <div class="milestone completed">
+                        <div class="milestone-marker">✓</div>
+                        <div class="milestone-label">ERP<br>Validated</div>
+                    </div>
+                    
+                    <div class="milestone current">
+                        <div class="milestone-marker">🚛</div>
+                        <div class="milestone-label">Handler<br>En Route</div>
+                    </div>
+                    
+                    <div class="milestone upcoming">
+                        <div class="milestone-marker">📦</div>
+                        <div class="milestone-label">Material<br>Pickup</div>
+                    </div>
+                    
+                    <div class="milestone upcoming">
+                        <div class="milestone-marker">🏆</div>
+                        <div class="milestone-label">Quest<br>Complete</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rewards-section">
+                <div class="rewards-title">
+                    🎁 Quest Rewards
+                </div>
+                <div class="reward-items">
+                    <div class="reward-item">
+                        <span>⚡</span> +50 Efficiency Points
+                    </div>
+                    <div class="reward-item">
+                        <span>🏃</span> Speed Bonus Eligible
+                    </div>
+                    <div class="reward-item">
+                        <span>📊</span> Performance Tracking
+                    </div>
+                    <div class="reward-item">
+                        <span>⭐</span> Quality Streak +1
+                    </div>
+                </div>
+            </div>
+
+            <div class="handler-info">
+                <div class="handler-avatar">MJ</div>
+                <div class="handler-details">
+                    <div class="handler-name">Mike Johnson</div>
+                    <div class="handler-status">
+                        <span>🟢 Active Player</span>
+                        <span>•</span>
+                        <span>Success Rate: 94%</span>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 14px; font-weight: bold; color: #FF6B35;">Level 8</div>
+                    <div style="font-size: 12px; color: #6c757d;">Handler</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn secondary" onclick="viewLeaderboard()">
+                🏆 Leaderboard
+            </button>
+            <button class="action-btn secondary" onclick="trackQuest()">
+                📍 Track Quest
+            </button>
+            <button class="action-btn primary" onclick="boostQuest()">
+                ⚡ Boost Quest
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function viewLeaderboard() {
+            showAchievement('Opening production floor leaderboard...');
+        }
+
+        function trackQuest() {
+            showAchievement('Activating real-time quest tracking...');
+        }
+
+        function boostQuest() {
+            showAchievement('⚡ Quest boost activated! Priority increased.');
+            
+            // Visual boost effect
+            const card = document.querySelector('.gaming-card');
+            card.style.animation = 'none';
+            card.style.transform = 'scale(1.02)';
+            card.style.filter = 'drop-shadow(0 0 30px rgba(255, 107, 53, 0.5))';
+            
+            setTimeout(() => {
+                card.style.transform = 'scale(1)';
+                card.style.filter = 'none';
+            }, 500);
+            
+            // Update progress
+            const progressBar = document.querySelector('.progress-bar');
+            const progressStats = document.querySelector('.progress-stats');
+            progressBar.style.width = '65%';
+            progressStats.textContent = '65% Complete • 10 min ETA';
+        }
+
+        function showAchievement(message) {
+            const achievement = document.createElement('div');
+            achievement.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #FF6B35, #F7931E);
+                color: white;
+                padding: 20px 25px;
+                border-radius: 15px;
+                font-weight: bold;
+                z-index: 1000;
+                animation: achievementSlide 0.8s cubic-bezier(0.23, 1, 0.320, 1);
+                box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+                border: 2px solid rgba(255, 255, 255, 0.2);
+                min-width: 300px;
+            `;
+            
+            achievement.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">🎉</span>
+                    <div>
+                        <div style="font-size: 14px; margin-bottom: 2px;">Achievement Unlocked!</div>
+                        <div style="font-size: 12px; opacity: 0.9;">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(achievement);
+            
+            setTimeout(() => {
+                achievement.remove();
+            }, 4000);
+        }
+
+        // Add CSS for achievement slide animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes achievementSlide {
+                0% {
+                    opacity: 0;
+                    transform: translateX(100%) rotate(5deg) scale(0.8);
+                    filter: blur(5px);
+                }
+                50% {
+                    opacity: 0.8;
+                    transform: translateX(-10px) rotate(-1deg) scale(1.05);
+                    filter: blur(1px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateX(0) rotate(0deg) scale(1);
+                    filter: blur(0px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Simulate quest progression
+        function simulateQuestProgress() {
+            setTimeout(() => {
+                // Advance from "En Route" to "Pickup"
+                const milestones = document.querySelectorAll('.milestone');
+                const currentMilestone = document.querySelector('.milestone.current');
+                const nextMilestone = milestones[3]; // Pickup milestone
+                
+                if (currentMilestone && nextMilestone) {
+                    currentMilestone.classList.remove('current');
+                    currentMilestone.classList.add('completed');
+                    currentMilestone.querySelector('.milestone-marker').innerHTML = '✓';
+                    
+                    nextMilestone.classList.remove('upcoming');
+                    nextMilestone.classList.add('current');
+                    nextMilestone.querySelector('.milestone-marker').innerHTML = '📦';
+                    
+                    // Update progress
+                    const progressBar = document.querySelector('.progress-bar');
+                    const progressStats = document.querySelector('.progress-stats');
+                    const milestoneProgress = document.querySelector('.milestone-progress');
+                    
+                    progressBar.style.width = '80%';
+                    progressStats.textContent = '80% Complete • 5 min ETA';
+                    milestoneProgress.style.width = '80%';
+                    
+                    // Update achievement
+                    document.querySelector('.achievement-name').textContent = 'Material Pickup in Progress';
+                    document.querySelector('.achievement-desc').textContent = 'Handler has arrived and is collecting your requested materials';
+                    document.querySelector('.achievement-icon').textContent = '📦';
+                    
+                    showAchievement('📦 Handler has arrived at pickup location!');
+                }
+            }, 10000);
+        }
+
+        // Start quest progression simulation
+        simulateQuestProgress();
+
+        // Periodic XP and level updates
+        setInterval(() => {
+            const levelBadge = document.querySelector('.level-badge');
+            const rewards = document.querySelectorAll('.reward-item');
+            
+            // Animate rewards occasionally
+            rewards.forEach((reward, index) => {
+                setTimeout(() => {
+                    reward.style.transform = 'scale(1.1) rotate(2deg)';
+                    reward.style.background = '#FF6B35';
+                    reward.style.color = 'white';
+                    setTimeout(() => {
+                        reward.style.transform = 'scale(1) rotate(0deg)';
+                        reward.style.background = '#f8f9fa';
+                        reward.style.color = '#495057';
+                    }, 300);
+                }, index * 200);
+            });
+        }, 8000);
+
+        // Dynamic background particle animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            document.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX / window.innerWidth;
+                mouseY = e.clientY / window.innerHeight;
+                
+                const intensity = (mouseX + mouseY) / 2;
+                body.style.filter = `hue-rotate(${intensity * 30}deg) saturate(${1 + intensity * 0.2})`;
+            });
+        });
+    </script>
+</body>
+</html>

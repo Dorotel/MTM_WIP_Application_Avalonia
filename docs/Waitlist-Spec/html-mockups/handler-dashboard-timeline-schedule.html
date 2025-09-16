@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Handler Dashboard - Timeline Schedule</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .schedule-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            height: calc(100vh - 40px);
+            gap: 20px;
+        }
+
+        .schedule-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 25px 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .handler-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .handler-avatar {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 26px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .handler-details h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .shift-info {
+            color: #28a745;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .schedule-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .time-display {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .current-time {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .current-date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 6px;
+            border-radius: 8px;
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn.active {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+        }
+
+        .timeline-main {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timeline-header {
+            background: #f8f9fa;
+            padding: 20px 0;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .timeline-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 15px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: 2px solid #e9ecef;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            border-color: #FF6B35;
+            color: #FF6B35;
+            transform: scale(1.1);
+        }
+
+        .current-period {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .timeline-grid-header {
+            display: grid;
+            grid-template-columns: 80px repeat(24, 1fr);
+            gap: 1px;
+            background: #e9ecef;
+            padding: 0 20px;
+        }
+
+        .hour-header {
+            background: white;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .timeline-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 20px 20px;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(24, 1fr);
+            gap: 1px;
+            background: #f1f3f4;
+            min-height: 500px;
+        }
+
+        .time-slot {
+            background: white;
+            border: 1px solid #f1f3f4;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .time-slot:hover {
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        .time-label {
+            background: #f8f9fa;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            border-right: 2px solid #e9ecef;
+        }
+
+        .task-block {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            z-index: 5;
+        }
+
+        .task-block:hover {
+            transform: scale(1.02);
+            z-index: 10;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .task-block.pickup {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            top: 5px;
+            height: 35px;
+        }
+
+        .task-block.delivery {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            top: 45px;
+            height: 35px;
+        }
+
+        .task-block.maintenance {
+            background: linear-gradient(135deg, #6f42c1, #5a2d91);
+            top: 85px;
+            height: 35px;
+        }
+
+        .task-block.break {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            top: 5px;
+            height: 115px;
+        }
+
+        .task-block.travel {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            top: 125px;
+            height: 20px;
+        }
+
+        .task-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .task-details {
+            font-size: 10px;
+            opacity: 0.9;
+            line-height: 1.2;
+        }
+
+        .current-time-indicator {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #dc3545;
+            z-index: 15;
+            box-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+            animation: currentTimeGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes currentTimeGlow {
+            from { box-shadow: 0 0 8px rgba(220, 53, 69, 0.5); }
+            to { box-shadow: 0 0 15px rgba(220, 53, 69, 0.8); }
+        }
+
+        .current-time-label {
+            position: absolute;
+            top: -25px;
+            left: -10px;
+            background: #dc3545;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .schedule-summary {
+            background: white;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .summary-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .summary-number.tasks {
+            color: #FF6B35;
+        }
+
+        .summary-number.time {
+            color: #28a745;
+        }
+
+        .summary-number.distance {
+            color: #0078D4;
+        }
+
+        .summary-number.efficiency {
+            color: #6f42c1;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .fab.primary {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+        }
+
+        .fab.secondary {
+            background: white;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+
+        .fab:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .task-tooltip {
+            position: absolute;
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            z-index: 20;
+            pointer-events: none;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .task-tooltip.show {
+            transform: scale(1);
+        }
+
+        .tooltip-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .tooltip-details {
+            font-size: 12px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .schedule-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .timeline-grid-header,
+            .timeline-grid {
+                grid-template-columns: 60px repeat(12, 1fr);
+            }
+
+            .hour-header:nth-child(n+14) {
+                display: none;
+            }
+
+            .time-slot:nth-child(n+14) {
+                display: none;
+            }
+
+            .schedule-summary {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin: 15px;
+                padding: 15px;
+            }
+
+            .floating-actions {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="schedule-container">
+        <div class="schedule-header">
+            <div class="handler-info">
+                <div class="handler-avatar">MJ</div>
+                <div class="handler-details">
+                    <h1>Mike Johnson - Schedule Timeline</h1>
+                    <div class="shift-info">
+                        <span>🟢 Active Shift</span>
+                        <span>•</span>
+                        <span>6:00 AM - 2:00 PM</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="schedule-controls">
+                <div class="time-display">
+                    <div class="current-time" id="current-time">10:24 AM</div>
+                    <div class="current-date" id="current-date">Monday, Sep 16, 2025</div>
+                </div>
+                
+                <div class="view-controls">
+                    <button class="view-btn active" onclick="setView('day')">Day</button>
+                    <button class="view-btn" onclick="setView('week')">Week</button>
+                    <button class="view-btn" onclick="setView('month')">Month</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-main">
+            <div class="timeline-header">
+                <div class="timeline-nav">
+                    <button class="nav-btn" onclick="previousPeriod()">‹</button>
+                    <div class="current-period">Today - September 16, 2025</div>
+                    <button class="nav-btn" onclick="nextPeriod()">›</button>
+                </div>
+                
+                <div class="timeline-grid-header">
+                    <div class="hour-header" style="background: #f8f9fa;"></div>
+                    <div class="hour-header">6 AM</div>
+                    <div class="hour-header">7</div>
+                    <div class="hour-header">8</div>
+                    <div class="hour-header">9</div>
+                    <div class="hour-header">10</div>
+                    <div class="hour-header">11</div>
+                    <div class="hour-header">12 PM</div>
+                    <div class="hour-header">1</div>
+                    <div class="hour-header">2</div>
+                    <div class="hour-header">3</div>
+                    <div class="hour-header">4</div>
+                    <div class="hour-header">5</div>
+                    <div class="hour-header">6</div>
+                    <div class="hour-header">7</div>
+                    <div class="hour-header">8</div>
+                    <div class="hour-header">9</div>
+                    <div class="hour-header">10</div>
+                    <div class="hour-header">11</div>
+                    <div class="hour-header">12 AM</div>
+                    <div class="hour-header">1</div>
+                    <div class="hour-header">2</div>
+                    <div class="hour-header">3</div>
+                    <div class="hour-header">4</div>
+                    <div class="hour-header">5</div>
+                </div>
+            </div>
+
+            <div class="timeline-content">
+                <div class="timeline-grid">
+                    <!-- Time labels -->
+                    <div class="time-label">Pickups</div>
+                    <div class="time-label">Deliveries</div>
+                    <div class="time-label">Maintenance</div>
+                    <div class="time-label">Breaks</div>
+                    <div class="time-label">Travel</div>
+
+                    <!-- Time slots for each hour -->
+                    <!-- 6 AM -->
+                    <div class="time-slot">
+                        <div class="task-block pickup" data-task="WL-2024-1150" 
+                             onmouseenter="showTooltip(event, 'Shift Start Pickup', 'Material collection from Warehouse A for Line 1')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Shift Start</div>
+                            <div class="task-details">Warehouse A</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+
+                    <!-- 7 AM -->
+                    <div class="time-slot">
+                        <div class="task-block pickup" data-task="WL-2024-1151"
+                             onmouseenter="showTooltip(event, 'Component Pickup', 'Electronic components for Line 2 assembly process')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Components</div>
+                            <div class="task-details">Line 2</div>
+                        </div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="task-block delivery" data-task="WL-2024-1150"
+                             onmouseenter="showTooltip(event, 'Material Delivery', 'Delivering warehouse materials to Line 1 production')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Materials</div>
+                            <div class="task-details">Line 1</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block travel"></div>
+                    </div>
+
+                    <!-- 8 AM -->
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block delivery" data-task="WL-2024-1151"
+                             onmouseenter="showTooltip(event, 'Component Delivery', 'Electronic component delivery to Line 2')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Components</div>
+                            <div class="task-details">Line 2</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block travel"></div>
+                    </div>
+
+                    <!-- 9 AM -->
+                    <div class="time-slot">
+                        <div class="task-block pickup" data-task="WL-2024-1152"
+                             onmouseenter="showTooltip(event, 'Tool Pickup', 'Precision tools needed for Line 3 operations')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Tools</div>
+                            <div class="task-details">Tool Crib</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block travel"></div>
+                    </div>
+
+                    <!-- 10 AM -->
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block delivery" data-task="WL-2024-1152"
+                             onmouseenter="showTooltip(event, 'Tool Delivery', 'Precision tool delivery to Line 3')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Tools</div>
+                            <div class="task-details">Line 3</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block break"
+                             onmouseenter="showTooltip(event, 'Morning Break', '15-minute scheduled break period')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Break</div>
+                            <div class="task-details">15 min</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+
+                    <!-- 11 AM -->
+                    <div class="time-slot">
+                        <div class="task-block pickup" data-task="WL-2024-1153"
+                             onmouseenter="showTooltip(event, 'Safety Pickup', 'Safety equipment and PPE restock materials')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Safety Gear</div>
+                            <div class="task-details">Safety Store</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block travel"></div>
+                    </div>
+
+                    <!-- 12 PM -->
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block delivery" data-task="WL-2024-1153"
+                             onmouseenter="showTooltip(event, 'Safety Delivery', 'Safety equipment distribution to multiple stations')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Safety Gear</div>
+                            <div class="task-details">All Lines</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block break"
+                             onmouseenter="showTooltip(event, 'Lunch Break', '30-minute lunch break period')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Lunch</div>
+                            <div class="task-details">30 min</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+
+                    <!-- 1 PM -->
+                    <div class="time-slot">
+                        <div class="task-block pickup" data-task="WL-2024-1154"
+                             onmouseenter="showTooltip(event, 'Quality Pickup', 'Quality control samples and inspection materials')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">QC Materials</div>
+                            <div class="task-details">QC Lab</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block maintenance" data-task="MAINT-001"
+                             onmouseenter="showTooltip(event, 'Cart Maintenance', 'Scheduled maintenance on material handling cart')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">Cart Check</div>
+                            <div class="task-details">Routine</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block travel"></div>
+                    </div>
+
+                    <!-- 2 PM -->
+                    <div class="time-slot"></div>
+                    <div class="time-slot">
+                        <div class="task-block delivery" data-task="WL-2024-1154"
+                             onmouseenter="showTooltip(event, 'QC Delivery', 'Quality control materials to inspection stations')"
+                             onmouseleave="hideTooltip()">
+                            <div class="task-title">QC Materials</div>
+                            <div class="task-details">Inspection</div>
+                        </div>
+                    </div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+                    <div class="time-slot"></div>
+
+                    <!-- Remaining hours -->
+                    <!-- 3 PM - 5 AM (next shift coverage visualization) -->
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                    <div class="time-slot" style="opacity: 0.5;"></div>
+                </div>
+
+                <!-- Current time indicator -->
+                <div class="current-time-indicator" style="left: 380px;">
+                    <div class="current-time-label">10:24 AM</div>
+                </div>
+
+                <div class="schedule-summary">
+                    <div class="summary-item">
+                        <div class="summary-number tasks">8</div>
+                        <div class="summary-label">Scheduled Tasks</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-number time">7.5</div>
+                        <div class="summary-label">Work Hours</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-number distance">4.2</div>
+                        <div class="summary-label">Miles Planned</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-number efficiency">92%</div>
+                        <div class="summary-label">Schedule Efficiency</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-actions">
+        <button class="fab secondary" onclick="exportSchedule()" title="Export Schedule">
+            📤
+        </button>
+        <button class="fab secondary" onclick="printSchedule()" title="Print Schedule">
+            🖨️
+        </button>
+        <button class="fab primary" onclick="addTask()" title="Add Task">
+            ➕
+        </button>
+    </div>
+
+    <div class="task-tooltip" id="task-tooltip">
+        <div class="tooltip-title" id="tooltip-title"></div>
+        <div class="tooltip-details" id="tooltip-details"></div>
+    </div>
+
+    <script>
+        let currentView = 'day';
+
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const dateString = now.toLocaleDateString([], {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            document.getElementById('current-time').textContent = timeString;
+            document.getElementById('current-date').textContent = dateString;
+            
+            // Update current time indicator position
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+            const totalMinutes = (hour * 60) + minute;
+            const startOfDay = 6 * 60; // 6 AM in minutes
+            const pixelsPerMinute = 1440 / (24 * 60); // Total width divided by minutes in day
+            
+            if (totalMinutes >= startOfDay) {
+                const position = 80 + ((totalMinutes - startOfDay) * pixelsPerMinute);
+                const indicator = document.querySelector('.current-time-indicator');
+                indicator.style.left = `${position}px`;
+            }
+        }
+
+        function setView(view) {
+            currentView = view;
+            const buttons = document.querySelectorAll('.view-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            const viewMap = { 'day': 0, 'week': 1, 'month': 2 };
+            buttons[viewMap[view]].classList.add('active');
+            
+            showNotification(`Switched to ${view} view`);
+        }
+
+        function previousPeriod() {
+            showNotification('Loading previous day...');
+        }
+
+        function nextPeriod() {
+            showNotification('Loading next day...');
+        }
+
+        function showTooltip(event, title, details) {
+            const tooltip = document.getElementById('task-tooltip');
+            const titleElement = document.getElementById('tooltip-title');
+            const detailsElement = document.getElementById('tooltip-details');
+            
+            titleElement.textContent = title;
+            detailsElement.textContent = details;
+            
+            const rect = event.target.getBoundingClientRect();
+            tooltip.style.left = `${rect.left + rect.width + 10}px`;
+            tooltip.style.top = `${rect.top - 10}px`;
+            
+            tooltip.classList.add('show');
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('task-tooltip');
+            tooltip.classList.remove('show');
+        }
+
+        function addTask() {
+            showNotification('Opening task creation dialog...');
+        }
+
+        function exportSchedule() {
+            showNotification('Exporting schedule to PDF...');
+        }
+
+        function printSchedule() {
+            window.print();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(40, 167, 69, 0.95);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 25px;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideInDown 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutUp 0.5s cubic-bezier(0.23, 1, 0.320, 1)';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        // Add CSS for notification animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInDown {
+                from {
+                    opacity: 0;
+                    transform: translateX(-50%) translateY(-30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+            }
+            @keyframes slideOutUp {
+                from {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(-50%) translateY(-30px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 60000); // Update every minute
+            
+            // Add click handlers to task blocks
+            const taskBlocks = document.querySelectorAll('.task-block');
+            taskBlocks.forEach(block => {
+                block.addEventListener('click', function() {
+                    const taskId = this.dataset.task;
+                    if (taskId) {
+                        showNotification(`Opening details for ${taskId}`);
+                    }
+                });
+            });
+
+            // Simulate schedule updates
+            setTimeout(() => {
+                simulateScheduleChange();
+            }, 15000);
+        });
+
+        function simulateScheduleChange() {
+            // Add a new urgent task
+            const pickupRow = document.querySelector('.timeline-grid .time-slot:nth-child(27)'); // 11 AM pickup slot
+            
+            const urgentTask = document.createElement('div');
+            urgentTask.className = 'task-block pickup';
+            urgentTask.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+            urgentTask.innerHTML = `
+                <div class="task-title">URGENT</div>
+                <div class="task-details">Line 4</div>
+            `;
+            urgentTask.setAttribute('data-task', 'WL-2024-1155');
+            urgentTask.addEventListener('mouseenter', function(e) {
+                showTooltip(e, 'Urgent Material Request', 'Critical shortage on Line 4 - immediate pickup required');
+            });
+            urgentTask.addEventListener('mouseleave', hideTooltip);
+            urgentTask.addEventListener('click', function() {
+                showNotification('Opening urgent task WL-2024-1155');
+            });
+            
+            pickupRow.appendChild(urgentTask);
+            
+            // Animate the new task
+            urgentTask.style.animation = 'none';
+            urgentTask.style.transform = 'scale(0)';
+            setTimeout(() => {
+                urgentTask.style.transform = 'scale(1)';
+                urgentTask.style.transition = 'transform 0.5s cubic-bezier(0.23, 1, 0.320, 1)';
+            }, 100);
+            
+            showNotification('🚨 New urgent task assigned to your schedule!');
+            
+            // Update summary
+            const taskCount = document.querySelector('.summary-number.tasks');
+            taskCount.textContent = parseInt(taskCount.textContent) + 1;
+        }
+    </script>
+</body>
+</html>

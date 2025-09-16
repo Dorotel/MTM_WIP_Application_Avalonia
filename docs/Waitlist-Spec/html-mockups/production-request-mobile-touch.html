@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Production Request - Mobile Touch Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            touch-action: manipulation;
+        }
+
+        .mobile-interface {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(50px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .mobile-header {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+            padding: 25px 20px 20px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .mobile-header::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        .big-header {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .status-strip {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            margin: 15px 0 0 0;
+            border-radius: 15px;
+        }
+
+        .status-mini {
+            text-align: center;
+        }
+
+        .status-mini-number {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+        }
+
+        .status-mini-label {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        .touch-form {
+            padding: 25px 20px;
+        }
+
+        .touch-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .big-dropdown {
+            width: 100%;
+            background: #f8f9fa;
+            border: 3px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .big-dropdown:active {
+            transform: scale(0.98);
+            background: #e9ecef;
+        }
+
+        .big-dropdown.selected {
+            border-color: #17a2b8;
+            background: #e7f9fc;
+            color: #17a2b8;
+        }
+
+        .dropdown-icon {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .big-dropdown.open .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .dropdown-option {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f8f9fa;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-option:active {
+            background: #e9ecef;
+        }
+
+        .location-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .big-button {
+            background: #f8f9fa;
+            border: 3px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px 15px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .big-button:active {
+            transform: scale(0.95);
+        }
+
+        .big-button.selected {
+            border-color: #17a2b8;
+            background: #e7f9fc;
+            color: #17a2b8;
+            transform: scale(1.02);
+        }
+
+        .button-icon {
+            font-size: 24px;
+            display: block;
+        }
+
+        .button-text {
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        .priority-touch {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .touch-priority {
+            background: #f8f9fa;
+            border: 3px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+            touch-action: manipulation;
+            user-select: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .touch-priority:active {
+            transform: scale(0.92);
+        }
+
+        .touch-priority.emergency {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .touch-priority.urgent {
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .touch-priority.normal {
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .touch-priority.low {
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .touch-priority.selected {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .touch-priority.emergency.selected {
+            background: #dc3545;
+            color: white;
+        }
+
+        .touch-priority.urgent.selected {
+            background: #ffc107;
+            color: #856404;
+        }
+
+        .touch-priority.normal.selected {
+            background: #28a745;
+            color: white;
+        }
+
+        .touch-priority.low.selected {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .priority-icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .quantity-touch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .quantity-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .quantity-touch-btn {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #17a2b8;
+            background: white;
+            color: #17a2b8;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-touch-btn:active {
+            transform: scale(0.85);
+            background: #17a2b8;
+            color: white;
+        }
+
+        .quantity-display {
+            font-size: 28px;
+            font-weight: bold;
+            color: #17a2b8;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .submit-touch {
+            width: 100%;
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 22px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .submit-touch::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+        }
+
+        .submit-touch:active::before {
+            width: 200px;
+            height: 200px;
+        }
+
+        .submit-touch:active {
+            transform: scale(0.98);
+        }
+
+        .quick-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        .quick-action {
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+        }
+
+        .quick-action:active {
+            transform: scale(0.95);
+            background: rgba(23, 162, 184, 0.1);
+        }
+
+        .quick-action-icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .quick-action-text {
+            font-size: 11px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        @media (max-width: 350px) {
+            .priority-touch {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .location-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .vibrate {
+            animation: vibrate 0.3s;
+        }
+
+        @keyframes vibrate {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-interface">
+        <div class="mobile-header">
+            <div class="big-header">🏭 Request Materials</div>
+            <div class="header-subtitle">Quick touch interface for production floor</div>
+            <div class="status-strip">
+                <div class="status-mini">
+                    <span class="status-mini-number">4</span>
+                    <div class="status-mini-label">Handlers</div>
+                </div>
+                <div class="status-mini">
+                    <span class="status-mini-number">8</span>
+                    <div class="status-mini-label">Queue</div>
+                </div>
+                <div class="status-mini">
+                    <span class="status-mini-number">15m</span>
+                    <div class="status-mini-label">Avg Time</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="touch-form">
+            <div class="touch-section">
+                <div class="section-title">📦 Select Part</div>
+                <div class="big-dropdown" id="partDropdown">
+                    <span id="selectedPart">ABC-123 Widget Assembly</span>
+                    <span class="dropdown-icon">▼</span>
+                    <div class="dropdown-options" id="partOptions">
+                        <div class="dropdown-option" data-value="ABC-123">ABC-123 Widget Assembly (156 available)</div>
+                        <div class="dropdown-option" data-value="DEF-456">DEF-456 Motor Housing (89 available)</div>
+                        <div class="dropdown-option" data-value="GHI-789">GHI-789 Control Panel (23 available)</div>
+                        <div class="dropdown-option" data-value="JKL-012">JKL-012 Sensor Module (67 available)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="touch-section">
+                <div class="section-title">📊 Quantity Needed</div>
+                <div class="quantity-touch">
+                    <div class="quantity-label">Units:</div>
+                    <div class="quantity-controls">
+                        <button class="quantity-touch-btn" onclick="changeQuantity(-1)">−</button>
+                        <div class="quantity-display" id="quantity">25</div>
+                        <button class="quantity-touch-btn" onclick="changeQuantity(1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="touch-section">
+                <div class="section-title">📍 Locations</div>
+                <div class="location-row">
+                    <div class="big-button selected from" id="fromBtn">
+                        <span class="button-icon">📍</span>
+                        <div class="button-text">
+                            <strong>From</strong><br>
+                            Line 5 - Op 100
+                        </div>
+                    </div>
+                    <div class="big-button selected to" id="toBtn">
+                        <span class="button-icon">🎯</span>
+                        <div class="button-text">
+                            <strong>To</strong><br>
+                            Quality Control
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="touch-section">
+                <div class="section-title">⚡ Priority Level</div>
+                <div class="priority-touch">
+                    <div class="touch-priority emergency" data-priority="emergency">
+                        <span class="priority-icon">🔴</span>
+                        Emergency
+                    </div>
+                    <div class="touch-priority urgent selected" data-priority="urgent">
+                        <span class="priority-icon">🟡</span>
+                        Urgent
+                    </div>
+                    <div class="touch-priority normal" data-priority="normal">
+                        <span class="priority-icon">🟢</span>
+                        Normal
+                    </div>
+                    <div class="touch-priority low" data-priority="low">
+                        <span class="priority-icon">🔵</span>
+                        Low
+                    </div>
+                </div>
+            </div>
+
+            <button class="submit-touch" onclick="submitTouchRequest()">
+                ✅ Submit Request
+            </button>
+
+            <div class="quick-actions">
+                <div class="quick-action" onclick="showHistory()">
+                    <span class="quick-action-icon">📋</span>
+                    <div class="quick-action-text">History</div>
+                </div>
+                <div class="quick-action" onclick="showHelp()">
+                    <span class="quick-action-icon">❓</span>
+                    <div class="quick-action-text">Help</div>
+                </div>
+                <div class="quick-action" onclick="showSettings()">
+                    <span class="quick-action-icon">⚙️</span>
+                    <div class="quick-action-text">Settings</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuantity = 25;
+
+        function changeQuantity(delta) {
+            currentQuantity = Math.max(1, Math.min(999, currentQuantity + delta));
+            document.getElementById('quantity').textContent = currentQuantity;
+            
+            // Haptic feedback simulation
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+        }
+
+        function submitTouchRequest() {
+            const button = document.querySelector('.submit-touch');
+            const originalText = button.innerHTML;
+            
+            // Haptic feedback
+            if ('vibrate' in navigator) {
+                navigator.vibrate([100, 50, 100]);
+            }
+            
+            // Check if locations are selected
+            const fromSelected = document.getElementById('fromBtn').classList.contains('selected');
+            const toSelected = document.getElementById('toBtn').classList.contains('selected');
+            
+            if (!fromSelected || !toSelected) {
+                button.innerHTML = '❌ Select From & To Locations';
+                button.style.background = '#dc3545';
+                button.classList.add('vibrate');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = 'linear-gradient(135deg, #17a2b8 0%, #20c997 100%)';
+                    button.classList.remove('vibrate');
+                }, 2000);
+                return;
+            }
+            
+            // Simulate submission
+            button.innerHTML = '🔄 Submitting...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                const requestId = 'WL-2024-' + Math.floor(Math.random() * 1000 + 1200);
+                button.innerHTML = `✅ Request ${requestId} Submitted!`;
+                button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                
+                // Success haptic
+                if ('vibrate' in navigator) {
+                    navigator.vibrate([200, 100, 200]);
+                }
+                
+                setTimeout(() => {
+                    // Reset form
+                    currentQuantity = 1;
+                    document.getElementById('quantity').textContent = currentQuantity;
+                    document.getElementById('selectedPart').textContent = 'Select a part...';
+                    
+                    // Reset priority
+                    document.querySelectorAll('.touch-priority').forEach(p => p.classList.remove('selected'));
+                    document.querySelector('.touch-priority.normal').classList.add('selected');
+                    
+                    // Reset locations
+                    document.getElementById('fromBtn').classList.remove('selected');
+                    document.getElementById('toBtn').classList.remove('selected');
+                    document.getElementById('fromBtn').querySelector('.button-text').innerHTML = '<strong>From</strong><br>Select location';
+                    document.getElementById('toBtn').querySelector('.button-text').innerHTML = '<strong>To</strong><br>Select location';
+                    
+                    button.innerHTML = originalText;
+                    button.style.background = 'linear-gradient(135deg, #17a2b8 0%, #20c997 100%)';
+                    button.disabled = false;
+                }, 3000);
+            }, 1200);
+        }
+
+        function showHistory() {
+            alert('📋 Request History\n\nWL-1152: Completed\nWL-1154: In Progress\nWL-1156: Pending');
+        }
+
+        function showHelp() {
+            alert('❓ Quick Help\n\n• Select part and quantity\n• Choose from/to locations\n• Set priority level\n• Submit request\n• Track via SMS notifications');
+        }
+
+        function showSettings() {
+            alert('⚙️ Settings\n\n• Notifications: ON\n• Vibration: ON\n• Default Priority: Normal\n• Auto-location: Enabled');
+        }
+
+        // Initialize dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown = document.getElementById('partDropdown');
+            const options = document.getElementById('partOptions');
+            const selectedPart = document.getElementById('selectedPart');
+            
+            dropdown.addEventListener('click', function() {
+                const isOpen = options.style.display === 'block';
+                options.style.display = isOpen ? 'none' : 'block';
+                dropdown.classList.toggle('open', !isOpen);
+                
+                // Haptic feedback
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(30);
+                }
+            });
+            
+            // Handle option selection
+            options.addEventListener('click', function(e) {
+                if (e.target.classList.contains('dropdown-option')) {
+                    selectedPart.textContent = e.target.textContent;
+                    dropdown.classList.add('selected');
+                    options.style.display = 'none';
+                    dropdown.classList.remove('open');
+                    
+                    // Haptic feedback
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(50);
+                    }
+                }
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!dropdown.contains(e.target)) {
+                    options.style.display = 'none';
+                    dropdown.classList.remove('open');
+                }
+            });
+            
+            // Priority selection
+            const priorities = document.querySelectorAll('.touch-priority');
+            priorities.forEach(priority => {
+                priority.addEventListener('click', function() {
+                    priorities.forEach(p => p.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Haptic feedback
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(50);
+                    }
+                });
+            });
+            
+            // Location button functionality
+            const fromBtn = document.getElementById('fromBtn');
+            const toBtn = document.getElementById('toBtn');
+            
+            fromBtn.addEventListener('click', function() {
+                // Simulate location picker
+                const locations = ['Line 5 - Op 100', 'Warehouse A', 'Receiving Dock', 'Line 3 - Op 90'];
+                const selected = locations[Math.floor(Math.random() * locations.length)];
+                this.querySelector('.button-text').innerHTML = `<strong>From</strong><br>${selected}`;
+                this.classList.add('selected');
+                
+                // Haptic feedback
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(50);
+                }
+            });
+            
+            toBtn.addEventListener('click', function() {
+                // Simulate location picker
+                const locations = ['Quality Control', 'Shipping Area', 'Storage Rack B', 'Line 7 - Op 110'];
+                const selected = locations[Math.floor(Math.random() * locations.length)];
+                this.querySelector('.button-text').innerHTML = `<strong>To</strong><br>${selected}`;
+                this.classList.add('selected');
+                
+                // Haptic feedback
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(50);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
