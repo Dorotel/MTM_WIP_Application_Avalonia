@@ -1,0 +1,109 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM.Avalonia.Controls.UniversalButton"
+             x:Name="UniversalButtonControl">
+  
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="10">
+        <UserControl Content="Primary Button" Classes="primary" />
+        <UserControl Content="Secondary Button" Classes="secondary" />
+        <UserControl Content="Danger Button" Classes="danger" />
+        <UserControl Content="Success Button" Classes="success" />
+        <UserControl Content="Disabled Button" IsEnabled="False" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <UserControl.Styles>
+    <Style Selector="Button">
+      <Setter Property="Padding" Value="16,8" />
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <!-- Primary Button Style -->
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#0078D4" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderBrush" Value="#0078D4" />
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+      <Setter Property="Background" Value="#106EBE" />
+      <Setter Property="BorderBrush" Value="#106EBE" />
+    </Style>
+    <Style Selector="Button.primary:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+
+    <!-- Secondary Button Style -->
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#0078D4" />
+      <Setter Property="BorderBrush" Value="#0078D4" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Button.secondary:pointerover">
+      <Setter Property="Background" Value="#F3F2F1" />
+    </Style>
+    <Style Selector="Button.secondary:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+
+    <!-- Danger Button Style -->
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="#D13438" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderBrush" Value="#D13438" />
+    </Style>
+    <Style Selector="Button.danger:pointerover">
+      <Setter Property="Background" Value="#A4262C" />
+      <Setter Property="BorderBrush" Value="#A4262C" />
+    </Style>
+    <Style Selector="Button.danger:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+
+    <!-- Success Button Style -->
+    <Style Selector="Button.success">
+      <Setter Property="Background" Value="#107C10" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderBrush" Value="#107C10" />
+    </Style>
+    <Style Selector="Button.success:pointerover">
+      <Setter Property="Background" Value="#0E5A0E" />
+      <Setter Property="BorderBrush" Value="#0E5A0E" />
+    </Style>
+    <Style Selector="Button.success:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+
+    <!-- Touch-optimized styles for mobile -->
+    <Style Selector="Button.touch">
+      <Setter Property="MinHeight" Value="48" />
+      <Setter Property="Padding" Value="20,12" />
+    </Style>
+
+    <!-- Disabled state -->
+    <Style Selector="Button:disabled">
+      <Setter Property="Opacity" Value="0.4" />
+      <Setter Property="Cursor" Value="Default" />
+    </Style>
+  </UserControl.Styles>
+
+  <Button x:Name="MainButton"
+          Content="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+          Command="{Binding Command, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+          CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+          IsEnabled="{Binding IsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+          Classes="{Binding ButtonStyle, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}" />
+
+</UserControl>

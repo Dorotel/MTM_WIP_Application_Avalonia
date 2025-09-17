@@ -1,0 +1,147 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM.Avalonia.Controls.UniversalInputField"
+             x:Name="UniversalInputFieldControl">
+
+  <Design.PreviewWith>
+    <Border Padding="20" Background="#FAFAFA">
+      <StackPanel Spacing="16" Width="300">
+        <UserControl Label="Part ID" Placeholder="Enter part ID..." IsRequired="True" />
+        <UserControl Label="Operation" Placeholder="e.g., 100, 110, 120" ValidationMessage="Operation number is required" />
+        <UserControl Label="Quantity" Placeholder="Enter quantity" InputType="Number" />
+        <UserControl Label="Notes" Placeholder="Optional notes..." IsMultiline="True" />
+        <UserControl Label="Location" Placeholder="Station A, B, C..." IsEnabled="False" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <UserControl.Styles>
+    <!-- Main container style -->
+    <Style Selector="Border.input-container">
+      <Setter Property="Background" Value="White" />
+      <Setter Property="BorderBrush" Value="#E1DFDD" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="BorderBrush" Duration="0:0:0.1" />
+          <ThicknessTransition Property="BorderThickness" Duration="0:0:0.1" />
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <!-- Focused state -->
+    <Style Selector="Border.input-container.focused">
+      <Setter Property="BorderBrush" Value="#0078D4" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
+    <!-- Error state -->
+    <Style Selector="Border.input-container.error">
+      <Setter Property="BorderBrush" Value="#D13438" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
+    <!-- Disabled state -->
+    <Style Selector="Border.input-container.disabled">
+      <Setter Property="Background" Value="#F3F2F1" />
+      <Setter Property="Opacity" Value="0.6" />
+    </Style>
+
+    <!-- Label styles -->
+    <Style Selector="TextBlock.label">
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="Foreground" Value="#323130" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="Margin" Value="0,0,0,4" />
+    </Style>
+
+    <Style Selector="TextBlock.required::after">
+      <Setter Property="Content" Value=" *" />
+      <Setter Property="Foreground" Value="#D13438" />
+    </Style>
+
+    <!-- TextBox styles -->
+    <Style Selector="TextBox.input">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="Foreground" Value="#323130" />
+    </Style>
+
+    <Style Selector="TextBox.input:focus">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <!-- Validation message styles -->
+    <Style Selector="TextBlock.validation">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="#D13438" />
+      <Setter Property="Margin" Value="0,4,0,0" />
+    </Style>
+
+    <!-- Success state -->
+    <Style Selector="Border.input-container.success">
+      <Setter Property="BorderBrush" Value="#107C10" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+  </UserControl.Styles>
+
+  <StackPanel>
+    <!-- Label with required indicator -->
+    <TextBlock x:Name="LabelText"
+               Text="{Binding Label, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+               Classes="label"
+               IsVisible="{Binding Label, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+    <!-- Input container -->
+    <Border x:Name="InputContainer" Classes="input-container">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Main input field -->
+        <TextBox x:Name="InputTextBox"
+                 Grid.Column="0"
+                 Classes="input"
+                 Text="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Mode=TwoWay}"
+                 Watermark="{Binding Placeholder, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                 IsEnabled="{Binding IsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                 MaxLength="{Binding MaxLength, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                 AcceptsReturn="{Binding IsMultiline, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}" />
+
+        <!-- Clear button -->
+        <Button x:Name="ClearButton"
+                Grid.Column="1"
+                Content="✕"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="4"
+                FontSize="12"
+                Foreground="#605E5C"
+                IsVisible="{Binding ShowClearButton, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                Command="{Binding ClearCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}" />
+      </Grid>
+    </Border>
+
+    <!-- Validation message -->
+    <TextBlock x:Name="ValidationMessage"
+               Text="{Binding ValidationMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+               Classes="validation"
+               IsVisible="{Binding ValidationMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+    <!-- Helper text -->
+    <TextBlock x:Name="HelperText"
+               Text="{Binding HelperText, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+               FontSize="12"
+               Foreground="#605E5C"
+               Margin="0,4,0,0"
+               IsVisible="{Binding HelperText, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+  </StackPanel>
+
+</UserControl>
