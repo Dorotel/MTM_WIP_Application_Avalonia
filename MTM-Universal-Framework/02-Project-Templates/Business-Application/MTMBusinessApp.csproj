@@ -1,10 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!-- Default platform inclusion properties -->
+    <IncludeDesktop Condition="'$(IncludeDesktop)' == ''">true</IncludeDesktop>
+    <IncludeAndroid Condition="'$(IncludeAndroid)' == ''">false</IncludeAndroid>
+    
     <OutputType>Exe</OutputType>
-    <TargetFramework Condition="$(IncludeDesktop)">net8.0</TargetFramework>
-    <TargetFrameworks Condition="$(IncludeAndroid) And $(IncludeDesktop)">net8.0;net8.0-android34.0</TargetFrameworks>
-    <TargetFramework Condition="$(IncludeAndroid) And !$(IncludeDesktop)">net8.0-android34.0</TargetFramework>
+    <TargetFramework Condition="'$(IncludeDesktop)' == 'true' And '$(IncludeAndroid)' == 'false'">net8.0</TargetFramework>
+    <TargetFrameworks Condition="'$(IncludeAndroid)' == 'true' And '$(IncludeDesktop)' == 'true'">net8.0;net8.0-android34.0</TargetFrameworks>
+    <TargetFramework Condition="'$(IncludeAndroid)' == 'true' And '$(IncludeDesktop)' == 'false'">net8.0-android34.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>12.0</LangVersion>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -15,8 +19,8 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.4" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.4" Condition="$(IncludeDesktop)" />
-    <PackageReference Include="Avalonia.Android" Version="11.3.4" Condition="$(IncludeAndroid)" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.4" Condition="'$(IncludeDesktop)' == 'true'" />
+    <PackageReference Include="Avalonia.Android" Version="11.3.4" Condition="'$(IncludeAndroid)' == 'true'" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />

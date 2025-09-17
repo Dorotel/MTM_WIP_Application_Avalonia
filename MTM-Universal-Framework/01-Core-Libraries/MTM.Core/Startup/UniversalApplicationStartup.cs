@@ -78,7 +78,7 @@ public static class UniversalApplicationStartup
                 ValidateServices(_serviceProvider);
 
                 // Phase 6: Initialize Logger
-                _logger = _serviceProvider.GetRequiredService<ILogger<UniversalApplicationStartup>>();
+                _logger = _serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("UniversalApplicationStartup");
 
                 stopwatch.Stop();
                 _logger.LogInformation("Application initialized successfully in {ElapsedMilliseconds}ms", stopwatch.ElapsedMilliseconds);
@@ -164,7 +164,7 @@ public static class UniversalApplicationStartup
         var essentialServices = new[]
         {
             typeof(IConfiguration),
-            typeof(ILogger<UniversalApplicationStartup>),
+            typeof(ILoggerFactory),
             typeof(IUniversalFrameworkMarker)
         };
 

@@ -1,0 +1,296 @@
+The name 'DefaultStyleKeyProperty' does not exist in the current context
+Using the generic type 'StyledPropertyMetadata<TValue>' requires 1 type arguments
+Cannot implicitly convert type 'int[]' to 'double[]'
+Cannot implicitly convert type 'int[]' to 'double[]'
+Argument 2: cannot convert from 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'
+'UniversalBadge.IsVisibleProperty' hides inherited member 'Visual.IsVisibleProperty'. Use the new keyword if hiding was intended.
+'UniversalBadge.IsVisible' hides inherited member 'Visual.IsVisible'. Use the new keyword if hiding was intended.
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Layout' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+Member 'VerticalAlignment.Center' cannot be accessed with an instance reference; qualify it with a type name instead
+The type or namespace name 'FuncDataTemplate<>' could not be found (are you missing a using directive or an assembly reference?)
+Argument 2: cannot convert from 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'
+Argument 2: cannot convert from 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'
+The name 'DefaultStyleKeyProperty' does not exist in the current context
+Using the generic type 'StyledPropertyMetadata<TValue>' requires 1 type arguments
+'UniversalButton.CornerRadiusProperty' hides inherited member 'TemplatedControl.CornerRadiusProperty'. Use the new keyword if hiding was intended.
+'UniversalButton.CornerRadius' hides inherited member 'TemplatedControl.CornerRadius'. Use the new keyword if hiding was intended.
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Layout' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Layout' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+Argument 2: cannot convert from 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'
+Argument 1: cannot convert from 'method group' to 'System.IObserver<Avalonia.AvaloniaPropertyChangedEventArgs<System.DateTime?>>'
+Remove this unused method parameter 'e'.
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Layout' does not exist in the namespace 'MTM.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Layout' does not exist in the namespace 'MTM.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Layout' does not exist in the namespace 'MTM.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Layout' does not exist in the namespace 'MTM.Avalonia' (are you missing an assembly reference?)
+No overload for 'OnPointerPressed' matches delegate 'EventHandler<PointerPressedEventArgs>'
+The type or namespace name 'Input' does not exist in the namespace 'MTM.Avalonia' (are you missing an assembly reference?)
+'IStorageItem' does not contain a definition for 'TryGetLocalPath' and no accessible extension method 'TryGetLocalPath' accepting a first argument of type 'IStorageItem' could be found (are you missing a using directive or an assembly reference?)
+'OpenFileDialog' is obsolete: 'Use Window.StorageProvider API or TopLevel.StorageProvider API'
+'FileDialogFilter' is obsolete: 'Use Window.StorageProvider API or TopLevel.StorageProvider API'
+The type or namespace name 'Threading' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Input' does not exist in the namespace 'MTM.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Input' does not exist in the namespace 'MTM.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Ellipse' could not be found (are you missing a using directive or an assembly reference?)
+Remove the unused event 'ColumnHeaderClicked' or invoke it.
+The name 'TextAlignment' does not exist in the current context
+Non-nullable field '_container' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the field as nullable.
+Non-nullable field '_progressBar' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the field as nullable.
+Non-nullable field '_messageBlock' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the field as nullable.
+The name 'DefaultStyleKeyProperty' does not exist in the current context
+Using the generic type 'StyledPropertyMetadata<TValue>' requires 1 type arguments
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'ContentPresenter' could not be found (are you missing a using directive or an assembly reference?)
+The name 'ContentPresenter' does not exist in the current context
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+Member 'VerticalAlignment.Center' cannot be accessed with an instance reference; qualify it with a type name instead
+The type or namespace name 'ContentPresenter' could not be found (are you missing a using directive or an assembly reference?)
+The name 'ContentPresenter' does not exist in the current context
+Argument 1: cannot convert from 'method group' to 'System.IObserver<Avalonia.AvaloniaPropertyChangedEventArgs<int>>'
+Argument 1: cannot convert from 'method group' to 'System.IObserver<Avalonia.AvaloniaPropertyChangedEventArgs<int>>'
+Remove this unused method parameter 'e'.
+Member 'VerticalAlignment.Center' cannot be accessed with an instance reference; qualify it with a type name instead
+Member 'VerticalAlignment.Center' cannot be accessed with an instance reference; qualify it with a type name instead
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+'IObservable<bool>' does not contain a definition for 'Select' and no accessible extension method 'Select' accepting a first argument of type 'IObservable<bool>' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'ContentPresenter' could not be found (are you missing a using directive or an assembly reference?)
+The name 'ContentPresenter' does not exist in the current context
+The type or namespace name 'ContentPresenter' could not be found (are you missing a using directive or an assembly reference?)
+The name 'ContentPresenter' does not exist in the current context
+Argument 2: cannot convert from 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'
+Argument 2: cannot convert from 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'
+'UniversalSlider.TickFrequencyProperty' hides inherited member 'Slider.TickFrequencyProperty'. Use the new keyword if hiding was intended.
+'UniversalSlider.TickFrequency' hides inherited member 'Slider.TickFrequency'. Use the new keyword if hiding was intended.
+The name 'ScrollBarVisibility' does not exist in the current context
+The name 'ScrollBarVisibility' does not exist in the current context
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The name 'TextAlignment' does not exist in the current context
+The name 'TextWrapping' does not exist in the current context
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Data' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Rectangle' could not be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Rectangle' could not be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+Remove the unused local variable 'step'.
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+Argument 2: cannot convert from 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'
+The type or namespace name 'Threading' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+Make 'SetToastAppearance' a static method.
+Converting null literal or possible null value to non-nullable type.
+Make 'GetTextBrush' a static method.
+Remove this unused method parameter 'type'.
+Indexing at Count-1 should be used instead of the "Enumerable" extension method "Last"
+Argument 2: cannot convert from 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'
+Argument 2: cannot convert from 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'
+The type or namespace name 'Layout' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+'IServiceCollection' does not contain a definition for 'AddHttpClient' and no accessible extension method 'AddHttpClient' accepting a first argument of type 'IServiceCollection' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'Headless' does not exist in the namespace 'Avalonia' (are you missing an assembly reference?)
+'AppBuilder' does not contain a definition for 'UseHeadless' and no accessible extension method 'UseHeadless' accepting a first argument of type 'AppBuilder' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'AvaloniaHeadlessPlatformOptions' could not be found (are you missing a using directive or an assembly reference?)
+Cannot implicitly convert type 'Avalonia.AppBuilder' to 'Avalonia.Application'
+There is no argument given that corresponds to the required parameter 'rootVisualPosition' of 'PointerPressedEventArgs.PointerPressedEventArgs(object, IPointer, Visual, Point, ulong, PointerPointProperties, KeyModifiers, int)'
+There is no argument given that corresponds to the required parameter 'routedEvent' of 'PointerEventArgs.PointerEventArgs(RoutedEvent, object?, IPointer, Visual?, Point, ulong, PointerPointProperties, KeyModifiers)'
+There is no argument given that corresponds to the required parameter 'rootVisualPosition' of 'PointerReleasedEventArgs.PointerReleasedEventArgs(object, IPointer, Visual, Point, ulong, PointerPointProperties, KeyModifiers, MouseButton)'
+There is no argument given that corresponds to the required parameter 'routedEvent' of 'PointerEventArgs.PointerEventArgs(RoutedEvent, object?, IPointer, Visual?, Point, ulong, PointerPointProperties, KeyModifiers)'
+'AvaloniaProperty' does not contain a definition for 'Parse'
+The name 'AutomationProperties' does not exist in the current context
+The name 'AutomationProperties' does not exist in the current context
+The name 'AutomationProperties' does not exist in the current context
+'AdvancedUITestFramework.Dispose(bool)': no suitable method found to override
+'Application' does not contain a definition for 'Shutdown' and no accessible extension method 'Shutdown' accepting a first argument of type 'Application' could be found (are you missing a using directive or an assembly reference?)
+No overload for method 'Dispose' takes 1 arguments
+The type or namespace name 'Media' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'CornerRadius' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+The type or namespace name 'Thickness' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+'DataGrid' does not contain a definition for 'Items' and no accessible extension method 'Items' accepting a first argument of type 'DataGrid' could be found (are you missing a using directive or an assembly reference?)
+'DataGrid' does not contain a definition for 'Items' and no accessible extension method 'Items' accepting a first argument of type 'DataGrid' could be found (are you missing a using directive or an assembly reference?)
+The name 'AutomationProperties' does not exist in the current context
+The name 'AutomationProperties' does not exist in the current context
+The name 'AutomationProperties' does not exist in the current context
+The name 'AutomationProperties' does not exist in the current context
+The name 'AutomationProperties' does not exist in the current context
+Non-nullable property 'AppBuilder' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Non-nullable property 'TestApplication' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Non-nullable property 'TestWindow' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Make 'SimulateUserInputAsync' a static method.
+Make 'WaitForConditionAsync' a static method.
+Make 'FindControlAsync' a static method.
+Possible null reference return.
+Make 'ValidateControlPropertiesAsync' a static method.
+Make 'TakeScreenshotAsync' a static method.
+Make 'ValidateAccessibilityAsync' a static method.
+Remove the unused local variable 'automationId'.
+Remove the unused local variable 'name'.
+Remove the unused local variable 'helpText'.
+Remove the unused local variable 'window'.
+The type or namespace name 'Data' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?)
+The type or namespace name 'SqliteConnection' could not be found (are you missing a using directive or an assembly reference?)
+'ValueTask?' does not contain a definition for 'GetAwaiter' and no accessible extension method 'GetAwaiter' accepting a first argument of type 'ValueTask?' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'SQLite' does not exist in the namespace 'System.Data' (are you missing an assembly reference?)
+The type or namespace name 'SQLiteConnection' could not be found (are you missing a using directive or an assembly reference?)
+'IDbConnection' does not contain a definition for 'OpenAsync' and no accessible extension method 'OpenAsync' accepting a first argument of type 'IDbConnection' could be found (are you missing a using directive or an assembly reference?)
+'IDbCommand' does not contain a definition for 'ExecuteNonQueryAsync' and no accessible extension method 'ExecuteNonQueryAsync' accepting a first argument of type 'IDbCommand' could be found (are you missing a using directive or an assembly reference?)
+'IDbCommand' does not contain a definition for 'ExecuteReaderAsync' and no accessible extension method 'ExecuteReaderAsync' accepting a first argument of type 'IDbCommand' could be found (are you missing a using directive or an assembly reference?)
+'DatabaseTestFramework.Dispose(bool)': no suitable method found to override
+No overload for method 'Dispose' takes 1 arguments
+Non-nullable property 'DatabaseConnection' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+Possible null reference argument for parameter 'item' in 'void List<string>.Add(string item)'.
+Remove the unused local variable 'newItemId'.
+The type or namespace name 'Headless' does not exist in the namespace 'Avalonia' (are you missing an assembly reference?)
+'AppBuilder' does not contain a definition for 'UseHeadless' and no accessible extension method 'UseHeadless' accepting a first argument of type 'AppBuilder' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'AvaloniaHeadlessPlatformOptions' could not be found (are you missing a using directive or an assembly reference?)
+'Application' does not contain a definition for 'Dispose' and no accessible extension method 'Dispose' accepting a first argument of type 'Application' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'Input' does not exist in the namespace 'MTM.UniversalFramework.Avalonia' (are you missing an assembly reference?)
+'DataGrid' does not contain a definition for 'Items' and no accessible extension method 'Items' accepting a first argument of type 'DataGrid' could be found (are you missing a using directive or an assembly reference?)
+'DataGrid' does not contain a definition for 'Items' and no accessible extension method 'Items' accepting a first argument of type 'DataGrid' could be found (are you missing a using directive or an assembly reference?)
+'DataGrid' does not contain a definition for 'Items' and no accessible extension method 'Items' accepting a first argument of type 'DataGrid' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'ObservableCollection<>' could not be found (are you missing a using directive or an assembly reference?)
+Non-nullable property 'TestApp' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Non-nullable property 'TestWindow' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Cannot convert null literal to non-nullable reference type.
+Possible null reference return.
+Make 'ClickControlAsync' a static method.
+Make 'SetTextAsync' a static method.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+Remove this commented out code.
+'IServiceProvider' does not contain a definition for 'Dispose' and no accessible extension method 'Dispose' accepting a first argument of type 'IServiceProvider' could be found (are you missing a using directive or an assembly reference?)
+'IServiceProvider' does not contain a definition for 'Dispose' and no accessible extension method 'Dispose' accepting a first argument of type 'IServiceProvider' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'Headless' does not exist in the namespace 'Avalonia' (are you missing an assembly reference?)
+'AppBuilder' does not contain a definition for 'UseHeadless' and no accessible extension method 'UseHeadless' accepting a first argument of type 'AppBuilder' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'AvaloniaHeadlessPlatformOptions' could not be found (are you missing a using directive or an assembly reference?)
+Make 'ShowWindowAsync' a static method.
+Make 'CloseWindowAsync' a static method.
+Make 'FindControl' a static method.
+Make 'SetTextAsync' a static method.
+Make 'ClickButtonAsync' a static method.
+Make 'WaitForConditionAsync' a static method.
+Avoid using "DateTime.Now" for benchmarking or timespan calculation operations.
+The name 'Skip' does not exist in the current context
+The name 'Skip' does not exist in the current context
+Make 'TestPlatformSpecificPaths' a static method.
+Make 'TestPlatformEnvironmentVariables' a static method.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+Converting null literal or possible null value to non-nullable type.
+Make 'IsWindows' a static property.
+Make 'IsMacOS' a static property.
+Make 'IsLinux' a static property.
+Do not use Assert.NotNull() on value type 'OSPlatform'. Remove this assert.
+This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.
+This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.
+This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.
+'UniversalServiceTestBase<TService>.SetupAsync()': no suitable method found to override
+'UniversalTestBase' does not contain a definition for 'SetupAsync'
+The name 'AssertServiceResult' does not exist in the current context
+The name 'AssertServiceResult' does not exist in the current context
+'UniversalServiceTestBase<TService>.TearDownAsync()': no suitable method found to override
+'UniversalTestBase' does not contain a definition for 'TearDownAsync'
+The name 'CreateMockService' does not exist in the current context
+Non-nullable property 'Service' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Non-nullable property 'MockService' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Possible null reference argument for parameter 'arg2' in 'Task<TResult> Func<TService, TParam, Task<TResult>>.Invoke(TService arg1, TParam arg2)'.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+Make 'TestErrorHandlingAsync' a static method.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+Non-nullable field '_mockLogger' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the field as nullable.
+Remove this unread private field '_configuration' or refactor the code to use its value.
+'IServiceProvider' does not contain a definition for 'Dispose' and no accessible extension method 'Dispose' accepting a first argument of type 'IServiceProvider' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'INotifyPropertyChanged' could not be found (are you missing a using directive or an assembly reference?)
+'T' does not contain a definition for 'PropertyChanged' and no accessible extension method 'PropertyChanged' accepting a first argument of type 'T' could be found (are you missing a using directive or an assembly reference?)
+Invalid token '=' in a member declaration [C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\MTM_WIP_Application_Avalonia.csproj]
+Invalid token '=' in a member declaration
+Invalid token '=' in a member declaration
+The name 'Services' does not exist in the current context.
+The name 'Services.BuildServiceProvider' does not exist in the current context.
+The name 'BuildServiceProvider' does not exist in the current context.
+Invalid token '(' in a member declaration [C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\MTM_WIP_Application_Avalonia.csproj]
+Invalid token '(' in a member declaration
+Tuple must contain at least two elements. [C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\MTM_WIP_Application_Avalonia.csproj]
+Tuple must contain at least two elements.
+Invalid token ';' in a member declaration [C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\MTM_WIP_Application_Avalonia.csproj]
+Invalid token ';' in a member declaration
+Invalid token '}' in a member declaration [C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\MTM_WIP_Application_Avalonia.csproj]
+Invalid token '}' in a member declaration
+The name 'Services' does not exist in the current context
+The name 'Configuration' does not exist in the current context
+The name 'Services' does not exist in the current context
+The name 'MockLogger' does not exist in the current context
+The name 'Services' does not exist in the current context
+The name 'Services' does not exist in the current context
+The name 'IsDisposed' does not exist in the current context
+'ServiceProvider' is a type, which is not valid in the given context
+The name 'IsDisposed' does not exist in the current context
+} expected [C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\MTM_WIP_Application_Avalonia.csproj]
+} expected
+Type or namespace definition, or end-of-file expected [C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\MTM_WIP_Application_Avalonia.csproj]
+Type or namespace definition, or end-of-file expected
+Fix this implementation of 'IDisposable' to conform to the dispose pattern. [+3 locations]
+Argument of type 'Dictionary<string, string>' cannot be used for parameter 'initialData' of type 'IEnumerable<KeyValuePair<string, string?>>' in 'IConfigurationBuilder MemoryConfigurationBuilderExtensions.AddInMemoryCollection(IConfigurationBuilder configurationBuilder, IEnumerable<KeyValuePair<string, string?>>? initialData)' due to differences in the nullability of reference types.
+Make 'AssertCompletesWithinAsync' a static method.
+Make 'AssertPropertyChanged' a static method.
+Make 'AssertThrowsAsync' a static method.
+Make 'AssertCollectionsEqual' a static method.
+Argument of type 'Dictionary<string, string>' cannot be used for parameter 'initialData' of type 'IEnumerable<KeyValuePair<string, string?>>' in 'IConfigurationBuilder MemoryConfigurationBuilderExtensions.AddInMemoryCollection(IConfigurationBuilder configurationBuilder, IEnumerable<KeyValuePair<string, string?>>? initialData)' due to differences in the nullability of reference types.
+Make 'CreateMockService' a static method.
+Make 'AssertServiceResult' a static method.
+Cannot convert null literal to non-nullable reference type.
+Move 'ServiceResult' into a named namespace.
+Non-nullable property 'Data' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Non-nullable property 'Exception' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Cannot convert null literal to non-nullable reference type.
+The type or namespace name 'Headless' does not exist in the namespace 'Avalonia' (are you missing an assembly reference?)
+'AppBuilder' does not contain a definition for 'UseHeadless' and no accessible extension method 'UseHeadless' accepting a first argument of type 'AppBuilder' could be found (are you missing a using directive or an assembly reference?)
+The type or namespace name 'AvaloniaHeadlessOptions' could not be found (are you missing a using directive or an assembly reference?)
+The namespace 'MTM.UniversalFramework.Testing' already contains a definition for 'TestApplication'
+Type 'TestApplication' already defines a member called 'Initialize' with the same parameter types
+Fix this implementation of 'IDisposable' to conform to the dispose pattern. [+3 locations]
+Non-nullable property 'TestApplication' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Non-nullable property 'TestWindow' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Make 'TestDataBindingAsync' a static method.
+Make 'TestPropertyChangeAsync' a static method.
+Make 'WaitForUIAsync' a static method.
+Cannot convert null literal to non-nullable reference type.
+'UniversalViewModelTestBase<TViewModel>.SetupAsync()': no suitable method found to override
+'UniversalTestBase' does not contain a definition for 'SetupAsync'
+'TViewModel' does not contain a definition for 'HasErrors' and no accessible extension method 'HasErrors' accepting a first argument of type 'TViewModel' could be found (are you missing a using directive or an assembly reference?)
+'TViewModel' does not contain a definition for 'HasErrors' and no accessible extension method 'HasErrors' accepting a first argument of type 'TViewModel' could be found (are you missing a using directive or an assembly reference?)
+'UniversalViewModelTestBase<TViewModel>.TearDownAsync()': no suitable method found to override
+'UniversalTestBase' does not contain a definition for 'TearDownAsync'
+The type 'MTM.UniversalFramework.Testing.SampleViewModel' cannot be used as type parameter 'TViewModel' in the generic type or method 'UniversalViewModelTestBase<TViewModel>'. There is no implicit reference conversion from 'MTM.UniversalFramework.Testing.SampleViewModel' to 'CommunityToolkit.Mvvm.ComponentModel.ObservableObject'.
+Non-nullable property 'ViewModel' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Non-nullable property 'MockViewModel' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.
+Converting null literal or possible null value to non-nullable type.
+Converting null literal or possible null value to non-nullable type.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+Remove the unused local variable 'canExecuteAfter'.
+Cannot convert null literal to non-nullable reference type.
+Cannot convert null literal to non-nullable reference type.
+The type MTM.UniversalFramework.Testing.SampleViewModel is using the [ObservableObject] attribute while having no base type, and it should instead inherit from ObservableObject

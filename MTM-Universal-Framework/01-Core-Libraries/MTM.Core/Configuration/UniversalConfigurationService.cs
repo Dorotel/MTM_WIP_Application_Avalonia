@@ -121,7 +121,7 @@ public class UniversalConfigurationService : IUniversalConfigurationService
         {
             var value = _configuration.GetValue(key, defaultValue);
             _logger.LogTrace("Retrieved configuration value for key {Key}: {Value}", key, value);
-            return value;
+            return value ?? defaultValue;
         }
         catch (Exception ex)
         {

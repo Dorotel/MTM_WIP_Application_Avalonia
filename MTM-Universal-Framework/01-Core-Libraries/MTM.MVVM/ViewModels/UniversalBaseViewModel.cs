@@ -9,8 +9,7 @@ namespace MTM.UniversalFramework.MVVM.ViewModels;
 /// Universal base ViewModel following MVVM Community Toolkit patterns with cross-platform lifecycle management.
 /// Extracted from MTM WIP Application and generalized for any business domain.
 /// </summary>
-[ObservableObject]
-public abstract partial class UniversalBaseViewModel : INotifyPropertyChanged, IDisposable
+public abstract partial class UniversalBaseViewModel : ObservableObject, IDisposable
 {
     protected readonly ILogger Logger;
     private bool _disposed = false;

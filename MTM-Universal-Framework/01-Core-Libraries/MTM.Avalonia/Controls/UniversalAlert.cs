@@ -1,6 +1,7 @@
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 
@@ -243,7 +244,7 @@ namespace MTM.UniversalFramework.Avalonia.Controls
             Classes.Set("dismissible", IsDismissible);
         }
 
-        private void OnDismissClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void OnDismissClick(object sender, RoutedEventArgs e)
         {
             DismissCommand?.Execute(null);
             IsVisible = false;

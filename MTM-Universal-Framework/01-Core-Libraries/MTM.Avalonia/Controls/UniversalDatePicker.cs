@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 
@@ -241,7 +242,7 @@ namespace MTM.Universal.Controls
             DateSelectedCommand?.Execute(newDate);
         }
 
-        private void OnTodayButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void OnTodayButtonClick(object? sender, RoutedEventArgs e)
         {
             var today = DateTime.Today;
             
@@ -254,12 +255,12 @@ namespace MTM.Universal.Controls
             SelectedDate = today;
         }
 
-        private void OnClearButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void OnClearButtonClick(object? sender, RoutedEventArgs e)
         {
             SelectedDate = null;
         }
 
-        private void OnCalendarIconClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void OnCalendarIconClick(object? sender, RoutedEventArgs e)
         {
             // Focus the date picker to open calendar
             _datePicker.Focus();

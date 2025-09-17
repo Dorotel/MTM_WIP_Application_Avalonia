@@ -26,8 +26,8 @@ namespace MTM.UniversalFramework.Avalonia.Controls
         public static readonly StyledProperty<bool> IsScrollableProperty =
             AvaloniaProperty.Register<UniversalTabView, bool>(nameof(IsScrollable), true);
 
-        public static readonly StyledProperty<TabStripPlacement> TabPlacementProperty =
-            AvaloniaProperty.Register<UniversalTabView, TabStripPlacement>(nameof(TabPlacement), TabStripPlacement.Top);
+        public static readonly StyledProperty<Dock> TabPlacementProperty =
+            AvaloniaProperty.Register<UniversalTabView, Dock>(nameof(TabPlacement), Dock.Top);
 
         public IEnumerable TabItems
         {
@@ -59,7 +59,7 @@ namespace MTM.UniversalFramework.Avalonia.Controls
             set => SetValue(IsScrollableProperty, value);
         }
 
-        public TabStripPlacement TabPlacement
+        public Dock TabPlacement
         {
             get => GetValue(TabPlacementProperty);
             set => SetValue(TabPlacementProperty, value);
