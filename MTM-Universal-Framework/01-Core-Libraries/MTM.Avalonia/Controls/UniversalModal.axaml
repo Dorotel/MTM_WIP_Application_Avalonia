@@ -1,0 +1,139 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM.Avalonia.Controls.UniversalModal"
+             Name="ModalRoot">
+
+  <UserControl.Styles>
+    <!-- Modal Overlay Styles -->
+    <Style Selector="Border.modal-overlay">
+      <Setter Property="Background" Value="#80000000" />
+      <Setter Property="IsVisible" Value="{Binding IsOpen, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+    
+    <!-- Modal Container Styles -->
+    <Style Selector="Border.modal-container">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ContentAreas}" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BoxShadow" Value="0 4 16 0 #40000000" />
+      <Setter Property="MaxWidth" Value="600" />
+      <Setter Property="MaxHeight" Value="400" />
+      <Setter Property="Margin" Value="24" />
+    </Style>
+    
+    <!-- Modal Header -->
+    <Style Selector="Border.modal-header">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.MainBackground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
+      <Setter Property="Padding" Value="24,16" />
+      <Setter Property="CornerRadius" Value="8,8,0,0" />
+    </Style>
+    
+    <!-- Modal Title -->
+    <Style Selector="TextBlock.modal-title">
+      <Setter Property="FontSize" Value="18" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+    </Style>
+    
+    <!-- Modal Content -->
+    <Style Selector="ScrollViewer.modal-content">
+      <Setter Property="Padding" Value="24" />
+      <Setter Property="MaxHeight" Value="300" />
+    </Style>
+    
+    <!-- Modal Footer -->
+    <Style Selector="Border.modal-footer">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.MainBackground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}" />
+      <Setter Property="BorderThickness" Value="0,1,0,0" />
+      <Setter Property="Padding" Value="24,16" />
+      <Setter Property="CornerRadius" Value="0,0,8,8" />
+    </Style>
+    
+    <!-- Close Button -->
+    <Style Selector="Button.modal-close">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="Padding" Value="8" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    
+    <Style Selector="Button.modal-close:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <!-- Modal Overlay -->
+  <Border Classes="modal-overlay"
+          IsVisible="{Binding IsOpen, RelativeSource={RelativeSource AncestorType=UserControl}}">
+    
+    <!-- Modal Container -->
+    <Border Classes="modal-container"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+      
+      <Grid RowDefinitions="Auto,*,Auto">
+        
+        <!-- Header -->
+        <Border Grid.Row="0" Classes="modal-header">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0" 
+                       Classes="modal-title"
+                       Text="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+            
+            <Button Grid.Column="1"
+                    Classes="modal-close"
+                    Content="×"
+                    Command="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+          </Grid>
+        </Border>
+        
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" Classes="modal-content">
+          <ContentPresenter Content="{Binding ModalContent, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        </ScrollViewer>
+        
+        <!-- Footer with Action Buttons -->
+        <Border Grid.Row="2" 
+                Classes="modal-footer"
+                IsVisible="{Binding ShowFooter, RelativeSource={RelativeSource AncestorType=UserControl}}">
+          <StackPanel Orientation="Horizontal" 
+                      HorizontalAlignment="Right"
+                      Spacing="12">
+            
+            <!-- Secondary Button (Cancel/Close) -->
+            <Button Background="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                    Content="{Binding SecondaryButtonText, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    Command="{Binding SecondaryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    IsVisible="{Binding ShowSecondaryButton, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    Padding="16,8"
+                    CornerRadius="4"
+                    BorderThickness="0" />
+            
+            <!-- Primary Button (Confirm/OK) -->
+            <Button Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                    Foreground="White"
+                    Content="{Binding PrimaryButtonText, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    Command="{Binding PrimaryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    IsVisible="{Binding ShowPrimaryButton, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    Padding="16,8"
+                    CornerRadius="4"
+                    BorderThickness="0" />
+          </StackPanel>
+        </Border>
+        
+      </Grid>
+    </Border>
+  </Border>
+
+</UserControl>
