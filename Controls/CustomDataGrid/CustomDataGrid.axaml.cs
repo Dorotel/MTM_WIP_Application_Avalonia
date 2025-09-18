@@ -654,9 +654,10 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
                     DataListBox.ItemsSource = sortedItems;
                     
                     // Restore selection after sort
+                    var sortedList = sortedItems.Cast<object>().ToList();
                     foreach (var item in selectedItems)
                     {
-                        if (sortedItems.Contains(item))
+                        if (sortedList.Contains(item))
                         {
                             DataListBox.SelectedItems?.Add(item);
                         }

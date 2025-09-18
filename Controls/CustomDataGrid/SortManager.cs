@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
+using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
 
 namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 {
@@ -27,12 +28,12 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// <summary>
         /// Clears all sorting from a data source
         /// </summary>
-        IEnumerable<object> ClearSort(IEnumerable source);
+        IEnumerable ClearSort(IEnumerable source);
 
         /// <summary>
         /// Gets a sorted collection from the provided data source
         /// </summary>
-        IEnumerable<object> GetSortedView(IEnumerable source, SortConfiguration sortConfiguration);
+        IEnumerable GetSortedView(IEnumerable source, SortConfiguration sortConfiguration);
     }
 
     /// <summary>
@@ -121,62 +122,39 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         }
 
         /// <summary>
-        /// Clears all sorting from a data source
+        /// Gets a sorted view of the data using the provided sort configuration
         /// </summary>
-        public IEnumerable<object> ClearSort(IEnumerable source)
+        public IEnumerable GetSortedView(IEnumerable source, SortConfiguration sortConfiguration)
         {
-            return source?.Cast<object>().ToList() ?? Enumerable.Empty<object>();
-        }
-
-        /// <summary>
-        /// Gets a sorted view of the provided data source using the specified sort configuration
-        /// </summary>
-        public IEnumerable<object> GetSortedView(IEnumerable source, SortConfiguration sortConfiguration)
-        {
-            if (source == null)
+            if (source == null || sortConfiguration == null)
             {
-                return Enumerable.Empty<object>();
-            }
-
-            var items = source.Cast<object>().ToList();
-
-            if (!sortConfiguration.HasActiveSorts())
-            {
-                return items;
+                return source ?? Enumerable.Empty<object>();
             }
 
             try
             {
-                var sortCriteria = sortConfiguration.GetActiveSortCriteria().ToList();
-                
-                // Apply sorting using LINQ OrderBy/ThenBy
-                IOrderedEnumerable<object>? orderedItems = null;
-
-                for (int i = 0; i < sortCriteria.Count; i++)
+                var activeSorts = sortConfiguration.GetActiveSortCriteria().ToList();
+                if (!activeSorts.Any())
                 {
-                    var criteria = sortCriteria[i];
-
-                    if (i == 0)
-                    {
-                        orderedItems = criteria.Direction == SortDirection.Ascending
-                            ? items.OrderBy(item => GetPropertyValue(item, criteria.ColumnId))
-                            : items.OrderByDescending(item => GetPropertyValue(item, criteria.ColumnId));
-                    }
-                    else
-                    {
-                        orderedItems = criteria.Direction == SortDirection.Ascending
-                            ? orderedItems!.ThenBy(item => GetPropertyValue(item, criteria.ColumnId))
-                            : orderedItems!.ThenByDescending(item => GetPropertyValue(item, criteria.ColumnId));
-                    }
+                    return source;
                 }
 
-                return orderedItems?.ToList() ?? items;
+                var sortedItems = ApplyMultiColumnSort(source, activeSorts);
+                return sortedItems;
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error applying sort to data view");
-                return items; // Return original items on error
+                _logger?.LogError(ex, "Error getting sorted view");
+                return source;
             }
+        }
+
+        /// <summary>
+        /// Returns the original unsorted data
+        /// </summary>
+        public IEnumerable ClearSort(IEnumerable source)
+        {
+            return source ?? Enumerable.Empty<object>();
         }
 
         /// <summary>
