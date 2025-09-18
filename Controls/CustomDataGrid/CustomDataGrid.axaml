@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="using:MTM_WIP_Application_Avalonia.Controls.CustomDataGrid"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.CustomDataGrid"
              x:Name="CustomDataGridRoot">
@@ -553,7 +554,7 @@
       </Grid>
     </Border>
 
-    <!-- Column Management Panel (Phase 3 - Disabled) -->
+    <!-- Column Management Panel (Phase 3a - Active) -->
     <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
             x:Name="ColumnManagementContainer"
             Width="0"
@@ -562,13 +563,9 @@
             BorderThickness="1,1,0,1"
             IsVisible="False">
 
-      <!-- Column Management Panel will be implemented in Phase 3 -->
-      <TextBlock Text="Column Management\\n(Phase 3)"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
-                 FontSize="12"
-                 Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                 Opacity="0.7" />
+      <!-- Actual Column Management Panel -->
+      <local:ColumnManagementPanel x:Name="ColumnManagementPanel" />
+      
     </Border>
 
     <!-- Filter Panel (Phase 5 - Disabled) -->

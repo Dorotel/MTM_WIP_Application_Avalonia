@@ -5,12 +5,17 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Styling;
+using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +31,12 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         private readonly ILogger<CustomDataGrid> _logger;
         private readonly SortManager _sortManager;
         private readonly SortConfiguration _sortConfiguration;
+        
+        // Column Management Components (Phase 3a)
+        private ColumnManagementPanel? _columnManagementPanel;
+        private Border? _columnManagementContainer;
+        private readonly List<ColumnItem> _columnItems = new();
+        private bool _isColumnManagementVisible = false;
 
         #region Dependency Properties
 
@@ -185,6 +196,9 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 
             InitializeComponent();
 
+            // Initialize column management (Phase 3a)
+            InitializeColumnManagement();
+
             // Subscribe to ListBox selection changes
             if (DataListBox != null)
             {
@@ -194,7 +208,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             // Initialize button states
             UpdateActionButtonStates();
 
-            _logger.LogDebug("CustomDataGrid initialized with sorting support");
+            _logger.LogDebug("CustomDataGrid initialized with sorting and column management support");
         }
 
         #endregion
@@ -762,16 +776,293 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         #region Event Handlers (Future Features)
 
         /// <summary>
-        /// Handles the column management toggle (Phase 3 - Currently disabled)
+        /// Handles the column management toggle (Phase 3a - Active)
         /// </summary>
         private void OnToggleColumnManagement(object sender, RoutedEventArgs e)
         {
-            _logger.LogDebug("Column management toggle clicked (Phase 3 - Not implemented)");
+            try
+            {
+                _logger.LogDebug("Column management toggle clicked");
+                
+                _isColumnManagementVisible = !_isColumnManagementVisible;
+                
+                if (_isColumnManagementVisible)
+                {
+                    ShowColumnManagementPanel();
+                }
+                else
+                {
+                    HideColumnManagementPanel();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error toggling column management panel");
+            }
+        }
 
-            // Phase 3 implementation:
-            // - Toggle ColumnManagementContainer visibility
-            // - Animate panel slide in/out
-            // - Load column management UI
+        #endregion
+
+        #region Column Management Methods (Phase 3a)
+
+        /// <summary>
+        /// Initializes column management components
+        /// </summary>
+        private void InitializeColumnManagement()
+        {
+            try
+            {
+                // Find the column management controls
+                _columnManagementContainer = this.Find<Border>("ColumnManagementContainer");
+                _columnManagementPanel = this.Find<ColumnManagementPanel>("ColumnManagementPanel");
+
+                // Initialize default column configuration
+                InitializeColumnItems();
+
+                // Setup event handlers if controls are found
+                if (_columnManagementPanel != null)
+                {
+                    _columnManagementPanel.ColumnVisibilityChanged += OnColumnVisibilityChanged;
+                }
+
+                _logger.LogDebug("Column management initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error initializing column management");
+            }
+        }
+
+        /// <summary>
+        /// Initializes the default column items
+        /// </summary>
+        private void InitializeColumnItems()
+        {
+            _columnItems.Clear();
+            
+            // Define the default columns based on the grid structure
+            _columnItems.AddRange(new[]
+            {
+                new ColumnItem { Id = "Selection", DisplayName = "Selection", IsVisible = true, CanHide = false, Order = 0, Width = 40 },
+                new ColumnItem { Id = "PartId", DisplayName = "Part ID", IsVisible = true, CanHide = false, Order = 1, Width = 150 }, // Critical column
+                new ColumnItem { Id = "Operation", DisplayName = "Operation", IsVisible = true, CanHide = true, Order = 2, Width = 100 },
+                new ColumnItem { Id = "Location", DisplayName = "Location", IsVisible = true, CanHide = true, Order = 3, Width = 120 },
+                new ColumnItem { Id = "Quantity", DisplayName = "Quantity", IsVisible = true, CanHide = true, Order = 4, Width = 100 },
+                new ColumnItem { Id = "LastUpdated", DisplayName = "Last Updated", IsVisible = true, CanHide = true, Order = 5, Width = 180 },
+                new ColumnItem { Id = "Notes", DisplayName = "Notes", IsVisible = true, CanHide = true, Order = 6, Width = 80 },
+                new ColumnItem { Id = "Actions", DisplayName = "Actions", IsVisible = true, CanHide = true, Order = 7, Width = 100 },
+                new ColumnItem { Id = "Management", DisplayName = "Manage", IsVisible = true, CanHide = true, Order = 8, Width = 40 }
+            });
+
+            // Pass column items to the management panel
+            if (_columnManagementPanel != null)
+            {
+                _columnManagementPanel.SetColumnItems(_columnItems);
+            }
+        }
+
+        /// <summary>
+        /// Shows the column management panel with animation
+        /// </summary>
+        private void ShowColumnManagementPanel()
+        {
+            if (_columnManagementContainer == null) return;
+
+            try
+            {
+                _columnManagementContainer.IsVisible = true;
+                
+                // Animate panel width from 0 to 300
+                var animation = new Animation
+                {
+                    Duration = TimeSpan.FromMilliseconds(200),
+                    Children =
+                    {
+                        new KeyFrame
+                        {
+                            Cue = new Cue(0.0),
+                            Setters = { new Setter(Border.WidthProperty, 0.0) }
+                        },
+                        new KeyFrame
+                        {
+                            Cue = new Cue(1.0),
+                            Setters = { new Setter(Border.WidthProperty, 300.0) }
+                        }
+                    }
+                };
+
+                animation.RunAsync(_columnManagementContainer);
+
+                _logger.LogDebug("Column management panel shown");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error showing column management panel");
+                // Fallback: Just show without animation
+                _columnManagementContainer.IsVisible = true;
+                _columnManagementContainer.Width = 300;
+            }
+        }
+
+        /// <summary>
+        /// Hides the column management panel with animation
+        /// </summary>
+        private void HideColumnManagementPanel()
+        {
+            if (_columnManagementContainer == null) return;
+
+            try
+            {
+                // Animate panel width from 300 to 0
+                var animation = new Animation
+                {
+                    Duration = TimeSpan.FromMilliseconds(200),
+                    Children =
+                    {
+                        new KeyFrame
+                        {
+                            Cue = new Cue(0.0),
+                            Setters = { new Setter(Border.WidthProperty, 300.0) }
+                        },
+                        new KeyFrame
+                        {
+                            Cue = new Cue(1.0),
+                            Setters = { new Setter(Border.WidthProperty, 0.0) }
+                        }
+                    }
+                };
+
+                animation.RunAsync(_columnManagementContainer).ContinueWith(_ =>
+                {
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        _columnManagementContainer.IsVisible = false;
+                    });
+                });
+
+                _logger.LogDebug("Column management panel hidden");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error hiding column management panel");
+                // Fallback: Just hide without animation
+                _columnManagementContainer.IsVisible = false;
+                _columnManagementContainer.Width = 0;
+            }
+        }
+
+        /// <summary>
+        /// Handles column visibility changes from the management panel
+        /// </summary>
+        private void OnColumnVisibilityChanged(object? sender, ColumnVisibilityChangedEventArgs e)
+        {
+            try
+            {
+                var columnItem = _columnItems.FirstOrDefault(c => c.Id == e.ColumnId);
+                if (columnItem != null)
+                {
+                    columnItem.IsVisible = e.IsVisible;
+                    ApplyColumnVisibility(e.ColumnId, e.IsVisible);
+                    
+                    _logger.LogDebug("Column visibility changed: {ColumnId} = {IsVisible}", e.ColumnId, e.IsVisible);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling column visibility change for {ColumnId}", e.ColumnId);
+            }
+        }
+
+        /// <summary>
+        /// Applies column visibility changes to the grid
+        /// </summary>
+        private void ApplyColumnVisibility(string columnId, bool isVisible)
+        {
+            try
+            {
+                var headerGrid = this.Find<Grid>("DynamicHeaderGrid");
+                var dataListBox = this.Find<ListBox>("DataListBox");
+
+                if (headerGrid == null || dataListBox == null) return;
+
+                // Map column IDs to grid column indices
+                var columnIndex = GetColumnIndex(columnId);
+                if (columnIndex < 0 || columnIndex >= headerGrid.ColumnDefinitions.Count) return;
+
+                // Update header visibility
+                var headerBorder = headerGrid.Children.OfType<Border>().ElementAtOrDefault(columnIndex);
+                if (headerBorder != null)
+                {
+                    headerBorder.IsVisible = isVisible;
+                }
+
+                // Update column definition width
+                var columnDefinition = headerGrid.ColumnDefinitions[columnIndex];
+                if (isVisible)
+                {
+                    // Restore original width (this is simplified - could be enhanced with stored widths)
+                    var columnItem = _columnItems.FirstOrDefault(c => c.Id == columnId);
+                    if (columnItem != null)
+                    {
+                        columnDefinition.Width = new GridLength(columnItem.Width, GridUnitType.Pixel);
+                    }
+                }
+                else
+                {
+                    columnDefinition.Width = new GridLength(0, GridUnitType.Pixel);
+                }
+
+                // Update data template visibility (this would require more complex data template changes)
+                // For now, we'll just refresh the ItemsSource
+                RefreshGridDisplay();
+
+                _logger.LogDebug("Applied column visibility: {ColumnId} = {IsVisible}", columnId, isVisible);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error applying column visibility for {ColumnId}", columnId);
+            }
+        }
+
+        /// <summary>
+        /// Maps column ID to grid column index
+        /// </summary>
+        private int GetColumnIndex(string columnId)
+        {
+            return columnId switch
+            {
+                "Selection" => 0,
+                "PartId" => 1,
+                "Operation" => 2,
+                "Location" => 3,
+                "Quantity" => 4,
+                "LastUpdated" => 5,
+                "Notes" => 6,
+                "Actions" => 7,
+                "Management" => 8,
+                _ => -1
+            };
+        }
+
+        /// <summary>
+        /// Refreshes the grid display after column changes
+        /// </summary>
+        private void RefreshGridDisplay()
+        {
+            try
+            {
+                var dataListBox = this.Find<ListBox>("DataListBox");
+                if (dataListBox != null && dataListBox.ItemsSource != null)
+                {
+                    var currentSource = dataListBox.ItemsSource;
+                    dataListBox.ItemsSource = null;
+                    dataListBox.ItemsSource = currentSource;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error refreshing grid display");
+            }
         }
 
         #endregion

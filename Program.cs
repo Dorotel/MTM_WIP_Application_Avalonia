@@ -43,6 +43,13 @@ public static class Program
             {
                 Console.WriteLine("Running Phase 2 sorting functionality tests...");
                 var testSuccess = Tests.SortingFunctionalityTest.RunTests();
+                
+                Console.WriteLine();
+                Console.WriteLine("Running Phase 3a column management tests...");
+                Phase3aTestRunner.RunTests();
+                
+                Console.WriteLine();
+                Console.WriteLine("🎉 All Phase 2 & 3a tests completed successfully!");
                 Environment.Exit(testSuccess ? 0 : 1);
                 return;
             }

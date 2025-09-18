@@ -1,47 +1,103 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
              x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.ColumnManagementPanel">
     
-    <!-- Phase 3 Feature - Column Management Panel -->
-    <!-- Currently disabled - placeholder implementation -->
+    <!-- Phase 3a - Column Visibility Toggle Panel -->
     
     <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
             BorderThickness="1"
-            CornerRadius="8"
-            Padding="16"
-            Margin="8">
+            CornerRadius="4"
+            Padding="16">
         
-        <StackPanel Spacing="12">
+        <Grid RowDefinitions="Auto,*,Auto" MinHeight="300">
             
-            <!-- Header -->
-            <TextBlock Text="Column Management"
-                       FontSize="16"
-                       FontWeight="Bold"
-                       Foreground="{DynamicResource MTM_Shared_Logic.ForegroundBrush}" />
-            
-            <!-- Placeholder Content -->
-            <TextBlock Text="Phase 3 Feature - Not yet implemented"
-                       FontStyle="Italic"
-                       Foreground="{DynamicResource MTM_Shared_Logic.SecondaryForegroundBrush}" />
-            
-            <!-- Future Implementation Area -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
-                    BorderThickness="1"
-                    CornerRadius="4"
-                    Padding="12"
-                    MinHeight="200">
+            <!-- Header Section -->
+            <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
                 
-                <TextBlock Text="Column management features will include:&#x0A;• Show/Hide columns&#x0A;• Reorder columns&#x0A;• Resize columns&#x0A;• Save/Load layouts"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           TextAlignment="Center"
-                           Foreground="{DynamicResource MTM_Shared_Logic.SecondaryForegroundBrush}" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="Column Management"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                    
+                    <Button Grid.Column="1"
+                            x:Name="CloseButton"
+                            Classes="icon-button"
+                            Width="24"
+                            Height="24"
+                            Padding="0"
+                            Click="OnClosePanel"
+                            ToolTip.Tip="Close Column Management">
+                        <materialIcons:MaterialIcon Kind="Close" 
+                                                    Width="16" 
+                                                    Height="16"
+                                                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                    </Button>
+                </Grid>
                 
-            </Border>
+                <Rectangle Fill="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                           Height="1"
+                           HorizontalAlignment="Stretch" />
+                
+            </StackPanel>
             
-        </StackPanel>
+            <!-- Column List Section -->
+            <ScrollViewer Grid.Row="1" 
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                
+                <StackPanel x:Name="ColumnListContainer" 
+                            Spacing="4">
+                    
+                    <!-- Column items will be added here by code-behind -->
+                    
+                </StackPanel>
+                
+            </ScrollViewer>
+            
+            <!-- Action Buttons Section -->
+            <StackPanel Grid.Row="2"
+                        Spacing="8"
+                        Margin="0,16,0,0"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Stretch">
+                
+                <Rectangle Fill="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                           Height="1"
+                           HorizontalAlignment="Stretch"
+                           Grid.ColumnSpan="3"
+                           Margin="0,0,0,8" />
+                
+                <Button x:Name="ShowAllButton"
+                        Content="Show All"
+                        Classes="secondary-button"
+                        MinWidth="80"
+                        Padding="12,6"
+                        Click="OnShowAllColumns"
+                        ToolTip.Tip="Make all columns visible" />
+                
+                <Button x:Name="HideAllButton"
+                        Content="Hide All"
+                        Classes="secondary-button"
+                        MinWidth="80"
+                        Padding="12,6"
+                        Click="OnHideAllColumns"
+                        ToolTip.Tip="Hide all non-essential columns" />
+                
+                <Button x:Name="ResetButton"
+                        Content="Reset"
+                        Classes="secondary-button"
+                        MinWidth="80"
+                        Padding="12,6"
+                        Click="OnResetLayout"
+                        ToolTip.Tip="Reset to default column layout" />
+                
+            </StackPanel>
+            
+        </Grid>
         
     </Border>
     
