@@ -38,6 +38,14 @@ public static class Program
 
         try
         {
+            // Check for test runner argument
+            if (args.Length > 0 && args[0] == "--run-sorting-tests")
+            {
+                Console.WriteLine("Running Phase 2 sorting functionality tests...");
+                var testSuccess = Tests.SortingFunctionalityTest.RunTests();
+                Environment.Exit(testSuccess ? 0 : 1);
+                return;
+            }
             // Phase 2: Configure services using ApplicationStartup infrastructure
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring services using ApplicationStartup...");
             var configureResult = await ConfigureServicesAsync();

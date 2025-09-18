@@ -26,6 +26,45 @@
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
+    <!-- Sortable Header Cell Style -->
+    <Style Selector="Border.sortable-header-cell">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+      <Setter Property="Padding" Value="6,6" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!-- Sortable Header Cell Hover Effect -->
+    <Style Selector="Border.sortable-header-cell:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+    </Style>
+
+    <!-- Sort Indicator Styles -->
+    <Style Selector="TextBlock.sort-indicator">
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="4,0,0,0" />
+    </Style>
+
+    <!-- Sort Indicator Secondary (multi-column sort) -->
+    <Style Selector="TextBlock.sort-indicator.secondary">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
+      <Setter Property="Opacity" Value="0.7" />
+    </Style>
+
+    <!-- Header Text in Sortable Headers -->
+    <Style Selector="Border.sortable-header-cell TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
     <!-- Data Cell Base Style -->
     <Style Selector="Border.data-cell">
       <Setter Property="MinHeight" Value="36" />
@@ -244,31 +283,84 @@
                     IsVisible="{Binding IsMultiSelectEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" />
         </Border>
 
-        <!-- Part ID Header -->
-        <Border Grid.Column="1" Classes="header-cell">
-          <TextBlock Text="Part ID"
-                     HorizontalAlignment="Center" />
+        <!-- Part ID Header (Sortable) -->
+        <Border Grid.Column="1" Classes="sortable-header-cell" 
+                PointerPressed="OnHeaderClick" 
+                Tag="PartId">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0" 
+                       Text="Part ID"
+                       HorizontalAlignment="Center" />
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal" 
+                        Spacing="2">
+              <!-- Sort indicators will be managed by code-behind -->
+              <TextBlock x:Name="PartIdSortIndicator" 
+                         Classes="sort-indicator"
+                         Text=""
+                         IsVisible="False" />
+            </StackPanel>
+          </Grid>
         </Border>
 
-        <!-- Operation Header -->
-        <Border Grid.Column="2" Classes="header-cell">
-          <TextBlock Text="Operation"
-                     HorizontalAlignment="Center" />
+        <!-- Operation Header (Sortable) -->
+        <Border Grid.Column="2" Classes="sortable-header-cell"
+                PointerPressed="OnHeaderClick"
+                Tag="Operation">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0"
+                       Text="Operation"
+                       HorizontalAlignment="Center" />
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal" 
+                        Spacing="2">
+              <TextBlock x:Name="OperationSortIndicator" 
+                         Classes="sort-indicator"
+                         Text=""
+                         IsVisible="False" />
+            </StackPanel>
+          </Grid>
         </Border>
 
-        <!-- Location Header -->
-        <Border Grid.Column="3" Classes="header-cell">
-          <TextBlock Text="Location"
-                     HorizontalAlignment="Center" />
+        <!-- Location Header (Sortable) -->
+        <Border Grid.Column="3" Classes="sortable-header-cell"
+                PointerPressed="OnHeaderClick"
+                Tag="Location">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0"
+                       Text="Location"
+                       HorizontalAlignment="Center" />
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal" 
+                        Spacing="2">
+              <TextBlock x:Name="LocationSortIndicator" 
+                         Classes="sort-indicator"
+                         Text=""
+                         IsVisible="False" />
+            </StackPanel>
+          </Grid>
         </Border>
 
-        <!-- Quantity Header -->
-        <Border Grid.Column="4" Classes="header-cell">
-          <TextBlock Text="Quantity"
-                     HorizontalAlignment="Center" />
+        <!-- Quantity Header (Sortable) -->
+        <Border Grid.Column="4" Classes="sortable-header-cell"
+                PointerPressed="OnHeaderClick"
+                Tag="Quantity">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0"
+                       Text="Quantity"
+                       HorizontalAlignment="Center" />
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal" 
+                        Spacing="2">
+              <TextBlock x:Name="QuantitySortIndicator" 
+                         Classes="sort-indicator"
+                         Text=""
+                         IsVisible="False" />
+            </StackPanel>
+          </Grid>
         </Border>
 
-        <!-- Notes Header -->
+        <!-- Notes Header (Non-sortable) -->
         <Border Grid.Column="5" Classes="header-cell">
           <TextBlock Text="Notes"
                      HorizontalAlignment="Center" />

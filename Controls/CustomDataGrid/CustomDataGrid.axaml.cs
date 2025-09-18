@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,8 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
     public partial class CustomDataGrid : UserControl
     {
         private readonly ILogger<CustomDataGrid> _logger;
+        private readonly SortManager _sortManager;
+        private readonly SortConfiguration _sortConfiguration;
 
         #region Dependency Properties
 
@@ -55,6 +58,24 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         public static readonly StyledProperty<object?> SelectedItemProperty =
             AvaloniaProperty.Register<CustomDataGrid, object?>(nameof(SelectedItem));
+
+        /// <summary>
+        /// Gets or sets whether sorting is enabled
+        /// </summary>
+        public static readonly StyledProperty<bool> IsSortingEnabledProperty =
+            AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsSortingEnabled), true);
+
+        /// <summary>
+        /// Gets or sets whether multi-column sorting is enabled
+        /// </summary>
+        public static readonly StyledProperty<bool> IsMultiColumnSortEnabledProperty =
+            AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsMultiColumnSortEnabled), true);
+
+        /// <summary>
+        /// Command executed when sorting is requested
+        /// </summary>
+        public static readonly StyledProperty<ICommand?> SortCommandProperty =
+            AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(SortCommand));
 
         #endregion
 
@@ -105,6 +126,33 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             set => SetValue(SelectedItemProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets whether sorting is enabled
+        /// </summary>
+        public bool IsSortingEnabled
+        {
+            get => GetValue(IsSortingEnabledProperty);
+            set => SetValue(IsSortingEnabledProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets whether multi-column sorting is enabled
+        /// </summary>
+        public bool IsMultiColumnSortEnabled
+        {
+            get => GetValue(IsMultiColumnSortEnabledProperty);
+            set => SetValue(IsMultiColumnSortEnabledProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the sort command
+        /// </summary>
+        public ICommand? SortCommand
+        {
+            get => GetValue(SortCommandProperty);
+            set => SetValue(SortCommandProperty, value);
+        }
+
         #endregion
 
         #region Events
@@ -113,6 +161,11 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// Event raised when selection changes
         /// </summary>
         public event EventHandler<SelectionChangedEventArgs>? SelectionChanged;
+
+        /// <summary>
+        /// Event raised when sorting is requested
+        /// </summary>
+        public event EventHandler<SortRequestEventArgs>? SortRequested;
 
         #endregion
 
@@ -126,6 +179,10 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             // Use null logger for now - can be injected later if needed
             _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<CustomDataGrid>.Instance;
 
+            // Initialize sorting components
+            _sortConfiguration = new SortConfiguration();
+            _sortManager = new SortManager();
+
             InitializeComponent();
 
             // Subscribe to ListBox selection changes
@@ -137,7 +194,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             // Initialize button states
             UpdateActionButtonStates();
 
-            _logger.LogDebug("CustomDataGrid initialized");
+            _logger.LogDebug("CustomDataGrid initialized with sorting support");
         }
 
         #endregion
@@ -158,6 +215,14 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             else if (change.Property == IsMultiSelectEnabledProperty)
             {
                 HandleMultiSelectEnabledChanged((bool)change.NewValue!);
+            }
+            else if (change.Property == IsMultiColumnSortEnabledProperty)
+            {
+                HandleMultiColumnSortEnabledChanged((bool)change.NewValue!);
+            }
+            else if (change.Property == IsSortingEnabledProperty)
+            {
+                HandleSortingEnabledChanged((bool)change.NewValue!);
             }
         }
 
@@ -211,6 +276,33 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             if (SelectAllCheckBox != null)
             {
                 SelectAllCheckBox.IsVisible = isEnabled;
+            }
+        }
+
+        /// <summary>
+        /// Handles changes to the IsMultiColumnSortEnabled property
+        /// </summary>
+        private void HandleMultiColumnSortEnabledChanged(bool isEnabled)
+        {
+            _logger.LogDebug("Multi-column sort enabled changed to: {IsEnabled}", isEnabled);
+
+            if (_sortConfiguration != null)
+            {
+                _sortConfiguration.IsMultiColumnSortEnabled = isEnabled;
+            }
+        }
+
+        /// <summary>
+        /// Handles changes to the IsSortingEnabled property
+        /// </summary>
+        private void HandleSortingEnabledChanged(bool isEnabled)
+        {
+            _logger.LogDebug("Sorting enabled changed to: {IsEnabled}", isEnabled);
+
+            if (!isEnabled && _sortConfiguration != null)
+            {
+                // Clear existing sorts when sorting is disabled
+                ClearSort();
             }
         }
 
@@ -456,6 +548,212 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         public int GetSelectedItemCount()
         {
             return GetSelectedItems().Count;
+        }
+
+        #endregion
+
+        #region Sorting Event Handlers (Phase 2)
+
+        /// <summary>
+        /// Handles header click events for sorting
+        /// </summary>
+        private void OnHeaderClick(object? sender, PointerPressedEventArgs e)
+        {
+            if (!IsSortingEnabled) return;
+
+            if (sender is not Border headerBorder) return;
+            
+            var columnId = headerBorder.Tag?.ToString();
+            if (string.IsNullOrEmpty(columnId)) return;
+
+            _logger.LogDebug("Header clicked for column: {ColumnId}", columnId);
+
+            // Check if this is a multi-column sort request (Shift key held)
+            bool isMultiColumnSort = e.KeyModifiers.HasFlag(KeyModifiers.Shift) && IsMultiColumnSortEnabled;
+
+            // Determine the next sort direction
+            var currentDirection = _sortConfiguration.GetSortDirection(columnId);
+            var newDirection = GetNextSortDirection(currentDirection);
+
+            _logger.LogDebug("Sort direction changing from {Current} to {New} for column {ColumnId}", 
+                currentDirection, newDirection, columnId);
+
+            try
+            {
+                // Apply the sort
+                if (isMultiColumnSort)
+                {
+                    _sortConfiguration.ApplyMultiColumnSort(columnId, newDirection);
+                }
+                else
+                {
+                    _sortConfiguration.ApplySingleColumnSort(columnId, newDirection);
+                }
+
+                // Apply sorting to the data source
+                ApplyCurrentSort();
+
+                // Update visual indicators
+                UpdateSortIndicators();
+
+                // Raise the SortRequested event
+                var sortEventArgs = new SortRequestEventArgs
+                {
+                    ColumnId = columnId,
+                    IsMultiColumn = isMultiColumnSort,
+                    RequestedDirection = newDirection
+                };
+
+                SortRequested?.Invoke(this, sortEventArgs);
+
+                // Execute sort command if provided
+                if (SortCommand?.CanExecute(sortEventArgs) == true)
+                {
+                    SortCommand.Execute(sortEventArgs);
+                }
+
+                _logger.LogInformation("Sort applied successfully for column: {ColumnId} ({Direction})", 
+                    columnId, newDirection);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error applying sort for column: {ColumnId}", columnId);
+            }
+        }
+
+        /// <summary>
+        /// Gets the next sort direction in the cycle: None -> Ascending -> Descending -> None
+        /// </summary>
+        private static SortDirection GetNextSortDirection(SortDirection currentDirection)
+        {
+            return currentDirection switch
+            {
+                SortDirection.None => SortDirection.Ascending,
+                SortDirection.Ascending => SortDirection.Descending,
+                SortDirection.Descending => SortDirection.None,
+                _ => SortDirection.Ascending
+            };
+        }
+
+        /// <summary>
+        /// Applies the current sort configuration to the data source
+        /// </summary>
+        private void ApplyCurrentSort()
+        {
+            if (ItemsSource == null) return;
+
+            try
+            {
+                var sortedItems = _sortManager.GetSortedView(ItemsSource, _sortConfiguration);
+                
+                if (DataListBox != null)
+                {
+                    // Preserve selection during sort
+                    var selectedItems = DataListBox.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
+                    
+                    DataListBox.ItemsSource = sortedItems;
+                    
+                    // Restore selection after sort
+                    foreach (var item in selectedItems)
+                    {
+                        if (sortedItems.Contains(item))
+                        {
+                            DataListBox.SelectedItems?.Add(item);
+                        }
+                    }
+                }
+
+                _logger.LogDebug("Sort applied to data source successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error applying sort to data source");
+            }
+        }
+
+        /// <summary>
+        /// Updates the visual sort indicators in column headers
+        /// </summary>
+        private void UpdateSortIndicators()
+        {
+            try
+            {
+                // Update each sortable column's indicator
+                UpdateSortIndicator("PartIdSortIndicator", "PartId");
+                UpdateSortIndicator("OperationSortIndicator", "Operation");
+                UpdateSortIndicator("LocationSortIndicator", "Location");
+                UpdateSortIndicator("QuantitySortIndicator", "Quantity");
+
+                _logger.LogTrace("Sort indicators updated successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating sort indicators");
+            }
+        }
+
+        /// <summary>
+        /// Updates a single sort indicator
+        /// </summary>
+        private void UpdateSortIndicator(string indicatorName, string columnId)
+        {
+            var indicator = this.FindControl<TextBlock>(indicatorName);
+            if (indicator == null) return;
+
+            var direction = _sortConfiguration.GetSortDirection(columnId);
+            var precedence = _sortConfiguration.GetSortPrecedence(columnId);
+
+            indicator.IsVisible = direction != SortDirection.None;
+            
+            if (direction != SortDirection.None)
+            {
+                // Set the sort arrow
+                indicator.Text = direction == SortDirection.Ascending ? "↑" : "↓";
+                
+                // Add precedence number for multi-column sorts
+                if (precedence > 0)
+                {
+                    indicator.Text += precedence + 1; // Display as 1-based
+                    indicator.Classes.Add("secondary");
+                }
+                else
+                {
+                    indicator.Classes.Remove("secondary");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clears all sorting
+        /// </summary>
+        public void ClearSort()
+        {
+            try
+            {
+                _sortConfiguration.ClearAllSorts();
+                
+                if (ItemsSource != null && DataListBox != null)
+                {
+                    var unsortedItems = _sortManager.ClearSort(ItemsSource);
+                    DataListBox.ItemsSource = unsortedItems;
+                }
+
+                UpdateSortIndicators();
+                
+                _logger.LogDebug("All sorting cleared");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error clearing sort");
+            }
+        }
+
+        /// <summary>
+        /// Gets the current sort configuration
+        /// </summary>
+        public SortConfiguration GetCurrentSortConfiguration()
+        {
+            return _sortConfiguration.Clone();
         }
 
         #endregion
