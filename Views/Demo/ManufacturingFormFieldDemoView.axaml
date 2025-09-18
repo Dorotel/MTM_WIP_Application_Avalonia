@@ -1,0 +1,190 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls.ManufacturingFormField"
+             x:Class="MTM_WIP_Application_Avalonia.Views.Demo.ManufacturingFormFieldDemoView">
+             
+  <Design.DataContext>
+    <!-- Design-time data context for preview -->
+    <x:Null />
+  </Design.DataContext>
+  
+  <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+    <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="800" MinHeight="600" Margin="16">
+      
+      <!-- Demo Content -->
+      <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" 
+              BorderThickness="1" CornerRadius="8" Padding="24" Margin="0,0,0,16">
+        
+        <StackPanel Spacing="24">
+          
+          <!-- Demo Title -->
+          <TextBlock Text="ManufacturingFormField Demo" 
+                     FontSize="24" FontWeight="Bold"
+                     Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+          
+          <!-- Part ID Field -->
+          <controls:ManufacturingFormField 
+              Label="Part ID"
+              FieldType="PartId"
+              IsRequired="True"
+              ShowShortcutHint="True"
+              EnableKeyboardShortcuts="True"
+              ShowIcon="True"
+              FieldIcon="🔧"
+              ShortcutHint="F1 for help">
+            
+            <TextBox Text="" 
+                     Watermark="Enter part ID"
+                     Width="300" />
+                     
+          </controls:ManufacturingFormField>
+          
+          <!-- Operation Field -->
+          <controls:ManufacturingFormField 
+              Label="Operation"
+              FieldType="Operation"
+              IsRequired="True"
+              ShowShortcutHint="True"
+              EnableKeyboardShortcuts="True"
+              ShowIcon="True"
+              FieldIcon="⚙️"
+              ShortcutHint="F1-F4 for operations">
+            
+            <ComboBox Width="300">
+              <ComboBoxItem Content="90 - Receiving" />
+              <ComboBoxItem Content="100 - First Operation" />
+              <ComboBoxItem Content="110 - Second Operation" />
+              <ComboBoxItem Content="120 - Final Operation" />
+            </ComboBox>
+            
+          </controls:ManufacturingFormField>
+          
+          <!-- Quantity Field -->
+          <controls:ManufacturingFormField 
+              Label="Quantity"
+              FieldType="Quantity"
+              IsRequired="True"
+              ValidationMessage="Quantity must be greater than 0"
+              ValidationType="info"
+              ShowIcon="True"
+              FieldIcon="📊">
+            
+            <NumericUpDown Value="1" 
+                           Minimum="1"
+                           Maximum="99999"
+                           Width="200" />
+                           
+          </controls:ManufacturingFormField>
+          
+          <!-- Location Field -->
+          <controls:ManufacturingFormField 
+              Label="Location"
+              FieldType="Location"
+              IsRequired="True"
+              ShowShortcutHint="True"
+              ShowIcon="True"
+              FieldIcon="📍"
+              ShortcutHint="F5 for location lookup">
+            
+            <ComboBox Width="300">
+              <ComboBoxItem Content="STATION_A" />
+              <ComboBoxItem Content="STATION_B" />
+              <ComboBoxItem Content="WIP_001" />
+              <ComboBoxItem Content="WAREHOUSE_A" />
+            </ComboBox>
+            
+          </controls:ManufacturingFormField>
+          
+          <!-- User Field -->
+          <controls:ManufacturingFormField 
+              Label="User"
+              FieldType="User"
+              IsRequired="False"
+              ShowIcon="True"
+              FieldIcon="👤">
+            
+            <TextBox Text="DEMO_USER" 
+                     IsReadOnly="True"
+                     Width="300" />
+                     
+          </controls:ManufacturingFormField>
+          
+          <!-- Notes Field -->
+          <controls:ManufacturingFormField 
+              Label="Notes"
+              FieldType="Notes"
+              IsRequired="False"
+              ShowIcon="True"
+              FieldIcon="📝">
+            
+            <TextBox Text="" 
+                     Watermark="Enter optional notes"
+                     Height="80"
+                     Width="400"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap" />
+                     
+          </controls:ManufacturingFormField>
+          
+          <!-- Error Example -->
+          <controls:ManufacturingFormField 
+              Label="Error Example"
+              FieldType="Text"
+              ValidationMessage="This field has an error for demonstration"
+              ValidationType="error"
+              ShowIcon="True"
+              FieldIcon="⚠️">
+            
+            <TextBox Text="Invalid Value" 
+                     Width="300" />
+                     
+          </controls:ManufacturingFormField>
+          
+          <!-- Success Example -->
+          <controls:ManufacturingFormField 
+              Label="Success Example"
+              FieldType="Text"
+              ValidationMessage="This field is valid"
+              ValidationType="success"
+              ShowIcon="True"
+              FieldIcon="✅">
+            
+            <TextBox Text="Valid Value" 
+                     Width="300" />
+                     
+          </controls:ManufacturingFormField>
+          
+        </StackPanel>
+        
+      </Border>
+      
+      <!-- Action Panel -->
+      <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+              BorderThickness="1" CornerRadius="8" Padding="16">
+        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+          
+          <Button Content="Demo Save"
+                  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                  Foreground="White"
+                  Padding="16,8"
+                  CornerRadius="4"
+                  MinWidth="120" />
+                  
+          <Button Content="Demo Reset"
+                  Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
+                  Foreground="White"
+                  Padding="12,6"
+                  CornerRadius="4"
+                  MinWidth="100" />
+                  
+        </StackPanel>
+        
+      </Border>
+      
+    </Grid>
+  </ScrollViewer>
+  
+</UserControl>

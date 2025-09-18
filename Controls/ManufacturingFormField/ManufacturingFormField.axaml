@@ -1,0 +1,197 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.ManufacturingFormField.ManufacturingFormField"
+             x:Name="ManufacturingFormFieldRoot">
+
+  <UserControl.Styles>
+    
+    <!-- ManufacturingFormField Base Styling -->
+    <Style Selector="Border.form-field-container">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+
+    <!-- Label Styling -->
+    <Style Selector="TextBlock.field-label">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="0,0,8,0" />
+    </Style>
+
+    <!-- Required Field Indicator -->
+    <Style Selector="TextBlock.required-indicator">
+      <Setter Property="Text" Value="*" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="2,0,0,0" />
+    </Style>
+
+    <!-- Icon Styling -->
+    <Style Selector="materialIcons|MaterialIcon.field-icon">
+      <Setter Property="Width" Value="14" />
+      <Setter Property="Height" Value="14" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="0,0,6,0" />
+    </Style>
+
+    <!-- Input Field Base Styling -->
+    <Style Selector="TextBox.manufacturing-input">
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!-- AutoCompleteBox Styling -->
+    <Style Selector="AutoCompleteBox.manufacturing-input">
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!-- ComboBox Styling -->
+    <Style Selector="ComboBox.manufacturing-input">
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!-- NumericUpDown Styling -->
+    <Style Selector="NumericUpDown.manufacturing-input">
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!-- Focus State -->
+    <Style Selector="TextBox.manufacturing-input:focus, AutoCompleteBox.manufacturing-input:focus, ComboBox.manufacturing-input:focus">
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
+    <!-- Error State -->
+    <Style Selector="TextBox.manufacturing-input.error, AutoCompleteBox.manufacturing-input.error, ComboBox.manufacturing-input.error">
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
+    <!-- Success State -->
+    <Style Selector="TextBox.manufacturing-input.success, AutoCompleteBox.manufacturing-input.success, ComboBox.manufacturing-input.success">
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
+    <!-- Validation Message Styling -->
+    <Style Selector="TextBlock.validation-message">
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="Margin" Value="0,4,0,0" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.validation-message.error">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.validation-message.success">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.validation-message.info">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InfoBrush}" />
+    </Style>
+
+    <!-- Shortcut Hint Styling -->
+    <Style Selector="TextBlock.shortcut-hint">
+      <Setter Property="FontSize" Value="9" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+      <Setter Property="FontStyle" Value="Italic" />
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="Margin" Value="0,2,0,0" />
+    </Style>
+
+  </UserControl.Styles>
+
+  <!-- Main Container -->
+  <Border Classes="form-field-container">
+    <Grid x:Name="MainGrid" RowDefinitions="Auto,Auto,Auto">
+      
+      <!-- Label Row -->
+      <Grid Grid.Row="0" x:Name="LabelGrid" ColumnDefinitions="Auto,Auto,Auto,*,Auto">
+        
+        <!-- Icon -->
+        <TextBlock Grid.Column="0" 
+                   Classes="field-icon"
+                   Text="{Binding FieldIcon, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                   IsVisible="{Binding ShowIcon, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        
+        <!-- Label Text -->
+        <TextBlock Grid.Column="1" 
+                   x:Name="LabelText"
+                   Classes="field-label"
+                   Text="{Binding Label, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        
+        <!-- Required Indicator -->
+        <TextBlock Grid.Column="2"
+                   x:Name="RequiredIndicator"
+                   Classes="required-indicator"
+                   IsVisible="{Binding IsRequired, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        
+        <!-- Spacer -->
+        <Border Grid.Column="3" />
+        
+        <!-- Shortcut Hint -->
+        <TextBlock Grid.Column="4"
+                   Classes="shortcut-hint"
+                   Text="{Binding ShortcutHint, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                   IsVisible="{Binding ShowShortcutHint, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+      </Grid>
+
+      <!-- Input Row -->
+      <ContentPresenter Grid.Row="1" 
+                        x:Name="InputPresenter"
+                        Content="{Binding InputControl, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Margin="0,4,0,0" />
+
+      <!-- Validation Message Row -->
+      <TextBlock Grid.Row="2"
+                 Classes="validation-message"
+                 Text="{Binding ValidationMessage, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                 IsVisible="{Binding HasValidationMessage, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+
+    </Grid>
+  </Border>
+
+</UserControl>
