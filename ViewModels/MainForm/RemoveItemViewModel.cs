@@ -211,6 +211,18 @@ public partial class RemoveItemViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isEditDialogVisible;
 
+    /// <summary>
+    /// Gets or sets the column name used for sorting.
+    /// </summary>
+    [ObservableProperty]
+    private string _sortColumn = "PartId";
+
+    /// <summary>
+    /// Gets or sets a value indicating whether sorting is in ascending order.
+    /// </summary>
+    [ObservableProperty]
+    private bool _sortAscending = true;
+
     #endregion
 
     #region Undo Functionality
@@ -471,6 +483,82 @@ public partial class RemoveItemViewModel : BaseViewModel
             Logger.LogError(ex, "Failed to reset search criteria and clear CustomDataGrid");
             throw new ApplicationException("Failed to reset inventory data", ex);
         }
+    }
+
+    /// <summary>
+    /// Executes sorting by the specified column name.
+    /// </summary>
+    /// <param name="columnName">The name of the column to sort by.</param>
+    /// <returns>A task representing the asynchronous sort operation.</returns>
+    [RelayCommand]
+    private async Task ExecuteSortAsync(string? columnName)
+    {
+        if (string.IsNullOrEmpty(columnName)) return;
+
+        Logger.LogDebug("Sorting by column: {ColumnName}", columnName);
+
+        if (SortColumn == columnName)
+        {
+            SortAscending = !SortAscending;
+        }
+        else
+        {
+            SortColumn = columnName;
+            SortAscending = true;
+        }
+
+        // Apply sorting to the current inventory items
+        await ApplySortToInventoryItems();
+    }
+
+    /// <summary>
+    /// Applies the current sort settings to the InventoryItems collection.
+    /// </summary>
+    private async Task ApplySortToInventoryItems()
+    {
+        try
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                var items = InventoryItems.ToList();
+                
+                if (string.IsNullOrEmpty(SortColumn))
+                    return;
+
+                var sortedItems = SortAscending 
+                    ? items.OrderBy(item => GetSortValue(item)).ToList()
+                    : items.OrderByDescending(item => GetSortValue(item)).ToList();
+
+                InventoryItems.Clear();
+                foreach (var item in sortedItems)
+                {
+                    InventoryItems.Add(item);
+                }
+
+                Logger.LogDebug("Applied sort: {Column} {Direction}", SortColumn, SortAscending ? "ASC" : "DESC");
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to apply sorting to inventory items");
+        }
+    }
+
+    /// <summary>
+    /// Gets the sort value for the specified inventory item based on the current sort column.
+    /// </summary>
+    /// <param name="item">The inventory item to get the sort value for.</param>
+    /// <returns>The value to use for sorting the item.</returns>
+    private object GetSortValue(InventoryItem item)
+    {
+        return SortColumn switch
+        {
+            "PartId" => item.PartId,
+            "Operation" => item.Operation,
+            "Location" => item.Location,
+            "Quantity" => item.Quantity,
+            _ => item.PartId
+        };
     }
 
     /// <summary>

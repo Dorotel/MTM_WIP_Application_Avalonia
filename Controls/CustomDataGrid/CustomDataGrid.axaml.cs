@@ -68,6 +68,24 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         public static readonly StyledProperty<object?> SelectedItemProperty =
             AvaloniaProperty.Register<CustomDataGrid, object?>(nameof(SelectedItem));
 
+        /// <summary>
+        /// Command for sorting data by column
+        /// </summary>
+        public static readonly StyledProperty<ICommand?> SortCommandProperty =
+            AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(SortCommand));
+
+        /// <summary>
+        /// Gets or sets the current sort column name
+        /// </summary>
+        public static readonly StyledProperty<string> SortColumnProperty =
+            AvaloniaProperty.Register<CustomDataGrid, string>(nameof(SortColumn), string.Empty);
+
+        /// <summary>
+        /// Gets or sets whether sorting is in ascending order
+        /// </summary>
+        public static readonly StyledProperty<bool> SortAscendingProperty =
+            AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(SortAscending), true);
+
         #endregion
 
         #region Public Properties
@@ -135,6 +153,33 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             set => SetValue(SelectedItemProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the command for sorting data by column
+        /// </summary>
+        public ICommand? SortCommand
+        {
+            get => GetValue(SortCommandProperty);
+            set => SetValue(SortCommandProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current sort column name
+        /// </summary>
+        public string SortColumn
+        {
+            get => GetValue(SortColumnProperty);
+            set => SetValue(SortColumnProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets whether sorting is in ascending order
+        /// </summary>
+        public bool SortAscending
+        {
+            get => GetValue(SortAscendingProperty);
+            set => SetValue(SortAscendingProperty, value);
+        }
+
         #endregion
 
         #region Events
@@ -188,6 +233,10 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             else if (change.Property == IsMultiSelectEnabledProperty)
             {
                 HandleMultiSelectEnabledChanged((bool)change.NewValue!);
+            }
+            else if (change.Property == SortColumnProperty || change.Property == SortAscendingProperty)
+            {
+                UpdateSortIndicators();
             }
         }
 
@@ -515,6 +564,75 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         public int GetSelectedItemCount()
         {
             return GetSelectedItems().Count;
+        }
+
+        #endregion
+
+        #region Sort Management
+
+        /// <summary>
+        /// Updates the sort indicators in column headers
+        /// </summary>
+        private void UpdateSortIndicators()
+        {
+            _logger.LogDebug("Updating sort indicators for column: {SortColumn}, ascending: {SortAscending}", 
+                SortColumn, SortAscending);
+
+            // Dictionary mapping column names to their sort indicator TextBlocks
+            var sortIndicators = new Dictionary<string, string>
+            {
+                { "PartId", "PartIdSortIndicator" },
+                { "Operation", "OperationSortIndicator" },
+                { "Location", "LocationSortIndicator" },
+                { "Quantity", "QuantitySortIndicator" }
+            };
+
+            // Hide all sort indicators first
+            foreach (var indicatorName in sortIndicators.Values)
+            {
+                if (this.FindControl<TextBlock>(indicatorName) is TextBlock indicator)
+                {
+                    indicator.IsVisible = false;
+                    indicator.Text = "";
+                }
+            }
+
+            // Show the indicator for the current sort column
+            if (!string.IsNullOrEmpty(SortColumn) && sortIndicators.ContainsKey(SortColumn))
+            {
+                var currentIndicatorName = sortIndicators[SortColumn];
+                if (this.FindControl<TextBlock>(currentIndicatorName) is TextBlock currentIndicator)
+                {
+                    currentIndicator.IsVisible = true;
+                    currentIndicator.Text = SortAscending ? "↑" : "↓";
+                    
+                    _logger.LogTrace("Sort indicator updated: {Column} {Direction}", 
+                        SortColumn, currentIndicator.Text);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles column header clicks for sorting
+        /// </summary>
+        private void OnColumnHeaderClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button headerButton) return;
+
+            var columnName = headerButton.CommandParameter?.ToString();
+            if (string.IsNullOrEmpty(columnName))
+            {
+                _logger.LogWarning("Column header clicked but no column name found in CommandParameter");
+                return;
+            }
+
+            _logger.LogDebug("Column header clicked: {ColumnName}", columnName);
+
+            // Execute the sort command if available
+            if (SortCommand?.CanExecute(columnName) == true)
+            {
+                SortCommand.Execute(columnName);
+            }
         }
 
         #endregion

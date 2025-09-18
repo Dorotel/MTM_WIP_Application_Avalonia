@@ -26,6 +26,35 @@
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
+    <!-- Sortable Header Button Style -->
+    <Style Selector="Button.header-sort-button">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="MinHeight" Value="24" />
+    </Style>
+
+    <Style Selector="Button.header-sort-button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+    </Style>
+
+    <Style Selector="Button.header-sort-button:pressed">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="Opacity" Value="0.8" />
+    </Style>
+
+    <!-- Sort Indicator Styles -->
+    <Style Selector="TextBlock.sort-indicator">
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="4,0,0,0" />
+    </Style>
+
     <!-- Data Cell Base Style -->
     <Style Selector="Border.data-cell">
       <Setter Property="MinHeight" Value="36" />
@@ -246,26 +275,102 @@
 
         <!-- Part ID Header -->
         <Border Grid.Column="1" Classes="header-cell">
-          <TextBlock Text="Part ID" 
-                     HorizontalAlignment="Center" />
+          <Button Classes="header-sort-button"
+                  Command="{Binding SortCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  CommandParameter="PartId"
+                  Click="OnColumnHeaderClick">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0" Text="Part ID" 
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         FontWeight="SemiBold"
+                         FontSize="12" />
+              <TextBlock Grid.Column="1" 
+                         x:Name="PartIdSortIndicator"
+                         Classes="sort-indicator"
+                         Text=""
+                         IsVisible="False" />
+            </Grid>
+          </Button>
         </Border>
 
         <!-- Operation Header -->
         <Border Grid.Column="2" Classes="header-cell">
-          <TextBlock Text="Operation" 
-                     HorizontalAlignment="Center" />
+          <Button Classes="header-sort-button"
+                  Command="{Binding SortCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  CommandParameter="Operation"
+                  Click="OnColumnHeaderClick">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0" Text="Operation" 
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         FontWeight="SemiBold"
+                         FontSize="12" />
+              <TextBlock Grid.Column="1" 
+                         x:Name="OperationSortIndicator"
+                         Classes="sort-indicator"
+                         Text=""
+                         IsVisible="False" />
+            </Grid>
+          </Button>
         </Border>
 
         <!-- Location Header -->
         <Border Grid.Column="3" Classes="header-cell">
-          <TextBlock Text="Location" 
-                     HorizontalAlignment="Center" />
+          <Button Classes="header-sort-button"
+                  Command="{Binding SortCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  CommandParameter="Location"
+                  Click="OnColumnHeaderClick">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0" Text="Location" 
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         FontWeight="SemiBold"
+                         FontSize="12" />
+              <TextBlock Grid.Column="1" 
+                         x:Name="LocationSortIndicator"
+                         Classes="sort-indicator"
+                         Text=""
+                         IsVisible="False" />
+            </Grid>
+          </Button>
         </Border>
 
         <!-- Quantity Header -->
         <Border Grid.Column="4" Classes="header-cell">
-          <TextBlock Text="Quantity"
-                     HorizontalAlignment="Center" />
+          <Button Classes="header-sort-button"
+                  Command="{Binding SortCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  CommandParameter="Quantity"
+                  Click="OnColumnHeaderClick">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0" Text="Quantity"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         FontWeight="SemiBold"
+                         FontSize="12" />
+              <TextBlock Grid.Column="1" 
+                         x:Name="QuantitySortIndicator"
+                         Classes="sort-indicator"
+                         Text=""
+                         IsVisible="False" />
+            </Grid>
+          </Button>
         </Border>
 
         <!-- Notes Header -->
