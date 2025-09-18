@@ -7,7 +7,7 @@
              xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="650"
              x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.EditInventoryView"
-             x:CompileBindings="True" 
+             x:CompileBindings="True"
              x:DataType="vm:EditInventoryViewModel">
 
   <UserControl.Styles>
@@ -18,8 +18,8 @@
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="Padding" Value="8,6" />
-      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="Padding" Value="4,2" />
+      <Setter Property="MinHeight" Value="24" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
@@ -76,8 +76,8 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="MinHeight" Value="28" />
+      <Setter Property="Padding" Value="8,4" />
     </Style>
 
     <!-- Secondary Button styling -->
@@ -87,8 +87,8 @@
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
       <Setter Property="BorderThickness" Value="1.5" />
       <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="MinHeight" Value="28" />
+      <Setter Property="Padding" Value="8,4" />
     </Style>
 
     <Style Selector="Button.secondary:pointerover">
@@ -105,8 +105,8 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="MinHeight" Value="28" />
+      <Setter Property="Padding" Value="8,4" />
     </Style>
 
     <!-- Field label styling -->
@@ -138,43 +138,50 @@
   </UserControl.Styles>
 
   <!-- Main Dialog Container -->
-  <Grid x:Name="MainContainer" 
-        RowDefinitions="Auto,*,Auto" 
-        Width="750"
-        MinHeight="500"
-        MaxHeight="900"
-        Margin="8"
+  <Grid x:Name="MainContainer"
+        RowDefinitions="Auto,*,Auto"
+                HorizontalAlignment="Stretch"
+        Margin="4"
         VerticalAlignment="Stretch">
 
     <!-- Dialog Header -->
     <Border Grid.Row="0"
             Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
             CornerRadius="8,8,0,0"
-            Padding="16,10">
-      
+            Padding="12,6">
+
       <Grid ColumnDefinitions="*,Auto">
-        <StackPanel Grid.Column="0" Spacing="3">
+        <StackPanel Grid.Column="0" Spacing="2">
           <TextBlock Text="Edit Inventory Item (Limited Access)"
-                     FontSize="15"
+                     FontSize="14"
                      FontWeight="Bold"
                      Foreground="White" />
-          <TextBlock Text="{Binding EditModel.PartId, StringFormat='Part: {0} - Only Operation, Quantity &amp; Notes editable'}"
-                     FontSize="11"
-                     Foreground="White"
-                     Opacity="0.9" />
+          <TextBox Text="{Binding EditModel.PartId, StringFormat='Part: {0} - Only Operation, Quantity &amp; Notes editable', Mode=OneWay}"
+                   FontSize="11"
+                   MinHeight="22"
+                   Classes="input-field"
+                   Foreground="White"
+                   Opacity="0.9"
+                   IsReadOnly="True"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   Padding="0"
+                   IsHitTestVisible="False"
+                   Focusable="False"
+                   IsTabStop="False" />
         </StackPanel>
-        
+
         <!-- Status Indicators -->
-        <StackPanel Grid.Column="1" 
-                    Orientation="Horizontal" 
-                    Spacing="6"
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="4"
                     VerticalAlignment="Center">
-          
+
           <!-- Changes Indicator -->
           <Border Classes="status-indicator has-changes"
                   IsVisible="{Binding EditModel.HasChanges}">
             <TextBlock Text="● Modified"
-                       FontSize="10"
+                       FontSize="11"
                        Foreground="{DynamicResource MTM_Shared_Logic.WarningBrush}" />
           </Border>
 
@@ -182,7 +189,7 @@
           <Border Classes="status-indicator validation-error"
                   IsVisible="{Binding HasValidationErrors}">
             <TextBlock Text="⚠ Errors"
-                       FontSize="10"
+                       FontSize="11"
                        Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
           </Border>
         </StackPanel>
@@ -194,29 +201,29 @@
             Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
             BorderThickness="1,0,1,0">
-      
-      <ScrollViewer VerticalScrollBarVisibility="Auto" 
+
+      <ScrollViewer VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Disabled"
-                    MaxHeight="600"
-                    Padding="16">
-        
-        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10">
-        
+                    MaxHeight="480"
+                    Padding="12">
+
+        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="6">
+
         <!-- Validation Error Display -->
         <Border Grid.Row="0"
                 Background="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"
                 BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
                 BorderThickness="1"
                 CornerRadius="4"
-                Padding="10,6"
+                Padding="8,4"
                 IsVisible="{Binding HasValidationErrors}">
-          
+
           <StackPanel Spacing="3">
             <StackPanel Orientation="Horizontal" Spacing="6">
-              <materialIcons:MaterialIcon Kind="AlertCircle" Width="14" Height="14" 
+              <materialIcons:MaterialIcon Kind="AlertCircle" Width="14" Height="14"
                                           Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
               <TextBlock Text="Please fix validation errors before saving"
-                         FontSize="11" FontWeight="SemiBold"
+                         FontSize="12" FontWeight="SemiBold"
                          Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
             </StackPanel>
           </StackPanel>
@@ -228,79 +235,105 @@
                 BorderBrush="{DynamicResource MTM_Shared_Logic.WarningBrush}"
                 BorderThickness="1"
                 CornerRadius="4"
-                Padding="10,6"
+                Padding="8,4"
                 IsVisible="{Binding !CanEditRecord}">
-          
+
           <StackPanel Spacing="3">
             <StackPanel Orientation="Horizontal" Spacing="6">
-              <materialIcons:MaterialIcon Kind="Lock" Width="14" Height="14" 
+              <materialIcons:MaterialIcon Kind="Lock" Width="14" Height="14"
                                           Foreground="{DynamicResource MTM_Shared_Logic.WarningBrush}" />
-              <TextBlock Text="{Binding PermissionErrorMessage}"
-                         FontSize="11" FontWeight="SemiBold"
-                         TextWrapping="Wrap"
-                         Foreground="{DynamicResource MTM_Shared_Logic.WarningBrush}" />
+              <TextBox Text="{Binding PermissionErrorMessage, Mode=OneWay}"
+                       FontSize="11" FontWeight="SemiBold" MinHeight="22"
+                                              Classes="input-field"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                       IsReadOnly="True"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       Padding="0"
+                       IsHitTestVisible="False"
+                       Focusable="False"
+                       IsTabStop="False" />
             </StackPanel>
           </StackPanel>
         </Border>
 
         <!-- Form Fields in Compact Layout -->
-        <Grid Grid.Row="2" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="10">
-          
+        <Grid Grid.Row="2" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="6">
+
           <!-- Row 1: Part ID and Location (Read-Only) -->
           <Grid Grid.Row="0" ColumnDefinitions="*,12,*" >
             <!-- Part ID Field (LOCKED) -->
-            <Grid Grid.Column="0" ColumnDefinitions="75,*,25" ColumnSpacing="8">
+            <Grid Grid.Column="0" ColumnDefinitions="60,*,20" ColumnSpacing="6">
               <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" />
+                <materialIcons:MaterialIcon Kind="Identifier" Width="12" Height="12" />
                 <TextBlock Text="Part ID:" Classes="field-label" FontSize="11" />
               </StackPanel>
-              
-              <Border Grid.Column="1" 
+
+              <Border Grid.Column="1"
                       Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
                       BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
                       BorderThickness="1"
                       CornerRadius="4"
-                      Padding="6,4"
-                      MinHeight="28">
-                <TextBlock Text="{Binding EditModel.PartId}"
-                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                           FontWeight="SemiBold"
-                           FontSize="12"
-                           VerticalAlignment="Center"
-                           ToolTip.Tip="Part identifier (LOCKED)" />
+                      Padding="4,3"
+                      MinHeight="24">
+                <TextBox Text="{Binding EditModel.PartId, Mode=OneWay}"
+                         Classes="input-field"
+                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         FontWeight="SemiBold"
+                         FontSize="12"
+                         MinHeight="24"
+                         VerticalAlignment="Center"
+                         IsReadOnly="True"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Padding="0"
+                         IsHitTestVisible="False"
+                         Focusable="False"
+                         IsTabStop="False"
+                         ToolTip.Tip="Part identifier (LOCKED)" />
               </Border>
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="Lock" 
-                                          Width="14" Height="14"
+
+              <materialIcons:MaterialIcon Grid.Column="2"
+                                          Kind="Lock"
+                                          Width="12" Height="12"
                                           Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
             </Grid>
 
             <!-- Location Field (LOCKED) -->
-            <Grid Grid.Column="2" ColumnDefinitions="75,*,25" ColumnSpacing="8">
+            <Grid Grid.Column="2" ColumnDefinitions="60,*,20" ColumnSpacing="6">
               <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                <materialIcons:MaterialIcon Kind="MapMarker" Width="14" Height="14" />
+                <materialIcons:MaterialIcon Kind="MapMarker" Width="12" Height="12" />
                 <TextBlock Text="Location:" Classes="field-label" FontSize="11" />
               </StackPanel>
-              
-              <Border Grid.Column="1" 
+
+              <Border Grid.Column="1"
                       Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
                       BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
                       BorderThickness="1"
                       CornerRadius="4"
-                      Padding="6,4"
-                      MinHeight="28">
-                <TextBlock Text="{Binding EditModel.Location}"
-                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
-                           FontWeight="SemiBold"
-                           FontSize="12"
-                           VerticalAlignment="Center"
-                           ToolTip.Tip="Storage location (LOCKED)" />
+                      Padding="4,3"
+                      MinHeight="24">
+                <TextBox Text="{Binding EditModel.Location, Mode=OneWay}"
+                                       Classes="input-field"
+                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         FontWeight="SemiBold"
+                         FontSize="12"
+                         MinHeight="24"
+                         VerticalAlignment="Center"
+                         IsReadOnly="True"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Padding="0"
+                         IsHitTestVisible="False"
+                         Focusable="False"
+                         IsTabStop="False"
+                         ToolTip.Tip="Storage location (LOCKED)" />
               </Border>
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="Lock" 
-                                          Width="14" Height="14"
+
+              <materialIcons:MaterialIcon Grid.Column="2"
+                                          Kind="Lock"
+                                          Width="12" Height="12"
                                           Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
             </Grid>
           </Grid>
@@ -311,9 +344,9 @@
             <Grid Grid.Column="0" ColumnDefinitions="75,*,25" ColumnSpacing="8">
               <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                 <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" />
-                <TextBlock Text="Operation:" Classes="field-label" FontSize="11" />
+                <TextBlock Text="Operation:" Classes="field-label" FontSize="12" />
               </StackPanel>
-              
+
               <TextBox Grid.Column="1"
                        Text="{Binding EditModel.Operation, Mode=TwoWay}"
                        Classes="input-field"
@@ -325,15 +358,15 @@
                        ToolTip.Tip="Operation number (e.g. 90, 100, 110) - EDITABLE"
                        behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="{Binding CanEditRecord}"
                        behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding AvailableOperations}" />
-              
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="CheckCircle" 
+
+              <materialIcons:MaterialIcon Grid.Column="2"
+                                          Kind="CheckCircle"
                                           Width="14" Height="14"
                                           Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
                                           IsVisible="{Binding IsOperationValid}"
                                           ToolTip.Tip="Valid Operation" />
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="Lock" 
+              <materialIcons:MaterialIcon Grid.Column="2"
+                                          Kind="Lock"
                                           Width="14" Height="14"
                                           Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
                                           IsVisible="{Binding !CanEditRecord}"
@@ -344,9 +377,9 @@
             <Grid Grid.Column="2" ColumnDefinitions="75,*,25" ColumnSpacing="8">
               <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                 <materialIcons:MaterialIcon Kind="Counter" Width="14" Height="14" />
-                <TextBlock Text="Quantity:" Classes="field-label" FontSize="11" />
+                <TextBlock Text="Quantity:" Classes="field-label" FontSize="12" />
               </StackPanel>
-              
+
               <TextBox Grid.Column="1"
                        Text="{Binding EditModel.Quantity, Mode=TwoWay}"
                        Classes="input-field"
@@ -355,10 +388,10 @@
                        MinHeight="28"
                        FontSize="12"
                        ToolTip.Tip="Item quantity - EDITABLE" />
-              
+
               <!-- Success icon - only show if can edit and quantity is valid -->
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="CheckCircle" 
+              <materialIcons:MaterialIcon Grid.Column="2"
+                                          Kind="CheckCircle"
                                           Width="14" Height="14"
                                           Foreground="Green"
                                           VerticalAlignment="Center"
@@ -371,10 +404,10 @@
                   </MultiBinding>
                 </materialIcons:MaterialIcon.IsVisible>
               </materialIcons:MaterialIcon>
-              
+
               <!-- Lock icon - only show if cannot edit -->
-              <materialIcons:MaterialIcon Grid.Column="2" 
-                                          Kind="Lock" 
+              <materialIcons:MaterialIcon Grid.Column="2"
+                                          Kind="Lock"
                                           Width="14" Height="14"
                                           Foreground="Gray"
                                           VerticalAlignment="Center"
@@ -388,9 +421,9 @@
           <Grid Grid.Row="2" ColumnDefinitions="75,*,25" ColumnSpacing="8">
             <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Top" Margin="0,4,0,0">
               <materialIcons:MaterialIcon Kind="NoteText" Width="14" Height="14" />
-              <TextBlock Text="Notes:" Classes="field-label" FontSize="11" />
+              <TextBlock Text="Notes:" Classes="field-label" FontSize="12" />
             </StackPanel>
-            
+
             <TextBox Grid.Column="1"
                      Text="{Binding EditModel.Notes, Mode=TwoWay}"
                      Classes="input-field"
@@ -404,10 +437,10 @@
                      FontSize="12"
                      IsEnabled="{Binding CanEditRecord}"
                      ToolTip.Tip="Optional notes or comments - EDITABLE" />
-            
+
             <!-- Notes field icon - show edit or lock icon -->
-            <materialIcons:MaterialIcon Grid.Column="2" 
-                                        Kind="PencilOutline" 
+            <materialIcons:MaterialIcon Grid.Column="2"
+                                        Kind="PencilOutline"
                                         Width="14" Height="14"
                                         Foreground="Green"
                                         VerticalAlignment="Top"
@@ -415,8 +448,8 @@
                                         Margin="0,8,0,0"
                                         IsVisible="{Binding CanEditRecord}"
                                         ToolTip.Tip="Editable Field" />
-            <materialIcons:MaterialIcon Grid.Column="2" 
-                                        Kind="Lock" 
+            <materialIcons:MaterialIcon Grid.Column="2"
+                                        Kind="Lock"
                                         Width="14" Height="14"
                                         Foreground="Gray"
                                         VerticalAlignment="Top"
@@ -427,37 +460,47 @@
           </Grid>
 
           <!-- Row 4: Read-Only Information in Full-Width Expander -->
-          <Expander Grid.Row="3" 
-                    Header="Additional Information" 
+          <Expander Grid.Row="3"
+                    Header="Additional Information"
                     IsExpanded="True"
-                    VerticalAlignment="Top"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
                     HorizontalAlignment="Stretch"
-                    MaxHeight="200"
+
                     ClipToBounds="True"
-                    Margin="0,6,0,6"
+                    Margin="0,4,0,4"
                     Grid.ColumnSpan="3">
-            <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto">
-              <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6" Margin="0,0,6,0">
-              
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+              <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6" Margin="0,0,6,0" VerticalAlignment="Stretch">
+
               <!-- Row 1: Item Type and Batch Number -->
               <Grid Grid.Row="0" ColumnDefinitions="*,12,*">
                 <!-- Item Type -->
                 <Grid Grid.Column="0" ColumnDefinitions="75,*,25" ColumnSpacing="8">
                   <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                     <materialIcons:MaterialIcon Kind="Category" Width="12" Height="12" />
-                    <TextBlock Text="Item Type:" Classes="field-label" FontSize="10" />
+                    <TextBlock Text="Item Type:" Classes="field-label" FontSize="11" />
                   </StackPanel>
-                  <Border Grid.Column="1" 
+                  <Border Grid.Column="1"
                           Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
                           BorderThickness="1"
                           CornerRadius="3"
                           Padding="4,2"
                           MinHeight="24">
-                    <TextBlock Text="{Binding EditModel.ItemType}"
-                               Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                               FontSize="10"
-                               VerticalAlignment="Center" />
+                    <TextBox Text="{Binding EditModel.ItemType, Mode=OneWay}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                                                    Classes="input-field"
+                       MinHeight="26"
+                       FontSize="11"
+                             VerticalAlignment="Center"
+                             IsReadOnly="True"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Padding="0"
+                             IsHitTestVisible="False"
+                             Focusable="False"
+                             IsTabStop="False" />
                   </Border>
                   <materialIcons:MaterialIcon Grid.Column="2" Kind="Lock" Width="12" Height="12"
                                               Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
@@ -467,19 +510,28 @@
                 <Grid Grid.Column="2" ColumnDefinitions="75,*,25" ColumnSpacing="8">
                   <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                     <materialIcons:MaterialIcon Kind="Barcode" Width="12" Height="12" />
-                    <TextBlock Text="Batch #:" Classes="field-label" FontSize="10" />
+                    <TextBlock Text="Batch #:" Classes="field-label" FontSize="11" />
                   </StackPanel>
-                  <Border Grid.Column="1" 
+                  <Border Grid.Column="1"
                           Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
                           BorderThickness="1"
                           CornerRadius="3"
                           Padding="4,2"
                           MinHeight="24">
-                    <TextBlock Text="{Binding EditModel.BatchNumber}"
-                               Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                               FontSize="10"
-                               VerticalAlignment="Center" />
+                    <TextBox Text="{Binding EditModel.BatchNumber, Mode=OneWay}"
+                                           Classes="input-field"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                                                    MinHeight="26"
+                             FontSize="11"
+                             VerticalAlignment="Center"
+                             IsReadOnly="True"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Padding="0"
+                             IsHitTestVisible="False"
+                             Focusable="False"
+                             IsTabStop="False" />
                   </Border>
                   <materialIcons:MaterialIcon Grid.Column="2" Kind="Lock" Width="12" Height="12"
                                               Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
@@ -490,19 +542,28 @@
               <Grid Grid.Row="1" ColumnDefinitions="75,*,25" ColumnSpacing="8">
                 <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                   <materialIcons:MaterialIcon Kind="Account" Width="12" Height="12" />
-                  <TextBlock Text="User:" Classes="field-label" FontSize="10" />
+                  <TextBlock Text="User:" Classes="field-label" FontSize="11" />
                 </StackPanel>
-                <Border Grid.Column="1" 
+                <Border Grid.Column="1"
                         Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
                         BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
                         BorderThickness="1"
                         CornerRadius="3"
                         Padding="4,2"
                         MinHeight="24">
-                  <TextBlock Text="{Binding EditModel.User}"
-                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                             FontSize="10"
-                             VerticalAlignment="Center" />
+                  <TextBox Text="{Binding EditModel.User, Mode=OneWay}"
+                                         Classes="input-field"
+                                         MinHeight="26"
+                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                           FontSize="11"
+                           VerticalAlignment="Center"
+                           IsReadOnly="True"
+                           Background="Transparent"
+                           BorderThickness="0"
+                           Padding="0"
+                           IsHitTestVisible="False"
+                           Focusable="False"
+                           IsTabStop="False" />
                 </Border>
                 <materialIcons:MaterialIcon Grid.Column="2" Kind="Lock" Width="12" Height="12"
                                             Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
@@ -512,7 +573,7 @@
               <Grid Grid.Row="2" ColumnDefinitions="75,*" ColumnSpacing="8">
                 <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Top" Margin="0,2,0,0">
                   <materialIcons:MaterialIcon Kind="Clock" Width="12" Height="12" />
-                  <TextBlock Text="Timestamps:" Classes="field-label" FontSize="10" />
+                  <TextBlock Text="Timestamps:" Classes="field-label" FontSize="11" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Spacing="4">
                   <Border Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
@@ -521,10 +582,19 @@
                           CornerRadius="3"
                           Padding="4,2"
                           MinHeight="24">
-                    <TextBlock Text="{Binding EditModel.ReceiveDate, StringFormat='Created: {0:MM/dd/yyyy HH:mm}'}"
-                               Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                               FontSize="10"
-                               VerticalAlignment="Center" />
+                    <TextBox Text="{Binding EditModel.ReceiveDate, StringFormat='Created: {0:MM/dd/yyyy HH:mm}', Mode=OneWay}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             FontSize="11"
+                             MinHeight="26"
+                                                    Classes="input-field"
+                             VerticalAlignment="Center"
+                             IsReadOnly="True"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Padding="0"
+                             IsHitTestVisible="False"
+                             Focusable="False"
+                             IsTabStop="False" />
                   </Border>
                   <Border Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
@@ -532,10 +602,18 @@
                           CornerRadius="3"
                           Padding="4,2"
                           MinHeight="24">
-                    <TextBlock Text="{Binding EditModel.LastUpdated, StringFormat='Last Updated: {0:MM/dd/yyyy HH:mm}'}"
-                               Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                               FontSize="10"
-                               VerticalAlignment="Center" />
+                    <TextBox Text="{Binding EditModel.LastUpdated, StringFormat='Last Updated: {0:MM/dd/yyyy HH:mm}', Mode=OneWay}"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             FontSize="11"
+                                                    Classes="input-field"
+                             VerticalAlignment="Center"
+                             IsReadOnly="True"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Padding="0"
+                             IsHitTestVisible="False"
+                             Focusable="False"
+                             IsTabStop="False" />
                   </Border>
                   <!-- Spacer removed - not needed with fixed height -->
                 </StackPanel>
@@ -545,7 +623,7 @@
           </Expander>
         </Grid>
       </Grid>
-      
+
       </ScrollViewer>
     </Border>
 
@@ -555,21 +633,21 @@
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
             BorderThickness="1"
             CornerRadius="0,0,8,8"
-            Padding="16,10"
-            MinHeight="60">
-      
-      <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="12">
-        
+            Padding="12,6"
+            MinHeight="48">
+
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+
         <!-- Loading Indicator -->
-        <StackPanel Grid.Column="0" 
-                    Orientation="Horizontal" 
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
                     Spacing="8"
                     IsVisible="{Binding IsLoading}"
                     VerticalAlignment="Center">
-          <materialIcons:MaterialIcon Kind="Loading" 
+          <materialIcons:MaterialIcon Kind="Loading"
                                       Width="16" Height="16"
                                       Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-          <TextBlock Text="Saving..." 
+          <TextBlock Text="Saving..."
                      FontSize="12"
                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
         </StackPanel>
@@ -580,12 +658,12 @@
         <!-- Revert Changes Button -->
         <Button Grid.Column="2"
                 Classes="warning"
-                Width="110"
+                Width="90"
                 Command="{Binding RevertCommand}"
                 IsEnabled="{Binding EditModel.HasChanges}"
                 ToolTip.Tip="Revert all changes to original values">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <materialIcons:MaterialIcon Kind="Undo" Width="14" Height="14" />
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <materialIcons:MaterialIcon Kind="Undo" Width="12" Height="12" />
             <TextBlock Text="Revert" FontSize="11" />
           </StackPanel>
         </Button>
@@ -593,11 +671,11 @@
         <!-- Cancel Button -->
         <Button Grid.Column="3"
                 Classes="secondary"
-                Width="100"
+                Width="80"
                 Command="{Binding CancelCommand}"
                 ToolTip.Tip="Cancel editing and close dialog">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <materialIcons:MaterialIcon Kind="Close" Width="14" Height="14" />
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <materialIcons:MaterialIcon Kind="Close" Width="12" Height="12" />
             <TextBlock Text="Cancel" FontSize="11" />
           </StackPanel>
         </Button>
@@ -605,12 +683,12 @@
         <!-- Save Button -->
         <Button Grid.Column="4"
                 Classes="primary"
-                Width="100"
+                Width="80"
                 Command="{Binding SaveCommand}"
                 IsEnabled="{Binding CanSave}"
                 ToolTip.Tip="Save changes to inventory item">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <materialIcons:MaterialIcon Kind="ContentSave" Width="14" Height="14" />
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <materialIcons:MaterialIcon Kind="ContentSave" Width="12" Height="12" />
             <TextBlock Text="Save" FontSize="11" />
           </StackPanel>
         </Button>

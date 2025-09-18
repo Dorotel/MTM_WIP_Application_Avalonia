@@ -103,19 +103,19 @@
 
   <!-- Root Grid for overlay positioning -->
   <Grid x:Name="RootContainer">
-    
+
     <!-- Main Layout Container - No ScrollViewer wrapper, CustomDataGrid handles its own scrolling -->
     <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8" Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
 
       <!-- Data Display Section -->
       <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,8">
-        
+
         <Grid x:Name="DataContainer" RowDefinitions="Auto,Auto,*">
 
           <!-- Search Input Panel (CollapsiblePanel) -->
           <controls:CollapsiblePanel Grid.Row="1" x:Name="SearchPanel" Header="Search Filters" HeaderPosition="Top" IsExpanded="True" Margin="0,0,0,16">
             <Grid x:Name="SearchFieldsGrid" RowDefinitions="Auto,Auto" RowSpacing="12" Margin="8">
-              
+
               <!-- Part ID Field -->
               <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
@@ -139,37 +139,36 @@
 
           <!-- Data Display Area - CustomDataGrid Integration -->
           <Grid Grid.Row="2" RowDefinitions="*,Auto">
-            
+
             <!-- CustomDataGrid for Inventory Data Display -->
-            <customDataGrid:CustomDataGrid Grid.Row="0" 
+            <customDataGrid:CustomDataGrid Grid.Row="0"
                                          x:Name="InventoryDataGrid"
                                          ItemsSource="{Binding InventoryItems}"
                                          IsMultiSelectEnabled="False"
                                          SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                          DeleteItemCommand="{Binding DeleteSingleItemCommand}"
-                                         ReadNoteCommand="{Binding ReadNoteCommand}"
                                          EditItemCommand="{Binding EditItemCommand}"
                                          IsVisible="{Binding HasInventoryItems}"
-                                         Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                                         BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" 
-                                         BorderThickness="1" 
-                                         CornerRadius="4" 
+                                         Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                                         BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                                         BorderThickness="1"
+                                         CornerRadius="4"
                                          MinHeight="200"
                                          MaxHeight="400" />
 
             <!-- Nothing Found Indicator -->
-            <Border Grid.Row="0" IsVisible="{Binding !HasInventoryItems}" 
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" 
+            <Border Grid.Row="0" IsVisible="{Binding !HasInventoryItems}"
+                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
                     BorderThickness="1" CornerRadius="4" Padding="32" MinHeight="200">
               <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
-                <materialIcons:MaterialIcon Kind="DatabaseRemove" Width="48" Height="48" 
+                <materialIcons:MaterialIcon Kind="DatabaseRemove" Width="48" Height="48"
                                           Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
-                <TextBlock Text="No inventory items found" FontSize="16" FontWeight="Medium" 
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                <TextBlock Text="No inventory items found" FontSize="16" FontWeight="Medium"
+                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                           HorizontalAlignment="Center" />
-                <TextBlock Text="Enter search criteria above and click Search" FontSize="12" 
-                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                <TextBlock Text="Enter search criteria above and click Search" FontSize="12"
+                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
                           HorizontalAlignment="Center" />
               </StackPanel>
             </Border>
@@ -177,9 +176,9 @@
             <!-- Loading Indicator -->
             <Border Grid.Row="0" IsVisible="{Binding IsLoading}" Background="#80000000" MinHeight="200">
               <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
-                <ProgressBar IsIndeterminate="True" Width="200" Height="4" 
+                <ProgressBar IsIndeterminate="True" Width="200" Height="4"
                            Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-                <TextBlock Text="Loading inventory data..." FontSize="14" Foreground="White" 
+                <TextBlock Text="Loading inventory data..." FontSize="14" Foreground="White"
                           HorizontalAlignment="Center" />
               </StackPanel>
             </Border>
@@ -191,19 +190,19 @@
 
       <!-- Action Buttons Panel -->
       <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,8">
-        
+
         <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="Auto,*,Auto">
-          
+
           <!-- Primary Actions -->
           <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
-            
+
             <Button x:Name="SearchButton" Classes="primary" Width="100" Command="{Binding SearchCommand}" ToolTip.Tip="Search inventory (F5)" Click="OnSearchButtonClick">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Magnify" Width="14" Height="14" />
                 <TextBlock Text="Search" FontSize="11" FontWeight="SemiBold" />
               </StackPanel>
             </Button>
-            
+
             <Button x:Name="DeleteButton" Classes="danger" Width="100" Command="{Binding DeleteCommand}" IsEnabled="{Binding CanDelete}" ToolTip.Tip="Delete selected items (Delete key)" Click="OnDeleteButtonClick">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Delete" Width="14" Height="14" />
@@ -217,7 +216,7 @@
                 <TextBlock Text="Reset" FontSize="11" />
               </StackPanel>
             </Button>
-            
+
           </StackPanel>
 
           <!-- Secondary Actions -->
@@ -252,8 +251,8 @@
     </Grid>
 
     <!-- Note Editor Overlay - positioned above main content when visible -->
-    <Border x:Name="NoteEditorOverlay" 
-            IsVisible="{Binding IsNoteEditorVisible}" 
+    <Border x:Name="NoteEditorOverlay"
+            IsVisible="{Binding IsNoteEditorVisible}"
             Background="#CC000000">
       <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
               BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
@@ -271,23 +270,23 @@
     </Border>
 
     <!-- Edit Inventory Dialog Overlay - comprehensive inventory editing -->
-    <Border x:Name="EditInventoryDialogOverlay" 
-            IsVisible="{Binding IsEditDialogVisible}" 
-            Background="#CC000000">
+    <Border x:Name="EditInventoryDialogOverlay"
+            IsVisible="{Binding IsEditDialogVisible}"
+            Background="#CC000000"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
       <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
               BorderBrush="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
               BorderThickness="2"
               CornerRadius="8"
-              MaxWidth="800"
-              MaxHeight="850"
               Margin="30"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Center"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
               BoxShadow="0 12 48 12 #60000000">
         <!-- Reference to EditInventoryView with proper DataContext -->
         <overlayViews:EditInventoryView DataContext="{Binding EditDialogViewModel}" />
       </Border>
     </Border>
-    
+
   </Grid> <!-- Close RootContainer -->
 </UserControl>

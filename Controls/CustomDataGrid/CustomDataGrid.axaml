@@ -8,7 +8,7 @@
 
   <UserControl.Styles>
     <!-- MTM CustomDataGrid Cell Styles -->
-    
+
     <!-- Header Cell Base Style -->
     <Style Selector="Border.header-cell">
       <Setter Property="MinHeight" Value="36" />
@@ -222,7 +222,7 @@
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
             BorderThickness="1,1,1,0"
             CornerRadius="8,8,0,0">
-      
+
       <Grid x:Name="DynamicHeaderGrid">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="40" />      <!-- Selection -->
@@ -246,19 +246,19 @@
 
         <!-- Part ID Header -->
         <Border Grid.Column="1" Classes="header-cell">
-          <TextBlock Text="Part ID" 
+          <TextBlock Text="Part ID"
                      HorizontalAlignment="Center" />
         </Border>
 
         <!-- Operation Header -->
         <Border Grid.Column="2" Classes="header-cell">
-          <TextBlock Text="Operation" 
+          <TextBlock Text="Operation"
                      HorizontalAlignment="Center" />
         </Border>
 
         <!-- Location Header -->
         <Border Grid.Column="3" Classes="header-cell">
-          <TextBlock Text="Location" 
+          <TextBlock Text="Location"
                      HorizontalAlignment="Center" />
         </Border>
 
@@ -399,7 +399,7 @@
             BorderThickness="1,0,1,1"
             CornerRadius="0,0,8,8"
             Padding="16,12">
-      
+
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
@@ -407,11 +407,11 @@
         </Grid.ColumnDefinitions>
 
         <!-- Selection Info -->
-        <StackPanel Grid.Column="0" 
-                    Orientation="Horizontal" 
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
                     Spacing="16"
                     VerticalAlignment="Center">
-          
+
           <TextBlock x:Name="SelectionInfoText"
                      Text="No items selected"
                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
@@ -421,25 +421,10 @@
         </StackPanel>
 
         <!-- Action Buttons -->
-        <StackPanel Grid.Column="1" 
-                    Orientation="Horizontal" 
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
                     Spacing="8"
                     VerticalAlignment="Center">
-
-          <!-- Read Note Button -->
-          <Button x:Name="ReadNoteButton"
-                  Content="📝 Read Note"
-                  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                  Foreground="White"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                  BorderThickness="1"
-                  CornerRadius="4"
-                  Padding="12,6"
-                  FontSize="12"
-                  Cursor="Hand"
-                  IsEnabled="False"
-                  Command="{Binding ReadNoteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                  ToolTip.Tip="Read note for selected item (only available when item has notes)" />
 
           <!-- Edit Button -->
           <Button x:Name="EditButton"
@@ -455,21 +440,6 @@
                   IsEnabled="False"
                   Command="{Binding EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                   ToolTip.Tip="Edit selected inventory item (all fields including Part ID, Location, Operation, Quantity, Notes, etc.)" />
-
-          <!-- View Details Button -->
-          <Button x:Name="ViewDetailsButton"
-                  Content="👁️ Details"
-                  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                  Foreground="White"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                  BorderThickness="1"
-                  CornerRadius="4"
-                  Padding="12,6"
-                  FontSize="12"
-                  Cursor="Hand"
-                  IsEnabled="False"
-                  Command="{Binding ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                  ToolTip.Tip="View details for selected item" />
 
           <!-- Delete Button -->
           <Button x:Name="DeleteButton"
@@ -499,7 +469,7 @@
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
             BorderThickness="1,1,0,1"
             IsVisible="False">
-      
+
       <!-- Column Management Panel will be implemented in Phase 3 -->
       <TextBlock Text="Column Management\\n(Phase 3)"
                  HorizontalAlignment="Center"
@@ -518,7 +488,7 @@
             BorderThickness="1,1,1,1"
             CornerRadius="0,8,8,0"
             IsVisible="False">
-      
+
       <!-- Filter Panel will be implemented in Phase 5 -->
       <TextBlock Text="Filter Panel\\n(Phase 5)"
                  HorizontalAlignment="Center"

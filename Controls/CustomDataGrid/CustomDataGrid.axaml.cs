@@ -39,12 +39,6 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsMultiSelectEnabled), true);
 
         /// <summary>
-        /// Command for reading notes of an item
-        /// </summary>
-        public static readonly StyledProperty<ICommand?> ReadNoteCommandProperty =
-            AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(ReadNoteCommand));
-
-        /// <summary>
         /// Command for deleting an item
         /// </summary>
         public static readonly StyledProperty<ICommand?> DeleteItemCommandProperty =
@@ -55,12 +49,6 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         public static readonly StyledProperty<ICommand?> EditItemCommandProperty =
             AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(EditItemCommand));
-
-        /// <summary>
-        /// Command for viewing item details
-        /// </summary>
-        public static readonly StyledProperty<ICommand?> ViewDetailsCommandProperty =
-            AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(ViewDetailsCommand));
 
         /// <summary>
         /// Gets or sets the selected item
@@ -91,15 +79,6 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         }
 
         /// <summary>
-        /// Gets or sets the command for reading notes of an item
-        /// </summary>
-        public ICommand? ReadNoteCommand
-        {
-            get => GetValue(ReadNoteCommandProperty);
-            set => SetValue(ReadNoteCommandProperty, value);
-        }
-
-        /// <summary>
         /// Gets or sets the command for deleting an item
         /// </summary>
         public ICommand? DeleteItemCommand
@@ -115,15 +94,6 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         {
             get => GetValue(EditItemCommandProperty);
             set => SetValue(EditItemCommandProperty, value);
-        }
-
-        /// <summary>
-        /// Gets or sets the command for viewing item details
-        /// </summary>
-        public ICommand? ViewDetailsCommand
-        {
-            get => GetValue(ViewDetailsCommandProperty);
-            set => SetValue(ViewDetailsCommandProperty, value);
         }
 
         /// <summary>
@@ -157,16 +127,16 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<CustomDataGrid>.Instance;
 
             InitializeComponent();
-            
+
             // Subscribe to ListBox selection changes
             if (DataListBox != null)
             {
                 DataListBox.SelectionChanged += OnDataListBoxSelectionChanged;
             }
-            
+
             // Initialize button states
             UpdateActionButtonStates();
-            
+
             _logger.LogDebug("CustomDataGrid initialized");
         }
 
@@ -196,8 +166,8 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void HandleItemsSourceChanged(IEnumerable? oldValue, IEnumerable? newValue)
         {
-            _logger.LogDebug("ItemsSource changed from {OldType} to {NewType}", 
-                oldValue?.GetType().Name ?? "null", 
+            _logger.LogDebug("ItemsSource changed from {OldType} to {NewType}",
+                oldValue?.GetType().Name ?? "null",
                 newValue?.GetType().Name ?? "null");
 
             // Unsubscribe from old collection change notifications
@@ -231,7 +201,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         private void HandleMultiSelectEnabledChanged(bool isEnabled)
         {
             _logger.LogDebug("Multi-select enabled changed to: {IsEnabled}", isEnabled);
-            
+
             if (DataListBox != null)
             {
                 DataListBox.SelectionMode = isEnabled ? SelectionMode.Multiple : SelectionMode.Single;
@@ -250,7 +220,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         private void OnItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             _logger.LogTrace("Items collection changed: {Action}", e.Action);
-            
+
             // Update select all state when collection changes
             UpdateSelectAllState();
 
@@ -268,12 +238,12 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void OnDataListBoxSelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
         {
-            _logger.LogDebug("DataListBox selection changed: {SelectedCount} items selected", 
+            _logger.LogDebug("DataListBox selection changed: {SelectedCount} items selected",
                 DataListBox?.SelectedItems?.Count ?? 0);
 
             // Update action button states based on selection
             UpdateActionButtonStates();
-            
+
             // Update selection info text
             UpdateSelectionInfoText();
 
@@ -282,8 +252,8 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 
             // Raise selection changed event
             var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
-            SelectionChanged?.Invoke(this, new SelectionChangedEventArgs 
-            { 
+            SelectionChanged?.Invoke(this, new SelectionChangedEventArgs
+            {
                 SelectedItems = selectedItems,
                 SelectionMode = "ListBoxSelection"
             });
@@ -305,27 +275,8 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             if (EditButton != null)
                 EditButton.IsEnabled = singleSelection; // Edit only works on single selection
 
-            if (ViewDetailsButton != null)
-                ViewDetailsButton.IsEnabled = singleSelection; // View details only works on single selection
-
             if (DeleteButton != null)
                 DeleteButton.IsEnabled = hasSelection; // Delete works on any selection
-
-            // ReadNote button - only enabled if single selection and item has notes
-            if (ReadNoteButton != null)
-            {
-                var canReadNote = false;
-                if (singleSelection)
-                {
-                    var selectedItem = selectedItems.First();
-                    var hasNotesProperty = selectedItem.GetType().GetProperty("HasNotes");
-                    if (hasNotesProperty != null)
-                    {
-                        canReadNote = hasNotesProperty.GetValue(selectedItem) as bool? == true;
-                    }
-                }
-                ReadNoteButton.IsEnabled = canReadNote;
-            }
 
             // Update command parameters with selected items
             UpdateCommandParameters();
@@ -342,19 +293,9 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             _logger.LogTrace("Updating command parameters for {SelectedCount} selected items", selectedItems.Count);
 
             // Update action button command parameters to use selected item(s)
-            if (ReadNoteButton != null && ReadNoteCommand != null && selectedItem != null)
-            {
-                ReadNoteButton.CommandParameter = selectedItem;
-            }
-
             if (EditButton != null && EditItemCommand != null && selectedItem != null)
             {
                 EditButton.CommandParameter = selectedItem;
-            }
-
-            if (ViewDetailsButton != null && ViewDetailsCommand != null && selectedItem != null)
-            {
-                ViewDetailsButton.CommandParameter = selectedItem;
             }
 
             if (DeleteButton != null && DeleteItemCommand != null)
@@ -414,7 +355,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
                     if (isSelectedProperty != null && isSelectedProperty.CanWrite)
                     {
                         isSelectedProperty.SetValue(item, selectAll);
-                        
+
                         if (selectAll)
                         {
                             selectedItems.Add(item);
@@ -431,8 +372,8 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             };
 
             SelectionChanged?.Invoke(this, eventArgs);
-            
-            _logger.LogInformation("Selection changed: {SelectedCount} items {Action}", 
+
+            _logger.LogInformation("Selection changed: {SelectedCount} items {Action}",
                 selectedItems.Count, selectAll ? "selected" : "deselected");
         }
 
@@ -527,7 +468,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         private void OnToggleColumnManagement(object sender, RoutedEventArgs e)
         {
             _logger.LogDebug("Column management toggle clicked (Phase 3 - Not implemented)");
-            
+
             // Phase 3 implementation:
             // - Toggle ColumnManagementContainer visibility
             // - Animate panel slide in/out
@@ -553,7 +494,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         private void LogCommandExecution(string commandName, object? parameter)
         {
             var parameterType = parameter?.GetType().Name ?? "null";
-            _logger.LogDebug("Command executed: {CommandName} with parameter type: {ParameterType}", 
+            _logger.LogDebug("Command executed: {CommandName} with parameter type: {ParameterType}",
                 commandName, parameterType);
         }
 
