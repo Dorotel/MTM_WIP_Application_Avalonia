@@ -200,7 +200,7 @@ public partial class MainViewViewModel : BaseViewModel
         InventoryTabViewModel.AdvancedEntryRequested += (sender, e) => OnAdvancedEntryRequested();
         InventoryTabViewModel.TriggerValidationLostFocus += OnInventoryValidationLostFocusRequested;
         QuickButtonsViewModel.QuickActionExecuted += OnQuickActionExecuted;
-        
+
         // Wire up RemoveTab events (TODO: Implement events in ViewModels)
         // RemoveItemViewModel.ItemsRemoved += OnItemsRemoved;
         RemoveItemViewModel.PanelToggleRequested += OnPanelToggleRequested;
@@ -209,6 +209,9 @@ public partial class MainViewViewModel : BaseViewModel
         // Wire up TransferTab events
         TransferItemViewModel.ItemsTransferred += OnItemsTransferred;
         TransferItemViewModel.PanelToggleRequested += OnPanelToggleRequested;
+
+        // Assign QuickButtonsViewModel to child ViewModels for UI integration
+        TransferItemViewModel.QuickButtonsViewModel = QuickButtonsViewModel;
 
         // UI-only initialization; child contents are provided elsewhere via composition
         SelectedTabIndex = 0;
@@ -226,16 +229,16 @@ public partial class MainViewViewModel : BaseViewModel
         {
             // Get SettingsViewModel from DI container
             var settingsViewModel = Program.GetService<SettingsViewModel>();
-            
+
             // Create SettingsView with the ViewModel
             var settingsView = new Views.SettingsView
             {
                 DataContext = settingsViewModel
             };
-            
+
             // Navigate to the settings view
             await Task.Run(() => _navigationService.NavigateTo(settingsView)).ConfigureAwait(false);
-            
+
             Logger.LogInformation("Navigated to Settings view");
             StatusText = "Settings opened";
         }
@@ -256,16 +259,16 @@ public partial class MainViewViewModel : BaseViewModel
         {
             // Get SettingsViewModel from DI container
             var SettingsViewModel = Program.GetService<SettingsViewModel>();
-            
+
             // Create SettingsView with the ViewModel
             var SettingsView = new Views.SettingsView
             {
                 DataContext = SettingsViewModel
             };
-            
+
             // Navigate to the advanced settings view
             await Task.Run(() => _navigationService.NavigateTo(SettingsView)).ConfigureAwait(false);
-            
+
             Logger.LogInformation("Navigated to Advanced Settings form");
             StatusText = "Advanced Settings opened";
         }
@@ -432,7 +435,7 @@ public partial class MainViewViewModel : BaseViewModel
     {
         // Update status
         StatusText = $"Item saved: {e.PartId} ({e.Quantity} units)";
-        
+
         // Update QuickButtons and Session Transaction History
         Task.Run(async () =>
         {
@@ -440,16 +443,16 @@ public partial class MainViewViewModel : BaseViewModel
             {
                 // Add a small delay to ensure database transaction is fully committed
                 await Task.Delay(500);
-                
+
                 // FIXED: Use only the service method which handles both QuickButton addition and SessionTransaction
                 // The service will fire SessionTransactionAdded event which will automatically handle the session history
                 await QuickButtonsViewModel.AddQuickButtonFromOperationAsync(
-                    e.PartId, 
-                    e.Operation ?? "Unknown", 
+                    e.PartId,
+                    e.Operation ?? "Unknown",
                     e.Quantity
                 );
-                
-                Logger.LogInformation("Updated QuickButtons via service: Part={PartId}, Quantity={Quantity}, Operation={Operation}", 
+
+                Logger.LogInformation("Updated QuickButtons via service: Part={PartId}, Quantity={Quantity}, Operation={Operation}",
                     e.PartId, e.Quantity, e.Operation);
             }
             catch (Exception ex)
@@ -476,15 +479,15 @@ public partial class MainViewViewModel : BaseViewModel
 
     private void OnQuickActionExecuted(object? sender, QuickActionExecutedEventArgs e)
     {
-        Logger.LogDebug("OnQuickActionExecuted event handler triggered - Sender: {SenderType}, PartId: {PartId}, Operation: {Operation}, Quantity: {Quantity}", 
+        Logger.LogDebug("OnQuickActionExecuted event handler triggered - Sender: {SenderType}, PartId: {PartId}, Operation: {Operation}, Quantity: {Quantity}",
             sender?.GetType().Name ?? "null", e.PartId, e.Operation, e.Quantity);
-        
+
         try
         {
             // Populate appropriate tab fields with QuickButton data based on current tab
-            Logger.LogInformation("Processing quick action for tab {TabIndex}: {Operation} - {PartId} ({Quantity} units)", 
+            Logger.LogInformation("Processing quick action for tab {TabIndex}: {Operation} - {PartId} ({Quantity} units)",
                 SelectedTabIndex, e.Operation, e.PartId, e.Quantity);
-                
+
             switch (SelectedTabIndex)
             {
                 case 0: // Inventory Tab
@@ -493,7 +496,7 @@ public partial class MainViewViewModel : BaseViewModel
                     InventoryTabViewModel.SelectedOperation = e.Operation;
                     InventoryTabViewModel.Quantity = e.Quantity;
                     InventoryTabViewModel.QuantityText = e.Quantity.ToString(); // Set the text binding property
-                    
+
                     // Force validation update after programmatically setting values
                     TriggerInventoryValidationUpdate();
                     break;
@@ -513,16 +516,20 @@ public partial class MainViewViewModel : BaseViewModel
                     }
                     break;
                 case 2: // Transfer Tab
-                    Logger.LogDebug("Populating Transfer tab with quick action data");
-                    TransferItemViewModel.SelectedPart = e.PartId;
-                    TransferItemViewModel.SelectedOperation = e.Operation;
-                    TransferItemViewModel.TransferQuantity = e.Quantity;
+                    Logger.LogDebug("Populating Transfer tab with quick action data using SetTransferConfiguration");
+                    var quickButtonData = new QuickButtonData
+                    {
+                        PartId = e.PartId,
+                        Operation = e.Operation,
+                        Quantity = e.Quantity
+                    };
+                    TransferItemViewModel.SetTransferConfiguration(quickButtonData);
                     break;
                 default:
                     Logger.LogWarning("Unknown tab index {TabIndex} in quick action handler", SelectedTabIndex);
                     break;
             }
-            
+
             StatusText = $"Quick action: {e.Operation} - {e.PartId} ({e.Quantity} units)";
             Logger.LogInformation("Quick action processed successfully and status updated");
         }
@@ -543,28 +550,28 @@ public partial class MainViewViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Triggering inventory validation update after QuickButton population");
-            
+
             // Call the InventoryTabViewModel's validation refresh method
             // This will update all validation properties and clear error states
             InventoryTabViewModel.RefreshValidationState();
-            
+
             // Trigger LostFocus events on the TextBoxes to ensure proper validation
             // and SuggestionOverlay behavior is triggered (without cursor placement)
             var fieldsToTrigger = new List<string> { "PartId", "Operation", "Quantity" };
             var lostFocusArgs = new TriggerLostFocusEventArgs(fieldsToTrigger, 0, 50); // 50ms delay between fields
-            
+
             TriggerLostFocusRequested?.Invoke(this, lostFocusArgs);
-            
+
             // Add delay before focusing Location to ensure LostFocus events complete
             _ = Task.Run(async () =>
             {
                 await Task.Delay(300); // Wait for LostFocus events to complete
-                
+
                 // After validation triggers, focus on Location field for user to complete entry
                 var focusArgs = new TriggerLostFocusEventArgs(new List<string> { "Location" }, 0, 0, focusOnly: true);
                 TriggerLostFocusRequested?.Invoke(this, focusArgs);
             });
-            
+
             Logger.LogDebug("Inventory validation update, LostFocus triggers, and Location focus completed");
         }
         catch (Exception ex)
@@ -578,23 +585,23 @@ public partial class MainViewViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("OnInventoryValidationLostFocusRequested event handler triggered - triggering LostFocus for validation");
-            
+
             // Trigger LostFocus events on all relevant fields to restore error highlighting
             var fieldsToTrigger = new List<string> { "PartId", "Operation", "Quantity", "Location" };
             var lostFocusArgs = new TriggerLostFocusEventArgs(fieldsToTrigger, 0, 50); // 50ms delay between fields
-            
+
             TriggerLostFocusRequested?.Invoke(this, lostFocusArgs);
-            
+
             // Add delay before focusing PartID to ensure all LostFocus events complete
             _ = Task.Run(async () =>
             {
                 await Task.Delay(450); // Wait for all LostFocus events to complete (4 fields * 50ms + buffer)
-                
+
                 // After validation triggers, focus on PartID field for user to start fresh entry
                 var focusArgs = new TriggerLostFocusEventArgs("PartId", 0, focusOnly: true);
                 TriggerLostFocusRequested?.Invoke(this, focusArgs);
             });
-            
+
             Logger.LogDebug("Validation LostFocus triggers and PartID focus completed for Reset operation");
         }
         catch (Exception ex)
@@ -605,26 +612,26 @@ public partial class MainViewViewModel : BaseViewModel
 
     private void OnItemsRemoved(object? sender, ItemsRemovedEventArgs e)
     {
-        Logger.LogDebug("OnItemsRemoved event handler triggered - Sender: {SenderType}, Items count: {ItemCount}", 
+        Logger.LogDebug("OnItemsRemoved event handler triggered - Sender: {SenderType}, Items count: {ItemCount}",
             sender?.GetType().Name ?? "null", e.RemovedItems.Count);
-        
+
         try
         {
             // Update status with removal information
             var totalQuantity = e.TotalQuantityRemoved;
             var itemCount = e.RemovedItems.Count;
             StatusText = $"Removed: {itemCount} item(s), {totalQuantity} total quantity";
-            
-            Logger.LogInformation("Items removed successfully: {ItemCount} items, {TotalQuantity} total quantity", 
+
+            Logger.LogInformation("Items removed successfully: {ItemCount} items, {TotalQuantity} total quantity",
                 itemCount, totalQuantity);
-                
+
             // Log details of removed items for debugging
             foreach (var item in e.RemovedItems)
             {
-                Logger.LogDebug("Removed item: {PartId} - {Operation} ({Quantity} units) from {Location}", 
+                Logger.LogDebug("Removed item: {PartId} - {Operation} ({Quantity} units) from {Location}",
                     item.PartId, item.Operation, item.Quantity, item.Location);
             }
-            
+
             // TODO: Update QuickButtons or other components as needed
         }
         catch (Exception ex)
@@ -636,17 +643,17 @@ public partial class MainViewViewModel : BaseViewModel
 
     private void OnItemsTransferred(object? sender, ItemsTransferredEventArgs e)
     {
-        Logger.LogDebug("OnItemsTransferred event handler triggered - Sender: {SenderType}, PartId: {PartId}", 
+        Logger.LogDebug("OnItemsTransferred event handler triggered - Sender: {SenderType}, PartId: {PartId}",
             sender?.GetType().Name ?? "null", e.PartId);
-        
+
         try
         {
             // Update status with transfer information
             StatusText = $"Transferred: {e.TransferredQuantity} units of {e.PartId} from {e.FromLocation} to {e.ToLocation}";
-            
-            Logger.LogInformation("Items transferred successfully: {Quantity} units of {PartId} from {FromLocation} to {ToLocation}", 
+
+            Logger.LogInformation("Items transferred successfully: {Quantity} units of {PartId} from {FromLocation} to {ToLocation}",
                 e.TransferredQuantity, e.PartId, e.FromLocation, e.ToLocation);
-            
+
             // TODO: Update QuickButtons with transfer information for future quick actions
         }
         catch (Exception ex)
@@ -681,23 +688,23 @@ public partial class MainViewViewModel : BaseViewModel
 
     private void OnTabSelectionChanged(int tabIndex)
     {
-        Logger.LogDebug("OnTabSelectionChanged triggered - Previous tab: {PreviousTab}, New tab: {NewTab}", 
+        Logger.LogDebug("OnTabSelectionChanged triggered - Previous tab: {PreviousTab}, New tab: {NewTab}",
             SelectedTabIndex, tabIndex);
-        
+
         try
         {
             switch (tabIndex)
             {
                 case 0: // Inventory Tab
                     StatusText = IsAdvancedInventoryMode ? "Advanced Inventory Entry" : "Inventory Entry";
-                    Logger.LogInformation("Switched to Inventory tab - Mode: {Mode}", 
+                    Logger.LogInformation("Switched to Inventory tab - Mode: {Mode}",
                         IsAdvancedInventoryMode ? "Advanced" : "Normal");
                     break;
                 case 1: // Remove Tab
                     StatusText = IsAdvancedRemoveMode ? "Advanced Inventory Removal" : "Inventory Removal";
-                    Logger.LogInformation("Switched to Remove tab - Mode: {Mode}", 
+                    Logger.LogInformation("Switched to Remove tab - Mode: {Mode}",
                         IsAdvancedRemoveMode ? "Advanced" : "Normal");
-                    
+
                     // Load data when switching to Remove tab
                     if (IsAdvancedRemoveMode)
                     {
@@ -729,7 +736,7 @@ public partial class MainViewViewModel : BaseViewModel
                 case 2: // Transfer Tab
                     StatusText = "Inventory Transfer";
                     Logger.LogInformation("Switched to Transfer tab");
-                    
+
                     // Load data when switching to Transfer tab
                     Logger.LogDebug("Loading data for Transfer tab");
                     // Transfer ViewModel will load data when needed
@@ -744,7 +751,7 @@ public partial class MainViewViewModel : BaseViewModel
             // Request focus management for the new tab
             // This will set focus to the first TabIndex=1 control in the current tab
             RequestTabSwitchFocus(tabIndex);
-            
+
             Logger.LogInformation("Tab selection change completed successfully for index: {TabIndex}", tabIndex);
         }
         catch (Exception ex)
@@ -771,7 +778,7 @@ public partial class MainViewViewModel : BaseViewModel
                 };
                 Logger.LogDebug("Created new cached AdvancedInventoryView instance");
             }
-            
+
             InventoryContent = _cachedAdvancedInventoryView;
         }
         else
@@ -785,7 +792,7 @@ public partial class MainViewViewModel : BaseViewModel
                 };
                 Logger.LogDebug("Created new cached InventoryTabView instance");
             }
-            
+
             InventoryContent = _cachedInventoryTabView;
         }
     }
@@ -807,7 +814,7 @@ public partial class MainViewViewModel : BaseViewModel
                 };
                 Logger.LogDebug("Created new cached AdvancedRemoveView instance");
             }
-            
+
             RemoveContent = _cachedAdvancedRemoveView;
         }
         else
@@ -821,7 +828,7 @@ public partial class MainViewViewModel : BaseViewModel
                 };
                 Logger.LogDebug("Created new cached RemoveTabView instance");
             }
-            
+
             RemoveContent = _cachedRemoveTabView;
         }
     }

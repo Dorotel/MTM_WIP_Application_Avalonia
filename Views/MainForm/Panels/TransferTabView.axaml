@@ -5,13 +5,21 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:customDataGrid="using:MTM_WIP_Application_Avalonia.Controls.CustomDataGrid"
              xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
+             xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
+             xmlns:overlayViews="using:MTM_WIP_Application_Avalonia.Views.Overlay"
+             xmlns:conv="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d"
-             d:DesignWidth="800"
              d:DesignHeight="600"
              x:Class="MTM_WIP_Application_Avalonia.Views.TransferTabView"
              x:CompileBindings="True"
              x:DataType="vm:TransferItemViewModel">
+
+  <UserControl.Resources>
+    <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
+    <conv:ColorToBoxShadowConverter x:Key="ColorToBoxShadowConverter" />
+  </UserControl.Resources>
 
   <UserControl.Styles>
     <!-- MTM Theme Input Field Styles -->
@@ -35,27 +43,6 @@
 
     <!-- Focus state styling -->
     <Style Selector="TextBox.input-field:focus">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
-    </Style>
-
-    <!-- NumericUpDown styling to match input-field -->
-    <Style Selector="NumericUpDown.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="Padding" Value="8,6" />
-      <Setter Property="MinHeight" Value="32" />
-    </Style>
-
-    <Style Selector="NumericUpDown.input-field.error">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}" />
-    </Style>
-
-    <Style Selector="NumericUpDown.input-field:focus">
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}" />
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
     </Style>
@@ -116,16 +103,22 @@
 
   </UserControl.Styles>
 
-  <!-- Main Layout Container - ScrollViewer for overflow handling (InventoryTabView pattern) -->
-  <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
-    
-    <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8">
+  <!-- Root Grid for layout and overlay positioning -->
+  <Grid x:Name="RootContainer" Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+
+    <!-- Main Layout Grid with columns for content and QuickButtons -->
+    <Grid x:Name="LayoutContainer" ColumnDefinitions="*,Auto" Margin="8">
+
+      <!-- Left Panel: Main Transfer Content -->
+      <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+        <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="0,0,8,0">
 
       <!-- Main Transfer Configuration Panel -->
       <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,8">
-        
+
         <Grid x:Name="TransferFormGrid" RowDefinitions="Auto,Auto,*">
-          
+
 
 
           <!-- Transfer Configuration Fields -->
@@ -136,7 +129,7 @@
                                     IsExpanded="True"
                                     ToolTip.Tip="Configure source and destination for inventory transfer"
                                     Margin="0,0,0,16">
-            
+
             <Grid x:Name="ConfigFieldsGrid" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12" Margin="12">
 
               <!-- Part ID Field -->
@@ -145,7 +138,7 @@
                   <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding PartText, Mode=TwoWay}" Watermark="Enter part ID for transfer..." Classes="input-field" ToolTip.Tip="Select or enter part ID to search for transfer candidates" TabIndex="1" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding PartOptions}" />
+                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding PartText, Mode=TwoWay}" Watermark="Enter part ID for transfer..." Classes="input-field" ToolTip.Tip="Select or enter part ID to search for transfer candidates" TabIndex="1" />
               </Grid>
 
               <!-- Operation Field -->
@@ -154,7 +147,7 @@
                   <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding OperationText, Mode=TwoWay}" Watermark="Enter operation number (optional)..." Classes="input-field" ToolTip.Tip="Select or enter operation number to filter transfer candidates" TabIndex="2" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding OperationOptions}" />
+                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding OperationText, Mode=TwoWay}" Watermark="Enter operation number (optional)..." Classes="input-field" ToolTip.Tip="Select or enter operation number to filter transfer candidates" TabIndex="2" />
               </Grid>
 
               <!-- To Location Field -->
@@ -163,7 +156,7 @@
                   <materialIcons:MaterialIcon Kind="MapMarkerRadius" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                   <TextBlock Text="To Location:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="ToLocationTextBox" Text="{Binding ToLocationText, Mode=TwoWay}" Watermark="Select destination location..." Classes="input-field" Classes.error="{Binding HasLocationValidationError}" ToolTip.Tip="Select or enter destination location for transfer" TabIndex="3" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding LocationOptions}" />
+                <TextBox Grid.Column="1" x:Name="ToLocationTextBox" Text="{Binding ToLocationText, Mode=TwoWay}" Watermark="Select destination location..." Classes="input-field" Classes.error="{Binding HasLocationValidationError}" ToolTip.Tip="Select or enter destination location for transfer" TabIndex="3" />
               </Grid>
 
               <!-- Transfer Quantity Field -->
@@ -173,14 +166,14 @@
                   <TextBlock Text="Quantity:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
                 </StackPanel>
                 <Grid Grid.Column="1" ColumnDefinitions="*,Auto">
-                  <NumericUpDown Grid.Column="0" 
-                                Value="{Binding TransferQuantity, Mode=TwoWay}"
-                                Minimum="1"
-                                Maximum="{Binding MaxTransferQuantity}"
-                                Classes="input-field"
-                                Classes.error="{Binding HasQuantityValidationError}"
-                                ToolTip.Tip="Enter quantity to transfer (max based on available inventory)"
-                                TabIndex="4" />
+                  <TextBox Grid.Column="0"
+                           x:Name="QuantityTextBox"
+                           Text="{Binding TransferQuantityText, Mode=TwoWay}"
+                           Watermark="Enter quantity to transfer..."
+                           Classes="input-field"
+                           Classes.error="{Binding HasQuantityValidationError}"
+                           ToolTip.Tip="Enter numeric quantity to transfer"
+                           TabIndex="4" />
                   <Border Grid.Column="1"
                           Background="{DynamicResource MTM_Shared_Logic.InteractiveText}"
                           CornerRadius="4"
@@ -197,9 +190,9 @@
               </Grid>
 
             </Grid>
-            
+
           </controls:CollapsiblePanel>
-          
+
           <!-- DataGrid for Available Inventory -->
           <Border Grid.Row="2"
                   Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
@@ -207,11 +200,11 @@
                   BorderThickness="1"
                   CornerRadius="6"
                   Padding="8">
-            
+
             <Grid RowDefinitions="Auto,*">
-              
+
               <!-- DataGrid Header -->
-              <Border Grid.Row="0" 
+              <Border Grid.Row="0"
                       Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
                       CornerRadius="4"
                       Padding="12,8"
@@ -249,24 +242,24 @@
                   </Border>
                 </Grid>
               </Border>
-              
-              <!-- Data Display Area - Placeholder for new display method -->
+
+              <!-- Data Display Area - TransferCustomDataGrid Integration -->
               <Grid Grid.Row="1">
-                
+
                 <!-- Loading Overlay -->
-                <Border Background="#80000000" 
+                <Border Background="#80000000"
                         CornerRadius="6"
                         IsVisible="{Binding IsLoading}"
                         ZIndex="10">
-                  <StackPanel HorizontalAlignment="Center" 
-                              VerticalAlignment="Center" 
+                  <StackPanel HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
                               Spacing="12">
-                    <ProgressBar IsIndeterminate="True" 
-                                Width="200" 
-                                Height="4" 
+                    <ProgressBar IsIndeterminate="True"
+                                Width="200"
+                                Height="4"
                                 Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
                                 Background="Transparent"/>
-                    <TextBlock Text="Loading inventory data..." 
+                    <TextBlock Text="Loading inventory data..."
                               FontSize="14"
                               FontWeight="Medium"
                               Foreground="White"
@@ -274,27 +267,21 @@
                   </StackPanel>
                 </Border>
 
-                <!-- Inventory Data Available - Placeholder for new display component -->
-                <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-                        BorderThickness="1"
-                        CornerRadius="6"
-                        Padding="16" MinHeight="200"
-                        IsVisible="{Binding HasInventoryItems}"
-                        ZIndex="1">
-                  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
-                    <materialIcons:MaterialIcon Kind="CheckCircle" Width="48" Height="48" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
-                    <TextBlock Text="Transfer inventory data loaded successfully" 
-                              FontSize="16" FontWeight="Medium" 
-                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
-                              HorizontalAlignment="Center" />
-                    <TextBlock Text="Data is ready - new display component will be added here" 
-                              FontSize="12" 
-                              Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
-                              HorizontalAlignment="Center" />
-                  </StackPanel>
-                </Border>
+                <!-- TransferCustomDataGrid for Transfer Operations -->
+                <customDataGrid:TransferCustomDataGrid Grid.Row="0"
+                                                     x:Name="TransferInventoryDataGrid"
+                                                     ItemsSource="{Binding InventoryItems}"
+                                                     SelectedItem="{Binding SelectedInventoryItem, Mode=TwoWay}"
+                                                     SelectedItemsCollection="{Binding SelectedInventoryItems}"
+                                                     ExecuteTransferCommand="{Binding TransferCommand}"
+                                                     IsVisible="{Binding HasInventoryItems}"
+                                                     Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                                                     BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                                                     BorderThickness="1"
+                                                     CornerRadius="4"
+                                                     MinHeight="200"
+                                                     MaxHeight="400"
+                                                     ZIndex="5" />
 
                 <!-- Nothing Found Indicator -->
                 <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
@@ -304,34 +291,34 @@
                         Padding="40"
                         IsVisible="{Binding ShowNothingFoundIndicator}"
                         ZIndex="5">
-                  <StackPanel HorizontalAlignment="Center" 
-                              VerticalAlignment="Center" 
+                  <StackPanel HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
                               Spacing="16">
-                    <materialIcons:MaterialIcon Kind="FileFind" 
-                                              Width="48" 
-                                              Height="48" 
+                    <materialIcons:MaterialIcon Kind="FileFind"
+                                              Width="48"
+                                              Height="48"
                                               Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"/>
-                    <TextBlock Text="Nothing Found" 
+                    <TextBlock Text="Nothing Found"
                               FontSize="18"
                               FontWeight="SemiBold"
                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
                               HorizontalAlignment="Center"/>
-                    <TextBlock Text="No transfer candidates match your search criteria." 
+                    <TextBlock Text="No transfer candidates match your search criteria."
                               FontSize="12"
                               Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
                               HorizontalAlignment="Center"
                               TextWrapping="Wrap"
                               MaxWidth="300"/>
-                    <StackPanel Orientation="Horizontal" 
-                                Spacing="8" 
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="8"
                                 HorizontalAlignment="Center"
                                 Margin="0,8,0,0">
-                      <Button Content="Reset Search" 
+                      <Button Content="Reset Search"
                               Classes="secondary"
                               Command="{Binding ResetCommand}"
                               ToolTip.Tip="Clear search criteria and reset form"
                               Padding="12,6"/>
-                      <Button Content="Modify Criteria" 
+                      <Button Content="Modify Criteria"
                               Classes="primary"
                               Command="{Binding ExpandPanelCommand}"
                               ToolTip.Tip="Expand search panel to modify criteria"
@@ -340,44 +327,44 @@
                   </StackPanel>
                 </Border>
               </Grid>
-              
+
             </Grid>
           </Border>
-          
+
         </Grid>
       </Border>
 
       <!-- Action Buttons Panel -->
       <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,8">
-        
+
         <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="Auto,*">
-          
+
           <!-- Action buttons -->
           <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
-            
+
             <Button x:Name="SearchButton" Classes="primary" Width="100" Command="{Binding SearchCommand}" IsEnabled="{Binding CanSearch}" ToolTip.Tip="Search for transfer candidates (F5)" TabIndex="5">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Magnify" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                 <TextBlock Text="Search" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
               </StackPanel>
             </Button>
-            
+
             <Button x:Name="TransferButton" Classes="transfer" Width="100" Command="{Binding TransferCommand}" IsEnabled="{Binding CanTransfer}" ToolTip.Tip="Execute transfer (Enter)" TabIndex="6">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="ArrowRightBold" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 <TextBlock Text="Transfer" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" />
               </StackPanel>
             </Button>
-            
+
             <Button Classes="secondary" Width="100" Command="{Binding ResetCommand}" ToolTip.Tip="Reset form (Escape)" TabIndex="7">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 <TextBlock Text="Reset" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
-            
+
           </StackPanel>
-          
+
           <Grid Grid.Column="1" HorizontalAlignment="Right">
             <Button Classes="secondary" Width="120" Command="{Binding PrintCommand}" ToolTip.Tip="Test print functionality with mock data (Ctrl+P)" TabIndex="8">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
@@ -391,5 +378,66 @@
       </Border>
 
     </Grid>
-  </ScrollViewer>
+      </ScrollViewer>
+
+      <!-- Right Panel: Collapsible Quick Actions -->
+      <controls:CollapsiblePanel Grid.Column="1"
+                                HeaderPosition="Right"
+                                IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
+                                IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
+                                Margin="0,0,0,0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                MinWidth="40">
+        <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"/>
+      </controls:CollapsiblePanel>
+    </Grid>
+
+    <!-- Suggestion Overlay Panel - Covers entire left panel area when visible -->
+    <Border x:Name="SuggestionOverlayPanel"
+            IsVisible="False"
+            Background="{DynamicResource MTM_Shared_Logic.ShadowBrush}"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Margin="8"
+            CornerRadius="8"
+            ZIndex="1003">
+      <!-- Centered overlay container -->
+      <Border Padding="16"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+              BorderThickness="2"
+              CornerRadius="12"
+              BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,32,0'}">
+        <!-- Overlay content will be dynamically set -->
+        <ContentControl x:Name="SuggestionOverlayContent"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"/>
+      </Border>
+    </Border>
+
+    <!-- Success Overlay Panel - Full screen overlay for success messages -->
+    <Border x:Name="SuccessOverlayPanel"
+            IsVisible="False"
+            Background="{DynamicResource MTM_Shared_Logic.ShadowBrush}"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Margin="8"
+            CornerRadius="8"
+            ZIndex="1001">
+      <!-- Success overlay content will be dynamically set -->
+      <ContentControl x:Name="SuccessOverlayContent"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      VerticalContentAlignment="Stretch"/>
+    </Border>
+
+  </Grid> <!-- Close RootContainer -->
 </UserControl>

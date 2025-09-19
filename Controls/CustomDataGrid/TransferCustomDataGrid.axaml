@@ -1,0 +1,508 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.TransferCustomDataGrid"
+             x:Name="TransferCustomDataGridRoot">
+
+  <UserControl.Styles>
+    <!-- MTM TransferCustomDataGrid Cell Styles -->
+
+    <!-- Header Cell Base Style -->
+    <Style Selector="Border.header-cell">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+    </Style>
+
+    <Style Selector="Border.header-cell TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Data Cell Base Style -->
+    <Style Selector="Border.data-cell">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+    </Style>
+
+    <Style Selector="Border.data-cell TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- Transfer Arrow Cell Style -->
+    <Style Selector="Border.arrow-cell">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+      <Setter Property="Padding" Value="4,6" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+    </Style>
+
+    <Style Selector="Border.arrow-header-cell">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+      <Setter Property="Padding" Value="4,6" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+    </Style>
+
+    <Style Selector="TextBlock.transfer-arrow">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Action Cell Styles -->
+    <Style Selector="Border.action-cell, Border.action-header-cell">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+      <Setter Property="Padding" Value="4,6" />
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+    </Style>
+
+    <Style Selector="Border.action-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+    </Style>
+
+    <!-- Transfer Button Styles -->
+    <Style Selector="Border.action-cell Button.transfer-action">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="Padding" Value="4,2" />
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
+      <Setter Property="Margin" Value="1" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Border.action-cell Button.transfer-action:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}" />
+    </Style>
+
+    <Style Selector="Border.action-cell Button.edit-action">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryAction}" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryAction}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="Padding" Value="4,2" />
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
+      <Setter Property="Margin" Value="1" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Border.action-cell Button.edit-action:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}" />
+    </Style>
+
+    <!-- Interactive States -->
+    <Style Selector="Border.data-cell:pointerover, Border.arrow-cell:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+    </Style>
+
+    <!-- Alternating Row Colors -->
+    <Style Selector="ListBoxItem:nth-child(2n) Border.data-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.AlternateRowBrush}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:nth-child(2n) Border.arrow-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.AlternateRowBrush}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:nth-child(2n) Border.action-cell">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.AlternateRowBrush}" />
+    </Style>
+
+    <!-- Selection State - WinForms DataGridView Style -->
+    <Style Selector="ListBoxItem:selected Border.data-cell">
+      <Setter Property="Background" Value="#3390FF" />
+      <Setter Property="BorderBrush" Value="#2080EF" />
+    </Style>
+
+    <Style Selector="ListBoxItem:selected Border.arrow-cell">
+      <Setter Property="Background" Value="#3390FF" />
+      <Setter Property="BorderBrush" Value="#2080EF" />
+    </Style>
+
+    <Style Selector="ListBoxItem:selected Border.action-cell">
+      <Setter Property="Background" Value="#3390FF" />
+      <Setter Property="BorderBrush" Value="#2080EF" />
+    </Style>
+
+    <!-- Selected row text color override for visibility on blue background -->
+    <Style Selector="ListBoxItem:selected Border.data-cell TextBlock">
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+
+    <Style Selector="ListBoxItem:selected TextBlock.transfer-arrow">
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <!-- Selection when control loses focus (gray like WinForms) -->
+    <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.data-cell">
+      <Setter Property="Background" Value="#D0D0D0" />
+      <Setter Property="BorderBrush" Value="#C0C0C0" />
+    </Style>
+
+    <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.data-cell TextBlock">
+      <Setter Property="Foreground" Value="Black" />
+    </Style>
+
+    <!-- Notes Indicator Style -->
+    <Style Selector="TextBlock.notes-indicator">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Right-aligned text for numeric columns -->
+    <Style Selector="TextBlock.numeric-value">
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="TextAlignment" Value="Right" />
+    </Style>
+
+  </UserControl.Styles>
+
+  <!-- Main Grid Container -->
+  <Grid x:Name="MainGrid" RowDefinitions="Auto,*,Auto" ColumnDefinitions="*,Auto,Auto">
+
+    <!-- Header Section -->
+    <Border Grid.Row="0" Grid.Column="0"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            BorderThickness="1,1,1,0"
+            CornerRadius="8,8,0,0">
+
+      <Grid x:Name="DynamicHeaderGrid">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1.2*" />    <!-- Part ID -->
+          <ColumnDefinition Width="0.8*" />    <!-- Operation -->
+          <ColumnDefinition Width="1*" />      <!-- From Location -->
+          <ColumnDefinition Width="40" />      <!-- Transfer Arrow -->
+          <ColumnDefinition Width="1*" />      <!-- To Location -->
+          <ColumnDefinition Width="0.8*" />    <!-- Available Qty -->
+          <ColumnDefinition Width="0.8*" />    <!-- Transfer Qty -->
+          <ColumnDefinition Width="80" />      <!-- Notes -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Part ID Header -->
+        <Border Grid.Column="0" Classes="header-cell">
+          <TextBlock Text="Part ID"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Operation Header -->
+        <Border Grid.Column="1" Classes="header-cell">
+          <TextBlock Text="Operation"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- From Location Header -->
+        <Border Grid.Column="2" Classes="header-cell">
+          <TextBlock Text="From Location"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Transfer Arrow Header -->
+        <Border Grid.Column="3" Classes="arrow-header-cell">
+          <TextBlock Text="➜"
+                     Classes="transfer-arrow"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- To Location Header -->
+        <Border Grid.Column="4" Classes="header-cell">
+          <TextBlock Text="To Location"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Available Quantity Header -->
+        <Border Grid.Column="5" Classes="header-cell">
+          <TextBlock Text="Available"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Transfer Quantity Header -->
+        <Border Grid.Column="6" Classes="header-cell">
+          <TextBlock Text="Transfer"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Notes Header -->
+        <Border Grid.Column="7" Classes="header-cell">
+          <TextBlock Text="Notes"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+      </Grid>
+    </Border>
+
+    <!-- Data Section with ScrollViewer -->
+    <ScrollViewer Grid.Row="1" Grid.Column="0"
+                  x:Name="DataScrollViewer"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                  BorderThickness="1,0,1,1"
+                  CornerRadius="0,0,8,8">
+
+      <!-- Data ListBox with Virtual Scrolling -->
+      <ListBox x:Name="DataListBox"
+               ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
+               Background="Transparent"
+               BorderThickness="0"
+               SelectionMode="Multiple"
+               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+               ScrollViewer.VerticalScrollBarVisibility="Disabled">
+
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <VirtualizingStackPanel Orientation="Vertical" />
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+
+        <ListBox.ItemContainerTheme>
+          <ControlTheme TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+          </ControlTheme>
+        </ListBox.ItemContainerTheme>
+
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*" />    <!-- Part ID -->
+                <ColumnDefinition Width="0.8*" />    <!-- Operation -->
+                <ColumnDefinition Width="1*" />      <!-- From Location -->
+                <ColumnDefinition Width="40" />      <!-- Transfer Arrow -->
+                <ColumnDefinition Width="1*" />      <!-- To Location -->
+                <ColumnDefinition Width="0.8*" />    <!-- Available Qty -->
+                <ColumnDefinition Width="0.8*" />    <!-- Transfer Qty -->
+                <ColumnDefinition Width="80" />      <!-- Notes -->
+              </Grid.ColumnDefinitions>
+
+              <!-- Conditional tooltip overlay for rows with notes -->
+              <Border Grid.ColumnSpan="8"
+                      Background="Transparent"
+                      IsVisible="{Binding HasNotes}"
+                      ToolTip.Tip="{Binding Notes}" />
+
+              <!-- Part ID -->
+              <Border Grid.Column="0" Classes="data-cell">
+                <TextBlock Text="{Binding PartId}"
+                           ToolTip.Tip="{Binding PartId}" />
+              </Border>
+
+              <!-- Operation -->
+              <Border Grid.Column="1" Classes="data-cell">
+                <TextBlock Text="{Binding Operation}"
+                           ToolTip.Tip="{Binding Operation}" />
+              </Border>
+
+              <!-- From Location -->
+              <Border Grid.Column="2" Classes="data-cell">
+                <TextBlock Text="{Binding FromLocation}"
+                           ToolTip.Tip="{Binding FromLocation}" />
+              </Border>
+
+              <!-- Transfer Arrow -->
+              <Border Grid.Column="3" Classes="arrow-cell">
+                <TextBlock Text="➜"
+                           Classes="transfer-arrow"
+                           ToolTip.Tip="{Binding FromLocation, StringFormat='Transfer from {0}'} → {Binding ToLocation, StringFormat='to {0}'}" />
+              </Border>
+
+              <!-- To Location -->
+              <Border Grid.Column="4" Classes="data-cell">
+                <TextBlock Text="{Binding ToLocation}"
+                           ToolTip.Tip="{Binding ToLocation}" />
+              </Border>
+
+              <!-- Available Quantity -->
+              <Border Grid.Column="5" Classes="data-cell">
+                <TextBlock Text="{Binding AvailableQuantity, StringFormat=N0}"
+                           Classes="numeric-value"
+                           ToolTip.Tip="{Binding AvailableQuantity, StringFormat='Available: {0:N0}'}" />
+              </Border>
+
+              <!-- Transfer Quantity -->
+              <Border Grid.Column="6" Classes="data-cell">
+                <TextBlock Text="{Binding TransferQuantity, StringFormat=N0}"
+                           Classes="numeric-value"
+                           ToolTip.Tip="{Binding TransferQuantity, StringFormat='Transfer Qty: {0:N0}'}" />
+              </Border>
+
+              <!-- Notes -->
+              <Border Grid.Column="7" Classes="data-cell">
+                <Grid>
+                  <TextBlock Text="{Binding Notes}"
+                             TextTrimming="CharacterEllipsis" />
+                  <!-- Invisible overlay for tooltip when notes exist -->
+                  <Border Background="Transparent"
+                          IsVisible="{Binding HasNotes}"
+                          ToolTip.Tip="{Binding Notes}" />
+                </Grid>
+              </Border>
+
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </ScrollViewer>
+
+    <!-- Action Buttons Row -->
+    <Border Grid.Row="2" Grid.Column="0"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            BorderThickness="1,0,1,1"
+            CornerRadius="0,0,8,8"
+            Padding="16,12">
+
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Selection Info -->
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="16"
+                    VerticalAlignment="Center">
+
+          <TextBlock x:Name="SelectionInfoText"
+                     Text="No items selected for transfer"
+                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                     FontSize="12"
+                     VerticalAlignment="Center" />
+
+          <Border Width="1" Height="16" Background="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+
+          <TextBlock x:Name="TotalTransferQuantityText"
+                     Text="Total Transfer Quantity: 0"
+                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                     FontSize="12" FontWeight="Medium"
+                     VerticalAlignment="Center"
+                     ToolTip.Tip="Total quantity planned for transfer by Part ID and Operation" />
+
+        </StackPanel>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    VerticalAlignment="Center">
+
+          <!-- Edit Transfer Button -->
+          <Button x:Name="EditTransferButton"
+                  Content="✏️ Edit"
+                  Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
+                  Foreground="White"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="12,6"
+                  FontSize="12"
+                  Cursor="Hand"
+                  IsEnabled="False"
+                  Command="{Binding EditTransferCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  ToolTip.Tip="Edit selected transfer item (modify destination location, transfer quantity, notes, etc.)" />
+
+          <!-- Execute Transfer Button -->
+          <Button x:Name="ExecuteTransferButton"
+                  Content="➜ Transfer"
+                  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                  Foreground="White"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="12,6"
+                  FontSize="12"
+                  Cursor="Hand"
+                  IsEnabled="False"
+                  Command="{Binding ExecuteTransferCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  ToolTip.Tip="Execute transfer for selected item(s)" />
+
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- Column Management Panel (Phase 3 - Disabled) -->
+    <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+            x:Name="ColumnManagementContainer"
+            Width="0"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            BorderThickness="1,1,0,1"
+            IsVisible="False">
+
+      <!-- Column Management Panel will be implemented in Phase 3 -->
+      <TextBlock Text="Column Management\\n(Phase 3)"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontSize="12"
+                 Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                 Opacity="0.7" />
+    </Border>
+
+    <!-- Filter Panel (Phase 5 - Disabled) -->
+    <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
+            x:Name="FilterPanelContainer"
+            Width="0"
+            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            BorderThickness="1,1,1,1"
+            CornerRadius="0,8,8,0"
+            IsVisible="False">
+
+      <!-- Filter Panel will be implemented in Phase 5 -->
+      <TextBlock Text="Filter Panel\\n(Phase 5)"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontSize="12"
+                 Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                 Opacity="0.7" />
+    </Border>
+
+  </Grid>
+
+</UserControl>

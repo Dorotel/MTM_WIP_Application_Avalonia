@@ -21,7 +21,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 /// <summary>
 /// ViewModel for the inventory transfer interface (Control_TransferTab).
 /// Provides comprehensive functionality for transferring inventory items between locations,
-/// including search capabilities, quantity specification, batch transfer operations, 
+/// including search capabilities, quantity specification, batch transfer operations,
 /// and complete transaction history tracking.
 /// Uses MVVM Community Toolkit for modern .NET patterns.
 /// </summary>
@@ -29,28 +29,44 @@ public partial class TransferItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
+    private readonly IMasterDataService _masterDataService;
     private readonly ILogger<TransferItemViewModel> _logger;
     private readonly ISuccessOverlayService? _successOverlayService;
     private readonly IPrintService? _printService;
     private readonly INavigationService? _navigationService;
 
     #region Observable Collections
-    
+
     /// <summary>
-    /// Available part options for filtering
+    /// Available part options for filtering (DEPRECATED - Use PartIds)
     /// </summary>
     public ObservableCollection<string> PartOptions { get; } = new();
-    
+
     /// <summary>
-    /// Available operation options for refined filtering
+    /// Available operation options for refined filtering (DEPRECATED - Use Operations)
     /// </summary>
     public ObservableCollection<string> OperationOptions { get; } = new();
-    
+
+    /// <summary>
+    /// Available part IDs from MasterDataService
+    /// </summary>
+    public ObservableCollection<string> PartIds => _masterDataService?.PartIds ?? new ObservableCollection<string>();
+
+    /// <summary>
+    /// Available operations from MasterDataService
+    /// </summary>
+    public ObservableCollection<string> Operations => _masterDataService?.Operations ?? new ObservableCollection<string>();
+
+    /// <summary>
+    /// Available locations from MasterDataService
+    /// </summary>
+    public ObservableCollection<string> Locations => _masterDataService?.Locations ?? new ObservableCollection<string>();
+
     /// <summary>
     /// Available locations for transfer destinations
     /// </summary>
     public ObservableCollection<string> LocationOptions { get; } = new();
-    
+
     /// <summary>
     /// Current inventory items displayed in the DataGrid
     /// </summary>
@@ -93,6 +109,35 @@ public partial class TransferItemViewModel : BaseViewModel
     private int _transferQuantity = 1;
 
     [ObservableProperty]
+    [StringLength(10, ErrorMessage = "Quantity text cannot exceed 10 characters")]
+    private string _transferQuantityText = "1";
+
+    /// <summary>
+    /// Called when TransferQuantityText property changes - handles text validation and conversion
+    /// </summary>
+    partial void OnTransferQuantityTextChanged(string value)
+    {
+        // Convert text to integer, handling empty/invalid inputs
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            TransferQuantity = 0; // 0 represents empty/invalid state
+        }
+        else if (int.TryParse(value, out int quantity) && quantity > 0)
+        {
+            TransferQuantity = quantity;
+        }
+        else
+        {
+            TransferQuantity = 0; // Invalid input - set to 0 to trigger validation error
+        }
+
+        // Notify property changes for validation
+        OnPropertyChanged(nameof(HasQuantityValidationError));
+        OnPropertyChanged(nameof(IsTransferQuantityValid));
+        OnPropertyChanged(nameof(CanTransfer));
+    }
+
+    [ObservableProperty]
     [Range(0, int.MaxValue, ErrorMessage = "Maximum transfer quantity must be 0 or greater")]
     private int _maxTransferQuantity = 0;
 
@@ -118,6 +163,31 @@ public partial class TransferItemViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isLoading;
 
+    #endregion
+
+    #region QuickButtons Integration Properties
+
+    /// <summary>
+    /// Controls whether the QuickActions panel is expanded
+    /// </summary>
+    [ObservableProperty]
+    private bool _isQuickActionsPanelExpanded;
+
+    /// <summary>
+    /// Controls visibility of advanced panels
+    /// </summary>
+    [ObservableProperty]
+    private bool _isAdvancedPanelVisible;
+
+    /// <summary>
+    /// QuickButtons ViewModel for transfer operations
+    /// </summary>
+    public QuickButtonsViewModel? QuickButtonsViewModel { get; set; }
+
+    #endregion
+
+    #region Computed Properties
+
     /// <summary>
     /// Indicates if there are inventory items to display
     /// </summary>
@@ -136,7 +206,7 @@ public partial class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Indicates if there's a location validation error (same source and destination)
     /// </summary>
-    public bool HasLocationValidationError => !string.IsNullOrWhiteSpace(SelectedToLocation) && 
+    public bool HasLocationValidationError => !string.IsNullOrWhiteSpace(SelectedToLocation) &&
                                               !ValidateTransferDestination();
 
     /// <summary>
@@ -145,11 +215,16 @@ public partial class TransferItemViewModel : BaseViewModel
     public bool HasQuantityValidationError => TransferQuantity > MaxTransferQuantity || TransferQuantity <= 0;
 
     /// <summary>
+    /// Validation state for transfer quantity - must be positive and within available limits
+    /// </summary>
+    public bool IsTransferQuantityValid => TransferQuantity > 0 && TransferQuantity <= MaxTransferQuantity;
+
+    /// <summary>
     /// Indicates if transfer operation can be performed
     /// </summary>
-    public bool CanTransfer => (SelectedInventoryItem != null || SelectedInventoryItems.Count > 0) && 
-                              !string.IsNullOrWhiteSpace(SelectedToLocation) && 
-                              TransferQuantity > 0 && 
+    public bool CanTransfer => (SelectedInventoryItem != null || SelectedInventoryItems.Count > 0) &&
+                              !string.IsNullOrWhiteSpace(SelectedToLocation) &&
+                              TransferQuantity > 0 &&
                               !IsLoading &&
                               ValidateTransferDestination();
 
@@ -194,6 +269,7 @@ public partial class TransferItemViewModel : BaseViewModel
     public TransferItemViewModel(
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
+        IMasterDataService masterDataService,
         ILogger<TransferItemViewModel> logger,
         ISuccessOverlayService? successOverlayService = null,
         IPrintService? printService = null,
@@ -201,6 +277,7 @@ public partial class TransferItemViewModel : BaseViewModel
     {
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
+        _masterDataService = masterDataService ?? throw new ArgumentNullException(nameof(masterDataService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _successOverlayService = successOverlayService; // Optional service
         _printService = printService;
@@ -214,7 +291,7 @@ public partial class TransferItemViewModel : BaseViewModel
     #endregion
 
     #region Command Implementations
-    
+
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         // Update computed properties when dependencies change
@@ -289,20 +366,20 @@ public partial class TransferItemViewModel : BaseViewModel
         {
             IsLoading = true;
             ReportProgress("Searching inventory...", "search", 0);
-            
+
             InventoryItems.Clear();
             SelectedInventoryItem = null;
             SelectedInventoryItems.Clear();
             _hasSearchBeenExecuted = true;
 
-            _logger.LogInformation("Executing transfer search for Part: {PartId}, Operation: {Operation}", 
+            _logger.LogInformation("Executing transfer search for Part: {PartId}, Operation: {Operation}",
                 SelectedPart, SelectedOperation);
 
             ReportProgress("Querying database...", "search", 25);
 
             // Dynamic search based on selection criteria
             System.Data.DataTable result;
-            
+
             if (!string.IsNullOrWhiteSpace(SelectedPart) && !string.IsNullOrWhiteSpace(SelectedOperation))
             {
                 // Search by both part and operation
@@ -340,7 +417,7 @@ public partial class TransferItemViewModel : BaseViewModel
                     BatchNumber = row["BatchNumber"]?.ToString() ?? string.Empty,
                     Notes = row["Notes"]?.ToString() ?? string.Empty
                 };
-                
+
                 InventoryItems.Add(inventoryItem);
             }
 
@@ -397,7 +474,7 @@ public partial class TransferItemViewModel : BaseViewModel
     private async Task ExecuteTransferAsync()
     {
         // Handle both single and batch transfers
-        var itemsToTransfer = SelectedInventoryItems.Count > 0 ? SelectedInventoryItems.ToList() : 
+        var itemsToTransfer = SelectedInventoryItems.Count > 0 ? SelectedInventoryItems.ToList() :
             (SelectedInventoryItem != null ? new List<InventoryItem> { SelectedInventoryItem } : new List<InventoryItem>());
 
         if (!itemsToTransfer.Any() || string.IsNullOrWhiteSpace(SelectedToLocation))
@@ -423,7 +500,7 @@ public partial class TransferItemViewModel : BaseViewModel
                 var partId = item.PartID;
                 var operation = item.Operation ?? string.Empty;
 
-                ReportProgress($"Processing {partId} ({processedItems + 1} of {totalItems})...", "transfer", 
+                ReportProgress($"Processing {partId} ({processedItems + 1} of {totalItems})...", "transfer",
                     (int)((double)processedItems / totalItems * 80)); // Use 80% for processing, 20% for finalization
 
                 // Validate destination location is different from source
@@ -442,7 +519,7 @@ public partial class TransferItemViewModel : BaseViewModel
                 // Validate transfer quantity
                 if (transferQuantity > item.Quantity)
                 {
-                    _logger.LogWarning("Transfer quantity {TransferQuantity} exceeds available {Available} for {PartId}", 
+                    _logger.LogWarning("Transfer quantity {TransferQuantity} exceeds available {Available} for {PartId}",
                         transferQuantity, item.Quantity, partId);
                     failedTransfers++;
                     processedItems++;
@@ -451,13 +528,13 @@ public partial class TransferItemViewModel : BaseViewModel
 
                 // Execute transfer
                 bool transferResult;
-                
+
                 if (transferQuantity < item.Quantity && totalItems == 1)
                 {
                     // Partial quantity transfer (only for single item)
-                    _logger.LogInformation("Executing partial transfer: {TransferQuantity} of {TotalQuantity} units for {PartId}", 
+                    _logger.LogInformation("Executing partial transfer: {TransferQuantity} of {TotalQuantity} units for {PartId}",
                         transferQuantity, item.Quantity, partId);
-                    
+
                     transferResult = await _databaseService.TransferQuantityAsync(
                         item.BatchNumber ?? string.Empty,
                         partId,
@@ -472,7 +549,7 @@ public partial class TransferItemViewModel : BaseViewModel
                 {
                     // Complete item transfer
                     _logger.LogInformation("Executing complete transfer: {TransferQuantity} units for {PartId}", transferQuantity, partId);
-                    
+
                     transferResult = await _databaseService.TransferPartAsync(
                         item.BatchNumber ?? string.Empty,
                         partId,
@@ -484,7 +561,7 @@ public partial class TransferItemViewModel : BaseViewModel
                 if (transferResult)
                 {
                     successfulTransfers++;
-                    
+
                     // Update UI - remove or update item
                     if (transferQuantity >= item.Quantity)
                     {
@@ -509,7 +586,7 @@ public partial class TransferItemViewModel : BaseViewModel
                         TransferTime = DateTime.Now
                     });
 
-                    _logger.LogInformation("Successfully transferred {Quantity} units of {PartId} from {FromLocation} to {ToLocation}", 
+                    _logger.LogInformation("Successfully transferred {Quantity} units of {PartId} from {FromLocation} to {ToLocation}",
                         transferQuantity, partId, fromLocation, SelectedToLocation);
                 }
                 else
@@ -522,7 +599,7 @@ public partial class TransferItemViewModel : BaseViewModel
             }
 
             // Final status report
-            var finalMessage = totalItems == 1 ? 
+            var finalMessage = totalItems == 1 ?
                 $"Transfer complete: {TransferQuantity} units" :
                 $"Batch transfer complete: {successfulTransfers} successful, {failedTransfers} failed";
 
@@ -534,7 +611,7 @@ public partial class TransferItemViewModel : BaseViewModel
                 var firstItem = itemsToTransfer.First();
                 if (totalItems == 1)
                 {
-                    ShowTransferSuccessOverlay(firstItem.PartID, firstItem.Operation ?? string.Empty, 
+                    ShowTransferSuccessOverlay(firstItem.PartID, firstItem.Operation ?? string.Empty,
                         firstItem.Location, SelectedToLocation, TransferQuantity);
                 }
                 else
@@ -681,7 +758,7 @@ public partial class TransferItemViewModel : BaseViewModel
             {
                 var message = "Transfer Complete";
                 var details = $"Part: {partId}\nOperation: {operation}\nFrom: {fromLocation} → To: {toLocation}\nQuantity: {quantity:N0} units";
-                
+
                 // Use SuccessOverlayRequested event to trigger overlay from the View
                 SuccessOverlayRequested?.Invoke(this, new SuccessOverlayEventArgs
                 {
@@ -690,8 +767,8 @@ public partial class TransferItemViewModel : BaseViewModel
                     IconKind = "ArrowRightBold",
                     Duration = 3000
                 });
-                
-                _logger.LogDebug("SuccessOverlay requested for transfer: {PartId} from {FromLocation} to {ToLocation}", 
+
+                _logger.LogDebug("SuccessOverlay requested for transfer: {PartId} from {FromLocation} to {ToLocation}",
                     partId, fromLocation, toLocation);
             }
         }
@@ -712,10 +789,10 @@ public partial class TransferItemViewModel : BaseViewModel
             {
                 var message = "Batch Transfer Complete";
                 var details = $"Successful: {successfulTransfers}\nFailed: {failedTransfers}\nDestination: {toLocation}";
-                
+
                 // Use different icon for batch transfers
                 var iconKind = failedTransfers > 0 ? "AlertCircle" : "CheckAll";
-                
+
                 SuccessOverlayRequested?.Invoke(this, new SuccessOverlayEventArgs
                 {
                     Message = message,
@@ -723,8 +800,8 @@ public partial class TransferItemViewModel : BaseViewModel
                     IconKind = iconKind,
                     Duration = 4000 // Longer duration for batch operations
                 });
-                
-                _logger.LogDebug("Batch SuccessOverlay requested: {Successful} successful, {Failed} failed transfers to {ToLocation}", 
+
+                _logger.LogDebug("Batch SuccessOverlay requested: {Successful} successful, {Failed} failed transfers to {ToLocation}",
                     successfulTransfers, failedTransfers, toLocation);
             }
         }
@@ -742,7 +819,7 @@ public partial class TransferItemViewModel : BaseViewModel
         try
         {
             StatusMessage = message;
-            
+
             ProgressReported?.Invoke(this, new ProgressReportEventArgs
             {
                 Message = message,
@@ -751,7 +828,7 @@ public partial class TransferItemViewModel : BaseViewModel
                 IsComplete = isComplete,
                 IsError = isError
             });
-            
+
             _logger.LogDebug("Progress reported: {Message} for {Operation}", message, operation);
         }
         catch (Exception ex)
@@ -797,7 +874,7 @@ public partial class TransferItemViewModel : BaseViewModel
                 });
                 _logger.LogInformation("Loaded {Count} parts for transfer", PartOptions.Count);
             }
-            
+
             // Load Operations using md_operation_numbers_Get_All stored procedure
             var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
@@ -961,13 +1038,13 @@ public partial class TransferItemViewModel : BaseViewModel
 
             if (!string.IsNullOrWhiteSpace(SelectedPart))
             {
-                filteredItems = filteredItems.Where(item => 
+                filteredItems = filteredItems.Where(item =>
                     item.PartID.Equals(SelectedPart, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(SelectedOperation))
             {
-                filteredItems = filteredItems.Where(item => 
+                filteredItems = filteredItems.Where(item =>
                     item.Operation?.Equals(SelectedOperation, StringComparison.OrdinalIgnoreCase) == true);
             }
 
@@ -991,7 +1068,7 @@ public partial class TransferItemViewModel : BaseViewModel
         if (SelectedInventoryItem != null)
         {
             MaxTransferQuantity = SelectedInventoryItem.Quantity;
-            
+
             // Ensure current transfer quantity is within bounds
             if (TransferQuantity > MaxTransferQuantity)
             {
@@ -1001,7 +1078,7 @@ public partial class TransferItemViewModel : BaseViewModel
         else if (SelectedInventoryItems.Count == 1)
         {
             MaxTransferQuantity = SelectedInventoryItems[0].Quantity;
-            
+
             // Ensure current transfer quantity is within bounds
             if (TransferQuantity > MaxTransferQuantity)
             {
@@ -1032,7 +1109,7 @@ public partial class TransferItemViewModel : BaseViewModel
         // Check multi-item selection - all items must have different location than destination
         if (SelectedInventoryItems.Count > 0)
         {
-            return SelectedInventoryItems.All(item => 
+            return SelectedInventoryItems.All(item =>
                 !item.Location.Equals(SelectedToLocation, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -1049,15 +1126,15 @@ public partial class TransferItemViewModel : BaseViewModel
     private void HandleException(Exception ex)
     {
         _logger.LogError(ex, "Error in TransferItemViewModel operation");
-        
+
         // Present user-friendly error message via centralized error service
         _ = Services.ErrorHandling.HandleErrorAsync(ex, "Transfer Operation", _applicationState.CurrentUser);
-        
+
         // Update UI state to reflect error
         // Note: StatusMessage property may need to be added to this ViewModel for UI feedback
         Logger.LogInformation("User-friendly error message: {Message}", GetUserFriendlyErrorMessage(ex));
     }
-    
+
     /// <summary>
     /// Gets a user-friendly error message based on the exception type
     /// </summary>
@@ -1097,11 +1174,11 @@ public partial class TransferItemViewModel : BaseViewModel
         SelectedToLocation = toLocation;
         ToLocationText = toLocation;
         TransferQuantity = quantity;
-        
+
         // Trigger search to populate inventory grid
         TriggerSearch();
-        
-        _logger.LogInformation("Transfer configuration set via external source: Part={PartId}, Operation={Operation}, ToLocation={ToLocation}, Quantity={Quantity}", 
+
+        _logger.LogInformation("Transfer configuration set via external source: Part={PartId}, Operation={Operation}, ToLocation={ToLocation}, Quantity={Quantity}",
             partId, operation, toLocation, quantity);
     }
 
@@ -1124,17 +1201,18 @@ public partial class TransferItemViewModel : BaseViewModel
         PartText = quickButton.PartId;
         SelectedOperation = quickButton.Operation;
         OperationText = quickButton.Operation;
-        
+
         // Don't pre-set destination location for transfers - user must select
         // SelectedToLocation = null;
         // ToLocationText = string.Empty;
-        
+
         TransferQuantity = Math.Max(1, quickButton.Quantity);
-        
+        TransferQuantityText = TransferQuantity.ToString();
+
         // Trigger search to populate inventory grid with source criteria
         TriggerSearch();
-        
-        _logger.LogInformation("Transfer configuration set from QuickButton: Part={PartId}, Operation={Operation}, Quantity={Quantity}", 
+
+        _logger.LogInformation("Transfer configuration set from QuickButton: Part={PartId}, Operation={Operation}, Quantity={Quantity}",
             quickButton.PartId, quickButton.Operation, quickButton.Quantity);
     }
 
@@ -1146,36 +1224,36 @@ public partial class TransferItemViewModel : BaseViewModel
         // Validate destination location is selected
         if (string.IsNullOrWhiteSpace(SelectedToLocation))
             return false;
-        
+
         // Validate transfer quantity
         if (TransferQuantity <= 0)
             return false;
-        
+
         // Validate selection exists
         if (SelectedInventoryItem == null)
             return false;
-            
+
         // Validate sufficient quantity available
         if (TransferQuantity > SelectedInventoryItem.Quantity)
             return false;
-            
+
         return true;
     }
-    
+
     /// <summary>
     /// Generates a comprehensive transfer report.
     /// </summary>
     private string GenerateTransferReport()
     {
         var report = new StringBuilder();
-        
+
         // Report header
         report.AppendLine("MTM WIP Application - Transfer Report");
         report.AppendLine($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
         report.AppendLine($"Generated by: {Environment.UserName}");
         report.AppendLine(new string('=', 50));
         report.AppendLine();
-        
+
         // Search criteria
         report.AppendLine("SEARCH CRITERIA");
         report.AppendLine(new string('-', 15));
@@ -1183,7 +1261,7 @@ public partial class TransferItemViewModel : BaseViewModel
         report.AppendLine($"Operation: {SelectedOperation ?? "All"}");
         report.AppendLine($"Location Filter: {PartText ?? "All"}"); // Using PartText instead of SelectedLocation
         report.AppendLine();
-        
+
         // Transfer configuration
         if (!string.IsNullOrEmpty(SelectedToLocation))
         {
@@ -1191,27 +1269,27 @@ public partial class TransferItemViewModel : BaseViewModel
             report.AppendLine(new string('-', 22));
             report.AppendLine($"Destination Location: {SelectedToLocation}");
             report.AppendLine($"Transfer Quantity: {TransferQuantity}");
-            
+
             if (SelectedInventoryItem != null)
             {
                 report.AppendLine($"Selected Item: {SelectedInventoryItem.PartID} - {SelectedInventoryItem.Operation}");
                 report.AppendLine($"Available Quantity: {SelectedInventoryItem.Quantity}");
             }
-            
+
             report.AppendLine();
         }
-        
+
         // Inventory data
         report.AppendLine("INVENTORY ITEMS");
         report.AppendLine(new string('-', 15));
         report.AppendLine("Part ID\t\t\tOperation\tLocation\tQuantity\tItem Type\tLast Updated");
         report.AppendLine(new string('-', 80));
-        
+
         foreach (var item in InventoryItems.OrderBy(i => i.PartID).ThenBy(i => i.Operation))
         {
             report.AppendLine($"{item.PartID}\t\t{item.Operation}\t\t{item.Location}\t\t{item.Quantity}\t\t{item.ItemType}\t\t{item.LastUpdated:yyyy-MM-dd}");
         }
-        
+
         // Summary statistics
         report.AppendLine();
         report.AppendLine("SUMMARY STATISTICS");
@@ -1220,10 +1298,10 @@ public partial class TransferItemViewModel : BaseViewModel
         report.AppendLine($"Total Quantity: {InventoryItems.Sum(i => i.Quantity):N0}");
         report.AppendLine($"Unique Parts: {InventoryItems.Select(i => i.PartID).Distinct().Count()}");
         report.AppendLine($"Unique Locations: {InventoryItems.Select(i => i.Location).Distinct().Count()}");
-        
+
         report.AppendLine();
         report.AppendLine("End of Transfer Report");
-        
+
         return report.ToString();
     }
 
@@ -1233,7 +1311,7 @@ public partial class TransferItemViewModel : BaseViewModel
     private DataTable ConvertInventoryToDataTable(ObservableCollection<InventoryItem> inventoryItems)
     {
         var dataTable = new DataTable();
-        
+
         // Define columns based on InventoryItem properties
         dataTable.Columns.Add("PartId", typeof(string));
         dataTable.Columns.Add("Operation", typeof(string));
@@ -1242,7 +1320,7 @@ public partial class TransferItemViewModel : BaseViewModel
         dataTable.Columns.Add("Notes", typeof(string));
         dataTable.Columns.Add("LastUpdated", typeof(DateTime));
         dataTable.Columns.Add("LastUpdatedBy", typeof(string));
-        
+
         // Add rows
         foreach (var item in inventoryItems)
         {
@@ -1256,10 +1334,10 @@ public partial class TransferItemViewModel : BaseViewModel
             row["LastUpdatedBy"] = item.User ?? string.Empty;
             dataTable.Rows.Add(row);
         }
-        
-        _logger.LogDebug("Converted {ItemCount} inventory items to DataTable with {ColumnCount} columns", 
+
+        _logger.LogDebug("Converted {ItemCount} inventory items to DataTable with {ColumnCount} columns",
             inventoryItems.Count, dataTable.Columns.Count);
-            
+
         return dataTable;
     }
 
@@ -1269,7 +1347,7 @@ public partial class TransferItemViewModel : BaseViewModel
     private DataTable CreateMockInventoryDataTable()
     {
         var dataTable = new DataTable();
-        
+
         // Define columns based on InventoryItem properties
         dataTable.Columns.Add("PartId", typeof(string));
         dataTable.Columns.Add("Operation", typeof(string));
@@ -1278,7 +1356,7 @@ public partial class TransferItemViewModel : BaseViewModel
         dataTable.Columns.Add("Notes", typeof(string));
         dataTable.Columns.Add("LastUpdated", typeof(DateTime));
         dataTable.Columns.Add("LastUpdatedBy", typeof(string));
-        
+
         // Add mock data rows for testing
         var mockData = new[]
         {
@@ -1291,10 +1369,10 @@ public partial class TransferItemViewModel : BaseViewModel
             new { PartId = "TEST-PART-007", Operation = "110", Location = "WC04", Quantity = 20, Notes = "Manufacturing work center 4" },
             new { PartId = "TEST-PART-008", Operation = "120", Location = "FG01", Quantity = 60, Notes = "Finished goods inventory mock data" }
         };
-        
+
         var currentUser = Environment.UserName;
         var baseTime = DateTime.Now.AddDays(-1); // Yesterday as base time
-        
+
         for (int i = 0; i < mockData.Length; i++)
         {
             var item = mockData[i];
@@ -1308,9 +1386,9 @@ public partial class TransferItemViewModel : BaseViewModel
             row["LastUpdatedBy"] = $"{currentUser}_TEST";
             dataTable.Rows.Add(row);
         }
-        
+
         _logger.LogDebug("Created mock DataTable with {RowCount} test inventory items for print testing", dataTable.Rows.Count);
-            
+
         return dataTable;
     }
 
