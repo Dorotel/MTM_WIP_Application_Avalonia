@@ -5,6 +5,7 @@ This file contains code templates and patterns to ensure consistency across all 
 ## Universal Service Integration Pattern
 
 ### **Service Registration Template**
+
 ```csharp
 // Add to ServiceCollectionExtensions.cs
 public static IServiceCollection AddNewOverlayService(this IServiceCollection services)
@@ -20,6 +21,7 @@ public static IServiceCollection AddNewOverlayService(this IServiceCollection se
 ```
 
 ### **ViewModel Base Pattern**
+
 ```csharp
 [ObservableObject]
 public partial class NewOverlayViewModel : BaseViewModel
@@ -51,6 +53,7 @@ public partial class NewOverlayViewModel : BaseViewModel
 ```
 
 ### **View AXAML Template**
+
 ```xml
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -110,6 +113,7 @@ public partial class NewOverlayViewModel : BaseViewModel
 ```
 
 ### **View Code-Behind Template**
+
 ```csharp
 using Avalonia.Controls;
 
@@ -133,6 +137,7 @@ public partial class NewOverlayView : UserControl
 ## View Integration Patterns
 
 ### **Adding Overlay Container to Existing View**
+
 ```xml
 <!-- Add to existing View.axaml -->
 <Grid>
@@ -154,6 +159,7 @@ public partial class NewOverlayView : UserControl
 ```
 
 ### **ViewModel Integration Pattern**
+
 ```csharp
 [ObservableObject]
 public partial class ExistingViewModel : BaseViewModel
@@ -197,6 +203,7 @@ public partial class ExistingViewModel : BaseViewModel
 ## Service Implementation Patterns
 
 ### **Specialized Service Template**
+
 ```csharp
 // Interface
 public interface INewOverlayService
@@ -245,6 +252,7 @@ public class NewOverlayService : INewOverlayService
 ## Testing Patterns
 
 ### **ViewModel Unit Test Template**
+
 ```csharp
 [TestClass]
 public class NewOverlayViewModelTests
@@ -282,6 +290,7 @@ public class NewOverlayViewModelTests
 ```
 
 ### **Service Integration Test Template**
+
 ```csharp
 [TestClass]
 public class NewOverlayServiceIntegrationTests
@@ -328,6 +337,7 @@ public class NewOverlayServiceIntegrationTests
 ## Error Handling Patterns
 
 ### **Service Error Handling**
+
 ```csharp
 public async Task<OverlayResult> OperationWithOverlayAsync()
 {
@@ -379,6 +389,7 @@ public async Task<OverlayResult> OperationWithOverlayAsync()
 ## Memory Management Patterns
 
 ### **Overlay Disposal Pattern**
+
 ```csharp
 public class ManagedOverlayViewModel : BaseViewModel, IDisposable
 {

@@ -17,6 +17,7 @@ This stage implements the most critical missing overlays that significantly impr
 **Dependencies**: Universal Overlay Service  
 
 #### **Files to Create**
+
 ```
 ViewModels/Overlay/ValidationOverlayViewModel.cs
 Views/Overlay/ValidationOverlayView.axaml
@@ -28,6 +29,7 @@ Models/Overlay/ValidationError.cs
 #### **Implementation Details**
 
 **ValidationOverlayViewModel**
+
 ```csharp
 [ObservableObject]
 public partial class ValidationOverlayViewModel : BaseViewModel
@@ -71,6 +73,7 @@ public partial class ValidationOverlayViewModel : BaseViewModel
 ```
 
 **ValidationOverlayView.axaml**
+
 ```xml
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -143,6 +146,7 @@ public partial class ValidationOverlayViewModel : BaseViewModel
 ```
 
 #### **Integration with Forms**
+
 ```csharp
 // Usage pattern in ViewModels
 public async Task ValidateAndProceedAsync()
@@ -174,6 +178,7 @@ public async Task ValidateAndProceedAsync()
 **Dependencies**: Universal Overlay Service  
 
 #### **Files to Create**
+
 ```
 ViewModels/Overlay/ProgressOverlayViewModel.cs
 Views/Overlay/ProgressOverlayView.axaml
@@ -184,6 +189,7 @@ Models/Overlay/ProgressUpdate.cs
 #### **Implementation Details**
 
 **ProgressOverlayViewModel**
+
 ```csharp
 [ObservableObject]
 public partial class ProgressOverlayViewModel : BaseViewModel
@@ -236,6 +242,7 @@ public partial class ProgressOverlayViewModel : BaseViewModel
 ```
 
 **ProgressTracker Implementation**
+
 ```csharp
 public interface IProgressTracker : IDisposable
 {
@@ -286,6 +293,7 @@ public class ProgressTracker : IProgressTracker
 **Dependencies**: Universal Overlay Service  
 
 #### **Files to Create**
+
 ```
 ViewModels/Overlay/ConnectionStatusOverlayViewModel.cs
 Views/Overlay/ConnectionStatusOverlayView.axaml
@@ -295,6 +303,7 @@ Services/ConnectionStatusService.cs
 #### **Implementation Details**
 
 **ConnectionStatusOverlayViewModel**
+
 ```csharp
 [ObservableObject]
 public partial class ConnectionStatusOverlayViewModel : BaseViewModel
@@ -361,6 +370,7 @@ public partial class ConnectionStatusOverlayViewModel : BaseViewModel
 **Dependencies**: ConfirmationOverlayViewModel pattern  
 
 #### **Files to Create**
+
 ```
 ViewModels/Overlay/BatchConfirmationOverlayViewModel.cs
 Views/Overlay/BatchConfirmationOverlayView.axaml
@@ -370,6 +380,7 @@ Models/Overlay/BatchOperationItem.cs
 #### **Implementation Details**
 
 **BatchConfirmationOverlayViewModel**
+
 ```csharp
 [ObservableObject]
 public partial class BatchConfirmationOverlayViewModel : BaseViewModel
@@ -418,12 +429,14 @@ public partial class BatchConfirmationOverlayViewModel : BaseViewModel
 ## 🧪 Testing Strategy
 
 ### **Individual Overlay Testing**
+
 1. **Validation Overlay**: Test with various validation scenarios
 2. **Progress Overlay**: Test cancellation and completion flows
 3. **Connection Status**: Test with network disconnection scenarios
 4. **Batch Confirmation**: Test with different batch sizes and warning types
 
 ### **Integration Testing**
+
 1. **Form Integration**: Validate overlays work with real form validation
 2. **Long Operations**: Progress overlays with actual database operations
 3. **Error Scenarios**: Connection and operation failure handling
@@ -431,11 +444,13 @@ public partial class BatchConfirmationOverlayViewModel : BaseViewModel
 ## ⚠️ Risk Mitigation
 
 ### **Potential Issues**
+
 1. **Performance Impact**: Progress updates may affect UI responsiveness
 2. **Memory Usage**: Large batch operations may consume significant memory
 3. **Thread Safety**: UI updates from background threads need proper marshaling
 
 ### **Mitigation Strategies**
+
 1. **Throttle Updates**: Limit progress update frequency
 2. **Pagination**: Show large batch items in pages
 3. **Dispatcher Usage**: Ensure all UI updates use proper dispatcher

@@ -5,10 +5,12 @@ This document provides detailed specifications for overlay types that are **curr
 ## 🚨 Critical Missing Overlays
 
 ### 1. Global Progress Overlay
+
 **Priority**: 🔴 Critical  
 **Use Cases**: Database operations, file imports, batch processing
 
 #### **Implementation Specification**
+
 ```csharp
 // ViewModel
 [ObservableObject]
@@ -41,6 +43,7 @@ await tracker.CompleteAsync("Import completed successfully");
 ```
 
 **Views Missing This Overlay**:
+
 - InventoryTabView (bulk import operations)
 - AdvancedInventoryView (batch processing)
 - PrintView (large print jobs)
@@ -49,10 +52,12 @@ await tracker.CompleteAsync("Import completed successfully");
 ---
 
 ### 2. Field Validation Overlay
+
 **Priority**: 🔴 Critical  
 **Use Cases**: Real-time input validation, form error highlighting
 
 #### **Implementation Specification**
+
 ```csharp
 // ViewModel
 [ObservableObject]
@@ -77,6 +82,7 @@ public class ValidationError
 ```
 
 **Views Missing This Overlay**:
+
 - ALL form-based views (critical gap)
 - InventoryTabView (part ID, operation, quantity validation)
 - TransferTabView (location, quantity validation)
@@ -85,10 +91,12 @@ public class ValidationError
 ---
 
 ### 3. Global Error Overlay
+
 **Priority**: 🔴 Critical  
 **Use Cases**: Database connection errors, unexpected exceptions, system failures
 
 #### **Implementation Specification**
+
 ```csharp
 // ViewModel
 [ObservableObject]
@@ -121,10 +129,12 @@ public interface IGlobalErrorOverlayService
 ---
 
 ### 4. Batch Operation Confirmation Overlay
+
 **Priority**: 🟡 High  
 **Use Cases**: Multi-item deletions, bulk updates, mass transfers
 
 #### **Implementation Specification**
+
 ```csharp
 // ViewModel
 [ObservableObject]
@@ -151,6 +161,7 @@ await _batchConfirmationService.ShowBatchConfirmationAsync(
 ```
 
 **Views Missing This Overlay**:
+
 - AdvancedInventoryView (bulk operations)
 - AdvancedRemoveView (mass deletions)  
 - CustomDataGrid (multi-row actions)
@@ -160,6 +171,7 @@ await _batchConfirmationService.ShowBatchConfirmationAsync(
 ## 🟡 High Priority Missing Overlays
 
 ### 5. Connection Status Overlay
+
 **Priority**: 🟡 High  
 **Use Cases**: Database connectivity, network status, service health
 
@@ -180,6 +192,7 @@ public partial class ConnectionStatusOverlayViewModel : BaseViewModel
 ```
 
 ### 6. Feature Discovery Overlay  
+
 **Priority**: 🟡 High  
 **Use Cases**: New user onboarding, feature announcements, help system
 
@@ -201,6 +214,7 @@ public partial class FeatureDiscoveryOverlayViewModel : BaseViewModel
 ```
 
 ### 7. Export/Import Progress Overlay
+
 **Priority**: 🟡 High  
 **Use Cases**: CSV exports, Excel imports, data migrations
 
@@ -227,6 +241,7 @@ public partial class DataOperationOverlayViewModel : BaseViewModel
 ## 🟢 Medium Priority Missing Overlays
 
 ### 8. Smart Suggestions Overlay (AI-Powered)
+
 **Current**: Basic SuggestionOverlay exists  
 **Enhancement**: Add AI-powered recommendations
 
@@ -254,6 +269,7 @@ public class SmartSuggestion
 ```
 
 ### 9. Performance Monitoring Overlay (Developer Mode)
+
 ```csharp
 [ObservableObject]
 public partial class PerformanceOverlayViewModel : BaseViewModel
@@ -271,6 +287,7 @@ public partial class PerformanceOverlayViewModel : BaseViewModel
 ```
 
 ### 10. Keyboard Shortcuts Overlay
+
 ```csharp
 [ObservableObject]
 public partial class KeyboardShortcutsOverlayViewModel : BaseViewModel
@@ -291,15 +308,19 @@ public partial class KeyboardShortcutsOverlayViewModel : BaseViewModel
 ## 🔵 Low Priority / Future Enhancement Overlays
 
 ### 11. Theme Preview Overlay
+
 **Enhancement to existing ThemeQuickSwitcher**
 
 ### 12. Data Quality Overlay
+
 **For inventory data health monitoring**
 
 ### 13. Workflow Guidance Overlay  
+
 **Step-by-step process assistance**
 
 ### 14. Analytics Overlay
+
 **Usage statistics and insights**
 
 ---
@@ -307,21 +328,25 @@ public partial class KeyboardShortcutsOverlayViewModel : BaseViewModel
 ## Implementation Strategy
 
 ### Phase 1: Critical Safety Net (Week 1)
+
 1. **Global Error Overlay** - Critical error handling
 2. **Connection Status Overlay** - Database reliability  
 3. **Global Progress Overlay** - Long operation feedback
 
 ### Phase 2: User Experience Enhancement (Week 2-3)
+
 1. **Field Validation Overlay** - Form validation feedback
 2. **Batch Confirmation Overlay** - Safe bulk operations
 3. **Export/Import Progress Overlay** - Data operation feedback
 
 ### Phase 3: Advanced Features (Week 4+)  
+
 1. **Feature Discovery Overlay** - User onboarding
 2. **Smart Suggestions Overlay** - AI-powered assistance
 3. **Performance Monitoring Overlay** - Developer tools
 
 Each overlay should follow the established MTM WIP Application patterns:
+
 - MVVM Community Toolkit with `[ObservableProperty]` and `[RelayCommand]`
 - Dependency injection through service interfaces
 - MTM theme system integration with dynamic resources

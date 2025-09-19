@@ -17,6 +17,7 @@ This stage creates the Universal Overlay Service that consolidates all overlay m
 **Dependencies**: None  
 
 #### **Files to Create**
+
 ```
 Services/IUniversalOverlayService.cs
 Models/Overlay/OverlayRequest.cs
@@ -25,6 +26,7 @@ Models/Overlay/OverlayConfiguration.cs
 ```
 
 #### **Core Interface Design**
+
 ```csharp
 // Services/IUniversalOverlayService.cs
 namespace MTM_WIP_Application_Avalonia.Services;
@@ -61,6 +63,7 @@ public interface IUniversalOverlayService
 ```
 
 #### **Supporting Models**
+
 ```csharp
 // Models/Overlay/OverlayRequest.cs
 public abstract class OverlayRequest
@@ -100,6 +103,7 @@ public class ProgressOverlayRequest : OverlayRequest
 ```
 
 #### **Validation Checklist**
+
 - [ ] Interface covers all existing overlay types
 - [ ] Request/Response pattern is consistent
 - [ ] Container management is flexible
@@ -114,6 +118,7 @@ public class ProgressOverlayRequest : OverlayRequest
 **Dependencies**: Task 2.1  
 
 #### **Files to Create**
+
 ```
 Services/UniversalOverlayService.cs
 Services/OverlayContainerManager.cs
@@ -121,6 +126,7 @@ ViewModels/Overlay/UniversalOverlayViewModel.cs
 ```
 
 #### **Core Service Implementation**
+
 ```csharp
 // Services/UniversalOverlayService.cs
 [ServiceLifetime(ServiceLifetime.Singleton)]
@@ -182,6 +188,7 @@ public class UniversalOverlayService : IUniversalOverlayService
 ```
 
 #### **Container Management**
+
 ```csharp
 // Services/OverlayContainerManager.cs
 public class OverlayContainerManager
@@ -258,6 +265,7 @@ public class OverlayContainerManager
 ```
 
 #### **Validation Checklist**
+
 - [ ] Service implements all interface methods
 - [ ] Container finding logic works across different view types
 - [ ] Error handling and logging is comprehensive
@@ -272,12 +280,14 @@ public class OverlayContainerManager
 **Dependencies**: Task 2.2  
 
 #### **Files to Update**
+
 ```
 Extensions/ServiceCollectionExtensions.cs
 Program.cs (or App.axaml.cs)
 ```
 
 #### **Service Registration Updates**
+
 ```csharp
 // Extensions/ServiceCollectionExtensions.cs
 public static class ServiceCollectionExtensions
@@ -321,6 +331,7 @@ public static class ServiceCollectionExtensions
 ```
 
 #### **Configuration Setup**
+
 ```json
 // appsettings.json - Add overlay configuration section
 {
@@ -336,6 +347,7 @@ public static class ServiceCollectionExtensions
 ```
 
 #### **Validation Checklist**
+
 - [ ] Universal service is registered as singleton
 - [ ] Existing services remain functional during transition
 - [ ] Configuration binding works correctly
@@ -350,6 +362,7 @@ public static class ServiceCollectionExtensions
 **Dependencies**: Tasks 2.1-2.3  
 
 #### **Files to Create**
+
 ```
 Tests/Services/UniversalOverlayServiceTests.cs
 Tests/Services/OverlayContainerManagerTests.cs
@@ -357,6 +370,7 @@ Tests/Integration/OverlayServiceIntegrationTests.cs
 ```
 
 #### **Core Service Tests**
+
 ```csharp
 // Tests/Services/UniversalOverlayServiceTests.cs
 [TestClass]
@@ -413,6 +427,7 @@ public class UniversalOverlayServiceTests
 ```
 
 #### **Integration Tests**
+
 ```csharp
 // Tests/Integration/OverlayServiceIntegrationTests.cs
 [TestClass]
@@ -429,6 +444,7 @@ public class OverlayServiceIntegrationTests
 ```
 
 #### **Validation Checklist**
+
 - [ ] Unit tests cover core service functionality
 - [ ] Integration tests verify service compatibility
 - [ ] Container finding logic is thoroughly tested
@@ -437,12 +453,14 @@ public class OverlayServiceIntegrationTests
 ## 🔄 Migration Strategy
 
 ### **Gradual Migration Approach**
+
 1. **Phase A**: Create Universal Service alongside existing services
 2. **Phase B**: Update new overlay implementations to use Universal Service
 3. **Phase C**: Gradually migrate existing overlays to Universal Service
 4. **Phase D**: Deprecate individual overlay services (future stage)
 
 ### **Backward Compatibility**
+
 - Keep existing `ISuggestionOverlayService` and `ISuccessOverlayService` functional
 - Universal Service can delegate to existing services where appropriate
 - No breaking changes to existing overlay usage
@@ -450,11 +468,13 @@ public class OverlayServiceIntegrationTests
 ## 🧪 Testing Strategy
 
 ### **Service Testing**
+
 1. **Unit Tests**: Core service logic and container management
 2. **Integration Tests**: Service registration and DI resolution
 3. **UI Tests**: Overlay display and interaction in real views
 
 ### **Performance Testing**
+
 1. **Memory Usage**: Monitor overlay creation and disposal
 2. **Container Finding**: Measure performance of container detection
 3. **Service Resolution**: Verify DI performance with new registrations
@@ -462,6 +482,7 @@ public class OverlayServiceIntegrationTests
 ## ⚠️ Risk Mitigation
 
 ### **Potential Issues**
+
 1. **Container Detection Complexity**
    - Different view structures may not have suitable containers
    - Visual tree walking may be performance-intensive
@@ -475,6 +496,7 @@ public class OverlayServiceIntegrationTests
    - Overlay disposal must prevent memory leaks
 
 ### **Mitigation Strategies**
+
 1. **Extensive Testing**: Test with all major view types
 2. **Gradual Rollout**: Implement incrementally with fallbacks
 3. **Performance Monitoring**: Track memory and performance impact

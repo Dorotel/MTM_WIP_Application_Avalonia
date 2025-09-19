@@ -17,6 +17,7 @@ This stage focuses on critical safety improvements and cleanup of deprecated com
 **Dependencies**: None  
 
 #### **Files to Remove**
+
 ```
 Views/NoteEditorView.axaml
 Views/NoteEditorView.axaml.cs
@@ -24,6 +25,7 @@ ViewModels/Overlay/NoteEditorViewModel.cs
 ```
 
 #### **Files to Update**
+
 ```
 Extensions/ServiceCollectionExtensions.cs (remove service registration)
 ViewModels/MainForm/*.cs (remove NoteEditor references)
@@ -31,7 +33,9 @@ Views/MainForm/Panels/*.axaml (remove NoteEditor namespace imports)
 ```
 
 #### **Step-by-Step Process**
+
 1. **Identify all references**
+
    ```bash
    # Search for NoteEditor references
    grep -r "NoteEditor" --include="*.cs" --include="*.axaml" .
@@ -55,6 +59,7 @@ Views/MainForm/Panels/*.axaml (remove NoteEditor namespace imports)
    - Fix any compilation errors
 
 #### **Validation Checklist**
+
 - [ ] All NoteEditor files deleted
 - [ ] No compilation errors
 - [ ] No runtime errors on application startup
@@ -71,6 +76,7 @@ Views/MainForm/Panels/*.axaml (remove NoteEditor namespace imports)
 #### **Implementation Approach**
 
 **Step 1: Add ConfirmationOverlay to AdvancedRemoveView**
+
 ```xml
 <!-- Add to AdvancedRemoveView.axaml -->
 <Grid>
@@ -88,6 +94,7 @@ Views/MainForm/Panels/*.axaml (remove NoteEditor namespace imports)
 ```
 
 **Step 2: Update AdvancedRemoveViewModel**
+
 ```csharp
 [ObservableObject]
 public partial class AdvancedRemoveViewModel : BaseViewModel
@@ -127,6 +134,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
 ```
 
 #### **Validation Checklist**
+
 - [ ] Confirmation overlay shows before any delete operation
 - [ ] Batch operations require explicit confirmation
 - [ ] User can cancel operations safely
@@ -143,6 +151,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
 #### **Implementation Approach**
 
 **Step 1: Add overlay containers to AdvancedInventoryView**
+
 ```xml
 <!-- Add to AdvancedInventoryView.axaml -->
 <Grid>
@@ -168,6 +177,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
 ```
 
 **Step 2: Update AdvancedInventoryViewModel**
+
 ```csharp
 [RelayCommand]
 private async Task ProcessBatchOperationAsync()
@@ -199,6 +209,7 @@ private async Task ShowBatchConfirmationAsync()
 ```
 
 #### **Validation Checklist**
+
 - [ ] All batch operations require confirmation
 - [ ] Warnings displayed for potential conflicts
 - [ ] User can review selection before proceeding
@@ -213,6 +224,7 @@ private async Task ShowBatchConfirmationAsync()
 **Dependencies**: None (creates new infrastructure)  
 
 #### **Files to Create**
+
 ```
 ViewModels/Overlay/GlobalErrorOverlayViewModel.cs
 Views/Overlay/GlobalErrorOverlayView.axaml
@@ -223,6 +235,7 @@ Services/GlobalErrorOverlay.cs
 #### **Implementation Approach**
 
 **Step 1: Create GlobalErrorOverlayViewModel**
+
 ```csharp
 [ObservableObject]
 public partial class GlobalErrorOverlayViewModel : BaseViewModel
@@ -260,6 +273,7 @@ public partial class GlobalErrorOverlayViewModel : BaseViewModel
 ```
 
 **Step 2: Create GlobalErrorOverlayView.axaml**
+
 ```xml
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -319,6 +333,7 @@ public partial class GlobalErrorOverlayViewModel : BaseViewModel
 ```
 
 **Step 3: Integrate with MainWindow**
+
 ```csharp
 // Add to MainWindow or MainView
 <Grid>
@@ -331,6 +346,7 @@ public partial class GlobalErrorOverlayViewModel : BaseViewModel
 ```
 
 #### **Validation Checklist**
+
 - [ ] Global error overlay shows for application-level errors
 - [ ] Technical details available but hidden by default
 - [ ] Error reporting integration functional
@@ -340,6 +356,7 @@ public partial class GlobalErrorOverlayViewModel : BaseViewModel
 ## 🧪 Testing Strategy
 
 ### **Integration Testing**
+
 1. **Confirmation Overlays**
    - Test all batch operations require confirmation
    - Test cancellation works correctly
@@ -351,6 +368,7 @@ public partial class GlobalErrorOverlayViewModel : BaseViewModel
    - Test error reporting functionality
 
 ### **User Acceptance Testing**
+
 1. **Safety Validation**
    - Verify no destructive operations can be performed without confirmation
    - Verify appropriate warnings are shown for risky operations
@@ -359,6 +377,7 @@ public partial class GlobalErrorOverlayViewModel : BaseViewModel
 ## ⚠️ Risk Mitigation
 
 ### **Potential Issues**
+
 1. **Service Registration Conflicts**
    - Ensure new services don't conflict with existing registrations
    - Test dependency injection resolution
@@ -372,6 +391,7 @@ public partial class GlobalErrorOverlayViewModel : BaseViewModel
    - Monitor performance during implementation
 
 ### **Rollback Plan**
+
 1. **Maintain backup branches** for each task
 2. **Test compilation** after each major change
 3. **Keep service registrations** modular for easy rollback

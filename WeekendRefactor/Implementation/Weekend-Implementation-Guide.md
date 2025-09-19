@@ -7,11 +7,13 @@ This guide provides complete structure and resources for implementing the MTM Ov
 ## 🚀 Quick Start
 
 ### **Before You Begin**
+
 1. Review `WeekendRefactor/OverlayAnalysis/Comprehensive-Overlay-Analysis.md` for full context
 2. Check `WeekendRefactor/Implementation/Implementation-Status.md` for current progress
 3. Use `WeekendRefactor/Implementation/Task-Checklist-Template.md` for tracking individual tasks
 
 ### **Development Environment Setup**
+
 ```powershell
 # Navigate to project root
 cd "c:\Users\jkoll\source\MTM_WIP_Application_Avalonia"
@@ -24,6 +26,7 @@ dotnet test
 ```
 
 ### **Stage Implementation Order**
+
 1. **Stage 1** - Critical Safety Fixes (MUST DO FIRST)
 2. **Stage 2** - Universal Overlay Service (FOUNDATION)
 3. **Stage 3** - Critical Missing Overlays  
@@ -34,6 +37,7 @@ dotnet test
 ## 📁 File Structure Overview
 
 ### **Analysis Files (Reference Only)**
+
 ```
 WeekendRefactor/OverlayAnalysis/
 ├── Comprehensive-Overlay-Analysis.md    # 14,000+ word complete analysis
@@ -43,6 +47,7 @@ WeekendRefactor/OverlayAnalysis/
 ```
 
 ### **Implementation Files (Working Documents)**
+
 ```
 WeekendRefactor/Implementation/
 ├── Implementation-Status.md             # Master progress tracker
@@ -61,10 +66,12 @@ WeekendRefactor/Implementation/
 ## 🎯 Weekend Session Planning
 
 ### **2-Hour Session: Critical Safety**
+
 **Goal:** Fix immediate safety issues
 **Files:** Focus on `Stage1-CriticalSafety/Implementation-Guide.md`
 
 **Priority Tasks:**
+
 1. Remove deprecated `NoteEditorOverlay` (45 minutes)
 2. Add confirmation to `AdvancedRemoveView` (30 minutes)  
 3. Add batch confirmation to `AdvancedInventoryView` (30 minutes)
@@ -73,10 +80,12 @@ WeekendRefactor/Implementation/
 **Success Criteria:** No dangerous operations without confirmation
 
 ### **4-Hour Session: Foundation Service**
+
 **Goal:** Implement Universal Overlay Service
 **Files:** Focus on `Stage2-UniversalService/Implementation-Guide.md`
 
 **Priority Tasks:**
+
 1. Create `IUniversalOverlayService` interface (45 minutes)
 2. Implement service with dependency injection (90 minutes)
 3. Create base overlay request/response models (45 minutes)
@@ -86,10 +95,12 @@ WeekendRefactor/Implementation/
 **Success Criteria:** Universal service accessible from any ViewModel
 
 ### **6-Hour Session: Critical Overlays**
+
 **Goal:** Implement most important missing overlays
 **Files:** Focus on `Stage3-CriticalOverlays/Implementation-Guide.md`
 
 **Priority Tasks:**
+
 1. Global Error Overlay (2 hours)
 2. Field Validation Overlay (1.5 hours)  
 3. Connection Status Overlay (1.5 hours)
@@ -100,6 +111,7 @@ WeekendRefactor/Implementation/
 ## 🔧 Technical Implementation Notes
 
 ### **MTM Architecture Compliance**
+
 - **MVVM Community Toolkit**: Use `[ObservableProperty]` and `[RelayCommand]` patterns
 - **Avalonia Syntax**: Use `x:Name` (not `Name`) on Grid definitions
 - **Database Access**: ONLY via `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()`
@@ -107,6 +119,7 @@ WeekendRefactor/Implementation/
 - **Error Handling**: Always use `Services.ErrorHandling.HandleErrorAsync()`
 
 ### **Code Quality Standards**
+
 - **Null Safety**: Enable nullable reference types, use `ArgumentNullException.ThrowIfNull()`
 - **Dependency Injection**: Constructor injection with `TryAdd` service registration
 - **Resource Management**: Implement `IDisposable` for overlay ViewModels
@@ -114,6 +127,7 @@ WeekendRefactor/Implementation/
 - **Documentation**: XML comments for public APIs
 
 ### **Performance Considerations**
+
 - **Memory Management**: Dispose overlay ViewModels when closed
 - **UI Responsiveness**: Use async patterns for database operations
 - **Theme Resources**: Cache dynamic resources to prevent repeated lookups
@@ -122,6 +136,7 @@ WeekendRefactor/Implementation/
 ## 🚨 Critical Safety Rules
 
 ### **Database Operations**
+
 ```csharp
 // ✅ CORRECT: Always validate column names against actual schema
 var userName = row["User"].ToString(); // Column name is "User", not "UserId"
@@ -131,6 +146,7 @@ var userName = row["UserId"].ToString(); // Will throw ArgumentException
 ```
 
 ### **AXAML Syntax**
+
 ```xml
 <!-- ✅ CORRECT: Avalonia namespace and x:Name -->
 <Grid x:Name="MainGrid" ColumnDefinitions="Auto,*">
@@ -140,6 +156,7 @@ var userName = row["UserId"].ToString(); // Will throw ArgumentException
 ```
 
 ### **Service Registration**
+
 ```csharp
 // ✅ CORRECT: TryAdd prevents duplicate registrations
 services.TryAddSingleton<IUniversalOverlayService, UniversalOverlayService>();
@@ -151,7 +168,9 @@ services.AddSingleton<IUniversalOverlayService, UniversalOverlayService>();
 ## 📊 Progress Tracking
 
 ### **Implementation Status Tracking**
+
 Update `Implementation-Status.md` after each session:
+
 ```markdown
 ## Stage 1 Progress
 - [x] Remove NoteEditorOverlay - Completed 2024-01-15
@@ -160,7 +179,9 @@ Update `Implementation-Status.md` after each session:
 ```
 
 ### **Task-Level Tracking**
+
 Use `Task-Checklist-Template.md` for individual tasks:
+
 ```markdown
 ## Task: Implement Global Error Overlay
 - [ ] Create ErrorOverlayRequest model
@@ -174,18 +195,21 @@ Use `Task-Checklist-Template.md` for individual tasks:
 ## 🧪 Testing Strategy
 
 ### **Test-Driven Implementation**
+
 1. **Write tests first** for ViewModels and services
 2. **Implement minimal code** to pass tests
 3. **Refactor** while keeping tests green
 4. **Add integration tests** for end-to-end scenarios
 
 ### **Testing Tools Available**
+
 - **MSTest**: Unit testing framework  
 - **Moq**: Service mocking for unit tests
 - **FluentAssertions**: Readable test assertions
 - **TestHost**: Integration testing for dependency injection
 
 ### **Manual Testing Checklist**
+
 ```markdown
 ## Overlay Testing Checklist
 - [ ] Overlay displays correctly in all themes (MTM_Blue, MTM_Green, MTM_Red, MTM_Dark)
@@ -198,7 +222,9 @@ Use `Task-Checklist-Template.md` for individual tasks:
 ## 🎨 Theme Integration
 
 ### **MTM Theme System**
+
 All overlays must support dynamic theme switching:
+
 ```xml
 <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
         BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
@@ -206,6 +232,7 @@ All overlays must support dynamic theme switching:
 ```
 
 ### **Required Theme Resources**
+
 - `MTM_Shared_Logic.CardBackgroundBrush`
 - `MTM_Shared_Logic.BorderBrush`  
 - `MTM_Shared_Logic.PrimaryAction`
@@ -213,7 +240,9 @@ All overlays must support dynamic theme switching:
 - `MTM_Shared_Logic.PanelBackgroundBrush`
 
 ### **Theme Testing**
+
 Test overlays in all four themes:
+
 1. MTM_Blue (default)
 2. MTM_Green  
 3. MTM_Red
@@ -222,6 +251,7 @@ Test overlays in all four themes:
 ## 📝 Documentation Requirements
 
 ### **Code Documentation**
+
 ```csharp
 /// <summary>
 /// Represents a request to display an error overlay with detailed information.
@@ -236,7 +266,9 @@ public record ErrorOverlayRequest(
 ```
 
 ### **Implementation Documentation**
+
 Update relevant documentation files:
+
 - `docs/architecture/overlay-architecture.md`
 - `docs/development/overlay-development-guide.md`  
 - `Documentation/Development/Overlay-Integration-Guide.md`
@@ -244,12 +276,14 @@ Update relevant documentation files:
 ## 🔄 Iterative Development Approach
 
 ### **Session Structure**
+
 1. **Start (10 minutes)**: Review progress, plan session goals
 2. **Implement (80% of time)**: Focus on coding with regular commits
 3. **Test (15% of time)**: Unit tests and manual verification
 4. **Document (5% of time)**: Update progress and next steps
 
 ### **Git Workflow**
+
 ```powershell
 # Create feature branch for overlay work
 git checkout -b feature/overlay-refactor-stage1
@@ -263,7 +297,9 @@ git push origin feature/overlay-refactor-stage1
 ```
 
 ### **Quality Gates**
+
 Before moving to next stage:
+
 - [ ] All new code has unit tests
 - [ ] Solution builds without warnings
 - [ ] Manual testing passes in primary theme
