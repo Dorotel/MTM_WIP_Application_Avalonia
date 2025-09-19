@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -163,7 +164,16 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Indicates if delete operation can be performed (items selected)
     /// </summary>
-    public bool CanDelete => SelectedItems.Count > 0 && !IsLoading;
+    public bool CanDelete
+    {
+        get
+        {
+            var canDelete = SelectedItems.Count > 0 && !IsLoading;
+            Logger.LogTrace("🔍 QA DEBUG: CanDelete evaluated - SelectedItems.Count: {Count}, IsLoading: {IsLoading}, Result: {CanDelete}",
+                SelectedItems.Count, IsLoading, canDelete);
+            return canDelete;
+        }
+    }
 
     /// <summary>
     /// Indicates if there are items available for undo operation (delegates to RemoveService)
@@ -210,6 +220,13 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// </summary>
     [ObservableProperty]
     private bool _isEditDialogVisible;
+
+    /// <summary>
+    /// Confirmation overlay ViewModel for multi-row deletion confirmations.
+    /// Provides Yes/No confirmation dialogs using MTM theme styling.
+    /// </summary>
+    [ObservableProperty]
+    private ConfirmationOverlayViewModel? _confirmationOverlayViewModel;
 
     #endregion
 
@@ -272,6 +289,9 @@ public partial class RemoveItemViewModel : BaseViewModel
         _removeService.ItemsRemoved += OnItemsRemovedFromService;
         _removeService.LoadingStateChanged += OnLoadingStateChangedFromService;
 
+        // CRITICAL FIX: Subscribe to SelectedItems collection changes to update CanDelete property
+        SelectedItems.CollectionChanged += OnSelectedItemsCollectionChanged;
+
         // Sync InventoryItems with RemoveService collection
         // Note: In a more complex scenario, we could use CollectionChanged events for two-way sync
         _ = LoadData(); // Load real data from database
@@ -303,6 +323,26 @@ public partial class RemoveItemViewModel : BaseViewModel
     {
         IsLoading = isLoading;
         Logger.LogDebug("Loading state changed from RemoveService: {IsLoading}", isLoading);
+    }
+
+    /// <summary>
+    /// Handles SelectedItems collection changes to update CanDelete property.
+    /// CRITICAL FIX: This ensures the delete button enables/disables properly when selection changes.
+    /// </summary>
+    private void OnSelectedItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        // Trigger CanDelete property change notification when selection changes
+        OnPropertyChanged(nameof(CanDelete));
+
+        Logger.LogInformation("🔍 QA DEBUG: SelectedItems collection changed: {Action}, Count: {Count}, CanDelete: {CanDelete}",
+            e.Action, SelectedItems.Count, CanDelete);
+
+        // Log selection details for debugging
+        if (Logger.IsEnabled(LogLevel.Debug))
+        {
+            Logger.LogDebug("🔍 QA DEBUG: Current selection details: {Items}",
+                string.Join(", ", SelectedItems.Select(i => $"{i.PartId}({i.Id})")));
+        }
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -462,6 +502,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             // Manually trigger property change notifications
             OnPropertyChanged(nameof(HasInventoryItems));
+            OnPropertyChanged(nameof(AreSearchFieldsEnabled));
             OnPropertyChanged(nameof(CanDelete));
 
             Logger.LogInformation("Search criteria reset and CustomDataGrid cleared successfully");
@@ -707,6 +748,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
                 // Update UI state - ViewModel collection updated, notify property changes
                 OnPropertyChanged(nameof(HasInventoryItems));
+                OnPropertyChanged(nameof(AreSearchFieldsEnabled));
                 OnPropertyChanged(nameof(CanDelete));
                 OnPropertyChanged(nameof(HasUndoItems));
                 OnPropertyChanged(nameof(CanUndo));
@@ -780,6 +822,331 @@ public partial class RemoveItemViewModel : BaseViewModel
                     $"Unexpected error deleting {item.PartId}: {ex.Message}",
                     "AlertCircle", // Error icon
                     5000, // 5 seconds
+                    true // isError = true
+                );
+            }
+        }
+    }
+
+    /// <summary>
+    /// Deletes multiple selected inventory items with confirmation dialog.
+    /// Used by CustomDataGrid for multi-row delete operations with user confirmation.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanDelete))]
+    private async Task DeleteMultipleItems()
+    {
+        // Ensure we have selected items to delete
+        if (SelectedItems.Count == 0)
+        {
+            Logger.LogWarning("DeleteMultipleItems called with no selected items");
+            return;
+        }
+
+        // If only one item, delegate to single item delete for consistency
+        if (SelectedItems.Count == 1)
+        {
+            await DeleteSingleItem(SelectedItems.First());
+            return;
+        }
+
+        Logger.LogInformation("Initiating multi-row delete confirmation for {Count} items", SelectedItems.Count);
+
+        try
+        {
+            // Create confirmation dialog using established MTM pattern
+            var confirmationViewModel = _serviceProvider.GetService<ConfirmationOverlayViewModel>();
+            if (confirmationViewModel == null)
+            {
+                Logger.LogError("ConfirmationOverlayViewModel service not available");
+                await ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException("Confirmation service unavailable"),
+                    "Multi-row delete confirmation failed",
+                    _applicationState.CurrentUser
+                ).ConfigureAwait(false);
+                return;
+            }
+
+            // Configure confirmation dialog for multi-row deletion
+            var itemCount = SelectedItems.Count;
+            var itemsDescription = itemCount == 1 ? "1 inventory item" : $"{itemCount} inventory items";
+
+            confirmationViewModel.Title = "Confirm Multiple Item Deletion";
+            confirmationViewModel.Message = $"Are you sure you want to delete {itemsDescription}?";
+            confirmationViewModel.Details = $"Items to be deleted:\n{string.Join("\n", SelectedItems.Take(5).Select(i => $"• {i.PartId} - {i.Operation} - {i.Location} (Qty: {i.Quantity})"))}";
+
+            // Add "and X more..." if more than 5 items
+            if (itemCount > 5)
+            {
+                confirmationViewModel.Details += $"\n... and {itemCount - 5} more items.";
+            }
+
+            confirmationViewModel.Details += "\n\nThis action cannot be undone.";
+            confirmationViewModel.OverlayType = OverlayType.Warning; // Warning style for deletion
+            confirmationViewModel.PrimaryButtonText = "Delete All";
+            confirmationViewModel.SecondaryButtonText = "Cancel";
+            confirmationViewModel.ShowSecondaryButton = true;
+            confirmationViewModel.IconKind = "Delete";
+
+            // Ensure dialog is hidden before setting up the binding
+            confirmationViewModel.IsVisible = false;
+
+            // Set up confirmation overlay and show it
+            ConfirmationOverlayViewModel = confirmationViewModel;
+
+            // Handle confirmation events
+            var confirmationComplete = false;
+            var userConfirmed = false;
+
+            void OnConfirmed(object? sender, EventArgs e)
+            {
+                userConfirmed = true;
+                confirmationComplete = true;
+                confirmationViewModel.IsVisible = false;
+            }
+
+            void OnCancelled(object? sender, EventArgs e)
+            {
+                userConfirmed = false;
+                confirmationComplete = true;
+                confirmationViewModel.IsVisible = false;
+            }
+
+            confirmationViewModel.Confirmed += OnConfirmed;
+            confirmationViewModel.Cancelled += OnCancelled;
+
+            try
+            {
+                // Show the confirmation dialog
+                confirmationViewModel.IsVisible = true;
+                Logger.LogDebug("Multi-row confirmation dialog displayed for {Count} items", itemCount);
+
+                // Wait for user confirmation (with timeout to prevent infinite wait)
+                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(5)); // 5 minute timeout
+
+                while (!confirmationComplete && !timeoutCts.Token.IsCancellationRequested)
+                {
+                    await Task.Delay(100, timeoutCts.Token); // Poll every 100ms
+                }
+
+                if (timeoutCts.Token.IsCancellationRequested)
+                {
+                    Logger.LogWarning("Multi-row deletion confirmation dialog timed out");
+                    confirmationViewModel.IsVisible = false;
+                    return;
+                }
+
+                // Process user decision
+                if (!userConfirmed)
+                {
+                    Logger.LogInformation("User cancelled multi-row deletion");
+                    return;
+                }
+
+                Logger.LogInformation("User confirmed multi-row deletion of {Count} items", itemCount);
+
+                // Execute multi-row deletion
+                await ExecuteMultipleItemsDeletion();
+            }
+            finally
+            {
+                // Clean up event subscriptions
+                confirmationViewModel.Confirmed -= OnConfirmed;
+                confirmationViewModel.Cancelled -= OnCancelled;
+                ConfirmationOverlayViewModel = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected error during multi-row deletion confirmation");
+            await ErrorHandling.HandleErrorAsync(ex,
+                "Multi-row deletion confirmation failed",
+                _applicationState.CurrentUser
+            ).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Executes the actual deletion of multiple selected items after confirmation.
+    /// Private helper method called by DeleteMultipleItems after user confirmation.
+    /// </summary>
+    private async Task ExecuteMultipleItemsDeletion()
+    {
+        var itemsToDelete = SelectedItems.ToList(); // Create snapshot to avoid collection modification issues
+        var totalItems = itemsToDelete.Count;
+
+        Logger.LogInformation("Executing multi-row deletion of {Count} items via RemoveService", totalItems);
+
+        try
+        {
+            var successCount = 0;
+            var errorCount = 0;
+            var errorMessages = new List<string>();
+
+            // Delete each item using the same pattern as single delete
+            foreach (var item in itemsToDelete)
+            {
+                try
+                {
+                    // Use RemoveService for consistent business logic (same as single delete)
+                    var result = await _removeService.RemoveInventoryItemAsync(
+                        item,
+                        _applicationState.CurrentUser,
+                        "Removed via CustomDataGrid multi-row deletion"
+                    );
+
+                    if (result.IsSuccess)
+                    {
+                        successCount++;
+                        Logger.LogDebug("Successfully deleted item: {PartId}", item.PartId);
+                    }
+                    else
+                    {
+                        errorCount++;
+                        errorMessages.Add($"{item.PartId}: {result.Message}");
+                        Logger.LogWarning("Failed to delete item {PartId}: {Message}", item.PartId, result.Message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errorCount++;
+                    errorMessages.Add($"{item.PartId}: {ex.Message}");
+                    Logger.LogError(ex, "Exception deleting item {PartId}", item.PartId);
+                }
+            }
+
+            // Update ViewModel collections on UI thread after all deletions
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                // Remove successfully deleted items from InventoryItems
+                var successfullyDeleted = itemsToDelete.Where(item =>
+                    !errorMessages.Any(error => error.StartsWith($"{item.PartId}:"))).ToList();
+
+                foreach (var item in successfullyDeleted)
+                {
+                    InventoryItems.Remove(item);
+                    if (SelectedItems.Contains(item))
+                    {
+                        SelectedItems.Remove(item);
+                    }
+                }
+
+                // Clear selected item if it was deleted
+                if (SelectedItem != null && successfullyDeleted.Contains(SelectedItem))
+                {
+                    SelectedItem = null;
+                }
+
+                // Clear remaining selected items if all were processed
+                if (successfullyDeleted.Count == itemsToDelete.Count)
+                {
+                    SelectedItems.Clear();
+                }
+
+                // Update UI state properties
+                OnPropertyChanged(nameof(HasInventoryItems));
+                OnPropertyChanged(nameof(AreSearchFieldsEnabled));
+                OnPropertyChanged(nameof(CanDelete));
+                OnPropertyChanged(nameof(HasUndoItems));
+                OnPropertyChanged(nameof(CanUndo));
+            });
+
+            // Clean up cached ViewModels for removed items
+            var successfullyDeletedItems = itemsToDelete.Where(item =>
+                !errorMessages.Any(error => error.StartsWith($"{item.PartId}:"))).ToList();
+            CleanupRemovedViewModels(successfullyDeletedItems);
+
+            // Show appropriate success/error overlay
+            if (successCount == totalItems)
+            {
+                // All items deleted successfully
+                var message = $"Successfully deleted {successCount} inventory items";
+                var details = successCount == 1 ?
+                    $"Deleted: {itemsToDelete[0].PartId}" :
+                    $"Deleted {successCount} items from inventory";
+
+                if (_successOverlayService != null)
+                {
+                    await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                        null, // sourceControl
+                        message,
+                        details,
+                        "CheckCircle",
+                        4000 // 4 seconds
+                    );
+                }
+
+                Logger.LogInformation("Multi-row deletion completed successfully: {SuccessCount}/{Total} items",
+                    successCount, totalItems);
+            }
+            else if (successCount > 0)
+            {
+                // Partial success
+                var message = $"Partially completed: {successCount} of {totalItems} items deleted";
+                var details = $"Successful: {successCount}\nFailed: {errorCount}\n\nErrors:\n{string.Join("\n", errorMessages.Take(3))}";
+
+                if (errorCount > 3)
+                {
+                    details += $"\n... and {errorCount - 3} more errors.";
+                }
+
+                if (_successOverlayService != null)
+                {
+                    await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                        null,
+                        message,
+                        details,
+                        "AlertCircle", // Warning icon for partial success
+                        6000, // 6 seconds for longer message
+                        true // isError = true for warning style
+                    );
+                }
+
+                Logger.LogWarning("Multi-row deletion partially completed: {SuccessCount}/{Total} items, {ErrorCount} errors",
+                    successCount, totalItems, errorCount);
+            }
+            else
+            {
+                // Complete failure
+                var message = "Failed to delete inventory items";
+                var details = $"All {totalItems} items failed to delete.\n\nErrors:\n{string.Join("\n", errorMessages.Take(3))}";
+
+                if (errorCount > 3)
+                {
+                    details += $"\n... and {errorCount - 3} more errors.";
+                }
+
+                if (_successOverlayService != null)
+                {
+                    await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                        null,
+                        message,
+                        details,
+                        "AlertCircle", // Error icon
+                        8000, // 8 seconds for error message
+                        true // isError = true
+                    );
+                }
+
+                Logger.LogError("Multi-row deletion completely failed: 0/{Total} items deleted", totalItems);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected error during multi-row deletion execution");
+            await ErrorHandling.HandleErrorAsync(ex,
+                "Multi-row deletion execution failed",
+                _applicationState.CurrentUser
+            ).ConfigureAwait(false);
+
+            // Show error overlay
+            if (_successOverlayService != null)
+            {
+                await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                    null,
+                    "Deletion Error",
+                    $"Unexpected error during multi-row deletion: {ex.Message}",
+                    "AlertCircle",
+                    5000,
                     true // isError = true
                 );
             }

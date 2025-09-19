@@ -75,7 +75,7 @@ public partial class RemoveTabView : UserControl
         {
             this.DataContextChanged += OnDataContextChanged;
             this.Loaded += OnViewLoaded;
-            
+
             // Setup SuggestionOverlay event handlers for TextBoxes
             SetupTextBoxSuggestionHandlers();
         }
@@ -101,7 +101,7 @@ public partial class RemoveTabView : UserControl
                 _logger?.LogDebug("Part TextBox LostFocus event handler attached");
             }
 
-            // Setup Operation TextBox - LostFocus only (not TextChanged to avoid double triggering)  
+            // Setup Operation TextBox - LostFocus only (not TextChanged to avoid double triggering)
             var operationTextBox = this.FindControl<TextBox>("OperationTextBox");
             if (operationTextBox != null)
             {
@@ -138,10 +138,10 @@ public partial class RemoveTabView : UserControl
             {
                 _viewModel = viewModel;
                 WireViewModelEvents(viewModel);
-                
+
                 // Initialize QuickButtons integration
                 _ = InitializeQuickButtonsIntegrationAsync();
-                
+
                 _logger?.LogInformation("RemoveItemViewModel connected successfully");
             }
             else if (DataContext != null)
@@ -161,10 +161,10 @@ public partial class RemoveTabView : UserControl
         {
             // Subscribe to property changes to detect command execution completion
             viewModel.PropertyChanged += OnViewModelPropertyChanged;
-            
+
             // Subscribe to ShowSuccessOverlay event
             viewModel.ShowSuccessOverlay += OnShowSuccessOverlay;
-            
+
             _logger?.LogDebug("RemoveTabView ViewModel events wired successfully");
         }
         catch (Exception ex)
@@ -204,10 +204,10 @@ public partial class RemoveTabView : UserControl
         try
         {
             _logger?.LogInformation("ShowSuccessOverlay event received: {Message}", e.Message);
-            
+
             // The SuccessOverlay service integration is handled directly in the ViewModel
             // This event handler is available for additional UI-specific success handling if needed
-            
+
             // For example, we could trigger visual feedback, sounds, or other UI updates here
             // For now, we just log the success
             _logger?.LogDebug("Success overlay event handled: {Details}", e.Details);
@@ -242,46 +242,53 @@ public partial class RemoveTabView : UserControl
     {
         try
         {
-            var dataGrid = this.FindControl<DataGrid>("InventoryDataGrid");
-            if (dataGrid != null)
+            // CRITICAL FIX: Find CustomDataGrid instead of regular DataGrid
+            var customDataGrid = this.FindControl<Controls.CustomDataGrid.CustomDataGrid>("InventoryDataGrid");
+            if (customDataGrid != null)
             {
-                dataGrid.SelectionChanged += OnDataGridSelectionChanged;
-                _logger?.LogDebug("DataGrid multi-selection configured successfully");
+                customDataGrid.SelectionChanged += OnCustomDataGridSelectionChanged;
+                _logger?.LogDebug("CustomDataGrid multi-selection configured successfully");
             }
             else
             {
-                _logger?.LogWarning("Could not find InventoryDataGrid for multi-selection setup");
+                _logger?.LogWarning("Could not find CustomDataGrid 'InventoryDataGrid' for multi-selection setup");
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error setting up DataGrid multi-selection");
+            _logger?.LogError(ex, "Error setting up CustomDataGrid multi-selection");
         }
     }
 
     /// <summary>
-    /// Handles DataGrid selection changes to sync with ViewModel SelectedItems
+    /// CRITICAL FIX: Handles CustomDataGrid selection changes to sync with ViewModel SelectedItems.
+    /// This ensures the ViewModel's SelectedItems collection is properly updated when users make selections.
     /// </summary>
-    private void OnDataGridSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private void OnCustomDataGridSelectionChanged(object? sender, Controls.CustomDataGrid.SelectionChangedEventArgs e)
     {
         try
         {
-            if (_viewModel == null || sender is not DataGrid dataGrid) return;
+            if (_viewModel == null || e == null) return;
 
+            _logger?.LogInformation("🔍 QA DEBUG: CustomDataGrid selection changed - Count: {Count}", e.SelectedCount);
+
+            // Clear and repopulate ViewModel's SelectedItems with the CustomDataGrid selection
             _viewModel.SelectedItems.Clear();
-            foreach (var item in dataGrid.SelectedItems)
+            foreach (var item in e.SelectedItems)
             {
                 if (item is InventoryItem inventoryItem)
                 {
                     _viewModel.SelectedItems.Add(inventoryItem);
+                    _logger?.LogTrace("🔍 QA DEBUG: Added to ViewModel selection: {PartId} (ID: {Id})", inventoryItem.PartId, inventoryItem.Id);
                 }
             }
 
-            _logger?.LogDebug("DataGrid selection synced: {Count} items selected", _viewModel.SelectedItems.Count);
+            _logger?.LogInformation("🔍 QA DEBUG: ViewModel SelectedItems synced - Count: {Count}, CanDelete: {CanDelete}",
+                _viewModel.SelectedItems.Count, _viewModel.CanDelete);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error handling DataGrid selection change");
+            _logger?.LogError(ex, "Error handling CustomDataGrid selection change");
         }
     }
 
@@ -333,7 +340,7 @@ public partial class RemoveTabView : UserControl
                 }
                 else
                 {
-                    // Reset: auto-expand panel 
+                    // Reset: auto-expand panel
                     _searchPanel.IsExpanded = true;
                     _logger?.LogDebug("Reset completed - panel auto-expanded");
                 }
@@ -355,7 +362,7 @@ public partial class RemoveTabView : UserControl
         {
             // Wait a bit for the command to complete, then auto-collapse
             await Task.Delay(100);
-            
+
             if (_searchPanel != null && !_viewModel?.IsLoading == true)
             {
                 _searchPanel.IsExpanded = false;
@@ -384,7 +391,7 @@ public partial class RemoveTabView : UserControl
                 : $"Delete {itemCount} inventory items?\n\nThis action cannot be undone automatically.\nUse the Undo button immediately after deletion if needed.";
 
             var result = await ShowConfirmationDialog("Confirm Batch Deletion", confirmationMessage);
-            
+
             if (result)
             {
                 // User confirmed - execute the delete command
@@ -433,11 +440,11 @@ public partial class RemoveTabView : UserControl
             };
 
             var stackPanel = new StackPanel { Margin = new Thickness(24, 20) };
-            
+
             // Message text with proper styling
-            var messageText = new TextBlock 
-            { 
-                Text = message, 
+            var messageText = new TextBlock
+            {
+                Text = message,
                 TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 Margin = new Thickness(0, 0, 0, 24),
                 FontSize = 14,
@@ -446,16 +453,16 @@ public partial class RemoveTabView : UserControl
             };
 
             // Button panel with proper spacing
-            var buttonPanel = new StackPanel 
-            { 
-                Orientation = Avalonia.Layout.Orientation.Horizontal, 
+            var buttonPanel = new StackPanel
+            {
+                Orientation = Avalonia.Layout.Orientation.Horizontal,
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
                 Spacing = 12
             };
-            
+
             // Yes button with danger styling for delete actions
-            var yesButton = new Button 
-            { 
+            var yesButton = new Button
+            {
                 Content = "Delete",
                 Width = 80,
                 Height = 32,
@@ -467,10 +474,10 @@ public partial class RemoveTabView : UserControl
                 CornerRadius = new Avalonia.CornerRadius(4),
                 FontWeight = Avalonia.Media.FontWeight.SemiBold
             };
-            
+
             // No button with secondary styling
-            var noButton = new Button 
-            { 
+            var noButton = new Button
+            {
                 Content = "Cancel",
                 Width = 80,
                 Height = 32,
@@ -483,7 +490,7 @@ public partial class RemoveTabView : UserControl
             };
 
             buttonPanel.Children.Add(noButton);  // Cancel first (left)
-            buttonPanel.Children.Add(yesButton); // Delete second (right) 
+            buttonPanel.Children.Add(yesButton); // Delete second (right)
             stackPanel.Children.Add(messageText);
             stackPanel.Children.Add(buttonPanel);
             border.Child = stackPanel;
@@ -491,14 +498,14 @@ public partial class RemoveTabView : UserControl
 
             bool result = false;
 
-            yesButton.Click += (s, e) => 
-            { 
+            yesButton.Click += (s, e) =>
+            {
                 result = true;
                 dialog.Close();
                 _logger?.LogInformation("User confirmed batch deletion");
             };
 
-            noButton.Click += (s, e) => 
+            noButton.Click += (s, e) =>
             {
                 dialog.Close();
                 _logger?.LogInformation("User cancelled batch deletion");
@@ -525,19 +532,34 @@ public partial class RemoveTabView : UserControl
     }
 
     /// <summary>
-    /// Handles Reset button click for auto-expand behavior
+    /// Handles Reset button click for auto-expand behavior and Part ID focus
     /// </summary>
     private async void OnResetButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         try
         {
-            // Wait a bit for the command to complete, then auto-expand
+            // Wait a bit for the command to complete, then auto-expand and focus Part ID
             await Task.Delay(100);
-            
+
             if (_searchPanel != null)
             {
                 _searchPanel.IsExpanded = true;
                 _logger?.LogDebug("Reset button clicked - panel auto-expanded");
+
+                // Set focus to Part ID TextBox after reset
+                var partTextBox = this.FindControl<TextBox>("PartTextBox");
+                if (partTextBox != null)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        partTextBox.Focus();
+                        _logger?.LogDebug("Reset button clicked - Part ID TextBox focused");
+                    });
+                }
+                else
+                {
+                    _logger?.LogWarning("Could not find PartTextBox to set focus after reset");
+                }
             }
         }
         catch (Exception ex)
@@ -551,7 +573,7 @@ public partial class RemoveTabView : UserControl
         try
         {
             _logger?.LogError(ex, "Command {CommandName} encountered an error in RemoveTabView: {Message}", commandName, ex.Message);
-            
+
             // Handle specific exception types
             switch (ex)
             {
@@ -610,7 +632,7 @@ public partial class RemoveTabView : UserControl
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 _viewModel.ShowSuccessOverlay -= OnShowSuccessOverlay;
             }
-            
+
             _logger?.LogDebug("RemoveTabView ViewModel events unwired successfully");
         }
         catch (Exception ex)
@@ -648,28 +670,28 @@ public partial class RemoveTabView : UserControl
 
             // Find partial matches (not exact matches)
             var semiMatches = data
-                .Where(partId => !string.IsNullOrEmpty(partId) && 
+                .Where(partId => !string.IsNullOrEmpty(partId) &&
                                partId.Contains(value, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(partId => partId)
                 .ToList();
 
-            bool isExactMatch = data.Any(partId => 
+            bool isExactMatch = data.Any(partId =>
                 string.Equals(partId, value, StringComparison.OrdinalIgnoreCase));
 
-            _logger?.LogDebug("Part '{Value}' - ExactMatch: {IsExactMatch}, SemiMatches: {SemiMatchesCount}", 
+            _logger?.LogDebug("Part '{Value}' - ExactMatch: {IsExactMatch}, SemiMatches: {SemiMatchesCount}",
                 value, isExactMatch, semiMatches.Count);
 
             // Show overlay only for partial matches (not exact matches or empty input)
-            if (!string.IsNullOrEmpty(value) && 
-                !isExactMatch && 
-                semiMatches.Count > 0 && 
+            if (!string.IsNullOrEmpty(value) &&
+                !isExactMatch &&
+                semiMatches.Count > 0 &&
                 !_isShowingSuggestionOverlay)
             {
                 try
                 {
                     _isShowingSuggestionOverlay = true;
                     var selected = await _viewModel.ShowPartSuggestionsAsync(textBox, value);
-                    
+
                     if (!string.IsNullOrEmpty(selected) && selected != value)
                     {
                         _logger?.LogDebug("Part overlay - User selected: '{Selected}'", selected);
@@ -702,11 +724,11 @@ public partial class RemoveTabView : UserControl
                 else if (semiMatches.Count == 0)
                 {
                     _logger?.LogDebug("Part overlay not shown - no semi-matches for '{Value}'", value);
-                    
+
                     // Clear invalid input to maintain data integrity (MTM pattern)
                     textBox.Text = string.Empty;
                     _viewModel.SelectedPart = string.Empty;
-                    
+
                     // Show user feedback
                     try
                     {
@@ -760,28 +782,28 @@ public partial class RemoveTabView : UserControl
 
             // Find partial matches (not exact matches)
             var semiMatches = data
-                .Where(operation => !string.IsNullOrEmpty(operation) && 
+                .Where(operation => !string.IsNullOrEmpty(operation) &&
                                   operation.Contains(value, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(operation => operation)
                 .ToList();
 
-            bool isExactMatch = data.Any(operation => 
+            bool isExactMatch = data.Any(operation =>
                 string.Equals(operation, value, StringComparison.OrdinalIgnoreCase));
 
-            _logger?.LogDebug("Operation '{Value}' - ExactMatch: {IsExactMatch}, SemiMatches: {SemiMatchesCount}", 
+            _logger?.LogDebug("Operation '{Value}' - ExactMatch: {IsExactMatch}, SemiMatches: {SemiMatchesCount}",
                 value, isExactMatch, semiMatches.Count);
 
             // Show overlay only for partial matches (not exact matches or empty input)
-            if (!string.IsNullOrEmpty(value) && 
-                !isExactMatch && 
-                semiMatches.Count > 0 && 
+            if (!string.IsNullOrEmpty(value) &&
+                !isExactMatch &&
+                semiMatches.Count > 0 &&
                 !_isShowingSuggestionOverlay)
             {
                 try
                 {
                     _isShowingSuggestionOverlay = true;
                     var selected = await _viewModel.ShowOperationSuggestionsAsync(textBox, value);
-                    
+
                     if (!string.IsNullOrEmpty(selected) && selected != value)
                     {
                         _logger?.LogDebug("Operation overlay - User selected: '{Selected}'", selected);
@@ -814,11 +836,11 @@ public partial class RemoveTabView : UserControl
                 else if (semiMatches.Count == 0)
                 {
                     _logger?.LogDebug("Operation overlay not shown - no semi-matches for '{Value}'", value);
-                    
+
                     // Clear invalid input to maintain data integrity (MTM pattern)
                     textBox.Text = string.Empty;
                     _viewModel.SelectedOperation = string.Empty;
-                    
+
                     // Show user feedback
                     try
                     {
@@ -859,7 +881,7 @@ public partial class RemoveTabView : UserControl
         try
         {
             _logger?.LogDebug("Starting QuickButtons integration initialization...");
-            
+
             // Strategy 1: Visual tree traversal (primary approach)
             var quickButtonsView = FindQuickButtonsView();
             if (quickButtonsView?.DataContext is QuickButtonsViewModel quickButtonsViewModel)
@@ -876,9 +898,9 @@ public partial class RemoveTabView : UserControl
             if (_viewModel != null)
             {
                 // Use reflection to get QuickButtonsService from ViewModel
-                var quickButtonsServiceField = _viewModel.GetType().GetField("_quickButtonsService", 
+                var quickButtonsServiceField = _viewModel.GetType().GetField("_quickButtonsService",
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                
+
                 if (quickButtonsServiceField?.GetValue(_viewModel) != null)
                 {
                     _logger?.LogInformation("QuickButtons service found in ViewModel - direct service integration active");
@@ -894,9 +916,9 @@ public partial class RemoveTabView : UserControl
                 {
                     // Try to find QuickButtonsViewModel through main window
                     var mainViewModelType = mainViewModel.GetType();
-                    var quickButtonsProperty = mainViewModelType.GetProperty("QuickButtons") ?? 
+                    var quickButtonsProperty = mainViewModelType.GetProperty("QuickButtons") ??
                                              mainViewModelType.GetProperty("QuickButtonsViewModel");
-                    
+
                     if (quickButtonsProperty?.GetValue(mainViewModel) is QuickButtonsViewModel globalQuickButtonsViewModel)
                     {
                         _quickButtonsViewModel = globalQuickButtonsViewModel;
@@ -917,7 +939,7 @@ public partial class RemoveTabView : UserControl
         {
             _logger?.LogError(ex, "Critical error initializing QuickButtons integration");
         }
-        
+
         return Task.CompletedTask;
     }
 
@@ -962,8 +984,8 @@ public partial class RemoveTabView : UserControl
             var partId = GetPropertyValue<string>(e, "PartId");
             var operation = GetPropertyValue<string>(e, "Operation");
             var location = GetPropertyValue<string>(e, "Location");
-            
-            _logger?.LogInformation("QuickButton clicked in RemoveTabView - Part: {PartId}, Operation: {Operation}, Location: {Location}", 
+
+            _logger?.LogInformation("QuickButton clicked in RemoveTabView - Part: {PartId}, Operation: {Operation}, Location: {Location}",
                 partId, operation, location);
 
             // Populate the search fields using ViewModel method
@@ -984,14 +1006,14 @@ public partial class RemoveTabView : UserControl
         try
         {
             _logger?.LogDebug("Starting comprehensive QuickButtonsView search...");
-            
+
             // Strategy 1: Search up the parent hierarchy
             var current = this.Parent;
             int parentLevels = 0;
             while (current != null && parentLevels < 10) // Prevent infinite loops
             {
                 _logger?.LogTrace("Searching parent level {Level}: {Type}", parentLevels, current.GetType().Name);
-                
+
                 if (current is Panel panel)
                 {
                     var result = SearchInPanel(panel);
@@ -1001,7 +1023,7 @@ public partial class RemoveTabView : UserControl
                         return result;
                     }
                 }
-                
+
                 current = current.Parent;
                 parentLevels++;
             }
@@ -1177,7 +1199,7 @@ public partial class RemoveTabView : UserControl
             }
 
             this.DataContextChanged -= OnDataContextChanged;
-            
+
             _logger?.LogInformation("RemoveTabView cleanup completed");
         }
         catch (Exception ex)

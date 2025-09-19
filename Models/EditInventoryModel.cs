@@ -51,7 +51,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         /// Gets or sets the Quantity
         /// </summary>
         [ObservableProperty]
-        [Range(0, int.MaxValue, ErrorMessage = "Quantity must be non-negative")]
+        [Range(1, int.MaxValue, ErrorMessage = "Enter Quantity")]
         private int _quantity;
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace MTM_WIP_Application_Avalonia.Models
             User = "SYSTEM";
             ReceiveDate = DateTime.Now;
             LastUpdated = DateTime.Now;
-            
+
             // Start change tracking
             SaveOriginalValues();
         }
@@ -189,7 +189,7 @@ namespace MTM_WIP_Application_Avalonia.Models
             User = inventoryItem.User;
             ReceiveDate = inventoryItem.ReceiveDate;
             LastUpdated = inventoryItem.LastUpdated;
-            
+
             // Start change tracking with current values as original
             SaveOriginalValues();
         }
@@ -214,7 +214,7 @@ namespace MTM_WIP_Application_Avalonia.Models
             _originalUser = User;
             _originalReceiveDate = ReceiveDate;
             _originalLastUpdated = LastUpdated;
-            
+
             HasChanges = false;
         }
 
@@ -234,7 +234,7 @@ namespace MTM_WIP_Application_Avalonia.Models
             User = _originalUser;
             ReceiveDate = _originalReceiveDate;
             LastUpdated = _originalLastUpdated;
-            
+
             HasChanges = false;
             ValidationError = string.Empty;
         }
@@ -245,7 +245,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         /// <returns>True if changes exist, false otherwise</returns>
         public bool CheckForChanges()
         {
-            var hasChanges = 
+            var hasChanges =
                 Id != _originalId ||
                 !string.Equals(PartId, _originalPartId, StringComparison.Ordinal) ||
                 !string.Equals(Location, _originalLocation, StringComparison.Ordinal) ||
@@ -338,7 +338,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         {
             var context = new ValidationContext(this) { MemberName = propertyName };
             var results = new System.Collections.Generic.List<ValidationResult>();
-            
+
             if (!Validator.TryValidateProperty(value, context, results))
             {
                 ValidationError = results[0].ErrorMessage ?? $"Invalid value for {propertyName}";
@@ -358,9 +358,9 @@ namespace MTM_WIP_Application_Avalonia.Models
         {
             var context = new ValidationContext(this);
             var results = new System.Collections.Generic.List<ValidationResult>();
-            
+
             var isValid = Validator.TryValidateObject(this, context, results, true);
-            
+
             if (!isValid)
             {
                 ValidationError = string.Join("; ", results.Select(r => r.ErrorMessage));
@@ -369,7 +369,7 @@ namespace MTM_WIP_Application_Avalonia.Models
             {
                 ValidationError = string.Empty;
             }
-            
+
             return isValid;
         }
 
@@ -383,7 +383,7 @@ namespace MTM_WIP_Application_Avalonia.Models
             var results = new System.Collections.Generic.List<ValidationResult>();
 
             // Custom validation rules for MTM business logic
-            
+
             // Part ID format validation (if needed)
             if (!string.IsNullOrWhiteSpace(PartId))
             {
@@ -404,9 +404,9 @@ namespace MTM_WIP_Application_Avalonia.Models
             }
 
             // Quantity validation
-            if (Quantity < 0)
+            if (Quantity <= 0)
             {
-                results.Add(new ValidationResult("Quantity cannot be negative", new[] { nameof(Quantity) }));
+                results.Add(new ValidationResult("Enter Quantity", new[] { nameof(Quantity) }));
             }
 
             // Batch number format validation (if applicable)
@@ -488,7 +488,7 @@ namespace MTM_WIP_Application_Avalonia.Models
                 HasChanges = HasChanges,
                 IsValidationEnabled = IsValidationEnabled,
                 ValidationError = ValidationError,
-                
+
                 // Copy original values for change tracking
                 _originalId = _originalId,
                 _originalPartId = _originalPartId,
@@ -531,7 +531,7 @@ namespace MTM_WIP_Application_Avalonia.Models
                        string.Equals(Operation, other.Operation, StringComparison.Ordinal) &&
                        string.Equals(BatchNumber, other.BatchNumber, StringComparison.Ordinal);
             }
-            
+
             if (obj is InventoryItem inventoryItem)
             {
                 return Id == inventoryItem.Id &&

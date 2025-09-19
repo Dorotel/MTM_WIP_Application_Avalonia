@@ -43,34 +43,6 @@
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
-    <!-- Checkbox Cell Styles -->
-    <Style Selector="Border.checkbox-cell, Border.checkbox-header-cell">
-      <Setter Property="MinHeight" Value="36" />
-      <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="8" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
-      <Setter Property="BorderThickness" Value="0,0,1,1" />
-    </Style>
-
-    <Style Selector="Border.checkbox-header-cell">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
-    </Style>
-
-    <Style Selector="Border.checkbox-cell CheckBox, Border.checkbox-header-cell CheckBox">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-
-    <Style Selector="Border.checkbox-cell CheckBox:checked, Border.checkbox-header-cell CheckBox:checked">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="White" />
-    </Style>
-
     <!-- Action Cell Styles -->
     <Style Selector="Border.action-cell, Border.action-header-cell">
       <Setter Property="MinHeight" Value="36" />
@@ -135,10 +107,6 @@
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.AlternateRowBrush}" />
     </Style>
 
-    <Style Selector="ListBoxItem:nth-child(2n) Border.checkbox-cell">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.AlternateRowBrush}" />
-    </Style>
-
     <Style Selector="ListBoxItem:nth-child(2n) Border.action-cell">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.AlternateRowBrush}" />
     </Style>
@@ -146,11 +114,6 @@
     <!-- Selection State - WinForms DataGridView Style -->
     <!-- Selected row overlay with blue highlight -->
     <Style Selector="ListBoxItem:selected Border.data-cell">
-      <Setter Property="Background" Value="#3390FF" />
-      <Setter Property="BorderBrush" Value="#2080EF" />
-    </Style>
-
-    <Style Selector="ListBoxItem:selected Border.checkbox-cell">
       <Setter Property="Background" Value="#3390FF" />
       <Setter Property="BorderBrush" Value="#2080EF" />
     </Style>
@@ -166,28 +129,14 @@
       <Setter Property="FontWeight" Value="Medium" />
     </Style>
 
-    <Style Selector="ListBoxItem:selected Border.checkbox-cell CheckBox">
-      <Setter Property="Foreground" Value="White" />
-    </Style>
-
     <!-- Selected row with focus (darker blue like WinForms) -->
     <Style Selector="ListBoxItem:selected:focus Border.data-cell">
       <Setter Property="Background" Value="#2080EF" />
       <Setter Property="BorderBrush" Value="#1070DF" />
     </Style>
 
-    <Style Selector="ListBoxItem:selected:focus Border.checkbox-cell">
-      <Setter Property="Background" Value="#2080EF" />
-      <Setter Property="BorderBrush" Value="#1070DF" />
-    </Style>
-
     <!-- Selection when control loses focus (gray like WinForms) -->
     <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.data-cell">
-      <Setter Property="Background" Value="#D0D0D0" />
-      <Setter Property="BorderBrush" Value="#C0C0C0" />
-    </Style>
-
-    <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.checkbox-cell">
       <Setter Property="Background" Value="#D0D0D0" />
       <Setter Property="BorderBrush" Value="#C0C0C0" />
     </Style>
@@ -225,67 +174,41 @@
 
       <Grid x:Name="DynamicHeaderGrid">
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="40" />      <!-- Selection -->
           <ColumnDefinition Width="1.5*" />    <!-- Part ID -->
           <ColumnDefinition Width="1*" />      <!-- Operation -->
           <ColumnDefinition Width="1.2*" />    <!-- Location -->
           <ColumnDefinition Width="1*" />      <!-- Quantity -->
           <ColumnDefinition Width="80" />      <!-- Notes -->
-          <ColumnDefinition Width="40" />      <!-- Management -->
         </Grid.ColumnDefinitions>
 
-        <!-- Selection Header -->
-        <Border Grid.Column="0" Classes="checkbox-header-cell">
-          <CheckBox x:Name="SelectAllCheckBox"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Click="OnSelectAllClick"
-                    ToolTip.Tip="Select/Deselect All Items"
-                    IsVisible="{Binding IsMultiSelectEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-        </Border>
-
         <!-- Part ID Header -->
-        <Border Grid.Column="1" Classes="header-cell">
+        <Border Grid.Column="0" Classes="header-cell">
           <TextBlock Text="Part ID"
                      HorizontalAlignment="Center" />
         </Border>
 
         <!-- Operation Header -->
-        <Border Grid.Column="2" Classes="header-cell">
+        <Border Grid.Column="1" Classes="header-cell">
           <TextBlock Text="Operation"
                      HorizontalAlignment="Center" />
         </Border>
 
         <!-- Location Header -->
-        <Border Grid.Column="3" Classes="header-cell">
+        <Border Grid.Column="2" Classes="header-cell">
           <TextBlock Text="Location"
                      HorizontalAlignment="Center" />
         </Border>
 
         <!-- Quantity Header -->
-        <Border Grid.Column="4" Classes="header-cell">
+        <Border Grid.Column="3" Classes="header-cell">
           <TextBlock Text="Quantity"
                      HorizontalAlignment="Center" />
         </Border>
 
         <!-- Notes Header -->
-        <Border Grid.Column="5" Classes="header-cell">
+        <Border Grid.Column="4" Classes="header-cell">
           <TextBlock Text="Notes"
                      HorizontalAlignment="Center" />
-        </Border>
-
-        <!-- Management Header (Future) -->
-        <Border Grid.Column="6" Classes="action-header-cell">
-          <Button Content="⚙️"
-                  Width="24"
-                  Height="24"
-                  FontSize="10"
-                  Background="Transparent"
-                  BorderThickness="0"
-                  ToolTip.Tip="Column Management (Coming Soon)"
-                  IsEnabled="False"
-                  Opacity="0.5"
-                  Click="OnToggleColumnManagement" />
         </Border>
 
       </Grid>
@@ -331,59 +254,54 @@
           <DataTemplate>
             <Grid>
               <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40" />      <!-- Selection -->
                 <ColumnDefinition Width="1.5*" />    <!-- Part ID -->
                 <ColumnDefinition Width="1*" />      <!-- Operation -->
                 <ColumnDefinition Width="1.2*" />    <!-- Location -->
                 <ColumnDefinition Width="1*" />      <!-- Quantity -->
                 <ColumnDefinition Width="80" />      <!-- Notes -->
-                <ColumnDefinition Width="40" />      <!-- Management -->
               </Grid.ColumnDefinitions>
 
-              <!-- Selection Checkbox -->
-              <Border Grid.Column="0" Classes="checkbox-cell">
-                <CheckBox IsChecked="{Binding IsSelected}"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          IsVisible="{Binding IsMultiSelectEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-              </Border>
+              <!-- Conditional tooltip overlay for rows with notes -->
+              <Border Grid.ColumnSpan="5"
+                      Background="Transparent"
+                      IsVisible="{Binding HasNotes}"
+                      ToolTip.Tip="{Binding Notes}" />
 
               <!-- Part ID -->
-              <Border Grid.Column="1" Classes="data-cell">
+              <Border Grid.Column="0" Classes="data-cell">
                 <TextBlock Text="{Binding PartId}"
                            ToolTip.Tip="{Binding PartId}" />
               </Border>
 
               <!-- Operation -->
-              <Border Grid.Column="2" Classes="data-cell">
+              <Border Grid.Column="1" Classes="data-cell">
                 <TextBlock Text="{Binding Operation}"
                            ToolTip.Tip="{Binding Operation}" />
               </Border>
 
               <!-- Location -->
-              <Border Grid.Column="3" Classes="data-cell">
+              <Border Grid.Column="2" Classes="data-cell">
                 <TextBlock Text="{Binding Location}"
                            ToolTip.Tip="{Binding Location}" />
               </Border>
 
               <!-- Quantity -->
-              <Border Grid.Column="4" Classes="data-cell">
+              <Border Grid.Column="3" Classes="data-cell">
                 <TextBlock Text="{Binding Quantity, StringFormat=N0}"
                            Classes="numeric-value"
                            ToolTip.Tip="{Binding Quantity, StringFormat='Quantity: {0:N0}'}" />
               </Border>
 
-              <!-- Notes Indicator -->
-              <Border Grid.Column="5" Classes="data-cell">
-                <TextBlock Text="✓"
-                           Classes="notes-indicator"
-                           IsVisible="{Binding HasNotes}"
-                           ToolTip.Tip="This item has notes" />
-              </Border>
-
-              <!-- Management (Future) -->
-              <Border Grid.Column="6" Classes="data-cell">
-                <!-- Reserved for future features -->
+              <!-- Notes -->
+              <Border Grid.Column="4" Classes="data-cell">
+                <Grid>
+                  <TextBlock Text="{Binding Notes}"
+                             TextTrimming="CharacterEllipsis" />
+                  <!-- Invisible overlay for tooltip when notes exist -->
+                  <Border Background="Transparent"
+                          IsVisible="{Binding HasNotes}"
+                          ToolTip.Tip="{Binding Notes}" />
+                </Grid>
               </Border>
 
             </Grid>
@@ -417,6 +335,15 @@
                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
                      FontSize="12"
                      VerticalAlignment="Center" />
+
+          <Border Width="1" Height="16" Background="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+
+          <TextBlock x:Name="TotalQuantityText"
+                     Text="Total Quantity: 0"
+                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                     FontSize="12" FontWeight="Medium"
+                     VerticalAlignment="Center"
+                     ToolTip.Tip="Total quantity breakdown by Part ID and Operation" />
 
         </StackPanel>
 

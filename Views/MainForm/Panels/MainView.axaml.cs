@@ -18,7 +18,7 @@ namespace MTM_WIP_Application_Avalonia.Views
     {
         private bool _isInitialized = false;
         private MainViewViewModel? _viewModel;
-        
+
         /// <summary>
         /// Static flag to track if a tab switch is currently in progress
         /// Used by SuggestionOverlay service to prevent showing overlays during tab transitions
@@ -33,20 +33,20 @@ namespace MTM_WIP_Application_Avalonia.Views
             IsTabSwitchInProgress = false;
             System.Diagnostics.Debug.WriteLine("MANUAL: Tab switch flag forcibly cleared");
         }
-        
+
         public MainView()
         {
             InitializeComponent();
             Loaded += OnMainViewLoaded;
             SizeChanged += OnMainViewSizeChanged;
             DataContextChanged += OnDataContextChanged;
-            
+
             // CRITICAL: Subscribe to TabControl property changes immediately to catch tab switching early
             SetupEarlyTabMonitoring();
-            
+
             // DEBUG: Add theme diagnostic when view loads
             Loaded += OnMainViewLoadedThemeDebug;
-            
+
             // Setup theme editor navigation
             SetupThemeEditorNavigation();
         }
@@ -63,7 +63,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                     // Find the ThemeQuickSwitcher control
                     var themeQuickSwitcher = this.FindControl<Views.ThemeQuickSwitcher>("ThemeQuickSwitcher") ??
                                            FindControlInVisualTree<Views.ThemeQuickSwitcher>(this, "ThemeQuickSwitcher");
-                    
+
                     if (themeQuickSwitcher != null)
                     {
                         // Subscribe to the theme editor request event
@@ -90,7 +90,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine("Theme editor requested - navigating to theme editor");
-                
+
                 // Get navigation service and navigate to theme editor
                 var navigationService = Program.GetOptionalService<Services.INavigationService>();
                 if (navigationService != null)
@@ -103,7 +103,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                         {
                             DataContext = themeEditorViewModel
                         };
-                        
+
                         navigationService.NavigateTo(themeEditorView);
                         System.Diagnostics.Debug.WriteLine("Successfully navigated to theme editor");
                     }
@@ -137,10 +137,10 @@ namespace MTM_WIP_Application_Avalonia.Views
                     if (tabControl != null)
                     {
                         System.Diagnostics.Debug.WriteLine("EARLY: TabControl found, setting up property change monitoring");
-                        
+
                         // Subscribe to property changes to catch SelectedIndex changes early
                         tabControl.PropertyChanged += OnTabControlPropertyChanged;
-                        
+
                         System.Diagnostics.Debug.WriteLine("EARLY: TabControl property change monitoring setup complete");
                     }
                     else
@@ -156,21 +156,30 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
 
         /// <summary>
-        /// Handles TabControl pointer pressed events to clear inputs BEFORE any selection change
+        /// Handles TabControl pointer pressed events to set tab switch flag and clear inputs ONLY when clicking on tab headers.
+        /// This prevents any focus events from triggering SuggestionOverlay during actual tab switching.
+        /// Called BEFORE any selection change or focus events, but only when clicking on actual tab headers.
         /// </summary>
         private void OnTabControlPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("IMMEDIATE: TabControl pointer pressed - setting tab switch flag and clearing inputs");
-                
+                // Only proceed if we're actually clicking on a tab header, not content area
+                if (!IsClickingOnTabHeader(e))
+                {
+                    System.Diagnostics.Debug.WriteLine("POINTER: Click detected on TabControl content area - no action needed");
+                    return;
+                }
+
+                System.Diagnostics.Debug.WriteLine("IMMEDIATE: TabControl pointer pressed on tab header - setting tab switch flag and clearing inputs");
+
                 // Set the tab switch flag to prevent SuggestionOverlay from showing
                 IsTabSwitchInProgress = true;
-                
+
                 // Clear ALL inputs immediately when user starts clicking on tabs
                 // This happens BEFORE any selection change or focus events
                 ClearAllTabInputsImmediate();
-                
+
                 // Schedule clearing the flag after a brief delay to allow tab switch to complete
                 Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
                 {
@@ -187,6 +196,49 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
 
         /// <summary>
+        /// Determines if the pointer click is occurring on a tab header (actual tab button)
+        /// rather than in the tab content area.
+        /// </summary>
+        /// <param name="e">Pointer pressed event args</param>
+        /// <returns>True if clicking on a tab header, false if clicking in content area</returns>
+        private bool IsClickingOnTabHeader(Avalonia.Input.PointerPressedEventArgs e)
+        {
+            try
+            {
+                // Get the TabControl
+                if (this.FindControl<TabControl>("MainForm_TabControl") is not TabControl tabControl)
+                {
+                    System.Diagnostics.Debug.WriteLine("POINTER: Could not find MainForm_TabControl");
+                    return false;
+                }
+
+                // Get click position relative to TabControl
+                var clickPosition = e.GetPosition(tabControl);
+
+                // Check if click is within tab header area - typically the top portion of TabControl
+                // For most themes, tab headers are in the top ~40-50 pixels
+                var tabHeaderHeight = 45.0; // Approximate height of tab headers
+
+                if (clickPosition.Y <= tabHeaderHeight)
+                {
+                    System.Diagnostics.Debug.WriteLine($"POINTER: Click at Y={clickPosition.Y:F1} is within tab header area (height: {tabHeaderHeight})");
+                    return true;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"POINTER: Click at Y={clickPosition.Y:F1} is in content area (below header height: {tabHeaderHeight})");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error determining click location: {ex.Message}");
+                // If we can't determine, err on the side of NOT clearing inputs
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Handles TabControl property changes to clear inputs BEFORE focus events
         /// </summary>
         private void OnTabControlPropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
@@ -196,13 +248,13 @@ namespace MTM_WIP_Application_Avalonia.Views
                 if (e.Property.Name == "SelectedIndex" && sender is TabControl tabControl)
                 {
                     System.Diagnostics.Debug.WriteLine($"EARLY: TabControl SelectedIndex changed to {tabControl.SelectedIndex} - setting tab switch flag and clearing inputs immediately");
-                    
+
                     // Set the tab switch flag to prevent SuggestionOverlay from showing
                     IsTabSwitchInProgress = true;
-                    
+
                     // Clear ALL inputs immediately when any tab selection change is detected
                     ClearAllTabInputsImmediate();
-                    
+
                     // Schedule clearing the flag after a brief delay
                     Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
                     {
@@ -222,7 +274,7 @@ namespace MTM_WIP_Application_Avalonia.Views
         private void OnMainViewLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (_isInitialized) return;
-            
+
             try
             {
                 // Ensure the window is properly positioned and sized on the current monitor
@@ -266,7 +318,7 @@ namespace MTM_WIP_Application_Avalonia.Views
 
                 // Get the screen where the mouse cursor is currently located
                 var currentScreen = GetCurrentScreen(window) ?? screens.First();
-                
+
                 // Calculate center position on the current screen
                 var workingArea = currentScreen.WorkingArea;
                 var screenCenter = new PixelPoint(
@@ -281,7 +333,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 // Ensure the window size fits within the screen
                 var maxWidth = (int)(workingArea.Width * 0.9); // Use 90% of screen width max
                 var maxHeight = (int)(workingArea.Height * 0.9); // Use 90% of screen height max
-                
+
                 windowWidth = Math.Min(windowWidth, maxWidth);
                 windowHeight = Math.Min(windowHeight, maxHeight);
 
@@ -313,7 +365,7 @@ namespace MTM_WIP_Application_Avalonia.Views
 
                 var currentScreen = GetCurrentScreen(window) ?? screens.First();
                 var workingArea = currentScreen.WorkingArea;
-                
+
                 var windowBounds = new PixelRect(
                     window.Position.X,
                     window.Position.Y,
@@ -327,11 +379,11 @@ namespace MTM_WIP_Application_Avalonia.Views
                     // Adjust size if window is too large
                     var newWidth = Math.Min((int)window.Width, workingArea.Width);
                     var newHeight = Math.Min((int)window.Height, workingArea.Height);
-                    
+
                     // Adjust position to keep window on screen
-                    var newX = Math.Max(workingArea.X, 
+                    var newX = Math.Max(workingArea.X,
                         Math.Min(window.Position.X, workingArea.Right - newWidth));
-                    var newY = Math.Max(workingArea.Y, 
+                    var newY = Math.Max(workingArea.Y,
                         Math.Min(window.Position.Y, workingArea.Bottom - newHeight));
 
                     window.Position = new PixelPoint(newX, newY);
@@ -364,7 +416,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 // Set minimum constraints
                 window.MinWidth = 800;
                 window.MinHeight = 500;
-                
+
                 // Set maximum constraints based on screen size
                 window.MaxWidth = workingArea.Width;
                 window.MaxHeight = workingArea.Height;
@@ -420,7 +472,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 {
                     var intersection = screen.WorkingArea.Intersect(windowBounds);
                     var overlapArea = intersection.Width * intersection.Height;
-                    
+
                     if (overlapArea > maxOverlap)
                     {
                         maxOverlap = overlapArea;
@@ -534,7 +586,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 for (int i = 0; i < Application.Current.Resources.MergedDictionaries.Count; i++)
                 {
                     var dict = Application.Current.Resources.MergedDictionaries[i];
-                    if (dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var testValue) && 
+                    if (dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var testValue) &&
                         testValue?.ToString() == "#B8860B")
                     {
                         lightThemeIndex = i;
@@ -562,7 +614,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             {
                 var overlayPanel = this.FindControl<Border>("SuggestionOverlayPanel");
                 var contentControl = this.FindControl<ContentControl>("SuggestionOverlayContent");
-                
+
                 if (overlayPanel != null && contentControl != null)
                 {
                     contentControl.Content = overlayContent;
@@ -589,7 +641,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             {
                 var overlayPanel = this.FindControl<Border>("SuggestionOverlayPanel");
                 var contentControl = this.FindControl<ContentControl>("SuggestionOverlayContent");
-                
+
                 if (overlayPanel != null && contentControl != null)
                 {
                     overlayPanel.IsVisible = false;
@@ -613,7 +665,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             {
                 var overlayPanel = this.FindControl<Border>("NewQuickButtonOverlayPanel");
                 var newQuickButtonView = this.FindControl<MTM_WIP_Application_Avalonia.Views.NewQuickButtonView>("NewQuickButtonView");
-                
+
                 if (overlayPanel != null && newQuickButtonView != null)
                 {
                     // Set the DataContext for the view if provided
@@ -621,7 +673,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                     {
                         newQuickButtonView.DataContext = viewModel;
                     }
-                    
+
                     overlayPanel.IsVisible = true;
                     System.Diagnostics.Debug.WriteLine("NewQuickButton view panel shown successfully");
                 }
@@ -644,7 +696,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 var overlayPanel = this.FindControl<Border>("NewQuickButtonOverlayPanel");
-                
+
                 if (overlayPanel != null)
                 {
                     overlayPanel.IsVisible = false;
@@ -671,7 +723,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             {
                 var overlayPanel = this.FindControl<Border>("SuccessOverlayPanel");
                 var contentControl = this.FindControl<ContentControl>("SuccessOverlayContent");
-                
+
                 if (overlayPanel != null && contentControl != null)
                 {
                     contentControl.Content = overlayContent;
@@ -698,7 +750,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             {
                 var overlayPanel = this.FindControl<Border>("SuccessOverlayPanel");
                 var contentControl = this.FindControl<ContentControl>("SuccessOverlayContent");
-                
+
                 if (overlayPanel != null && contentControl != null)
                 {
                     overlayPanel.IsVisible = false;
@@ -749,7 +801,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 Loaded -= OnMainViewLoaded;
                 SizeChanged -= OnMainViewSizeChanged;
                 DataContextChanged -= OnDataContextChanged;
-                
+
                 // Clean up TabControl property change subscription
                 var tabControl = this.FindControl<TabControl>("MainForm_TabControl");
                 if (tabControl != null)
@@ -757,7 +809,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                     tabControl.PropertyChanged -= OnTabControlPropertyChanged;
                     System.Diagnostics.Debug.WriteLine("CLEANUP: TabControl property change monitoring unsubscribed");
                 }
-                
+
                 // Unsubscribe from ViewModel events
                 if (_viewModel != null)
                 {
@@ -835,7 +887,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                     // We'll need to monitor property changes or implement command notifications
                 }
 
-                // Subscribe to AdvancedRemoveViewModel events for Back button  
+                // Subscribe to AdvancedRemoveViewModel events for Back button
                 if (viewModel.AdvancedRemoveViewModel != null)
                 {
                     // Note: BackToNormalCommand is handled through the ViewModel command pattern
@@ -916,14 +968,14 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine("New QuickButton requested - showing view");
-                
+
                 // Get the NewQuickButtonOverlayViewModel from DI
                 var overlayViewModel = Program.GetService<ViewModels.Overlay.NewQuickButtonOverlayViewModel>();
                 if (overlayViewModel != null)
                 {
                     // Show the view with the ViewModel
                     ShowNewQuickButtonOverlay(overlayViewModel);
-                    
+
                     // Subscribe to overlay events
                     overlayViewModel.QuickButtonCreated += OnQuickButtonCreated;
                     overlayViewModel.Cancelled += OnNewQuickButtonOverlayClosed;
@@ -947,10 +999,10 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine("NewQuickButton overlay closed - hiding overlay");
-                
+
                 // Hide the overlay
                 HideNewQuickButtonOverlay();
-                
+
                 // Unsubscribe from overlay events
                 if (sender is ViewModels.Overlay.NewQuickButtonOverlayViewModel overlayViewModel)
                 {
@@ -972,16 +1024,16 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine("QuickButton created successfully");
-                
+
                 // Hide the overlay
                 HideNewQuickButtonOverlay();
-                
+
                 // Refresh the QuickButtons view
                 if (_viewModel?.QuickButtonsViewModel != null)
                 {
                     _viewModel.QuickButtonsViewModel.RefreshButtonsCommand.Execute(null);
                 }
-                
+
                 // Unsubscribe from overlay events
                 if (sender is ViewModels.Overlay.NewQuickButtonOverlayViewModel overlayViewModel)
                 {
@@ -1004,7 +1056,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine("Clearing inputs when returning from advanced views");
-                
+
                 // Clear advanced inventory inputs
                 if (_viewModel?.AdvancedInventoryViewModel != null)
                 {
@@ -1022,7 +1074,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                     System.Diagnostics.Debug.WriteLine("Cleared Advanced Inventory inputs");
                 }
 
-                // Clear advanced remove inputs  
+                // Clear advanced remove inputs
                 if (_viewModel?.AdvancedRemoveViewModel != null)
                 {
                     // Clear any advanced remove specific inputs
@@ -1051,7 +1103,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 {
                     System.Diagnostics.Debug.WriteLine($"MainView received request to trigger LostFocus on {e.FieldNames.Count} fields on tab {e.TabIndex}");
                 }
-                
+
                 // Use Dispatcher to ensure UI operations happen on the correct thread
                 await Dispatcher.UIThread.InvokeAsync(async () =>
                 {
@@ -1076,14 +1128,14 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine($"Triggering LostFocus events for fields: {string.Join(", ", fieldNames)} on tab {tabIndex}");
-                
+
                 // First, ensure we're on the correct tab if needed
                 var tabControl = this.FindControl<TabControl>("MainForm_TabControl");
                 if (tabControl != null && tabControl.SelectedIndex != tabIndex)
                 {
                     tabControl.SelectedIndex = tabIndex;
                     System.Diagnostics.Debug.WriteLine($"Switched to tab {tabIndex}");
-                    
+
                     // Small delay to allow tab switch to complete
                     await Task.Delay(100);
                 }
@@ -1092,7 +1144,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 foreach (var fieldName in fieldNames)
                 {
                     await TriggerLostFocusOnField(fieldName);
-                    
+
                     // Add delay between fields if specified
                     if (delayBetweenFields > 0)
                     {
@@ -1113,14 +1165,14 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine($"Focusing on fields: {string.Join(", ", fieldNames)} on tab {tabIndex}");
-                
+
                 // First, ensure we're on the correct tab if needed
                 var tabControl = this.FindControl<TabControl>("MainForm_TabControl");
                 if (tabControl != null && tabControl.SelectedIndex != tabIndex)
                 {
                     tabControl.SelectedIndex = tabIndex;
                     System.Diagnostics.Debug.WriteLine($"Switched to tab {tabIndex}");
-                    
+
                     // Small delay to allow tab switch to complete
                     await Task.Delay(100);
                 }
@@ -1129,7 +1181,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 foreach (var fieldName in fieldNames)
                 {
                     await FocusOnField(fieldName);
-                    
+
                     // Add delay between fields if specified
                     if (delayBetweenFields > 0)
                     {
@@ -1150,7 +1202,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine($"Attempting to trigger LostFocus for field: {fieldName}");
-                
+
                 Control? targetControl = null;
 
                 // The TextBox controls are inside the InventoryTabView, so we need to find them differently
@@ -1159,9 +1211,9 @@ namespace MTM_WIP_Application_Avalonia.Views
                 if (tabControl?.SelectedIndex == 0) // Inventory tab
                 {
                     // Find the InventoryTabView content within the tab
-                    var inventoryContent = FindControlInVisualTree<UserControl>(this, "InventoryTabView") ?? 
+                    var inventoryContent = FindControlInVisualTree<UserControl>(this, "InventoryTabView") ??
                                           FindControlByType<UserControl>(this, "InventoryTabView");
-                    
+
                     if (inventoryContent != null)
                     {
                         // Look for controls within the InventoryTabView
@@ -1216,7 +1268,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                     // Trigger the LostFocus event by first focusing the control, then moving focus away
                     targetControl.Focus();
                     await Task.Delay(50); // Brief delay to ensure focus is established
-                    
+
                     // Move focus away to trigger LostFocus - focus on another control or the parent
                     var parentContainer = targetControl.Parent;
                     if (parentContainer is Control parentControl && parentControl.Focusable)
@@ -1232,7 +1284,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                             tabContainer.Focus();
                         }
                     }
-                    
+
                     System.Diagnostics.Debug.WriteLine($"Successfully triggered LostFocus for field: {fieldName}");
                 }
                 else
@@ -1251,7 +1303,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine($"Attempting to focus field: {fieldName}");
-                
+
                 Control? targetControl = null;
 
                 // The TextBox controls are inside the InventoryTabView, so we need to find them differently
@@ -1260,9 +1312,9 @@ namespace MTM_WIP_Application_Avalonia.Views
                 if (tabControl?.SelectedIndex == 0) // Inventory tab
                 {
                     // Find the InventoryTabView content within the tab
-                    var inventoryContent = FindControlInVisualTree<UserControl>(this, "InventoryTabView") ?? 
+                    var inventoryContent = FindControlInVisualTree<UserControl>(this, "InventoryTabView") ??
                                           FindControlByType<UserControl>(this, "InventoryTabView");
-                    
+
                     if (inventoryContent != null)
                     {
                         // Look for controls within the InventoryTabView
@@ -1317,7 +1369,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                     // Simply focus the control without triggering LostFocus
                     targetControl.Focus();
                     await Task.Delay(50); // Brief delay to ensure focus is established
-                    
+
                     System.Diagnostics.Debug.WriteLine($"Successfully focused field: {fieldName}");
                 }
                 else
@@ -1382,7 +1434,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 return null;
             }
         }
-        
+
         /// <summary>
         /// Handles focus management requests from the ViewModel
         /// </summary>
@@ -1391,7 +1443,7 @@ namespace MTM_WIP_Application_Avalonia.Views
             try
             {
                 System.Diagnostics.Debug.WriteLine($"MainView received focus management request: {e.FocusType} for tab {e.TabIndex} with {e.DelayMs}ms delay");
-                
+
                 // Get the FocusManagementService from the service provider
                 var focusService = Program.GetService<Services.IFocusManagementService>();
                 if (focusService == null)
@@ -1407,17 +1459,17 @@ namespace MTM_WIP_Application_Avalonia.Views
                         System.Diagnostics.Debug.WriteLine("Processing startup focus request");
                         await focusService.SetStartupFocusAsync(this);
                         break;
-                        
+
                     case FocusRequestType.TabSwitch:
                         System.Diagnostics.Debug.WriteLine($"Processing tab switch focus request for tab {e.TabIndex}");
                         await focusService.SetTabSwitchFocusAsync(this, e.TabIndex);
                         break;
-                        
+
                     case FocusRequestType.ViewSwitch:
                         System.Diagnostics.Debug.WriteLine("Processing view switch focus request");
                         await focusService.SetInitialFocusAsync(this, e.DelayMs);
                         break;
-                        
+
                     default:
                         System.Diagnostics.Debug.WriteLine($"Unknown focus request type: {e.FocusType}");
                         break;
@@ -1428,7 +1480,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 System.Diagnostics.Debug.WriteLine($"Error handling focus management request: {ex.Message}");
             }
         }
-        
+
         /// <summary>
         /// Handles tab selection changes to clear input fields and prevent SuggestionOverlay triggers
         /// </summary>
@@ -1504,7 +1556,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                     case 0: // Inventory Tab
                         ClearInventoryTabInputs();
                         break;
-                    case 1: // Remove Tab  
+                    case 1: // Remove Tab
                         ClearRemoveTabInputs();
                         break;
                     case 2: // Transfer Tab
@@ -1564,7 +1616,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                         System.Diagnostics.Debug.WriteLine("Preserving Remove tab inputs - edit dialog is open");
                         return;
                     }
-                    
+
                     _viewModel.RemoveItemViewModel.SelectedPart = null;
                     _viewModel.RemoveItemViewModel.SelectedOperation = null;
                     _viewModel.RemoveItemViewModel.PartText = string.Empty;

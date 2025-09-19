@@ -109,7 +109,7 @@ namespace MTM_WIP_Application_Avalonia.Services
 
                 if (result.Status != 1 || result.Data == null || result.Data.Rows.Count == 0)
                 {
-                    _logger.LogWarning("Inventory item {InventoryId} not found or failed to load. Status: {Status}", 
+                    _logger.LogWarning("Inventory item {InventoryId} not found or failed to load. Status: {Status}",
                         inventoryId, result.Status);
                     return null;
                 }
@@ -210,11 +210,11 @@ namespace MTM_WIP_Application_Avalonia.Services
                     // Success - create result with updated item
                     var updatedItem = editModel.ToInventoryItem();
                     updatedItem.LastUpdated = DateTime.Now;
-                    
+
                     var successResult = EditInventoryResult.CreateSuccess(ConvertToSharedModel(updatedItem), editModel, editModel.User);
                     successResult.DatabaseStatus = result.Status;
                     successResult.RowsAffected = 1;
-                    
+
                     // Record field changes for audit
                     RecordFieldChanges(successResult, originalItem, editModel);
 
@@ -225,8 +225,8 @@ namespace MTM_WIP_Application_Avalonia.Services
                 {
                     // Database operation failed
                     return EditInventoryResult.DatabaseFailure(
-                        result.Message ?? "Unknown database error", 
-                        result.Status, 
+                        result.Message ?? "Unknown database error",
+                        result.Status,
                         editModel
                     );
                 }
@@ -235,10 +235,10 @@ namespace MTM_WIP_Application_Avalonia.Services
             {
                 _logger.LogError(ex, "Error saving inventory item {InventoryId} changes", editModel?.Id ?? 0);
                 await ErrorHandling.HandleErrorAsync(ex, $"Failed to save inventory item {editModel?.Id ?? 0} changes", "SYSTEM");
-                
+
                 return EditInventoryResult.DatabaseFailure(
-                    $"Exception during save: {ex.Message}", 
-                    -1, 
+                    $"Exception during save: {ex.Message}",
+                    -1,
                     editModel
                 );
             }
@@ -260,15 +260,15 @@ namespace MTM_WIP_Application_Avalonia.Services
                 if (!editModel.IsValid())
                 {
                     return EditInventoryResult.ValidationFailure(
-                        new List<string> { editModel.ValidationError }, 
+                        new List<string> { editModel.ValidationError },
                         editModel
                     );
                 }
 
                 // Validate against master data
                 var masterDataValidation = await ValidateMasterDataAsync(
-                    editModel.PartId, 
-                    editModel.Operation, 
+                    editModel.PartId,
+                    editModel.Operation,
                     editModel.Location
                 );
 
@@ -277,10 +277,10 @@ namespace MTM_WIP_Application_Avalonia.Services
                 // Check each master data field
                 if (!masterDataValidation["PartId"])
                     validationErrors.Add($"Part ID '{editModel.PartId}' not found in master data");
-                
+
                 if (!masterDataValidation["Operation"])
                     validationErrors.Add($"Operation '{editModel.Operation}' not found in master data");
-                
+
                 if (!masterDataValidation["Location"])
                     validationErrors.Add($"Location '{editModel.Location}' not found in master data");
 
@@ -307,7 +307,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                 // All validation passed
                 var successResult = EditInventoryResult.CreateSuccess(ConvertToSharedModel(editModel.ToInventoryItem()), editModel, editModel.User);
                 successResult.MasterDataValidation = masterDataValidation;
-                
+
                 _logger.LogInformation("Validation successful for inventory item {InventoryId}", editModel.Id);
                 return successResult;
             }
@@ -315,9 +315,9 @@ namespace MTM_WIP_Application_Avalonia.Services
             {
                 _logger.LogError(ex, "Error validating inventory item {InventoryId}", editModel.Id);
                 await ErrorHandling.HandleErrorAsync(ex, $"Failed to validate inventory item {editModel.Id}", "SYSTEM");
-                
+
                 return EditInventoryResult.ValidationFailure(
-                    new List<string> { $"Validation error: {ex.Message}" }, 
+                    new List<string> { $"Validation error: {ex.Message}" },
                     editModel
                 );
             }
@@ -334,6 +334,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                     partId, operation, location);
 
                 // Use the stored procedure for master data validation
+                // Note: This procedure uses SELECT to return results, not output parameters
                 var parameters = new Dictionary<string, object>
                 {
                     ["p_PartID"] = partId ?? string.Empty,
@@ -341,7 +342,8 @@ namespace MTM_WIP_Application_Avalonia.Services
                     ["p_Location"] = location ?? string.Empty
                 };
 
-                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                // Use ExecuteDataTableDirect since inv_inventory_Validate_MasterData returns data via SELECT
+                var dataTable = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                     _databaseService.GetConnectionString(),
                     "inv_inventory_Validate_MasterData",
                     parameters
@@ -354,16 +356,20 @@ namespace MTM_WIP_Application_Avalonia.Services
                     ["Location"] = false
                 };
 
-                if (result.Status == 1 && result.Data != null && result.Data.Rows.Count > 0)
+                if (dataTable != null && dataTable.Rows.Count > 0)
                 {
-                    var row = result.Data.Rows[0];
+                    var row = dataTable.Rows[0];
                     validation["PartId"] = Convert.ToBoolean(row["PartID_Valid"]);
                     validation["Operation"] = Convert.ToBoolean(row["Operation_Valid"]);
                     validation["Location"] = Convert.ToBoolean(row["Location_Valid"]);
+
+                    _logger.LogDebug("Master data validation successful - returned {RowCount} rows with columns: {Columns}",
+                        dataTable.Rows.Count, string.Join(", ", dataTable.Columns.Cast<System.Data.DataColumn>().Select(c => c.ColumnName)));
                 }
                 else
                 {
-                    _logger.LogWarning("Master data validation procedure failed or returned no results. Status: {Status}", result.Status);
+                    _logger.LogWarning("Master data validation procedure returned no results for PartId='{PartId}', Operation='{Operation}', Location='{Location}'",
+                        partId, operation, location);
                 }
 
                 _logger.LogDebug("Master data validation results: PartId={PartIdValid}, Operation={OperationValid}, Location={LocationValid}",
@@ -375,7 +381,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             {
                 _logger.LogError(ex, "Error validating master data");
                 await ErrorHandling.HandleErrorAsync(ex, "Failed to validate master data", "SYSTEM");
-                
+
                 // Return all false on error
                 return new Dictionary<string, bool>
                 {
@@ -394,7 +400,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             try
             {
                 var dataTable = await _databaseService.GetInventoryByIdAsync(inventoryId);
-                
+
                 if (dataTable != null && dataTable.Rows.Count > 0)
                 {
                     var row = dataTable.Rows[0];
@@ -449,7 +455,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                 }
 
                 return EditInventoryResult.DatabaseFailure(
-                    result.Message ?? "Failed to update notes", 
+                    result.Message ?? "Failed to update notes",
                     result.Status
                 );
             }
@@ -457,7 +463,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             {
                 _logger.LogError(ex, "Error updating notes for inventory item {InventoryId}", inventoryId);
                 await ErrorHandling.HandleErrorAsync(ex, $"Failed to update notes for inventory item {inventoryId}", "SYSTEM");
-                
+
                 return EditInventoryResult.DatabaseFailure($"Exception during notes update: {ex.Message}", -1);
             }
         }
@@ -471,22 +477,22 @@ namespace MTM_WIP_Application_Avalonia.Services
         {
             if (original.PartId != edited.PartId)
                 result.RecordFieldChange("PartId", original.PartId, edited.PartId);
-                
+
             if (original.Location != edited.Location)
                 result.RecordFieldChange("Location", original.Location, edited.Location);
-                
+
             if (original.Operation != edited.Operation)
                 result.RecordFieldChange("Operation", original.Operation, edited.Operation);
-                
+
             if (original.Quantity != edited.Quantity)
                 result.RecordFieldChange("Quantity", original.Quantity, edited.Quantity);
-                
+
             if (original.ItemType != edited.ItemType)
                 result.RecordFieldChange("ItemType", original.ItemType, edited.ItemType);
-                
+
             if (original.BatchNumber != edited.BatchNumber)
                 result.RecordFieldChange("BatchNumber", original.BatchNumber, edited.BatchNumber);
-                
+
             if (original.Notes != edited.Notes)
                 result.RecordFieldChange("Notes", original.Notes, edited.Notes);
         }

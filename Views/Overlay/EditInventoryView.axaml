@@ -380,14 +380,22 @@
                 <TextBlock Text="Quantity:" Classes="field-label" FontSize="12" />
               </StackPanel>
 
-              <TextBox Grid.Column="1"
-                       Text="{Binding EditModel.Quantity, Mode=TwoWay}"
-                       Classes="input-field"
-                       Classes.error="{Binding IsQuantityInvalid}"
-                       IsEnabled="{Binding CanEditRecord}"
-                       MinHeight="28"
-                       FontSize="12"
-                       ToolTip.Tip="Item quantity - EDITABLE" />
+              <StackPanel Grid.Column="1">
+                <TextBox Text="{Binding QuantityText, Mode=TwoWay}"
+                         Classes="input-field"
+                         Classes.error="{Binding IsQuantityInvalid}"
+                         IsEnabled="{Binding CanEditRecord}"
+                         MinHeight="28"
+                         FontSize="12"
+                         ToolTip.Tip="Item quantity - EDITABLE" />
+
+                <!-- Quantity Error Message -->
+                <TextBlock Text="{Binding QuantityErrorMessage}"
+                           FontSize="11"
+                           Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                           Margin="2,2,0,0"
+                           IsVisible="{Binding IsQuantityInvalid}" />
+              </StackPanel>
 
               <!-- Success icon - only show if can edit and quantity is valid -->
               <materialIcons:MaterialIcon Grid.Column="2"

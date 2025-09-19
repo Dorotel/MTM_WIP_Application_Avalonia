@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,8 +38,47 @@ public partial class EditInventoryViewModel : BaseViewModel
             newValue?.User ?? "NULL",
             newValue?.Id ?? -1);
 
+        // Unsubscribe from old model if it exists
+        if (oldValue != null)
+        {
+            oldValue.PropertyChanged -= OnEditModelPropertyChanged;
+        }
+
+        // Subscribe to new model property changes
+        if (newValue != null)
+        {
+            newValue.PropertyChanged -= OnEditModelPropertyChanged; // Ensure no double subscription
+            newValue.PropertyChanged += OnEditModelPropertyChanged;
+
+            Logger.LogDebug("🔍 Subscribed to new EditModel property changes");
+
+            // Trigger initial CanSave evaluation
+            OnPropertyChanged(nameof(CanSave));
+            SaveCommand.NotifyCanExecuteChanged();
+        }
+
         // TextBox bindings work correctly - no manual refresh needed
         Logger.LogInformation("🔍 QA TEXTBOX-BINDINGS: TextBox controls should auto-refresh with EditModel changes");
+    }
+
+    /// <summary>
+    /// Handle EditModel property changes
+    /// </summary>
+    private void OnEditModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        Logger.LogDebug("🔍 EditModel property changed: {PropertyName}", e.PropertyName);
+
+        ValidateField(e.PropertyName);
+        OnPropertyChanged(nameof(CanSave)); // Notify CanSave when EditModel changes
+        SaveCommand.NotifyCanExecuteChanged(); // Notify the command as well
+
+        // Subscribe to HasChanges property specifically to ensure CanSave updates
+        if (e.PropertyName == nameof(EditModel.HasChanges))
+        {
+            Logger.LogDebug("EditModel.HasChanges changed to: {HasChanges}", EditModel.HasChanges);
+            OnPropertyChanged(nameof(CanSave));
+            SaveCommand.NotifyCanExecuteChanged(); // Critical: Notify SaveCommand when HasChanges updates
+        }
     }
 
     [ObservableProperty]
@@ -52,6 +92,12 @@ public partial class EditInventoryViewModel : BaseViewModel
 
     [ObservableProperty]
     private string permissionErrorMessage = string.Empty;
+
+    [ObservableProperty]
+    private string quantityErrorMessage = string.Empty;
+
+    [ObservableProperty]
+    private string quantityText = string.Empty;
 
     [ObservableProperty]
     private ObservableCollection<string> availablePartIds = new();
@@ -110,12 +156,35 @@ public partial class EditInventoryViewModel : BaseViewModel
     private DateTime displayLastUpdated = DateTime.MinValue;
 
     // Computed properties
-    public bool CanSave => CanEditRecord &&
-                          EditModel.HasChanges &&
-                          !HasValidationErrors &&
-                          !IsLoading &&
-                          IsOperationValid &&
-                          IsQuantityValid;
+    public bool CanSave
+    {
+        get
+        {
+            var canEdit = CanEditRecord;
+            var hasChanges = EditModel.HasChanges;
+            var hasErrors = HasValidationErrors;
+            var loading = IsLoading;
+            var operationValid = IsOperationValid;
+            var quantityValid = IsQuantityValid;
+
+            var result = canEdit &&
+                        hasChanges &&
+                        !hasErrors &&
+                        !loading &&
+                        operationValid &&
+                        quantityValid;
+
+            // Debug logging to identify which condition is failing
+            Logger.LogDebug("🔍 CanSave DEBUG: CanEditRecord={CanEdit}, HasChanges={HasChanges}, " +
+                          "HasValidationErrors={HasErrors}, IsLoading={Loading}, " +
+                          "IsOperationValid={OperationValid}, IsQuantityValid={QuantityValid}, " +
+                          "RESULT={Result}",
+                          canEdit, hasChanges, hasErrors, loading,
+                          operationValid, quantityValid, result);
+
+            return result;
+        }
+    }
 
     // Events
     public event EventHandler? DialogClosed;
@@ -165,12 +234,72 @@ public partial class EditInventoryViewModel : BaseViewModel
             "Consumable"
         };
 
-        // Wire up property change notifications for validation
-        EditModel.PropertyChanged += (s, e) =>
+        // Note: EditModel property change subscriptions are handled in OnEditModelChanged
+        // This ensures proper subscription after EditModel is set
+    }
+
+    /// <summary>
+    /// Override property change handlers to ensure CanSave is notified when dependencies change
+    /// </summary>
+    partial void OnCanEditRecordChanged(bool value)
+    {
+        Logger.LogDebug("CanEditRecord changed to: {CanEditRecord}", value);
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnHasValidationErrorsChanged(bool value)
+    {
+        Logger.LogDebug("HasValidationErrors changed to: {HasValidationErrors}", value);
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsLoadingChanged(bool value)
+    {
+        Logger.LogDebug("IsLoading changed to: {IsLoading}", value);
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsOperationValidChanged(bool value)
+    {
+        Logger.LogDebug("IsOperationValid changed to: {IsOperationValid}", value);
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsQuantityValidChanged(bool value)
+    {
+        Logger.LogDebug("IsQuantityValid changed to: {IsQuantityValid}", value);
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnQuantityTextChanged(string value)
+    {
+        // Handle quantity text input with proper validation
+        bool isValid = false;
+        int quantity = 0;
+
+        if (!string.IsNullOrWhiteSpace(value) && int.TryParse(value, out quantity) && quantity > 0)
         {
-            ValidateField(e.PropertyName);
-            OnPropertyChanged(nameof(CanSave));
-        };
+            // Valid positive quantity
+            isValid = true;
+        }
+
+        // Update EditModel
+        EditModel.Quantity = quantity;
+
+        // Set validation state and error message
+        IsQuantityValid = isValid;
+        IsQuantityInvalid = !isValid;
+        QuantityErrorMessage = isValid ? string.Empty : "Enter Quantity";
+
+        // Update overall validation state
+        HasValidationErrors = IsOperationInvalid || IsQuantityInvalid;
+        OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>
@@ -229,6 +358,20 @@ public partial class EditInventoryViewModel : BaseViewModel
             if (CanEditRecord)
             {
                 ValidateAllFields();
+
+                // Force initial CanSave evaluation and notification
+                Logger.LogDebug("🔍 InitializeAsync(int) - Initial validation completed, triggering CanSave notification");
+                OnPropertyChanged(nameof(CanSave));
+                SaveCommand.NotifyCanExecuteChanged();
+            }
+            else
+            {
+                // Even if user can't edit, we should set the validation states properly
+                IsOperationValid = true; // Don't block on validation if can't edit anyway
+                IsQuantityValid = true;
+                Logger.LogDebug("🔍 InitializeAsync(int) - User can't edit, setting validation states to true");
+                OnPropertyChanged(nameof(CanSave));
+                SaveCommand.NotifyCanExecuteChanged();
             }
 
             Logger.LogInformation("Edit dialog initialized successfully for Part ID: {PartId}, CanEdit: {CanEdit}", EditModel.PartId, CanEditRecord);
@@ -270,6 +413,9 @@ public partial class EditInventoryViewModel : BaseViewModel
             EditModel = new EditInventoryModel(inventoryItem);
             EditModel.ResetChangeTracking(); // Start fresh change tracking
 
+            // Initialize QuantityText to prevent binding errors
+            QuantityText = EditModel.Quantity.ToString();
+
             // Immediately update display properties for TextBlock bindings
             UpdateDisplayProperties();
 
@@ -301,6 +447,20 @@ public partial class EditInventoryViewModel : BaseViewModel
             if (CanEditRecord)
             {
                 ValidateAllFields();
+
+                // Force initial CanSave evaluation and notification
+                Logger.LogDebug("🔍 InitializeAsync(InventoryItem) - Initial validation completed, triggering CanSave notification");
+                OnPropertyChanged(nameof(CanSave));
+                SaveCommand.NotifyCanExecuteChanged();
+            }
+            else
+            {
+                // Even if user can't edit, we should set the validation states properly
+                IsOperationValid = true; // Don't block on validation if can't edit anyway
+                IsQuantityValid = true;
+                Logger.LogDebug("🔍 InitializeAsync(InventoryItem) - User can't edit, setting validation states to true");
+                OnPropertyChanged(nameof(CanSave));
+                SaveCommand.NotifyCanExecuteChanged();
             }
 
             Logger.LogInformation("Edit dialog initialized successfully for Part ID: {PartId}, CanEdit: {CanEdit}", EditModel.PartId, CanEditRecord);
@@ -367,10 +527,7 @@ public partial class EditInventoryViewModel : BaseViewModel
                 IsOperationInvalid = !IsOperationValid;
                 break;
 
-            case nameof(EditModel.Quantity):
-                IsQuantityValid = EditModel.Quantity >= 0;
-                IsQuantityInvalid = !IsQuantityValid;
-                break;
+                // Quantity validation is handled in OnQuantityTextChanged
         }
 
         // Update overall validation status (only for editable fields)
@@ -378,6 +535,7 @@ public partial class EditInventoryViewModel : BaseViewModel
 
         // Notify that CanSave may have changed
         OnPropertyChanged(nameof(CanSave));
+        SaveCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>
@@ -388,14 +546,14 @@ public partial class EditInventoryViewModel : BaseViewModel
         if (!CanEditRecord) return; // Don't validate if user can't edit
 
         ValidateField(nameof(EditModel.Operation));
-        ValidateField(nameof(EditModel.Quantity));
+        // Quantity validation is handled automatically in OnQuantityTextChanged
         // Notes don't need validation as they're optional
     }
 
     /// <summary>
     /// Save changes to the inventory item.
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
     {
         if (!CanSave)

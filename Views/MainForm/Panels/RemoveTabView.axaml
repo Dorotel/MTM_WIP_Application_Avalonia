@@ -11,12 +11,17 @@
              xmlns:interactions="using:Avalonia.Xaml.Interactions.Core"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
              xmlns:overlayViews="using:MTM_WIP_Application_Avalonia.Views.Overlay"
+             xmlns:conv="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="600"
              x:Class="MTM_WIP_Application_Avalonia.Views.RemoveTabView"
              x:CompileBindings="True"
              x:DataType="apivm:RemoveItemViewModel">
+
+  <UserControl.Resources>
+    <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
+  </UserControl.Resources>
 
   <UserControl.KeyBindings>
     <KeyBinding Gesture="F5" Command="{Binding SearchCommand}" />
@@ -144,9 +149,10 @@
             <customDataGrid:CustomDataGrid Grid.Row="0"
                                          x:Name="InventoryDataGrid"
                                          ItemsSource="{Binding InventoryItems}"
-                                         IsMultiSelectEnabled="False"
                                          SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                         SelectedItemsCollection="{Binding SelectedItems}"
                                          DeleteItemCommand="{Binding DeleteSingleItemCommand}"
+                                         MultiRowDeleteCommand="{Binding DeleteMultipleItemsCommand}"
                                          EditItemCommand="{Binding EditItemCommand}"
                                          IsVisible="{Binding HasInventoryItems}"
                                          Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
@@ -286,6 +292,11 @@
         <!-- Reference to EditInventoryView with proper DataContext -->
         <overlayViews:EditInventoryView DataContext="{Binding EditDialogViewModel}" />
       </Border>
+    </Border>
+
+    <!-- Confirmation Dialog Overlay - multi-row deletion confirmation with MTM theme -->
+    <Border IsVisible="{Binding ConfirmationOverlayViewModel, Converter={StaticResource NullToBoolConverter}}">
+      <views:ConfirmationOverlayView DataContext="{Binding ConfirmationOverlayViewModel}" />
     </Border>
 
   </Grid> <!-- Close RootContainer -->

@@ -1,28 +1,34 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Layout;
+using Avalonia.Media;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 {
     /// <summary>
     /// CustomDataGrid control for MTM WIP Application
-    /// Provides high-performance data grid with perfect header-data alignment
+    /// Provides high-performance data grid with WinForms-style multi-selection
+    /// Supports Ctrl+Click (toggle), Shift+Click (range), and drag selection
     /// Follows MTM design system and MVVM Community Toolkit patterns
     /// </summary>
     public partial class CustomDataGrid : UserControl
     {
         private readonly ILogger<CustomDataGrid> _logger;
+        private int _lastSelectedIndex = -1;
+        private bool _isDragging = false;
+        private int _dragStartIndex = -1;
 
         #region Dependency Properties
 
@@ -33,16 +39,16 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             AvaloniaProperty.Register<CustomDataGrid, IEnumerable?>(nameof(ItemsSource));
 
         /// <summary>
-        /// Gets or sets whether multi-selection is enabled
-        /// </summary>
-        public static readonly StyledProperty<bool> IsMultiSelectEnabledProperty =
-            AvaloniaProperty.Register<CustomDataGrid, bool>(nameof(IsMultiSelectEnabled), true);
-
-        /// <summary>
         /// Command for deleting an item
         /// </summary>
         public static readonly StyledProperty<ICommand?> DeleteItemCommandProperty =
             AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(DeleteItemCommand));
+
+        /// <summary>
+        /// Command for deleting multiple selected items with confirmation
+        /// </summary>
+        public static readonly StyledProperty<ICommand?> MultiRowDeleteCommandProperty =
+            AvaloniaProperty.Register<CustomDataGrid, ICommand?>(nameof(MultiRowDeleteCommand));
 
         /// <summary>
         /// Command for editing an item
@@ -55,6 +61,12 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         public static readonly StyledProperty<object?> SelectedItemProperty =
             AvaloniaProperty.Register<CustomDataGrid, object?>(nameof(SelectedItem));
+
+        /// <summary>
+        /// Gets or sets the selected items collection (for multi-selection binding)
+        /// </summary>
+        public static readonly StyledProperty<ICollection<object>?> SelectedItemsCollectionProperty =
+            AvaloniaProperty.Register<CustomDataGrid, ICollection<object>?>(nameof(SelectedItemsCollection));
 
         #endregion
 
@@ -70,21 +82,21 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         }
 
         /// <summary>
-        /// Gets or sets whether multi-selection is enabled
-        /// </summary>
-        public bool IsMultiSelectEnabled
-        {
-            get => GetValue(IsMultiSelectEnabledProperty);
-            set => SetValue(IsMultiSelectEnabledProperty, value);
-        }
-
-        /// <summary>
         /// Gets or sets the command for deleting an item
         /// </summary>
         public ICommand? DeleteItemCommand
         {
             get => GetValue(DeleteItemCommandProperty);
             set => SetValue(DeleteItemCommandProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the command for deleting multiple selected items with confirmation
+        /// </summary>
+        public ICommand? MultiRowDeleteCommand
+        {
+            get => GetValue(MultiRowDeleteCommandProperty);
+            set => SetValue(MultiRowDeleteCommandProperty, value);
         }
 
         /// <summary>
@@ -103,6 +115,15 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         {
             get => GetValue(SelectedItemProperty);
             set => SetValue(SelectedItemProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the selected items collection (for multi-selection binding)
+        /// </summary>
+        public ICollection<object>? SelectedItemsCollection
+        {
+            get => GetValue(SelectedItemsCollectionProperty);
+            set => SetValue(SelectedItemsCollectionProperty, value);
         }
 
         #endregion
@@ -128,16 +149,22 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 
             InitializeComponent();
 
-            // Subscribe to ListBox selection changes
+            // Subscribe to ListBox selection changes and mouse events
             if (DataListBox != null)
             {
                 DataListBox.SelectionChanged += OnDataListBoxSelectionChanged;
+                DataListBox.PointerPressed += OnDataListBoxPointerPressed;
+                DataListBox.PointerMoved += OnDataListBoxPointerMoved;
+                DataListBox.PointerReleased += OnDataListBoxPointerReleased;
+
+                // Enable multi-selection by default
+                DataListBox.SelectionMode = SelectionMode.Multiple;
             }
 
             // Initialize button states
             UpdateActionButtonStates();
 
-            _logger.LogDebug("CustomDataGrid initialized");
+            _logger.LogDebug("CustomDataGrid initialized with WinForms-style multi-selection");
         }
 
         #endregion
@@ -154,10 +181,6 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             if (change.Property == ItemsSourceProperty)
             {
                 HandleItemsSourceChanged(change.OldValue as IEnumerable, change.NewValue as IEnumerable);
-            }
-            else if (change.Property == IsMultiSelectEnabledProperty)
-            {
-                HandleMultiSelectEnabledChanged((bool)change.NewValue!);
             }
         }
 
@@ -182,10 +205,15 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
                 newCollection.CollectionChanged += OnItemsCollectionChanged;
             }
 
+            // Reset selection tracking
+            _lastSelectedIndex = -1;
+            _isDragging = false;
+            _dragStartIndex = -1;
+
             // Update UI state
-            UpdateSelectAllState();
             UpdateActionButtonStates();
             UpdateSelectionInfoText();
+            UpdateTotalQuantityDisplay(); // Update totals when data changes
 
             // Log item count for debugging
             if (newValue != null)
@@ -196,37 +224,201 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         }
 
         /// <summary>
-        /// Handles changes to the IsMultiSelectEnabled property
-        /// </summary>
-        private void HandleMultiSelectEnabledChanged(bool isEnabled)
-        {
-            _logger.LogDebug("Multi-select enabled changed to: {IsEnabled}", isEnabled);
-
-            if (DataListBox != null)
-            {
-                DataListBox.SelectionMode = isEnabled ? SelectionMode.Multiple : SelectionMode.Single;
-            }
-
-            // Update select all checkbox visibility
-            if (SelectAllCheckBox != null)
-            {
-                SelectAllCheckBox.IsVisible = isEnabled;
-            }
-        }
-
-        /// <summary>
         /// Handles collection change notifications from the items source
         /// </summary>
         private void OnItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             _logger.LogTrace("Items collection changed: {Action}", e.Action);
 
-            // Update select all state when collection changes
-            UpdateSelectAllState();
+            // Update total quantities when collection changes
+            UpdateTotalQuantityDisplay();
 
             // Notify parent of collection change
             var itemCount = ItemsSource?.Cast<object>().Count() ?? 0;
             _logger.LogDebug("Collection changed, new item count: {ItemCount}", itemCount);
+        }
+
+        #endregion
+
+        #region WinForms-Style Multi-Selection
+
+        /// <summary>
+        /// Handles pointer pressed events for WinForms-style selection
+        /// </summary>
+        private void OnDataListBoxPointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (DataListBox == null) return;
+
+            var point = e.GetPosition(DataListBox);
+            var hitTestResult = DataListBox.InputHitTest(point);
+            var listBoxItem = FindParent<ListBoxItem>(hitTestResult as Control);
+
+            if (listBoxItem == null) return;
+
+            var clickedIndex = DataListBox.IndexFromContainer(listBoxItem);
+            if (clickedIndex < 0) return;
+
+            var keyModifiers = e.KeyModifiers;
+            var isCtrlPressed = keyModifiers.HasFlag(KeyModifiers.Control);
+            var isShiftPressed = keyModifiers.HasFlag(KeyModifiers.Shift);
+
+            _logger.LogDebug("Item clicked at index {Index}, Ctrl: {Ctrl}, Shift: {Shift}",
+                clickedIndex, isCtrlPressed, isShiftPressed);
+
+            if (isCtrlPressed)
+            {
+                // Ctrl+Click: Toggle selection
+                HandleCtrlClick(clickedIndex);
+            }
+            else if (isShiftPressed && _lastSelectedIndex >= 0)
+            {
+                // Shift+Click: Range selection
+                HandleShiftClick(clickedIndex);
+            }
+            else
+            {
+                // Normal click: Single selection
+                HandleNormalClick(clickedIndex);
+
+                // Start potential drag operation
+                _isDragging = true;
+                _dragStartIndex = clickedIndex;
+            }
+
+            _lastSelectedIndex = clickedIndex;
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Handles pointer moved events for drag selection
+        /// </summary>
+        private void OnDataListBoxPointerMoved(object? sender, PointerEventArgs e)
+        {
+            if (!_isDragging || DataListBox == null || _dragStartIndex < 0) return;
+
+            var point = e.GetPosition(DataListBox);
+            var hitTestResult = DataListBox.InputHitTest(point);
+            var listBoxItem = FindParent<ListBoxItem>(hitTestResult as Control);
+
+            if (listBoxItem == null) return;
+
+            var currentIndex = DataListBox.IndexFromContainer(listBoxItem);
+            if (currentIndex < 0) return;
+
+            // Perform drag selection from drag start to current position
+            HandleDragSelection(_dragStartIndex, currentIndex);
+        }
+
+        /// <summary>
+        /// Handles pointer released events to end drag selection
+        /// </summary>
+        private void OnDataListBoxPointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            _isDragging = false;
+            _dragStartIndex = -1;
+        }
+
+        /// <summary>
+        /// Handles normal click (single selection)
+        /// </summary>
+        private void HandleNormalClick(int index)
+        {
+            if (DataListBox == null) return;
+
+            DataListBox.SelectedItems?.Clear();
+            if (index >= 0 && index < (ItemsSource?.Cast<object>().Count() ?? 0))
+            {
+                var items = ItemsSource?.Cast<object>().ToList();
+                if (items != null && index < items.Count)
+                {
+                    DataListBox.SelectedItems?.Add(items[index]);
+                }
+            }
+
+            _logger.LogDebug("Normal click selection: index {Index}", index);
+        }
+
+        /// <summary>
+        /// Handles Ctrl+Click (toggle selection)
+        /// </summary>
+        private void HandleCtrlClick(int index)
+        {
+            if (DataListBox == null || ItemsSource == null) return;
+
+            var items = ItemsSource.Cast<object>().ToList();
+            if (index < 0 || index >= items.Count) return;
+
+            var item = items[index];
+            var isSelected = DataListBox.SelectedItems?.Contains(item) == true;
+
+            if (isSelected)
+            {
+                DataListBox.SelectedItems?.Remove(item);
+            }
+            else
+            {
+                DataListBox.SelectedItems?.Add(item);
+            }
+
+            _logger.LogDebug("Ctrl+Click toggle: index {Index}, now {Selected}",
+                index, !isSelected ? "selected" : "deselected");
+        }
+
+        /// <summary>
+        /// Handles Shift+Click (range selection)
+        /// </summary>
+        private void HandleShiftClick(int currentIndex)
+        {
+            if (DataListBox == null || ItemsSource == null || _lastSelectedIndex < 0) return;
+
+            var items = ItemsSource.Cast<object>().ToList();
+            var startIndex = Math.Min(_lastSelectedIndex, currentIndex);
+            var endIndex = Math.Max(_lastSelectedIndex, currentIndex);
+
+            // Clear current selection and select range
+            DataListBox.SelectedItems?.Clear();
+            for (int i = startIndex; i <= endIndex && i < items.Count; i++)
+            {
+                DataListBox.SelectedItems?.Add(items[i]);
+            }
+
+            _logger.LogDebug("Shift+Click range selection: from {Start} to {End}", startIndex, endIndex);
+        }
+
+        /// <summary>
+        /// Handles drag selection
+        /// </summary>
+        private void HandleDragSelection(int startIndex, int currentIndex)
+        {
+            if (DataListBox == null || ItemsSource == null) return;
+
+            var items = ItemsSource.Cast<object>().ToList();
+            var rangeStart = Math.Min(startIndex, currentIndex);
+            var rangeEnd = Math.Max(startIndex, currentIndex);
+
+            // Clear and select the drag range
+            DataListBox.SelectedItems?.Clear();
+            for (int i = rangeStart; i <= rangeEnd && i < items.Count; i++)
+            {
+                DataListBox.SelectedItems?.Add(items[i]);
+            }
+
+            _logger.LogTrace("Drag selection: from {Start} to {End}", rangeStart, rangeEnd);
+        }
+
+        /// <summary>
+        /// Finds parent control of specified type
+        /// </summary>
+        private static T? FindParent<T>(Control? child) where T : Control
+        {
+            var parent = child?.Parent as Control;
+            while (parent != null)
+            {
+                if (parent is T targetParent)
+                    return targetParent;
+                parent = parent.Parent as Control;
+            }
+            return null;
         }
 
         #endregion
@@ -250,12 +442,29 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             // Update SelectedItem property
             SelectedItem = DataListBox?.SelectedItem;
 
-            // Raise selection changed event
+            // CRITICAL FIX: Sync SelectedItemsCollection with DataListBox selection for ViewModel binding
+            // Create new collection and set property to trigger two-way binding notification
             var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
+            if (selectedItems.Count > 0)
+            {
+                // Create new ObservableCollection to trigger binding system
+                var newSelectedItems = new System.Collections.ObjectModel.ObservableCollection<object>(selectedItems);
+                SelectedItemsCollection = newSelectedItems;
+                _logger.LogDebug("Updated SelectedItemsCollection with new collection: {Count} items", selectedItems.Count);
+            }
+            else
+            {
+                // Clear selection by setting to empty collection
+                SelectedItemsCollection = new System.Collections.ObjectModel.ObservableCollection<object>();
+                _logger.LogDebug("Cleared SelectedItemsCollection");
+            }
+
+            // Raise selection changed event
+            var selectedItemsForEvent = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
             SelectionChanged?.Invoke(this, new SelectionChangedEventArgs
             {
-                SelectedItems = selectedItems,
-                SelectionMode = "ListBoxSelection"
+                SelectedItems = selectedItemsForEvent,
+                SelectionMode = "WinFormsSelection"
             });
         }
 
@@ -298,11 +507,37 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
                 EditButton.CommandParameter = selectedItem;
             }
 
-            if (DeleteButton != null && DeleteItemCommand != null)
+            if (DeleteButton != null)
             {
-                // For delete, always pass the single selected item (not a collection)
-                // The DeleteSingleItemCommand expects a single InventoryItem, not a collection
-                DeleteButton.CommandParameter = selectedItem;
+                // Smart delete button logic: choose between single and multi-row commands
+                if (selectedItems.Count > 1 && MultiRowDeleteCommand != null)
+                {
+                    // Multiple items selected - use multi-row delete command (no parameter needed)
+                    DeleteButton.Command = MultiRowDeleteCommand;
+                    DeleteButton.CommandParameter = null;
+                    _logger.LogTrace("Delete button configured for multi-row deletion ({Count} items)", selectedItems.Count);
+                }
+                else if (selectedItems.Count == 1 && DeleteItemCommand != null)
+                {
+                    // Single item selected - use single item delete command
+                    DeleteButton.Command = DeleteItemCommand;
+                    DeleteButton.CommandParameter = selectedItem;
+                    _logger.LogTrace("Delete button configured for single item deletion");
+                }
+                else if (selectedItems.Count == 0)
+                {
+                    // No items selected - disable delete button
+                    DeleteButton.Command = null;
+                    DeleteButton.CommandParameter = null;
+                    _logger.LogTrace("Delete button disabled - no items selected");
+                }
+                else
+                {
+                    // Fallback: use single delete command if multi-row not available
+                    DeleteButton.Command = DeleteItemCommand;
+                    DeleteButton.CommandParameter = selectedItem;
+                    _logger.LogTrace("Delete button configured for single item deletion (fallback)");
+                }
             }
         }
 
@@ -329,99 +564,128 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
                 SelectionInfoText.Text += $" of {totalCount}";
             }
 
+            // Update total quantity display
+            UpdateTotalQuantityDisplay();
+
             _logger.LogTrace("Selection info updated: {SelectionText}", SelectionInfoText.Text);
         }
 
         /// <summary>
-        /// Handles the Select All checkbox click
+        /// Updates the total quantity display and tooltip
         /// </summary>
-        private void OnSelectAllClick(object sender, RoutedEventArgs e)
+        private void UpdateTotalQuantityDisplay()
         {
-            if (sender is not CheckBox selectAllCheckBox || ItemsSource == null)
+            if (TotalQuantityText == null || ItemsSource == null)
                 return;
 
-            bool selectAll = selectAllCheckBox.IsChecked == true;
-            var selectedItems = new List<object>();
-
-            _logger.LogDebug("Select All clicked: {SelectAll}", selectAll);
-
-            // Update selection state for all items that support it
-            foreach (var item in ItemsSource)
+            try
             {
-                if (item is INotifyPropertyChanged selectable)
-                {
-                    // Try to set IsSelected property via reflection for dynamic data
-                    var isSelectedProperty = item.GetType().GetProperty("IsSelected");
-                    if (isSelectedProperty != null && isSelectedProperty.CanWrite)
-                    {
-                        isSelectedProperty.SetValue(item, selectAll);
+                // Calculate total quantity and group by PartId and Operation
+                var totalQuantity = 0;
+                var groupedTotals = new Dictionary<(string PartId, string Operation), int>();
 
-                        if (selectAll)
-                        {
-                            selectedItems.Add(item);
-                        }
+                foreach (var item in ItemsSource)
+                {
+                    // Handle both InventoryItem and EditInventoryModel types
+                    string partId = GetPartId(item);
+                    string operation = GetOperation(item);
+                    int quantity = GetQuantity(item);
+
+                    if (!string.IsNullOrEmpty(partId) && !string.IsNullOrEmpty(operation) && quantity > 0)
+                    {
+                        totalQuantity += quantity;
+
+                        var key = (partId, operation);
+                        if (groupedTotals.ContainsKey(key))
+                            groupedTotals[key] += quantity;
+                        else
+                            groupedTotals[key] = quantity;
                     }
                 }
+
+                // Update the display text
+                TotalQuantityText.Text = $"Total Quantity: {totalQuantity:N0}";
+
+                // Generate tooltip with breakdown
+                var tooltipLines = new List<string>();
+                foreach (var kvp in groupedTotals.OrderBy(x => x.Key.PartId).ThenBy(x => x.Key.Operation))
+                {
+                    tooltipLines.Add($"{kvp.Key.PartId} ({kvp.Key.Operation}) Total: {kvp.Value:N0}");
+                }
+
+                if (tooltipLines.Count > 0)
+                {
+                    ToolTip.SetTip(TotalQuantityText, string.Join("\n", tooltipLines));
+                }
+                else
+                {
+                    ToolTip.SetTip(TotalQuantityText, "No inventory items available");
+                }
+
+                _logger.LogTrace("Total quantity updated: {Total}, Groups: {Groups}", totalQuantity, groupedTotals.Count);
             }
-
-            // Notify parent of selection change
-            var eventArgs = new SelectionChangedEventArgs
+            catch (Exception ex)
             {
-                SelectedItems = selectedItems,
-                SelectionMode = selectAll ? "SelectAll" : "DeselectAll"
-            };
-
-            SelectionChanged?.Invoke(this, eventArgs);
-
-            _logger.LogInformation("Selection changed: {SelectedCount} items {Action}",
-                selectedItems.Count, selectAll ? "selected" : "deselected");
+                _logger.LogError(ex, "Error updating total quantity display");
+                TotalQuantityText.Text = "Total Quantity: Error";
+                ToolTip.SetTip(TotalQuantityText, "Error calculating totals");
+            }
         }
 
         /// <summary>
-        /// Updates the state of the Select All checkbox based on current selection
+        /// Gets the PartId from an inventory item, handling different types
         /// </summary>
-        private void UpdateSelectAllState()
+        private string GetPartId(object item)
         {
-            if (SelectAllCheckBox == null || ItemsSource == null)
-                return;
+            return item switch
+            {
+                MTM_Shared_Logic.Models.InventoryItem inventoryItem => inventoryItem.PartId,
+                Models.EditInventoryModel editModel => editModel.PartId,
+                _ => GetPropertyValue(item, "PartId") ?? GetPropertyValue(item, "PartID") ?? string.Empty
+            };
+        }
 
-            var items = ItemsSource.Cast<object>().ToList();
-            if (items.Count == 0)
+        /// <summary>
+        /// Gets the Operation from an inventory item, handling different types
+        /// </summary>
+        private string GetOperation(object item)
+        {
+            return item switch
             {
-                SelectAllCheckBox.IsChecked = false;
-                return;
-            }
+                MTM_Shared_Logic.Models.InventoryItem inventoryItem => inventoryItem.Operation ?? string.Empty,
+                Models.EditInventoryModel editModel => editModel.Operation,
+                _ => GetPropertyValue(item, "Operation") ?? string.Empty
+            };
+        }
 
-            // Count selected items
-            int selectedCount = 0;
-            foreach (var item in items)
+        /// <summary>
+        /// Gets the Quantity from an inventory item, handling different types
+        /// </summary>
+        private int GetQuantity(object item)
+        {
+            return item switch
             {
-                var isSelectedProperty = item.GetType().GetProperty("IsSelected");
-                if (isSelectedProperty != null)
-                {
-                    var isSelected = isSelectedProperty.GetValue(item) as bool?;
-                    if (isSelected == true)
-                    {
-                        selectedCount++;
-                    }
-                }
-            }
+                MTM_Shared_Logic.Models.InventoryItem inventoryItem => inventoryItem.Quantity,
+                Models.EditInventoryModel editModel => editModel.Quantity,
+                _ => int.TryParse(GetPropertyValue(item, "Quantity"), out int qty) ? qty : 0
+            };
+        }
 
-            // Update checkbox state
-            if (selectedCount == 0)
+        /// <summary>
+        /// Gets a property value by name using reflection (fallback for unknown types)
+        /// </summary>
+        private string? GetPropertyValue(object item, string propertyName)
+        {
+            try
             {
-                SelectAllCheckBox.IsChecked = false;
+                var property = item.GetType().GetProperty(propertyName);
+                return property?.GetValue(item)?.ToString();
             }
-            else if (selectedCount == items.Count)
+            catch (Exception ex)
             {
-                SelectAllCheckBox.IsChecked = true;
+                _logger.LogTrace(ex, "Failed to get property {PropertyName} from {Type}", propertyName, item.GetType().Name);
+                return null;
             }
-            else
-            {
-                SelectAllCheckBox.IsChecked = null; // Indeterminate state
-            }
-
-            _logger.LogTrace("Updated Select All state: {SelectedCount}/{TotalCount}", selectedCount, items.Count);
         }
 
         /// <summary>
@@ -429,25 +693,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         public List<object> GetSelectedItems()
         {
-            var selectedItems = new List<object>();
-
-            if (ItemsSource != null)
-            {
-                foreach (var item in ItemsSource)
-                {
-                    var isSelectedProperty = item.GetType().GetProperty("IsSelected");
-                    if (isSelectedProperty != null)
-                    {
-                        var isSelected = isSelectedProperty.GetValue(item) as bool?;
-                        if (isSelected == true)
-                        {
-                            selectedItems.Add(item);
-                        }
-                    }
-                }
-            }
-
-            return selectedItems;
+            return DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
         }
 
         /// <summary>
@@ -455,7 +701,33 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         public int GetSelectedItemCount()
         {
-            return GetSelectedItems().Count;
+            return DataListBox?.SelectedItems?.Count ?? 0;
+        }
+
+        /// <summary>
+        /// Clears all selections
+        /// </summary>
+        public void ClearSelection()
+        {
+            DataListBox?.SelectedItems?.Clear();
+            _lastSelectedIndex = -1;
+            _logger.LogDebug("Selection cleared");
+        }
+
+        /// <summary>
+        /// Selects all items
+        /// </summary>
+        public void SelectAll()
+        {
+            if (DataListBox == null || ItemsSource == null) return;
+
+            DataListBox.SelectedItems?.Clear();
+            foreach (var item in ItemsSource)
+            {
+                DataListBox.SelectedItems?.Add(item);
+            }
+
+            _logger.LogDebug("All items selected");
         }
 
         #endregion
@@ -477,29 +749,6 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 
         #endregion
 
-        #region Validation and Error Handling
-
-        /// <summary>
-        /// Validates that a command parameter is of the expected type
-        /// </summary>
-        private static bool ValidateCommandParameter<T>(object? parameter, out T? validParameter) where T : class
-        {
-            validParameter = parameter as T;
-            return validParameter != null;
-        }
-
-        /// <summary>
-        /// Logs command execution for debugging
-        /// </summary>
-        private void LogCommandExecution(string commandName, object? parameter)
-        {
-            var parameterType = parameter?.GetType().Name ?? "null";
-            _logger.LogDebug("Command executed: {CommandName} with parameter type: {ParameterType}",
-                commandName, parameterType);
-        }
-
-        #endregion
-
         #region Cleanup
 
         /// <summary>
@@ -513,6 +762,15 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             if (ItemsSource is INotifyCollectionChanged collection)
             {
                 collection.CollectionChanged -= OnItemsCollectionChanged;
+            }
+
+            // Unsubscribe from ListBox events
+            if (DataListBox != null)
+            {
+                DataListBox.SelectionChanged -= OnDataListBoxSelectionChanged;
+                DataListBox.PointerPressed -= OnDataListBoxPointerPressed;
+                DataListBox.PointerMoved -= OnDataListBoxPointerMoved;
+                DataListBox.PointerReleased -= OnDataListBoxPointerReleased;
             }
 
             base.OnDetachedFromVisualTree(e);
@@ -534,7 +792,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         public List<object> SelectedItems { get; set; } = new();
 
         /// <summary>
-        /// Gets or sets the selection mode (SelectAll, DeselectAll, etc.)
+        /// Gets or sets the selection mode (WinFormsSelection, etc.)
         /// </summary>
         public string SelectionMode { get; set; } = string.Empty;
 
