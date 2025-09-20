@@ -37,7 +37,7 @@ public static class ErrorHandling
             var errorCategory = DetermineErrorCategory(exception);
             var severity = DetermineSeverity(exception, errorCategory);
             var errorKey = GenerateErrorKey(exception, callerMemberName, callerFilePath, callerLineNumber);
-            
+
             if (IsNewError(errorCategory, errorKey))
             {
                 await LogErrorAsync(exception, operation, userId, context ?? new Dictionary<string, object>());
@@ -78,7 +78,7 @@ public static class ErrorHandling
         try
         {
             var errorEntry = CreateErrorEntry(ex, operation, userId, context);
-            
+
             // Try MySQL logging first
             if (ErrorConfiguration.EnableMySqlLogging)
             {
@@ -124,7 +124,7 @@ public static class ErrorHandling
             // Ensure UserId is uppercase for consistent folder structure
             var normalizedUserId = errorEntry.UserId.ToUpper();
             var csvFileName = GetCsvFileName(errorEntry.Category);
-            
+
             // Write to both network and local locations simultaneously
             var tasks = new List<Task>
             {
@@ -142,8 +142,8 @@ public static class ErrorHandling
                         Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Network logging failed: {ex.Message}");
                     }
                 }),
-                
-                // Local location  
+
+                // Local location
                 Task.Run(() =>
                 {
                     try
@@ -158,7 +158,7 @@ public static class ErrorHandling
                     }
                 })
             };
-            
+
             // Wait for both writes with timeout
             Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(5));
         }
@@ -174,17 +174,17 @@ public static class ErrorHandling
     private static void WriteToSingleLocation(string csvFilePath, ErrorEntry errorEntry)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(csvFilePath)!);
-        
+
         lock (_lockObject)
         {
             var fileExists = File.Exists(csvFilePath);
             using var writer = new StreamWriter(csvFilePath, append: true);
-            
+
             if (!fileExists)
             {
                 writer.WriteLine(GetCsvHeader());
             }
-            
+
             writer.WriteLine(FormatErrorEntryAsCsv(errorEntry));
         }
     }
@@ -196,12 +196,12 @@ public static class ErrorHandling
     {
         try
         {
-            if (!ErrorConfiguration.EnableMySqlLogging || 
+            if (!ErrorConfiguration.EnableMySqlLogging ||
                 string.IsNullOrWhiteSpace(ErrorConfiguration.MySqlConnectionString))
                 return;
 
             var tableName = GetMySqlTableName(errorEntry.Category);
-            
+
             // Use uppercase username for MySQL connection - MTM standard
             var connectionString = ErrorConfiguration.MySqlConnectionString;
             if (connectionString.Contains("Uid=") || connectionString.Contains("User="))
@@ -209,28 +209,28 @@ public static class ErrorHandling
                 // Replace any username in connection string with uppercase version
                 var upperUsername = Environment.UserName.ToUpper();
                 connectionString = System.Text.RegularExpressions.Regex.Replace(
-                    connectionString, 
-                    @"(Uid|User|UserId)=([^;]+)", 
+                    connectionString,
+                    @"(Uid|User|UserId)=([^;]+)",
                     $"Uid={upperUsername}",
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             }
-            
+
             using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
-            
+
             await EnsureTableExists(connection, tableName);
-            
+
             var insertSql = $@"
-                INSERT INTO {tableName} 
-                (Timestamp, UserId, MachineName, Category, Severity, ErrorMessage, 
+                INSERT INTO {tableName}
+                (Timestamp, UserId, MachineName, Category, Severity, ErrorMessage,
                  FileName, MethodName, LineNumber, StackTrace, AdditionalData, ExceptionType, BusinessContext)
-                VALUES 
+                VALUES
                 (@Timestamp, @UserId, @MachineName, @Category, @Severity, @ErrorMessage,
                  @FileName, @MethodName, @LineNumber, @StackTrace, @AdditionalData, @ExceptionType, @BusinessContext)";
 
             using var command = new MySqlCommand(insertSql, connection);
             AddMySqlParameters(command, errorEntry);
-            
+
             await command.ExecuteNonQueryAsync();
         }
         catch (Exception ex)
@@ -317,7 +317,7 @@ public static class ErrorHandling
             var categoryKey = category.ToString();
             if (!_sessionErrorCache.ContainsKey(categoryKey))
                 _sessionErrorCache[categoryKey] = new HashSet<string>();
-            
+
             return !_sessionErrorCache[categoryKey].Contains(errorKey);
         }
     }
@@ -329,7 +329,7 @@ public static class ErrorHandling
             var categoryKey = category.ToString();
             if (!_sessionErrorCache.ContainsKey(categoryKey))
                 _sessionErrorCache[categoryKey] = new HashSet<string>();
-            
+
             _sessionErrorCache[categoryKey].Add(errorKey);
         }
     }
@@ -428,12 +428,12 @@ public static class ErrorHandling
     private static string EscapeCsvField(string field)
     {
         if (string.IsNullOrEmpty(field)) return "\"\"";
-        
+
         if (field.Contains(",") || field.Contains("\"") || field.Contains("\n") || field.Contains("\r"))
         {
             return "\"" + field.Replace("\"", "\"\"") + "\"";
         }
-        
+
         return field;
     }
 
@@ -443,19 +443,19 @@ public static class ErrorHandling
         {
             // Ensure UserId is uppercase for consistent folder structure
             var normalizedUserId = errorEntry.UserId.ToUpper();
-            var fallbackPath = Path.Combine(ErrorConfiguration.FallbackLocalPath, 
+            var fallbackPath = Path.Combine(ErrorConfiguration.FallbackLocalPath,
                 normalizedUserId, GetCsvFileName(errorEntry.Category));
-            
+
             Directory.CreateDirectory(Path.GetDirectoryName(fallbackPath)!);
-            
+
             var fileExists = File.Exists(fallbackPath);
             using var writer = new StreamWriter(fallbackPath, append: true);
-            
+
             if (!fileExists)
             {
                 writer.WriteLine(GetCsvHeader());
             }
-            
+
             writer.WriteLine(FormatErrorEntryAsCsv(errorEntry));
         }
         catch (Exception fallbackEx)

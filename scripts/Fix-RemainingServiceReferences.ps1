@@ -10,7 +10,7 @@ Write-Host "🔧 Fixing remaining Services namespace references..." -ForegroundC
 # Specific files that need the Core services using statement
 $FilesToFix = @(
     "Services\MasterDataService.cs",
-    "Services\RemoveService.cs", 
+    "Services\RemoveService.cs",
     "Services\QuickButtons.cs",
     "Services\SettingsService.cs",
     "Services\ThemeService.cs"
@@ -20,14 +20,14 @@ $FilesModified = 0
 
 foreach ($file in $FilesToFix) {
     $fullPath = Join-Path $ProjectRoot $file
-    
+
     if (Test-Path $fullPath) {
         $content = Get-Content $fullPath -Raw
-        
+
         # Check if already has Core using statement
         if ($content -notmatch "using MTM_WIP_Application_Avalonia\.Services\.Core;") {
             $lines = $content -split "`r?`n"
-            
+
             # Find where to insert the using statement (after other MTM using statements)
             $insertIndex = -1
             for ($i = 0; $i -lt $lines.Count; $i++) {
@@ -38,14 +38,14 @@ foreach ($file in $FilesToFix) {
                     break
                 }
             }
-            
+
             if ($insertIndex -ge 0) {
                 # Insert after the last MTM using statement
-                $lines = $lines[0..$insertIndex] + "using MTM_WIP_Application_Avalonia.Services.Core;" + $lines[($insertIndex+1)..($lines.Count-1)]
-                
+                $lines = $lines[0..$insertIndex] + "using MTM_WIP_Application_Avalonia.Services.Core;" + $lines[($insertIndex + 1)..($lines.Count - 1)]
+
                 $newContent = $lines -join "`r`n"
                 Set-Content -Path $fullPath -Value $newContent -NoNewline
-                
+
                 Write-Host "  ✅ Fixed: $file" -ForegroundColor Green
                 $FilesModified++
             }
@@ -71,11 +71,13 @@ try {
     dotnet build --no-restore --verbosity quiet | Out-Null
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Build successful! All Core Services references fixed." -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "❌ Build still has errors. Running detailed build..." -ForegroundColor Red
         dotnet build --no-restore
     }
-} catch {
+}
+catch {
     Write-Host "❌ Build test failed: $($_.Exception.Message)" -ForegroundColor Red
 }
 

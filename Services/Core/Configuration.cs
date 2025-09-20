@@ -30,15 +30,15 @@ public interface IApplicationStateService : INotifyPropertyChanged
     string CurrentLocation { get; set; }
     string CurrentOperation { get; set; }
     bool IsOfflineMode { get; set; }
-    
+
     // Progress communication for MainView integration
     int ProgressValue { get; set; }
     string StatusText { get; set; }
-    
+
     // Async progress communication methods
     Task SetProgressAsync(int value, string status);
     Task ClearProgressAsync();
-    
+
     event EventHandler<StateChangedEventArgs>? StateChanged;
 }
 
@@ -61,28 +61,28 @@ public class ConfigurationService : IConfigurationService
         // Use Model_AppVariables connection string logic which handles
         // server, database naming, and uppercase username
         var connectionString = Models.Model_AppVariables.ConnectionString;
-        
+
         // Log the connection string for debugging (without sensitive info)
-        _logger.LogInformation("Using connection string: Server={Server}, Database={Database}, Uid={User}", 
+        _logger.LogInformation("Using connection string: Server={Server}, Database={Database}, Uid={User}",
             GetServerFromConnectionString(connectionString),
             GetDatabaseFromConnectionString(connectionString),
             GetUserFromConnectionString(connectionString));
-            
+
         return connectionString;
     }
-    
+
     private static string GetServerFromConnectionString(string connectionString)
     {
         var match = System.Text.RegularExpressions.Regex.Match(connectionString, @"Server=([^;]+)");
         return match.Success ? match.Groups[1].Value : "Unknown";
     }
-    
+
     private static string GetDatabaseFromConnectionString(string connectionString)
     {
         var match = System.Text.RegularExpressions.Regex.Match(connectionString, @"Database=([^;]+)");
         return match.Success ? match.Groups[1].Value : "Unknown";
     }
-    
+
     private static string GetUserFromConnectionString(string connectionString)
     {
         var match = System.Text.RegularExpressions.Regex.Match(connectionString, @"Uid=([^;]+)");
@@ -147,7 +147,7 @@ public class ApplicationStateService : IApplicationStateService
     public ApplicationStateService(ILogger<ApplicationStateService> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        
+
         // Set default user for development/testing
         _currentUser = Environment.UserName.ToUpper();
         _logger.LogInformation("ApplicationStateService initialized with default user: {CurrentUser}", _currentUser);
@@ -193,7 +193,7 @@ public class ApplicationStateService : IApplicationStateService
     {
         ProgressValue = Math.Clamp(value, 0, 100);
         StatusText = status ?? "Processing...";
-        
+
         _logger.LogDebug("Progress updated: {ProgressValue}% - {StatusText}", ProgressValue, StatusText);
         await Task.CompletedTask;
     }
@@ -202,7 +202,7 @@ public class ApplicationStateService : IApplicationStateService
     {
         ProgressValue = 0;
         StatusText = "Ready";
-        
+
         _logger.LogDebug("Progress cleared");
         await Task.CompletedTask;
     }
@@ -213,12 +213,12 @@ public class ApplicationStateService : IApplicationStateService
         {
             var oldValue = field;
             field = value;
-            
-            _logger.LogDebug("Application state changed: {PropertyName} = {NewValue} (was {OldValue})", 
+
+            _logger.LogDebug("Application state changed: {PropertyName} = {NewValue} (was {OldValue})",
                 propertyName, value, oldValue);
-            
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            
+
             StateChanged?.Invoke(this, new StateChangedEventArgs
             {
                 PropertyName = propertyName,

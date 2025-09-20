@@ -26,27 +26,27 @@ function Add-CoreServicesUsing {
     param(
         [string]$FilePath
     )
-    
+
     $content = Get-Content $FilePath -Raw
     $modified = $false
-    
+
     # Check if file uses any Core services interfaces
     $usesCoreServices = $content -match "(IConfigurationService|IApplicationStateService|IDatabaseService)" -and
-                       $content -match "using MTM_WIP_Application_Avalonia\.Services;" -and
-                       $content -notmatch "using MTM_WIP_Application_Avalonia\.Services\.Core;"
-    
+    $content -match "using MTM_WIP_Application_Avalonia\.Services;" -and
+    $content -notmatch "using MTM_WIP_Application_Avalonia\.Services\.Core;"
+
     if ($usesCoreServices) {
         # Find the line with Services using statement
         $lines = $content -split "`r?`n"
         for ($i = 0; $i -lt $lines.Count; $i++) {
             if ($lines[$i] -match "^using MTM_WIP_Application_Avalonia\.Services;") {
                 # Insert the Core using statement after the Services using
-                $lines = $lines[0..$i] + "using MTM_WIP_Application_Avalonia.Services.Core;" + $lines[($i+1)..($lines.Count-1)]
+                $lines = $lines[0..$i] + "using MTM_WIP_Application_Avalonia.Services.Core;" + $lines[($i + 1)..($lines.Count - 1)]
                 $modified = $true
                 break
             }
         }
-        
+
         if ($modified) {
             $newContent = $lines -join "`r`n"
             Set-Content -Path $FilePath -Value $newContent -NoNewline
@@ -54,7 +54,7 @@ function Add-CoreServicesUsing {
             return $true
         }
     }
-    
+
     return $false
 }
 
@@ -62,18 +62,18 @@ function Add-CoreServicesUsing {
 foreach ($pattern in $FilePatternsToUpdate) {
     $fullPattern = Join-Path $ProjectRoot $pattern
     Write-Host "`n📁 Processing pattern: $pattern" -ForegroundColor Cyan
-    
+
     try {
         $files = Get-ChildItem -Path $fullPattern -Recurse -ErrorAction SilentlyContinue | Where-Object { !$_.PSIsContainer }
-        
+
         foreach ($file in $files) {
             $FilesProcessed++
-            
+
             if (Add-CoreServicesUsing -FilePath $file.FullName) {
                 $FilesModified++
             }
         }
-        
+
         Write-Host "  📊 Pattern processed: $($files.Count) files found" -ForegroundColor Gray
     }
     catch {
@@ -91,11 +91,13 @@ try {
     $buildResult = dotnet build --no-restore --verbosity quiet
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Build successful! All namespace references fixed." -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "❌ Build still has errors. Manual review may be needed." -ForegroundColor Red
         Write-Host "Run 'dotnet build' for detailed error information." -ForegroundColor Gray
     }
-} catch {
+}
+catch {
     Write-Host "❌ Build test failed: $($_.Exception.Message)" -ForegroundColor Red
 }
 

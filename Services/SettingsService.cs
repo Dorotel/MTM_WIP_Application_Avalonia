@@ -16,27 +16,27 @@ public interface ISettingsService : INotifyPropertyChanged
     // Theme Settings
     string CurrentTheme { get; set; }
     bool AutoSaveSettings { get; set; }
-    
+
     // Application Settings
     string DefaultLocation { get; set; }
     string DefaultOperation { get; set; }
     bool EnableAdvancedFeatures { get; set; }
-    
+
     // UI Settings
     double WindowWidth { get; set; }
     double WindowHeight { get; set; }
     bool RememberWindowSize { get; set; }
-    
+
     // Data Settings
     int DefaultPageSize { get; set; }
     bool EnableRealTimeUpdates { get; set; }
-    
+
     Task<ServiceResult> LoadSettingsAsync();
     Task<ServiceResult> SaveSettingsAsync();
     Task<ServiceResult> ResetToDefaultsAsync();
     Task<ServiceResult> ExportSettingsAsync(string filePath);
     Task<ServiceResult> ImportSettingsAsync(string filePath);
-    
+
     event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
 }
 
@@ -59,7 +59,7 @@ public class SettingsService : ISettingsService
     private readonly ILogger<SettingsService> _logger;
     private readonly IConfigurationService _configurationService;
     private readonly IApplicationStateService _applicationStateService;
-    
+
     // Settings fields
     private string _currentTheme = "MTM_Light";
     private bool _autoSaveSettings = true;
@@ -83,9 +83,9 @@ public class SettingsService : ISettingsService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         _applicationStateService = applicationStateService ?? throw new ArgumentNullException(nameof(applicationStateService));
-        
+
         _logger.LogInformation("SettingsService initialized");
-        
+
         // Initialize settings from configuration
         _ = LoadSettingsAsync();
     }
@@ -176,25 +176,25 @@ public class SettingsService : ISettingsService
         try
         {
             await Task.CompletedTask; // Placeholder for async configuration access
-            
+
             // Load theme settings
             CurrentTheme = _configurationService.GetValue("Settings:Theme", "MTM_Light");
             AutoSaveSettings = _configurationService.GetBoolValue("Settings:AutoSave", true);
-            
+
             // Load application settings
             DefaultLocation = _configurationService.GetValue("Settings:DefaultLocation", "");
             DefaultOperation = _configurationService.GetValue("Settings:DefaultOperation", "");
             EnableAdvancedFeatures = _configurationService.GetBoolValue("Settings:EnableAdvancedFeatures", false);
-            
+
             // Load UI settings
             WindowWidth = _configurationService.GetValue("Settings:WindowWidth", 1200.0);
             WindowHeight = _configurationService.GetValue("Settings:WindowHeight", 700.0);
             RememberWindowSize = _configurationService.GetBoolValue("Settings:RememberWindowSize", true);
-            
+
             // Load data settings
             DefaultPageSize = _configurationService.GetIntValue("Settings:DefaultPageSize", 50);
             EnableRealTimeUpdates = _configurationService.GetBoolValue("Settings:EnableRealTimeUpdates", true);
-            
+
             // Sync with application state
             if (!string.IsNullOrEmpty(DefaultLocation))
             {
@@ -204,7 +204,7 @@ public class SettingsService : ISettingsService
             {
                 _applicationStateService.CurrentOperation = DefaultOperation;
             }
-            
+
             _logger.LogInformation("Settings loaded successfully");
             return ServiceResult.Success("Settings loaded successfully");
         }
@@ -223,10 +223,10 @@ public class SettingsService : ISettingsService
         try
         {
             await Task.CompletedTask; // Placeholder for async configuration save
-            
+
             // Note: Current IConfigurationService doesn't have save methods
             // This would need to be implemented when configuration persistence is added
-            
+
             _logger.LogInformation("Settings saved successfully");
             return ServiceResult.Success("Settings saved successfully");
         }
@@ -247,26 +247,26 @@ public class SettingsService : ISettingsService
             // Reset theme settings
             CurrentTheme = "MTM_Light";
             AutoSaveSettings = true;
-            
+
             // Reset application settings
             DefaultLocation = string.Empty;
             DefaultOperation = string.Empty;
             EnableAdvancedFeatures = false;
-            
+
             // Reset UI settings
             WindowWidth = 1200;
             WindowHeight = 700;
             RememberWindowSize = true;
-            
+
             // Reset data settings
             DefaultPageSize = 50;
             EnableRealTimeUpdates = true;
-            
+
             if (AutoSaveSettings)
             {
                 await SaveSettingsAsync();
             }
-            
+
             _logger.LogInformation("Settings reset to defaults");
             return ServiceResult.Success("Settings reset to defaults");
         }
@@ -285,9 +285,9 @@ public class SettingsService : ISettingsService
         try
         {
             await Task.CompletedTask; // Placeholder for async file export
-            
+
             // Would implement JSON/XML export here
-            
+
             _logger.LogInformation("Settings exported to {FilePath}", filePath);
             return ServiceResult.Success($"Settings exported to {filePath}");
         }
@@ -306,9 +306,9 @@ public class SettingsService : ISettingsService
         try
         {
             await Task.CompletedTask; // Placeholder for async file import
-            
+
             // Would implement JSON/XML import here
-            
+
             _logger.LogInformation("Settings imported from {FilePath}", filePath);
             return ServiceResult.Success($"Settings imported from {filePath}");
         }
@@ -332,19 +332,19 @@ public class SettingsService : ISettingsService
         {
             var oldValue = field;
             field = value;
-            
-            _logger.LogDebug("Setting changed: {PropertyName} = {NewValue} (was {OldValue})", 
+
+            _logger.LogDebug("Setting changed: {PropertyName} = {NewValue} (was {OldValue})",
                 propertyName, value, oldValue);
-            
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            
+
             SettingsChanged?.Invoke(this, new SettingsChangedEventArgs
             {
                 SettingName = propertyName,
                 OldValue = oldValue,
                 NewValue = value
             });
-            
+
             // Auto-save if enabled
             if (AutoSaveSettings && propertyName != nameof(AutoSaveSettings))
             {

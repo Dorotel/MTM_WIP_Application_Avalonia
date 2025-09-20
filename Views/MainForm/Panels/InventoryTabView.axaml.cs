@@ -62,7 +62,7 @@ public partial class InventoryTabView : UserControl
 
         InitializeControlReferences();
         SetupEventHandlers();
-        
+
         Loaded += OnLoaded;
     }
 
@@ -70,7 +70,7 @@ public partial class InventoryTabView : UserControl
     {
         _serviceProvider = serviceProvider;
         _logger = _serviceProvider?.GetService<ILogger<InventoryTabView>>();
-        
+
         // Try to resolve the suggestion overlay service immediately if we have a service provider
         try
         {
@@ -251,7 +251,7 @@ public partial class InventoryTabView : UserControl
 
                 // Subscribe to ViewModel events
                 _viewModel.PropertyChanged += OnViewModelPropertyChanged;
-                
+
                 // Subscribe to success overlay event
                 _viewModel.ShowSuccessOverlay += OnShowSuccessOverlay;
 
@@ -266,7 +266,7 @@ public partial class InventoryTabView : UserControl
 
             // Initialize QuickButtons integration if available
             await InitializeQuickButtonsIntegrationAsync();
-            
+
         }
         catch (Exception ex)
         {
@@ -293,20 +293,20 @@ public partial class InventoryTabView : UserControl
                         _logger?.LogDebug("Method 1 - SuggestionOverlayService resolution: {ServiceResolved}", _suggestionOverlayService != null);
                         System.Diagnostics.Debug.WriteLine($"Method 1 - SuggestionOverlayService resolution: {_suggestionOverlayService != null}");
                     }
-                    
+
                     if (_successOverlayService == null)
                     {
                         _successOverlayService = _serviceProvider.GetService<ISuccessOverlayService>();
                         // Method 1 - SuccessOverlayService resolution successful
                         System.Diagnostics.Debug.WriteLine($"Method 1 - SuccessOverlayService resolution: {_successOverlayService != null}");
                     }
-                    
+
                     // Additional debugging - check if services are registered
                     var suggestionServices = _serviceProvider.GetServices<ISuggestionOverlayService>();
                     var suggestionServiceCount = suggestionServices?.Count() ?? 0;
                     _logger?.LogDebug("ISuggestionOverlayService instances in container: {ServiceCount}", suggestionServiceCount);
                     System.Diagnostics.Debug.WriteLine($"ISuggestionOverlayService instances in container: {suggestionServiceCount}");
-                    
+
                     var successServices = _serviceProvider.GetServices<ISuccessOverlayService>();
                     var successServiceCount = successServices?.Count() ?? 0;
                     // Success overlay service instances count check
@@ -336,7 +336,7 @@ public partial class InventoryTabView : UserControl
                                 _logger?.LogDebug("Method 2 - MainWindow SuggestionOverlay resolution: {ServiceResolved}", _suggestionOverlayService != null);
                                 System.Diagnostics.Debug.WriteLine($"Method 2 - MainWindow SuggestionOverlay resolution: {_suggestionOverlayService != null}");
                             }
-                            
+
                             if (_successOverlayService == null)
                             {
                                 _successOverlayService = windowServiceProvider.GetService<ISuccessOverlayService>();
@@ -368,7 +368,7 @@ public partial class InventoryTabView : UserControl
                             _logger?.LogWarning("Method 3 - Manual SuggestionOverlayService creation successful as fallback");
                             System.Diagnostics.Debug.WriteLine("Method 3 - Manual SuggestionOverlayService creation successful as fallback");
                         }
-                        
+
                         if (_successOverlayService == null)
                         {
                             var successServiceLogger = loggerFactory.CreateLogger<SuccessOverlayService>();
@@ -390,16 +390,16 @@ public partial class InventoryTabView : UserControl
             // Log final result with detailed information
             if (_suggestionOverlayService != null && _successOverlayService != null)
             {
-                _logger?.LogInformation("Both overlay services successfully resolved - SuggestionType: {SuggestionType}, SuccessType: {SuccessType}", 
+                _logger?.LogInformation("Both overlay services successfully resolved - SuggestionType: {SuggestionType}, SuccessType: {SuccessType}",
                     _suggestionOverlayService.GetType().Name, _successOverlayService.GetType().Name);
                 System.Diagnostics.Debug.WriteLine($"Both overlay services successfully resolved - SuggestionType: {_suggestionOverlayService.GetType().Name}, SuccessType: {_successOverlayService.GetType().Name}");
             }
             else
             {
-                _logger?.LogError("One or more overlay services could not be resolved - Suggestion: {SuggestionResolved}, Success: {SuccessResolved}", 
+                _logger?.LogError("One or more overlay services could not be resolved - Suggestion: {SuggestionResolved}, Success: {SuccessResolved}",
                     _suggestionOverlayService != null, _successOverlayService != null);
                 System.Diagnostics.Debug.WriteLine($"One or more overlay services could not be resolved - Suggestion: {_suggestionOverlayService != null}, Success: {_successOverlayService != null}");
-                
+
                 // Additional diagnostic information
                 if (_serviceProvider != null)
                 {
@@ -408,13 +408,13 @@ public partial class InventoryTabView : UserControl
                         var registeredServices = _serviceProvider.GetServices<object>().Count();
                         _logger?.LogDebug("Service provider contains {ServiceCount} registered services", registeredServices);
                         System.Diagnostics.Debug.WriteLine($"Service provider contains {registeredServices} registered services");
-                        
+
                         // Check if the specific services are registered
                         var suggestionsServices = _serviceProvider.GetServices<ISuggestionOverlayService>();
                         var suggestionServiceCount = suggestionsServices?.Count() ?? 0;
                         _logger?.LogDebug("ISuggestionOverlayService registrations found: {Count}", suggestionServiceCount);
                         System.Diagnostics.Debug.WriteLine($"ISuggestionOverlayService registrations found: {suggestionServiceCount}");
-                        
+
                         var successServices = _serviceProvider.GetServices<ISuccessOverlayService>();
                         var successServiceCount = successServices?.Count() ?? 0;
                         // ISuccessOverlayService registrations found
@@ -443,14 +443,14 @@ public partial class InventoryTabView : UserControl
         try
         {
             // Set initial focus to Part ID field
-            
+
 
             // Apply any saved user preferences
             ApplyUserPreferences();
 
             // Update control states based on ViewModel
             UpdateControlStates();
-MoveFocusToFirstControl();
+            MoveFocusToFirstControl();
             _logger?.LogDebug("Form state initialized successfully");
         }
         catch (Exception ex)
@@ -648,157 +648,157 @@ MoveFocusToFirstControl();
 
 
     private async void OnPartLostFocus(object? sender, RoutedEventArgs e)
-{
-    try
     {
-        if (_viewModel == null || sender is not TextBox textBox) return;
-
-        // Ensure services are resolved before proceeding
-        TryResolveServices();
-
-        var value = textBox.Text?.Trim() ?? string.Empty;
-        // Use PartIds collection which is populated from the PartID column via stored procedure
-        var data = _viewModel.PartIds ?? Enumerable.Empty<string>();
-        int count = data.Count();
-
-        _logger?.LogInformation($"[FocusLost] PartTextBox lost focus. User entered: '{value}'. PartIds count: {count}");
-        System.Diagnostics.Debug.WriteLine($"[FocusLost] PartTextBox lost focus. User entered: '{value}'. PartIds count: {count}");
-
-        // Check if no data is available from server
-        if (count == 0)
+        try
         {
-            _logger?.LogWarning("No Part IDs available - likely database connectivity issue");
-            System.Diagnostics.Debug.WriteLine("No Part IDs available - likely database connectivity issue");
-            
-            // Clear the textbox and show error message about data unavailability
-            textBox.Text = string.Empty;
-            _viewModel.SelectedPart = string.Empty;
-            
-            UpdateValidationStates();
-            ValidateAndUpdateSaveButton();
-            return;
-        }
+            if (_viewModel == null || sender is not TextBox textBox) return;
 
-        // Debug: Log sample of available part IDs
-        if (count > 0)
-        {
-            var sampleParts = string.Join(", ", data.Take(10));
-            _logger?.LogInformation($"Sample PartIDs: {sampleParts}");
-            System.Diagnostics.Debug.WriteLine($"Sample PartIDs: {sampleParts}");
-        }
+            // Ensure services are resolved before proceeding
+            TryResolveServices();
 
-        // Show overlay only if:
-        // 1. User entered something (not blank)
-        // 2. Entered value is NOT an exact match to any PartID
-        // 3. Entered value IS a substring of one or more PartIDs (semi-matches)
-        var semiMatches = data
-            .Where(partId => !string.IsNullOrEmpty(partId) && 
-                           partId.Contains(value, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(partId => partId) // Sort suggestions alphabetically
-            .ToList();
+            var value = textBox.Text?.Trim() ?? string.Empty;
+            // Use PartIds collection which is populated from the PartID column via stored procedure
+            var data = _viewModel.PartIds ?? Enumerable.Empty<string>();
+            int count = data.Count();
 
-        bool isExactMatch = data.Any(partId => 
-            string.Equals(partId, value, StringComparison.OrdinalIgnoreCase));
+            _logger?.LogInformation($"[FocusLost] PartTextBox lost focus. User entered: '{value}'. PartIds count: {count}");
+            System.Diagnostics.Debug.WriteLine($"[FocusLost] PartTextBox lost focus. User entered: '{value}'. PartIds count: {count}");
 
-        _logger?.LogInformation($"Part '{value}' - ExactMatch: {isExactMatch}, SemiMatches: {semiMatches.Count}");
-        System.Diagnostics.Debug.WriteLine($"Part '{value}' - ExactMatch: {isExactMatch}, SemiMatches: {semiMatches.Count}");
-
-        if (!string.IsNullOrEmpty(value) && 
-            !isExactMatch && 
-            semiMatches.Count > 0 && 
-            _suggestionOverlayService != null &&
-            !_isShowingSuggestionOverlay)
-        {
-            _logger?.LogInformation($"Invoking overlay for Part: '{value}' with {semiMatches.Count} suggestions");
-            System.Diagnostics.Debug.WriteLine($"Invoking overlay for Part: '{value}' with {semiMatches.Count} suggestions");
-            
-            // Log first few suggestions for debugging
-            var firstFewSuggestions = string.Join(", ", semiMatches.Take(5));
-            _logger?.LogInformation($"First 5 suggestions: {firstFewSuggestions}");
-            System.Diagnostics.Debug.WriteLine($"First 5 suggestions: {firstFewSuggestions}");
-
-            try
+            // Check if no data is available from server
+            if (count == 0)
             {
-                _isShowingSuggestionOverlay = true;
-                var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, semiMatches, value);
-                
-                if (!string.IsNullOrEmpty(selected))
-                {
-                    _logger?.LogInformation($"Part overlay - User selected: '{selected}'");
-                    System.Diagnostics.Debug.WriteLine($"Part overlay - User selected: '{selected}'");
-                    _viewModel.SelectedPart = selected;
-                    textBox.Text = selected;
-                }
-                else
-                {
-                    _logger?.LogInformation($"Part overlay - User cancelled, keeping: '{value}'");
-                    System.Diagnostics.Debug.WriteLine($"Part overlay - User cancelled, keeping: '{value}'");
-                    _viewModel.SelectedPart = value;
-                }
-            }
-            finally
-            {
-                _isShowingSuggestionOverlay = false;
-            }
-        }
-        else
-        {
-            // Log why overlay was not shown
-            if (string.IsNullOrEmpty(value))
-            {
-                _logger?.LogInformation($"Part overlay not shown - value is empty");
-                System.Diagnostics.Debug.WriteLine($"Part overlay not shown - value is empty");
-            }
-            else if (isExactMatch)
-            {
-                _logger?.LogInformation($"Part overlay not shown - '{value}' is exact match");
-                System.Diagnostics.Debug.WriteLine($"Part overlay not shown - '{value}' is exact match");
-            }
-            else if (semiMatches.Count == 0)
-            {
-                _logger?.LogInformation($"Part overlay not shown - no semi-matches for '{value}'");
-                System.Diagnostics.Debug.WriteLine($"Part overlay not shown - no semi-matches for '{value}'");
-                
-                // MTM Pattern: Clear textbox when no matches found to maintain data integrity
-                _logger?.LogInformation($"Part '{value}' has no matches in validation source. Clearing textbox for data integrity.");
-                System.Diagnostics.Debug.WriteLine($"Part '{value}' has no matches in validation source. Clearing textbox for data integrity.");
-                
+                _logger?.LogWarning("No Part IDs available - likely database connectivity issue");
+                System.Diagnostics.Debug.WriteLine("No Part IDs available - likely database connectivity issue");
+
+                // Clear the textbox and show error message about data unavailability
                 textBox.Text = string.Empty;
                 _viewModel.SelectedPart = string.Empty;
-                
-                // Show user feedback about the clearing action
+
+                UpdateValidationStates();
+                ValidateAndUpdateSaveButton();
+                return;
+            }
+
+            // Debug: Log sample of available part IDs
+            if (count > 0)
+            {
+                var sampleParts = string.Join(", ", data.Take(10));
+                _logger?.LogInformation($"Sample PartIDs: {sampleParts}");
+                System.Diagnostics.Debug.WriteLine($"Sample PartIDs: {sampleParts}");
+            }
+
+            // Show overlay only if:
+            // 1. User entered something (not blank)
+            // 2. Entered value is NOT an exact match to any PartID
+            // 3. Entered value IS a substring of one or more PartIDs (semi-matches)
+            var semiMatches = data
+                .Where(partId => !string.IsNullOrEmpty(partId) &&
+                               partId.Contains(value, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(partId => partId) // Sort suggestions alphabetically
+                .ToList();
+
+            bool isExactMatch = data.Any(partId =>
+                string.Equals(partId, value, StringComparison.OrdinalIgnoreCase));
+
+            _logger?.LogInformation($"Part '{value}' - ExactMatch: {isExactMatch}, SemiMatches: {semiMatches.Count}");
+            System.Diagnostics.Debug.WriteLine($"Part '{value}' - ExactMatch: {isExactMatch}, SemiMatches: {semiMatches.Count}");
+
+            if (!string.IsNullOrEmpty(value) &&
+                !isExactMatch &&
+                semiMatches.Count > 0 &&
+                _suggestionOverlayService != null &&
+                !_isShowingSuggestionOverlay)
+            {
+                _logger?.LogInformation($"Invoking overlay for Part: '{value}' with {semiMatches.Count} suggestions");
+                System.Diagnostics.Debug.WriteLine($"Invoking overlay for Part: '{value}' with {semiMatches.Count} suggestions");
+
+                // Log first few suggestions for debugging
+                var firstFewSuggestions = string.Join(", ", semiMatches.Take(5));
+                _logger?.LogInformation($"First 5 suggestions: {firstFewSuggestions}");
+                System.Diagnostics.Debug.WriteLine($"First 5 suggestions: {firstFewSuggestions}");
+
                 try
                 {
-                    await Services.Core.ErrorHandling.HandleErrorAsync(
-                        new ArgumentException($"Invalid Part ID: '{value}' not found in available parts."),
-                        "Part ID validation failed - input cleared",
-                        "System"
-                    );
+                    _isShowingSuggestionOverlay = true;
+                    var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, semiMatches, value);
+
+                    if (!string.IsNullOrEmpty(selected))
+                    {
+                        _logger?.LogInformation($"Part overlay - User selected: '{selected}'");
+                        System.Diagnostics.Debug.WriteLine($"Part overlay - User selected: '{selected}'");
+                        _viewModel.SelectedPart = selected;
+                        textBox.Text = selected;
+                    }
+                    else
+                    {
+                        _logger?.LogInformation($"Part overlay - User cancelled, keeping: '{value}'");
+                        System.Diagnostics.Debug.WriteLine($"Part overlay - User cancelled, keeping: '{value}'");
+                        _viewModel.SelectedPart = value;
+                    }
                 }
-                catch (Exception errorEx)
+                finally
                 {
-                    _logger?.LogWarning(errorEx, "Failed to show error message for invalid Part ID");
-                    System.Diagnostics.Debug.WriteLine($"Failed to show error message for invalid Part ID: {errorEx.Message}");
+                    _isShowingSuggestionOverlay = false;
                 }
             }
-            else if (_suggestionOverlayService == null)
+            else
             {
-                _logger?.LogWarning($"Part overlay not shown - SuggestionOverlayService is null");
-                System.Diagnostics.Debug.WriteLine($"Part overlay not shown - SuggestionOverlayService is null");
+                // Log why overlay was not shown
+                if (string.IsNullOrEmpty(value))
+                {
+                    _logger?.LogInformation($"Part overlay not shown - value is empty");
+                    System.Diagnostics.Debug.WriteLine($"Part overlay not shown - value is empty");
+                }
+                else if (isExactMatch)
+                {
+                    _logger?.LogInformation($"Part overlay not shown - '{value}' is exact match");
+                    System.Diagnostics.Debug.WriteLine($"Part overlay not shown - '{value}' is exact match");
+                }
+                else if (semiMatches.Count == 0)
+                {
+                    _logger?.LogInformation($"Part overlay not shown - no semi-matches for '{value}'");
+                    System.Diagnostics.Debug.WriteLine($"Part overlay not shown - no semi-matches for '{value}'");
+
+                    // MTM Pattern: Clear textbox when no matches found to maintain data integrity
+                    _logger?.LogInformation($"Part '{value}' has no matches in validation source. Clearing textbox for data integrity.");
+                    System.Diagnostics.Debug.WriteLine($"Part '{value}' has no matches in validation source. Clearing textbox for data integrity.");
+
+                    textBox.Text = string.Empty;
+                    _viewModel.SelectedPart = string.Empty;
+
+                    // Show user feedback about the clearing action
+                    try
+                    {
+                        await Services.Core.ErrorHandling.HandleErrorAsync(
+                            new ArgumentException($"Invalid Part ID: '{value}' not found in available parts."),
+                            "Part ID validation failed - input cleared",
+                            "System"
+                        );
+                    }
+                    catch (Exception errorEx)
+                    {
+                        _logger?.LogWarning(errorEx, "Failed to show error message for invalid Part ID");
+                        System.Diagnostics.Debug.WriteLine($"Failed to show error message for invalid Part ID: {errorEx.Message}");
+                    }
+                }
+                else if (_suggestionOverlayService == null)
+                {
+                    _logger?.LogWarning($"Part overlay not shown - SuggestionOverlayService is null");
+                    System.Diagnostics.Debug.WriteLine($"Part overlay not shown - SuggestionOverlayService is null");
+                }
+
+                _viewModel.SelectedPart = value;
             }
-            
-            _viewModel.SelectedPart = value;
+
+            UpdateValidationStates();
+            ValidateAndUpdateSaveButton();
         }
-        
-        UpdateValidationStates();
-        ValidateAndUpdateSaveButton();
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling part lost focus");
+            System.Diagnostics.Debug.WriteLine($"Error handling part lost focus: {ex.Message}");
+        }
     }
-    catch (Exception ex)
-    {
-        _logger?.LogError(ex, "Error handling part lost focus");
-        System.Diagnostics.Debug.WriteLine($"Error handling part lost focus: {ex.Message}");
-    }
-}
 
     #endregion
 
@@ -848,24 +848,24 @@ MoveFocusToFirstControl();
             {
                 _logger?.LogWarning("No Operations available - likely database connectivity issue");
                 System.Diagnostics.Debug.WriteLine("No Operations available - likely database connectivity issue");
-                
+
                 // Clear the textbox and show error message about data unavailability
                 textBox.Text = string.Empty;
                 _viewModel.SelectedOperation = string.Empty;
-                
+
                 UpdateValidationStates();
                 ValidateAndUpdateSaveButton();
                 return;
             }
 
             // Only show suggestions if the user actually entered something
-            if (!string.IsNullOrEmpty(value) && 
-                !data.Contains(value, StringComparer.OrdinalIgnoreCase) && 
+            if (!string.IsNullOrEmpty(value) &&
+                !data.Contains(value, StringComparer.OrdinalIgnoreCase) &&
                 _suggestionOverlayService != null &&
                 !_isShowingSuggestionOverlay)
             {
                 // Check if the value has any partial matches in the data
-                var hasPartialMatches = data.Any(op => 
+                var hasPartialMatches = data.Any(op =>
                     op.Contains(value, StringComparison.OrdinalIgnoreCase));
 
                 if (hasPartialMatches)
@@ -894,10 +894,10 @@ MoveFocusToFirstControl();
                     // MTM Pattern: Clear textbox when no matches found to maintain data integrity
                     _logger?.LogInformation($"Operation '{value}' has no matches in validation source. Clearing textbox for data integrity.");
                     System.Diagnostics.Debug.WriteLine($"Operation '{value}' has no matches in validation source. Clearing textbox for data integrity.");
-                    
+
                     textBox.Text = string.Empty;
                     _viewModel.SelectedOperation = string.Empty;
-                    
+
                     // Show user feedback about the clearing action
                     try
                     {
@@ -975,24 +975,24 @@ MoveFocusToFirstControl();
             {
                 _logger?.LogWarning("No Locations available - likely database connectivity issue");
                 System.Diagnostics.Debug.WriteLine("No Locations available - likely database connectivity issue");
-                
+
                 // Clear the textbox and show error message about data unavailability
                 textBox.Text = string.Empty;
                 _viewModel.SelectedLocation = string.Empty;
-                
+
                 UpdateValidationStates();
                 ValidateAndUpdateSaveButton();
                 return;
             }
 
             // Only show suggestions if the user actually entered something
-            if (!string.IsNullOrEmpty(value) && 
-                !data.Contains(value, StringComparer.OrdinalIgnoreCase) && 
+            if (!string.IsNullOrEmpty(value) &&
+                !data.Contains(value, StringComparer.OrdinalIgnoreCase) &&
                 _suggestionOverlayService != null &&
                 !_isShowingSuggestionOverlay)
             {
                 // Check if the value has any partial matches in the data
-                var hasPartialMatches = data.Any(loc => 
+                var hasPartialMatches = data.Any(loc =>
                     loc.Contains(value, StringComparison.OrdinalIgnoreCase));
 
                 if (hasPartialMatches)
@@ -1021,10 +1021,10 @@ MoveFocusToFirstControl();
                     // MTM Pattern: Clear textbox when no matches found to maintain data integrity
                     _logger?.LogInformation($"Location '{value}' has no matches in validation source. Clearing textbox for data integrity.");
                     System.Diagnostics.Debug.WriteLine($"Location '{value}' has no matches in validation source. Clearing textbox for data integrity.");
-                    
+
                     textBox.Text = string.Empty;
                     _viewModel.SelectedLocation = string.Empty;
-                    
+
                     // Show user feedback about the clearing action
                     try
                     {
@@ -1230,7 +1230,7 @@ MoveFocusToFirstControl();
             _logger?.LogError(ex, "Error initializing QuickButtons integration");
             System.Diagnostics.Debug.WriteLine($"Error initializing QuickButtons integration: {ex.Message}");
         }
-        
+
         return Task.CompletedTask;
     }
 
@@ -1257,7 +1257,7 @@ MoveFocusToFirstControl();
                 _viewModel.SelectedPart = partId;
                 _viewModel.SelectedOperation = operation;
                 _viewModel.Quantity = quantity;
-                
+
                 // Also set QuantityText property for UI binding (if it exists)
                 var quantityTextProperty = _viewModel.GetType().GetProperty("QuantityText");
                 if (quantityTextProperty?.CanWrite == true)
@@ -1282,7 +1282,7 @@ MoveFocusToFirstControl();
                 // Update UI control states and save button
                 UpdateControlStates();
                 ValidateAndUpdateSaveButton();
-                
+
                 // Clear TextBox error classes that may persist from TextBoxFuzzyValidationBehavior
                 ClearTextBoxErrorClasses();
 
@@ -1494,7 +1494,7 @@ MoveFocusToFirstControl();
         try
         {
             if (_viewModel == null) return;
-            
+
             var resetCommand = GetPropertyValue<ICommand>(_viewModel, "ResetCommand");
             if (resetCommand?.CanExecute(null) == true)
             {

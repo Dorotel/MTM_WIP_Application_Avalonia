@@ -180,7 +180,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
     private async Task LoadTransactionsAsync()
     {
         using var scope = Logger.BeginScope("LoadTransactions");
-        Logger.LogDebug("Loading transactions with filters - StartDate: {StartDate}, EndDate: {EndDate}, User: {User}, Search: {Search}", 
+        Logger.LogDebug("Loading transactions with filters - StartDate: {StartDate}, EndDate: {EndDate}, User: {User}, Search: {Search}",
             StartDate, EndDate, SelectedUser, SearchText);
 
         try
@@ -190,7 +190,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
 
             // Use stored procedure approach
             DataTable dataTable;
-            
+
             // Load transactions based on filters
             if (SelectedUser == "All Users" || string.IsNullOrEmpty(SelectedUser))
             {
@@ -204,13 +204,13 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
             var allTransactions = ConvertDataTableToTransactionRecords(dataTable).ToList();
 
             // Apply date filter
-            allTransactions = allTransactions.Where(t => 
+            allTransactions = allTransactions.Where(t =>
                 t.TransactionDate >= StartDate && t.TransactionDate <= EndDate).ToList();
 
             // Apply search filter if specified
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                allTransactions = allTransactions.Where(t => 
+                allTransactions = allTransactions.Where(t =>
                     t.PartId.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                     t.Location.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                     t.Operation.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
@@ -232,7 +232,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
             {
                 Transactions = new ObservableCollection<TransactionRecord>(pagedTransactions);
             });
-            
+
             StatusMessage = $"Loaded {Transactions.Count} transactions";
             Logger.LogInformation("Successfully loaded {Count} transactions", Transactions.Count);
         }
@@ -384,7 +384,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
         try
         {
             SelectedTransaction = transaction;
-            Logger.LogInformation("Selected transaction: ID={TransactionId}, PartId={PartId}", 
+            Logger.LogInformation("Selected transaction: ID={TransactionId}, PartId={PartId}",
                 transaction.TransactionId, transaction.PartId);
 
             StatusMessage = $"Selected transaction: {transaction.TransactionType} - {transaction.PartId}";
@@ -416,7 +416,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
 
             // Implementation for export functionality would go here
             // This is a placeholder for the actual export logic
-            
+
             StatusMessage = "Export completed successfully";
             Logger.LogInformation("Transaction export completed");
         }
@@ -460,12 +460,12 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
             Logger.LogDebug("Loading available users for transaction history");
 
             var usersData = await _databaseService.GetAllUsersAsync();
-            
+
             // Update collection on UI thread
             Dispatcher.UIThread.Post(() =>
             {
                 var users = new ObservableCollection<string> { "All Users" }; // Add default option
-                
+
                 if (usersData != null)
                 {
                     foreach (DataRow row in usersData.Rows)

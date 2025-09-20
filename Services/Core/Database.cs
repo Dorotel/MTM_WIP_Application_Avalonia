@@ -20,7 +20,7 @@ public interface IDatabaseService
     Task<bool> TestConnectionAsync();
     Task<DataTable> GetLastTransactionsForUserAsync(string? userId = null, int limit = 10);
     string GetConnectionString();
-    
+
     // Inventory Operations - using Services.Core.Helper_Database_StoredProcedure pattern
     Task<StoredProcedureResult> AddInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string batchNumber, string notes);
     Task<DataTable> GetInventoryByPartIdAsync(string partId);
@@ -29,39 +29,39 @@ public interface IDatabaseService
     Task<StoredProcedureResult> RemoveInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string batchNumber, string notes);
     Task<bool> TransferPartAsync(string batchNumber, string partId, string operation, string newLocation);
     Task<bool> TransferQuantityAsync(string batchNumber, string partId, string operation, int transferQuantity, int originalQuantity, string newLocation, string user);
-    
+
     // Note editing operations
     Task<StoredProcedureResult> UpdateInventoryNotesAsync(int inventoryId, string partId, string batchNumber, string notes, string user);
     Task<DataTable> GetInventoryByIdAsync(int inventoryId);
-    
+
     // Master Data Operations - Parts
     Task<StoredProcedureResult> AddPartAsync(string partId, string customer, string description, string issuedBy, string itemType);
     Task<StoredProcedureResult> UpdatePartAsync(int id, string partId, string customer, string description, string issuedBy, string itemType);
     Task<bool> DeletePartAsync(string partId);
     Task<DataTable> GetPartByIdAsync(string partId);
-    
+
     // Master Data Operations - Operations
     Task<StoredProcedureResult> AddOperationAsync(string operation, string issuedBy);
     Task<StoredProcedureResult> UpdateOperationAsync(string operation, string newOperation, string issuedBy);
     Task<bool> DeleteOperationAsync(string operation);
-    
+
     // Master Data Operations - Locations
     Task<StoredProcedureResult> AddLocationAsync(string location, string issuedBy, string building);
     Task<StoredProcedureResult> UpdateLocationAsync(string oldLocation, string location, string issuedBy, string building);
     Task<bool> DeleteLocationAsync(string location);
-    
+
     // Master Data Operations - Item Types
     Task<DataTable> GetAllItemTypesAsync();
     Task<StoredProcedureResult> AddItemTypeAsync(string itemType, string issuedBy);
     Task<StoredProcedureResult> UpdateItemTypeAsync(int id, string itemType, string issuedBy);
     Task<bool> DeleteItemTypeAsync(string itemType);
-    
+
     // Additional Master Data Operations
     Task<DataTable> GetAllLocationsAsync();
     Task<DataTable> GetAllOperationsAsync();
     Task<DataTable> GetAllPartIDsAsync();
     Task<DataTable> GetAllRolesAsync();
-    
+
     // User Management
     Task<DataTable> GetAllUsersAsync();
     Task<DataTable> GetUserAsync(string username);
@@ -69,12 +69,12 @@ public interface IDatabaseService
     Task<StoredProcedureResult> AddUserAsync(MTM_Shared_Logic.Models.User userInfo);
     Task<StoredProcedureResult> UpdateUserAsync(MTM_Shared_Logic.Models.User userInfo);
     Task<bool> DeleteUserAsync(string username);
-    
+
     // Additional User Management overloads for ViewModels
     Task<StoredProcedureResult> AddUserAsync(string username, string firstName, string lastName, string email, string role, string issuedBy);
     Task<StoredProcedureResult> UpdateUserAsync(int id, string username, string firstName, string lastName, string email, string role, bool isActive, string issuedBy);
     Task<bool> DeleteUserAsync(int id);
-    
+
     // System Configuration
     Task<string> GetUserSettingsAsync(string userId);
     Task<bool> SaveUserSettingsAsync(string userId, string settingsJson);
@@ -96,7 +96,7 @@ public class DatabaseService : IDatabaseService
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _connectionString = configurationService?.GetConnectionString() ?? throw new ArgumentNullException(nameof(configurationService));
-        
+
         if (string.IsNullOrWhiteSpace(_connectionString))
         {
             throw new InvalidOperationException("Database connection string is not configured");
@@ -118,7 +118,7 @@ public class DatabaseService : IDatabaseService
             await connection.OpenAsync();
 
             using var command = new MySqlCommand(query, connection);
-            
+
             if (parameters != null)
             {
                 foreach (var param in parameters)
@@ -137,12 +137,12 @@ public class DatabaseService : IDatabaseService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to execute query: {Query}", query);
-            
+
             // Use fully qualified namespace for ErrorHandling service
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteQueryAsync", Environment.UserName, 
-                new Dictionary<string, object> 
-                { 
-                    ["Query"] = query, 
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteQueryAsync", Environment.UserName,
+                new Dictionary<string, object>
+                {
+                    ["Query"] = query,
                     ["Parameters"] = parameters ?? new Dictionary<string, object>(),
                     ["Operation"] = "DatabaseQuery",
                     ["Service"] = "DatabaseService"
@@ -164,7 +164,7 @@ public class DatabaseService : IDatabaseService
             await connection.OpenAsync();
 
             using var command = new MySqlCommand(query, connection);
-    
+
             if (parameters != null)
             {
                 foreach (var param in parameters)
@@ -174,19 +174,19 @@ public class DatabaseService : IDatabaseService
             }
 
             var result = await command.ExecuteScalarAsync();
-            
+
             _logger.LogDebug("Scalar query executed successfully, result: {Result}", result);
             return result;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to execute scalar query: {Query}", query);
-            
+
             // Use fully qualified namespace for ErrorHandling service
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteScalarAsync", Environment.UserName, 
-                new Dictionary<string, object> 
-                { 
-                    ["Query"] = query, 
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteScalarAsync", Environment.UserName,
+                new Dictionary<string, object>
+                {
+                    ["Query"] = query,
                     ["Parameters"] = parameters ?? new Dictionary<string, object>(),
                     ["Operation"] = "DatabaseScalarQuery",
                     ["Service"] = "DatabaseService"
@@ -208,7 +208,7 @@ public class DatabaseService : IDatabaseService
             await connection.OpenAsync();
 
             using var command = new MySqlCommand(query, connection);
-            
+
             if (parameters != null)
             {
                 foreach (var param in parameters)
@@ -218,19 +218,19 @@ public class DatabaseService : IDatabaseService
             }
 
             var affectedRows = await command.ExecuteNonQueryAsync();
-            
+
             _logger.LogDebug("Non-query executed successfully, affected rows: {AffectedRows}", affectedRows);
             return affectedRows;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to execute non-query: {Query}", query);
-            
+
             // Use fully qualified namespace for ErrorHandling service
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteNonQueryAsync", Environment.UserName, 
-                new Dictionary<string, object> 
-                { 
-                    ["Query"] = query, 
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteNonQueryAsync", Environment.UserName,
+                new Dictionary<string, object>
+                {
+                    ["Query"] = query,
                     ["Parameters"] = parameters ?? new Dictionary<string, object>(),
                     ["Operation"] = "DatabaseNonQuery",
                     ["Service"] = "DatabaseService"
@@ -250,14 +250,14 @@ public class DatabaseService : IDatabaseService
 
             using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
-            
+
             _logger.LogInformation("Database connection test successful");
             return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Database connection test failed");
-            
+
             // Use fully qualified namespace for ErrorHandling service
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "TestConnectionAsync", Environment.UserName,
                 new Dictionary<string, object>
@@ -286,7 +286,7 @@ public class DatabaseService : IDatabaseService
     {
         // Use current user if none specified, and ensure it's uppercase
         var currentUser = !string.IsNullOrEmpty(userId) ? userId.ToUpper() : Models.Model_AppVariables.CurrentUser;
-        
+
         _logger.LogDebug("Getting last {Limit} transactions for user: {UserId}", limit, currentUser);
 
         try
@@ -306,18 +306,18 @@ public class DatabaseService : IDatabaseService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get transactions for user: {UserId}", currentUser);
-            
+
             // Use fully qualified namespace for ErrorHandling service
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "GetLastTransactionsForUserAsync", Environment.UserName, 
-                new Dictionary<string, object> 
-                { 
-                    ["UserId"] = userId ?? "", 
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "GetLastTransactionsForUserAsync", Environment.UserName,
+                new Dictionary<string, object>
+                {
+                    ["UserId"] = userId ?? "",
                     ["Limit"] = limit,
                     ["Operation"] = "GetLastTransactions",
                     ["Service"] = "DatabaseService",
                     ["StoredProcedure"] = "sys_last_10_transactions_Get_ByUser"
                 });
-            
+
             // Return empty DataTable rather than throwing, so the UI doesn't crash
             _logger.LogWarning("Returning empty DataTable due to stored procedure failure");
             return new DataTable();
@@ -334,8 +334,8 @@ public class DatabaseService : IDatabaseService
         // Validate required parameters before building dictionary
         if (string.IsNullOrWhiteSpace(partId))
         {
-            var errorResult = new StoredProcedureResult 
-            { 
+            var errorResult = new StoredProcedureResult
+            {
                 Status = -1,
                 Message = "PartID cannot be null or empty",
                 Data = new DataTable()
@@ -346,8 +346,8 @@ public class DatabaseService : IDatabaseService
 
         if (string.IsNullOrWhiteSpace(user))
         {
-            var errorResult = new StoredProcedureResult 
-            { 
+            var errorResult = new StoredProcedureResult
+            {
                 Status = -1,
                 Message = "User cannot be null or empty",
                 Data = new DataTable()
@@ -358,8 +358,8 @@ public class DatabaseService : IDatabaseService
 
         if (quantity <= 0)
         {
-            var errorResult = new StoredProcedureResult 
-            { 
+            var errorResult = new StoredProcedureResult
+            {
                 Status = -1,
                 Message = "Quantity must be greater than 0",
                 Data = new DataTable()
@@ -368,7 +368,7 @@ public class DatabaseService : IDatabaseService
             return errorResult;
         }
 
-        _logger?.LogDebug("Adding inventory item: PartID {PartId}, Location {Location}, Operation {Operation}, Quantity {Quantity}, User {User}, BatchNumber {BatchNumber}", 
+        _logger?.LogDebug("Adding inventory item: PartID {PartId}, Location {Location}, Operation {Operation}, Quantity {Quantity}, User {User}, BatchNumber {BatchNumber}",
             partId, location, operation, quantity, user, batchNumber);
 
         var parameters = new Dictionary<string, object>
@@ -382,7 +382,7 @@ public class DatabaseService : IDatabaseService
             ["p_Notes"] = !string.IsNullOrWhiteSpace(notes) ? notes : DBNull.Value
         };
 
-        _logger?.LogDebug("Calling inv_inventory_Add_Item with parameters: {Parameters}", 
+        _logger?.LogDebug("Calling inv_inventory_Add_Item with parameters: {Parameters}",
             string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}")));
         _logger?.LogInformation("Adding inventory item with BatchNumber generated by stored procedure: PartID={PartId}, User={User}", partId, user);
 
@@ -392,7 +392,7 @@ public class DatabaseService : IDatabaseService
             parameters
         );
 
-        _logger?.LogDebug("inv_inventory_Add_Item returned: Status={Status}, Message='{Message}'", 
+        _logger?.LogDebug("inv_inventory_Add_Item returned: Status={Status}, Message='{Message}'",
             result.Status, result.Message);
 
         // REMOVED: QuickButton logic moved to dedicated QuickButtons service
@@ -431,11 +431,11 @@ public class DatabaseService : IDatabaseService
                         maxPosition = Math.Max(maxPosition, position);
                     }
                 }
-                
+
                 // Return next position (1-10, cycling back to 1)
                 return maxPosition >= 10 ? 1 : maxPosition + 1;
             }
-            
+
             // No existing buttons, start at position 1
             return 1;
         }
@@ -454,13 +454,13 @@ public class DatabaseService : IDatabaseService
         try
         {
             _logger.LogDebug("GetInventoryByPartIdAsync called with PartId={PartId}", partId);
-            
+
             var parameters = new Dictionary<string, object>
             {
                 ["p_PartID"] = partId ?? string.Empty
             };
 
-            _logger.LogDebug("Calling stored procedure inv_inventory_Get_ByPartID with parameters: {Parameters}", 
+            _logger.LogDebug("Calling stored procedure inv_inventory_Get_ByPartID with parameters: {Parameters}",
                 string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}")));
 
             var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -469,12 +469,12 @@ public class DatabaseService : IDatabaseService
                 parameters
             );
 
-            _logger.LogDebug("Stored procedure result: IsSuccess={IsSuccess}, RowCount={RowCount}, Message={Message}", 
+            _logger.LogDebug("Stored procedure result: IsSuccess={IsSuccess}, RowCount={RowCount}, Message={Message}",
                 result.IsSuccess, result.Data?.Rows.Count ?? 0, result.Message);
 
             if (!result.IsSuccess)
             {
-                _logger.LogError("Stored procedure inv_inventory_Get_ByPartID failed: Status={Status}, Message={Message}", 
+                _logger.LogError("Stored procedure inv_inventory_Get_ByPartID failed: Status={Status}, Message={Message}",
                     result.Status, result.Message);
             }
 
@@ -495,14 +495,14 @@ public class DatabaseService : IDatabaseService
         try
         {
             _logger.LogDebug("GetInventoryByPartAndOperationAsync called with PartId={PartId}, Operation={Operation}", partId, operation);
-            
+
             var parameters = new Dictionary<string, object>
             {
                 ["p_PartID"] = partId ?? string.Empty,
                 ["p_Operation"] = operation ?? string.Empty
             };
 
-            _logger.LogDebug("Calling stored procedure inv_inventory_Get_ByPartIDandOperation with parameters: {Parameters}", 
+            _logger.LogDebug("Calling stored procedure inv_inventory_Get_ByPartIDandOperation with parameters: {Parameters}",
                 string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}")));
 
             var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -511,12 +511,12 @@ public class DatabaseService : IDatabaseService
                 parameters
             );
 
-            _logger.LogDebug("Stored procedure result: IsSuccess={IsSuccess}, RowCount={RowCount}, Message={Message}", 
+            _logger.LogDebug("Stored procedure result: IsSuccess={IsSuccess}, RowCount={RowCount}, Message={Message}",
                 result.IsSuccess, result.Data?.Rows.Count ?? 0, result.Message);
 
             if (!result.IsSuccess)
             {
-                _logger.LogError("Stored procedure inv_inventory_Get_ByPartIDandOperation failed: Status={Status}, Message={Message}", 
+                _logger.LogError("Stored procedure inv_inventory_Get_ByPartIDandOperation failed: Status={Status}, Message={Message}",
                     result.Status, result.Message);
             }
 
@@ -624,7 +624,7 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public async Task<StoredProcedureResult> UpdateInventoryNotesAsync(int inventoryId, string partId, string batchNumber, string notes, string user)
     {
-        _logger.LogInformation("Updating notes for inventory ID={InventoryId}, PartID={PartId}, BatchNumber={BatchNumber}, User={User}", 
+        _logger.LogInformation("Updating notes for inventory ID={InventoryId}, PartID={PartId}, BatchNumber={BatchNumber}, User={User}",
             inventoryId, partId, batchNumber, user);
 
         var parameters = new Dictionary<string, object>
@@ -956,7 +956,7 @@ public class DatabaseService : IDatabaseService
             "md_locations_Get_All",
             new Dictionary<string, object>()
         );
-        
+
         return result.Data ?? new DataTable();
     }
 
@@ -971,7 +971,7 @@ public class DatabaseService : IDatabaseService
             "md_operation_numbers_Get_All",
             new Dictionary<string, object>()
         );
-        
+
         return result.Data ?? new DataTable();
     }
 
@@ -986,7 +986,7 @@ public class DatabaseService : IDatabaseService
             "md_part_ids_Get_All",
             new Dictionary<string, object>()
         );
-        
+
         return result.Data ?? new DataTable();
     }
 
@@ -1234,9 +1234,9 @@ public class DatabaseService : IDatabaseService
             };
 
             var result = await ExecuteScalarAsync(query, parameters);
-            
+
             var settingsJson = result?.ToString() ?? string.Empty;
-            
+
             if (string.IsNullOrEmpty(settingsJson))
             {
                 _logger.LogDebug("No settings found for user {UserId}", userId);
@@ -1288,7 +1288,7 @@ public class DatabaseService : IDatabaseService
                 ["p_ThemeJson"] = themeJson
             };
 
-            _logger.LogDebug("Calling usr_ui_settings_SetThemeJson for user {UserId} with theme JSON: {ThemeJson}", 
+            _logger.LogDebug("Calling usr_ui_settings_SetThemeJson for user {UserId} with theme JSON: {ThemeJson}",
                 userId, themeJson);
 
             var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -1304,7 +1304,7 @@ public class DatabaseService : IDatabaseService
             }
             else
             {
-                _logger.LogWarning("Failed to save theme settings for user {UserId}: Status={Status}, Message={Message}", 
+                _logger.LogWarning("Failed to save theme settings for user {UserId}: Status={Status}, Message={Message}",
                     userId, result.Status, result.Message);
                 return false;
             }
@@ -1381,17 +1381,17 @@ public static class Helper_Database_StoredProcedure
     /// Use this for stored procedures that follow the MTM standard (have @p_Status and @p_ErrorMsg output parameters).
     /// </summary>
     public static async Task<StoredProcedureResult> ExecuteDataTableWithStatus(
-        string connectionString, 
-        string procedureName, 
+        string connectionString,
+        string procedureName,
         Dictionary<string, object> parameters)
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var isQuickButtonProcedure = IsQuickButtonProcedure(procedureName);
-        
+
         try
         {
             _logger?.LogDebug("Executing stored procedure: {ProcedureName}", procedureName);
-            
+
             // Enhanced debugging for QuickButton procedures
             if (isQuickButtonProcedure)
             {
@@ -1412,10 +1412,10 @@ public static class Helper_Database_StoredProcedure
             {
                 var parameterValue = param.Value ?? DBNull.Value;
                 command.Parameters.AddWithValue($"@{param.Key}", parameterValue);
-                
+
                 if (isQuickButtonProcedure)
                 {
-                    _logger?.LogDebug("🔍 QUICKBUTTON DEBUG: Added parameter @{ParameterName} = {ParameterValue} (Type: {ParameterType})", 
+                    _logger?.LogDebug("🔍 QUICKBUTTON DEBUG: Added parameter @{ParameterName} = {ParameterValue} (Type: {ParameterType})",
                         param.Key, parameterValue, parameterValue?.GetType().Name ?? "NULL");
                 }
             }
@@ -1449,17 +1449,17 @@ public static class Helper_Database_StoredProcedure
 
             if (isQuickButtonProcedure)
             {
-                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Procedure {ProcedureName} completed - Status: {Status}, Message: '{Message}', Rows: {RowCount}, Duration: {Duration}ms", 
+                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Procedure {ProcedureName} completed - Status: {Status}, Message: '{Message}', Rows: {RowCount}, Duration: {Duration}ms",
                     procedureName, status, message, dataTable.Rows.Count, stopwatch.ElapsedMilliseconds);
-                
+
                 LogQuickButtonResult(procedureName, result, parameters);
-                
+
                 // Log column information for data procedures
                 if (dataTable.Rows.Count > 0 && dataTable.Columns.Count > 0)
                 {
                     var columnNames = string.Join(", ", dataTable.Columns.OfType<DataColumn>().Select(c => $"{c.ColumnName}({c.DataType.Name})"));
                     _logger?.LogDebug("🔍 QUICKBUTTON DEBUG: Result columns: {Columns}", columnNames);
-                    
+
                     // Log first row data for debugging
                     if (dataTable.Rows.Count > 0)
                     {
@@ -1471,7 +1471,7 @@ public static class Helper_Database_StoredProcedure
                 }
             }
 
-            _logger?.LogDebug("Stored procedure executed: {ProcedureName}, Status: {Status}, Rows: {RowCount}", 
+            _logger?.LogDebug("Stored procedure executed: {ProcedureName}, Status: {Status}, Rows: {RowCount}",
                 procedureName, status, dataTable.Rows.Count);
 
             return result;
@@ -1479,21 +1479,21 @@ public static class Helper_Database_StoredProcedure
         catch (Exception ex)
         {
             stopwatch.Stop();
-            
+
             if (isQuickButtonProcedure)
             {
-                _logger?.LogError("🔍 QUICKBUTTON DEBUG: FAILED execution of {ProcedureName} after {Duration}ms - Error: {ErrorMessage}", 
+                _logger?.LogError("🔍 QUICKBUTTON DEBUG: FAILED execution of {ProcedureName} after {Duration}ms - Error: {ErrorMessage}",
                     procedureName, stopwatch.ElapsedMilliseconds, ex.Message);
                 LogQuickButtonError(procedureName, parameters, ex);
             }
 
             _logger?.LogError(ex, "Failed to execute stored procedure: {ProcedureName}", procedureName);
-            
+
             // Use fully qualified namespace for ErrorHandling service with enhanced business context
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteDataTableWithStatus", Environment.UserName, 
-                new Dictionary<string, object> 
-                { 
-                    ["ProcedureName"] = procedureName, 
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteDataTableWithStatus", Environment.UserName,
+                new Dictionary<string, object>
+                {
+                    ["ProcedureName"] = procedureName,
                     ["Parameters"] = parameters,
                     ["Operation"] = "StoredProcedureExecution",
                     ["Service"] = "Services.Core.Helper_Database_StoredProcedure",
@@ -1520,17 +1520,17 @@ public static class Helper_Database_StoredProcedure
     /// Use this for stored procedures that follow the MTM standard (have @p_Status and @p_ErrorMsg output parameters).
     /// </summary>
     public static async Task<StoredProcedureResult> ExecuteWithStatus(
-        string connectionString, 
-        string procedureName, 
+        string connectionString,
+        string procedureName,
         Dictionary<string, object> parameters)
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var isQuickButtonProcedure = IsQuickButtonProcedure(procedureName);
-        
+
         try
         {
             _logger?.LogDebug("Executing stored procedure (no data): {ProcedureName}", procedureName);
-            
+
             // Enhanced debugging for QuickButton procedures
             if (isQuickButtonProcedure)
             {
@@ -1551,10 +1551,10 @@ public static class Helper_Database_StoredProcedure
             {
                 var parameterValue = param.Value ?? DBNull.Value;
                 command.Parameters.AddWithValue($"@{param.Key}", parameterValue);
-                
+
                 if (isQuickButtonProcedure)
                 {
-                    _logger?.LogDebug("🔍 QUICKBUTTON DEBUG: Added parameter @{ParameterName} = {ParameterValue} (Type: {ParameterType})", 
+                    _logger?.LogDebug("🔍 QUICKBUTTON DEBUG: Added parameter @{ParameterName} = {ParameterValue} (Type: {ParameterType})",
                         param.Key, parameterValue, parameterValue?.GetType().Name ?? "NULL");
                 }
             }
@@ -1584,13 +1584,13 @@ public static class Helper_Database_StoredProcedure
 
             if (isQuickButtonProcedure)
             {
-                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Non-query {ProcedureName} completed - Status: {Status}, Message: '{Message}', Duration: {Duration}ms", 
+                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Non-query {ProcedureName} completed - Status: {Status}, Message: '{Message}', Duration: {Duration}ms",
                     procedureName, status, message, stopwatch.ElapsedMilliseconds);
-                
+
                 LogQuickButtonResult(procedureName, result, parameters);
             }
 
-            _logger?.LogDebug("Stored procedure executed: {ProcedureName}, Status: {Status}", 
+            _logger?.LogDebug("Stored procedure executed: {ProcedureName}, Status: {Status}",
                 procedureName, status);
 
             return result;
@@ -1598,21 +1598,21 @@ public static class Helper_Database_StoredProcedure
         catch (Exception ex)
         {
             stopwatch.Stop();
-            
+
             if (isQuickButtonProcedure)
             {
-                _logger?.LogError("🔍 QUICKBUTTON DEBUG: FAILED non-query execution of {ProcedureName} after {Duration}ms - Error: {ErrorMessage}", 
+                _logger?.LogError("🔍 QUICKBUTTON DEBUG: FAILED non-query execution of {ProcedureName} after {Duration}ms - Error: {ErrorMessage}",
                     procedureName, stopwatch.ElapsedMilliseconds, ex.Message);
                 LogQuickButtonError(procedureName, parameters, ex);
             }
 
             _logger?.LogError(ex, "Failed to execute stored procedure: {ProcedureName}", procedureName);
-            
+
             // Use fully qualified namespace for ErrorHandling service with enhanced business context
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteWithStatus", Environment.UserName, 
-                new Dictionary<string, object> 
-                { 
-                    ["ProcedureName"] = procedureName, 
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteWithStatus", Environment.UserName,
+                new Dictionary<string, object>
+                {
+                    ["ProcedureName"] = procedureName,
                     ["Parameters"] = parameters,
                     ["Operation"] = "StoredProcedureExecution",
                     ["Service"] = "Services.Core.Helper_Database_StoredProcedure",
@@ -1645,11 +1645,11 @@ public static class Helper_Database_StoredProcedure
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var isQuickButtonProcedure = IsQuickButtonProcedure(procedureName);
-        
+
         try
         {
             _logger?.LogDebug("Executing direct stored procedure: {ProcedureName}", procedureName);
-            
+
             // Enhanced debugging for QuickButton procedures
             if (isQuickButtonProcedure)
             {
@@ -1670,10 +1670,10 @@ public static class Helper_Database_StoredProcedure
             {
                 var parameterValue = param.Value ?? DBNull.Value;
                 command.Parameters.AddWithValue($"@{param.Key}", parameterValue);
-                
+
                 if (isQuickButtonProcedure)
                 {
-                    _logger?.LogDebug("🔍 QUICKBUTTON DEBUG: Added parameter @{ParameterName} = {ParameterValue} (Type: {ParameterType})", 
+                    _logger?.LogDebug("🔍 QUICKBUTTON DEBUG: Added parameter @{ParameterName} = {ParameterValue} (Type: {ParameterType})",
                         param.Key, parameterValue, parameterValue?.GetType().Name ?? "NULL");
                 }
             }
@@ -1692,15 +1692,15 @@ public static class Helper_Database_StoredProcedure
 
             if (isQuickButtonProcedure)
             {
-                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Direct procedure {ProcedureName} completed - Rows: {RowCount}, Duration: {Duration}ms", 
+                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Direct procedure {ProcedureName} completed - Rows: {RowCount}, Duration: {Duration}ms",
                     procedureName, dataTable.Rows.Count, stopwatch.ElapsedMilliseconds);
-                
+
                 // Log column information for data procedures
                 if (dataTable.Rows.Count > 0 && dataTable.Columns.Count > 0)
                 {
                     var columnNames = string.Join(", ", dataTable.Columns.OfType<DataColumn>().Select(c => $"{c.ColumnName}({c.DataType.Name})"));
                     _logger?.LogDebug("🔍 QUICKBUTTON DEBUG: Direct result columns: {Columns}", columnNames);
-                    
+
                     // Log first row data for debugging
                     if (dataTable.Rows.Count > 0)
                     {
@@ -1720,10 +1720,10 @@ public static class Helper_Database_StoredProcedure
         catch (Exception ex)
         {
             stopwatch.Stop();
-            
+
             if (isQuickButtonProcedure)
             {
-                _logger?.LogError("🔍 QUICKBUTTON DEBUG: FAILED direct execution of {ProcedureName} after {Duration}ms - Error: {ErrorMessage}", 
+                _logger?.LogError("🔍 QUICKBUTTON DEBUG: FAILED direct execution of {ProcedureName} after {Duration}ms - Error: {ErrorMessage}",
                     procedureName, stopwatch.ElapsedMilliseconds, ex.Message);
                 LogQuickButtonError(procedureName, parameters, ex);
             }
@@ -1754,13 +1754,13 @@ public static class Helper_Database_StoredProcedure
         var quickButtonProcedures = new[]
         {
             "qb_quickbuttons_Save",
-            "qb_quickbuttons_Remove", 
+            "qb_quickbuttons_Remove",
             "qb_quickbuttons_Clear_ByUser",
             "qb_quickbuttons_Get_ByUser",
             "sys_last_10_transactions_Get_ByUser",
             "sys_last_10_transactions_Add_Transaction"
         };
-        
+
         return quickButtonProcedures.Any(proc => procedureName.Equals(proc, StringComparison.OrdinalIgnoreCase));
     }
 
@@ -1770,12 +1770,12 @@ public static class Helper_Database_StoredProcedure
     private static void LogQuickButtonParameters(string procedureName, Dictionary<string, object> parameters)
     {
         _logger?.LogDebug("🔍 QUICKBUTTON DEBUG: {ProcedureName} input parameters:", procedureName);
-        
+
         foreach (var param in parameters)
         {
             var value = param.Value ?? "NULL";
             var type = param.Value?.GetType().Name ?? "NULL";
-            _logger?.LogDebug("🔍 QUICKBUTTON DEBUG:   @{ParameterName} = '{ParameterValue}' ({ParameterType})", 
+            _logger?.LogDebug("🔍 QUICKBUTTON DEBUG:   @{ParameterName} = '{ParameterValue}' ({ParameterType})",
                 param.Key, value, type);
         }
 
@@ -1811,11 +1811,11 @@ public static class Helper_Database_StoredProcedure
         var statusText = result.Status switch
         {
             0 => "SUCCESS",
-            1 => "WARNING", 
+            1 => "WARNING",
             _ => "ERROR"
         };
 
-        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: {ProcedureName} result - Status: {Status} ({StatusText}), Message: '{Message}'", 
+        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: {ProcedureName} result - Status: {Status} ({StatusText}), Message: '{Message}'",
             procedureName, result.Status, statusText, result.Message);
 
         // Log business-specific result context
@@ -1824,24 +1824,24 @@ public static class Helper_Database_StoredProcedure
             case "qb_quickbuttons_save":
                 var position = parameters.GetValueOrDefault("p_Position", "unknown");
                 var partId = parameters.GetValueOrDefault("p_PartID", "unknown");
-                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Save operation for Part '{PartId}' at position {Position} - {StatusText}", 
+                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Save operation for Part '{PartId}' at position {Position} - {StatusText}",
                     partId, position, statusText);
                 break;
-                
+
             case "qb_quickbuttons_remove":
                 var removePosition = parameters.GetValueOrDefault("p_Position", "unknown");
                 var userId = parameters.GetValueOrDefault("p_User", "unknown");
-                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Remove operation for Position {Position} by user '{UserId}' - {StatusText}", 
+                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Remove operation for Position {Position} by user '{UserId}' - {StatusText}",
                     removePosition, userId, statusText);
                 break;
-                
+
             case "qb_quickbuttons_get_byuser":
-                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Get operation returned {RowCount} quick buttons - {StatusText}", 
+                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Get operation returned {RowCount} quick buttons - {StatusText}",
                     result.Data.Rows.Count, statusText);
                 break;
-                
+
             case "sys_last_10_transactions_get_byuser":
-                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Transaction get operation returned {RowCount} transactions - {StatusText}", 
+                _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: Transaction get operation returned {RowCount} transactions - {StatusText}",
                     result.Data.Rows.Count, statusText);
                 break;
         }
@@ -1855,7 +1855,7 @@ public static class Helper_Database_StoredProcedure
         _logger?.LogError("🔍 QUICKBUTTON DEBUG: {ProcedureName} ERROR DETAILS:", procedureName);
         _logger?.LogError("🔍 QUICKBUTTON DEBUG:   Error Type: {ErrorType}", ex.GetType().Name);
         _logger?.LogError("🔍 QUICKBUTTON DEBUG:   Error Message: {ErrorMessage}", ex.Message);
-        
+
         if (ex.InnerException != null)
         {
             _logger?.LogError("🔍 QUICKBUTTON DEBUG:   Inner Exception: {InnerException}", ex.InnerException.Message);
@@ -1867,7 +1867,7 @@ public static class Helper_Database_StoredProcedure
         {
             if (parameters.ContainsKey(paramName))
             {
-                _logger?.LogError("🔍 QUICKBUTTON DEBUG:   Critical Parameter {ParamName}: {ParamValue}", 
+                _logger?.LogError("🔍 QUICKBUTTON DEBUG:   Critical Parameter {ParamName}: {ParamValue}",
                     paramName, parameters[paramName] ?? "NULL");
             }
         }
@@ -1888,8 +1888,8 @@ public static class Helper_Database_StoredProcedure
         var partId = parameters.GetValueOrDefault("p_PartID", "");
         var operation = parameters.GetValueOrDefault("p_Operation", "");
         var quantity = parameters.GetValueOrDefault("p_Quantity", "");
-        
-        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: SAVE CONTEXT - User '{UserId}' saving Part '{PartId}' with Operation '{Operation}' (Qty: {Quantity}) at position {Position}", 
+
+        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: SAVE CONTEXT - User '{UserId}' saving Part '{PartId}' with Operation '{Operation}' (Qty: {Quantity}) at position {Position}",
             userId, partId, operation, quantity, position);
     }
 
@@ -1897,22 +1897,22 @@ public static class Helper_Database_StoredProcedure
     {
         var userId = parameters.GetValueOrDefault("p_User", "");
         var position = parameters.GetValueOrDefault("p_Position", "");
-        
-        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: REMOVE CONTEXT - User '{UserId}' removing button at position {Position}", 
+
+        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: REMOVE CONTEXT - User '{UserId}' removing button at position {Position}",
             userId, position);
     }
 
     private static void LogQuickButtonClearContext(Dictionary<string, object> parameters)
     {
         var userId = parameters.GetValueOrDefault("p_User", "");
-        
+
         _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: CLEAR CONTEXT - User '{UserId}' clearing all quick buttons", userId);
     }
 
     private static void LogQuickButtonGetContext(Dictionary<string, object> parameters)
     {
         var userId = parameters.GetValueOrDefault("p_User", "");
-        
+
         _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: GET CONTEXT - Retrieving quick buttons for user '{UserId}'", userId);
     }
 
@@ -1920,8 +1920,8 @@ public static class Helper_Database_StoredProcedure
     {
         var userId = parameters.GetValueOrDefault("p_User", "");
         var limit = parameters.GetValueOrDefault("p_Limit", "10");
-        
-        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: TRANSACTION GET CONTEXT - Retrieving last {Limit} transactions for user '{UserId}'", 
+
+        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: TRANSACTION GET CONTEXT - Retrieving last {Limit} transactions for user '{UserId}'",
             limit, userId);
     }
 
@@ -1931,8 +1931,8 @@ public static class Helper_Database_StoredProcedure
         var partId = parameters.GetValueOrDefault("p_PartID", "");
         var operation = parameters.GetValueOrDefault("p_Operation", "");
         var quantity = parameters.GetValueOrDefault("p_Quantity", "");
-        
-        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: TRANSACTION ADD CONTEXT - User '{UserId}' adding transaction: Part '{PartId}', Operation '{Operation}', Quantity {Quantity}", 
+
+        _logger?.LogInformation("🔍 QUICKBUTTON DEBUG: TRANSACTION ADD CONTEXT - User '{UserId}' adding transaction: Part '{PartId}', Operation '{Operation}', Quantity {Quantity}",
             userId, partId, operation, quantity);
     }
 }
