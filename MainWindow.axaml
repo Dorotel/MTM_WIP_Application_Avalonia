@@ -13,15 +13,65 @@
         Height="850"
         Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
 
-    <!-- Root Grid required for overlay support -->
-    <Grid>
+    <!-- Keyboard Shortcuts for Overlay Access -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="F9" Command="{Binding ShowConnectionStatusOverlayCommand}" />
+        <KeyBinding Gesture="F10" Command="{Binding ShowEmergencyShutdownOverlayCommand}" />
+        <KeyBinding Gesture="F11" Command="{Binding ShowThemeQuickSwitcherOverlayCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+C" Command="{Binding ShowConnectionStatusOverlayCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+E" Command="{Binding ShowEmergencyShutdownOverlayCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+T" Command="{Binding ShowThemeQuickSwitcherOverlayCommand}" />
+    </Window.KeyBindings>
+
+    <!-- Root Grid required for overlay support and menu -->
+    <Grid RowDefinitions="Auto,*">
+        <!-- Main Menu Bar -->
+        <Menu Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" BorderThickness="0,0,0,1">
+
+            <!-- Tools Menu for Overlay Access -->
+            <MenuItem Header="Tools" Foreground="{DynamicResource MTM_Shared_Logic.TextPrimaryBrush}">
+                <MenuItem Header="Connection Status"
+                          Command="{Binding ShowConnectionStatusOverlayCommand}"
+                          InputGesture="F9"
+                          Icon="📊">
+                    <MenuItem.ToolTip>
+                        <ToolTip>Test database connectivity and connection status (F9)</ToolTip>
+                    </MenuItem.ToolTip>
+                </MenuItem>
+
+                <MenuItem Header="Emergency Shutdown"
+                          Command="{Binding ShowEmergencyShutdownOverlayCommand}"
+                          InputGesture="F10"
+                          Icon="⚠️">
+                    <MenuItem.ToolTip>
+                        <ToolTip>Emergency application shutdown with data saving options (F10)</ToolTip>
+                    </MenuItem.ToolTip>
+                </MenuItem>
+
+                <Separator />
+
+                <MenuItem Header="Theme Quick Switcher"
+                          Command="{Binding ShowThemeQuickSwitcherOverlayCommand}"
+                          InputGesture="F11"
+                          Icon="🎨">
+                    <MenuItem.ToolTip>
+                        <ToolTip>Quick theme switching with live preview (F11)</ToolTip>
+                    </MenuItem.ToolTip>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+
         <!-- Main Window Content with proper stretching for MainView -->
-        <ContentControl Content="{Binding CurrentView}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Stretch"/>
-        <!-- Overlay Host: overlays (e.g., SuggestionOverlayView) will be added here dynamically -->
-    <Grid x:Name="OverlayHost" />
+        <Grid Grid.Row="1">
+            <ContentControl Content="{Binding CurrentView}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"/>
+
+            <!-- Overlay Host: overlays (e.g., SuggestionOverlayView) will be added here dynamically -->
+            <Grid x:Name="OverlayHost" />
+        </Grid>
     </Grid>
 </Window>

@@ -22,7 +22,6 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
     /// The success message to display
     /// </summary>
     [ObservableProperty]
-    [StringLength(500, ErrorMessage = "Success message cannot exceed 500 characters")]
     private string _message = string.Empty;
 
     /// <summary>
@@ -35,7 +34,6 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
     /// Additional details about the successful operation
     /// </summary>
     [ObservableProperty]
-    [StringLength(1000, ErrorMessage = "Details cannot exceed 1000 characters")]
     private string _details = string.Empty;
 
     /// <summary>
@@ -60,7 +58,6 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
     /// Display duration in milliseconds
     /// </summary>
     [ObservableProperty]
-    [Range(500, 10000, ErrorMessage = "Duration must be between 500ms and 10000ms")]
     private int _displayDuration = 2000;
 
     /// <summary>
@@ -150,10 +147,10 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
         try
         {
             Logger.LogDebug("Continue requested from error overlay");
-            
+
             // Stop emergency monitoring since user is continuing
             StopEmergencyShutdownMonitoring();
-            
+
             await AnimateOutAsync();
         }
         catch (Exception ex)
@@ -173,10 +170,10 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
         try
         {
             Logger.LogWarning("User requested application exit from error overlay");
-            
+
             // Stop emergency monitoring since we're manually exiting
             StopEmergencyShutdownMonitoring();
-            
+
             // Trigger immediate dismissal (don't wait for it)
             try
             {
@@ -210,7 +207,7 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
 
             // Wait up to 3 seconds for graceful shutdown
             var completed = await shutdownTask.WaitAsync(TimeSpan.FromSeconds(3));
-            
+
             if (!completed)
             {
                 Logger.LogWarning("Graceful shutdown timed out - forcing application exit");
@@ -300,10 +297,10 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
         try
         {
             Logger.LogDebug("Force dismiss requested");
-            
+
             // Stop emergency monitoring
             StopEmergencyShutdownMonitoring();
-            
+
             IsAnimating = false;
             Progress = 0.0;
             DismissRequested?.Invoke();
@@ -340,19 +337,19 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
                     _emergencyKeyboardHook = new Services.EmergencyKeyboardHook(
                         Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.EmergencyKeyboardHook>.Instance
                     );
-                    
+
                     _emergencyKeyboardHook.EmergencyExitRequested += () =>
                     {
                         Logger.LogWarning("Emergency exit requested via global shortcut");
                         _ = Task.Run(async () => await ExitApplicationCommand.ExecuteAsync(null));
                     };
-                    
+
                     _emergencyKeyboardHook.EmergencyContinueRequested += () =>
                     {
                         Logger.LogWarning("Emergency continue requested via global shortcut");
                         _ = Task.Run(async () => await ContinueCommand.ExecuteAsync(null));
                     };
-                    
+
                     _emergencyKeyboardHook.StartHook();
                 }
                 catch (Exception hookEx)
@@ -454,15 +451,15 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
         {
             // Use Windows API to check key states even when UI is locked
             // This is a simplified version - in production you'd use P/Invoke to GetAsyncKeyState
-            
+
             // For now, we'll use a timer-based approach since P/Invoke adds complexity
             // Check if UI thread is responsive by trying to dispatch a simple operation
             var uiResponsive = await CheckUIThreadResponsiveness();
-            
+
             if (!uiResponsive)
             {
                 Logger.LogWarning("UI thread appears unresponsive - considering emergency action");
-                
+
                 // If UI has been unresponsive for more than 5 seconds, assume emergency
                 // In a real implementation, you'd check actual keyboard state here
                 return true;
@@ -532,14 +529,14 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
         try
         {
             Logger.LogCritical("Emergency timer triggered - force shutting down application after 30 seconds");
-            
+
             // This runs on a background thread and won't be affected by UI lockup
             Environment.Exit(1);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error in emergency timer callback");
-            
+
             // Ultimate fallback
             try
             {

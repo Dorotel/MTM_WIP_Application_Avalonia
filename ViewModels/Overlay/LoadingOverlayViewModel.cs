@@ -95,11 +95,11 @@ public partial class LoadingOverlayViewModel : BaseOverlayViewModel
         StopTimeout();
     }
 
-    public override void Show()
+    public async Task ShowLoadingAsync()
     {
         _startTime = DateTime.Now;
         StartTimeoutIfNeeded();
-        base.Show();
+        await ShowAsync();
     }
 
     #endregion
@@ -115,7 +115,7 @@ public partial class LoadingOverlayViewModel : BaseOverlayViewModel
         ShowSpinner = true;
         ShowBackground = true;
         TimeoutSeconds = 0; // No timeout
-        
+
         Show();
         Logger.LogInformation("Loading started: {Message}", message);
     }
@@ -129,7 +129,7 @@ public partial class LoadingOverlayViewModel : BaseOverlayViewModel
         ShowSpinner = true;
         ShowBackground = true;
         TimeoutSeconds = timeoutSeconds;
-        
+
         Show();
         Logger.LogInformation("Loading started with timeout: {Message} ({Timeout}s)", message, timeoutSeconds);
     }
@@ -144,7 +144,7 @@ public partial class LoadingOverlayViewModel : BaseOverlayViewModel
         ShowBackground = false;
         SpinnerSize = "Small";
         TimeoutSeconds = 0;
-        
+
         Show();
         Logger.LogInformation("Minimal loading started: {Message}", message);
     }
@@ -167,7 +167,7 @@ public partial class LoadingOverlayViewModel : BaseOverlayViewModel
         {
             var elapsed = DateTime.Now - _startTime;
             Logger.LogInformation("Loading completed in {ElapsedMs}ms", elapsed.TotalMilliseconds);
-            
+
             StopTimeout();
             await CloseAsync();
         }
@@ -186,11 +186,11 @@ public partial class LoadingOverlayViewModel : BaseOverlayViewModel
         {
             var elapsed = DateTime.Now - _startTime;
             Logger.LogWarning("Loading failed after {ElapsedMs}ms: {Error}", elapsed.TotalMilliseconds, errorMessage);
-            
+
             StopTimeout();
             LoadingMessage = $"Failed: {errorMessage}";
             ShowSpinner = false;
-            
+
             // Brief delay to show error, then close
             await Task.Delay(1500);
             await CloseAsync();
@@ -231,10 +231,10 @@ public partial class LoadingOverlayViewModel : BaseOverlayViewModel
         try
         {
             Logger.LogWarning("Loading timeout after {Timeout} seconds", TimeoutSeconds);
-            
+
             StopTimeout();
             LoadingTimeout?.Invoke(this, EventArgs.Empty);
-            
+
             await FailAsync("Operation timed out");
         }
         catch (Exception ex)

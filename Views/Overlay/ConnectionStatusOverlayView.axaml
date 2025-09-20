@@ -1,0 +1,191 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
+             x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.ConnectionStatusOverlayView">
+
+    <Border Background="{DynamicResource MTM_Shared_Logic.OverlayBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="16"
+            MaxWidth="450"
+            MinWidth="350"
+            MaxHeight="400">
+
+        <Grid RowDefinitions="Auto,*,Auto" Spacing="16">
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
+                    CornerRadius="4"
+                    Padding="12,8">
+                <TextBlock Text="Database Connection Status"
+                           Foreground="White"
+                           FontWeight="Bold"
+                           FontSize="16"
+                           HorizontalAlignment="Center" />
+            </Border>
+
+            <!-- Content -->
+            <StackPanel Grid.Row="1" Spacing="16">
+
+                <!-- Current Status -->
+                <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="12">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Current Status:"
+                                   FontWeight="SemiBold"
+                                   FontSize="14" />
+                        <TextBlock Text="{Binding ConnectionStatus}"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Connection Success Indicator -->
+                <Border IsVisible="{Binding IsConnected}"
+                        Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                        CornerRadius="4"
+                        Padding="12,8">
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Spacing="8">
+                        <TextBlock Text="✓"
+                                   Foreground="White"
+                                   FontWeight="Bold"
+                                   FontSize="18"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="Connected Successfully"
+                                   Foreground="White"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Connection Failure Indicator -->
+                <Border IsVisible="{Binding !IsConnected}"
+                        Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                        CornerRadius="4"
+                        Padding="12,8">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Spacing="8">
+                            <TextBlock Text="✗"
+                                       Foreground="White"
+                                       FontWeight="Bold"
+                                       FontSize="18"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="Connection Failed"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding LastConnectionError}"
+                                   Foreground="White"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"
+                                   HorizontalAlignment="Center"
+                                   IsVisible="{Binding LastConnectionError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Progress Indicator -->
+                <Border IsVisible="{Binding IsTestingConnection}"
+                        Background="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+                        CornerRadius="4"
+                        Padding="12,8">
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Spacing="8">
+                        <TextBlock Text="⟳"
+                                   Foreground="White"
+                                   FontWeight="Bold"
+                                   FontSize="16"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="Testing connection..."
+                                   Foreground="White"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Retry Information -->
+                <Border IsVisible="{Binding !IsConnected}"
+                        Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="12">
+                    <StackPanel Spacing="4">
+                        <TextBlock FontSize="12"
+                                   HorizontalAlignment="Center">
+                            <Run Text="Retry Attempts: " />
+                            <Run Text="{Binding RetryAttempts}" FontWeight="Bold" />
+                            <Run Text=" / " />
+                            <Run Text="{Binding MaxRetryAttempts}" FontWeight="Bold" />
+                        </TextBlock>
+                        <TextBlock Text="{Binding ConnectionTimeoutSeconds, StringFormat='Connection Timeout: {0} seconds'}"
+                                   FontSize="12"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource MTM_Shared_Logic.TextSecondaryBrush}" />
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+
+            <!-- Actions -->
+            <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+
+                <!-- Retry Connection Button -->
+                <Button Content="Retry Connection"
+                        Command="{Binding RetryConnectionCommand}"
+                        IsVisible="{Binding !IsConnected}"
+                        Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
+                        Foreground="White"
+                        Padding="16,8"
+                        CornerRadius="4"
+                        FontWeight="SemiBold" />
+
+                <!-- Reset Test Button -->
+                <Button Content="Reset Test"
+                        Command="{Binding ResetConnectionTestCommand}"
+                        IsVisible="{Binding !IsConnected}"
+                        Background="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                        Foreground="White"
+                        Padding="16,8"
+                        CornerRadius="4"
+                        FontWeight="SemiBold" />
+
+                <!-- Skip Connection Test Button -->
+                <Button Content="Skip Test"
+                        Command="{Binding SkipConnectionTestCommand}"
+                        Background="{DynamicResource MTM_Shared_Logic.SecondaryBrush}"
+                        Foreground="White"
+                        Padding="16,8"
+                        CornerRadius="4"
+                        FontWeight="SemiBold" />
+
+                <!-- Close Button -->
+                <Button Content="Close"
+                        Command="{Binding CloseCommand}"
+                        IsVisible="{Binding IsConnected}"
+                        Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
+                        Foreground="White"
+                        Padding="16,8"
+                        CornerRadius="4"
+                        FontWeight="SemiBold" />
+
+            </StackPanel>
+
+        </Grid>
+    </Border>
+</UserControl>

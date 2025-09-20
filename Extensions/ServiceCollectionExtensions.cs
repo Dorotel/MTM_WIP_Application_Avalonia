@@ -9,6 +9,7 @@ using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
+using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.Services.Business;
@@ -30,20 +31,23 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMTMServices(this IServiceCollection services, IConfiguration configuration)
     {
         // CONSOLIDATED CORE SERVICES (Services/Core/CoreServices.cs)
-        services.TryAddSingleton<IConfigurationService, Core.ConfigurationService>();
-        services.TryAddSingleton<IApplicationStateService, Core.ApplicationStateService>();
-        services.TryAddSingleton<IDatabaseService, Core.DatabaseService>();
+        services.TryAddSingleton<Core.IConfigurationService, Core.ConfigurationService>();
+        services.TryAddSingleton<Core.IApplicationStateService, Core.ApplicationStateService>();
+        services.TryAddSingleton<Core.IDatabaseService, Core.DatabaseService>();
 
         // CONSOLIDATED BUSINESS SERVICES (Services/Business/BusinessServices.cs)
         services.TryAddSingleton<Business.IMasterDataService, Business.MasterDataService>();
         services.TryAddSingleton<Business.IRemoveService, Business.RemoveService>();
         services.TryAddSingleton<Business.IInventoryEditingService, Business.InventoryEditingService>();
+        services.TryAddSingleton<Business.IQuickButtonsService, Business.QuickButtonsService>();
+        services.TryAddSingleton<Business.IProgressService, Business.ProgressService>();
 
         // CONSOLIDATED UI SERVICES (Services/UI/UIServices.cs)
         services.TryAddSingleton<UI.INavigationService, UI.NavigationService>();
         services.TryAddSingleton<UI.IThemeService, UI.ThemeService>();
         services.TryAddSingleton<UI.IFocusManagementService, UI.FocusManagementService>();
         services.TryAddSingleton<UI.ISuccessOverlayService, UI.SuccessOverlayService>();
+        services.TryAddSingleton<UI.IUniversalOverlayService, UI.UniversalOverlayService>();
 
         // CONSOLIDATED INFRASTRUCTURE SERVICES (Services/Infrastructure/InfrastructureServices.cs)
         services.TryAddSingleton<Infrastructure.IFileSelectionService, Infrastructure.FileSelectionService>();
@@ -51,9 +55,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<Infrastructure.IPrintService, Infrastructure.PrintService>();
         services.TryAddSingleton<Infrastructure.IFileLoggingService, Infrastructure.FileLoggingService>();
         services.TryAddSingleton<Infrastructure.IEmergencyKeyboardHookService, Infrastructure.EmergencyKeyboardHookService>();
-
-        // UNIVERSAL OVERLAY SERVICE - Phase 2 foundation
-        services.TryAddSingleton<Interfaces.IUniversalOverlayService, UniversalOverlayService>();
 
         // Logging services using consolidated Infrastructure
         services.AddLogging(builder =>
@@ -66,12 +67,8 @@ public static class ServiceCollectionExtensions
             });
         });
 
-        // FEATURE SERVICES (kept separate as per plan)
+        // FEATURE SERVICES (that are still in root Services/ folder - to be migrated)
         services.TryAddSingleton<ISettingsService, SettingsService>();
-        services.TryAddSingleton<IQuickButtonsService, QuickButtonsService>();
-        services.TryAddSingleton<IProgressService, ProgressService>();
-
-        // UI PANEL AND OVERLAY SERVICES (Services root - to be consolidated later)
         services.TryAddSingleton<ISuggestionOverlayService, SuggestionOverlayService>();
         services.TryAddSingleton<VirtualPanelManager>();
         services.TryAddSingleton<SettingsPanelStateManager>();
@@ -95,11 +92,28 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<PrintViewModel>();
         services.TryAddTransient<PrintLayoutControlViewModel>();
 
-        // Overlay ViewModels
+        // Overlay ViewModels - using Lazy<T> for MainWindow integration
         services.TryAddTransient<NewQuickButtonOverlayViewModel>();
         services.TryAddTransient<NoteEditorViewModel>();
         services.TryAddTransient<ConfirmationOverlayViewModel>();
         services.TryAddTransient<EditInventoryViewModel>();
+        services.TryAddTransient<ConnectionStatusOverlayViewModel>();
+        services.TryAddTransient<EmergencyShutdownOverlayViewModel>();
+        services.TryAddTransient<ThemeQuickSwitcherOverlayViewModel>();
+        services.TryAddTransient<FieldValidationOverlayViewModel>();
+        services.TryAddTransient<ViewModels.Overlay.ProgressOverlayViewModel>();
+
+        // Lazy overlay registrations for MainWindow integration
+        services.TryAddTransient<Lazy<ConnectionStatusOverlayViewModel>>(provider =>
+            new Lazy<ConnectionStatusOverlayViewModel>(() => provider.GetRequiredService<ConnectionStatusOverlayViewModel>()));
+        services.TryAddTransient<Lazy<EmergencyShutdownOverlayViewModel>>(provider =>
+            new Lazy<EmergencyShutdownOverlayViewModel>(() => provider.GetRequiredService<EmergencyShutdownOverlayViewModel>()));
+        services.TryAddTransient<Lazy<ThemeQuickSwitcherOverlayViewModel>>(provider =>
+            new Lazy<ThemeQuickSwitcherOverlayViewModel>(() => provider.GetRequiredService<ThemeQuickSwitcherOverlayViewModel>()));
+        services.TryAddTransient<Lazy<FieldValidationOverlayViewModel>>(provider =>
+            new Lazy<FieldValidationOverlayViewModel>(() => provider.GetRequiredService<FieldValidationOverlayViewModel>()));
+        services.TryAddTransient<Lazy<ViewModels.Overlay.ProgressOverlayViewModel>>(provider =>
+            new Lazy<ViewModels.Overlay.ProgressOverlayViewModel>(() => provider.GetRequiredService<ViewModels.Overlay.ProgressOverlayViewModel>()));
 
         // SettingsForm ViewModels
         services.TryAddTransient<SettingsViewModel>();

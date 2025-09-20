@@ -6,10 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
 
-namespace MTM_WIP_Application_Avalonia.Services;
+namespace MTM_WIP_Application_Avalonia.Services.UI;
 
 /// <summary>
 /// Service interface for CustomDataGrid operations.

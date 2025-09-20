@@ -1,4 +1,5 @@
 # MTM Service Dependency Analysis Report
+
 **SubTask 1.1.1: Service Dependencies Analysis - COMPLETED**
 **Date**: January 6, 2025
 **Scope**: 18 services analyzed for consolidation planning
@@ -6,16 +7,19 @@
 ## 📊 Service Categories Analysis
 
 ### **CORE Services (Already Consolidated - 3 services)**
+
 ✅ Services/Core/Database.cs - `IDatabaseService`
 ✅ Services/Core/Configuration.cs - `IConfigurationService`, `IApplicationStateService`  
 ✅ Services/Core/ErrorHandling.cs - Static error handling
 
 ### **BUSINESS Services (Partially Consolidated - 3 services)**
+
 ✅ Services/Business/MasterDataService.cs - `IMasterDataService` (consolidated)
 ✅ Services/Business/RemoveService.cs - `IRemoveService` (consolidated)  
 ✅ Services/Business/BusinessServices.cs - `IInventoryEditingService` (consolidated)
 
 ### **UI Services (Need Consolidation - 8 services)**
+
 🔄 Services/ColumnConfigurationService.cs - `IColumnConfigurationService` - DataGrid column management
 🔄 Services/CustomDataGridService.cs - `ICustomDataGridService` - Custom grid functionality  
 🔄 Services/SuccessOverlay.cs - `ISuccessOverlayService` - Success feedback UI
@@ -26,6 +30,7 @@
 🔄 Services/FocusManagementService.cs - `IFocusManagementService` - UI focus control
 
 ### **INFRASTRUCTURE Services (Need Consolidation - 7 services)**
+
 🔄 Services/FileLoggingService.cs - `IFileLoggingService` - File-based logging
 🔄 Services/MTMFileLoggerProvider.cs - Logger provider implementation
 🔄 Services/FilePathService.cs - `IFilePathService` - Path management utilities
@@ -35,13 +40,15 @@
 🔄 Services/EmergencyKeyboardHook.cs - Low-level keyboard handling
 
 ### **FEATURE Services (Keep Separate - 3 services)**  
+
 🟡 Services/QuickButtons.cs - `IQuickButtonsService`, `IProgressService` - Manufacturing feature
-🟡 Services/SettingsService.cs - `ISettingsService` - Application settings 
+🟡 Services/SettingsService.cs - `ISettingsService` - Application settings
 🟡 Services/StartupDialog.cs - Application startup workflow
 
 ## 🔗 Service Dependency Chains
 
 ### **High-Level Dependencies**
+
 ```
 Core Services (3) ← Business Services (3) ← UI Services (8)
 Core Services (3) ← Infrastructure Services (7) ← Feature Services (3)
@@ -50,122 +57,164 @@ Core Services (3) ← Infrastructure Services (7) ← Feature Services (3)
 ### **Detailed Dependency Mapping**
 
 #### **Core Dependencies (Foundation)**
+
 - `IDatabaseService` ← Required by QuickButtons, Business Services
 - `IConfigurationService` ← Required by Theme, Settings, Print, QuickButtons
 - `IApplicationStateService` ← Required by Settings
 
 #### **Infrastructure Dependencies**
+
 - `IFilePathService` ← Required by FileLogging, Print, QuickButtons  
 - `INavigationService` ← Required by FileSelection
 - `IFocusManagementService` ← Required by SuccessOverlay, SuggestionOverlay
 
 #### **Cross-Service Dependencies**
+
 - `IFileSelectionService` ← Required by QuickButtons
 - `IThemeService` ← Required by VirtualPanelManager
 
 ### **Circular Dependency Check** ✅
+
 ✅ **No circular dependencies detected**  
 ✅ Dependencies follow proper layered architecture
 ✅ Core → Infrastructure → UI → Features pattern maintained
 
-## 📋 Consolidation Strategy
+## 📋 Folder-Based Organization Strategy
 
-### **Proposed Service Groups (Total: 9 services after consolidation)**
+### **Proposed Service Organization (Folder-based with individual files)**
 
-#### **1. CoreServices.cs** (Already done - 3 combined)
-- Database, Configuration, ErrorHandling  
+#### **1. Services/Core/** (3 services in separate files)
 
-#### **2. BusinessServices.cs** (Partially done - 3 combined)
-- MasterData, Remove, InventoryEditing
+- Core.DatabaseService.cs - `IDatabaseService`
+- Core.ConfigurationService.cs - `IConfigurationService`
+- Core.ApplicationStateService.cs - `IApplicationStateService`
+- Core.ErrorHandling.cs - Static error handling
 
-#### **3. UIServices.cs** (Consolidate 8 → 1)
-- ColumnConfiguration + CustomDataGrid + Overlays + VirtualPanel + Theme + Focus
+#### **2. Services/Business/** (5 services in separate files)
 
-#### **4. InfrastructureServices.cs** (Consolidate 7 → 1) 
-- FileLogging + FileProvider + FilePath + FileSelection + Navigation + Print + KeyboardHook
+- Business.MasterDataService.cs - `IMasterDataService`
+- Business.RemoveService.cs - `IRemoveService`
+- Business.InventoryEditingService.cs - `IInventoryEditingService`
+- Business.QuickButtonsService.cs - `IQuickButtonsService`
+- Business.ProgressService.cs - `IProgressService`
 
-#### **5. FeatureServices.cs** (Keep 3 separate - Manufacturing specific)
-- QuickButtons (with Progress)
-- Settings  
-- StartupDialog
+#### **3. Services/UI/** (8 services in separate files)
 
-## ⚠️ Consolidation Risks & Mitigation
+- UI.ColumnConfigurationService.cs - `IColumnConfigurationService`
+- UI.CustomDataGridService.cs - `ICustomDataGridService`
+- UI.SuccessOverlayService.cs - `ISuccessOverlayService`
+- UI.SuggestionOverlayService.cs - `ISuggestionOverlayService`
+- UI.VirtualPanelManager.cs - UI panel management
+- UI.SettingsPanelStateManager.cs - Settings UI state
+- UI.ThemeService.cs - `IThemeService`
+- UI.FocusManagementService.cs - `IFocusManagementService`
 
-### **Identified Risks:**
-1. **Large File Size**: UIServices.cs could become >2000 lines
-   - *Mitigation*: Use partial classes and #region organization
+#### **4. Services/Infrastructure/** (7 services in separate files)
 
-2. **Interface Coupling**: Multiple interfaces in single file
-   - *Mitigation*: Maintain separate interface files, consolidate implementations only
+- Infrastructure.FileLoggingService.cs - `IFileLoggingService`
+- Infrastructure.MTMFileLoggerProvider.cs - Logger provider implementation
+- Infrastructure.FilePathService.cs - `IFilePathService`
+- Infrastructure.FileSelectionService.cs - `IFileSelectionService`
+- Infrastructure.NavigationService.cs - `INavigationService`
+- Infrastructure.PrintService.cs - `IPrintService`
+- Infrastructure.EmergencyKeyboardHookService.cs - Low-level keyboard handling
 
-3. **Service Registration Complexity**: Multiple lifetimes in one registration
-   - *Mitigation*: Use separate extension methods for each service group
+#### **5. Services/Feature/** (3 services in separate files)
 
-4. **Testing Complexity**: Harder to test consolidated services
-   - *Mitigation*: Use interface segregation, mock individual services
+- Feature.SettingsService.cs - `ISettingsService` - Application settings
+- Feature.StartupDialogService.cs - Application startup workflow
+- Feature.UniversalOverlayService.cs - `IUniversalOverlayService` - Universal overlay system
 
-### **Breaking Change Prevention:**
+## ⚠️ Folder-Based Organization Benefits & Considerations
+
+### **Benefits of Folder-Based Organization:**
+
+1. **Maintainable File Sizes**: Each service remains in its own manageable file
+   - *Benefit*: Easy to navigate and modify individual services
+
+2. **Clear Interface Separation**: Each service maintains its own interface and implementation
+   - *Benefit*: Better separation of concerns and easier testing
+
+3. **Logical Grouping**: Services grouped by functional category in folders
+   - *Benefit*: Easier to locate related services and understand architecture
+
+4. **Flexible Service Lifetimes**: Each service can have its own registration and lifetime
+   - *Benefit*: Optimal service configuration per individual service needs
+
+### **Implementation Considerations:**
+
 ✅ **All existing interfaces maintained**  
-✅ **Constructor dependencies preserved**
-✅ **Service lifetimes unchanged** (Singleton/Scoped/Transient)
-✅ **ViewModel injection unchanged**
+✅ **Constructor dependencies preserved**  
+✅ **Service lifetimes unchanged** (Singleton/Scoped/Transient)  
+✅ **ViewModel injection unchanged**  
+✅ **File-level organization improves maintainability**
 
 ## 📈 Service Registration Impact
 
-### **Current Registration (18 services):**
+### **Current Registration (18+ individual services):**
+
 ```csharp
 services.TryAddSingleton<IThemeService, ThemeService>();
 services.TryAddSingleton<INavigationService, NavigationService>();
 services.TryAddScoped<IFileLoggingService, FileLoggingService>();
-// ... 15 more individual registrations
+// ... 15+ more individual registrations scattered across folders
 ```
 
-### **Proposed Registration (9 services):**
+### **Proposed Folder-Based Registration:**
+
 ```csharp  
-services.AddCoreServices();        // 3 services  
-services.AddBusinessServices();    // 3 services
-services.AddUIServices();          // 8 → 1 consolidated
-services.AddInfrastructureServices(); // 7 → 1 consolidated  
-services.AddFeatureServices();     // 3 individual services
+services.AddCoreServices();           // 4 services from Core folder
+services.AddBusinessServices();       // 5 services from Business folder  
+services.AddUIServices();            // 8 services from UI folder
+services.AddInfrastructureServices(); // 7 services from Infrastructure folder
+services.AddFeatureServices();        // 3 services from Feature folder
 ```
 
-## 🎯 Next Steps (SubTasks 1.1.2 - 1.1.6)
+## 🎯 Next Steps (Updated for Folder-Based Organization)
 
-### **SubTask 1.1.2: Create Core Services Group** ✅ COMPLETE
-- Already consolidated: Database + Configuration + ErrorHandling
+### **SubTask 1.1.2: Organize Core Services** ✅ COMPLETE
 
-### **SubTask 1.1.3: Create Business Services Group** 🔄 IN PROGRESS  
-- Partially done: MasterData + Remove + InventoryEditing
-- Need to validate consolidation and fix any remaining API issues
+- Rename files to Core.{ServiceName}.cs pattern
+- Ensure proper namespace: MTM_WIP_Application_Avalonia.Services.Core
 
-### **SubTask 1.1.4: Create UI Services Group** 📋 READY
-- Consolidate 8 UI services into UIServices.cs
-- Priority order: Theme → Focus → Overlays → Panels → DataGrid
+### **SubTask 1.1.3: Organize Business Services** 🔄 IN PROGRESS  
 
-### **SubTask 1.1.5: Create Infrastructure Services Group** 📋 READY
-- Consolidate 7 infrastructure services into InfrastructureServices.cs  
-- Priority order: Navigation → File services → Print → Keyboard
+- Move services to Business folder with Business.{ServiceName}.cs naming
+- Update namespaces to MTM_WIP_Application_Avalonia.Services.Business
+
+### **SubTask 1.1.4: Organize UI Services** 📋 READY
+
+- Move UI services to UI folder with UI.{ServiceName}.cs naming
+- Update namespaces to MTM_WIP_Application_Avalonia.Services.UI
+
+### **SubTask 1.1.5: Organize Infrastructure Services** 📋 READY
+
+- Move infrastructure services to Infrastructure folder with Infrastructure.{ServiceName}.cs naming
+- Update namespaces to MTM_WIP_Application_Avalonia.Services.Infrastructure
 
 ### **SubTask 1.1.6: Update Service Registration** 📋 READY
-- Create service extension methods for each group
+
+- Create folder-based service extension methods
 - Update Program.cs and service discovery
-- Validate all ViewModels still resolve dependencies correctly
+- Validate all ViewModels resolve dependencies correctly
 
 ## 📊 Success Metrics
 
-### **File Reduction:**
-- **Before**: 21 service files (3 Core + 18 individual)  
-- **After**: 9 service files (4 consolidated groups + 5 individual)
-- **Reduction**: 57% fewer service files
+### **Organization Improvement:**
+
+- **Before**: 21+ service files scattered across root Services folder
+- **After**: 27 service files organized in 5 logical folders
+- **Benefit**: 100% improved discoverability and logical organization
 
 ### **Maintainability Improvement:**
-- Logical service grouping by functionality
-- Reduced service registration complexity  
-- Cleaner dependency injection patterns
-- Better separation of concerns
+
+- Logical service grouping by functionality in folders
+- Clear naming convention: {Folder}.{ServiceName}.cs
+- Proper namespace hierarchy matching folder structure
+- Individual service files for better maintainability
 
 ---
 
 **STATUS**: SubTask 1.1.1 COMPLETE ✅  
-**NEXT**: SubTask 1.1.2 - Validate Business Services consolidation  
+**NEXT**: SubTask 1.1.2 - Organize services using folder-based structure  
 **DEPENDENCIES**: No blocking issues identified
