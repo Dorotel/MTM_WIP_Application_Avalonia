@@ -1,0 +1,177 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.BaseOverlayView"
+             x:Name="BaseOverlay">
+
+  <Design.DataContext>
+    <!-- Design-time DataContext for preview -->
+  </Design.DataContext>
+
+  <Grid x:Name="OverlayGrid">
+    <!-- Semi-transparent background overlay -->
+    <Border x:Name="ModalBackground" 
+            Background="{DynamicResource MTM_Shared_Logic.OverlayBackground}"
+            IsVisible="{Binding IsModal}"
+            ZIndex="100" />
+
+    <!-- Main overlay container -->
+    <Border x:Name="OverlayContainer"
+            Background="{DynamicResource MTM_Shared_Logic.ContentAreas}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="24"
+            MaxWidth="600"
+            MaxHeight="400"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            BoxShadow="0 8 32 rgba(0,0,0,0.2)"
+            ZIndex="200">
+
+      <Grid x:Name="ContentGrid" RowDefinitions="Auto,*,Auto">
+
+        <!-- Header Section -->
+        <Grid Grid.Row="0" x:Name="HeaderGrid" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+          
+          <!-- Title -->
+          <TextBlock Grid.Column="0"
+                     x:Name="TitleTextBlock"
+                     Text="{Binding Title}"
+                     FontSize="18"
+                     FontWeight="SemiBold"
+                     Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                     VerticalAlignment="Center" />
+
+          <!-- Close Button -->
+          <Button Grid.Column="1"
+                  x:Name="CloseButton"
+                  Content="✕"
+                  Width="32"
+                  Height="32"
+                  FontSize="14"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                  Command="{Binding CloseCommand}"
+                  IsVisible="{Binding CanClose}"
+                  ToolTip.Tip="Close overlay">
+            
+            <Button.Styles>
+              <Style Selector="Button:pointerover">
+                <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+                <Setter Property="Foreground" Value="White" />
+              </Style>
+            </Button.Styles>
+          </Button>
+
+        </Grid>
+
+        <!-- Content Section -->
+        <ScrollViewer Grid.Row="1" x:Name="ContentScrollViewer">
+          <Grid x:Name="MainContentGrid">
+            
+            <!-- Status Message -->
+            <TextBlock x:Name="StatusMessageTextBlock"
+                       Text="{Binding StatusMessage}"
+                       IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,12" />
+
+            <!-- Error Message -->
+            <Border x:Name="ErrorMessageBorder"
+                    IsVisible="{Binding HasError}"
+                    Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                    CornerRadius="4"
+                    Padding="12,8"
+                    Margin="0,0,0,12">
+              
+              <TextBlock x:Name="ErrorMessageTextBlock"
+                         Text="{Binding ErrorMessage}"
+                         Foreground="White"
+                         TextWrapping="Wrap" />
+            </Border>
+
+            <!-- Loading Indicator -->
+            <StackPanel x:Name="LoadingIndicator"
+                        IsVisible="{Binding IsLoading}"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,24">
+              
+              <ProgressBar x:Name="LoadingProgressBar"
+                           IsIndeterminate="True"
+                           Width="200"
+                           Height="4"
+                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+              
+              <TextBlock Text="Loading..."
+                         Margin="16,0,0,0"
+                         Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Dynamic Content Area - Override in derived views -->
+            <ContentPresenter x:Name="OverlayContentPresenter"
+                              Content="{Binding}"
+                              IsVisible="{Binding !IsLoading}" />
+
+          </Grid>
+        </ScrollViewer>
+
+        <!-- Action Buttons Section -->
+        <StackPanel Grid.Row="2" 
+                    x:Name="ActionButtonsPanel"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="12"
+                    Margin="0,16,0,0">
+
+          <!-- Cancel Button -->
+          <Button x:Name="CancelButton"
+                  Content="Cancel"
+                  MinWidth="80"
+                  Height="36"
+                  Padding="16,8"
+                  Background="Transparent"
+                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                  BorderThickness="1"
+                  Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                  Command="{Binding CancelCommand}">
+            
+            <Button.Styles>
+              <Style Selector="Button:pointerover">
+                <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderBrush}" />
+              </Style>
+            </Button.Styles>
+          </Button>
+
+          <!-- Confirm/OK Button -->
+          <Button x:Name="ConfirmButton"
+                  Content="OK"
+                  MinWidth="80"
+                  Height="36"
+                  Padding="16,8"
+                  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                  BorderThickness="0"
+                  Foreground="White"
+                  Command="{Binding ConfirmCommand}">
+            
+            <Button.Styles>
+              <Style Selector="Button:pointerover">
+                <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryAction}" />
+              </Style>
+              <Style Selector="Button:disabled">
+                <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                <Setter Property="Foreground" Value="White" />
+              </Style>
+            </Button.Styles>
+          </Button>
+
+        </StackPanel>
+
+      </Grid>
+    </Border>
+  </Grid>
+
+</UserControl>

@@ -6,16 +6,15 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 
 /// <summary>
 /// ViewModel for the success overlay that displays temporary success messages
 /// after successful transactions. Uses MVVM Community Toolkit patterns.
+/// Enhanced to inherit from BaseOverlayViewModel.
 /// </summary>
-
-public partial class SuccessOverlayViewModel : BaseViewModel
+public partial class SuccessOverlayViewModel : BaseOverlayViewModel
 {
     #region Properties
 

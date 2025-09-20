@@ -52,6 +52,9 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<Infrastructure.IFileLoggingService, Infrastructure.FileLoggingService>();
         services.TryAddSingleton<Infrastructure.IEmergencyKeyboardHookService, Infrastructure.EmergencyKeyboardHookService>();
 
+        // UNIVERSAL OVERLAY SERVICE - Phase 2 foundation
+        services.TryAddSingleton<Interfaces.IUniversalOverlayService, UniversalOverlayService>();
+
         // Logging services using consolidated Infrastructure
         services.AddLogging(builder =>
         {
