@@ -176,7 +176,7 @@ public partial class App : Application
                     // Initialize master data service early for all ViewModels
                     try
                     {
-                        var masterDataService = Program.GetService<IMasterDataService>();
+                        var masterDataService = Program.GetService<Services.Business.IMasterDataService>();
                         if (masterDataService != null)
                         {
                             await masterDataService.LoadAllMasterDataAsync();

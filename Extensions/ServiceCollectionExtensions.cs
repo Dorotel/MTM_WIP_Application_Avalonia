@@ -67,7 +67,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ISuccessOverlayService, SuccessOverlayService>();
 
         // Register Master Data service - singleton for shared access across ViewModels
-        services.TryAddSingleton<IMasterDataService, Business.MasterDataService>();
+        services.TryAddSingleton<Services.Business.IMasterDataService, Services.Business.MasterDataService>();
 
         // Register Focus Management service - singleton for application-wide focus management
         services.TryAddSingleton<IFocusManagementService, FocusManagementService>();
@@ -77,7 +77,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IPrintService, PrintService>();
 
         // Register Remove service - singleton for centralized inventory removal business logic
-        services.TryAddSingleton<IRemoveService, RemoveService>();
+        services.TryAddSingleton<Services.Business.IRemoveService, Services.Business.RemoveService>();
 
         // Register CustomDataGrid service - singleton for shared data grid functionality across views
         services.TryAddSingleton<ICustomDataGridService, CustomDataGridService>();
@@ -86,7 +86,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IFileSelectionService, FileSelectionService>();
 
         // Register Inventory Editing service - singleton for comprehensive inventory editing operations
-        services.TryAddSingleton<IInventoryEditingService, InventoryEditingService>();
+        services.TryAddSingleton<Services.Business.IInventoryEditingService, Services.Business.InventoryEditingService>();
 
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
@@ -196,10 +196,10 @@ public static class ServiceCollectionExtensions
             typeof(IQuickButtonsService),
             typeof(IProgressService),
             typeof(ISuggestionOverlayService),
-            typeof(IMasterDataService),
+            typeof(Services.Business.IMasterDataService),
             typeof(IFileLoggingService),
             typeof(IFocusManagementService),
-            typeof(IRemoveService),
+            typeof(Services.Business.IRemoveService),
             typeof(IFileSelectionService)
         };
 
@@ -235,10 +235,10 @@ public static class ServiceCollectionExtensions
             typeof(IQuickButtonsService),
             typeof(IProgressService),
             typeof(ISuggestionOverlayService),
-            typeof(IMasterDataService),
+            typeof(Services.Business.IMasterDataService),
             typeof(IFileLoggingService),
             typeof(IFocusManagementService),
-            typeof(IRemoveService),
+            typeof(Services.Business.IRemoveService),
             typeof(IFileSelectionService)
         };
 
