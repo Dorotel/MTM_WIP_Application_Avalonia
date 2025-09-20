@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
 
@@ -193,7 +194,7 @@ public partial class AddItemViewModel : BaseViewModel
                 StatusMessage = $"Failed to add inventory item: {result.Message}";
                 Logger.LogError("Failed to add inventory item: {Message}", result.Message);
                 
-                await ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new Exception(result.Message),
                     "Add Inventory Item",
                     _applicationState.CurrentUser ?? "System",
@@ -205,7 +206,7 @@ public partial class AddItemViewModel : BaseViewModel
             StatusMessage = "An unexpected error occurred while adding the inventory item.";
             Logger.LogError(ex, "Unexpected error in ExecuteAddItemAsync");
             
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Add Inventory Item",
                 _applicationState.CurrentUser ?? "System",
@@ -305,7 +306,7 @@ public partial class AddItemViewModel : BaseViewModel
             Logger.LogError(ex, "Error loading master data for AddItemViewModel");
             StatusMessage = "Error loading master data. Some dropdowns may be empty.";
             
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Load Master Data",
                 _applicationState.CurrentUser ?? "System",

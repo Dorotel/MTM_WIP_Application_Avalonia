@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -127,7 +128,7 @@ public partial class SystemHealthViewModel : BaseViewModel
             IsDatabaseConnected = false;
             DatabaseConnectionStatus = $"Connection error: {ex.Message}";
 
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Test Database Connection",
                 "System",
@@ -161,7 +162,7 @@ public partial class SystemHealthViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error refreshing system metrics");
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Refresh System Metrics",
                 "System",
@@ -199,7 +200,7 @@ public partial class SystemHealthViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error clearing system logs");
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Clear System Logs",
                 "System",
@@ -234,7 +235,7 @@ public partial class SystemHealthViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error exporting diagnostics");
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Export Diagnostics",
                 "System",
@@ -275,7 +276,7 @@ public partial class SystemHealthViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading system health data");
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Load System Health Data",
                 "System",

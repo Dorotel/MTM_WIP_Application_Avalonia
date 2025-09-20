@@ -157,8 +157,8 @@ public class StartupValidationService : IStartupValidationService
             {
                 typeof(IConfiguration),
                 typeof(ILoggerFactory),
-                typeof(MTM_WIP_Application_Avalonia.Services.IConfigurationService),
-                typeof(MTM_WIP_Application_Avalonia.Services.IApplicationStateService),
+                typeof(MTM_WIP_Application_Avalonia.Services.Core.IConfigurationService),
+                typeof(MTM_WIP_Application_Avalonia.Services.Core.IApplicationStateService),
                 typeof(MTM_WIP_Application_Avalonia.Services.INavigationService)
             };
 
@@ -167,7 +167,7 @@ public class StartupValidationService : IStartupValidationService
             {
                 typeof(MTM_WIP_Application_Avalonia.Services.IThemeService),
                 typeof(MTM_WIP_Application_Avalonia.Services.ISettingsService),
-                typeof(MTM_WIP_Application_Avalonia.Services.IDatabaseService)
+                typeof(MTM_WIP_Application_Avalonia.Services.Core.IDatabaseService)
             };
 
             // Validate critical services

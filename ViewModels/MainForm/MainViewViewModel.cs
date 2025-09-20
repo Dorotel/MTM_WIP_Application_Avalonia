@@ -9,10 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
-using API.ViewModels.MainForm;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 

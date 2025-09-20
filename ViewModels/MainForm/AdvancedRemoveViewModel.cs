@@ -14,6 +14,7 @@ using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Controls;
 using Material.Icons;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -279,7 +280,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove Data", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove Data", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Error loading data";
         }
         finally
@@ -321,7 +322,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 parameters["p_EndDate"] = RemovalDateRangeEnd.Value.DateTime;
             
             var connectionString = _configurationService.GetConnectionString();
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString, "inv_transaction_Get_History", parameters
             );
             
@@ -351,7 +352,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             }
             else
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Search failed with status: {result.Status}"),
                     "Advanced Remove Search", _applicationState.CurrentUser ?? "System"
                 );
@@ -362,7 +363,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Advanced Remove Search", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Advanced Remove Search", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Search error - please try again";
         }
         finally
@@ -393,7 +394,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Clear Advanced Remove Filters", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Clear Advanced Remove Filters", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Clear filters error";
         }
     }
@@ -411,7 +412,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Back to Normal Command", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Back to Normal Command", _applicationState.CurrentUser ?? "System");
         }
     }
 
@@ -453,7 +454,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                         ["p_Notes"] = "Bulk removal operation"
                     };
 
-                    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                    var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                         connectionString, "inv_inventory_Remove_Item", parameters
                     );
 
@@ -472,7 +473,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 catch (Exception itemEx)
                 {
                     failCount++;
-                    await Services.ErrorHandling.HandleErrorAsync(itemEx, $"Bulk Remove Item {item.PartId}", _applicationState.CurrentUser ?? "System");
+                    await Services.Core.ErrorHandling.HandleErrorAsync(itemEx, $"Bulk Remove Item {item.PartId}", _applicationState.CurrentUser ?? "System");
                 }
             }
 
@@ -486,7 +487,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Bulk Remove Operation", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Bulk Remove Operation", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Bulk removal error - please try again";
         }
         finally
@@ -515,7 +516,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Conditional Remove Operation", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Conditional Remove Operation", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Conditional removal error";
         }
         finally
@@ -544,7 +545,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Scheduled Remove Operation", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Scheduled Remove Operation", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Scheduled removal error";
         }
         finally
@@ -580,7 +581,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             };
             
             var connectionString = _configurationService.GetConnectionString();
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString, "inv_inventory_Undo_Remove", parameters
             );
             
@@ -604,7 +605,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             }
             else
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Undo failed with status: {result.Status}"),
                     "Undo Removal Operation", _applicationState.CurrentUser ?? "System"
                 );
@@ -613,7 +614,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Undo Removal", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Undo Removal", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Undo error - please try again";
         }
         finally
@@ -641,7 +642,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "View Removal History", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "View Removal History", _applicationState.CurrentUser ?? "System");
             StatusMessage = "History view error";
         }
         finally
@@ -673,7 +674,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Generate Removal Report", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Generate Removal Report", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Report generation error";
         }
         finally
@@ -705,7 +706,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Export Removal Data", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Export Removal Data", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Export failed";
         }
         finally
@@ -737,7 +738,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Print Removal Summary", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Print Removal Summary", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Failed to generate summary";
         }
         finally
@@ -759,7 +760,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Toggle Filter Panel", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Toggle Filter Panel", _applicationState.CurrentUser ?? "System");
         }
     }
 
@@ -792,7 +793,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 ["p_Notes"] = "Individual removal operation"
             };
 
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString, "inv_inventory_Remove_Item", parameters
             );
 
@@ -810,7 +811,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             }
             else
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Remove failed with status: {result.Status}"),
                     "Remove Selected Item", _applicationState.CurrentUser ?? "System"
                 );
@@ -819,7 +820,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Remove Selected Item", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Remove Selected Item", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Removal error - please try again";
         }
         finally
@@ -840,7 +841,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             var connectionString = _configurationService.GetConnectionString();
 
             // Load Part IDs from stored procedure
-            var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+            var partResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                 connectionString, "md_part_ids_Get_All", new Dictionary<string, object>()
             );
             
@@ -856,7 +857,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             });
 
             // Load Locations from stored procedure  
-            var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+            var locationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                 connectionString, "md_locations_Get_All", new Dictionary<string, object>()
             );
             
@@ -872,7 +873,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             });
 
             // Load Operations from stored procedure
-            var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+            var operationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                 connectionString, "md_operation_numbers_Get_All", new Dictionary<string, object>()
             );
             
@@ -890,7 +891,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             // Load Users from stored procedure (if user filtering stored procedure exists)
             try
             {
-                var userResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                var userResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     connectionString, "usr_users_Get_All", new Dictionary<string, object>()
                 );
                 
@@ -918,7 +919,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove Master Data", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove Master Data", _applicationState.CurrentUser ?? "System");
             throw; // Re-throw to let calling method handle it
         }
     }
@@ -937,7 +938,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 ["p_Limit"] = 100 // Limit to recent 100 records
             };
 
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString, "inv_transaction_Get_Recent", parameters
             );
 
@@ -974,7 +975,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove History", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove History", _applicationState.CurrentUser ?? "System");
             Logger.LogError(ex, "Error loading removal history");
             
             // Continue with empty history rather than failing completely
@@ -1016,7 +1017,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             // Only search removal transactions
             parameters["p_TransactionType"] = "OUT";
 
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString, "inv_transaction_Search", parameters
             );
 
@@ -1054,7 +1055,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Advanced Remove Search Execution", _applicationState.CurrentUser ?? "System");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Advanced Remove Search Execution", _applicationState.CurrentUser ?? "System");
             StatusMessage = "Search failed - please try again";
             Logger.LogError(ex, "Error executing search");
         }

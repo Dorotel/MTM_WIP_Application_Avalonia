@@ -9,6 +9,7 @@ using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -385,7 +386,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             var connectionString = _configurationService?.GetConnectionString() ?? throw new InvalidOperationException("Configuration service not available");
 
             // Load Part IDs using stored procedure
-            var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var partResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString,
                 "md_part_ids_Get_All",
                 new Dictionary<string, object>()
@@ -404,7 +405,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             }
             else
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Failed to load parts: Status {partResult.Status}"),
                     "Load Part IDs",
                     Environment.UserName
@@ -413,7 +414,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             }
 
             // Load Operations using stored procedure
-            var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var operationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString,
                 "md_operation_numbers_Get_All",
                 new Dictionary<string, object>()
@@ -432,7 +433,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             }
             else
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Failed to load operations: Status {operationResult.Status}"),
                     "Load Operations",
                     Environment.UserName
@@ -441,7 +442,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             }
 
             // Load Locations using stored procedure
-            var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var locationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString,
                 "md_locations_Get_All",
                 new Dictionary<string, object>()
@@ -464,7 +465,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             }
             else
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Failed to load locations: Status {locationResult.Status}"),
                     "Load Locations",
                     Environment.UserName
@@ -477,7 +478,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Load Master Data", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Load Master Data", Environment.UserName);
             StatusMessage = "Error loading data from database";
         }
         finally 
@@ -515,7 +516,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
                     ["p_Notes"] = $"Advanced Inventory - Multiple Times ({i + 1} of {RepeatTimes})"
                 };
 
-                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     connectionString,
                     "inv_inventory_Add_Item",
                     parameters
@@ -547,7 +548,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             }
             else
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"All {RepeatTimes} transactions failed"),
                     "Add Multiple Times",
                     Environment.UserName
@@ -556,7 +557,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Add Multiple Times", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Add Multiple Times", Environment.UserName);
             StatusMessage = "Error adding multiple items";
         }
         finally 
@@ -613,7 +614,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
                     ["p_Notes"] = $"Advanced Inventory - Multiple Locations (Location: {location})"
                 };
 
-                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     connectionString,
                     "inv_inventory_Add_Item",
                     parameters
@@ -645,7 +646,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             }
             else
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"All {count} location additions failed"),
                     "Add To Multiple Locations",
                     Environment.UserName
@@ -654,7 +655,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Add To Multiple Locations", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Add To Multiple Locations", Environment.UserName);
             StatusMessage = "Error adding to locations";
         }
         finally 

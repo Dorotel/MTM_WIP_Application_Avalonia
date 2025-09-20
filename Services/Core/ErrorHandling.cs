@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 
-namespace MTM_WIP_Application_Avalonia.Services;
+namespace MTM_WIP_Application_Avalonia.Services.Core;
 
 /// <summary>
 /// Comprehensive error handling and logging service for MTM WIP Application.

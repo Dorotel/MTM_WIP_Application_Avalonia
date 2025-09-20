@@ -207,7 +207,7 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
                     {
                         try
                         {
-                            await Services.ErrorHandling.HandleErrorAsync(
+                            await Services.Core.ErrorHandling.HandleErrorAsync(
                                 new InvalidOperationException("No data available due to server connectivity issues. Please check server connection."),
                                 "Data unavailable - input cleared",
                                 "System"
@@ -349,7 +349,7 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
                     {
                         try
                         {
-                            await Services.ErrorHandling.HandleErrorAsync(
+                            await Services.Core.ErrorHandling.HandleErrorAsync(
                                 new ArgumentException($"Invalid input: '{text}' not found in available options. Please correct or select from suggestions."),
                                 "Input validation failed - please correct",
                                 "System"

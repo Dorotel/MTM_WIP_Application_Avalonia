@@ -4,7 +4,7 @@ using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Views;
 using MTM_WIP_Application_Avalonia.Models;
-using API.ViewModels.MainForm;
+using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using System;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -732,7 +732,7 @@ public partial class RemoveTabView : UserControl
                     // Show user feedback
                     try
                     {
-                        await Services.ErrorHandling.HandleErrorAsync(
+                        await Services.Core.ErrorHandling.HandleErrorAsync(
                             new ArgumentException($"Invalid Part ID: '{value}' not found in available parts."),
                             "Part ID validation failed - input cleared",
                             "System"
@@ -844,7 +844,7 @@ public partial class RemoveTabView : UserControl
                     // Show user feedback
                     try
                     {
-                        await Services.ErrorHandling.HandleErrorAsync(
+                        await Services.Core.ErrorHandling.HandleErrorAsync(
                             new ArgumentException($"Invalid Operation: '{value}' not found in available operations."),
                             "Operation validation failed - input cleared",
                             "System"

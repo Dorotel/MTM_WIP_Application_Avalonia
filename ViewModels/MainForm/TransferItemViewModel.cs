@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -29,7 +31,7 @@ public partial class TransferItemViewModel : BaseViewModel
 {
     private readonly IApplicationStateService _applicationState;
     private readonly IDatabaseService _databaseService;
-    private readonly IMasterDataService _masterDataService;
+    private readonly MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService _masterDataService;
     private readonly ILogger<TransferItemViewModel> _logger;
     private readonly ISuccessOverlayService? _successOverlayService;
     private readonly IPrintService? _printService;
@@ -269,7 +271,7 @@ public partial class TransferItemViewModel : BaseViewModel
     public TransferItemViewModel(
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
-        IMasterDataService masterDataService,
+        MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService masterDataService,
         ILogger<TransferItemViewModel> logger,
         ISuccessOverlayService? successOverlayService = null,
         IPrintService? printService = null,
@@ -682,7 +684,7 @@ public partial class TransferItemViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error initiating test print operation");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
         }
         finally
         {
@@ -851,7 +853,7 @@ public partial class TransferItemViewModel : BaseViewModel
             _logger.LogInformation("Loading transfer ComboBox data from database");
 
             // Load Parts using md_part_ids_Get_All stored procedure
-            var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var partResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_part_ids_Get_All",
                 new Dictionary<string, object>()
@@ -876,7 +878,7 @@ public partial class TransferItemViewModel : BaseViewModel
             }
 
             // Load Operations using md_operation_numbers_Get_All stored procedure
-            var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var operationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_operation_numbers_Get_All",
                 new Dictionary<string, object>()
@@ -901,7 +903,7 @@ public partial class TransferItemViewModel : BaseViewModel
             }
 
             // Load Locations using md_locations_Get_All stored procedure
-            var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var locationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_locations_Get_All",
                 new Dictionary<string, object>()
@@ -1128,7 +1130,7 @@ public partial class TransferItemViewModel : BaseViewModel
         _logger.LogError(ex, "Error in TransferItemViewModel operation");
 
         // Present user-friendly error message via centralized error service
-        _ = Services.ErrorHandling.HandleErrorAsync(ex, "Transfer Operation", _applicationState.CurrentUser);
+        _ = Services.Core.ErrorHandling.HandleErrorAsync(ex, "Transfer Operation", _applicationState.CurrentUser);
 
         // Update UI state to reflect error
         // Note: StatusMessage property may need to be added to this ViewModel for UI feedback

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
-             xmlns:apivm="using:API.ViewModels.MainForm"
+             xmlns:apivm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              xmlns:customDataGrid="using:MTM_WIP_Application_Avalonia.Controls.CustomDataGrid"

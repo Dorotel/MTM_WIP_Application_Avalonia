@@ -113,7 +113,7 @@ public partial class ConfirmationOverlayViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error during confirmation action");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Confirmation failed", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Confirmation failed", Environment.UserName);
         }
         finally
         {

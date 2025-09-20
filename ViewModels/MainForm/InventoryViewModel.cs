@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
@@ -187,7 +188,7 @@ public partial class InventoryViewModel : BaseViewModel
             StatusMessage = "Error loading inventory data.";
             Logger.LogError(ex, "Error loading inventory data");
             
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Load Inventory",
                 _applicationState.CurrentUser ?? "System",
@@ -340,7 +341,7 @@ public partial class InventoryViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error viewing inventory item details");
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "View Details",
                 _applicationState.CurrentUser ?? "System",

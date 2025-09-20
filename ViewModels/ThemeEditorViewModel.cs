@@ -168,7 +168,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error handling color blindness preview toggle");
-            _ = Services.ErrorHandling.HandleErrorAsync(ex, "Color blindness preview toggle", Environment.UserName);
+            _ = Services.Core.ErrorHandling.HandleErrorAsync(ex, "Color blindness preview toggle", Environment.UserName);
         }
     }
 
@@ -964,7 +964,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error during undo operation");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Undo operation failed", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Undo operation failed", Environment.UserName);
         }
     }
 
@@ -988,7 +988,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error during redo operation");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Redo operation failed", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Redo operation failed", Environment.UserName);
         }
     }
 
@@ -1013,7 +1013,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error toggling color blind preview");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Color blindness preview failed", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Color blindness preview failed", Environment.UserName);
         }
     }
 
@@ -1058,7 +1058,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error during bulk brightness adjustment");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Bulk brightness adjustment failed", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Bulk brightness adjustment failed", Environment.UserName);
         }
         finally
         {
@@ -1100,7 +1100,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error during bulk saturation adjustment");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Bulk saturation adjustment failed", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Bulk saturation adjustment failed", Environment.UserName);
         }
         finally
         {
@@ -1280,7 +1280,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error navigating to section {CategoryId}", categoryId);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to navigate to {categoryId} section", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to navigate to {categoryId} section", Environment.UserName);
         }
     }
 
@@ -1310,7 +1310,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling core colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate core color palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate core color palette", Environment.UserName);
         }
         finally
         {
@@ -1341,7 +1341,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling text colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate text color palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate text color palette", Environment.UserName);
         }
         finally
         {
@@ -1372,7 +1372,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling background colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate background color palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate background color palette", Environment.UserName);
         }
         finally
         {
@@ -1401,7 +1401,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling status colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate status color palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate status color palette", Environment.UserName);
         }
         finally
         {
@@ -1428,7 +1428,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error auto-filling border colors");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate border color palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate border color palette", Environment.UserName);
         }
         finally
         {
@@ -1458,7 +1458,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Open color picker for {colorProperty}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Open color picker for {colorProperty}", Environment.UserName);
         }
     }
 
@@ -1479,7 +1479,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Eyedropper for {colorProperty}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Eyedropper for {colorProperty}", Environment.UserName);
         }
     }
 
@@ -1503,7 +1503,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Copy color {colorProperty}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Copy color {colorProperty}", Environment.UserName);
         }
     }
 
@@ -1533,7 +1533,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Reset color {colorProperty}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Reset color {colorProperty}", Environment.UserName);
         }
     }
 
@@ -1628,7 +1628,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error exporting theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to export theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to export theme", Environment.UserName);
             StatusMessage = "Failed to export theme";
         }
         finally
@@ -1734,7 +1734,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error importing theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to import theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to import theme", Environment.UserName);
             StatusMessage = "Failed to import theme";
         }
         finally
@@ -1779,7 +1779,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading industry template: {TemplateName}", templateName);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to load {templateName} template", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to load {templateName} template", Environment.UserName);
             StatusMessage = $"Failed to load {templateName} template";
         }
         finally
@@ -1868,7 +1868,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error saving custom theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to save custom theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to save custom theme", Environment.UserName);
             StatusMessage = "❌ Failed to save custom theme";
         }
         finally
@@ -1964,7 +1964,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading custom theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to load custom theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to load custom theme", Environment.UserName);
             StatusMessage = "❌ Failed to load custom theme";
         }
         finally
@@ -2053,7 +2053,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error deleting custom theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to delete custom theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to delete custom theme", Environment.UserName);
             StatusMessage = "❌ Failed to delete custom theme";
         }
         finally
@@ -2149,7 +2149,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error creating version snapshot");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to create version snapshot", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to create version snapshot", Environment.UserName);
             StatusMessage = "Failed to create version snapshot";
         }
         finally
@@ -2229,7 +2229,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error rolling back to version: {Version}", version.Version);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to rollback to version {version.Version}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to rollback to version {version.Version}", Environment.UserName);
             StatusMessage = "Failed to rollback to selected version";
         }
         finally
@@ -2376,7 +2376,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error generating usage analytics");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate usage analytics", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate usage analytics", Environment.UserName);
             StatusMessage = "Failed to generate usage analytics";
         }
         finally
@@ -2446,7 +2446,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error applying base theme: {BaseTheme}", baseThemeName);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to apply base theme {baseThemeName}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to apply base theme {baseThemeName}", Environment.UserName);
             StatusMessage = $"Failed to apply base theme {baseThemeName}";
         }
         finally
@@ -2736,7 +2736,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error saving conditional theme for context: {Context}", context);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to save conditional theme for {context}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to save conditional theme for {context}", Environment.UserName);
             StatusMessage = $"Failed to save conditional theme for {context}";
         }
         finally
@@ -2846,7 +2846,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading conditional theme for context: {Context}", context);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to load conditional theme for {context}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to load conditional theme for {context}", Environment.UserName);
             StatusMessage = $"Failed to load conditional theme for {context}";
         }
         finally
@@ -2897,7 +2897,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error syncing with system theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to sync with system theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to sync with system theme", Environment.UserName);
             StatusMessage = "Failed to sync with system theme";
         }
         finally
@@ -3003,7 +3003,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error sharing theme to network");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to share theme to network", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to share theme to network", Environment.UserName);
             StatusMessage = "Failed to share theme to network";
         }
         finally
@@ -3146,7 +3146,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error importing shared theme from network");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to import shared theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to import shared theme", Environment.UserName);
             StatusMessage = "Failed to import shared theme";
         }
         finally
@@ -3191,7 +3191,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error generating monochromatic palette");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate monochromatic palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate monochromatic palette", Environment.UserName);
         }
         finally
         {
@@ -3229,7 +3229,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error generating complementary palette");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate complementary palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate complementary palette", Environment.UserName);
         }
         finally
         {
@@ -3268,7 +3268,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error generating analogous palette");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate analogous palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate analogous palette", Environment.UserName);
         }
         finally
         {
@@ -3308,7 +3308,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error generating triadic palette");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate triadic palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate triadic palette", Environment.UserName);
         }
         finally
         {
@@ -3364,7 +3364,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error generating accessibility-first palette");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate accessibility-first palette", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate accessibility-first palette", Environment.UserName);
         }
         finally
         {
@@ -3444,7 +3444,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error applying theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply theme changes", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to apply theme changes", Environment.UserName);
             StatusMessage = "Error applying theme changes";
         }
         finally
@@ -3469,7 +3469,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error resetting theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to reset theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to reset theme", Environment.UserName);
         }
         finally
         {
@@ -3554,7 +3554,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error generating comprehensive theme preview");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate theme preview", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate theme preview", Environment.UserName);
             StatusMessage = "❌ Error generating preview";
         }
         finally
@@ -3607,7 +3607,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error closing theme editor");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to close theme editor", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to close theme editor", Environment.UserName);
         }
     }
 
@@ -3697,7 +3697,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error during theme validation");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Theme validation failed", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Theme validation failed", Environment.UserName);
             StatusMessage = "❌ Theme validation encountered an error";
         }
         finally
@@ -3746,7 +3746,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error during color blindness validation");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Color blindness validation failed", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Color blindness validation failed", Environment.UserName);
             StatusMessage = "❌ Color blindness validation encountered an error";
         }
         finally
@@ -3807,7 +3807,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error applying optimized manufacturing theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply manufacturing theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to apply manufacturing theme", Environment.UserName);
             StatusMessage = "❌ Failed to apply manufacturing theme";
         }
         finally
@@ -3871,7 +3871,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error applying healthcare theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply healthcare theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to apply healthcare theme", Environment.UserName);
             StatusMessage = "❌ Failed to apply healthcare theme";
         }
         finally
@@ -3935,7 +3935,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error applying office theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply office theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to apply office theme", Environment.UserName);
             StatusMessage = "❌ Failed to apply office theme";
         }
         finally
@@ -3999,7 +3999,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error applying high contrast theme");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to apply high contrast theme", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to apply high contrast theme", Environment.UserName);
             StatusMessage = "❌ Failed to apply high contrast theme";
         }
         finally
@@ -4066,7 +4066,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error adjusting brightness");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to adjust brightness", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to adjust brightness", Environment.UserName);
             StatusMessage = "❌ Failed to adjust brightness";
         }
         finally
@@ -4126,7 +4126,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error opening color picker for {ColorProperty}", colorProperty);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to open color picker for {colorProperty}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to open color picker for {colorProperty}", Environment.UserName);
             StatusMessage = $"❌ Failed to open color picker for {colorProperty}";
         }
         finally
@@ -4338,7 +4338,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error generating theme report");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate theme report", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate theme report", Environment.UserName);
             StatusMessage = "❌ Failed to generate theme report";
         }
         finally
@@ -4374,7 +4374,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error toggling print preview");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle print preview", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle print preview", Environment.UserName);
             StatusMessage = "❌ Failed to toggle print preview";
         }
         finally
@@ -4410,7 +4410,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error toggling lighting simulation");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle lighting simulation", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle lighting simulation", Environment.UserName);
             StatusMessage = "❌ Failed to toggle lighting simulation";
         }
         finally
@@ -4442,7 +4442,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error changing lighting condition");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to change lighting condition", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to change lighting condition", Environment.UserName);
             StatusMessage = "❌ Failed to change lighting condition";
         }
         finally
@@ -4478,7 +4478,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error toggling multi-monitor preview");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle multi-monitor preview", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle multi-monitor preview", Environment.UserName);
             StatusMessage = "❌ Failed to toggle multi-monitor preview";
         }
         finally
@@ -4509,7 +4509,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error selecting preview monitor");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to select preview monitor", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to select preview monitor", Environment.UserName);
             StatusMessage = "❌ Failed to select preview monitor";
         }
         finally

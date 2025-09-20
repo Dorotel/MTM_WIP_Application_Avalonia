@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Controls;
 
@@ -260,7 +261,7 @@ public partial class PrintViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error initializing PrintViewModel");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to initialize print service", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to initialize print service", Environment.UserName);
             StatusMessage = "Error initializing print service";
         }
         finally
@@ -292,7 +293,7 @@ public partial class PrintViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading available printers");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to load available printers", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to load available printers", Environment.UserName);
         }
     }
 
@@ -326,7 +327,7 @@ public partial class PrintViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading print configuration");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to load print configuration", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to load print configuration", Environment.UserName);
         }
     }
 
@@ -347,7 +348,7 @@ public partial class PrintViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading available templates");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to load available templates", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to load available templates", Environment.UserName);
         }
     }
 
@@ -448,7 +449,7 @@ public partial class PrintViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error during print operation");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Print operation failed", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Print operation failed", Environment.UserName);
             StatusMessage = "Print operation failed";
         }
         finally
@@ -484,7 +485,7 @@ public partial class PrintViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error generating print preview");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate print preview", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate print preview", Environment.UserName);
             StatusMessage = "Error generating preview";
         }
         finally
@@ -588,7 +589,7 @@ public partial class PrintViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading template: {TemplateName}", SelectedTemplate?.Name);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to load template: {SelectedTemplate?.Name}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to load template: {SelectedTemplate?.Name}", Environment.UserName);
             StatusMessage = "Error loading template";
         }
         finally
@@ -672,7 +673,7 @@ public partial class PrintViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error closing print view");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to close print view", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to close print view", Environment.UserName);
         }
     }
 

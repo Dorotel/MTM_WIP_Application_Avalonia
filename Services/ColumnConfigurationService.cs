@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using API.Controls.CustomDataGrid;
+using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 
-namespace API.Services;
+namespace MTM_WIP_Application_Avalonia.Services;
 
 /// <summary>
 /// Service interface for column configuration persistence.

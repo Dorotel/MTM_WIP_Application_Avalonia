@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Avalonia.Threading;
 using MySql.Data.MySqlClient;
+using MTM_WIP_Application_Avalonia.Services.Core;
 
 namespace MTM_WIP_Application_Avalonia.Services;
 

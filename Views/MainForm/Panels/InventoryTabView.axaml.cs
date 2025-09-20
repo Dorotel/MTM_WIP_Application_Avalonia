@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Models;
 using System.Diagnostics;
@@ -640,7 +641,7 @@ MoveFocusToFirstControl();
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling part text change");
-            _ = Services.ErrorHandling.HandleErrorAsync(ex, "InventoryTabView_OnPartTextChanged", "System");
+            _ = Services.Core.ErrorHandling.HandleErrorAsync(ex, "InventoryTabView_OnPartTextChanged", "System");
             System.Diagnostics.Debug.WriteLine($"Error handling part text change: {ex.Message}");
         }
     }
@@ -768,7 +769,7 @@ MoveFocusToFirstControl();
                 // Show user feedback about the clearing action
                 try
                 {
-                    await Services.ErrorHandling.HandleErrorAsync(
+                    await Services.Core.ErrorHandling.HandleErrorAsync(
                         new ArgumentException($"Invalid Part ID: '{value}' not found in available parts."),
                         "Part ID validation failed - input cleared",
                         "System"
@@ -900,7 +901,7 @@ MoveFocusToFirstControl();
                     // Show user feedback about the clearing action
                     try
                     {
-                        await Services.ErrorHandling.HandleErrorAsync(
+                        await Services.Core.ErrorHandling.HandleErrorAsync(
                             new ArgumentException($"Invalid Operation: '{value}' not found in available operations."),
                             "Operation validation failed - input cleared",
                             "System"
@@ -1027,7 +1028,7 @@ MoveFocusToFirstControl();
                     // Show user feedback about the clearing action
                     try
                     {
-                        await Services.ErrorHandling.HandleErrorAsync(
+                        await Services.Core.ErrorHandling.HandleErrorAsync(
                             new ArgumentException($"Invalid Location: '{value}' not found in available locations."),
                             "Location validation failed - input cleared",
                             "System"
@@ -1376,7 +1377,7 @@ MoveFocusToFirstControl();
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error displaying success overlay via View event handler");
-            _ = Services.ErrorHandling.HandleErrorAsync(ex, "OnShowSuccessOverlay", "System");
+            _ = Services.Core.ErrorHandling.HandleErrorAsync(ex, "OnShowSuccessOverlay", "System");
         }
     }
 

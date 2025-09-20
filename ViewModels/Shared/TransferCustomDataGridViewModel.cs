@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_Shared_Logic.Models;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Shared;
@@ -138,7 +139,7 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error refreshing transfer grid data");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Refresh transfer grid data", _applicationStateService.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Refresh transfer grid data", _applicationStateService.CurrentUser);
         }
         finally
         {
@@ -163,7 +164,7 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error editing transfer item");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Edit transfer item", _applicationStateService.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Edit transfer item", _applicationStateService.CurrentUser);
         }
     }
 
@@ -190,7 +191,7 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error executing transfers");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Execute transfers", _applicationStateService.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Execute transfers", _applicationStateService.CurrentUser);
         }
     }
 
@@ -248,7 +249,7 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error validating transfers");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Validate transfers", _applicationStateService.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Validate transfers", _applicationStateService.CurrentUser);
         }
     }
 
@@ -440,7 +441,7 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
             else
             {
                 Logger.LogError("Transfer failed: {Message}", result.Message);
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException(result.Message),
                     $"Transfer failed for {item.PartId}",
                     _applicationStateService.CurrentUser
@@ -450,7 +451,7 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error executing single transfer for {PartId}", item.PartId);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Execute single transfer for {item.PartId}", _applicationStateService.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Execute single transfer for {item.PartId}", _applicationStateService.CurrentUser);
             throw;
         }
     }
@@ -496,7 +497,7 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error executing multiple transfers");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Execute multiple transfers", _applicationStateService.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Execute multiple transfers", _applicationStateService.CurrentUser);
             throw;
         }
     }

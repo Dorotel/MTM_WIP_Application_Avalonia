@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -194,7 +195,7 @@ public partial class SearchInventoryViewModel : BaseViewModel
             Logger.LogInformation("Loading master data for search filters");
 
             // Load Parts
-            var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var partResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_part_ids_Get_All",
                 new Dictionary<string, object>()
@@ -219,7 +220,7 @@ public partial class SearchInventoryViewModel : BaseViewModel
             }
 
             // Load Operations
-            var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var operationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_operation_numbers_Get_All",
                 new Dictionary<string, object>()
@@ -244,7 +245,7 @@ public partial class SearchInventoryViewModel : BaseViewModel
             }
 
             // Load Locations
-            var locationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var locationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_locations_Get_All",
                 new Dictionary<string, object>()

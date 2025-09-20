@@ -13,6 +13,7 @@ using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Services.Core;
 
 namespace MTM_WIP_Application_Avalonia.Services;
 

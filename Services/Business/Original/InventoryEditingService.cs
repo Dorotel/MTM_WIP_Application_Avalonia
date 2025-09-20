@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_Shared_Logic.Models;
 using InventoryItem = MTM_WIP_Application_Avalonia.Models.InventoryItem;
 
@@ -101,7 +102,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                     ["p_ID"] = inventoryId
                 };
 
-                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     _databaseService.GetConnectionString(),
                     "inv_inventory_Get_ByID_ForEdit",
                     parameters
@@ -142,7 +143,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading inventory item {InventoryId} for editing", inventoryId);
-                await ErrorHandling.HandleErrorAsync(ex, $"Failed to load inventory item {inventoryId} for editing", "SYSTEM");
+                await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to load inventory item {inventoryId} for editing", "SYSTEM");
                 return null;
             }
         }
@@ -196,7 +197,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                     ["p_Original_BatchNumber"] = originalItem.BatchNumber ?? string.Empty
                 };
 
-                var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
+                var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteWithStatus(
                     _databaseService.GetConnectionString(),
                     "inv_inventory_Update_Item",
                     parameters
@@ -234,7 +235,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error saving inventory item {InventoryId} changes", editModel?.Id ?? 0);
-                await ErrorHandling.HandleErrorAsync(ex, $"Failed to save inventory item {editModel?.Id ?? 0} changes", "SYSTEM");
+                await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to save inventory item {editModel?.Id ?? 0} changes", "SYSTEM");
 
                 return EditInventoryResult.DatabaseFailure(
                     $"Exception during save: {ex.Message}",
@@ -314,7 +315,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error validating inventory item {InventoryId}", editModel.Id);
-                await ErrorHandling.HandleErrorAsync(ex, $"Failed to validate inventory item {editModel.Id}", "SYSTEM");
+                await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to validate inventory item {editModel.Id}", "SYSTEM");
 
                 return EditInventoryResult.ValidationFailure(
                     new List<string> { $"Validation error: {ex.Message}" },
@@ -343,7 +344,7 @@ namespace MTM_WIP_Application_Avalonia.Services
                 };
 
                 // Use ExecuteDataTableDirect since inv_inventory_Validate_MasterData returns data via SELECT
-                var dataTable = await Helper_Database_StoredProcedure.ExecuteDataTableDirect(
+                var dataTable = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                     _databaseService.GetConnectionString(),
                     "inv_inventory_Validate_MasterData",
                     parameters
@@ -380,7 +381,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error validating master data");
-                await ErrorHandling.HandleErrorAsync(ex, "Failed to validate master data", "SYSTEM");
+                await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to validate master data", "SYSTEM");
 
                 // Return all false on error
                 return new Dictionary<string, bool>
@@ -425,7 +426,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting original inventory item {InventoryId}", inventoryId);
-                await ErrorHandling.HandleErrorAsync(ex, $"Failed to get original inventory item {inventoryId}", "SYSTEM");
+                await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to get original inventory item {inventoryId}", "SYSTEM");
                 return null;
             }
         }
@@ -462,7 +463,7 @@ namespace MTM_WIP_Application_Avalonia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating notes for inventory item {InventoryId}", inventoryId);
-                await ErrorHandling.HandleErrorAsync(ex, $"Failed to update notes for inventory item {inventoryId}", "SYSTEM");
+                await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to update notes for inventory item {inventoryId}", "SYSTEM");
 
                 return EditInventoryResult.DatabaseFailure($"Exception during notes update: {ex.Message}", -1);
             }

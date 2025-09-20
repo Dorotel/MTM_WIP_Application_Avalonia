@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace MTM_WIP_Application_Avalonia.Services;
+namespace MTM_WIP_Application_Avalonia.Services.Core;
 
 /// <summary>
 /// Unified configuration and application state management service.

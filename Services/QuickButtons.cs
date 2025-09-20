@@ -11,6 +11,7 @@ using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using MTM_WIP_Application_Avalonia.Models;
+using MTM_WIP_Application_Avalonia.Services.Core;
 
 namespace MTM_WIP_Application_Avalonia.Services;
 
@@ -126,7 +127,7 @@ public class QuickButtonsService : IQuickButtonsService
             try
             {
                 // qb_quickbuttons_Get_ByUser now uses proper MTM status pattern with OUT parameters
-                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     _databaseService.GetConnectionString(),
                     "qb_quickbuttons_Get_ByUser",
                     parameters
@@ -187,7 +188,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to load quick buttons for user: {UserId}", userId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(LoadUserQuickButtonsAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(LoadUserQuickButtonsAsync), userId);
             
             // Return empty list instead of sample data for production
             return new List<QuickButtonData>();
@@ -216,7 +217,7 @@ public class QuickButtonsService : IQuickButtonsService
 
             _logger.LogInformation("Calling stored procedure sys_last_10_transactions_Get_ByUser with UserId: {UserId}, Limit: 10", userId);
 
-            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "sys_last_10_transactions_Get_ByUser",
                 parameters
@@ -274,7 +275,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to load recent transactions for user: {UserId}", userId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(LoadLast10TransactionsAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(LoadLast10TransactionsAsync), userId);
             
             // Return empty list instead of sample data for production
             return new List<QuickButtonData>();
@@ -413,7 +414,7 @@ public class QuickButtonsService : IQuickButtonsService
             };
 
             // Use ExecuteWithStatus which handles MySQL status codes correctly
-            var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteWithStatus(
                 _databaseService.GetConnectionString(),
                 "qb_quickbuttons_Save",
                 parameters
@@ -438,7 +439,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to save quick button: {PartId}", quickButton?.PartId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(SaveQuickButtonAsync), quickButton?.UserId ?? "unknown", 
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(SaveQuickButtonAsync), quickButton?.UserId ?? "unknown", 
                 new Dictionary<string, object> { ["QuickButton"] = quickButton ?? new object() });
             return false;
         }
@@ -464,7 +465,7 @@ public class QuickButtonsService : IQuickButtonsService
             };
 
             // Use the proper stored procedure execution method that handles OUT parameters
-            var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteWithStatus(
                 _databaseService.GetConnectionString(),
                 "qb_quickbuttons_Remove",
                 parameters
@@ -494,7 +495,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to remove quick button: ID {ButtonId}", buttonId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(RemoveQuickButtonAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(RemoveQuickButtonAsync), userId);
             return false;
         }
     }
@@ -518,7 +519,7 @@ public class QuickButtonsService : IQuickButtonsService
             };
 
             // Use the proper stored procedure execution method that handles OUT parameters
-            var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteWithStatus(
                 _databaseService.GetConnectionString(),
                 "qb_quickbuttons_Clear_ByUser",
                 parameters
@@ -548,7 +549,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to clear quick buttons for user: {UserId}", userId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(ClearAllQuickButtonsAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(ClearAllQuickButtonsAsync), userId);
             return false;
         }
     }
@@ -590,7 +591,7 @@ public class QuickButtonsService : IQuickButtonsService
                 };
 
                 // Use the proper stored procedure execution method that handles OUT parameters
-                var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
+                var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteWithStatus(
                     _databaseService.GetConnectionString(),
                     "qb_quickbuttons_Save",
                     parameters
@@ -622,7 +623,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to reorder quick buttons for user: {UserId}", userId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(ReorderQuickButtonsAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(ReorderQuickButtonsAsync), userId);
             return false;
         }
     }
@@ -663,7 +664,7 @@ public class QuickButtonsService : IQuickButtonsService
                 ["p_ReceiveDate"] = DateTime.Now
             };
 
-            var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
+            var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteWithStatus(
                 _databaseService.GetConnectionString(),
                 "sys_last_10_transactions_Add_Transaction",
                 parameters
@@ -716,7 +717,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding transaction to last 10 for user: {UserId}", userId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(AddTransactionToLast10Async), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(AddTransactionToLast10Async), userId);
             return false;
         }
     }
@@ -806,7 +807,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to add quick button from operation");
-            await ErrorHandling.HandleErrorAsync(ex, nameof(AddQuickButtonFromOperationAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(AddQuickButtonFromOperationAsync), userId);
             return false;
         }
     }
@@ -916,7 +917,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to export quick buttons for user: {UserId}", userId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(ExportQuickButtonsAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(ExportQuickButtonsAsync), userId);
             return false;
         }
     }
@@ -1009,7 +1010,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to import quick buttons for user: {UserId} from file: {FilePath}", userId, filePath);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(ImportQuickButtonsAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(ImportQuickButtonsAsync), userId);
             return false;
         }
     }
@@ -1042,7 +1043,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get available export files");
-            await ErrorHandling.HandleErrorAsync(ex, nameof(GetAvailableExportFilesAsync), "system");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(GetAvailableExportFilesAsync), "system");
             return new List<string>();
         }
     }
@@ -1085,7 +1086,7 @@ public class QuickButtonsService : IQuickButtonsService
             {
                 _logger.LogWarning("No quick buttons found to export for user: {UserId}", userId);
                 // Use error handling to show user-friendly message
-                await ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException("No QuickButtons available to export"),
                     "Export QuickButtons - No Data",
                     userId);
@@ -1134,7 +1135,7 @@ public class QuickButtonsService : IQuickButtonsService
                     }
                     else
                     {
-                        await ErrorHandling.HandleErrorAsync(
+                        await Services.Core.ErrorHandling.HandleErrorAsync(
                             new InvalidOperationException("Export operation failed"),
                             "Export QuickButtons Failed",
                             userId);
@@ -1143,14 +1144,14 @@ public class QuickButtonsService : IQuickButtonsService
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error during enhanced export to path: {FilePath}", selectedPath);
-                    await ErrorHandling.HandleErrorAsync(ex, "Enhanced Export Error", userId);
+                    await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Enhanced Export Error", userId);
                 }
             });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in enhanced export for user: {UserId}", userId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(ExportQuickButtonsWithSelectionAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(ExportQuickButtonsWithSelectionAsync), userId);
         }
     }
 
@@ -1187,7 +1188,7 @@ public class QuickButtonsService : IQuickButtonsService
                     // Validate file access before import
                     if (!await _fileSelectionService.ValidateFileAccessAsync(selectedPath))
                     {
-                        await ErrorHandling.HandleErrorAsync(
+                        await Services.Core.ErrorHandling.HandleErrorAsync(
                             new UnauthorizedAccessException("Selected file is not accessible"),
                             "Import File Access Error",
                             userId);
@@ -1222,7 +1223,7 @@ public class QuickButtonsService : IQuickButtonsService
                     }
                     else
                     {
-                        await ErrorHandling.HandleErrorAsync(
+                        await Services.Core.ErrorHandling.HandleErrorAsync(
                             new InvalidOperationException("Import operation failed or no valid data found"),
                             "Import QuickButtons Failed",
                             userId);
@@ -1231,14 +1232,14 @@ public class QuickButtonsService : IQuickButtonsService
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error during enhanced import from path: {FilePath}", selectedPath);
-                    await ErrorHandling.HandleErrorAsync(ex, "Enhanced Import Error", userId);
+                    await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Enhanced Import Error", userId);
                 }
             });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in enhanced import for user: {UserId}", userId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(ImportQuickButtonsWithSelectionAsync), userId);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, nameof(ImportQuickButtonsWithSelectionAsync), userId);
         }
     }
 

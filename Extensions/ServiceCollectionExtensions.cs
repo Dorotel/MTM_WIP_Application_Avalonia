@@ -10,7 +10,8 @@ using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Services;
-using API.ViewModels.MainForm;
+using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services.Business;
 
 namespace MTM_WIP_Application_Avalonia.Extensions;
 
@@ -66,7 +67,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ISuccessOverlayService, SuccessOverlayService>();
         
         // Register Master Data service - singleton for shared access across ViewModels
-        services.TryAddSingleton<IMasterDataService, MasterDataService>();
+        services.TryAddSingleton<IMasterDataService, Business.MasterDataService>();
         
         // Register Focus Management service - singleton for application-wide focus management
         services.TryAddSingleton<IFocusManagementService, FocusManagementService>();

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -238,7 +239,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading transactions");
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Load Transactions",
                 _applicationState.CurrentUser ?? "System",
@@ -391,7 +392,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error viewing transaction details");
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "View Transaction Details",
                 _applicationState.CurrentUser ?? "System",
@@ -422,7 +423,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error exporting transactions");
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Export Transactions",
                 _applicationState.CurrentUser ?? "System",
@@ -489,7 +490,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading users for transaction history");
-            await ErrorHandling.HandleErrorAsync(
+            await Services.Core.ErrorHandling.HandleErrorAsync(
                 ex,
                 "Load Users",
                 _applicationState.CurrentUser ?? "System",

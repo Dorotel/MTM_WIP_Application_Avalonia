@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
 
-namespace API.Controls.CustomDataGrid;
+namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 
 /// <summary>
 /// Configuration model for persisting column settings and layouts.

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using System.IO;
 using System.Text.Json;
 using Avalonia.Controls;
@@ -149,7 +150,7 @@ public class PrintService : IPrintService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting available printers");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to get available printers", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to get available printers", Environment.UserName);
             
             // Return default printer as fallback
             return new List<string> { "Default Printer" };
@@ -187,7 +188,7 @@ public class PrintService : IPrintService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading print configuration for {DataSourceType}", dataSourceType);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to load print configuration for {dataSourceType}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to load print configuration for {dataSourceType}", Environment.UserName);
             
             // Return default configuration as fallback
             return GetDefaultPrintConfiguration(dataSourceType);
@@ -214,7 +215,7 @@ public class PrintService : IPrintService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving print configuration for {DataSourceType}", dataSourceType);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to save print configuration for {dataSourceType}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to save print configuration for {dataSourceType}", Environment.UserName);
             return false;
         }
     }
@@ -250,7 +251,7 @@ public class PrintService : IPrintService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating print preview");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to generate print preview", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate print preview", Environment.UserName);
             
             // Return empty canvas as fallback
             return new Canvas { Background = Avalonia.Media.Brushes.White };
@@ -301,7 +302,7 @@ public class PrintService : IPrintService
             else
             {
                 _logger.LogError("Print operation failed: {Message}", printStatus.Message);
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     printStatus.Exception ?? new Exception(printStatus.Message), 
                     "Print operation failed", 
                     Environment.UserName);
@@ -312,7 +313,7 @@ public class PrintService : IPrintService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during print operation");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Print operation error", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Print operation error", Environment.UserName);
             
             return new PrintStatus
             {
@@ -375,7 +376,7 @@ public class PrintService : IPrintService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading print templates");
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to load print templates", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to load print templates", Environment.UserName);
             
             // Return default templates as fallback
             return DefaultPrintTemplates.GetAllDefaultTemplates();
@@ -405,7 +406,7 @@ public class PrintService : IPrintService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving print template: {TemplateName}", template.Name);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to save print template: {template.Name}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to save print template: {template.Name}", Environment.UserName);
             return false;
         }
     }
@@ -437,7 +438,7 @@ public class PrintService : IPrintService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting print template: {TemplateId}", templateId);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to delete print template: {templateId}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to delete print template: {templateId}", Environment.UserName);
             return false;
         }
     }
@@ -480,7 +481,7 @@ public class PrintService : IPrintService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading print template: {TemplateId}", templateId);
-            await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to load print template: {templateId}", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to load print template: {templateId}", Environment.UserName);
             return null;
         }
     }

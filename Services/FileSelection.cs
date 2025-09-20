@@ -80,7 +80,7 @@ public class FileSelectionService : IFileSelectionService
             if (topLevel?.StorageProvider == null)
             {
                 _logger.LogError("StorageProvider not available for file selection");
-                await ErrorHandling.HandleErrorAsync(new InvalidOperationException("File selection not available"), "File selection unavailable", Environment.UserName);
+                await Services.Core.ErrorHandling.HandleErrorAsync(new InvalidOperationException("File selection not available"), "File selection unavailable", Environment.UserName);
                 return null;
             }
 
@@ -108,7 +108,7 @@ public class FileSelectionService : IFileSelectionService
                 else
                 {
                     _logger.LogWarning("Selected file is not accessible: {FilePath}", selectedPath);
-                    await ErrorHandling.HandleErrorAsync(new UnauthorizedAccessException("Selected file is not accessible"), "File access validation failed", Environment.UserName);
+                    await Services.Core.ErrorHandling.HandleErrorAsync(new UnauthorizedAccessException("Selected file is not accessible"), "File access validation failed", Environment.UserName);
                     return null;
                 }
             }
@@ -119,7 +119,7 @@ public class FileSelectionService : IFileSelectionService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during file import selection");
-            await ErrorHandling.HandleErrorAsync(ex, "File selection for import", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "File selection for import", Environment.UserName);
             return null;
         }
     }
@@ -135,7 +135,7 @@ public class FileSelectionService : IFileSelectionService
             if (topLevel?.StorageProvider == null)
             {
                 _logger.LogError("StorageProvider not available for file selection");
-                await ErrorHandling.HandleErrorAsync(new InvalidOperationException("File selection not available"), "File selection unavailable", Environment.UserName);
+                await Services.Core.ErrorHandling.HandleErrorAsync(new InvalidOperationException("File selection not available"), "File selection unavailable", Environment.UserName);
                 return null;
             }
 
@@ -168,7 +168,7 @@ public class FileSelectionService : IFileSelectionService
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to create directory: {Directory}", directory);
-                        await ErrorHandling.HandleErrorAsync(ex, "Directory creation failed", Environment.UserName);
+                        await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Directory creation failed", Environment.UserName);
                         return null;
                     }
                 }
@@ -182,7 +182,7 @@ public class FileSelectionService : IFileSelectionService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during file export location selection");
-            await ErrorHandling.HandleErrorAsync(ex, "File selection for export", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "File selection for export", Environment.UserName);
             return null;
         }
     }
@@ -275,7 +275,7 @@ public class FileSelectionService : IFileSelectionService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error showing file selection view");
-            await ErrorHandling.HandleErrorAsync(ex, "Show file selection view", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Show file selection view", Environment.UserName);
             onFileSelected?.Invoke(null);
         }
     }

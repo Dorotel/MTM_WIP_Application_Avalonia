@@ -401,7 +401,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         {
             if (result.IsFailure && result.Exception != null)
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     result.Exception, 
                     operation, 
                     userId, 

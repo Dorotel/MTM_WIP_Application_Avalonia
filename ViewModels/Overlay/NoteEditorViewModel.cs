@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_Shared_Logic.Models;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
@@ -141,7 +142,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 else
                 {
                     _logger.LogWarning("Failed to update note for inventory item {InventoryId}: {Message}", _inventoryId, result.Message);
-                    await ErrorHandling.HandleErrorAsync(
+                    await Services.Core.ErrorHandling.HandleErrorAsync(
                         new InvalidOperationException($"Failed to update note: {result.Message}"),
                         "Note update failed",
                         "SYSTEM"
@@ -151,7 +152,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error saving note for inventory item {InventoryId}", _inventoryId);
-                await ErrorHandling.HandleErrorAsync(ex, "Error saving note", "SYSTEM");
+                await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Error saving note", "SYSTEM");
             }
             finally
             {
@@ -191,7 +192,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 _logger.LogInformation("🔧 Calling stored procedure with parameters: ID={ID}, PartID='{PartID}', BatchNumber='{BatchNumber}', User='{User}'", 
                     inventoryId, PartId, BatchNumber, CurrentUser);
 
-                var result = await Helper_Database_StoredProcedure.ExecuteWithStatus(
+                var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteWithStatus(
                     _databaseService.GetConnectionString(),
                     "inv_inventory_Update_Notes",
                     parameters

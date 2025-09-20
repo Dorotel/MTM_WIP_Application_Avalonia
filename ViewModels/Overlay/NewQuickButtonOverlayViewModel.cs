@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Business;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 
@@ -34,7 +35,7 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
     #region Private Fields
 
     private readonly IQuickButtonsService _quickButtonsService;
-    private readonly IMasterDataService _masterDataService;
+    private readonly MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService _masterDataService;
 
     #endregion
 
@@ -200,7 +201,7 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
     public NewQuickButtonOverlayViewModel(
         ILogger<NewQuickButtonOverlayViewModel> logger,
         IQuickButtonsService quickButtonsService,
-        IMasterDataService masterDataService)
+        MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService masterDataService)
         : base(logger)
     {
         _quickButtonsService = quickButtonsService ?? throw new ArgumentNullException(nameof(quickButtonsService));
@@ -603,7 +604,7 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error in Create QuickButton: {Message}", ex.Message);
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Create QuickButton", Models.Model_AppVariables.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Create QuickButton", Models.Model_AppVariables.CurrentUser);
             StatusMessage = "Error creating QuickButton. Please check logs for details.";
         }
         finally

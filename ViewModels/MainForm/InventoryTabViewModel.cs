@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Threading;
@@ -43,7 +45,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService? _configurationService;
     private readonly ISuggestionOverlayService _suggestionService;
-    private readonly IMasterDataService _masterDataService;
+    private readonly MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService _masterDataService;
     private readonly ISuccessOverlayService? _successOverlayService;
 
     #endregion
@@ -401,7 +403,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         IDatabaseService databaseService,
         IConfigurationService configurationService,
         ISuggestionOverlayService suggestionService,
-        IMasterDataService masterDataService,
+        MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService masterDataService,
         ISuccessOverlayService? successOverlayService = null) : base()
     {
         // Validate required dependencies with descriptive error messages
@@ -584,7 +586,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                     result.Status, result.Message, SelectedPart, SelectedOperation, SelectedLocation, Quantity, currentUser);
                 
                 // Use centralized error handling instead of local error properties
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException(result.Message ?? "Database operation failed"), 
                     "Failed to save inventory item",
                     _applicationStateService.CurrentUser
@@ -596,7 +598,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         catch (Exception ex)
         {
             // Use centralized error handling for exceptions
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Error saving inventory item", _applicationStateService.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Error saving inventory item", _applicationStateService.CurrentUser);
             Logger.LogError(ex, "Exception during inventory save operation");
             await _applicationStateService.SetProgressAsync(0, "Error occurred during save");
         }
@@ -638,7 +640,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "ResetForm", _applicationStateService.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ResetForm", _applicationStateService.CurrentUser);
         }
     }
 
@@ -656,7 +658,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         }
         catch (Exception ex)
         {
-            _ = Services.ErrorHandling.HandleErrorAsync(ex, "AdvancedEntry", _applicationStateService.CurrentUser);
+            _ = Services.Core.ErrorHandling.HandleErrorAsync(ex, "AdvancedEntry", _applicationStateService.CurrentUser);
         }
     }
 
@@ -674,7 +676,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         }
         catch (Exception ex)
         {
-            _ = Services.ErrorHandling.HandleErrorAsync(ex, "TogglePanel", _applicationStateService.CurrentUser);
+            _ = Services.Core.ErrorHandling.HandleErrorAsync(ex, "TogglePanel", _applicationStateService.CurrentUser);
         }
     }
 
@@ -702,7 +704,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "RefreshLookupData", _applicationStateService.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "RefreshLookupData", _applicationStateService.CurrentUser);
         }
     }
 
@@ -779,7 +781,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             Logger.LogInformation("Loading Part IDs from database...");
             
             // First try to get parts directly from master data table using the correct stored procedure
-            var masterResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var masterResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _configurationService?.GetConnectionString() ?? throw new InvalidOperationException("Configuration service not available"),
                 "md_part_ids_Get_All",
                 new Dictionary<string, object>()

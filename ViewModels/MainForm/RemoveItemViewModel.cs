@@ -12,6 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.ViewModels;
@@ -23,7 +25,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace API.ViewModels.MainForm;
+namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 /// <summary>
 /// ViewModel for the inventory removal interface (Control_RemoveTab).
@@ -38,7 +40,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     private readonly ISuggestionOverlayService _suggestionOverlayService;
     private readonly ISuccessOverlayService _successOverlayService;
     private readonly IQuickButtonsService _quickButtonsService;
-    private readonly IRemoveService _removeService;
+    private readonly MTM_WIP_Application_Avalonia.Services.Business.IRemoveService _removeService;
     private readonly IPrintService? _printService;
     private readonly INavigationService? _navigationService;
     private readonly IServiceProvider _serviceProvider;
@@ -241,7 +243,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Event fired when items are successfully removed
     /// </summary>
-    public event EventHandler<ItemsRemovedEventArgs>? ItemsRemoved;
+    public event EventHandler<MTM_WIP_Application_Avalonia.Services.Business.ItemsRemovedEventArgs>? ItemsRemoved;
 
     /// <summary>
     /// Event fired when panel toggle is requested
@@ -268,7 +270,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         ISuggestionOverlayService suggestionOverlayService,
         ISuccessOverlayService successOverlayService,
         IQuickButtonsService quickButtonsService,
-        IRemoveService removeService,
+        MTM_WIP_Application_Avalonia.Services.Business.IRemoveService removeService,
         IServiceProvider serviceProvider,
         ILogger<RemoveItemViewModel> logger,
         IPrintService? printService = null,
@@ -304,7 +306,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Handles items removed events from the RemoveService
     /// </summary>
-    private void OnItemsRemovedFromService(object? sender, ItemsRemovedEventArgs e)
+    private void OnItemsRemovedFromService(object? sender, MTM_WIP_Application_Avalonia.Services.Business.ItemsRemovedEventArgs e)
     {
         // Propagate the event to the UI
         ItemsRemoved?.Invoke(this, e);
@@ -1204,7 +1206,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error initiating print operation");
-            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
+            await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to open print interface", Environment.UserName);
         }
     }
 
@@ -1234,7 +1236,7 @@ public partial class RemoveItemViewModel : BaseViewModel
             if (noteEditorViewModel == null)
             {
                 Logger.LogError("NoteEditorViewModel not available from DI container");
-                await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(
+                await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException("Note editor not available"),
                     "Note Editor Error",
                     _applicationState.CurrentUser);
@@ -1266,7 +1268,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to open note editor for item: {PartId}", item?.PartId);
-            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Note Editor Error", _applicationState.CurrentUser);
+            await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(ex, "Note Editor Error", _applicationState.CurrentUser);
         }
     }
 
@@ -1315,7 +1317,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error handling note edit completion");
-            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Note Editor Error", _applicationState.CurrentUser);
+            await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(ex, "Note Editor Error", _applicationState.CurrentUser);
         }
     }
 
@@ -1374,7 +1376,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to open edit dialog for item: {PartId}", item?.PartId);
-            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Edit Dialog Error", _applicationState.CurrentUser);
+            await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(ex, "Edit Dialog Error", _applicationState.CurrentUser);
         }
     }
 
@@ -1469,7 +1471,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error handling inventory item save completion");
-            await MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Data Update Error", _applicationState.CurrentUser);
+            await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(ex, "Data Update Error", _applicationState.CurrentUser);
         }
     }
 
@@ -1518,7 +1520,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             // Load Parts using md_part_ids_Get_All stored procedure
             Logger.LogDebug("Calling md_part_ids_Get_All stored procedure");
-            var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var partResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_part_ids_Get_All",
                 new Dictionary<string, object>()
@@ -1555,7 +1557,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             // Load Operations using md_operation_numbers_Get_All stored procedure
             Logger.LogDebug("Calling md_operation_numbers_Get_All stored procedure");
-            var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+            var operationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_operation_numbers_Get_All",
                 new Dictionary<string, object>()
@@ -1714,7 +1716,7 @@ public partial class RemoveItemViewModel : BaseViewModel
         Logger.LogError(ex, "Error in RemoveItemViewModel operation");
 
         // Present user-friendly error message via centralized error service
-        _ = MTM_WIP_Application_Avalonia.Services.ErrorHandling.HandleErrorAsync(ex, "Remove Operation", _applicationState.CurrentUser);
+        _ = MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(ex, "Remove Operation", _applicationState.CurrentUser);
 
         // Update UI state to reflect error
         // Note: StatusMessage property may need to be added to this ViewModel for UI feedback

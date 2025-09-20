@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
@@ -21,8 +22,8 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 /// </summary>
 public partial class EditInventoryViewModel : BaseViewModel
 {
-    private readonly IInventoryEditingService _editingService;
-    private readonly IMasterDataService _masterDataService;
+    private readonly MTM_WIP_Application_Avalonia.Services.Business.IInventoryEditingService _editingService;
+    private readonly MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService _masterDataService;
 
     [ObservableProperty]
     private EditInventoryModel editModel = new();
@@ -210,8 +211,8 @@ public partial class EditInventoryViewModel : BaseViewModel
 
     public EditInventoryViewModel(
         ILogger<EditInventoryViewModel> logger,
-        IInventoryEditingService editingService,
-        IMasterDataService masterDataService)
+        MTM_WIP_Application_Avalonia.Services.Business.IInventoryEditingService editingService,
+        MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService masterDataService)
         : base(logger)
     {
         ArgumentNullException.ThrowIfNull(editingService);
@@ -322,7 +323,7 @@ public partial class EditInventoryViewModel : BaseViewModel
             var inventoryItem = await loadItemTask;
             if (inventoryItem == null)
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Inventory item with ID {inventoryId} not found"),
                     "Failed to load inventory item for editing",
                     "SYSTEM"
@@ -378,7 +379,7 @@ public partial class EditInventoryViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to initialize inventory edit dialog", "SYSTEM");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to initialize inventory edit dialog", "SYSTEM");
         }
         finally
         {
@@ -467,7 +468,7 @@ public partial class EditInventoryViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to initialize inventory edit dialog", "SYSTEM");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to initialize inventory edit dialog", "SYSTEM");
         }
         finally
         {
@@ -611,7 +612,7 @@ public partial class EditInventoryViewModel : BaseViewModel
             }
             else
             {
-                await Services.ErrorHandling.HandleErrorAsync(
+                await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Save operation failed: {result.StatusMessage}"),
                     "Failed to save inventory changes",
                     "SYSTEM"
@@ -620,7 +621,7 @@ public partial class EditInventoryViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Services.ErrorHandling.HandleErrorAsync(ex, "Error saving inventory changes", "SYSTEM");
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Error saving inventory changes", "SYSTEM");
         }
         finally
         {

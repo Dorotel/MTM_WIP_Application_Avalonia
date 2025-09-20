@@ -218,7 +218,7 @@ public partial class NewQuickButtonView : UserControl
                     {
                         try
                         {
-                            await Services.ErrorHandling.HandleErrorAsync(
+                            await Services.Core.ErrorHandling.HandleErrorAsync(
                                 new ArgumentException($"Invalid Part ID: '{value}' not found in available options."),
                                 "Part ID validation failed - input cleared",
                                 "System"
@@ -317,7 +317,7 @@ public partial class NewQuickButtonView : UserControl
                     {
                         try
                         {
-                            await Services.ErrorHandling.HandleErrorAsync(
+                            await Services.Core.ErrorHandling.HandleErrorAsync(
                                 new ArgumentException($"Invalid Operation: '{value}' not found in available options."),
                                 "Operation validation failed - input cleared",
                                 "System"

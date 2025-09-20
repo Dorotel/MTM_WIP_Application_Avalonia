@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Views;
 using CommunityToolkit.Mvvm.Input;
@@ -96,8 +97,8 @@ public partial class App : Application
             _logger = Program.GetService<ILogger<App>>();
             var loggerFactory = Program.GetService<ILoggerFactory>() 
                 ?? throw new InvalidOperationException("LoggerFactory service could not be resolved");
-            var generalLogger = loggerFactory.CreateLogger("Helper_Database_StoredProcedure");
-            Helper_Database_StoredProcedure.SetLogger(generalLogger);
+            var generalLogger = loggerFactory.CreateLogger("Services.Core.Helper_Database_StoredProcedure");
+            Services.Core.Helper_Database_StoredProcedure.SetLogger(generalLogger);
 
             _logger?.LogInformation("MTM WIP Application framework initialization started");
             _logger?.LogInformation("Model_AppVariables and database helper initialized successfully");

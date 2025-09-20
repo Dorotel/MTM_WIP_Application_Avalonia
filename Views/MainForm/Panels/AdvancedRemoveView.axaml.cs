@@ -161,7 +161,7 @@ public partial class AdvancedRemoveView : UserControl
             }
 
             // Also log to error handling system
-            await ErrorHandling.HandleErrorAsync(ex, commandName, Environment.UserName,
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, commandName, Environment.UserName,
                 new Dictionary<string, object>
                 {
                     ["Component"] = "AdvancedRemoveView",
@@ -315,7 +315,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Bulk removal operation failed");
-            await ErrorHandling.HandleErrorAsync(ex, "ExecuteBulkRemovalAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteBulkRemovalAsync", Environment.UserName);
             return false;
         }
     }
@@ -343,7 +343,7 @@ public partial class AdvancedRemoveView : UserControl
         {
             _logger?.LogError(ex, "Undo removal operation failed for transaction: {TransactionId}", 
                 removalTransactionId);
-            await ErrorHandling.HandleErrorAsync(ex, "ExecuteUndoRemovalAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteUndoRemovalAsync", Environment.UserName);
             return false;
         }
     }
@@ -370,7 +370,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Removal analytics generation failed");
-            await ErrorHandling.HandleErrorAsync(ex, "GenerateRemovalAnalyticsAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "GenerateRemovalAnalyticsAsync", Environment.UserName);
             return false;
         }
     }
@@ -396,7 +396,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Removal data export failed for file: {FilePath}", filePath);
-            await ErrorHandling.HandleErrorAsync(ex, "ExportRemovalDataAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExportRemovalDataAsync", Environment.UserName);
             return false;
         }
     }
@@ -422,7 +422,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Removal summary printing failed");
-            await ErrorHandling.HandleErrorAsync(ex, "PrintRemovalSummaryAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "PrintRemovalSummaryAsync", Environment.UserName);
             return false;
         }
     }
@@ -446,7 +446,7 @@ public partial class AdvancedRemoveView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to apply advanced removal filters");
-            await ErrorHandling.HandleErrorAsync(ex, "ApplyAdvancedRemovalFiltersAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ApplyAdvancedRemovalFiltersAsync", Environment.UserName);
         }
     }
 }
