@@ -550,7 +550,7 @@ public class ManufacturingKPIService : IManufacturingKPIService
                                    FontSize="24" 
                                    FontWeight="Bold" 
                                    Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-                        <TextBlock Text="{Binding LastUpdateTime, StringFormat='Last Updated: September 19, 2025
+                        <TextBlock Text="{Binding LastUpdateTime, StringFormat='Last Updated: September 20, 2025
                                    FontSize="14" 
                                    Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
                     </StackPanel>
