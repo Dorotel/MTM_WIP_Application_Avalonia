@@ -12,6 +12,8 @@ using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.Services.Business;
+using MTM_WIP_Application_Avalonia.Services.UI;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
 
 namespace MTM_WIP_Application_Avalonia.Extensions;
 
@@ -27,66 +29,51 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddMTMServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Core infrastructure services
-        services.TryAddSingleton<IConfigurationService, ConfigurationService>();
-        services.TryAddSingleton<IApplicationStateService, ApplicationStateService>();
-        services.TryAddSingleton<INavigationService, NavigationService>();
-        services.TryAddSingleton<IFilePathService, FilePathService>();
+        // CONSOLIDATED CORE SERVICES (Services/Core/CoreServices.cs)
+        services.TryAddSingleton<IConfigurationService, Core.ConfigurationService>();
+        services.TryAddSingleton<IApplicationStateService, Core.ApplicationStateService>();
+        services.TryAddSingleton<IDatabaseService, Core.DatabaseService>();
 
-        // Logging services
-        services.TryAddSingleton<IFileLoggingService, FileLoggingService>();
+        // CONSOLIDATED BUSINESS SERVICES (Services/Business/BusinessServices.cs)
+        services.TryAddSingleton<Business.IMasterDataService, Business.MasterDataService>();
+        services.TryAddSingleton<Business.IRemoveService, Business.RemoveService>();
+        services.TryAddSingleton<Business.IInventoryEditingService, Business.InventoryEditingService>();
+
+        // CONSOLIDATED UI SERVICES (Services/UI/UIServices.cs)
+        services.TryAddSingleton<UI.INavigationService, UI.NavigationService>();
+        services.TryAddSingleton<UI.IThemeService, UI.ThemeService>();
+        services.TryAddSingleton<UI.IFocusManagementService, UI.FocusManagementService>();
+        services.TryAddSingleton<UI.ISuccessOverlayService, UI.SuccessOverlayService>();
+
+        // CONSOLIDATED INFRASTRUCTURE SERVICES (Services/Infrastructure/InfrastructureServices.cs)
+        services.TryAddSingleton<Infrastructure.IFileSelectionService, Infrastructure.FileSelectionService>();
+        services.TryAddSingleton<Infrastructure.IFilePathService, Infrastructure.FilePathService>();
+        services.TryAddSingleton<Infrastructure.IPrintService, Infrastructure.PrintService>();
+        services.TryAddSingleton<Infrastructure.IFileLoggingService, Infrastructure.FileLoggingService>();
+        services.TryAddSingleton<Infrastructure.IEmergencyKeyboardHookService, Infrastructure.EmergencyKeyboardHookService>();
+
+        // Logging services using consolidated Infrastructure
         services.AddLogging(builder =>
         {
             // Add custom file logging provider
             builder.Services.AddSingleton<ILoggerProvider>(serviceProvider =>
             {
-                var fileLoggingService = serviceProvider.GetRequiredService<IFileLoggingService>();
+                var fileLoggingService = serviceProvider.GetRequiredService<Infrastructure.IFileLoggingService>();
                 return new MTMFileLoggerProvider(fileLoggingService);
             });
         });
 
-        // Theme and Settings services
-        services.TryAddSingleton<IThemeService, ThemeService>();
+        // FEATURE SERVICES (kept separate as per plan)
         services.TryAddSingleton<ISettingsService, SettingsService>();
-
-        // SettingsForm services
-        services.TryAddSingleton<VirtualPanelManager>();
-        services.TryAddSingleton<SettingsPanelStateManager>();
-
-        // Database services
-        services.TryAddSingleton<IDatabaseService, DatabaseService>();
-
-        // UI and Application services
         services.TryAddSingleton<IQuickButtonsService, QuickButtonsService>();
         services.TryAddSingleton<IProgressService, ProgressService>();
 
-        // Register SuggestionOverlay service - change to singleton for validation
+        // UI PANEL AND OVERLAY SERVICES (Services root - to be consolidated later)
         services.TryAddSingleton<ISuggestionOverlayService, SuggestionOverlayService>();
-
-        // Register SuccessOverlay service - singleton for shared access across ViewModels
-        services.TryAddSingleton<ISuccessOverlayService, SuccessOverlayService>();
-
-        // Register Master Data service - singleton for shared access across ViewModels
-        services.TryAddSingleton<Services.Business.IMasterDataService, Services.Business.MasterDataService>();
-
-        // Register Focus Management service - singleton for application-wide focus management
-        services.TryAddSingleton<IFocusManagementService, FocusManagementService>();
-
-
-        // Register Print service - singleton for shared access across ViewModels
-        services.TryAddSingleton<IPrintService, PrintService>();
-
-        // Register Remove service - singleton for centralized inventory removal business logic
-        services.TryAddSingleton<Services.Business.IRemoveService, Services.Business.RemoveService>();
-
-        // Register CustomDataGrid service - singleton for shared data grid functionality across views
+        services.TryAddSingleton<VirtualPanelManager>();
+        services.TryAddSingleton<SettingsPanelStateManager>();
         services.TryAddSingleton<ICustomDataGridService, CustomDataGridService>();
-
-        // Register File Selection service - singleton for unified file operations across application
-        services.TryAddSingleton<IFileSelectionService, FileSelectionService>();
-
-        // Register Inventory Editing service - singleton for comprehensive inventory editing operations
-        services.TryAddSingleton<Services.Business.IInventoryEditingService, Services.Business.InventoryEditingService>();
+        services.TryAddSingleton<IColumnConfigurationService, ColumnConfigurationService>();
 
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
@@ -188,19 +175,22 @@ public static class ServiceCollectionExtensions
             typeof(ILoggerFactory),
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
-            typeof(INavigationService),
-            typeof(IFilePathService),
-            typeof(IThemeService),
-            typeof(ISettingsService),
             typeof(IDatabaseService),
+            typeof(UI.INavigationService),
+            typeof(UI.IThemeService),
+            typeof(UI.IFocusManagementService),
+            typeof(UI.ISuccessOverlayService),
+            typeof(Infrastructure.IFilePathService),
+            typeof(Infrastructure.IFileLoggingService),
+            typeof(Infrastructure.IFileSelectionService),
+            typeof(Infrastructure.IPrintService),
+            typeof(Business.IMasterDataService),
+            typeof(Business.IRemoveService),
+            typeof(Business.IInventoryEditingService),
+            typeof(ISettingsService),
             typeof(IQuickButtonsService),
             typeof(IProgressService),
-            typeof(ISuggestionOverlayService),
-            typeof(Services.Business.IMasterDataService),
-            typeof(IFileLoggingService),
-            typeof(IFocusManagementService),
-            typeof(Services.Business.IRemoveService),
-            typeof(IFileSelectionService)
+            typeof(ISuggestionOverlayService)
         };
 
         var missingServices = requiredServices
@@ -227,19 +217,22 @@ public static class ServiceCollectionExtensions
         {
             typeof(IConfigurationService),
             typeof(IApplicationStateService),
-            typeof(INavigationService),
-            typeof(IFilePathService),
-            typeof(IThemeService),
-            typeof(ISettingsService),
             typeof(IDatabaseService),
+            typeof(UI.INavigationService),
+            typeof(UI.IThemeService),
+            typeof(UI.IFocusManagementService),
+            typeof(UI.ISuccessOverlayService),
+            typeof(Infrastructure.IFilePathService),
+            typeof(Infrastructure.IFileLoggingService),
+            typeof(Infrastructure.IFileSelectionService),
+            typeof(Infrastructure.IPrintService),
+            typeof(Business.IMasterDataService),
+            typeof(Business.IRemoveService),
+            typeof(Business.IInventoryEditingService),
+            typeof(ISettingsService),
             typeof(IQuickButtonsService),
             typeof(IProgressService),
-            typeof(ISuggestionOverlayService),
-            typeof(Services.Business.IMasterDataService),
-            typeof(IFileLoggingService),
-            typeof(IFocusManagementService),
-            typeof(Services.Business.IRemoveService),
-            typeof(IFileSelectionService)
+            typeof(ISuggestionOverlayService)
         };
 
         var failedServices = new List<string>();
