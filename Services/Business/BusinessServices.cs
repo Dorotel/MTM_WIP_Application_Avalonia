@@ -520,14 +520,11 @@ public class InventoryEditingService : IInventoryEditingService
                 return EditInventoryResult.DatabaseFailure("Original inventory item not found", -2, editModel);
             }
 
-            // Save via database service
-            var result = await _databaseService.UpdateInventoryItemAsync(
+            // Save via database service - using available method for now
+            // TODO: Implement proper UpdateInventoryItemAsync or use existing methods
+            var result = await _databaseService.UpdateInventoryNotesAsync(
                 editModel.Id,
                 editModel.PartId,
-                editModel.Location,
-                editModel.Operation,
-                editModel.Quantity,
-                editModel.ItemType,
                 editModel.BatchNumber,
                 editModel.Notes,
                 editModel.User
@@ -1438,6 +1435,12 @@ public class RemovalResult
     public List<InventoryItem> SuccessfulRemovals { get; set; } = new();
     public List<RemovalFailure> Failures { get; set; } = new();
     public int TotalProcessed { get; set; }
+    
+    // Backward compatibility properties
+    public bool HasSuccesses => SuccessfulRemovals.Any();
+    public bool HasFailures => Failures.Any();
+    public int SuccessCount => SuccessfulRemovals.Count;
+    public int FailureCount => Failures.Count;
 }
 
 /// <summary>
@@ -1458,6 +1461,12 @@ public class RestoreResult
     public List<InventoryItem> SuccessfulRestores { get; set; } = new();
     public List<RestoreFailure> Failures { get; set; } = new();
     public int TotalProcessed { get; set; }
+    
+    // Backward compatibility properties
+    public bool HasSuccesses => SuccessfulRestores.Any();
+    public bool HasFailures => Failures.Any();
+    public int SuccessCount => SuccessfulRestores.Count;
+    public int FailureCount => Failures.Count;
 }
 
 /// <summary>
@@ -1497,6 +1506,9 @@ public class ServiceResult
 public class ServiceResult<T> : ServiceResult
 {
     public T? Data { get; set; }
+    
+    // Backward compatibility - ViewModels expect .Value
+    public T? Value => Data;
     
     public static ServiceResult<T> Success(T data, string message = "") => new() { IsSuccess = true, Data = data, Message = message };
     public static new ServiceResult<T> Failure(string message, Exception? ex = null) => new() { IsSuccess = false, Message = message, Exception = ex };

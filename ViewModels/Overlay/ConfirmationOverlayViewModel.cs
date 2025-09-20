@@ -1,26 +1,19 @@
 using System;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 
 /// <summary>
 /// ViewModel for confirmation and error message overlay.
 /// Supports both confirmation dialogs and error message display.
+/// Now inherits from BaseOverlayViewModel for consistent overlay behavior.
 /// </summary>
-public partial class ConfirmationOverlayViewModel : BaseViewModel
+public partial class ConfirmationOverlayViewModel : BaseOverlayViewModel
 {
     #region Observable Properties
-
-    /// <summary>
-    /// Title text for the overlay
-    /// </summary>
-    [ObservableProperty]
-    private string title = string.Empty;
 
     /// <summary>
     /// Main message text
@@ -64,18 +57,6 @@ public partial class ConfirmationOverlayViewModel : BaseViewModel
     [ObservableProperty]
     private string iconKind = "QuestionMark";
 
-    /// <summary>
-    /// Whether the overlay is currently visible
-    /// </summary>
-    [ObservableProperty]
-    private bool isVisible;
-
-    /// <summary>
-    /// Whether the overlay is in loading state
-    /// </summary>
-    [ObservableProperty]
-    private bool isLoading;
-
     #endregion
 
     #region Events
@@ -90,72 +71,6 @@ public partial class ConfirmationOverlayViewModel : BaseViewModel
     /// </summary>
     public event EventHandler? Cancelled;
 
-    /// <summary>
-    /// Event fired when overlay is closed
-    /// </summary>
-    public event EventHandler? Closed;
-
-    #endregion
-
-    #region Commands
-
-    /// <summary>
-    /// Command to confirm the action
-    /// </summary>
-    [RelayCommand]
-    private async Task ConfirmAsync()
-    {
-        try
-        {
-            IsLoading = true;
-            Confirmed?.Invoke(this, EventArgs.Empty);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error during confirmation action");
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Confirmation failed", Environment.UserName);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    /// <summary>
-    /// Command to cancel the action
-    /// </summary>
-    [RelayCommand]
-    private void Cancel()
-    {
-        try
-        {
-            IsVisible = false;
-            Cancelled?.Invoke(this, EventArgs.Empty);
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error during cancel action");
-        }
-    }
-
-    /// <summary>
-    /// Command to close the overlay
-    /// </summary>
-    [RelayCommand]
-    private void Close()
-    {
-        try
-        {
-            IsVisible = false;
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error during close action");
-        }
-    }
-
     #endregion
 
     #region Constructor
@@ -163,7 +78,60 @@ public partial class ConfirmationOverlayViewModel : BaseViewModel
     public ConfirmationOverlayViewModel(ILogger<ConfirmationOverlayViewModel> logger)
         : base(logger)
     {
-        ArgumentNullException.ThrowIfNull(logger);
+        // Override default title
+        Title = "Confirm Action";
+    }
+
+    #endregion
+
+    #region BaseOverlayViewModel Overrides
+
+    protected override string GetDefaultTitle() => "Confirm Action";
+
+    protected override async Task<bool> OnConfirmAsync()
+    {
+        try
+        {
+            Confirmed?.Invoke(this, EventArgs.Empty);
+            return true; // Close overlay after confirmation
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex, "Confirmation action failed");
+            return false; // Don't close overlay on error
+        }
+    }
+
+    protected override async Task OnCancelAsync()
+    {
+        try
+        {
+            Cancelled?.Invoke(this, EventArgs.Empty);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex, "Cancellation action failed");
+        }
+    }
+
+    protected override void OnClosed(OverlayCloseReason reason)
+    {
+        base.OnClosed(reason);
+        
+        // Fire appropriate events based on close reason
+        switch (reason)
+        {
+            case OverlayCloseReason.UserConfirmed:
+                // Already handled in OnConfirmAsync
+                break;
+            case OverlayCloseReason.UserCancelled:
+                // Already handled in OnCancelAsync  
+                break;
+            default:
+                // For other close reasons, treat as cancellation
+                Cancelled?.Invoke(this, EventArgs.Empty);
+                break;
+        }
     }
 
     #endregion
@@ -183,7 +151,7 @@ public partial class ConfirmationOverlayViewModel : BaseViewModel
         SecondaryButtonText = "Cancel";
         ShowSecondaryButton = true;
         IconKind = "Delete";
-        IsVisible = true;
+        Show();
 
         Logger.LogInformation("Showing delete confirmation for: {ItemDescription}", itemDescription);
     }
@@ -201,7 +169,7 @@ public partial class ConfirmationOverlayViewModel : BaseViewModel
         SecondaryButtonText = string.Empty;
         ShowSecondaryButton = false;
         IconKind = "AlertCircle";
-        IsVisible = true;
+        Show();
 
         Logger.LogWarning("Showing error dialog: {Title} - {Message}", title, message);
     }
@@ -219,7 +187,7 @@ public partial class ConfirmationOverlayViewModel : BaseViewModel
         SecondaryButtonText = string.Empty;
         ShowSecondaryButton = false;
         IconKind = "CheckCircle";
-        IsVisible = true;
+        Show();
 
         Logger.LogInformation("Showing success dialog: {Title} - {Message}", title, message);
     }
@@ -237,7 +205,7 @@ public partial class ConfirmationOverlayViewModel : BaseViewModel
         SecondaryButtonText = string.Empty;
         ShowSecondaryButton = false;
         IconKind = "Warning";
-        IsVisible = true;
+        Show();
 
         Logger.LogWarning("Showing warning dialog: {Title} - {Message}", title, message);
     }
@@ -255,7 +223,7 @@ public partial class ConfirmationOverlayViewModel : BaseViewModel
         SecondaryButtonText = secondaryText;
         ShowSecondaryButton = true;
         IconKind = "QuestionMark";
-        IsVisible = true;
+        Show();
 
         Logger.LogInformation("Showing confirmation dialog: {Title} - {Message}", title, message);
     }
