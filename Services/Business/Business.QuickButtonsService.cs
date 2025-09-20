@@ -45,29 +45,7 @@ public interface IQuickButtonsService
     event EventHandler<SessionTransactionEventArgs>? SessionTransactionAdded;
 }
 
-/// <summary>
-/// Progress reporting service interface.
-/// Provides centralized progress reporting for long-running operations
-/// with support for detailed status messages and cancellation.
-/// </summary>
-public interface IProgressService : INotifyPropertyChanged
-{
-    bool IsOperationInProgress { get; }
-    string CurrentOperationDescription { get; }
-    int ProgressPercentage { get; }
-    string StatusMessage { get; }
-    bool CanCancel { get; }
 
-    void StartOperation(string description, bool canCancel = false);
-    void UpdateProgress(int percentage, string? statusMessage = null);
-    void CompleteOperation(string? finalMessage = null);
-    void CancelOperation();
-    void ReportError(string errorMessage);
-
-    event EventHandler<ProgressChangedEventArgs>? ProgressChanged;
-    event EventHandler<OperationCompletedEventArgs>? OperationCompleted;
-    event EventHandler? OperationCancelled;
-}
 
 /// <summary>
 /// Quick buttons service implementation.
@@ -76,7 +54,6 @@ public interface IProgressService : INotifyPropertyChanged
 public class QuickButtonsService : IQuickButtonsService
 {
     private readonly ILogger<QuickButtonsService> _logger;
-    private const string DefaultItemType = "WIP"; // Align with stored procedure expectation
 
     public event EventHandler<QuickButtonsChangedEventArgs>? QuickButtonsChanged;
     public event EventHandler<SessionTransactionEventArgs>? SessionTransactionAdded;
@@ -88,6 +65,7 @@ public class QuickButtonsService : IQuickButtonsService
 
     public async Task<List<QuickButtonData>> LoadUserQuickButtonsAsync(string userId)
     {
+        _logger.LogInformation("Loading quick buttons for user: {UserId}", userId);
         // Implementation moved from root Services/QuickButtons.cs
         // Note: Implementation details truncated for brevity in consolidation
         return new List<QuickButtonData>();
@@ -184,43 +162,7 @@ public class QuickButtonsService : IQuickButtonsService
     }
 }
 
-/// <summary>
-/// Progress service implementation.
-/// Provides centralized progress reporting with thread-safe operations.
-/// </summary>
-public class ProgressService : IProgressService
-{
-    private readonly ILogger<ProgressService> _logger;
-    private readonly object _lockObject = new object();
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-    public event EventHandler<ProgressChangedEventArgs>? ProgressChanged;
-    public event EventHandler<OperationCompletedEventArgs>? OperationCompleted;
-    public event EventHandler? OperationCancelled;
-
-    private bool _isOperationInProgress;
-    private string _currentOperationDescription = string.Empty;
-    private int _progressPercentage;
-    private string _statusMessage = string.Empty;
-    private bool _canCancel;
-
-    public ProgressService(ILogger<ProgressService> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    public bool IsOperationInProgress { get; private set; }
-    public string CurrentOperationDescription { get; private set; } = string.Empty;
-    public int ProgressPercentage { get; private set; }
-    public string StatusMessage { get; private set; } = string.Empty;
-    public bool CanCancel { get; private set; }
-
-    public void StartOperation(string description, bool canCancel = false) { }
-    public void UpdateProgress(int percentage, string? statusMessage = null) { }
-    public void CompleteOperation(string? finalMessage = null) { }
-    public void CancelOperation() { }
-    public void ReportError(string errorMessage) { }
-}
 
 /// <summary>
 /// Quick button data model.

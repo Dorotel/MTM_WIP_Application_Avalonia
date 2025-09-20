@@ -2,15 +2,17 @@
 
 **Project**: MTM WIP Application Overlay System Refactoring  
 **Start Date**: September 19, 2025  
-**Status**: 🟡 In Progress - Phase 1 Project Reorganization  
-**Overall Progress**: 15% (Analysis Complete, Service Reorganization In Progress)
+**Status**: 🟡 In Progress - Phase 1 Project Reorganization (Services + Models)  
+**Overall Progress**: 20% (Analysis Complete, Services + Models Reorganization In Progress)
 
-## 🚀 Latest Update (September 20, 2025)
+## 🚀 Latest Update (January 18, 2025)
 
-- ✅ **SubTask 2.3.1: Connection Status Overlay** completed (ConnectionStatusOverlayViewModel, ConnectionStatusOverlayView.axaml)
-- 🟡 **Phase 2: Universal Overlay System** progress: 59% (10/17 SubTasks)
-- 🟢 **Critical Missing Overlays**: Connection Status Overlay now implemented
-- **Next Step**: Begin Emergency Shutdown Overlay (SubTask 2.3.2)
+- ✅ **Models Folder Organization Analysis** completed (MODEL_DEPENDENCY_ANALYSIS.md created with 21 files across 6 categories)
+- ✅ **Models Reorganization Plan** created following {Folder}.{Model}.cs naming pattern matching Services structure
+- ✅ **Master Implementation Plan** updated with TASK 1.4 Models Folder Organization (6 SubTasks)
+- ✅ **WeekendRefactor Documentation** updated to include comprehensive Models organization strategy
+- 🟡 **Phase 1: Project Reorganization** progress: Services consolidation ongoing, Models ready for implementation
+- **Next Step**: Begin Models folder structure creation (SubTask 1.4.2)
 
 ---
 
@@ -51,6 +53,24 @@
 | Update Service Registration | 🔴 Not Started | Extensions/ServiceCollectionExtensions.cs full update | |
 
 **Completion**: 3/6 tasks (50%)
+
+### **Phase 1.2: Models Folder Organization (New)**
+
+**Priority**: 🟡 High  
+**Timeline**: After Services Reorganization  
+**Status**: 🟡 In Progress (Analysis Complete)
+
+| Task | Status | Notes | Assignee |
+|------|--------|-------|----------|
+| Create MODEL_DEPENDENCY_ANALYSIS.md | 🟢 Completed | Analysis of 21 model files across 6 categories | Agent |
+| Create Core Models Folder Structure | 🔴 Not Started | Core.AppVariables.cs, Core.EditInventoryModel.cs, etc. | |
+| Create Events Models Folder Structure | 🔴 Not Started | Events.EventArgs.cs, Events.FocusManagementEventArgs.cs, etc. | |
+| Create UI Models Folder Structure | 🔴 Not Started | UI.CustomDataGrid.*.cs pattern from CustomDataGrid folder | |
+| Create Overlay & Print Models Structure | 🔴 Not Started | Overlay.*.cs and Print.*.cs patterns | |
+| Create Shared Models and Clean Root | 🔴 Not Started | Shared.*.cs patterns and root cleanup | |
+| Update All Model References | 🔴 Not Started | ViewModels, Services, Views using statement updates | |
+
+**Completion**: 1/7 tasks (14%)
 
 ### **Stage 1: Critical Safety & Cleanup**
 
@@ -211,13 +231,23 @@
 - ✅ Core Services Directory Structure completed (Configuration.cs, Database.cs, ErrorHandling.cs moved to Services/Core/)
 - ✅ Business Services Group completed (MasterDataService, InventoryEditingService, RemoveService consolidated to Services/Business/)
 - 🟡 UI Services Group in progress (Navigation, ThemeService, FocusManagement, SuccessOverlay → Services/UI/)
-- 🔄 **Current Focus**: Completing UI Services consolidation before moving to Universal Overlay Service implementation
+
+### **January 18, 2025**
+
+- ✅ **Models Folder Organization Analysis Completed** (Models/MODEL_DEPENDENCY_ANALYSIS.md created)
+- ✅ Models dependency analysis shows 21 files across 6 functional categories
+- ✅ Models reorganization plan created following {Folder}.{Model}.cs naming pattern
+- ✅ Master Implementation Plan updated to include TASK 1.4 Models Folder Organization
+- ✅ MTM Implementation Prompts updated with Models reorganization prompt
+- ✅ WeekendRefactor documentation updated to include Models organization strategy
+- 🔄 **Current Focus**: Ready to begin Models folder reorganization implementation
 
 ### **Implementation Updates**
 
 **Phase 1 - Project Reorganization Progress:**
 
 - **Services Consolidated**: 6 of 21 remaining services (3 groups completed: Core, Business; UI in progress)
+- **Models Organization**: Analysis phase complete, ready for folder structure implementation
 - **Build Status**: Compilation issues due to namespace refactoring (normal for major reorganization)
 - **Automation Scripts Created**: 6 PowerShell scripts for bulk reference updates
 - **Total Reference Updates**: 280+ automated fixes across 40+ files

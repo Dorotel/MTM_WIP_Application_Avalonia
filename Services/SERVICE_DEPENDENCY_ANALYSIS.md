@@ -88,7 +88,7 @@ Core Services (3) ← Infrastructure Services (7) ← Feature Services (3)
 - Core.DatabaseService.cs - `IDatabaseService`
 - Core.ConfigurationService.cs - `IConfigurationService`
 - Core.ApplicationStateService.cs - `IApplicationStateService`
-- Core.ErrorHandling.cs - Static error handling
+- Core.ErrorHandling.cs - `Static error handling`
 
 #### **2. Services/Business/** (5 services in separate files)
 

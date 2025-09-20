@@ -9,12 +9,12 @@ using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
-using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.Services.UI;
 using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.Feature;
 
 namespace MTM_WIP_Application_Avalonia.Extensions;
 
@@ -26,54 +26,55 @@ public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Adds all MTM services to the service collection.
-    /// Clean, simple registration of only the services that exist and work.
+    /// Services are organized in folder-based structure with individual files.
     /// </summary>
     public static IServiceCollection AddMTMServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // CONSOLIDATED CORE SERVICES (Services/Core/CoreServices.cs)
-        services.TryAddSingleton<Core.IConfigurationService, Core.ConfigurationService>();
-        services.TryAddSingleton<Core.IApplicationStateService, Core.ApplicationStateService>();
-        services.TryAddSingleton<Core.IDatabaseService, Core.DatabaseService>();
+        // CORE SERVICES (Services/Core/ folder - using folder-specific namespace)
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Core.IConfigurationService, MTM_WIP_Application_Avalonia.Services.Core.ConfigurationService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Core.IApplicationStateService, MTM_WIP_Application_Avalonia.Services.Core.ApplicationStateService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Core.IDatabaseService, MTM_WIP_Application_Avalonia.Services.Core.DatabaseService>();
 
-        // CONSOLIDATED BUSINESS SERVICES (Services/Business/BusinessServices.cs)
-        services.TryAddSingleton<Business.IMasterDataService, Business.MasterDataService>();
-        services.TryAddSingleton<Business.IRemoveService, Business.RemoveService>();
-        services.TryAddSingleton<Business.IInventoryEditingService, Business.InventoryEditingService>();
-        services.TryAddSingleton<Business.IQuickButtonsService, Business.QuickButtonsService>();
-        services.TryAddSingleton<Business.IProgressService, Business.ProgressService>();
+        // BUSINESS SERVICES (Services/Business/ folder - using base namespace)
+        services.TryAddSingleton<IMasterDataService, MasterDataService>();
+        services.TryAddSingleton<IInventoryEditingService, InventoryEditingService>();
+        services.TryAddSingleton<IQuickButtonsService, QuickButtonsService>();
+        services.TryAddSingleton<IProgressService, ProgressService>();
+        services.TryAddSingleton<IRemoveService, RemoveService>();
 
-        // CONSOLIDATED UI SERVICES (Services/UI/UIServices.cs)
-        services.TryAddSingleton<UI.INavigationService, UI.NavigationService>();
-        services.TryAddSingleton<UI.IThemeService, UI.ThemeService>();
-        services.TryAddSingleton<UI.IFocusManagementService, UI.FocusManagementService>();
-        services.TryAddSingleton<UI.ISuccessOverlayService, UI.SuccessOverlayService>();
-        services.TryAddSingleton<UI.IUniversalOverlayService, UI.UniversalOverlayService>();
+        // UI SERVICES (Services/UI/ folder - using folder-specific namespace)
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.IThemeService, MTM_WIP_Application_Avalonia.Services.UI.ThemeService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.IFocusManagementService, MTM_WIP_Application_Avalonia.Services.UI.FocusManagementService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.ISuccessOverlayService, MTM_WIP_Application_Avalonia.Services.UI.SuccessOverlayService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.ISuggestionOverlayService, MTM_WIP_Application_Avalonia.Services.UI.SuggestionOverlayService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.ICustomDataGridService, MTM_WIP_Application_Avalonia.Services.UI.CustomDataGridService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.IColumnConfigurationService, MTM_WIP_Application_Avalonia.Services.UI.ColumnConfigurationService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.VirtualPanelManager>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.SettingsPanelStateManager>();
 
-        // CONSOLIDATED INFRASTRUCTURE SERVICES (Services/Infrastructure/InfrastructureServices.cs)
-        services.TryAddSingleton<Infrastructure.IFileSelectionService, Infrastructure.FileSelectionService>();
-        services.TryAddSingleton<Infrastructure.IFilePathService, Infrastructure.FilePathService>();
-        services.TryAddSingleton<Infrastructure.IPrintService, Infrastructure.PrintService>();
-        services.TryAddSingleton<Infrastructure.IFileLoggingService, Infrastructure.FileLoggingService>();
-        services.TryAddSingleton<Infrastructure.IEmergencyKeyboardHookService, Infrastructure.EmergencyKeyboardHookService>();
+        // INFRASTRUCTURE SERVICES (Services/Infrastructure/ folder - using folder-specific namespace)
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileSelectionService, MTM_WIP_Application_Avalonia.Services.Infrastructure.FileSelectionService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IFilePathService, MTM_WIP_Application_Avalonia.Services.Infrastructure.FilePathService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IPrintService, MTM_WIP_Application_Avalonia.Services.Infrastructure.PrintService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileLoggingService, MTM_WIP_Application_Avalonia.Services.Infrastructure.FileLoggingService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IEmergencyKeyboardHookService, MTM_WIP_Application_Avalonia.Services.Infrastructure.EmergencyKeyboardHookService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.INavigationService, MTM_WIP_Application_Avalonia.Services.Infrastructure.NavigationService>();
 
-        // Logging services using consolidated Infrastructure
+        // FEATURE SERVICES (Services/Feature/ folder - using folder-specific namespace)
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Feature.ISettingsService, MTM_WIP_Application_Avalonia.Services.Feature.SettingsService>();
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Feature.IUniversalOverlayService, MTM_WIP_Application_Avalonia.Services.Feature.UniversalOverlayService>();
+        // Note: StartupDialog is a static class, not a service
+
+        // Logging services using Infrastructure services
         services.AddLogging(builder =>
         {
             // Add custom file logging provider
             builder.Services.AddSingleton<ILoggerProvider>(serviceProvider =>
             {
-                var fileLoggingService = serviceProvider.GetRequiredService<Infrastructure.IFileLoggingService>();
-                return new MTMFileLoggerProvider(fileLoggingService);
+                var fileLoggingService = serviceProvider.GetRequiredService<MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileLoggingService>();
+                return new MTM_WIP_Application_Avalonia.Services.Infrastructure.MTMFileLoggerProvider(fileLoggingService);
             });
         });
-
-        // FEATURE SERVICES (that are still in root Services/ folder - to be migrated)
-        services.TryAddSingleton<ISettingsService, SettingsService>();
-        services.TryAddSingleton<ISuggestionOverlayService, SuggestionOverlayService>();
-        services.TryAddSingleton<VirtualPanelManager>();
-        services.TryAddSingleton<SettingsPanelStateManager>();
-        services.TryAddSingleton<ICustomDataGridService, CustomDataGridService>();
-        services.TryAddSingleton<IColumnConfigurationService, ColumnConfigurationService>();
 
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
@@ -94,7 +95,6 @@ public static class ServiceCollectionExtensions
 
         // Overlay ViewModels - using Lazy<T> for MainWindow integration
         services.TryAddTransient<NewQuickButtonOverlayViewModel>();
-        services.TryAddTransient<NoteEditorViewModel>();
         services.TryAddTransient<ConfirmationOverlayViewModel>();
         services.TryAddTransient<EditInventoryViewModel>();
         services.TryAddTransient<ConnectionStatusOverlayViewModel>();
@@ -190,24 +190,33 @@ public static class ServiceCollectionExtensions
         {
             typeof(IConfiguration),
             typeof(ILoggerFactory),
-            typeof(IConfigurationService),
-            typeof(IApplicationStateService),
-            typeof(IDatabaseService),
-            typeof(UI.INavigationService),
-            typeof(UI.IThemeService),
-            typeof(UI.IFocusManagementService),
-            typeof(UI.ISuccessOverlayService),
-            typeof(Infrastructure.IFilePathService),
-            typeof(Infrastructure.IFileLoggingService),
-            typeof(Infrastructure.IFileSelectionService),
-            typeof(Infrastructure.IPrintService),
-            typeof(Business.IMasterDataService),
-            typeof(Business.IRemoveService),
-            typeof(Business.IInventoryEditingService),
-            typeof(ISettingsService),
+
+            // Core Services (use Core namespace)
+            typeof(MTM_WIP_Application_Avalonia.Services.Core.IConfigurationService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Core.IApplicationStateService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Core.IDatabaseService),
+
+            // UI Services (use UI namespace)
+            typeof(MTM_WIP_Application_Avalonia.Services.UI.IThemeService),
+            typeof(MTM_WIP_Application_Avalonia.Services.UI.IFocusManagementService),
+            typeof(MTM_WIP_Application_Avalonia.Services.UI.ISuccessOverlayService),
+
+            // Infrastructure Services (use Infrastructure namespace)
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IFilePathService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileLoggingService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileSelectionService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IPrintService),
+
+            // Business Services (use base Services namespace)
+            typeof(IMasterDataService),
+            typeof(IRemoveService),
+            typeof(IInventoryEditingService),
             typeof(IQuickButtonsService),
             typeof(IProgressService),
-            typeof(ISuggestionOverlayService)
+
+            // Feature Services
+            typeof(MTM_WIP_Application_Avalonia.Services.Feature.ISettingsService),
+            typeof(MTM_WIP_Application_Avalonia.Services.UI.ISuggestionOverlayService)
         };
 
         var missingServices = requiredServices
@@ -232,24 +241,32 @@ public static class ServiceCollectionExtensions
     {
         var criticalServices = new[]
         {
-            typeof(IConfigurationService),
-            typeof(IApplicationStateService),
-            typeof(IDatabaseService),
-            typeof(UI.INavigationService),
-            typeof(UI.IThemeService),
-            typeof(UI.IFocusManagementService),
-            typeof(UI.ISuccessOverlayService),
-            typeof(Infrastructure.IFilePathService),
-            typeof(Infrastructure.IFileLoggingService),
-            typeof(Infrastructure.IFileSelectionService),
-            typeof(Infrastructure.IPrintService),
-            typeof(Business.IMasterDataService),
-            typeof(Business.IRemoveService),
-            typeof(Business.IInventoryEditingService),
-            typeof(ISettingsService),
+            // Core Services (use Core namespace)
+            typeof(MTM_WIP_Application_Avalonia.Services.Core.IConfigurationService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Core.IApplicationStateService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Core.IDatabaseService),
+
+            // UI Services (use UI namespace)
+            typeof(MTM_WIP_Application_Avalonia.Services.UI.IThemeService),
+            typeof(MTM_WIP_Application_Avalonia.Services.UI.IFocusManagementService),
+            typeof(MTM_WIP_Application_Avalonia.Services.UI.ISuccessOverlayService),
+
+            // Infrastructure Services (use Infrastructure namespace)
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IFilePathService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileLoggingService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileSelectionService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IPrintService),
+
+            // Business Services (use base Services namespace)
+            typeof(IMasterDataService),
+            typeof(IRemoveService),
+            typeof(IInventoryEditingService),
             typeof(IQuickButtonsService),
             typeof(IProgressService),
-            typeof(ISuggestionOverlayService)
+
+            // Feature Services
+            typeof(MTM_WIP_Application_Avalonia.Services.Feature.ISettingsService),
+            typeof(MTM_WIP_Application_Avalonia.Services.UI.ISuggestionOverlayService)
         };
 
         var failedServices = new List<string>();
@@ -258,7 +275,8 @@ public static class ServiceCollectionExtensions
         {
             try
             {
-                var service = serviceProvider.GetRequiredService(serviceType);
+                // Just test resolution - don't need to store the result
+                serviceProvider.GetRequiredService(serviceType);
                 Console.WriteLine($"[VALIDATION-SUCCESS] {serviceType.Name} resolved successfully");
             }
             catch (Exception ex)

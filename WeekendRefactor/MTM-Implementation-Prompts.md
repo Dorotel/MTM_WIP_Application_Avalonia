@@ -162,7 +162,45 @@ Critical AXAML Requirements:
 Please scan existing Views, identify AXAML syntax issues, and provide corrected file organization.
 ```
 
-### **Prompt 1.4: Universal Overlay Service Foundation**
+### **Prompt 1.4: Models Folder Organization & Dependency Refactoring**
+
+```
+Help me organize the Models folder in this MTM WIP Application following the same {Folder}.{Model}.cs naming pattern used in the Services folder reorganization.
+
+Current Models (21 files across 4 locations):
+- Models/ root: EditInventoryModel.cs, EditInventoryResult.cs, EventArgs.cs, FocusManagementEventArgs.cs, InventoryEventArgs.cs, InventorySavedEventArgs.cs, Model_AppVariables.cs, PrintModel.cs, PrintTemplateModel.cs, SessionTransaction.cs, ViewModels.cs
+- Models/CustomDataGrid/: 6 custom grid model files
+- Models/Overlay/: 2 overlay model files  
+- Models/Shared/: 2 shared model files
+
+Target Organization (6 category-based folders):
+1. Models/Core/ - Core business models with {Folder}.{Model}.cs naming
+2. Models/Events/ - Event argument models
+3. Models/UI/ - UI-specific models including CustomDataGrid
+4. Models/Overlay/ - Overlay system models
+5. Models/Print/ - Print-related models
+6. Models/Shared/ - Shared/common models
+
+Implementation Requirements:
+- Follow {Folder}.{Model}.cs naming pattern (e.g., Core.AppVariables.cs)
+- Maintain namespace consistency: MTM_WIP_Application_Avalonia.Models.{Folder}
+- Update all using statements across ViewModels, Services, and Views
+- Preserve all model functionality and relationships
+- Follow dependency analysis from Models/MODEL_DEPENDENCY_ANALYSIS.md
+
+Key Files to Reorganize:
+- Model_AppVariables.cs → Models/Core/Core.AppVariables.cs
+- EditInventoryModel.cs → Models/Core/Core.EditInventoryModel.cs  
+- EventArgs.cs → Models/Events/Events.EventArgs.cs
+- FocusManagementEventArgs.cs → Models/Events/Events.FocusManagementEventArgs.cs
+- CustomDataGrid/* → Models/UI/UI.CustomDataGrid.{Model}.cs
+- PrintModel.cs → Models/Print/Print.PrintModel.cs
+- ViewModels.cs → Models/Shared/Shared.ViewModels.cs
+
+Please analyze the current Models dependencies, create the new folder structure, and update all references while maintaining compilation integrity.
+```
+
+### **Prompt 1.5: Universal Overlay Service Foundation**
 
 ```
 Help me create the Universal Overlay Service for this MTM WIP Application that will manage all overlay types in a consistent, performant manner.
