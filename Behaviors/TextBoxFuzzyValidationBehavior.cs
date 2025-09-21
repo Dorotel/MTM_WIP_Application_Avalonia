@@ -245,19 +245,8 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
                 {
                     System.Diagnostics.Debug.WriteLine($"Attempting to trigger binding update for '{text}'");
 
-                    // Force binding update using Avalonia's approach
-                    // Step 1: Temporarily change the text to trigger property change
-                    var originalText = box.Text;
-                    box.Text = string.Empty;        // Clear first - this will make SelectedPart empty
-
-                    // Force the binding to update by raising the TextChanged event
-                    box.RaiseEvent(new RoutedEventArgs(TextBox.TextChangedEvent));
-
-                    // Step 2: Set back to original text - this will make SelectedPart = originalText
-                    box.Text = originalText;
-                    box.RaiseEvent(new RoutedEventArgs(TextBox.TextChangedEvent));
-
-                    // Additionally try to directly set bound property to ensure it's updated
+                    // Use direct property approach instead of raising events to avoid InvalidCastException
+                    // This is more reliable and aligns with the Universal Overlay System patterns
                     var dataContext = box.DataContext;
                     if (dataContext != null)
                     {
@@ -271,11 +260,11 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
                             if (property != null && property.CanWrite)
                             {
                                 var currentValue = property.GetValue(dataContext)?.ToString();
-                                if (currentValue == originalText) // This is likely the bound property
+                                if (string.IsNullOrEmpty(currentValue) || currentValue != text)
                                 {
-                                    property.SetValue(dataContext, originalText);
-                                    System.Diagnostics.Debug.WriteLine($"Directly set {boundProp} property to '{originalText}'");
-                                    break;
+                                    // Set the property to trigger binding update
+                                    property.SetValue(dataContext, text);
+                                    System.Diagnostics.Debug.WriteLine($"Updated {boundProp} property to '{text}'");
                                 }
                             }
                         }
@@ -286,7 +275,21 @@ namespace MTM_WIP_Application_Avalonia.Behaviors
                             var onPropertyChangedMethod = dataContext.GetType().GetMethod("OnPropertyChanged", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(string) }, null);
                             if (onPropertyChangedMethod != null)
                             {
-                                // Trigger all watermark properties to ensure they update
+                                // Trigger all bound properties to ensure they update
+                                foreach (var boundProp in boundProperties)
+                                {
+                                    try
+                                    {
+                                        onPropertyChangedMethod.Invoke(dataContext, new object[] { boundProp });
+                                        System.Diagnostics.Debug.WriteLine($"Triggered OnPropertyChanged for {boundProp}");
+                                    }
+                                    catch
+                                    {
+                                        // Ignore individual failures
+                                    }
+                                }
+
+                                // Trigger watermark properties to ensure they update
                                 foreach (var watermarkProp in watermarkProperties)
                                 {
                                     try

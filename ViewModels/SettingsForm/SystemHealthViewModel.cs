@@ -1,3 +1,4 @@
+﻿using MTM_WIP_Application_Avalonia.Services.UI;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -340,3 +341,4 @@ public class LogEntryItem
     public string Message { get; set; } = string.Empty;
     public string Source { get; set; } = string.Empty;
 }
+

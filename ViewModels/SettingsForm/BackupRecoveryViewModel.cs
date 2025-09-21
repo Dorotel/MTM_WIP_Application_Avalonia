@@ -1,3 +1,4 @@
+﻿using MTM_WIP_Application_Avalonia.Services.Feature;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -123,7 +124,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             {
                 BackupHistory.Insert(0, backupItem);
                 LastBackupDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                BackupStatus = $"✅ Backup completed successfully: {backupFileName}";
+                BackupStatus = $"âœ… Backup completed successfully: {backupFileName}";
                 IsBackupInProgress = false;
             });
 
@@ -134,7 +135,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             // Update UI on UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                BackupStatus = $"❌ Backup failed: {ex.Message}";
+                BackupStatus = $"âŒ Backup failed: {ex.Message}";
                 IsBackupInProgress = false;
             });
             Logger.LogError(ex, "Error creating database backup");
@@ -167,7 +168,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             // Update UI on UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                BackupStatus = "✅ Database restored successfully";
+                BackupStatus = "âœ… Database restored successfully";
                 IsBackupInProgress = false;
             });
             
@@ -178,7 +179,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             // Update UI on UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                BackupStatus = $"❌ Restore failed: {ex.Message}";
+                BackupStatus = $"âŒ Restore failed: {ex.Message}";
                 IsBackupInProgress = false;
             });
             Logger.LogError(ex, "Error restoring from backup");
@@ -209,7 +210,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             // Update UI on UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                BackupStatus = "✅ Settings exported successfully";
+                BackupStatus = "âœ… Settings exported successfully";
                 IsBackupInProgress = false;
             });
             
@@ -220,7 +221,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             // Update UI on UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                BackupStatus = $"❌ Export failed: {ex.Message}";
+                BackupStatus = $"âŒ Export failed: {ex.Message}";
                 IsBackupInProgress = false;
             });
             Logger.LogError(ex, "Error exporting settings");
@@ -248,7 +249,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             // Update UI on UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                BackupStatus = "✅ Settings imported successfully";
+                BackupStatus = "âœ… Settings imported successfully";
                 IsBackupInProgress = false;
             });
             
@@ -259,7 +260,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             // Update UI on UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                BackupStatus = $"❌ Import failed: {ex.Message}";
+                BackupStatus = $"âŒ Import failed: {ex.Message}";
                 IsBackupInProgress = false;
             });
             Logger.LogError(ex, "Error importing settings");
@@ -287,7 +288,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
                 ScheduledBackups.Add(scheduledBackup);
-                BackupStatus = "✅ Backup scheduled successfully";
+                BackupStatus = "âœ… Backup scheduled successfully";
             });
             
             await Task.Delay(100).ConfigureAwait(false); // Simulate async operation
@@ -298,7 +299,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             // Update UI on UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                BackupStatus = $"❌ Scheduling failed: {ex.Message}";
+                BackupStatus = $"âŒ Scheduling failed: {ex.Message}";
             });
             Logger.LogError(ex, "Error scheduling backup");
         }
@@ -319,7 +320,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             {
                 // In real implementation, would show confirmation dialog
                 BackupHistory.Remove(backup);
-                BackupStatus = $"✅ Backup deleted: {backup.FileName}";
+                BackupStatus = $"âœ… Backup deleted: {backup.FileName}";
             });
             
             await Task.Delay(100).ConfigureAwait(false); // Simulate async operation
@@ -330,7 +331,7 @@ public partial class BackupRecoveryViewModel : BaseViewModel
             // Update UI on UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                BackupStatus = $"❌ Delete failed: {ex.Message}";
+                BackupStatus = $"âŒ Delete failed: {ex.Message}";
             });
             Logger.LogError(ex, "Error deleting backup: {FileName}", backup.FileName);
         }

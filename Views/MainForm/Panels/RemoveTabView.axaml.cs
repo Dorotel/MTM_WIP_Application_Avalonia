@@ -2,20 +2,17 @@ using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
-using MTM_WIP_Application_Avalonia.Views;
-using MTM_WIP_Application_Avalonia.Models;
-using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using System;
 using System.Threading.Tasks;
 using Avalonia.Threading;
-using Avalonia.Controls.Primitives;
-using System.Collections.Specialized;
-using Avalonia.Platform.Storage;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia;
 using System.Linq;
 using Avalonia.VisualTree;
 using Avalonia.Interactivity;
+using MTM_WIP_Application_Avalonia.Models.Events;
+using MTM_WIP_Application_Avalonia.Models.UI;
+using MTM_WIP_Application_Avalonia.Views.Overlay;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -199,7 +196,7 @@ public partial class RemoveTabView : UserControl
     /// <summary>
     /// Handles ShowSuccessOverlay event from ViewModel
     /// </summary>
-    private void OnShowSuccessOverlay(object? sender, MTM_WIP_Application_Avalonia.Models.SuccessEventArgs e)
+    private void OnShowSuccessOverlay(object? sender, MTM_WIP_Application_Avalonia.Models.Events.SuccessEventArgs e)
     {
         try
         {
@@ -243,7 +240,7 @@ public partial class RemoveTabView : UserControl
         try
         {
             // CRITICAL FIX: Find CustomDataGrid instead of regular DataGrid
-            var customDataGrid = this.FindControl<Controls.CustomDataGrid.CustomDataGrid>("InventoryDataGrid");
+            var customDataGrid = this.FindControl<Views.CustomControls.CustomDataGrid>("InventoryDataGrid");
             if (customDataGrid != null)
             {
                 customDataGrid.SelectionChanged += OnCustomDataGridSelectionChanged;
@@ -264,7 +261,7 @@ public partial class RemoveTabView : UserControl
     /// CRITICAL FIX: Handles CustomDataGrid selection changes to sync with ViewModel SelectedItems.
     /// This ensures the ViewModel's SelectedItems collection is properly updated when users make selections.
     /// </summary>
-    private void OnCustomDataGridSelectionChanged(object? sender, Controls.CustomDataGrid.SelectionChangedEventArgs e)
+    private void OnCustomDataGridSelectionChanged(object? sender, MTM_WIP_Application_Avalonia.Views.CustomControls.SelectionChangedEventArgs e)
     {
         try
         {
@@ -299,7 +296,7 @@ public partial class RemoveTabView : UserControl
     {
         try
         {
-            var searchPanel = this.FindControl<Controls.CollapsiblePanel>("SearchPanel");
+            var searchPanel = this.FindControl<Views.Overlay.CollapsiblePanel>("SearchPanel");
             if (searchPanel != null)
             {
                 // Store reference for auto-behavior
@@ -317,7 +314,7 @@ public partial class RemoveTabView : UserControl
         }
     }
 
-    private Controls.CollapsiblePanel? _searchPanel;
+    private Views.Overlay.CollapsiblePanel? _searchPanel;
 
     /// <summary>
     /// Executes command with CollapsiblePanel auto-behavior

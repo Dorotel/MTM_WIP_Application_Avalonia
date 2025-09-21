@@ -1,3 +1,5 @@
+﻿using MTM_WIP_Application_Avalonia.Models.Events;
+using MTM_WIP_Application_Avalonia.Services.UI;
 using System.Linq;
 using System;
 using System.Collections.Generic;
@@ -71,17 +73,9 @@ public partial class InventoryTabView : UserControl
         _serviceProvider = serviceProvider;
         _logger = _serviceProvider?.GetService<ILogger<InventoryTabView>>();
 
-        // Try to resolve the suggestion overlay service immediately if we have a service provider
-        try
-        {
-            _suggestionOverlayService = _serviceProvider?.GetService<ISuggestionOverlayService>();
-            _successOverlayService = _serviceProvider?.GetService<ISuccessOverlayService>();
-            _logger?.LogInformation("SuccessOverlayService resolved in constructor: {ServiceResolved}", _successOverlayService != null);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogWarning(ex, "Failed to resolve overlay services in constructor");
-        }
+        // Defer overlay service resolution to avoid circular dependencies during DI construction
+        // Services will be resolved lazily when first needed
+        _logger?.LogInformation("InventoryTabView initialized with deferred service resolution to avoid circular dependencies");
     }
 
     #region Control Initialization
@@ -372,9 +366,7 @@ public partial class InventoryTabView : UserControl
                         if (_successOverlayService == null)
                         {
                             var successServiceLogger = loggerFactory.CreateLogger<SuccessOverlayService>();
-                            var focusManagementLogger = loggerFactory.CreateLogger<FocusManagementService>();
-                            var focusService = _serviceProvider?.GetService<IFocusManagementService>() ?? new FocusManagementService(focusManagementLogger);
-                            _successOverlayService = new SuccessOverlayService(successServiceLogger, focusService);
+                            _successOverlayService = new SuccessOverlayService(successServiceLogger);
                             _logger?.LogWarning("Method 3 - Manual SuccessOverlayService creation successful as fallback");
                             System.Diagnostics.Debug.WriteLine("Method 3 - Manual SuccessOverlayService creation successful as fallback");
                         }
@@ -1810,3 +1802,5 @@ public partial class InventoryTabView : UserControl
 
     #endregion
 }
+
+

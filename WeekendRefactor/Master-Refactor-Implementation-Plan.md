@@ -31,9 +31,9 @@
 
 ### **Project Objective**
 
-Reorganize Services, ViewModels, Views, and WeekendRefactor folders according to established consolidation plans, creating clean foundation for overlay implementation.
+Reorganize Services, ViewModels, Views, and WeekendRefactor folders using folder-based organization with proper naming conventions, creating clean foundation for overlay implementation.
 
-### **TASK 1.1: Services Consolidation**
+### **TASK 1.1: Services Folder-Based Organization**
 
 #### **SubTask 1.1.1: Analyze Service Dependencies**
 
@@ -45,42 +45,58 @@ Reorganize Services, ViewModels, Views, and WeekendRefactor folders according to
 - Document service call patterns
 ```
 
-#### **SubTask 1.1.2: Create Core Services Group**
+#### **SubTask 1.1.2: Organize Core Services**
 
 ```bash
-# Target: Services/Core/
-- Merge: Configuration.cs + Database.cs + ErrorHandling.cs
-- Create: CoreServices.cs (consolidated)
-- Update: All references to use CoreServices namespace
+# Target: Services/Core/ with proper naming
+- Rename: Configuration.cs → Core.ConfigurationService.cs  
+- Rename: Database.cs → Core.DatabaseService.cs
+- Create: Core.ApplicationStateService.cs (if separate)
+- Create: Core.ErrorHandling.cs (static class)
+- Update: All references to use Services.Core namespace
 - Validate: No breaking changes in service registration
 ```
 
-#### **SubTask 1.1.3: Create Business Services Group**
+#### **SubTask 1.1.3: Organize Business Services**
 
 ```bash
-# Target: Services/Business/
-- Merge: MasterDataService.cs + InventoryEditingService.cs + RemoveService.cs
-- Create: BusinessServices.cs (consolidated)
-- Update: All ViewModel references to use BusinessServices
+# Target: Services/Business/ with proper naming
+- Rename: MasterDataService.cs → Business.MasterDataService.cs
+- Rename: RemoveService.cs → Business.RemoveService.cs
+- Rename: InventoryEditingService.cs → Business.InventoryEditingService.cs
+- Move: QuickButtons.cs → Business.QuickButtonsService.cs
+- Create: Business.ProgressService.cs (if separate from QuickButtons)
+- Update: All ViewModel references to use Services.Business namespace
 - Validate: All stored procedure calls remain functional
 ```
 
-#### **SubTask 1.1.4: Create UI Services Group**
+#### **SubTask 1.1.4: Organize UI Services**
 
 ```bash
-# Target: Services/UI/
-- Merge: Navigation.cs + ThemeService.cs + FocusManagementService.cs + SuccessOverlay.cs
-- Create: UIServices.cs (consolidated)
+# Target: Services/UI/ with proper naming
+- Rename: NavigationService.cs → UI.NavigationService.cs
+- Rename: ThemeService.cs → UI.ThemeService.cs  
+- Rename: FocusManagementService.cs → UI.FocusManagementService.cs
+- Rename: SuccessOverlay.cs → UI.SuccessOverlayService.cs
+- Rename: SuggestionOverlay.cs → UI.SuggestionOverlayService.cs
+- Rename: VirtualPanelManager.cs → UI.VirtualPanelManager.cs
+- Rename: SettingsPanelStateManager.cs → UI.SettingsPanelStateManager.cs
+- Rename: CustomDataGridService.cs → UI.CustomDataGridService.cs
+- Rename: ColumnConfigurationService.cs → UI.ColumnConfigurationService.cs
 - Update: All View code-behind references
 - Validate: Theme switching and navigation work correctly
 ```
 
-#### **SubTask 1.1.5: Create Infrastructure Services Group**
+#### **SubTask 1.1.5: Organize Infrastructure Services**
 
 ```bash
-# Target: Services/Infrastructure/
-- Merge: FileLoggingService.cs + FilePathService.cs + FileSelection.cs + PrintService.cs
-- Create: InfrastructureServices.cs (consolidated)
+# Target: Services/Infrastructure/ with proper naming
+- Rename: FileLoggingService.cs → Infrastructure.FileLoggingService.cs
+- Rename: MTMFileLoggerProvider.cs → Infrastructure.MTMFileLoggerProvider.cs
+- Rename: FilePathService.cs → Infrastructure.FilePathService.cs
+- Rename: FileSelection.cs → Infrastructure.FileSelectionService.cs
+- Rename: PrintService.cs → Infrastructure.PrintService.cs
+- Rename: EmergencyKeyboardHook.cs → Infrastructure.EmergencyKeyboardHookService.cs
 - Update: All external file operation references
 - Validate: File operations and printing functionality preserved
 ```
@@ -89,10 +105,14 @@ Reorganize Services, ViewModels, Views, and WeekendRefactor folders according to
 
 ```bash
 # Target: Extensions/ServiceCollectionExtensions.cs
-- Update all service registrations for consolidated files
-- Maintain same interface contracts
-- Ensure singleton/scoped/transient lifetimes preserved
-- Add integration tests for service resolution
+- Create: AddCoreServices() extension method
+- Create: AddBusinessServices() extension method  
+- Create: AddUIServices() extension method
+- Create: AddInfrastructureServices() extension method
+- Create: AddFeatureServices() extension method
+- Update: All service registrations to use new namespaces
+- Maintain: Same interface contracts and lifetimes
+- Add: Integration tests for service resolution
 ```
 
 ### **TASK 1.2: ViewModels Reorganization**
@@ -208,9 +228,76 @@ Reorganize Services, ViewModels, Views, and WeekendRefactor folders according to
 - Validate: No broken navigation routes exist
 ```
 
-### **TASK 1.4: WeekendRefactor Organization**
+### **TASK 1.4: Models Folder Organization**
 
-#### **SubTask 1.4.1: Create Numbered Folder Structure**
+#### **SubTask 1.4.1: Analyze Model Dependencies**
+
+```bash
+# Complete: Models/MODEL_DEPENDENCY_ANALYSIS.md already created
+- Review: 21 model files across 6 functional categories
+- Confirm: {Folder}.{Model}.cs naming pattern implementation
+- Validate: Dependency analysis matches Services folder organization
+```
+
+#### **SubTask 1.4.2: Create Core Models Folder Structure**
+
+```bash
+# Target: Models/Core/ 
+- Create: Models/Core/Core.AppVariables.cs (from Model_AppVariables.cs)
+- Create: Models/Core/Core.EditInventoryModel.cs (from EditInventoryModel.cs)
+- Create: Models/Core/Core.EditInventoryResult.cs (from EditInventoryResult.cs)
+- Create: Models/Core/Core.SessionTransaction.cs (from SessionTransaction.cs)
+- Update: All namespace references to MTM_WIP_Application_Avalonia.Models.Core
+- Validate: No compilation errors after refactoring
+```
+
+#### **SubTask 1.4.3: Create Events Models Folder Structure**
+
+```bash
+# Target: Models/Events/
+- Create: Models/Events/Events.EventArgs.cs (from EventArgs.cs)
+- Create: Models/Events/Events.FocusManagementEventArgs.cs (from FocusManagementEventArgs.cs)
+- Create: Models/Events/Events.InventoryEventArgs.cs (from InventoryEventArgs.cs)
+- Create: Models/Events/Events.InventorySavedEventArgs.cs (from InventorySavedEventArgs.cs)
+- Update: All event handler references to use new namespace
+- Validate: Event handling functionality preserved
+```
+
+#### **SubTask 1.4.4: Create UI Models Folder Structure**
+
+```bash
+# Target: Models/UI/
+- Move: Models/CustomDataGrid/* to Models/UI/UI.CustomDataGrid/
+- Rename: Files to UI.CustomDataGrid.{OriginalName}.cs pattern
+- Update: Namespaces to MTM_WIP_Application_Avalonia.Models.UI
+- Validate: UI component bindings work correctly
+```
+
+#### **SubTask 1.4.5: Create Overlay and Print Models Structure**
+
+```bash
+# Target: Models/Overlay/ and Models/Print/
+- Move: Models/Overlay/* to Models/Overlay/Overlay.{Model}.cs
+- Create: Models/Print/Print.PrintModel.cs (from PrintModel.cs)
+- Create: Models/Print/Print.PrintTemplateModel.cs (from PrintTemplateModel.cs)
+- Update: All print and overlay references
+- Validate: Print functionality and overlay systems work
+```
+
+#### **SubTask 1.4.6: Create Shared Models and Clean Root**
+
+```bash
+# Target: Models/Shared/ and root cleanup
+- Move: Models/Shared/* to Models/Shared/Shared.{Model}.cs pattern
+- Create: Models/Shared/Shared.ViewModels.cs (from ViewModels.cs)
+- Remove: Original files from Models root after verification
+- Update: All using statements and dependency injection registrations
+- Validate: Application compiles and runs without errors
+```
+
+### **TASK 1.5: WeekendRefactor Organization**
+
+#### **SubTask 1.5.1: Create Numbered Folder Structure**
 
 ```bash
 # Target: WeekendRefactor/01-Analysis/
@@ -220,7 +307,7 @@ Reorganize Services, ViewModels, Views, and WeekendRefactor folders according to
 - Validate: All markdown links work correctly
 ```
 
-#### **SubTask 1.4.2: Reorganize Implementation Documents**
+#### **SubTask 1.5.2: Reorganize Implementation Documents**
 
 ```bash
 # Target: WeekendRefactor/02-Reorganization/
@@ -230,7 +317,7 @@ Reorganize Services, ViewModels, Views, and WeekendRefactor folders according to
 - Validate: All reorganization plans reference correct paths
 ```
 
-#### **SubTask 1.4.3: Structure Implementation Guides**
+#### **SubTask 1.5.3: Structure Implementation Guides**
 
 ```bash
 # Target: WeekendRefactor/03-Implementation/
@@ -241,7 +328,7 @@ Reorganize Services, ViewModels, Views, and WeekendRefactor folders according to
 - Validate: Implementation guides reference correct reorganized structure
 ```
 
-#### **SubTask 1.4.4: Create Status Tracking**
+#### **SubTask 1.5.4: Create Status Tracking**
 
 ```bash
 # Target: WeekendRefactor/04-Status/
@@ -639,12 +726,13 @@ Complete integration testing, performance optimization, comprehensive documentat
 
 ### **Project Progress Overview**
 
-```
-Phase 1: Project Reorganization - 0% (0/16 SubTasks)
-├── Task 1.1: Services Consolidation - 0% (0/6 SubTasks)
+```text
+Phase 1: Project Reorganization - 0% (0/20 SubTasks)
+├── Task 1.1: Services Organization (Folder-based) - 0% (0/6 SubTasks)
 ├── Task 1.2: ViewModels Reorganization - 0% (0/5 SubTasks)
 ├── Task 1.3: Views Reorganization - 0% (0/5 SubTasks)
-└── Task 1.4: WeekendRefactor Organization - 0% (0/4 SubTasks)
+├── Task 1.4: Models Folder Organization - 0% (0/6 SubTasks)
+└── Task 1.5: WeekendRefactor Organization - 0% (0/4 SubTasks)
 
 Phase 2: Universal Overlay System - 0% (0/17 SubTasks)  
 ├── Task 2.1: Universal Service Foundation - 0% (0/5 SubTasks)
@@ -658,7 +746,7 @@ Phase 3: Integration & Polish - 0% (0/14 SubTasks)
 ├── Task 3.3: Documentation Completion - 0% (0/4 SubTasks)
 └── Task 3.4: Final Validation - 0% (0/4 SubTasks)
 
-Total Progress: 0% (0/47 SubTasks)
+Total Progress: 0% (0/51 SubTasks)
 ```
 
 ### **Copilot Execution Notes**

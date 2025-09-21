@@ -1,5 +1,8 @@
-
-
+using MTM_WIP_Application_Avalonia.Services.UI;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Models.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,14 +14,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Services;
-using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Models.Print;
 using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
-using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Views;
-using MTM_WIP_Application_Avalonia.Models;
+using CoreStoredProcedureResult = MTM_WIP_Application_Avalonia.Services.Core.Helper_Database_StoredProcedure.StoredProcedureResult;
 using Avalonia.Threading;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -189,25 +190,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     #endregion
 
-    #region Note Editor Properties
-
-    /// <summary>
-    /// Indicates if the note editor overlay is currently visible
-    /// </summary>
-    [ObservableProperty]
-    private bool _isNoteEditorVisible;
-
-    /// <summary>
-    /// Currently selected inventory item for note editing
-    /// </summary>
-    [ObservableProperty]
-    private InventoryItem? _noteEditorItem;
-
-    /// <summary>
-    /// Note editor view model instance
-    /// </summary>
-    [ObservableProperty]
-    private NoteEditorViewModel? _noteEditorViewModel;
+    #region Dialog Properties
 
     /// <summary>
     /// Current edit dialog ViewModel instance for comprehensive inventory editing.
@@ -243,7 +226,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Event fired when items are successfully removed
     /// </summary>
-    public event EventHandler<MTM_WIP_Application_Avalonia.Services.Business.ItemsRemovedEventArgs>? ItemsRemoved;
+    public event EventHandler<MTM_WIP_Application_Avalonia.Models.Events.ItemsRemovedEventArgs>? ItemsRemoved;
 
     /// <summary>
     /// Event fired when panel toggle is requested
@@ -258,7 +241,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Event fired when the success overlay should be shown
     /// </summary>
-    public event EventHandler<MTM_WIP_Application_Avalonia.Models.SuccessEventArgs>? ShowSuccessOverlay;
+    public event EventHandler<MTM_WIP_Application_Avalonia.Models.Events.SuccessEventArgs>? ShowSuccessOverlay;
 
     #endregion
 
@@ -306,7 +289,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Handles items removed events from the RemoveService
     /// </summary>
-    private void OnItemsRemovedFromService(object? sender, MTM_WIP_Application_Avalonia.Services.Business.ItemsRemovedEventArgs e)
+    private void OnItemsRemovedFromService(object? sender, MTM_WIP_Application_Avalonia.Models.Events.ItemsRemovedEventArgs e)
     {
         // Propagate the event to the UI
         ItemsRemoved?.Invoke(this, e);
@@ -572,7 +555,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                         : $"Batch operation completed\nItems removed: {removalResult.SuccessCount}\nTotal quantity removed: {removalResult.SuccessfulRemovals.Sum(x => x.Quantity)}";
 
                     // Fire SuccessOverlay event for View to handle
-                    var successArgs = new MTM_WIP_Application_Avalonia.Models.SuccessEventArgs
+                    var successArgs = new MTM_WIP_Application_Avalonia.Models.Events.SuccessEventArgs
                     {
                         Message = successMessage,
                         Details = detailsText,
@@ -1185,7 +1168,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             // Configure print data
             printViewModel.PrintData = dataTable;
-            printViewModel.DataSourceType = MTM_WIP_Application_Avalonia.Models.PrintDataSourceType.Remove;
+            printViewModel.DataSourceType = PrintDataSourceType.Remove;
             printViewModel.DocumentTitle = "Inventory Removal Report";
             printViewModel.OriginalViewContext = this; // Store current context for navigation back
 
@@ -1210,175 +1193,8 @@ public partial class RemoveItemViewModel : BaseViewModel
         }
     }
 
-    /// <summary>
-    /// Opens the note editor overlay for the specified inventory item.
-    /// Used by CustomDataGrid EditItemCommand for individual row editing (including notes).
-    /// </summary>
-    [RelayCommand]
-    private async Task ReadNote(InventoryItem? item)
-    {
-        if (item == null)
-        {
-            Logger.LogWarning("ReadNote called with null item");
-            return;
-        }
 
-        try
-        {
-            Logger.LogInformation("Opening note editor for item: PartID={PartId}, Operation={Operation}, Location={Location}",
-                item.PartId, item.Operation, item.Location);
 
-            // Store the item being edited
-            NoteEditorItem = item;
-
-            // Create and configure note editor ViewModel
-            var noteEditorViewModel = _serviceProvider.GetService<NoteEditorViewModel>();
-            if (noteEditorViewModel == null)
-            {
-                Logger.LogError("NoteEditorViewModel not available from DI container");
-                await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(
-                    new InvalidOperationException("Note editor not available"),
-                    "Note Editor Error",
-                    _applicationState.CurrentUser);
-                return;
-            }
-
-            // Initialize with inventory item data - using full parameter version for proper stored procedure call
-            await noteEditorViewModel.InitializeAsync(
-                item.Id,
-                item.PartId ?? string.Empty,
-                item.Operation ?? string.Empty,
-                item.Location ?? string.Empty,
-                item.Notes ?? string.Empty,
-                item.BatchNumber ?? string.Empty,
-                item.User ?? "SYSTEM",
-                isReadOnly: false // Allow editing by default
-            );
-
-            // Subscribe to note edit completion event
-            noteEditorViewModel.NoteEditCompleted -= OnNoteEditCompleted;
-            noteEditorViewModel.NoteEditCompleted += OnNoteEditCompleted;
-
-            // Set the ViewModel and show the overlay
-            NoteEditorViewModel = noteEditorViewModel;
-            IsNoteEditorVisible = true;
-
-            Logger.LogInformation("Note editor overlay opened successfully for {PartId}", item.PartId);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to open note editor for item: {PartId}", item?.PartId);
-            await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(ex, "Note Editor Error", _applicationState.CurrentUser);
-        }
-    }
-
-    /// <summary>
-    /// Handles note edit completion from the NoteEditorViewModel
-    /// </summary>
-    private async void OnNoteEditCompleted(object? sender, NoteEditorResult e)
-    {
-        try
-        {
-            Logger.LogInformation("Note edit completed for inventory ID={InventoryId}, Success={Success}",
-                e.InventoryId, e.Success);
-
-            if (e.Success && NoteEditorItem != null)
-            {
-                // Update the inventory item's Notes property
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    if (NoteEditorItem != null)
-                    {
-                        NoteEditorItem.Notes = e.UpdatedNote ?? string.Empty;
-                        Logger.LogDebug("Updated inventory item notes for {PartId}", NoteEditorItem.PartId);
-                    }
-                });
-
-                // Optionally refresh the search results to show updated data from database
-                if (!string.IsNullOrWhiteSpace(SelectedPart))
-                {
-                    Logger.LogDebug("Refreshing search results to reflect database changes");
-                    await Search().ConfigureAwait(false);
-                }
-            }
-            else if (!e.Success)
-            {
-                Logger.LogWarning("Note edit was cancelled or failed for inventory ID={InventoryId}", e.InventoryId);
-            }
-
-            // Close the overlay
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                IsNoteEditorVisible = false;
-                NoteEditorItem = null;
-                NoteEditorViewModel = null;
-            });
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error handling note edit completion");
-            await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(ex, "Note Editor Error", _applicationState.CurrentUser);
-        }
-    }
-
-    /// <summary>
-    /// Command to edit an inventory item with comprehensive editing dialog.
-    /// Opens the EditInventoryView dialog for full field editing with validation.
-    /// Uses cached ViewModel instances per inventory item ID to preserve data across multiple openings.
-    /// </summary>
-    [RelayCommand]
-    private async Task EditItem(InventoryItem? item)
-    {
-        // CRITICAL: Log at the very start to ensure this method is being called
-        Logger.LogCritical("🚨 QA CRITICAL: EditItem method called with item: {PartId} (ID: {Id})", item?.PartId ?? "NULL", item?.Id ?? -1);
-
-        if (item == null)
-        {
-            Logger.LogWarning("EditItem called with null item");
-            return;
-        }
-
-        try
-        {
-            Logger.LogInformation("Opening comprehensive edit dialog for item: PartID={PartId}, Operation={Operation}, Location={Location}, ID={Id}",
-                item.PartId, item.Operation, item.Location, item.Id);
-
-            // Get or create EditInventoryViewModel from cache based on inventory item ID
-            EditInventoryViewModel editViewModel;
-            if (_editViewModelCache.TryGetValue(item.Id, out var cachedViewModel))
-            {
-                Logger.LogInformation("🔍 QA REMOVE: Using CACHED EditInventoryViewModel for inventory ID {Id} with PartId {PartId}", item.Id, item.PartId);
-                editViewModel = cachedViewModel;
-            }
-            else
-            {
-                Logger.LogInformation("🔍 QA REMOVE: Creating NEW EditInventoryViewModel for inventory ID {Id} with PartId {PartId}", item.Id, item.PartId);
-                editViewModel = _serviceProvider.GetRequiredService<EditInventoryViewModel>();
-                _editViewModelCache[item.Id] = editViewModel;
-
-                // Subscribe to dialog events (only for new ViewModels)
-                editViewModel.DialogClosed += OnEditDialogClosed;
-                editViewModel.InventorySaved += OnInventoryItemSaved;
-            }
-
-            // CRITICAL FIX: Always initialize/refresh the ViewModel with current inventory item data
-            // This ensures cached ViewModels display correct data when switching between different items
-            Logger.LogInformation("🔍 QA REMOVE: About to call InitializeAsync for inventory ID {Id} with BatchNumber {BatchNumber}", item.Id, item.BatchNumber);
-            await editViewModel.InitializeAsync(item);
-            Logger.LogInformation("🔍 QA REMOVE: InitializeAsync completed for inventory ID {Id}", item.Id);
-
-            // Show the edit dialog using the cached (or newly created) ViewModel
-            EditDialogViewModel = editViewModel;
-            IsEditDialogVisible = true;
-
-            Logger.LogInformation("Edit dialog opened successfully for {PartId} using cached ViewModel", item.PartId);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to open edit dialog for item: {PartId}", item?.PartId);
-            await MTM_WIP_Application_Avalonia.Services.Core.ErrorHandling.HandleErrorAsync(ex, "Edit Dialog Error", _applicationState.CurrentUser);
-        }
-    }
 
     /// <summary>
     /// Handles edit dialog closure event.
@@ -1950,4 +1766,6 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     #endregion
 }
+
+
 

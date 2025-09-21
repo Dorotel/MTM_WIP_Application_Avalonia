@@ -1,12 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
-using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
+using MTM_WIP_Application_Avalonia.Models.CustomDataGrid.UI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
@@ -163,10 +161,10 @@ public partial class CustomDataGridViewModel : BaseViewModel
     public CustomDataGridViewModel(ILogger<CustomDataGridViewModel> logger) : base(logger)
     {
         Logger.LogDebug("CustomDataGridViewModel initialized");
-        
+
         // Initialize event handlers
         SelectedItems.CollectionChanged += OnSelectedItemsCollectionChanged;
-        
+
         // Set up default columns - can be overridden by consumer
         SetupDefaultColumns();
     }
@@ -218,10 +216,10 @@ public partial class CustomDataGridViewModel : BaseViewModel
         try
         {
             Logger.LogInformation("Refreshing grid data");
-            
+
             // Refresh logic would be implemented by derived classes or injected services
             await RefreshDataAsync();
-            
+
             Logger.LogDebug("Grid data refreshed successfully, item count: {Count}", ItemsSource.Count);
         }
         catch (Exception ex)
@@ -243,7 +241,7 @@ public partial class CustomDataGridViewModel : BaseViewModel
         try
         {
             Logger.LogInformation("Deleting selected items, count: {Count}", SelectedItemCount);
-            
+
             if (IsMultiSelectEnabled && SelectedItems.Count > 0)
             {
                 await DeleteMultipleItemsAsync(SelectedItems);
@@ -252,7 +250,7 @@ public partial class CustomDataGridViewModel : BaseViewModel
             {
                 await DeleteSingleItemAsync(SelectedItem);
             }
-            
+
             Logger.LogDebug("Selected items deleted successfully");
         }
         catch (Exception ex)
@@ -310,10 +308,10 @@ public partial class CustomDataGridViewModel : BaseViewModel
         try
         {
             Logger.LogInformation("Exporting grid data to format: {Format}", format);
-            
+
             // Export logic would be implemented by derived classes or injected services
             await ExportGridDataAsync(format ?? "csv");
-            
+
             Logger.LogDebug("Grid data exported successfully");
         }
         catch (Exception ex)
@@ -341,7 +339,7 @@ public partial class CustomDataGridViewModel : BaseViewModel
     public void AddColumn(CustomDataGridColumn column)
     {
         ArgumentNullException.ThrowIfNull(column);
-        
+
         try
         {
             Columns.Add(column);
@@ -388,7 +386,7 @@ public partial class CustomDataGridViewModel : BaseViewModel
             {
                 ItemsSource.Add(item);
             }
-            
+
             Logger.LogDebug("ItemsSource set with {Count} items of type {Type}", items.Count, typeof(T).Name);
         }
         catch (Exception ex)
@@ -462,7 +460,7 @@ public partial class CustomDataGridViewModel : BaseViewModel
         {
             OnPropertyChanged(nameof(SelectedItemCount));
             OnPropertyChanged(nameof(HasMultipleSelection));
-            
+
             // Update SelectedItem to the first selected item if we have selections
             if (SelectedItems.Count > 0 && SelectedItem != SelectedItems.First())
             {
@@ -472,7 +470,7 @@ public partial class CustomDataGridViewModel : BaseViewModel
             {
                 SelectedItem = null;
             }
-            
+
             Logger.LogDebug("Selected items collection changed, new count: {Count}", SelectedItems.Count);
         }
         catch (Exception ex)
@@ -492,7 +490,7 @@ public partial class CustomDataGridViewModel : BaseViewModel
         {
             Logger.LogCritical(handlingEx, "Error in error handling for context: {Context}", context);
         }
-        
+
         return Task.CompletedTask;
     }
 
@@ -507,7 +505,7 @@ public partial class CustomDataGridViewModel : BaseViewModel
             SelectedItems.CollectionChanged -= OnSelectedItemsCollectionChanged;
             Logger.LogDebug("CustomDataGridViewModel disposed");
         }
-        
+
         base.Dispose(disposing);
     }
 

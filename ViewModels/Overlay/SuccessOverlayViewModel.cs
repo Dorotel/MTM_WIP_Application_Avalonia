@@ -1,3 +1,4 @@
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
@@ -6,6 +7,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using Avalonia.LogicalTree;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
@@ -13,9 +15,9 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 /// <summary>
 /// ViewModel for the success overlay that displays temporary success messages
 /// after successful transactions. Uses MVVM Community Toolkit patterns.
+/// Enhanced to inherit from BaseOverlayViewModel.
 /// </summary>
-
-public partial class SuccessOverlayViewModel : BaseViewModel
+public partial class SuccessOverlayViewModel : BaseOverlayViewModel
 {
     #region Properties
 
@@ -23,7 +25,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     /// The success message to display
     /// </summary>
     [ObservableProperty]
-    [StringLength(500, ErrorMessage = "Success message cannot exceed 500 characters")]
     private string _message = string.Empty;
 
     /// <summary>
@@ -36,7 +37,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     /// Additional details about the successful operation
     /// </summary>
     [ObservableProperty]
-    [StringLength(1000, ErrorMessage = "Details cannot exceed 1000 characters")]
     private string _details = string.Empty;
 
     /// <summary>
@@ -61,7 +61,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     /// Display duration in milliseconds
     /// </summary>
     [ObservableProperty]
-    [Range(500, 10000, ErrorMessage = "Duration must be between 500ms and 10000ms")]
     private int _displayDuration = 2000;
 
     /// <summary>
@@ -83,7 +82,7 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     /// <summary>
     /// Emergency keyboard hook for global shortcuts
     /// </summary>
-    private Services.EmergencyKeyboardHook? _emergencyKeyboardHook;
+    private Services.Infrastructure.EmergencyKeyboardHookService? _emergencyKeyboardHook;
 
     #endregion
 
@@ -151,10 +150,10 @@ public partial class SuccessOverlayViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Continue requested from error overlay");
-            
+
             // Stop emergency monitoring since user is continuing
             StopEmergencyShutdownMonitoring();
-            
+
             await AnimateOutAsync();
         }
         catch (Exception ex)
@@ -174,10 +173,10 @@ public partial class SuccessOverlayViewModel : BaseViewModel
         try
         {
             Logger.LogWarning("User requested application exit from error overlay");
-            
+
             // Stop emergency monitoring since we're manually exiting
             StopEmergencyShutdownMonitoring();
-            
+
             // Trigger immediate dismissal (don't wait for it)
             try
             {
@@ -211,7 +210,7 @@ public partial class SuccessOverlayViewModel : BaseViewModel
 
             // Wait up to 3 seconds for graceful shutdown
             var completed = await shutdownTask.WaitAsync(TimeSpan.FromSeconds(3));
-            
+
             if (!completed)
             {
                 Logger.LogWarning("Graceful shutdown timed out - forcing application exit");
@@ -301,10 +300,10 @@ public partial class SuccessOverlayViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Force dismiss requested");
-            
+
             // Stop emergency monitoring
             StopEmergencyShutdownMonitoring();
-            
+
             IsAnimating = false;
             Progress = 0.0;
             DismissRequested?.Invoke();
@@ -338,22 +337,12 @@ public partial class SuccessOverlayViewModel : BaseViewModel
                 try
                 {
                     _emergencyKeyboardHook?.Dispose();
-                    _emergencyKeyboardHook = new Services.EmergencyKeyboardHook(
-                        Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.EmergencyKeyboardHook>.Instance
+                    _emergencyKeyboardHook = new Services.Infrastructure.EmergencyKeyboardHookService(
+                        Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.Infrastructure.EmergencyKeyboardHookService>.Instance
                     );
-                    
-                    _emergencyKeyboardHook.EmergencyExitRequested += () =>
-                    {
-                        Logger.LogWarning("Emergency exit requested via global shortcut");
-                        _ = Task.Run(async () => await ExitApplicationCommand.ExecuteAsync(null));
-                    };
-                    
-                    _emergencyKeyboardHook.EmergencyContinueRequested += () =>
-                    {
-                        Logger.LogWarning("Emergency continue requested via global shortcut");
-                        _ = Task.Run(async () => await ContinueCommand.ExecuteAsync(null));
-                    };
-                    
+
+                    _emergencyKeyboardHook.EmergencyKeyPressed += OnEmergencyKeyPressed;
+
                     _emergencyKeyboardHook.StartHook();
                 }
                 catch (Exception hookEx)
@@ -455,15 +444,15 @@ public partial class SuccessOverlayViewModel : BaseViewModel
         {
             // Use Windows API to check key states even when UI is locked
             // This is a simplified version - in production you'd use P/Invoke to GetAsyncKeyState
-            
+
             // For now, we'll use a timer-based approach since P/Invoke adds complexity
             // Check if UI thread is responsive by trying to dispatch a simple operation
             var uiResponsive = await CheckUIThreadResponsiveness();
-            
+
             if (!uiResponsive)
             {
                 Logger.LogWarning("UI thread appears unresponsive - considering emergency action");
-                
+
                 // If UI has been unresponsive for more than 5 seconds, assume emergency
                 // In a real implementation, you'd check actual keyboard state here
                 return true;
@@ -533,14 +522,14 @@ public partial class SuccessOverlayViewModel : BaseViewModel
         try
         {
             Logger.LogCritical("Emergency timer triggered - force shutting down application after 30 seconds");
-            
+
             // This runs on a background thread and won't be affected by UI lockup
             Environment.Exit(1);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error in emergency timer callback");
-            
+
             // Ultimate fallback
             try
             {
@@ -634,4 +623,34 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     }
 
     #endregion
+
+    /// <summary>
+    /// Handles emergency key pressed events and executes appropriate commands
+    /// </summary>
+    private void OnEmergencyKeyPressed(object? sender, Services.Infrastructure.EmergencyKeyEventArgs e)
+    {
+        try
+        {
+            // Handle different emergency key combinations
+            if (e.Key == Avalonia.Input.Key.Escape && e.Modifiers.HasFlag(Avalonia.Input.KeyModifiers.Control))
+            {
+                Logger.LogWarning("Emergency exit requested via Ctrl+Escape");
+                _ = Task.Run(async () => await ExitApplicationCommand.ExecuteAsync(null));
+            }
+            else if (e.Key == Avalonia.Input.Key.Enter && e.Modifiers.HasFlag(Avalonia.Input.KeyModifiers.Control))
+            {
+                Logger.LogWarning("Emergency continue requested via Ctrl+Enter");
+                _ = Task.Run(async () => await ContinueCommand.ExecuteAsync(null));
+            }
+            else
+            {
+                Logger.LogDebug("Unhandled emergency key: {Key} with modifiers {Modifiers}", e.Key, e.Modifiers);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling emergency key press");
+        }
+    }
 }
+

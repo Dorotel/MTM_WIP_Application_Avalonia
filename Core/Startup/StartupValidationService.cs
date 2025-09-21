@@ -5,6 +5,11 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Services.Business;
+using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services;
+
 
 namespace MTM_WIP_Application_Avalonia.Core.Startup;
 
@@ -159,14 +164,14 @@ public class StartupValidationService : IStartupValidationService
                 typeof(ILoggerFactory),
                 typeof(MTM_WIP_Application_Avalonia.Services.Core.IConfigurationService),
                 typeof(MTM_WIP_Application_Avalonia.Services.Core.IApplicationStateService),
-                typeof(MTM_WIP_Application_Avalonia.Services.INavigationService)
+                typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.INavigationService)
             };
 
             // Define optional services that should be available but are not critical
             var optionalServices = new[]
             {
-                typeof(MTM_WIP_Application_Avalonia.Services.IThemeService),
-                typeof(MTM_WIP_Application_Avalonia.Services.ISettingsService),
+                typeof(MTM_WIP_Application_Avalonia.Services.UI.IThemeService),
+                typeof(MTM_WIP_Application_Avalonia.Services.Feature.ISettingsService),
                 typeof(MTM_WIP_Application_Avalonia.Services.Core.IDatabaseService)
             };
 

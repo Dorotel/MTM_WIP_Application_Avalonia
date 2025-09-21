@@ -5,21 +5,29 @@ This directory contains comprehensive documentation for the MTM WIP Application,
 ## 📋 Documentation Sections
 
 ### Architecture and Planning
+
 - [Project Architecture Blueprint](architecture/project-blueprint.md)
 - [Project Structure Blueprint](architecture/folder-structure.md)
 - [Epic Architecture Specifications](ways-of-work/plan/mtm-inventory-management/epic-architecture/)
 
+### Audit Reports
+
+- [Pull Request Gap Analysis](audit/) - Comprehensive implementation progress tracking and gap reports
+
 ### GitHub Instructions System
+
 The `.github/instructions/` system provides comprehensive development guidelines:
+
 - [README](.github/instructions/README.md) - Overview and integration guide
 - [Avalonia UI Guidelines](.github/instructions/avalonia-ui-guidelines.instructions.md)
-- [MVVM Community Toolkit Patterns](.github/instructions/mvvm-community-toolkit.instructions.md) 
+- [MVVM Community Toolkit Patterns](.github/instructions/mvvm-community-toolkit.instructions.md)
 - [MySQL Database Patterns](.github/instructions/mysql-database-patterns.instructions.md)
 - [Service Architecture Guide](.github/instructions/service-architecture.instructions.md)
 - [Data Models Documentation](.github/instructions/data-models.instructions.md)
 - [.NET Architecture Best Practices](.github/instructions/dotnet-architecture-good-practices.instructions.md)
 
 ### Development Workflow
+
 - Issue Templates: Bug reports, feature requests, enhancements, documentation improvements
 - Pull Request Templates: Feature implementation, hotfixes, documentation changes
 - GitHub Actions: Automated CI/CD pipeline with testing and deployment

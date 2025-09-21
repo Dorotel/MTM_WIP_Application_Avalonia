@@ -1,3 +1,7 @@
+﻿using MTM_WIP_Application_Avalonia.Models.Events;
+using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,8 +65,8 @@ namespace MTM_WIP_Application_Avalonia.Views
                 try
                 {
                     // Find the ThemeQuickSwitcher control
-                    var themeQuickSwitcher = this.FindControl<Views.ThemeQuickSwitcher>("ThemeQuickSwitcher") ??
-                                           FindControlInVisualTree<Views.ThemeQuickSwitcher>(this, "ThemeQuickSwitcher");
+                    var themeQuickSwitcher = this.FindControl<Views.Overlay.ThemeQuickSwitcher>("ThemeQuickSwitcher") ??
+                                           FindControlInVisualTree<Views.Overlay.ThemeQuickSwitcher>(this, "ThemeQuickSwitcher");
 
                     if (themeQuickSwitcher != null)
                     {
@@ -92,7 +96,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 System.Diagnostics.Debug.WriteLine("Theme editor requested - navigating to theme editor");
 
                 // Get navigation service and navigate to theme editor
-                var navigationService = Program.GetOptionalService<Services.INavigationService>();
+                var navigationService = Program.GetOptionalService<INavigationService>();
                 if (navigationService != null)
                 {
                     // Get theme editor view from DI container
@@ -612,13 +616,20 @@ namespace MTM_WIP_Application_Avalonia.Views
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"MainView.ShowSuggestionOverlay called with content type: {overlayContent?.GetType().Name}");
+
                 var overlayPanel = this.FindControl<Border>("SuggestionOverlayPanel");
                 var contentControl = this.FindControl<ContentControl>("SuggestionOverlayContent");
+
+                System.Diagnostics.Debug.WriteLine($"Found overlayPanel: {overlayPanel != null}, contentControl: {contentControl != null}");
 
                 if (overlayPanel != null && contentControl != null)
                 {
                     contentControl.Content = overlayContent;
                     overlayPanel.IsVisible = true;
+
+                    System.Diagnostics.Debug.WriteLine($"Overlay panel visibility set to: {overlayPanel.IsVisible}");
+                    System.Diagnostics.Debug.WriteLine($"Content control content set to: {contentControl.Content?.GetType().Name}");
                     System.Diagnostics.Debug.WriteLine("Suggestion overlay panel shown successfully");
                 }
                 else
@@ -1445,7 +1456,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 System.Diagnostics.Debug.WriteLine($"MainView received focus management request: {e.FocusType} for tab {e.TabIndex} with {e.DelayMs}ms delay");
 
                 // Get the FocusManagementService from the service provider
-                var focusService = Program.GetService<Services.IFocusManagementService>();
+                var focusService = Program.GetService<IFocusManagementService>();
                 if (focusService == null)
                 {
                     System.Diagnostics.Debug.WriteLine("FocusManagementService not available");
@@ -1656,3 +1667,5 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
     }
 }
+
+

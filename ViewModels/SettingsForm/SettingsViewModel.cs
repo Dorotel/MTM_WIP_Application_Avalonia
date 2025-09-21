@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.UI;
+using MTM_WIP_Application_Avalonia.Services.Feature;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -21,9 +23,9 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly INavigationService _navigationService;
     private readonly IThemeService _themeService;
     private readonly ISettingsService _settingsService;
-    private readonly VirtualPanelManager _panelManager;
-    private readonly SettingsPanelStateManager _stateManager;
-    
+    private readonly IVirtualPanelManager _panelManager;
+    private readonly ISettingsPanelStateManager _stateManager;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSaveChanges))]
     private SettingsCategoryViewModel? _selectedCategory;
@@ -56,8 +58,8 @@ public partial class SettingsViewModel : BaseViewModel
         INavigationService navigationService,
         IThemeService themeService,
         ISettingsService settingsService,
-        VirtualPanelManager panelManager,
-        SettingsPanelStateManager stateManager,
+        IVirtualPanelManager panelManager,
+        ISettingsPanelStateManager stateManager,
         ILogger<SettingsViewModel> logger) : base(logger)
     {
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
@@ -72,7 +74,7 @@ public partial class SettingsViewModel : BaseViewModel
 
         // Initialize categories and panels
         InitializeCategories();
-        
+
         // Subscribe to events
         _stateManager.StateChanged += OnStateManagerStateChanged;
 
@@ -115,7 +117,7 @@ public partial class SettingsViewModel : BaseViewModel
             CurrentStatusMessage = "Saving all changes...";
 
             var result = await _stateManager.SaveAllChangesAsync().ConfigureAwait(false);
-            
+
             if (result.IsSuccess)
             {
                 CurrentStatusMessage = "All changes saved successfully";
@@ -159,7 +161,7 @@ public partial class SettingsViewModel : BaseViewModel
             CurrentStatusMessage = "Reverting all changes...";
 
             var result = await _stateManager.RevertAllChangesAsync().ConfigureAwait(false);
-            
+
             if (result.IsSuccess)
             {
                 CurrentStatusMessage = "All changes reverted";
@@ -248,7 +250,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "database",
             DisplayName = "Database Settings",
-            Icon = "🗄️",
+            Icon = "ðŸ—„ï¸",
             PanelType = typeof(DatabaseSettingsViewModel)
         });
 
@@ -257,37 +259,37 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "user-management",
             DisplayName = "User Management",
-            Icon = "👥",
+            Icon = "ðŸ‘¥",
             HasSubCategories = true
         };
-        
+
         userManagement.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "add-user",
             DisplayName = "Add User",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddUserViewModel),
             Parent = userManagement
         });
-        
+
         userManagement.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "edit-user",
             DisplayName = "Edit User",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditUserViewModel),
             Parent = userManagement
         });
-        
+
         userManagement.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "delete-user",
             DisplayName = "Delete User",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemoveUserViewModel),
             Parent = userManagement
         });
-        
+
         Categories.Add(userManagement);
 
         // Part Numbers
@@ -295,37 +297,37 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "part-numbers",
             DisplayName = "Part Numbers",
-            Icon = "🔧",
+            Icon = "ðŸ”§",
             HasSubCategories = true
         };
-        
+
         partNumbers.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "add-part",
             DisplayName = "Add Part Number",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddPartViewModel),
             Parent = partNumbers
         });
-        
+
         partNumbers.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "edit-part",
             DisplayName = "Edit Part Number",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditPartViewModel),
             Parent = partNumbers
         });
-        
+
         partNumbers.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "remove-part",
             DisplayName = "Remove Part Number",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemovePartViewModel),
             Parent = partNumbers
         });
-        
+
         Categories.Add(partNumbers);
 
         // Operations
@@ -333,37 +335,37 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "operations",
             DisplayName = "Operations",
-            Icon = "⚙️",
+            Icon = "âš™ï¸",
             HasSubCategories = true
         };
-        
+
         operations.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "add-operation",
             DisplayName = "Add Operation",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddOperationViewModel),
             Parent = operations
         });
-        
+
         operations.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "edit-operation",
             DisplayName = "Edit Operation",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditOperationViewModel),
             Parent = operations
         });
-        
+
         operations.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "remove-operation",
             DisplayName = "Remove Operation",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemoveOperationViewModel),
             Parent = operations
         });
-        
+
         Categories.Add(operations);
 
         // Locations
@@ -371,37 +373,37 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "locations",
             DisplayName = "Locations",
-            Icon = "📍",
+            Icon = "ðŸ“",
             HasSubCategories = true
         };
-        
+
         locations.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "add-location",
             DisplayName = "Add Location",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddLocationViewModel),
             Parent = locations
         });
-        
+
         locations.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "edit-location",
             DisplayName = "Edit Location",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditLocationViewModel),
             Parent = locations
         });
-        
+
         locations.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "remove-location",
             DisplayName = "Remove Location",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemoveLocationViewModel),
             Parent = locations
         });
-        
+
         Categories.Add(locations);
 
         // ItemTypes
@@ -409,54 +411,45 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "item-types",
             DisplayName = "Item Types",
-            Icon = "📦",
+            Icon = "ðŸ“¦",
             HasSubCategories = true
         };
-        
+
         itemTypes.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "add-itemtype",
             DisplayName = "Add Item Type",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddItemTypeViewModel),
             Parent = itemTypes
         });
-        
+
         itemTypes.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "edit-itemtype",
             DisplayName = "Edit Item Type",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditItemTypeViewModel),
             Parent = itemTypes
         });
-        
+
         itemTypes.SubCategories.Add(new SettingsCategoryViewModel
         {
             Id = "remove-itemtype",
             DisplayName = "Remove Item Type",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemoveItemTypeViewModel),
             Parent = itemTypes
         });
-        
-        Categories.Add(itemTypes);
 
-        // Advanced Theme Builder
-        Categories.Add(new SettingsCategoryViewModel
-        {
-            Id = "theme-builder",
-            DisplayName = "Advanced Theme Builder",
-            Icon = "🎨",
-            PanelType = typeof(ThemeBuilderViewModel)
-        });
+        Categories.Add(itemTypes);
 
         // Shortcuts Configuration
         Categories.Add(new SettingsCategoryViewModel
         {
             Id = "shortcuts",
             DisplayName = "Shortcuts Configuration",
-            Icon = "⌨️",
+            Icon = "âŒ¨ï¸",
             PanelType = typeof(ShortcutsViewModel)
         });
 
@@ -465,7 +458,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "about",
             DisplayName = "About Information",
-            Icon = "ℹ️",
+            Icon = "â„¹ï¸",
             PanelType = typeof(AboutViewModel)
         });
 
@@ -474,7 +467,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "system-health",
             DisplayName = "System Health & Diagnostics",
-            Icon = "🩺",
+            Icon = "ðŸ©º",
             PanelType = typeof(SystemHealthViewModel)
         });
 
@@ -483,7 +476,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "backup-recovery",
             DisplayName = "Backup & Recovery",
-            Icon = "💾",
+            Icon = "ðŸ’¾",
             PanelType = typeof(BackupRecoveryViewModel)
         });
 
@@ -492,7 +485,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "security-permissions",
             DisplayName = "Security & Permissions",
-            Icon = "🔒",
+            Icon = "ðŸ”’",
             PanelType = typeof(SecurityPermissionsViewModel)
         });
 
@@ -517,7 +510,7 @@ public partial class SettingsViewModel : BaseViewModel
 
             // Check if panel is already loaded
             var existingPanel = LoadedPanels.FirstOrDefault(p => p.CategoryId == SelectedCategory.Id);
-            
+
             if (existingPanel != null)
             {
                 // Switch to existing panel
@@ -527,12 +520,12 @@ public partial class SettingsViewModel : BaseViewModel
             {
                 // Create new virtual panel
                 var newPanel = await _panelManager.CreateVirtualPanelAsync(SelectedCategory).ConfigureAwait(false);
-                
+
                 if (newPanel != null)
                 {
                     LoadedPanels.Add(newPanel);
                     SelectedPanel = newPanel;
-                    
+
                     // Create state snapshot for new panel
                     _stateManager.CreateSnapshot(SelectedCategory.Id, newPanel.ViewModel);
                 }
@@ -577,7 +570,7 @@ public partial class SettingsViewModel : BaseViewModel
         if (disposing)
         {
             _stateManager.StateChanged -= OnStateManagerStateChanged;
-            
+
             // Dispose loaded panels
             foreach (var panel in LoadedPanels)
             {
@@ -585,7 +578,7 @@ public partial class SettingsViewModel : BaseViewModel
             }
             LoadedPanels.Clear();
         }
-        
+
         base.Dispose(disposing);
     }
 

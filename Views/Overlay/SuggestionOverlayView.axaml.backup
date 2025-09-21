@@ -1,0 +1,275 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
+             xmlns:conv="using:MTM_WIP_Application_Avalonia.Converters"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.SuggestionOverlayView"
+             x:DataType="vm:SuggestionOverlayViewModel"
+             Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+             Focusable="True"
+             IsTabStop="True"
+             KeyDown="OnUserControlKeyDown"
+             KeyUp="OnUserControlKeyUp">
+
+  <UserControl.Resources>
+    <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <!-- MTM Amber Theme Button Styles -->
+    <Style Selector="Button.action-button">
+      <Setter Property="Padding" Value="8,6"/>
+      <Setter Property="Margin" Value="3"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="MinHeight" Value="28"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+    </Style>
+
+    <Style Selector="Button.primary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
+    </Style>
+
+    <Style Selector="Button.primary:pressed">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryPressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryPressedBrush}"/>
+    </Style>
+
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
+    </Style>
+
+    <Style Selector="Button.secondary:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
+    </Style>
+
+    <Style Selector="Button.secondary:pressed">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
+    </Style>
+
+    <!-- Header panel styling -->
+    <Style Selector="Border.header-panel">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"/>
+      <Setter Property="CornerRadius" Value="12,12,0,0"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="BorderThickness" Value="1,1,1,0"/>
+    </Style>
+
+    <!-- Suggestion panel styling -->
+    <Style Selector="Border.suggestion-panel">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="BorderThickness" Value="1,0,1,0"/>
+      <Setter Property="CornerRadius" Value="0"/>
+      <Setter Property="Margin" Value="0,1,0,1"/>
+    </Style>
+
+    <!-- Action panel styling -->
+    <Style Selector="Border.action-panel">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="BorderThickness" Value="1,0,1,1"/>
+      <Setter Property="CornerRadius" Value="0,0,12,12"/>
+    </Style>
+
+    <!-- MTM ListBox styling -->
+    <Style Selector="ListBox">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+      <Setter Property="Padding" Value="4"/>
+    </Style>
+
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="Margin" Value="2"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+    </Style>
+
+    <Style Selector="ListBoxItem:selected">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SelectionBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <Style Selector="ListBoxItem:pointerover">
+      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+    </Style>
+
+    <!-- Force TextBlocks in ListBoxItems to be visible -->
+    <Style Selector="ListBoxItem TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="ListBoxItem:selected TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    </Style>
+
+    <Style Selector="ListBoxItem:pointerover TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+    </Style>
+
+    <!-- Force transparent backgrounds on Material Icons -->
+    <Style Selector="materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="Button materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+  </UserControl.Styles>
+
+  <!-- Main container with MTM modern panel layout -->
+
+  <Grid RowDefinitions="Auto,*,Auto"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        Margin="4">
+
+    <!-- Header Panel with gradient and top rounded corners -->
+    <Border Grid.Row="0"
+            Classes="header-panel"
+            Padding="16,12">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <materialIcons:MaterialIcon Grid.Column="0"
+                                    Kind="Lightbulb"
+                                    Width="20"
+                                    Height="20"
+                                    Margin="0,0,12,0"
+                                    Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+        <TextBlock Grid.Column="1"
+                   Text="Did you mean?"
+                   FontWeight="Bold"
+                   FontSize="16"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+        <materialIcons:MaterialIcon Grid.Column="2"
+                                    Kind="Close"
+                                    Width="16"
+                                    Height="16"
+                                    Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                                    Cursor="Hand"
+                                    Tapped="OnCloseClicked"/>
+      </Grid>
+    </Border>
+
+    <!-- Main content panel -->
+    <Border Grid.Row="1"
+            Classes="suggestion-panel"
+            Padding="16">
+      <Grid RowDefinitions="Auto,*">
+        <!-- Info text -->
+        <TextBlock Grid.Row="0"
+                   Text="No exact match found. Please select from similar items (scroll for more, use % as wildcard):"
+                   FontSize="12"
+                   Margin="0,0,0,12"
+                   Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+
+        <!-- Suggestions ListBox with improved full-height sizing -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      MinHeight="120">
+          <ListBox ItemsSource="{Binding Suggestions}"
+                   SelectedItem="{Binding SelectedSuggestion, Mode=TwoWay}"
+                   FontSize="13"
+                   x:Name="SuggestionListBox"
+                   KeyDown="OnSuggestionListBoxKeyDown"
+                   DoubleTapped="OnSuggestionListBoxDoubleTapped"
+                   VerticalAlignment="Stretch"
+                   IsTabStop="True"
+                   TabIndex="0"
+                   Focusable="True">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent">
+                  <materialIcons:MaterialIcon Kind="Package"
+                                              Width="14"
+                                              Height="14"
+                                              VerticalAlignment="Center"
+                                              Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                  <TextBlock Text="{Binding}"
+                             VerticalAlignment="Center"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             Background="Transparent"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </ScrollViewer>
+      </Grid>
+    </Border>
+
+    <!-- Bottom Action Panel with rounded bottom corners -->
+    <Border Grid.Row="2"
+            Classes="action-panel"
+            Padding="12">
+      <Grid ColumnDefinitions="*,Auto">
+        <!-- Left side - help text -->
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Spacing="6">
+          <materialIcons:MaterialIcon Kind="Information"
+                                      Width="14"
+                                      Height="14"
+                                      Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+          <TextBlock Text="Double-click to select, or use buttons. Use % for wildcards (e.g., R-%-0%)"
+                     FontSize="11"
+                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+        </StackPanel>
+
+        <!-- Right side buttons -->
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+          <Button Classes="action-button secondary"
+                  Content="Cancel"
+                  Command="{Binding CancelCommand}"
+                  Width="70"
+                  Height="28">
+          </Button>
+          <Button x:Name="SelectButton"
+                  Classes="action-button primary"
+                  Command="{Binding SelectCommand}"
+                  Width="70"
+                  Height="28"
+                  IsEnabled="{Binding SelectedSuggestion, Converter={StaticResource NullToBoolConverter}}">
+            <StackPanel Orientation="Horizontal" Spacing="6"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+              <materialIcons:MaterialIcon Kind="Check" Width="12" Height="12"/>
+              <TextBlock Text="Select" FontSize="11" FontWeight="SemiBold"/>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

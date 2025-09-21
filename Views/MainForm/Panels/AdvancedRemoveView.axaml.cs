@@ -1,18 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
-using MTM_WIP_Application_Avalonia.Controls;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using MTM_WIP_Application_Avalonia.Services;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
 /// <summary>
 /// Control_AdvancedRemove - Enhanced Removal Operations Interface
-/// 
+///
 /// Provides sophisticated removal operations beyond standard inventory removal functionality.
 /// Offers bulk removal operations, removal history tracking, undo capabilities, and specialized reporting
 /// for removal analytics. Uses standard .NET patterns without ReactiveUI dependencies.
@@ -26,7 +23,7 @@ public partial class AdvancedRemoveView : UserControl
         try
         {
             InitializeComponent();
-            
+
             // Set up event handlers for advanced removal features
             SetupAdvancedRemovalFeatures();
         }
@@ -53,19 +50,19 @@ public partial class AdvancedRemoveView : UserControl
         {
             // Set up bulk removal operation handlers
             SetupBulkRemovalOperations();
-            
+
             // Configure removal history tracking and undo capabilities
             SetupRemovalHistoryTracking();
-            
+
             // Initialize removal analytics and reporting features
             SetupRemovalAnalytics();
-            
+
             // Set up undo system architecture
             SetupUndoSystem();
-            
+
             // Configure printing integration for removal reports
             SetupPrintingIntegration();
-            
+
             _logger?.LogInformation("Advanced removal features initialized successfully");
         }
         catch (Exception ex)
@@ -81,7 +78,7 @@ public partial class AdvancedRemoveView : UserControl
     protected override void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
-        
+
         if (DataContext is AdvancedRemoveViewModel viewModel)
         {
             // Wire up command error handling using standard patterns
@@ -103,7 +100,7 @@ public partial class AdvancedRemoveView : UserControl
         {
             // Since we're not using ReactiveUI, we'll handle errors differently
             // Commands will handle their own errors internally
-            
+
             _logger?.LogDebug("ViewModel command error handling configured");
         }
         catch (Exception ex)
@@ -121,7 +118,7 @@ public partial class AdvancedRemoveView : UserControl
         {
             // Log the exception with context
             _logger?.LogError(ex, "Command {CommandName} encountered an error: {Message}", commandName, ex.Message);
-            
+
             // Handle specific exception types
             var userMessage = ex switch
             {
@@ -161,7 +158,7 @@ public partial class AdvancedRemoveView : UserControl
             }
 
             // Also log to error handling system
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, commandName, Environment.UserName,
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, commandName, Environment.UserName.ToUpper(),
                 new Dictionary<string, object>
                 {
                     ["Component"] = "AdvancedRemoveView",
@@ -172,7 +169,7 @@ public partial class AdvancedRemoveView : UserControl
         {
             // Critical: Exception in exception handler
             _logger?.LogCritical(handlerEx, "Critical error in exception handler for command {CommandName}", commandName);
-            
+
             // Last resort - write to debug output
             System.Diagnostics.Debug.WriteLine($"Critical exception handling error for {commandName}: {handlerEx.Message}");
         }
@@ -188,7 +185,7 @@ public partial class AdvancedRemoveView : UserControl
         {
             // Initialize bulk removal framework
             // This would integrate with stored procedures for advanced bulk operations
-            
+
             _logger?.LogDebug("Bulk removal operations setup completed");
         }
         catch (Exception ex)
@@ -279,13 +276,13 @@ public partial class AdvancedRemoveView : UserControl
         {
             // This method would integrate with progress tracking
             // when the progress system is available
-            
+
             if (DataContext is AdvancedRemoveViewModel viewModel)
             {
                 // Wire up progress callbacks to ViewModel
                 // viewModel.SetProgressCallbacks(progressCallback, statusCallback);
             }
-            
+
             _logger?.LogInformation("Progress controls configured for removal operations");
         }
         catch (Exception ex)
@@ -304,18 +301,18 @@ public partial class AdvancedRemoveView : UserControl
         {
             // This would integrate with stored procedures for bulk removal
             // when the database layer is available
-            
+
             _logger?.LogInformation("Bulk removal operation initiated");
-            
+
             // Placeholder for actual implementation
             await Task.Delay(100);
-            
+
             return true;
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Bulk removal operation failed");
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteBulkRemovalAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteBulkRemovalAsync", Environment.UserName.ToUpper());
             return false;
         }
     }
@@ -330,20 +327,20 @@ public partial class AdvancedRemoveView : UserControl
         {
             // This would integrate with stored procedures for undo operations
             // when the database layer is available
-            
-            _logger?.LogInformation("Undo removal operation initiated for transaction: {TransactionId}", 
+
+            _logger?.LogInformation("Undo removal operation initiated for transaction: {TransactionId}",
                 removalTransactionId);
-            
+
             // Placeholder for actual implementation
             await Task.Delay(100);
-            
+
             return true;
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Undo removal operation failed for transaction: {TransactionId}", 
+            _logger?.LogError(ex, "Undo removal operation failed for transaction: {TransactionId}",
                 removalTransactionId);
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteUndoRemovalAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExecuteUndoRemovalAsync", Environment.UserName.ToUpper());
             return false;
         }
     }
@@ -358,19 +355,19 @@ public partial class AdvancedRemoveView : UserControl
         {
             // This would integrate with stored procedures for analytics
             // when the database layer is available
-            
-            _logger?.LogInformation("Removal analytics generation initiated for date range: {StartDate} - {EndDate}", 
+
+            _logger?.LogInformation("Removal analytics generation initiated for date range: {StartDate} - {EndDate}",
                 startDate, endDate);
-            
+
             // Placeholder for actual implementation
             await Task.Delay(100);
-            
+
             return true;
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Removal analytics generation failed");
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "GenerateRemovalAnalyticsAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "GenerateRemovalAnalyticsAsync", Environment.UserName.ToUpper());
             return false;
         }
     }
@@ -385,18 +382,18 @@ public partial class AdvancedRemoveView : UserControl
         {
             // This would integrate with export services for removal data
             // when the Excel service is available
-            
+
             _logger?.LogInformation("Removal data export initiated for file: {FilePath}", filePath);
-            
+
             // Placeholder for actual implementation
             await Task.Delay(100);
-            
+
             return true;
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Removal data export failed for file: {FilePath}", filePath);
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExportRemovalDataAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "ExportRemovalDataAsync", Environment.UserName.ToUpper());
             return false;
         }
     }
@@ -411,18 +408,18 @@ public partial class AdvancedRemoveView : UserControl
         {
             // This would integrate with printing services for professional printing
             // when the printing system is available
-            
+
             _logger?.LogInformation("Removal summary printing initiated");
-            
+
             // Placeholder for actual implementation
             await Task.Delay(100);
-            
+
             return true;
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Removal summary printing failed");
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "PrintRemovalSummaryAsync", Environment.UserName);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "PrintRemovalSummaryAsync", Environment.UserName.ToUpper());
             return false;
         }
     }
@@ -437,9 +434,9 @@ public partial class AdvancedRemoveView : UserControl
         {
             // This would integrate with stored procedures for filtered data
             // when the database layer is available
-            
+
             _logger?.LogInformation("Advanced removal filters applied");
-            
+
             // Placeholder for actual implementation
             await Task.Delay(100);
         }
