@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
-             xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="650"
              x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.EditInventoryView"
              x:CompileBindings="True"
@@ -355,9 +354,7 @@
                        IsEnabled="{Binding CanEditRecord}"
                        MinHeight="28"
                        FontSize="12"
-                       ToolTip.Tip="Operation number (e.g. 90, 100, 110) - EDITABLE"
-                       behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="{Binding CanEditRecord}"
-                       behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding AvailableOperations}" />
+                       ToolTip.Tip="Operation number (e.g. 90, 100, 110) - EDITABLE" />
 
               <materialIcons:MaterialIcon Grid.Column="2"
                                           Kind="CheckCircle"

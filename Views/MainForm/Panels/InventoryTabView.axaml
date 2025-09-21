@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm" xmlns:materialIcons="using:Material.Icons.Avalonia" xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls" xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600" x:Class="MTM_WIP_Application_Avalonia.Views.InventoryTabView" x:CompileBindings="True" x:DataType="vm:InventoryTabViewModel">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm" xmlns:materialIcons="using:Material.Icons.Avalonia" xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600" x:Class="MTM_WIP_Application_Avalonia.Views.InventoryTabView" x:CompileBindings="True" x:DataType="vm:InventoryTabViewModel">
 
   <UserControl.Styles>
     <!-- MTM Theme Input Field Styles -->
@@ -79,14 +79,14 @@
 
   <!-- Main Layout Container - ScrollViewer for overflow handling -->
   <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
-    
+
     <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8">
 
       <!-- Main Entry Panel -->
       <Border Grid.Row="0"  Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,8">
-        
+
         <Grid x:Name="EntryFormGrid" RowDefinitions="Auto,*">
-          
+
           <!-- Form Fields Section -->
           <Grid x:Name="FormFieldsGrid" Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="12">
 
@@ -96,7 +96,7 @@
                 <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                 <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
               </StackPanel>
-              <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding SelectedPart, Mode=TwoWay}" Watermark="{Binding PartWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a part number" TabIndex="1" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding PartIds}" />
+              <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding SelectedPart, Mode=TwoWay}" Watermark="{Binding PartWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a part number" TabIndex="1" />
             </Grid>
 
             <!-- Operation Field -->
@@ -105,7 +105,7 @@
                 <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                 <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
               </StackPanel>
-              <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter an operation number" TabIndex="2" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Operations}" />
+              <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter an operation number" TabIndex="2" />
             </Grid>
 
             <!-- Location Field -->
@@ -114,7 +114,7 @@
                 <materialIcons:MaterialIcon Kind="MapMarker" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
                 <TextBlock Text="Location:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
               </StackPanel>
-              <TextBox Grid.Column="1" x:Name="LocationTextBox" Text="{Binding SelectedLocation, Mode=TwoWay}" Watermark="{Binding LocationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a location" TabIndex="3" behaviors:TextBoxFuzzyValidationBehavior.EnableFuzzyValidation="True" behaviors:TextBoxFuzzyValidationBehavior.ValidationSource="{Binding Locations}" />
+              <TextBox Grid.Column="1" x:Name="LocationTextBox" Text="{Binding SelectedLocation, Mode=TwoWay}" Watermark="{Binding LocationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a location" TabIndex="3" />
             </Grid>
 
             <!-- Quantity Field -->
@@ -141,19 +141,19 @@
 
       <!-- Action Buttons Panel -->
       <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,8">
-        
+
         <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="Auto,*">
-          
+
           <!-- Action buttons -->
           <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
-            
+
             <Button x:Name="SaveButton" Classes="primary" Width="100" Command="{Binding SaveCommand}" IsEnabled="{Binding CanSave}" ToolTip.Tip="Save inventory item (Enter to execute)" TabIndex="6">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="ContentSave" Width="14" Height="14" HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                 <TextBlock Text="Save" FontSize="11" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
               </StackPanel>
             </Button>
-            
+
             <Button Classes="secondary" Width="100" Command="{Binding ResetCommand}" CommandParameter="False" ToolTip.Tip="Reset form (F5 for soft reset, Shift+F5 for hard reset)">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" />

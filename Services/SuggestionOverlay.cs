@@ -45,12 +45,12 @@ public class SuggestionOverlayService : ISuggestionOverlayService
     /// <param name="logger">Logger for debugging and diagnostics</param>
     /// <param name="focusManagementService">Optional focus management service for enhanced UX</param>
     public SuggestionOverlayService(
-        ILogger<SuggestionOverlayService> logger, 
+        ILogger<SuggestionOverlayService> logger,
         IFocusManagementService? focusManagementService = null)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _focusManagementService = focusManagementService;
-        _logger.LogDebug("SuggestionOverlayService created successfully with focus management: {HasFocusManagement}", 
+        _logger.LogDebug("SuggestionOverlayService created successfully with focus management: {HasFocusManagement}",
             _focusManagementService != null);
     }
 
@@ -66,54 +66,62 @@ public class SuggestionOverlayService : ISuggestionOverlayService
     {
         try
         {
+            _logger.LogInformation("[SUGGESTION-DEBUG] ShowSuggestionsAsync called - TargetControl: {ControlType}, UserInput: '{UserInput}', Suggestions count: {Count}",
+                targetControl?.GetType().Name ?? "null", userInput, suggestions?.Count() ?? 0);
+
             // CRITICAL: Check if a tab switch is in progress - if so, don't show overlay
             if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
             {
-                _logger.LogDebug("Tab switch in progress - skipping suggestion overlay for input: '{UserInput}'", userInput);
+                _logger.LogDebug("[SUGGESTION-DEBUG] Tab switch in progress - skipping suggestion overlay for input: '{UserInput}'", userInput);
                 return null;
             }
 
             if (targetControl == null)
             {
-                _logger.LogWarning("Target control is null, cannot show suggestions");
+                _logger.LogWarning("[SUGGESTION-DEBUG] Target control is null, cannot show suggestions");
                 return null;
             }
 
             var suggestionList = suggestions?.ToList() ?? new List<string>();
-            
+
             if (!suggestionList.Any())
             {
-                _logger.LogDebug("No suggestions provided, returning null");
+                _logger.LogDebug("[SUGGESTION-DEBUG] No suggestions provided, returning null");
                 return null;
             }
 
             // Double-check tab switch flag before filtering (extra safety)
             if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
             {
-                _logger.LogDebug("Tab switch detected during suggestion processing - aborting overlay");
+                _logger.LogDebug("[SUGGESTION-DEBUG] Tab switch detected during suggestion processing - aborting overlay");
                 return null;
             }
 
             // Filter suggestions based on user input
             var filteredSuggestions = FilterSuggestions(suggestionList, userInput);
-            
+
+            _logger.LogInformation("[SUGGESTION-DEBUG] Filtered suggestions - Input: '{UserInput}', Original: {Original}, Filtered: {Filtered}",
+                userInput, suggestionList.Count, filteredSuggestions.Count);
+
             if (!filteredSuggestions.Any())
             {
-                _logger.LogDebug("No matching suggestions found for input: '{UserInput}'", userInput);
+                _logger.LogDebug("[SUGGESTION-DEBUG] No matching suggestions found for input: '{UserInput}'", userInput);
                 return null;
             }
 
             // Final check before showing overlay
             if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
             {
-                _logger.LogDebug("Tab switch detected before showing overlay - aborting for input: '{UserInput}'", userInput);
+                _logger.LogDebug("[SUGGESTION-DEBUG] Tab switch detected before showing overlay - aborting for input: '{UserInput}'", userInput);
                 return null;
             }
 
-            _logger.LogDebug("Showing {Count} suggestions for input: '{UserInput}'", filteredSuggestions.Count, userInput);
+            _logger.LogDebug("[SUGGESTION-DEBUG] About to show overlay with {Count} suggestions for input: '{UserInput}'", filteredSuggestions.Count, userInput);
 
             // Create and show the actual overlay
-            return await ShowOverlayAsync(targetControl, filteredSuggestions, userInput);
+            var result = await ShowOverlayAsync(targetControl, filteredSuggestions, userInput);
+            _logger.LogInformation("[SUGGESTION-DEBUG] ShowSuggestionsAsync completed - Result: '{Result}'", result ?? "null");
+            return result;
         }
         catch (Exception ex)
         {
@@ -162,12 +170,12 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 // Create the ViewModel with suggestions and logger
                 var vmLogger = Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<SuggestionOverlayViewModel>();
                 var viewModel = new SuggestionOverlayViewModel(filteredSuggestions, vmLogger);
-                
+
                 // Debug: Log the suggestions that were passed to the ViewModel
-                _logger.LogDebug("ViewModel created with {Count} suggestions: {Suggestions}", 
-                    viewModel.Suggestions.Count, 
+                _logger.LogDebug("ViewModel created with {Count} suggestions: {Suggestions}",
+                    viewModel.Suggestions.Count,
                     string.Join(", ", viewModel.Suggestions.Take(3)) + (viewModel.Suggestions.Count > 3 ? "..." : ""));
-                
+
                 // Create the overlay view
                 var overlayView = new SuggestionOverlayView
                 {
@@ -184,7 +192,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User selected suggestion: '{Suggestion}'", selectedSuggestion);
                     mainView.HideSuggestionOverlay();
-                    
+
                     // Handle focus management - move to next tab index after selection
                     if (_focusManagementService != null)
                     {
@@ -201,7 +209,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                             }
                         });
                     }
-                    
+
                     completionSource.TrySetResult(selectedSuggestion);
                 };
 
@@ -210,7 +218,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User cancelled suggestion overlay");
                     mainView.HideSuggestionOverlay();
-                    
+
                     // Handle focus management - stay on current tab index after cancellation
                     if (_focusManagementService != null)
                     {
@@ -227,7 +235,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                             }
                         });
                     }
-                    
+
                     completionSource.TrySetResult(null);
                 };
 
@@ -238,7 +246,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 // Wait for user interaction
                 var result = await completionSource.Task;
                 _logger.LogDebug("Suggestion overlay completed with result: '{Result}'", result ?? "null");
-                
+
                 return result;
             }
             catch (Exception ex)
@@ -274,7 +282,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 // Create the ViewModel with suggestions and logger
                 var vmLogger = Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<SuggestionOverlayViewModel>();
                 var viewModel = new SuggestionOverlayViewModel(filteredSuggestions, vmLogger);
-                
+
                 // Create the overlay view
                 var overlayView = new SuggestionOverlayView
                 {
@@ -310,7 +318,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User selected suggestion: '{Suggestion}'", selectedSuggestion);
                     popup.IsOpen = false;
-                    
+
                     // Handle focus management - move to next tab index after selection
                     if (_focusManagementService != null)
                     {
@@ -327,7 +335,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                             }
                         });
                     }
-                    
+
                     completionSource.TrySetResult(selectedSuggestion);
                 };
 
@@ -336,7 +344,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 {
                     _logger.LogDebug("User cancelled suggestion overlay");
                     popup.IsOpen = false;
-                    
+
                     // Handle focus management - stay on current tab index after cancellation
                     if (_focusManagementService != null)
                     {
@@ -353,7 +361,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                             }
                         });
                     }
-                    
+
                     completionSource.TrySetResult(null);
                 };
 
@@ -379,7 +387,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                                 }
                             });
                         }
-                        
+
                         completionSource.TrySetResult(null);
                     }
                 };
@@ -391,7 +399,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 // Wait for user interaction
                 var result = await completionSource.Task;
                 _logger.LogDebug("Suggestion overlay completed with result: '{Result}'", result ?? "null");
-                
+
                 return result;
             }
             catch (Exception ex)
@@ -426,7 +434,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
             // Convert wildcard pattern to regex for matching
             var regexPattern = ConvertWildcardToRegex(userInput);
             _logger.LogDebug("Wildcard pattern '{Input}' converted to regex: '{Regex}'", userInput, regexPattern);
-            
+
             try
             {
                 var regex = new Regex(regexPattern, RegexOptions.IgnoreCase);
@@ -448,9 +456,9 @@ public class SuggestionOverlayService : ISuggestionOverlayService
             {
                 // If regex fails, fall back to simple contains matching
                 _logger.LogWarning("Invalid wildcard pattern '{Pattern}': {Error}. Using simple matching.", userInput, ex.Message);
-                
+
                 filtered = suggestions
-                    .Where(s => !string.IsNullOrEmpty(s) && 
+                    .Where(s => !string.IsNullOrEmpty(s) &&
                                s.Contains(userInput.Replace("%", ""), StringComparison.OrdinalIgnoreCase))
                     .Take(50)
                     .ToList();
@@ -460,7 +468,7 @@ public class SuggestionOverlayService : ISuggestionOverlayService
         {
             // Standard substring matching (no wildcards)
             filtered = suggestions
-                .Where(s => !string.IsNullOrEmpty(s) && 
+                .Where(s => !string.IsNullOrEmpty(s) &&
                            s.Contains(userInput, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(s => s.StartsWith(userInput, StringComparison.OrdinalIgnoreCase) ? 0 : 1) // Prefer starts-with matches
                 .ThenBy(s => s.Length) // Prefer shorter matches
@@ -488,19 +496,19 @@ public class SuggestionOverlayService : ISuggestionOverlayService
         // First replace % with a placeholder that won't be escaped
         var withPlaceholder = wildcardPattern.Replace("%", "<!WILDCARD!>");
         _logger.LogDebug("With placeholder: '{Pattern}'", withPlaceholder);
-        
+
         // Escape special regex characters (% is now safe as placeholder)
         var escaped = Regex.Escape(withPlaceholder);
         _logger.LogDebug("After escaping: '{Escaped}'", escaped);
-        
+
         // Replace placeholder with .* (match any characters)
         var regexPattern = escaped.Replace("<!WILDCARD!>", ".*");
         _logger.LogDebug("After replacing wildcards: '{Pattern}'", regexPattern);
-        
+
         // Anchor the pattern to match the entire string
         regexPattern = "^" + regexPattern + "$";
         _logger.LogDebug("Final regex pattern: '{FinalPattern}'", regexPattern);
-        
+
         return regexPattern;
     }
 }
@@ -513,7 +521,7 @@ public class SuggestionItem
     public string Value { get; set; } = string.Empty;
     public string DisplayText { get; set; } = string.Empty;
     public bool IsExactMatch { get; set; }
-    
+
     public SuggestionItem(string value, string? displayText = null)
     {
         Value = value ?? string.Empty;

@@ -279,113 +279,189 @@
                   BorderThickness="1,0,1,1"
                   CornerRadius="0,0,8,8">
 
-      <!-- Data ListBox with Virtual Scrolling -->
-      <ListBox x:Name="DataListBox"
-               ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
-               Background="Transparent"
-               BorderThickness="0"
-               SelectionMode="Multiple"
-               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-               ScrollViewer.VerticalScrollBarVisibility="Disabled">
+      <!-- Container Grid for Data and Nothing Found Panel -->
+      <Grid>
 
-        <ListBox.ItemsPanel>
-          <ItemsPanelTemplate>
-            <VirtualizingStackPanel Orientation="Vertical" />
-          </ItemsPanelTemplate>
-        </ListBox.ItemsPanel>
+        <!-- Data ListBox with Virtual Scrolling -->
+        <ListBox x:Name="DataListBox"
+                 ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 SelectionMode="Multiple"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.VerticalScrollBarVisibility="Disabled">
 
-        <ListBox.ItemContainerTheme>
-          <ControlTheme TargetType="ListBoxItem">
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="VerticalContentAlignment" Value="Stretch" />
-          </ControlTheme>
-        </ListBox.ItemContainerTheme>
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <VirtualizingStackPanel Orientation="Vertical" />
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
 
-        <ListBox.ItemTemplate>
-          <DataTemplate>
-            <Grid>
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.2*" />    <!-- Part ID -->
-                <ColumnDefinition Width="0.8*" />    <!-- Operation -->
-                <ColumnDefinition Width="1*" />      <!-- From Location -->
-                <ColumnDefinition Width="40" />      <!-- Transfer Arrow -->
-                <ColumnDefinition Width="1*" />      <!-- To Location -->
-                <ColumnDefinition Width="0.8*" />    <!-- Available Qty -->
-                <ColumnDefinition Width="0.8*" />    <!-- Transfer Qty -->
-                <ColumnDefinition Width="80" />      <!-- Notes -->
-              </Grid.ColumnDefinitions>
+          <ListBox.ItemContainerTheme>
+            <ControlTheme TargetType="ListBoxItem">
+              <Setter Property="Padding" Value="0" />
+              <Setter Property="Margin" Value="0" />
+              <Setter Property="Background" Value="Transparent" />
+              <Setter Property="BorderThickness" Value="0" />
+              <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+              <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            </ControlTheme>
+          </ListBox.ItemContainerTheme>
 
-              <!-- Conditional tooltip overlay for rows with notes -->
-              <Border Grid.ColumnSpan="8"
-                      Background="Transparent"
-                      IsVisible="{Binding HasNotes}"
-                      ToolTip.Tip="{Binding Notes}" />
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="1.2*" />    <!-- Part ID -->
+                  <ColumnDefinition Width="0.8*" />    <!-- Operation -->
+                  <ColumnDefinition Width="1*" />      <!-- From Location -->
+                  <ColumnDefinition Width="40" />      <!-- Transfer Arrow -->
+                  <ColumnDefinition Width="1*" />      <!-- To Location -->
+                  <ColumnDefinition Width="0.8*" />    <!-- Available Qty -->
+                  <ColumnDefinition Width="0.8*" />    <!-- Transfer Qty -->
+                  <ColumnDefinition Width="80" />      <!-- Notes -->
+                </Grid.ColumnDefinitions>
 
-              <!-- Part ID -->
-              <Border Grid.Column="0" Classes="data-cell">
-                <TextBlock Text="{Binding PartId}"
-                           ToolTip.Tip="{Binding PartId}" />
-              </Border>
+                <!-- Conditional tooltip overlay for rows with notes -->
+                <Border Grid.ColumnSpan="8"
+                        Background="Transparent"
+                        IsVisible="{Binding HasNotes}"
+                        ToolTip.Tip="{Binding Notes}" />
 
-              <!-- Operation -->
-              <Border Grid.Column="1" Classes="data-cell">
-                <TextBlock Text="{Binding Operation}"
-                           ToolTip.Tip="{Binding Operation}" />
-              </Border>
+                <!-- Part ID -->
+                <Border Grid.Column="0" Classes="data-cell">
+                  <TextBlock Text="{Binding PartId}"
+                             ToolTip.Tip="{Binding PartId}" />
+                </Border>
 
-              <!-- From Location -->
-              <Border Grid.Column="2" Classes="data-cell">
-                <TextBlock Text="{Binding FromLocation}"
-                           ToolTip.Tip="{Binding FromLocation}" />
-              </Border>
+                <!-- Operation -->
+                <Border Grid.Column="1" Classes="data-cell">
+                  <TextBlock Text="{Binding Operation}"
+                             ToolTip.Tip="{Binding Operation}" />
+                </Border>
 
-              <!-- Transfer Arrow -->
-              <Border Grid.Column="3" Classes="arrow-cell">
-                <TextBlock Text="➜"
-                           Classes="transfer-arrow"
-                           ToolTip.Tip="{Binding FromLocation, StringFormat='Transfer from {0}'} → {Binding ToLocation, StringFormat='to {0}'}" />
-              </Border>
+                <!-- From Location -->
+                <Border Grid.Column="2" Classes="data-cell">
+                  <TextBlock Text="{Binding FromLocation}"
+                             ToolTip.Tip="{Binding FromLocation}" />
+                </Border>
 
-              <!-- To Location -->
-              <Border Grid.Column="4" Classes="data-cell">
-                <TextBlock Text="{Binding ToLocation}"
-                           ToolTip.Tip="{Binding ToLocation}" />
-              </Border>
+                <!-- Transfer Arrow -->
+                <Border Grid.Column="3" Classes="arrow-cell">
+                  <TextBlock Text="➜"
+                             Classes="transfer-arrow"
+                             ToolTip.Tip="{Binding FromLocation, StringFormat='Transfer from {0}'} → {Binding ToLocation, StringFormat='to {0}'}" />
+                </Border>
 
-              <!-- Available Quantity -->
-              <Border Grid.Column="5" Classes="data-cell">
-                <TextBlock Text="{Binding AvailableQuantity, StringFormat=N0}"
-                           Classes="numeric-value"
-                           ToolTip.Tip="{Binding AvailableQuantity, StringFormat='Available: {0:N0}'}" />
-              </Border>
+                <!-- To Location -->
+                <Border Grid.Column="4" Classes="data-cell">
+                  <TextBlock Text="{Binding ToLocation}"
+                             ToolTip.Tip="{Binding ToLocation}" />
+                </Border>
 
-              <!-- Transfer Quantity -->
-              <Border Grid.Column="6" Classes="data-cell">
-                <TextBlock Text="{Binding TransferQuantity, StringFormat=N0}"
-                           Classes="numeric-value"
-                           ToolTip.Tip="{Binding TransferQuantity, StringFormat='Transfer Qty: {0:N0}'}" />
-              </Border>
+                <!-- Available Quantity -->
+                <Border Grid.Column="5" Classes="data-cell">
+                  <TextBlock Text="{Binding AvailableQuantity, StringFormat=N0}"
+                             Classes="numeric-value"
+                             ToolTip.Tip="{Binding AvailableQuantity, StringFormat='Available: {0:N0}'}" />
+                </Border>
 
-              <!-- Notes -->
-              <Border Grid.Column="7" Classes="data-cell">
-                <Grid>
-                  <TextBlock Text="{Binding Notes}"
-                             TextTrimming="CharacterEllipsis" />
-                  <!-- Invisible overlay for tooltip when notes exist -->
-                  <Border Background="Transparent"
-                          IsVisible="{Binding HasNotes}"
-                          ToolTip.Tip="{Binding Notes}" />
-                </Grid>
-              </Border>
+                <!-- Transfer Quantity -->
+                <Border Grid.Column="6" Classes="data-cell">
+                  <TextBlock Text="{Binding TransferQuantity, StringFormat=N0}"
+                             Classes="numeric-value"
+                             ToolTip.Tip="{Binding TransferQuantity, StringFormat='Transfer Qty: {0:N0}'}" />
+                </Border>
 
-            </Grid>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
+                <!-- Notes -->
+                <Border Grid.Column="7" Classes="data-cell">
+                  <Grid>
+                    <TextBlock Text="{Binding Notes}"
+                               TextTrimming="CharacterEllipsis" />
+                    <!-- Invisible overlay for tooltip when notes exist -->
+                    <Border Background="Transparent"
+                            IsVisible="{Binding HasNotes}"
+                            ToolTip.Tip="{Binding Notes}" />
+                  </Grid>
+                </Border>
+
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Nothing Found Panel (similar to CustomDataGrid) -->
+        <Border x:Name="NothingFoundPanel"
+                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                BorderThickness="0"
+                Padding="64"
+                MinHeight="200"
+                IsVisible="{Binding !ItemsSource.Count, RelativeSource={RelativeSource AncestorType=UserControl}}">
+
+          <StackPanel HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Spacing="16">
+
+            <!-- Transfer Icon -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+                    CornerRadius="32"
+                    Width="64"
+                    Height="64"
+                    HorizontalAlignment="Center">
+              <TextBlock Text="➜"
+                         FontSize="24"
+                         FontWeight="Bold"
+                         Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center" />
+            </Border>
+
+            <!-- Nothing Found Message -->
+            <TextBlock Text="No transfer candidates found"
+                       FontSize="18"
+                       FontWeight="Medium"
+                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center" />
+
+            <!-- Help Text -->
+            <TextBlock Text="Enter search criteria in the transfer form above and click Search to find items available for transfer."
+                       FontSize="14"
+                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       MaxWidth="400" />
+
+            <!-- Additional Instructions -->
+            <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="16,12"
+                    Margin="0,8,0,0">
+              <StackPanel Spacing="6">
+                <TextBlock Text="Search Tips:"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="• Enter Part ID to find all locations for that part"
+                           FontSize="11"
+                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                <TextBlock Text="• Add Operation number to filter by specific operation"
+                           FontSize="11"
+                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                <TextBlock Text="• Select destination location before transferring"
+                           FontSize="11"
+                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </Border>
+
+      </Grid>
     </ScrollViewer>
 
     <!-- Action Buttons Row -->

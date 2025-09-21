@@ -13,6 +13,7 @@ using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
+using MTM_Shared_Logic.Models;
 
 namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 
@@ -27,7 +28,7 @@ public partial class TransferCustomDataGrid : UserControl
 {
     #region Fields
 
-    private readonly ILogger<TransferCustomDataGrid> _logger;
+    private readonly ILogger<TransferCustomDataGrid>? _logger;
 
     #endregion
 
@@ -36,20 +37,24 @@ public partial class TransferCustomDataGrid : UserControl
     /// <summary>
     /// Gets or sets the items source for the transfer data grid
     /// </summary>
-    public static readonly StyledProperty<ObservableCollection<object>> ItemsSourceProperty =
-        AvaloniaProperty.Register<TransferCustomDataGrid, ObservableCollection<object>>(nameof(ItemsSource), new ObservableCollection<object>());
+    public static readonly StyledProperty<ObservableCollection<TransferInventoryItem>> ItemsSourceProperty =
+        AvaloniaProperty.Register<TransferCustomDataGrid, ObservableCollection<TransferInventoryItem>>(
+            nameof(ItemsSource),
+            new ObservableCollection<TransferInventoryItem>());
 
     /// <summary>
     /// Gets or sets the selected item
     /// </summary>
-    public static readonly StyledProperty<object?> SelectedItemProperty =
-        AvaloniaProperty.Register<TransferCustomDataGrid, object?>(nameof(SelectedItem));
+    public static readonly StyledProperty<TransferInventoryItem?> SelectedItemProperty =
+        AvaloniaProperty.Register<TransferCustomDataGrid, TransferInventoryItem?>(nameof(SelectedItem));
 
     /// <summary>
-    /// Gets or sets the collection of selected items
+    /// Gets or sets the collection of selected items (strongly-typed for TransferInventoryItem)
     /// </summary>
-    public static readonly StyledProperty<ObservableCollection<object>> SelectedItemsCollectionProperty =
-        AvaloniaProperty.Register<TransferCustomDataGrid, ObservableCollection<object>>(nameof(SelectedItemsCollection), new ObservableCollection<object>());
+    public static readonly StyledProperty<ObservableCollection<TransferInventoryItem>> SelectedItemsCollectionProperty =
+        AvaloniaProperty.Register<TransferCustomDataGrid, ObservableCollection<TransferInventoryItem>>(
+            nameof(SelectedItemsCollection),
+            new ObservableCollection<TransferInventoryItem>());
 
     /// <summary>
     /// Command for editing a transfer
@@ -63,10 +68,14 @@ public partial class TransferCustomDataGrid : UserControl
     public static readonly StyledProperty<ICommand?> ExecuteTransferCommandProperty =
         AvaloniaProperty.Register<TransferCustomDataGrid, ICommand?>(nameof(ExecuteTransferCommand));
 
+    #endregion
+
+    #region Public Properties
+
     /// <summary>
     /// Gets or sets the items source
     /// </summary>
-    public ObservableCollection<object> ItemsSource
+    public ObservableCollection<TransferInventoryItem> ItemsSource
     {
         get => GetValue(ItemsSourceProperty);
         set => SetValue(ItemsSourceProperty, value);
@@ -75,7 +84,7 @@ public partial class TransferCustomDataGrid : UserControl
     /// <summary>
     /// Gets or sets the selected item
     /// </summary>
-    public object? SelectedItem
+    public TransferInventoryItem? SelectedItem
     {
         get => GetValue(SelectedItemProperty);
         set => SetValue(SelectedItemProperty, value);
@@ -84,7 +93,7 @@ public partial class TransferCustomDataGrid : UserControl
     /// <summary>
     /// Gets or sets the selected items collection
     /// </summary>
-    public ObservableCollection<object> SelectedItemsCollection
+    public ObservableCollection<TransferInventoryItem> SelectedItemsCollection
     {
         get => GetValue(SelectedItemsCollectionProperty);
         set => SetValue(SelectedItemsCollectionProperty, value);
@@ -120,19 +129,44 @@ public partial class TransferCustomDataGrid : UserControl
         // Use null logger pattern from original CustomDataGrid
         _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TransferCustomDataGrid>.Instance;
 
+        System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferCustomDataGrid() constructor started");
+
         InitializeComponent();
+
+        System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferCustomDataGrid InitializeComponent() completed");
+
+        // Set up event handlers after components are initialized
+        Loaded += OnControlLoaded;
+
+        System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferCustomDataGrid() constructor completed");
+        _logger?.LogDebug("TransferCustomDataGrid initialized");
+    }
+
+    /// <summary>
+    /// Handles the control loaded event to set up UI element event handlers
+    /// </summary>
+    private void OnControlLoaded(object? sender, RoutedEventArgs e)
+    {
+        System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] OnControlLoaded started");
 
         // Set up event handlers
         if (DataListBox != null)
         {
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] DataListBox found - setting up events");
             DataListBox.SelectionChanged += OnDataListBoxSelectionChanged;
             DataListBox.SelectionMode = SelectionMode.Multiple;
         }
+        else
+        {
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] WARNING: DataListBox not found - selection events will not work");
+        }
 
         // Initialize button states
+        System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] Updating initial action button states");
         UpdateActionButtonStates();
 
-        _logger?.LogDebug("TransferCustomDataGrid initialized");
+        System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] OnControlLoaded completed");
+        _logger?.LogDebug("TransferCustomDataGrid control loaded and event handlers attached");
     }
 
     #endregion
@@ -159,26 +193,40 @@ public partial class TransferCustomDataGrid : UserControl
     {
         try
         {
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] HandleItemsSourceChanged - Old: {oldValue?.GetType().Name ?? "null"}, New: {newValue?.GetType().Name ?? "null"}");
+
             // Subscribe to collection change notifications
             if (oldValue is INotifyCollectionChanged oldCollection)
             {
                 oldCollection.CollectionChanged -= OnItemsCollectionChanged;
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] Unsubscribed from old collection change notifications");
             }
 
             if (newValue is INotifyCollectionChanged newCollection)
             {
                 newCollection.CollectionChanged += OnItemsCollectionChanged;
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] Subscribed to new collection change notifications");
             }
+
+            // Count items for debugging
+            var itemCount = 0;
+            if (newValue != null)
+            {
+                itemCount = newValue.Cast<object>().Count();
+            }
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] New ItemsSource contains {itemCount} items");
 
             // Update display after data change
             UpdateSelectionInfo();
             UpdateActionButtonStates();
 
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] HandleItemsSourceChanged completed");
             _logger?.LogDebug("ItemsSource changed from {OldType} to {NewType}",
                 oldValue?.GetType().Name ?? "null", newValue?.GetType().Name ?? "null");
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] ERROR in HandleItemsSourceChanged: {ex.Message}");
             _logger?.LogError(ex, "Error handling ItemsSource change");
         }
     }
@@ -211,14 +259,32 @@ public partial class TransferCustomDataGrid : UserControl
     {
         try
         {
-            if (DataListBox == null) return;
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] OnDataListBoxSelectionChanged started");
+
+            if (DataListBox?.SelectedItems == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] DataListBox.SelectedItems is null - returning");
+                return;
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] DataListBox.SelectedItems.Count: {DataListBox.SelectedItems.Count}");
 
             // Update the SelectedItemsCollection with the current selection
             SelectedItemsCollection.Clear();
             foreach (var item in DataListBox.SelectedItems)
             {
-                SelectedItemsCollection.Add(item);
+                if (item is TransferInventoryItem transferItem)
+                {
+                    SelectedItemsCollection.Add(transferItem);
+                    System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Added to selection: {transferItem.PartId} - {transferItem.Operation} at {transferItem.Location}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] WARNING: Item is not TransferInventoryItem: {item?.GetType().Name ?? "null"}");
+                }
             }
+
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] SelectedItemsCollection.Count after update: {SelectedItemsCollection.Count}");
 
             // Update the single selected item
             if (SelectedItemsCollection.Count > 0)
@@ -226,11 +292,13 @@ public partial class TransferCustomDataGrid : UserControl
                 if (SelectedItemsCollection.Count == 1)
                 {
                     SelectedItem = SelectedItemsCollection[0];
+                    System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Single item selected: {SelectedItem.PartId}");
                 }
                 else
                 {
                     // Multiple items selected - clear single selection
                     SelectedItem = null;
+                    System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Multiple items selected ({SelectedItemsCollection.Count}) - cleared single selection");
                 }
 
                 UpdateSelectionInfo();
@@ -239,14 +307,17 @@ public partial class TransferCustomDataGrid : UserControl
             else
             {
                 SelectedItem = null;
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] No items selected");
                 UpdateSelectionInfo();
                 UpdateActionButtonStates();
             }
 
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] OnDataListBoxSelectionChanged completed");
             _logger?.LogTrace("Selection changed: {Count} items selected", SelectedItemsCollection.Count);
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] ERROR in OnDataListBoxSelectionChanged: {ex.Message}");
             _logger?.LogError(ex, "Error handling DataListBox selection change");
         }
     }
@@ -303,15 +374,12 @@ public partial class TransferCustomDataGrid : UserControl
 
             foreach (var item in SelectedItemsCollection)
             {
-                if (item is TransferInventoryItem transferItem)
-                {
-                    totalQuantity += transferItem.TransferQuantity;
+                totalQuantity += item.TransferQuantity;
 
-                    var key = $"{transferItem.PartId}-{transferItem.FromLocation}-{transferItem.ToLocation}";
-                    transferItems[key] = transferItems.ContainsKey(key)
-                        ? transferItems[key] + transferItem.TransferQuantity
-                        : transferItem.TransferQuantity;
-                }
+                var key = $"{item.PartId}-{item.Operation}-{item.FromLocation}→{item.ToLocation}";
+                transferItems[key] = transferItems.ContainsKey(key)
+                    ? transferItems[key] + item.TransferQuantity
+                    : item.TransferQuantity;
             }
 
             TotalTransferQuantityText.Text = $"Total Transfer Qty: {totalQuantity:N0}";
@@ -321,8 +389,15 @@ public partial class TransferCustomDataGrid : UserControl
             {
                 var tooltip = string.Join("\n", transferItems.Select(kvp =>
                 {
-                    var parts = kvp.Key.Split('-');
-                    return $"{parts[0]}: {parts[1]} → {parts[2]} ({kvp.Value:N0})";
+                    var parts = kvp.Key.Split('→');
+                    if (parts.Length >= 2)
+                    {
+                        var leftParts = parts[0].Split('-');
+                        return leftParts.Length >= 3
+                            ? $"{leftParts[0]} Op:{leftParts[1]} from {leftParts[2]} → {parts[1]} ({kvp.Value:N0})"
+                            : $"{parts[0]} → {parts[1]} ({kvp.Value:N0})";
+                    }
+                    return $"{kvp.Key} ({kvp.Value:N0})";
                 }));
 
                 ToolTip.SetTip(TotalTransferQuantityText, tooltip);
@@ -352,7 +427,7 @@ public partial class TransferCustomDataGrid : UserControl
         try
         {
             var hasSelection = SelectedItemsCollection.Count > 0;
-            var hasValidTransfers = SelectedItemsCollection.OfType<TransferInventoryItem>().Any(t => t.TransferQuantity > 0);
+            var hasValidInventory = SelectedItemsCollection.Any(item => item.TransferQuantity > 0 && item.IsTransferValid);
 
             if (EditTransferButton != null)
             {
@@ -361,11 +436,11 @@ public partial class TransferCustomDataGrid : UserControl
 
             if (ExecuteTransferButton != null)
             {
-                ExecuteTransferButton.IsEnabled = hasSelection && hasValidTransfers;
+                ExecuteTransferButton.IsEnabled = hasSelection && hasValidInventory;
             }
 
-            _logger?.LogTrace("Action buttons updated - HasSelection: {HasSelection}, HasValidTransfers: {HasValidTransfers}",
-                hasSelection, hasValidTransfers);
+            _logger?.LogTrace("Action buttons updated - HasSelection: {HasSelection}, HasValidInventory: {HasValidInventory}",
+                hasSelection, hasValidInventory);
         }
         catch (Exception ex)
         {
@@ -437,6 +512,9 @@ public partial class TransferCustomDataGrid : UserControl
         {
             DataListBox.SelectionChanged -= OnDataListBoxSelectionChanged;
         }
+
+        // Unsubscribe from control events
+        Loaded -= OnControlLoaded;
 
         base.OnDetachedFromVisualTree(e);
     }

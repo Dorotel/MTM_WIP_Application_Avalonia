@@ -187,7 +187,7 @@ public partial class MainViewViewModel : BaseViewModel
         UpdateInventoryContent();
         UpdateRemoveContent();
 
-        TransferContent = new Views.TransferTabView
+        TransferContent = new Views.TransferTabView(_serviceProvider)
         {
             DataContext = TransferItemViewModel
         };

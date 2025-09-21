@@ -149,7 +149,18 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
 
             InitializeComponent();
 
-            // Subscribe to ListBox selection changes and mouse events
+            // Set up event handlers after components are initialized
+            Loaded += OnControlLoaded;
+
+            _logger.LogDebug("CustomDataGrid initialized with WinForms-style multi-selection");
+        }
+
+        /// <summary>
+        /// Handles the control loaded event to set up UI element event handlers
+        /// </summary>
+        private void OnControlLoaded(object? sender, RoutedEventArgs e)
+        {
+            // Set up event handlers
             if (DataListBox != null)
             {
                 DataListBox.SelectionChanged += OnDataListBoxSelectionChanged;
@@ -164,7 +175,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             // Initialize button states
             UpdateActionButtonStates();
 
-            _logger.LogDebug("CustomDataGrid initialized with WinForms-style multi-selection");
+            _logger.LogDebug("CustomDataGrid control loaded and event handlers attached");
         }
 
         #endregion
@@ -189,37 +200,44 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void HandleItemsSourceChanged(IEnumerable? oldValue, IEnumerable? newValue)
         {
-            _logger.LogDebug("ItemsSource changed from {OldType} to {NewType}",
-                oldValue?.GetType().Name ?? "null",
-                newValue?.GetType().Name ?? "null");
-
-            // Unsubscribe from old collection change notifications
-            if (oldValue is INotifyCollectionChanged oldCollection)
+            try
             {
-                oldCollection.CollectionChanged -= OnItemsCollectionChanged;
+                _logger.LogDebug("ItemsSource changed from {OldType} to {NewType}",
+                    oldValue?.GetType().Name ?? "null",
+                    newValue?.GetType().Name ?? "null");
+
+                // Unsubscribe from old collection change notifications
+                if (oldValue is INotifyCollectionChanged oldCollection)
+                {
+                    oldCollection.CollectionChanged -= OnItemsCollectionChanged;
+                }
+
+                // Subscribe to new collection change notifications
+                if (newValue is INotifyCollectionChanged newCollection)
+                {
+                    newCollection.CollectionChanged += OnItemsCollectionChanged;
+                }
+
+                // Reset selection tracking
+                _lastSelectedIndex = -1;
+                _isDragging = false;
+                _dragStartIndex = -1;
+
+                // Update UI state
+                UpdateActionButtonStates();
+                UpdateSelectionInfoText();
+                UpdateTotalQuantityDisplay(); // Update totals when data changes
+
+                // Log item count for debugging
+                if (newValue != null)
+                {
+                    var count = newValue.Cast<object>().Count();
+                    _logger.LogInformation("Loaded {ItemCount} items into CustomDataGrid", count);
+                }
             }
-
-            // Subscribe to new collection change notifications
-            if (newValue is INotifyCollectionChanged newCollection)
+            catch (Exception ex)
             {
-                newCollection.CollectionChanged += OnItemsCollectionChanged;
-            }
-
-            // Reset selection tracking
-            _lastSelectedIndex = -1;
-            _isDragging = false;
-            _dragStartIndex = -1;
-
-            // Update UI state
-            UpdateActionButtonStates();
-            UpdateSelectionInfoText();
-            UpdateTotalQuantityDisplay(); // Update totals when data changes
-
-            // Log item count for debugging
-            if (newValue != null)
-            {
-                var count = newValue.Cast<object>().Count();
-                _logger.LogInformation("Loaded {ItemCount} items into CustomDataGrid", count);
+                _logger.LogError(ex, "Error handling ItemsSource change");
             }
         }
 
@@ -228,14 +246,22 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void OnItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            _logger.LogTrace("Items collection changed: {Action}", e.Action);
+            try
+            {
+                _logger.LogTrace("Items collection changed: {Action}", e.Action);
 
-            // Update total quantities when collection changes
-            UpdateTotalQuantityDisplay();
+                // Update total quantities when collection changes
+                UpdateTotalQuantityDisplay();
+                UpdateActionButtonStates();
 
-            // Notify parent of collection change
-            var itemCount = ItemsSource?.Cast<object>().Count() ?? 0;
-            _logger.LogDebug("Collection changed, new item count: {ItemCount}", itemCount);
+                // Notify parent of collection change
+                var itemCount = ItemsSource?.Cast<object>().Count() ?? 0;
+                _logger.LogDebug("Collection changed, new item count: {ItemCount}", itemCount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling collection change");
+            }
         }
 
         #endregion
@@ -247,46 +273,53 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void OnDataListBoxPointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataListBox == null) return;
-
-            var point = e.GetPosition(DataListBox);
-            var hitTestResult = DataListBox.InputHitTest(point);
-            var listBoxItem = FindParent<ListBoxItem>(hitTestResult as Control);
-
-            if (listBoxItem == null) return;
-
-            var clickedIndex = DataListBox.IndexFromContainer(listBoxItem);
-            if (clickedIndex < 0) return;
-
-            var keyModifiers = e.KeyModifiers;
-            var isCtrlPressed = keyModifiers.HasFlag(KeyModifiers.Control);
-            var isShiftPressed = keyModifiers.HasFlag(KeyModifiers.Shift);
-
-            _logger.LogDebug("Item clicked at index {Index}, Ctrl: {Ctrl}, Shift: {Shift}",
-                clickedIndex, isCtrlPressed, isShiftPressed);
-
-            if (isCtrlPressed)
+            try
             {
-                // Ctrl+Click: Toggle selection
-                HandleCtrlClick(clickedIndex);
-            }
-            else if (isShiftPressed && _lastSelectedIndex >= 0)
-            {
-                // Shift+Click: Range selection
-                HandleShiftClick(clickedIndex);
-            }
-            else
-            {
-                // Normal click: Single selection
-                HandleNormalClick(clickedIndex);
+                if (DataListBox == null) return;
 
-                // Start potential drag operation
-                _isDragging = true;
-                _dragStartIndex = clickedIndex;
-            }
+                var point = e.GetPosition(DataListBox);
+                var hitTestResult = DataListBox.InputHitTest(point);
+                var listBoxItem = FindParent<ListBoxItem>(hitTestResult as Control);
 
-            _lastSelectedIndex = clickedIndex;
-            e.Handled = true;
+                if (listBoxItem == null) return;
+
+                var clickedIndex = DataListBox.IndexFromContainer(listBoxItem);
+                if (clickedIndex < 0) return;
+
+                var keyModifiers = e.KeyModifiers;
+                var isCtrlPressed = keyModifiers.HasFlag(KeyModifiers.Control);
+                var isShiftPressed = keyModifiers.HasFlag(KeyModifiers.Shift);
+
+                _logger.LogTrace("Item clicked at index {Index}, Ctrl: {Ctrl}, Shift: {Shift}",
+                    clickedIndex, isCtrlPressed, isShiftPressed);
+
+                if (isCtrlPressed)
+                {
+                    // Ctrl+Click: Toggle selection
+                    HandleCtrlClick(clickedIndex);
+                }
+                else if (isShiftPressed && _lastSelectedIndex >= 0)
+                {
+                    // Shift+Click: Range selection
+                    HandleShiftClick(clickedIndex);
+                }
+                else
+                {
+                    // Normal click: Single selection
+                    HandleNormalClick(clickedIndex);
+
+                    // Start potential drag operation
+                    _isDragging = true;
+                    _dragStartIndex = clickedIndex;
+                }
+
+                _lastSelectedIndex = clickedIndex;
+                e.Handled = true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling pointer pressed event");
+            }
         }
 
         /// <summary>
@@ -323,19 +356,26 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void HandleNormalClick(int index)
         {
-            if (DataListBox == null) return;
-
-            DataListBox.SelectedItems?.Clear();
-            if (index >= 0 && index < (ItemsSource?.Cast<object>().Count() ?? 0))
+            try
             {
-                var items = ItemsSource?.Cast<object>().ToList();
-                if (items != null && index < items.Count)
-                {
-                    DataListBox.SelectedItems?.Add(items[index]);
-                }
-            }
+                if (DataListBox == null) return;
 
-            _logger.LogDebug("Normal click selection: index {Index}", index);
+                DataListBox.SelectedItems?.Clear();
+                if (index >= 0 && index < (ItemsSource?.Cast<object>().Count() ?? 0))
+                {
+                    var items = ItemsSource?.Cast<object>().ToList();
+                    if (items != null && index < items.Count)
+                    {
+                        DataListBox.SelectedItems?.Add(items[index]);
+                    }
+                }
+
+                _logger.LogTrace("Normal click selection: index {Index}", index);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling normal click at index {Index}", index);
+            }
         }
 
         /// <summary>
@@ -343,25 +383,32 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void HandleCtrlClick(int index)
         {
-            if (DataListBox == null || ItemsSource == null) return;
-
-            var items = ItemsSource.Cast<object>().ToList();
-            if (index < 0 || index >= items.Count) return;
-
-            var item = items[index];
-            var isSelected = DataListBox.SelectedItems?.Contains(item) == true;
-
-            if (isSelected)
+            try
             {
-                DataListBox.SelectedItems?.Remove(item);
-            }
-            else
-            {
-                DataListBox.SelectedItems?.Add(item);
-            }
+                if (DataListBox == null || ItemsSource == null) return;
 
-            _logger.LogDebug("Ctrl+Click toggle: index {Index}, now {Selected}",
-                index, !isSelected ? "selected" : "deselected");
+                var items = ItemsSource.Cast<object>().ToList();
+                if (index < 0 || index >= items.Count) return;
+
+                var item = items[index];
+                var isSelected = DataListBox.SelectedItems?.Contains(item) ?? false;
+
+                if (isSelected)
+                {
+                    DataListBox.SelectedItems?.Remove(item);
+                }
+                else
+                {
+                    DataListBox.SelectedItems?.Add(item);
+                }
+
+                _logger.LogTrace("Ctrl+Click toggle: index {Index}, now {Selected}",
+                    index, !isSelected ? "selected" : "deselected");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling Ctrl+Click at index {Index}", index);
+            }
         }
 
         /// <summary>
@@ -369,20 +416,28 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void HandleShiftClick(int currentIndex)
         {
-            if (DataListBox == null || ItemsSource == null || _lastSelectedIndex < 0) return;
-
-            var items = ItemsSource.Cast<object>().ToList();
-            var startIndex = Math.Min(_lastSelectedIndex, currentIndex);
-            var endIndex = Math.Max(_lastSelectedIndex, currentIndex);
-
-            // Clear current selection and select range
-            DataListBox.SelectedItems?.Clear();
-            for (int i = startIndex; i <= endIndex && i < items.Count; i++)
+            try
             {
-                DataListBox.SelectedItems?.Add(items[i]);
-            }
+                if (DataListBox == null || ItemsSource == null || _lastSelectedIndex < 0) return;
 
-            _logger.LogDebug("Shift+Click range selection: from {Start} to {End}", startIndex, endIndex);
+                var items = ItemsSource.Cast<object>().ToList();
+                var startIndex = Math.Min(_lastSelectedIndex, currentIndex);
+                var endIndex = Math.Max(_lastSelectedIndex, currentIndex);
+
+                // Clear current selection and select range
+                DataListBox.SelectedItems?.Clear();
+                for (int i = startIndex; i <= endIndex && i < items.Count; i++)
+                {
+                    DataListBox.SelectedItems?.Add(items[i]);
+                }
+
+                _logger.LogTrace("Shift+Click range selection: from {Start} to {End}", startIndex, endIndex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling Shift+Click range selection from {LastIndex} to {CurrentIndex}",
+                    _lastSelectedIndex, currentIndex);
+            }
         }
 
         /// <summary>
@@ -430,42 +485,49 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void OnDataListBoxSelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
         {
-            _logger.LogDebug("DataListBox selection changed: {SelectedCount} items selected",
-                DataListBox?.SelectedItems?.Count ?? 0);
-
-            // Update action button states based on selection
-            UpdateActionButtonStates();
-
-            // Update selection info text
-            UpdateSelectionInfoText();
-
-            // Update SelectedItem property
-            SelectedItem = DataListBox?.SelectedItem;
-
-            // CRITICAL FIX: Sync SelectedItemsCollection with DataListBox selection for ViewModel binding
-            // Create new collection and set property to trigger two-way binding notification
-            var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
-            if (selectedItems.Count > 0)
+            try
             {
-                // Create new ObservableCollection to trigger binding system
-                var newSelectedItems = new System.Collections.ObjectModel.ObservableCollection<object>(selectedItems);
-                SelectedItemsCollection = newSelectedItems;
-                _logger.LogDebug("Updated SelectedItemsCollection with new collection: {Count} items", selectedItems.Count);
+                _logger.LogDebug("DataListBox selection changed: {SelectedCount} items selected",
+                    DataListBox?.SelectedItems?.Count ?? 0);
+
+                // Update action button states based on selection
+                UpdateActionButtonStates();
+
+                // Update selection info text
+                UpdateSelectionInfoText();
+
+                // Update SelectedItem property
+                SelectedItem = DataListBox?.SelectedItem;
+
+                // CRITICAL FIX: Sync SelectedItemsCollection with DataListBox selection for ViewModel binding
+                // Create new collection and set property to trigger two-way binding notification
+                var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
+                if (selectedItems.Count > 0)
+                {
+                    // Create new ObservableCollection to trigger binding system
+                    var newSelectedItems = new System.Collections.ObjectModel.ObservableCollection<object>(selectedItems);
+                    SelectedItemsCollection = newSelectedItems;
+                    _logger.LogDebug("Updated SelectedItemsCollection with new collection: {Count} items", selectedItems.Count);
+                }
+                else
+                {
+                    // Clear selection by setting to empty collection
+                    SelectedItemsCollection = new System.Collections.ObjectModel.ObservableCollection<object>();
+                    _logger.LogDebug("Cleared SelectedItemsCollection");
+                }
+
+                // Raise selection changed event
+                var selectedItemsForEvent = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
+                SelectionChanged?.Invoke(this, new SelectionChangedEventArgs
+                {
+                    SelectedItems = selectedItemsForEvent,
+                    SelectionMode = "WinFormsSelection"
+                });
             }
-            else
+            catch (Exception ex)
             {
-                // Clear selection by setting to empty collection
-                SelectedItemsCollection = new System.Collections.ObjectModel.ObservableCollection<object>();
-                _logger.LogDebug("Cleared SelectedItemsCollection");
+                _logger.LogError(ex, "Error handling DataListBox selection change");
             }
-
-            // Raise selection changed event
-            var selectedItemsForEvent = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
-            SelectionChanged?.Invoke(this, new SelectionChangedEventArgs
-            {
-                SelectedItems = selectedItemsForEvent,
-                SelectionMode = "WinFormsSelection"
-            });
         }
 
         /// <summary>
@@ -473,22 +535,29 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void UpdateActionButtonStates()
         {
-            var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
-            var selectedCount = selectedItems.Count;
-            var hasSelection = selectedCount > 0;
-            var singleSelection = selectedCount == 1;
+            try
+            {
+                var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
+                var selectedCount = selectedItems.Count;
+                var hasSelection = selectedCount > 0;
+                var singleSelection = selectedCount == 1;
 
-            _logger.LogTrace("Updating action button states: {SelectedCount} items selected", selectedCount);
+                _logger.LogTrace("Updating action button states: {SelectedCount} items selected", selectedCount);
 
-            // Enable/disable buttons based on selection
-            if (EditButton != null)
-                EditButton.IsEnabled = singleSelection; // Edit only works on single selection
+                // Enable/disable buttons based on selection
+                if (EditButton != null)
+                    EditButton.IsEnabled = singleSelection; // Edit only works on single selection
 
-            if (DeleteButton != null)
-                DeleteButton.IsEnabled = hasSelection; // Delete works on any selection
+                if (DeleteButton != null)
+                    DeleteButton.IsEnabled = hasSelection; // Delete works on any selection
 
-            // Update command parameters with selected items
-            UpdateCommandParameters();
+                // Update command parameters with selected items
+                UpdateCommandParameters();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating action button states");
+            }
         }
 
         /// <summary>
@@ -496,48 +565,55 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void UpdateCommandParameters()
         {
-            var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
-            var selectedItem = selectedItems.FirstOrDefault();
-
-            _logger.LogTrace("Updating command parameters for {SelectedCount} selected items", selectedItems.Count);
-
-            // Update action button command parameters to use selected item(s)
-            if (EditButton != null && EditItemCommand != null && selectedItem != null)
+            try
             {
-                EditButton.CommandParameter = selectedItem;
+                var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
+                var selectedItem = selectedItems.FirstOrDefault();
+
+                _logger.LogTrace("Updating command parameters for {SelectedCount} selected items", selectedItems.Count);
+
+                // Update action button command parameters to use selected item(s)
+                if (EditButton != null && EditItemCommand != null && selectedItem != null)
+                {
+                    EditButton.CommandParameter = selectedItem;
+                }
+
+                if (DeleteButton != null)
+                {
+                    // Smart delete button logic: choose between single and multi-row commands
+                    if (selectedItems.Count > 1 && MultiRowDeleteCommand != null)
+                    {
+                        // Multiple items selected - use multi-row delete command (no parameter needed)
+                        DeleteButton.Command = MultiRowDeleteCommand;
+                        DeleteButton.CommandParameter = null;
+                        _logger.LogTrace("Delete button configured for multi-row deletion ({Count} items)", selectedItems.Count);
+                    }
+                    else if (selectedItems.Count == 1 && DeleteItemCommand != null)
+                    {
+                        // Single item selected - use single item delete command
+                        DeleteButton.Command = DeleteItemCommand;
+                        DeleteButton.CommandParameter = selectedItem;
+                        _logger.LogTrace("Delete button configured for single item deletion");
+                    }
+                    else if (selectedItems.Count == 0)
+                    {
+                        // No items selected - disable delete button
+                        DeleteButton.Command = null;
+                        DeleteButton.CommandParameter = null;
+                        _logger.LogTrace("Delete button disabled - no items selected");
+                    }
+                    else
+                    {
+                        // Fallback: use single delete command if multi-row not available
+                        DeleteButton.Command = DeleteItemCommand;
+                        DeleteButton.CommandParameter = selectedItem;
+                        _logger.LogTrace("Delete button configured for single item deletion (fallback)");
+                    }
+                }
             }
-
-            if (DeleteButton != null)
+            catch (Exception ex)
             {
-                // Smart delete button logic: choose between single and multi-row commands
-                if (selectedItems.Count > 1 && MultiRowDeleteCommand != null)
-                {
-                    // Multiple items selected - use multi-row delete command (no parameter needed)
-                    DeleteButton.Command = MultiRowDeleteCommand;
-                    DeleteButton.CommandParameter = null;
-                    _logger.LogTrace("Delete button configured for multi-row deletion ({Count} items)", selectedItems.Count);
-                }
-                else if (selectedItems.Count == 1 && DeleteItemCommand != null)
-                {
-                    // Single item selected - use single item delete command
-                    DeleteButton.Command = DeleteItemCommand;
-                    DeleteButton.CommandParameter = selectedItem;
-                    _logger.LogTrace("Delete button configured for single item deletion");
-                }
-                else if (selectedItems.Count == 0)
-                {
-                    // No items selected - disable delete button
-                    DeleteButton.Command = null;
-                    DeleteButton.CommandParameter = null;
-                    _logger.LogTrace("Delete button disabled - no items selected");
-                }
-                else
-                {
-                    // Fallback: use single delete command if multi-row not available
-                    DeleteButton.Command = DeleteItemCommand;
-                    DeleteButton.CommandParameter = selectedItem;
-                    _logger.LogTrace("Delete button configured for single item deletion (fallback)");
-                }
+                _logger.LogError(ex, "Error updating command parameters");
             }
         }
 
@@ -546,28 +622,39 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
         /// </summary>
         private void UpdateSelectionInfoText()
         {
-            if (SelectionInfoText == null)
-                return;
-
-            var selectedCount = DataListBox?.SelectedItems?.Count ?? 0;
-            var totalCount = ItemsSource?.Cast<object>().Count() ?? 0;
-
-            SelectionInfoText.Text = selectedCount switch
+            try
             {
-                0 => "No items selected",
-                1 => "1 item selected",
-                _ => $"{selectedCount} items selected"
-            };
+                if (SelectionInfoText == null)
+                    return;
 
-            if (totalCount > 0)
-            {
-                SelectionInfoText.Text += $" of {totalCount}";
+                var selectedCount = DataListBox?.SelectedItems?.Count ?? 0;
+                var totalCount = ItemsSource?.Cast<object>().Count() ?? 0;
+
+                SelectionInfoText.Text = selectedCount switch
+                {
+                    0 => "No items selected",
+                    1 => "1 item selected",
+                    _ => $"{selectedCount} items selected"
+                };
+
+                if (totalCount > 0)
+                {
+                    SelectionInfoText.Text += $" of {totalCount}";
+                }
+
+                // Update total quantity display
+                UpdateTotalQuantityDisplay();
+
+                _logger.LogTrace("Selection info updated: {SelectionText}", SelectionInfoText.Text);
             }
-
-            // Update total quantity display
-            UpdateTotalQuantityDisplay();
-
-            _logger.LogTrace("Selection info updated: {SelectionText}", SelectionInfoText.Text);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating selection info text");
+                if (SelectionInfoText != null)
+                {
+                    SelectionInfoText.Text = "Selection info error";
+                }
+            }
         }
 
         /// <summary>
@@ -772,6 +859,9 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
                 DataListBox.PointerMoved -= OnDataListBoxPointerMoved;
                 DataListBox.PointerReleased -= OnDataListBoxPointerReleased;
             }
+
+            // Unsubscribe from control events
+            Loaded -= OnControlLoaded;
 
             base.OnDetachedFromVisualTree(e);
         }

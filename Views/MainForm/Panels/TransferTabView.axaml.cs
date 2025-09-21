@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Controls;
+using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
+using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
 using MTM_Shared_Logic.Models;
 
 namespace MTM_WIP_Application_Avalonia.Views;
@@ -25,16 +28,14 @@ namespace MTM_WIP_Application_Avalonia.Views;
 public partial class TransferTabView : UserControl
 {
     private readonly ILogger<TransferTabView>? _logger;
-    private ISuccessOverlayService? _successOverlayService;
-    private ISuggestionOverlayService? _suggestionOverlayService;
-    private readonly IServiceProvider? _serviceProvider;
-    private bool _isShowingSuggestionOverlay = false;
+    private readonly ISuccessOverlayService? _successOverlayService;
+    private readonly ISuggestionOverlayService? _suggestionOverlayService;
 
     // Control references
     private CollapsiblePanel? _transferConfigPanel;
     private Button? _searchButton;
     private Button? _resetButton;
-    private DataGrid? _inventoryDataGrid;
+    private TransferCustomDataGrid? _transferInventoryDataGrid;
 
     /// <summary>
     /// Initializes a new instance of the TransferTabView class.
@@ -43,36 +44,48 @@ public partial class TransferTabView : UserControl
     {
         try
         {
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferTabView() constructor started");
             InitializeComponent();
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] InitializeComponent() completed successfully");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error during InitializeComponent: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Error during InitializeComponent: {ex.Message}");
         }
 
         InitializeControlReferences();
         SetupEventHandlers();
 
         Loaded += OnLoaded;
+        System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferTabView() constructor completed");
     }
 
     /// <summary>
     /// Constructor with service provider for dependency injection.
     /// </summary>
-    public TransferTabView(IServiceProvider serviceProvider) : this()
+    public TransferTabView(IServiceProvider? serviceProvider) : this()
     {
-        _serviceProvider = serviceProvider;
-
+        // Get services from service provider (following MTM pattern)
         try
         {
-            _logger = serviceProvider.GetService<ILogger<TransferTabView>>();
-            _successOverlayService = serviceProvider.GetService<ISuccessOverlayService>();
-            _suggestionOverlayService = serviceProvider.GetService<ISuggestionOverlayService>();
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferTabView(IServiceProvider) constructor started");
+            _logger = serviceProvider?.GetService<ILogger<TransferTabView>>();
+            _successOverlayService = serviceProvider?.GetService<ISuccessOverlayService>();
+            _suggestionOverlayService = serviceProvider?.GetService<ISuggestionOverlayService>();
+
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Service resolution results:");
+            System.Diagnostics.Debug.WriteLine($"  - Logger: {(_logger != null ? "RESOLVED" : "NULL")}");
+            System.Diagnostics.Debug.WriteLine($"  - SuccessOverlayService: {(_successOverlayService != null ? "RESOLVED" : "NULL")}");
+            System.Diagnostics.Debug.WriteLine($"  - SuggestionOverlayService: {(_suggestionOverlayService != null ? "RESOLVED" : "NULL")}");
+
+            _logger?.LogInformation("[TRANSFER-DEBUG] TransferTabView constructor - Services resolved: Logger={HasLogger}, Success={HasSuccess}, Suggestion={HasSuggestion}",
+                _logger != null, _successOverlayService != null, _suggestionOverlayService != null);
             _logger?.LogDebug("TransferTabView created with dependency injection");
         }
         catch (Exception ex)
         {
-            _logger?.LogWarning(ex, "Failed to resolve services in constructor");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Failed to resolve services: {ex.Message}");
+            _logger?.LogError(ex, "[TRANSFER-DEBUG] Failed to resolve services in TransferTabView constructor");
         }
     }
 
@@ -83,14 +96,64 @@ public partial class TransferTabView : UserControl
     {
         try
         {
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] InitializeControlReferences started");
+
             _transferConfigPanel = this.FindControl<CollapsiblePanel>("TransferConfigPanel");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] TransferConfigPanel: {(_transferConfigPanel != null ? "FOUND" : "NOT FOUND")}");
+
             _searchButton = this.FindControl<Button>("SearchButton");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] SearchButton: {(_searchButton != null ? "FOUND" : "NOT FOUND")}");
+
             _resetButton = this.FindControl<Button>("ResetButton");
-            _inventoryDataGrid = this.FindControl<DataGrid>("InventoryDataGrid");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] ResetButton: {(_resetButton != null ? "FOUND" : "NOT FOUND")}");
+
+            _transferInventoryDataGrid = this.FindControl<TransferCustomDataGrid>("TransferInventoryDataGrid");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] TransferInventoryDataGrid: {(_transferInventoryDataGrid != null ? "FOUND" : "NOT FOUND")}");
+
+            _logger?.LogInformation("[TRANSFER-DEBUG] Control references initialized: Panel={HasPanel}, SearchButton={HasSearch}, ResetButton={HasReset}, DataGrid={HasDataGrid}",
+                _transferConfigPanel != null, _searchButton != null, _resetButton != null, _transferInventoryDataGrid != null);
+
+            if (_transferInventoryDataGrid == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] CRITICAL: TransferInventoryDataGrid control not found - TransferCustomDataGrid functionality may not work");
+                _logger?.LogWarning("[TRANSFER-DEBUG] TransferInventoryDataGrid control not found - TransferCustomDataGrid functionality may not work");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferInventoryDataGrid found - Setting up custom event handlers");
+                SetupTransferCustomDataGridEvents();
+            }
+
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] InitializeControlReferences completed");
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error initializing control references");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] ERROR in InitializeControlReferences: {ex.Message}");
+            _logger?.LogError(ex, "[TRANSFER-DEBUG] Error initializing control references");
+        }
+    }
+
+    /// <summary>
+    /// Setup TransferCustomDataGrid specific event handlers
+    /// </summary>
+    private void SetupTransferCustomDataGridEvents()
+    {
+        try
+        {
+            if (_transferInventoryDataGrid == null) return;
+
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] SetupTransferCustomDataGridEvents started");
+
+            // Subscribe to selection events if available
+            // Note: TransferCustomDataGrid may need to expose these events in its implementation
+
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferCustomDataGrid event handlers setup completed");
+            _logger?.LogInformation("[TRANSFER-DEBUG] TransferCustomDataGrid event handlers setup completed");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Error setting up TransferCustomDataGrid events: {ex.Message}");
+            _logger?.LogError(ex, "[TRANSFER-DEBUG] Error setting up TransferCustomDataGrid events");
         }
     }
 
@@ -104,34 +167,23 @@ public partial class TransferTabView : UserControl
             // Keyboard event handling
             KeyDown += OnKeyDown;
 
-            // Search button - collapse panel after search
             if (_searchButton != null)
             {
                 _searchButton.Click += OnSearchButtonClick;
             }
 
-            // Reset button - expand panel after reset
             if (_resetButton != null)
             {
                 _resetButton.Click += OnResetButtonClick;
             }
 
-            // Auto-focus first field when panel expands
             if (_transferConfigPanel != null)
             {
                 _transferConfigPanel.ExpandedChanged += OnTransferConfigPanelExpandedChanged;
             }
 
-            // Handle DataGrid selection changes for multi-selection support
-            if (_inventoryDataGrid != null)
-            {
-                _inventoryDataGrid.SelectionChanged += OnInventoryDataGridSelectionChanged;
-            }
-
-            // Setup TextBox LostFocus handlers for SuggestionOverlay (following InventoryTabView pattern)
+            // Setup SuggestionOverlay event handlers
             SetupTextBoxSuggestionHandlers();
-
-            _logger?.LogDebug("Event handlers setup completed");
         }
         catch (Exception ex)
         {
@@ -146,157 +198,46 @@ public partial class TransferTabView : UserControl
     {
         try
         {
-            // Try to resolve services if not already resolved
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] OnLoaded event triggered");
+
+            // Verify services are available
             if (_suggestionOverlayService == null || _successOverlayService == null)
             {
-                TryResolveServices();
+                System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Required overlay services not available - Suggestion: {_suggestionOverlayService != null}, Success: {_successOverlayService != null}");
+                _logger?.LogWarning("Required overlay services not available");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] All overlay services are available");
             }
 
             // Subscribe to ViewModel events
             if (DataContext is TransferItemViewModel viewModel)
             {
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] DataContext is TransferItemViewModel - subscribing to events");
                 viewModel.PanelExpandRequested += OnPanelExpandRequested;
                 viewModel.SuccessOverlayRequested += OnSuccessOverlayRequested;
                 viewModel.ProgressReported += OnProgressReported;
             }
-
-            // Focus the first input field when view loads
-            Dispatcher.UIThread.Post(() =>
+            else
             {
-                var partTextBox = this.FindControl<TextBox>("PartTextBox");
-                partTextBox?.Focus();
-            }, DispatcherPriority.ApplicationIdle);
+                System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] DataContext is not TransferItemViewModel: {DataContext?.GetType().Name ?? "null"}");
+            }
 
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferTabView loaded successfully");
             _logger?.LogDebug("TransferTabView loaded successfully");
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Error in OnLoaded event handler: {ex.Message}");
             _logger?.LogError(ex, "Error in OnLoaded event handler");
-        }
-    }
-
-    /// <summary>
-    /// Attempts to resolve required services from various sources (following InventoryTabView pattern).
-    /// </summary>
-    private void TryResolveServices()
-    {
-        try
-        {
-            // Method 1: Try the injected service provider
-            if (_serviceProvider != null && _suggestionOverlayService == null)
-            {
-                try
-                {
-                    if (_suggestionOverlayService == null)
-                    {
-                        _suggestionOverlayService = _serviceProvider.GetService<ISuggestionOverlayService>();
-                        _logger?.LogDebug("Method 1 - SuggestionOverlayService resolution: {ServiceResolved}", _suggestionOverlayService != null);
-                        System.Diagnostics.Debug.WriteLine($"Method 1 - SuggestionOverlayService resolution: {_suggestionOverlayService != null}");
-                    }
-
-                    if (_successOverlayService == null)
-                    {
-                        _successOverlayService = _serviceProvider.GetService<ISuccessOverlayService>();
-                        System.Diagnostics.Debug.WriteLine($"Method 1 - SuccessOverlayService resolution: {_successOverlayService != null}");
-                    }
-
-                    // Additional debugging - check if services are registered
-                    var suggestionServices = _serviceProvider.GetServices<ISuggestionOverlayService>();
-                    var suggestionServiceCount = suggestionServices?.Count() ?? 0;
-                    _logger?.LogDebug("ISuggestionOverlayService instances in container: {ServiceCount}", suggestionServiceCount);
-                    System.Diagnostics.Debug.WriteLine($"ISuggestionOverlayService instances in container: {suggestionServiceCount}");
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogError(ex, "Failed to resolve overlay services from service provider");
-                    System.Diagnostics.Debug.WriteLine($"Failed to resolve overlay services: {ex.Message}");
-                }
-            }
-
-            // Method 2: Try to get from MainWindow if it has a service provider
-            if (_suggestionOverlayService == null || _successOverlayService == null)
-            {
-                try
-                {
-                    var mainWindow = TopLevel.GetTopLevel(this);
-                    if (mainWindow?.DataContext != null)
-                    {
-                        var serviceProviderProperty = mainWindow.DataContext.GetType().GetProperty("ServiceProvider");
-                        if (serviceProviderProperty?.GetValue(mainWindow.DataContext) is IServiceProvider windowServiceProvider)
-                        {
-                            if (_suggestionOverlayService == null)
-                            {
-                                _suggestionOverlayService = windowServiceProvider.GetService<ISuggestionOverlayService>();
-                                _logger?.LogDebug("Method 2 - MainWindow SuggestionOverlay resolution: {ServiceResolved}", _suggestionOverlayService != null);
-                                System.Diagnostics.Debug.WriteLine($"Method 2 - MainWindow SuggestionOverlay resolution: {_suggestionOverlayService != null}");
-                            }
-
-                            if (_successOverlayService == null)
-                            {
-                                _successOverlayService = windowServiceProvider.GetService<ISuccessOverlayService>();
-                                System.Diagnostics.Debug.WriteLine($"Method 2 - MainWindow SuccessOverlay resolution: {_successOverlayService != null}");
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogWarning(ex, "Failed to resolve overlay services from MainWindow");
-                    System.Diagnostics.Debug.WriteLine($"Failed to resolve overlay services from MainWindow: {ex.Message}");
-                }
-            }
-
-            // Method 3: Try to create instance manually as fallback
-            if (_suggestionOverlayService == null || _successOverlayService == null)
-            {
-                try
-                {
-                    var loggerFactory = _serviceProvider?.GetService<ILoggerFactory>();
-                    if (loggerFactory != null)
-                    {
-                        if (_suggestionOverlayService == null)
-                        {
-                            var suggestionServiceLogger = loggerFactory.CreateLogger<SuggestionOverlayService>();
-                            _suggestionOverlayService = new SuggestionOverlayService(suggestionServiceLogger);
-                            _logger?.LogWarning("Method 3 - Manual SuggestionOverlayService creation successful as fallback");
-                            System.Diagnostics.Debug.WriteLine("Method 3 - Manual SuggestionOverlayService creation successful as fallback");
-                        }
-
-                        if (_successOverlayService == null)
-                        {
-                            var successServiceLogger = loggerFactory.CreateLogger<SuccessOverlayService>();
-                            var focusManagementLogger = loggerFactory.CreateLogger<FocusManagementService>();
-                            var focusService = _serviceProvider?.GetService<IFocusManagementService>() ?? new FocusManagementService(focusManagementLogger);
-                            _successOverlayService = new SuccessOverlayService(successServiceLogger, focusService);
-                            _logger?.LogWarning("Method 3 - Manual SuccessOverlayService creation successful as fallback");
-                            System.Diagnostics.Debug.WriteLine("Method 3 - Manual SuccessOverlayService creation successful as fallback");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogError(ex, "Failed to create overlay services manually");
-                    System.Diagnostics.Debug.WriteLine($"Failed to create overlay services manually: {ex.Message}");
-                }
-            }
-
-            // Final logging of service resolution status
-            _logger?.LogInformation("Both overlay services successfully resolved - SuggestionType: {SuggestionType}, SuccessType: {SuccessType}",
-                _suggestionOverlayService?.GetType().Name ?? "null",
-                _successOverlayService?.GetType().Name ?? "null");
-            System.Diagnostics.Debug.WriteLine($"Both overlay services successfully resolved - SuggestionType: {_suggestionOverlayService?.GetType().Name ?? "null"}, SuccessType: {_successOverlayService?.GetType().Name ?? "null"}");
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Critical error during service resolution");
-            System.Diagnostics.Debug.WriteLine($"Critical error during service resolution: {ex.Message}");
         }
     }
 
     /// <summary>
     /// Handle keyboard shortcuts
     /// </summary>
-    private async void OnKeyDown(object? sender, KeyEventArgs e)
+    private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         try
         {
@@ -306,34 +247,30 @@ public partial class TransferTabView : UserControl
             switch (e.Key)
             {
                 case Key.F5:
-                    // Search operation
                     e.Handled = true;
                     if (viewModel.SearchCommand.CanExecute(null))
                     {
-                        await ExecuteSearchWithPanelBehavior();
+                        viewModel.SearchCommand.Execute(null);
                     }
                     break;
 
                 case Key.Enter:
-                    // Transfer operation (if conditions are met)
+                    e.Handled = true;
                     if (viewModel.CanTransfer && viewModel.TransferCommand.CanExecute(null))
                     {
-                        e.Handled = true;
                         viewModel.TransferCommand.Execute(null);
                     }
                     break;
 
                 case Key.Escape:
-                    // Reset operation
                     e.Handled = true;
                     if (viewModel.ResetCommand.CanExecute(null))
                     {
-                        await ExecuteResetWithPanelBehavior();
+                        viewModel.ResetCommand.Execute(null);
                     }
                     break;
 
                 case Key.P when e.KeyModifiers.HasFlag(KeyModifiers.Control):
-                    // Print operation
                     e.Handled = true;
                     if (viewModel.PrintCommand.CanExecute(null))
                     {
@@ -344,7 +281,7 @@ public partial class TransferTabView : UserControl
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error handling keyboard shortcut: {Key}", e.Key);
+            _logger?.LogError(ex, "Error handling keyboard shortcut");
         }
     }
 
@@ -374,18 +311,15 @@ public partial class TransferTabView : UserControl
             var viewModel = DataContext as TransferItemViewModel;
             if (viewModel?.SearchCommand.CanExecute(null) == true)
             {
-                // Execute search
                 viewModel.SearchCommand.Execute(null);
 
-                // Auto-collapse panel after search to maximize DataGrid view
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                // Auto-collapse panel after successful search
+                if (_transferConfigPanel != null && _transferConfigPanel.IsExpanded)
                 {
-                    if (_transferConfigPanel != null && _transferConfigPanel.IsExpanded)
-                    {
-                        _transferConfigPanel.SetExpanded(false, true);
-                        _logger?.LogDebug("Transfer config panel auto-collapsed after search");
-                    }
-                }, DispatcherPriority.Background);
+                    await Task.Delay(500); // Allow search to complete
+                    _transferConfigPanel.IsExpanded = false;
+                    _logger?.LogDebug("Transfer config panel auto-collapsed after search");
+                }
             }
         }
         catch (Exception ex)
@@ -404,27 +338,31 @@ public partial class TransferTabView : UserControl
             var viewModel = DataContext as TransferItemViewModel;
             if (viewModel?.ResetCommand.CanExecute(null) == true)
             {
-                // Execute reset
                 viewModel.ResetCommand.Execute(null);
 
-                // Auto-expand panel after reset for new search configuration
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                // Auto-expand panel after reset
+                if (_transferConfigPanel != null && !_transferConfigPanel.IsExpanded)
                 {
-                    if (_transferConfigPanel != null && !_transferConfigPanel.IsExpanded)
-                    {
-                        _transferConfigPanel.SetExpanded(true, true);
-                        _logger?.LogDebug("Transfer config panel auto-expanded after reset");
-                    }
-
-                    // Focus first field after reset
-                    var partTextBox = this.FindControl<TextBox>("PartTextBox");
-                    partTextBox?.Focus();
-                }, DispatcherPriority.Background);
+                    await Task.Delay(200); // Allow reset to complete
+                    _transferConfigPanel.IsExpanded = true;
+                    _logger?.LogDebug("Transfer config panel auto-expanded after reset");
+                }
             }
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error executing reset with panel behavior");
+        }
+    }
+
+    /// <summary>
+    /// Handle CollapsiblePanel property changes
+    /// </summary>
+    private void OnTransferConfigPanelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(CollapsiblePanel.IsExpanded) && sender is CollapsiblePanel panel)
+        {
+            OnTransferConfigPanelExpandedChanged(this, panel.IsExpanded);
         }
     }
 
@@ -437,23 +375,20 @@ public partial class TransferTabView : UserControl
         {
             if (isExpanded)
             {
-                // Focus first field when panel expands
-                Dispatcher.UIThread.Post(() =>
-                {
-                    var partTextBox = this.FindControl<TextBox>("PartTextBox");
-                    partTextBox?.Focus();
-                }, DispatcherPriority.ApplicationIdle);
+                _logger?.LogDebug("Transfer config panel expanded - focusing first input");
 
-                _logger?.LogDebug("Transfer config panel expanded - focused first field");
+                // Focus first input when panel expands
+                var partTextBox = this.FindControl<TextBox>("PartTextBox");
+                partTextBox?.Focus();
             }
             else
             {
-                _logger?.LogDebug("Transfer config panel collapsed - maximized DataGrid view");
+                _logger?.LogDebug("Transfer config panel collapsed");
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error handling panel expanded changed event");
+            _logger?.LogError(ex, "Error handling panel expanded changed");
         }
     }
 
@@ -466,8 +401,8 @@ public partial class TransferTabView : UserControl
         {
             if (_transferConfigPanel != null && !_transferConfigPanel.IsExpanded)
             {
-                _transferConfigPanel.SetExpanded(true, true);
-                _logger?.LogDebug("Transfer config panel expanded via ViewModel request");
+                _transferConfigPanel.IsExpanded = true;
+                _logger?.LogDebug("Panel expand requested and executed");
             }
         }
         catch (Exception ex)
@@ -485,21 +420,19 @@ public partial class TransferTabView : UserControl
         {
             if (_successOverlayService != null)
             {
-                // Use the current control as the target for the overlay
-                await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
-                    this,
-                    e.Message,
-                    e.Details,
-                    e.IconKind,
-                    e.Duration
+                await _successOverlayService.ShowSuccessOverlayAsync(
+                    targetControl: this,
+                    message: e.Message,
+                    details: e.Details,
+                    iconKind: e.IconKind,
+                    duration: e.Duration
                 );
-
-                _logger?.LogDebug("SuccessOverlay shown: {Message}", e.Message);
+                _logger?.LogDebug("Success overlay displayed: {Message}", e.Message);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error showing SuccessOverlay");
+            _logger?.LogError(ex, "Error displaying success overlay");
         }
     }
 
@@ -510,14 +443,8 @@ public partial class TransferTabView : UserControl
     {
         try
         {
-            // TODO: Forward progress to MainView status bar
-            // This would typically be done via an event or service call to MainView
-            // For now, just log the progress for debugging
-            _logger?.LogInformation("Transfer progress: {Message} ({Percentage}%) - {Operation}",
-                e.Message, e.ProgressPercentage ?? 0, e.Operation);
-
-            // In a full implementation, this would call something like:
-            // mainViewService?.UpdateStatusBar(e.Message, e.ProgressPercentage, e.IsComplete, e.IsError);
+            // Progress reporting is handled by MainView via ViewModel events
+            _logger?.LogTrace("Progress reported: {Message}", e.Message);
         }
         catch (Exception ex)
         {
@@ -535,130 +462,149 @@ public partial class TransferTabView : UserControl
     {
         try
         {
-            // Setup Part TextBox - LostFocus only (not TextChanged to avoid double triggering)
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] SetupTextBoxSuggestionHandlers started");
+
             var partTextBox = this.FindControl<TextBox>("PartTextBox");
             if (partTextBox != null)
             {
                 partTextBox.LostFocus += OnPartLostFocus;
-                _logger?.LogDebug("Part TextBox LostFocus event handler attached");
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] PartTextBox found and LostFocus event attached");
+                _logger?.LogInformation("[TRANSFER-DEBUG] PartTextBox found and LostFocus event attached");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] PartTextBox not found - suggestion overlay will not work for Part input");
+                _logger?.LogWarning("[TRANSFER-DEBUG] PartTextBox not found - suggestion overlay will not work for Part input");
             }
 
-            // Setup Operation TextBox - LostFocus only (not TextChanged to avoid double triggering)
             var operationTextBox = this.FindControl<TextBox>("OperationTextBox");
             if (operationTextBox != null)
             {
                 operationTextBox.LostFocus += OnOperationLostFocus;
-                _logger?.LogDebug("Operation TextBox LostFocus event handler attached");
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] OperationTextBox found and LostFocus event attached");
+                _logger?.LogInformation("[TRANSFER-DEBUG] OperationTextBox found and LostFocus event attached");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] OperationTextBox not found - suggestion overlay will not work for Operation input");
+                _logger?.LogWarning("[TRANSFER-DEBUG] OperationTextBox not found - suggestion overlay will not work for Operation input");
             }
 
-            // Setup Location TextBox - LostFocus only (not TextChanged to avoid double triggering)
             var locationTextBox = this.FindControl<TextBox>("ToLocationTextBox");
             if (locationTextBox != null)
             {
                 locationTextBox.LostFocus += OnLocationLostFocus;
-                _logger?.LogDebug("Location TextBox LostFocus event handler attached");
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] ToLocationTextBox found and LostFocus event attached");
+                _logger?.LogInformation("[TRANSFER-DEBUG] ToLocationTextBox found and LostFocus event attached");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] ToLocationTextBox not found - suggestion overlay will not work for Location input");
+                _logger?.LogWarning("[TRANSFER-DEBUG] ToLocationTextBox not found - suggestion overlay will not work for Location input");
             }
 
-            _logger?.LogDebug("TextBox SuggestionOverlay event handlers setup completed (LostFocus only)");
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] SetupTextBoxSuggestionHandlers completed");
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error setting up TextBox SuggestionOverlay handlers");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Error setting up TextBox suggestion handlers: {ex.Message}");
+            _logger?.LogError(ex, "[TRANSFER-DEBUG] Error setting up TextBox suggestion handlers");
         }
     }
 
     /// <summary>
-    /// Handles Part TextBox lost focus event for SuggestionOverlay (following InventoryTabView pattern).
-    /// Avoids double triggering by using LostFocus instead of TextChanged.
+    /// Handles Part TextBox lost focus event for SuggestionOverlay (following RemoveTabView pattern).
+    /// Uses direct SuggestionOverlayService call instead of TextBoxFuzzyValidationBehavior event.
     /// </summary>
     private async void OnPartLostFocus(object? sender, RoutedEventArgs e)
     {
-        if (_suggestionOverlayService == null || sender is not TextBox textBox) return;
+        System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] OnPartLostFocus triggered");
+        _logger?.LogInformation("[TRANSFER-DEBUG] OnPartLostFocus triggered");
+
+        if (_suggestionOverlayService == null)
+        {
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] SuggestionOverlayService is null in OnPartLostFocus");
+            _logger?.LogWarning("[TRANSFER-DEBUG] SuggestionOverlayService is null in OnPartLostFocus");
+            return;
+        }
+
+        if (sender is not TextBox textBox)
+        {
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Sender is not TextBox in OnPartLostFocus: {sender?.GetType().Name ?? "null"}");
+            _logger?.LogWarning("[TRANSFER-DEBUG] Sender is not TextBox in OnPartLostFocus: {SenderType}", sender?.GetType().Name ?? "null");
+            return;
+        }
 
         try
         {
-            var value = textBox.Text?.Trim() ?? string.Empty;
             var viewModel = DataContext as TransferItemViewModel;
-            if (viewModel == null) return;
-
-            // Get the master data for validation
-            var data = viewModel.PartIds ?? Enumerable.Empty<string>();
-            var dataList = data.ToList();
-
-            _logger?.LogDebug("Part LostFocus - Value: '{Value}', DataCount: {DataCount}", value, dataList.Count);
-
-            // If no data available (server down), return without processing
-            if (dataList.Count == 0)
+            if (viewModel == null)
             {
-                _logger?.LogWarning("Part validation skipped - no validation data available (server may be down)");
+                _logger?.LogWarning("[TRANSFER-DEBUG] DataContext is not TransferItemViewModel: {DataContextType}", DataContext?.GetType().Name ?? "null");
                 return;
             }
 
-            // Check for exact match (case insensitive)
-            bool isExactMatch = dataList.Any(part =>
-                string.Equals(part, value, StringComparison.OrdinalIgnoreCase));
+            var value = textBox.Text?.Trim() ?? string.Empty;
+            var dataList = viewModel.PartIds?.ToList() ?? [];
 
-            // Find partial matches (not exact matches)
-            var semiMatches = dataList
-                .Where(part => !string.IsNullOrEmpty(part) &&
-                               part.Contains(value, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(part => part)
+            _logger?.LogDebug("[TRANSFER-DEBUG] OnPartLostFocus - Input: '{Value}', DataList Count: {Count}", value, dataList.Count);
+
+            if (dataList.Count == 0 || string.IsNullOrEmpty(value))
+            {
+                _logger?.LogDebug("[TRANSFER-DEBUG] Part LostFocus: No PartIds data available or empty input");
+                return;
+            }
+
+            // Check for exact match (following RemoveTabView pattern)
+            var exactMatch = dataList.Any(x =>
+                string.Equals(x, value, StringComparison.OrdinalIgnoreCase));
+
+            if (exactMatch)
+            {
+                _logger?.LogDebug("[TRANSFER-DEBUG] Part '{Value}' - Exact match found", value);
+                return;
+            }
+
+            // Find fuzzy matches (following RemoveTabView pattern)
+            var semiMatches = dataList.Where(x =>
+                x.Contains(value, StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(x, value, StringComparison.OrdinalIgnoreCase))
+                .Take(50)
                 .ToList();
 
-            _logger?.LogDebug("Part '{Value}' - ExactMatch: {IsExactMatch}, SemiMatches: {SemiMatchesCount}",
-                value, isExactMatch, semiMatches.Count);
+            _logger?.LogDebug("[TRANSFER-DEBUG] OnPartLostFocus - ExactMatch: {ExactMatch}, SemiMatches: {SemiMatchCount}",
+                exactMatch, semiMatches.Count);
 
-            // Show overlay only for partial matches (not exact matches or empty input)
-            if (!string.IsNullOrEmpty(value) &&
-                !isExactMatch &&
-                semiMatches.Count > 0 &&
-                !_isShowingSuggestionOverlay)
+            if (semiMatches.Count > 0)
             {
-                try
-                {
-                    _isShowingSuggestionOverlay = true;
-                    var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, semiMatches, value);
+                _logger?.LogDebug("[TRANSFER-DEBUG] Calling ShowSuggestionsAsync for Part with {Count} suggestions", semiMatches.Count);
 
-                    if (!string.IsNullOrEmpty(selected) && selected != value)
-                    {
-                        _logger?.LogDebug("Part overlay - User selected: '{Selected}'", selected);
-                        viewModel.SelectedPart = selected;
-                        textBox.Text = selected;
-                    }
-                    else
-                    {
-                        _logger?.LogDebug("Part overlay - User cancelled or no selection, keeping: '{Value}'", value);
-                        viewModel.SelectedPart = value;
-                    }
-                }
-                finally
+                // Direct call to SuggestionOverlayService (matching RemoveTabView pattern)
+                var result = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, semiMatches, value);
+
+                _logger?.LogDebug("[TRANSFER-DEBUG] ShowSuggestionsAsync returned: '{Result}'", result ?? "null");
+
+                if (!string.IsNullOrEmpty(result))
                 {
-                    _isShowingSuggestionOverlay = false;
+                    textBox.Text = result;
+                    viewModel.PartText = result;
+                    _logger?.LogDebug("[TRANSFER-DEBUG] Part suggestion selected: {Result}", result);
                 }
             }
-            else if (!string.IsNullOrEmpty(value) && !isExactMatch && semiMatches.Count == 0)
+            else
             {
-                // No matches found - MTM Pattern: Clear textbox to maintain data integrity
-                _logger?.LogInformation("Part '{Value}' has no matches in validation source. Clearing textbox for data integrity.", value);
-                viewModel.SelectedPart = string.Empty;
-                textBox.Text = string.Empty;
-            }
-            else if (isExactMatch)
-            {
-                // Exact match found - update ViewModel
-                viewModel.SelectedPart = value;
-                _logger?.LogDebug("Part exact match found: '{Value}'", value);
+                _logger?.LogDebug("[TRANSFER-DEBUG] Part '{Value}' - No matches found", value);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in Part LostFocus handler");
+            _logger?.LogError(ex, "[TRANSFER-DEBUG] Error in OnPartLostFocus");
         }
     }
 
     /// <summary>
-    /// Handles Operation TextBox lost focus event for SuggestionOverlay (following InventoryTabView pattern).
-    /// Avoids double triggering by using LostFocus instead of TextChanged.
+    /// Handles Operation TextBox lost focus event for SuggestionOverlay (following RemoveTabView pattern).
+    /// Uses direct SuggestionOverlayService call instead of TextBoxFuzzyValidationBehavior event.
     /// </summary>
     private async void OnOperationLostFocus(object? sender, RoutedEventArgs e)
     {
@@ -666,88 +612,63 @@ public partial class TransferTabView : UserControl
 
         try
         {
-            var value = textBox.Text?.Trim() ?? string.Empty;
             var viewModel = DataContext as TransferItemViewModel;
             if (viewModel == null) return;
 
-            // Get the master data for validation
-            var data = viewModel.Operations ?? Enumerable.Empty<string>();
-            var dataList = data.ToList();
+            var value = textBox.Text?.Trim() ?? string.Empty;
+            var dataList = viewModel.Operations?.ToList() ?? [];
 
-            _logger?.LogDebug("Operation LostFocus - Value: '{Value}', DataCount: {DataCount}", value, dataList.Count);
-
-            // If no data available (server down), return without processing
-            if (dataList.Count == 0)
+            if (dataList.Count == 0 || string.IsNullOrEmpty(value))
             {
-                _logger?.LogWarning("Operation validation skipped - no validation data available (server may be down)");
+                _logger?.LogDebug("[TRANSFER-DEBUG] Operation LostFocus: No Operations data available or empty input");
                 return;
             }
 
-            // Check for exact match (case insensitive)
-            bool isExactMatch = dataList.Any(operation =>
-                string.Equals(operation, value, StringComparison.OrdinalIgnoreCase));
+            // Check for exact match (following RemoveTabView pattern)
+            var exactMatch = dataList.Any(x =>
+                string.Equals(x, value, StringComparison.OrdinalIgnoreCase));
 
-            // Find partial matches (not exact matches)
-            var semiMatches = dataList
-                .Where(operation => !string.IsNullOrEmpty(operation) &&
-                                   operation.Contains(value, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(operation => operation)
+            if (exactMatch)
+            {
+                _logger?.LogDebug("[TRANSFER-DEBUG] Operation '{Value}' - Exact match found", value);
+                return;
+            }
+
+            // Find fuzzy matches (following RemoveTabView pattern)
+            var semiMatches = dataList.Where(x =>
+                x.Contains(value, StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(x, value, StringComparison.OrdinalIgnoreCase))
+                .Take(50)
                 .ToList();
 
-            _logger?.LogDebug("Operation '{Value}' - ExactMatch: {IsExactMatch}, SemiMatches: {SemiMatchesCount}",
-                value, isExactMatch, semiMatches.Count);
-
-            // Show overlay only for partial matches (not exact matches or empty input)
-            if (!string.IsNullOrEmpty(value) &&
-                !isExactMatch &&
-                semiMatches.Count > 0 &&
-                !_isShowingSuggestionOverlay)
+            if (semiMatches.Count > 0)
             {
-                try
-                {
-                    _isShowingSuggestionOverlay = true;
-                    var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, semiMatches, value);
+                _logger?.LogDebug("[TRANSFER-DEBUG] Calling ShowSuggestionsAsync for Operation with {Count} suggestions", semiMatches.Count);
 
-                    if (!string.IsNullOrEmpty(selected) && selected != value)
-                    {
-                        _logger?.LogDebug("Operation overlay - User selected: '{Selected}'", selected);
-                        viewModel.SelectedOperation = selected;
-                        textBox.Text = selected;
-                    }
-                    else
-                    {
-                        _logger?.LogDebug("Operation overlay - User cancelled or no selection, keeping: '{Value}'", value);
-                        viewModel.SelectedOperation = value;
-                    }
-                }
-                finally
+                // Direct call to SuggestionOverlayService (matching RemoveTabView pattern)
+                var result = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, semiMatches, value);
+
+                if (!string.IsNullOrEmpty(result))
                 {
-                    _isShowingSuggestionOverlay = false;
+                    textBox.Text = result;
+                    viewModel.OperationText = result;
+                    _logger?.LogDebug("[TRANSFER-DEBUG] Operation suggestion selected: {Result}", result);
                 }
             }
-            else if (!string.IsNullOrEmpty(value) && !isExactMatch && semiMatches.Count == 0)
+            else
             {
-                // No matches found - MTM Pattern: Clear textbox to maintain data integrity
-                _logger?.LogInformation("Operation '{Value}' has no matches in validation source. Clearing textbox for data integrity.", value);
-                viewModel.SelectedOperation = string.Empty;
-                textBox.Text = string.Empty;
-            }
-            else if (isExactMatch)
-            {
-                // Exact match found - update ViewModel
-                viewModel.SelectedOperation = value;
-                _logger?.LogDebug("Operation exact match found: '{Value}'", value);
+                _logger?.LogDebug("[TRANSFER-DEBUG] Operation '{Value}' - No matches found", value);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in Operation LostFocus handler");
+            _logger?.LogError(ex, "[TRANSFER-DEBUG] Error in OnOperationLostFocus");
         }
     }
 
     /// <summary>
-    /// Handles Location TextBox lost focus event for SuggestionOverlay (following InventoryTabView pattern).
-    /// Avoids double triggering by using LostFocus instead of TextChanged.
+    /// Handles Location TextBox lost focus event for SuggestionOverlay (following RemoveTabView pattern).
+    /// Uses direct SuggestionOverlayService call instead of TextBoxFuzzyValidationBehavior event.
     /// </summary>
     private async void OnLocationLostFocus(object? sender, RoutedEventArgs e)
     {
@@ -755,111 +676,57 @@ public partial class TransferTabView : UserControl
 
         try
         {
-            var value = textBox.Text?.Trim() ?? string.Empty;
             var viewModel = DataContext as TransferItemViewModel;
             if (viewModel == null) return;
 
-            // Get the master data for validation
-            var data = viewModel.Locations ?? Enumerable.Empty<string>();
-            var dataList = data.ToList();
+            var value = textBox.Text?.Trim() ?? string.Empty;
+            var dataList = viewModel.Locations?.ToList() ?? [];
 
-            _logger?.LogDebug("Location LostFocus - Value: '{Value}', DataCount: {DataCount}", value, dataList.Count);
-
-            // If no data available (server down), return without processing
-            if (dataList.Count == 0)
+            if (dataList.Count == 0 || string.IsNullOrEmpty(value))
             {
-                _logger?.LogWarning("Location validation skipped - no validation data available (server may be down)");
+                _logger?.LogDebug("[TRANSFER-DEBUG] Location LostFocus: No Locations data available or empty input");
                 return;
             }
 
-            // Check for exact match (case insensitive)
-            bool isExactMatch = dataList.Any(location =>
-                string.Equals(location, value, StringComparison.OrdinalIgnoreCase));
+            // Check for exact match (following RemoveTabView pattern)
+            var exactMatch = dataList.Any(x =>
+                string.Equals(x, value, StringComparison.OrdinalIgnoreCase));
 
-            // Find partial matches (not exact matches)
-            var semiMatches = dataList
-                .Where(location => !string.IsNullOrEmpty(location) &&
-                                  location.Contains(value, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(location => location)
+            if (exactMatch)
+            {
+                _logger?.LogDebug("[TRANSFER-DEBUG] Location '{Value}' - Exact match found", value);
+                return;
+            }
+
+            // Find fuzzy matches (following RemoveTabView pattern)
+            var semiMatches = dataList.Where(x =>
+                x.Contains(value, StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(x, value, StringComparison.OrdinalIgnoreCase))
+                .Take(50)
                 .ToList();
 
-            _logger?.LogDebug("Location '{Value}' - ExactMatch: {IsExactMatch}, SemiMatches: {SemiMatchesCount}",
-                value, isExactMatch, semiMatches.Count);
-
-            // Show overlay only for partial matches (not exact matches or empty input)
-            if (!string.IsNullOrEmpty(value) &&
-                !isExactMatch &&
-                semiMatches.Count > 0 &&
-                !_isShowingSuggestionOverlay)
+            if (semiMatches.Count > 0)
             {
-                try
-                {
-                    _isShowingSuggestionOverlay = true;
-                    var selected = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, semiMatches, value);
+                _logger?.LogDebug("[TRANSFER-DEBUG] Calling ShowSuggestionsAsync for Location with {Count} suggestions", semiMatches.Count);
 
-                    if (!string.IsNullOrEmpty(selected) && selected != value)
-                    {
-                        _logger?.LogDebug("Location overlay - User selected: '{Selected}'", selected);
-                        viewModel.SelectedToLocation = selected;
-                        textBox.Text = selected;
-                    }
-                    else
-                    {
-                        _logger?.LogDebug("Location overlay - User cancelled or no selection, keeping: '{Value}'", value);
-                        viewModel.SelectedToLocation = value;
-                    }
-                }
-                finally
+                // Direct call to SuggestionOverlayService (matching RemoveTabView pattern)
+                var result = await _suggestionOverlayService.ShowSuggestionsAsync(textBox, semiMatches, value);
+
+                if (!string.IsNullOrEmpty(result))
                 {
-                    _isShowingSuggestionOverlay = false;
+                    textBox.Text = result;
+                    viewModel.ToLocationText = result;
+                    _logger?.LogDebug("[TRANSFER-DEBUG] Location suggestion selected: {Result}", result);
                 }
             }
-            else if (!string.IsNullOrEmpty(value) && !isExactMatch && semiMatches.Count == 0)
+            else
             {
-                // No matches found - MTM Pattern: Clear textbox to maintain data integrity
-                _logger?.LogInformation("Location '{Value}' has no matches in validation source. Clearing textbox for data integrity.", value);
-                viewModel.SelectedToLocation = string.Empty;
-                textBox.Text = string.Empty;
-            }
-            else if (isExactMatch)
-            {
-                // Exact match found - update ViewModel
-                viewModel.SelectedToLocation = value;
-                _logger?.LogDebug("Location exact match found: '{Value}'", value);
+                _logger?.LogDebug("[TRANSFER-DEBUG] Location '{Value}' - No matches found", value);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in Location LostFocus handler");
-        }
-    }
-
-    /// <summary>
-    /// Handle DataGrid selection changes to support multi-selection
-    /// </summary>
-    private void OnInventoryDataGridSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        try
-        {
-            if (DataContext is TransferItemViewModel viewModel && _inventoryDataGrid != null)
-            {
-                // Update the SelectedInventoryItems collection in the ViewModel
-                viewModel.SelectedInventoryItems.Clear();
-
-                foreach (var selectedItem in _inventoryDataGrid.SelectedItems)
-                {
-                    if (selectedItem is InventoryItem inventoryItem)
-                    {
-                        viewModel.SelectedInventoryItems.Add(inventoryItem);
-                    }
-                }
-
-                _logger?.LogDebug("DataGrid selection updated: {Count} items selected", viewModel.SelectedInventoryItems.Count);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error handling DataGrid selection change");
+            _logger?.LogError(ex, "[TRANSFER-DEBUG] Error in OnLocationLostFocus");
         }
     }
 
@@ -870,6 +737,8 @@ public partial class TransferTabView : UserControl
     /// </summary>
     protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
     {
+        _logger?.LogDebug("TransferTabView detached from visual tree, performing cleanup");
+
         try
         {
             // Unsubscribe from ViewModel events
@@ -880,39 +749,47 @@ public partial class TransferTabView : UserControl
                 viewModel.ProgressReported -= OnProgressReported;
             }
 
-            // Clean up event subscriptions
-            KeyDown -= OnKeyDown;
-
+            // Unsubscribe from control events
             if (_searchButton != null)
+            {
                 _searchButton.Click -= OnSearchButtonClick;
+            }
 
             if (_resetButton != null)
+            {
                 _resetButton.Click -= OnResetButtonClick;
+            }
 
             if (_transferConfigPanel != null)
+            {
                 _transferConfigPanel.ExpandedChanged -= OnTransferConfigPanelExpandedChanged;
+            }
 
-            if (_inventoryDataGrid != null)
-                _inventoryDataGrid.SelectionChanged -= OnInventoryDataGridSelectionChanged;
-
-            // Clean up TextBox LostFocus handlers
+            // Unsubscribe from TextBox events
             var partTextBox = this.FindControl<TextBox>("PartTextBox");
             if (partTextBox != null)
+            {
                 partTextBox.LostFocus -= OnPartLostFocus;
+            }
 
             var operationTextBox = this.FindControl<TextBox>("OperationTextBox");
             if (operationTextBox != null)
+            {
                 operationTextBox.LostFocus -= OnOperationLostFocus;
+            }
 
             var locationTextBox = this.FindControl<TextBox>("ToLocationTextBox");
             if (locationTextBox != null)
+            {
                 locationTextBox.LostFocus -= OnLocationLostFocus;
+            }
 
-            _logger?.LogDebug("TransferTabView resources cleaned up");
+            KeyDown -= OnKeyDown;
+            Loaded -= OnLoaded;
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error during resource cleanup");
+            _logger?.LogError(ex, "Error during cleanup");
         }
 
         base.OnDetachedFromVisualTree(e);
