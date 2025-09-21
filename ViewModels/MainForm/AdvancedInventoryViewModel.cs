@@ -19,7 +19,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 /// <summary>
 /// ViewModel for advanced inventory operations with three specialized areas:
 /// - Single item multiple times
-/// - Single item multiple locations  
+/// - Single item multiple locations
 /// - Import from Excel functionality
 /// Uses MVVM Community Toolkit for modern .NET patterns.
 /// </summary>
@@ -52,7 +52,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     /// Gets the width of the filter panel based on expansion state
     /// </summary>
     public string FilterPanelWidth => IsFilterPanelExpanded ? "200" : "32";
-    
+
     /// <summary>
     /// Gets the icon for the collapse button based on expansion state
     /// </summary>
@@ -134,25 +134,25 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     private string _locationText = string.Empty;
 
     // String wrapper properties for TextBox binding
-    public string QuantityText 
-    { 
-        get => Quantity.ToString(); 
-        set 
-        { 
-            if (int.TryParse(value, out var result) && result > 0) 
-                Quantity = result; 
-            this.OnPropertyChanged(nameof(QuantityText)); 
+    public string QuantityText
+    {
+        get => Quantity.ToString();
+        set
+        {
+            if (int.TryParse(value, out var result) && result > 0)
+                Quantity = result;
+            this.OnPropertyChanged(nameof(QuantityText));
         }
     }
-    
-    public string RepeatTimesText 
-    { 
-        get => RepeatTimes.ToString(); 
-        set 
-        { 
-            if (int.TryParse(value, out var result) && result > 0) 
-                RepeatTimes = result; 
-            this.OnPropertyChanged(nameof(RepeatTimesText)); 
+
+    public string RepeatTimesText
+    {
+        get => RepeatTimes.ToString();
+        set
+        {
+            if (int.TryParse(value, out var result) && result > 0)
+                RepeatTimes = result;
+            this.OnPropertyChanged(nameof(RepeatTimesText));
         }
     }
 
@@ -186,14 +186,14 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     public ObservableCollection<string> SelectedLocations { get; } = new();
 
     // String wrapper property for TextBox binding
-    public string MultiLocationQuantityText 
-    { 
-        get => MultiLocationQuantity.ToString(); 
-        set 
-        { 
-            if (int.TryParse(value, out var result) && result > 0) 
-                MultiLocationQuantity = result; 
-            this.OnPropertyChanged(nameof(MultiLocationQuantityText)); 
+    public string MultiLocationQuantityText
+    {
+        get => MultiLocationQuantity.ToString();
+        set
+        {
+            if (int.TryParse(value, out var result) && result > 0)
+                MultiLocationQuantity = result;
+            this.OnPropertyChanged(nameof(MultiLocationQuantityText));
         }
     }
     #endregion
@@ -214,13 +214,13 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
 
     public event EventHandler? BackToNormalRequested;
 
-    public bool CanAddMultipleTimes => !string.IsNullOrWhiteSpace(SelectedPartID) && 
-                                      !string.IsNullOrWhiteSpace(SelectedOperation) && 
-                                      !string.IsNullOrWhiteSpace(SelectedLocation) && 
+    public bool CanAddMultipleTimes => !string.IsNullOrWhiteSpace(SelectedPartID) &&
+                                      !string.IsNullOrWhiteSpace(SelectedOperation) &&
+                                      !string.IsNullOrWhiteSpace(SelectedLocation) &&
                                       Quantity > 0 && RepeatTimes > 0;
 
-    public bool CanAddToMultipleLocations => !string.IsNullOrWhiteSpace(MultiLocationPartID) && 
-                                            !string.IsNullOrWhiteSpace(MultiLocationOperation) && 
+    public bool CanAddToMultipleLocations => !string.IsNullOrWhiteSpace(MultiLocationPartID) &&
+                                            !string.IsNullOrWhiteSpace(MultiLocationOperation) &&
                                             MultiLocationQuantity > 0;
 
     // Design-time constructor
@@ -237,9 +237,9 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configurationService = configurationService;
-        
+
         InitializeDesignTimeData();
-        
+
         // Setup property change notifications for computed properties
         PropertyChanged += OnPropertyChanged;
 
@@ -261,7 +261,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
 
         _logger.LogInformation("AdvancedInventoryViewModel initialized with dependency injection");
     }
-    
+
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         // Update computed properties when dependencies change
@@ -361,7 +361,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         foreach (var o in new[] { "90", "100", "110" }) OperationOptions.Add(o);
         foreach (var l in new[] { "WC01", "WC02", "WC03" }) LocationOptions.Add(l);
         foreach (var l in LocationOptions) AvailableLocations.Add(l);
-        
+
         // Set some sample data
         SelectedPartID = "PART001";
         SelectedOperation = "90";
@@ -408,7 +408,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
                 await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Failed to load parts: Status {partResult.Status}"),
                     "Load Part IDs",
-                    Environment.UserName
+                    Environment.UserName.ToUpper()
                 );
                 // Keep empty collection to indicate data unavailability
             }
@@ -436,7 +436,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
                 await Services.Core.ErrorHandling.HandleErrorAsync(
                     new InvalidOperationException($"Failed to load operations: Status {operationResult.Status}"),
                     "Load Operations",
-                    Environment.UserName
+                    Environment.UserName.ToUpper()
                 );
                 // Keep empty collection to indicate data unavailability
             }
@@ -481,9 +481,9 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Load Master Data", Environment.UserName);
             StatusMessage = "Error loading data from database";
         }
-        finally 
-        { 
-            IsBusy = false; 
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -497,7 +497,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = $"Adding {RepeatTimes}x {SelectedPartID} to {SelectedLocation}...";
-            
+
             var connectionString = _configurationService?.GetConnectionString() ?? throw new InvalidOperationException("Configuration service not available");
             var successCount = 0;
             var failureCount = 0;
@@ -529,20 +529,20 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
                 else
                 {
                     failureCount++;
-                    _logger.LogWarning("Failed to add inventory item {Count} of {Total}: Status {Status}", 
+                    _logger.LogWarning("Failed to add inventory item {Count} of {Total}: Status {Status}",
                         i + 1, RepeatTimes, result.Status);
                 }
 
                 // Update progress
                 StatusMessage = $"Added {successCount} of {RepeatTimes} transactions...";
             }
-            
+
             if (successCount > 0)
             {
                 StatusMessage = $"Successfully added {successCount} transactions" + (failureCount > 0 ? $" ({failureCount} failed)" : "");
-                _logger.LogInformation("Added {SuccessCount} items of {PartID} to {Location} (Multiple Times mode)", 
+                _logger.LogInformation("Added {SuccessCount} items of {PartID} to {Location} (Multiple Times mode)",
                     successCount, SelectedPartID, SelectedLocation);
-                
+
                 if (failureCount == 0)
                     ResetMultipleTimes();
             }
@@ -560,9 +560,9 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Add Multiple Times", Environment.UserName);
             StatusMessage = "Error adding multiple items";
         }
-        finally 
-        { 
-            IsBusy = false; 
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -580,7 +580,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         LocationText = string.Empty;
         Quantity = 1;
         RepeatTimes = 1;
-        
+
         _logger.LogInformation("Reset multiple times form");
     }
 
@@ -595,7 +595,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             IsBusy = true;
             var count = SelectedLocations.Count;
             StatusMessage = $"Adding {MultiLocationPartID} to {count} locations...";
-            
+
             var connectionString = _configurationService?.GetConnectionString() ?? throw new InvalidOperationException("Configuration service not available");
             var successCount = 0;
             var failureCount = 0;
@@ -627,20 +627,20 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
                 else
                 {
                     failureCount++;
-                    _logger.LogWarning("Failed to add inventory item to location {Location}: Status {Status}", 
+                    _logger.LogWarning("Failed to add inventory item to location {Location}: Status {Status}",
                         location, result.Status);
                 }
 
                 // Update progress
                 StatusMessage = $"Added to {successCount} of {count} locations...";
             }
-            
+
             if (successCount > 0)
             {
                 StatusMessage = $"Successfully added to {successCount} locations" + (failureCount > 0 ? $" ({failureCount} failed)" : "");
-                _logger.LogInformation("Added {PartID} to {SuccessCount} locations (Multiple Locations mode)", 
+                _logger.LogInformation("Added {PartID} to {SuccessCount} locations (Multiple Locations mode)",
                     MultiLocationPartID, successCount);
-                
+
                 if (failureCount == 0)
                     ResetMultipleLocations();
             }
@@ -658,9 +658,9 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Add To Multiple Locations", Environment.UserName);
             StatusMessage = "Error adding to locations";
         }
-        finally 
-        { 
-            IsBusy = false; 
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -674,7 +674,7 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
         MultiLocationOperation = null;
         MultiLocationQuantity = 1;
         SelectedLocations.Clear();
-        
+
         _logger.LogInformation("Reset multiple locations form");
     }
 
@@ -685,9 +685,9 @@ public partial class AdvancedInventoryViewModel : BaseViewModel
     private void SelectAllLocations()
     {
         SelectedLocations.Clear();
-        foreach (var loc in AvailableLocations) 
+        foreach (var loc in AvailableLocations)
             SelectedLocations.Add(loc);
-        
+
         _logger.LogInformation("Selected all {Count} locations", AvailableLocations.Count);
     }
 

@@ -1,0 +1,533 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Services.Core;
+using MySql.Data.MySqlClient;
+
+namespace MTM_WIP_Application_Avalonia.Services.UI;
+
+
+#region Theme Service
+
+/// <summary>
+/// Theme management service interface for dynamic theme switching.
+/// Provides comprehensive theme management following MTM patterns.
+/// </summary>
+public interface IThemeService : INotifyPropertyChanged
+{
+    string CurrentTheme { get; }
+    IReadOnlyList<ThemeInfo> AvailableThemes { get; }
+    bool IsDarkTheme { get; }
+
+    Task<ServiceResult> SetThemeAsync(string themeId);
+    Task<ServiceResult> ToggleVariantAsync();
+    Task<ServiceResult<string>> GetUserPreferredThemeAsync();
+    Task<ServiceResult> SaveUserPreferredThemeAsync(string themeId);
+    Task<ServiceResult> ApplyCustomColorsAsync(Dictionary<string, string> colorOverrides);
+    Task<ServiceResult> InitializeThemeSystemAsync();
+
+    event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
+}
+
+/// <summary>
+/// Theme information model.
+/// </summary>
+public class ThemeInfo
+{
+    public string Id { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public bool IsDark { get; set; }
+    public string PreviewColor { get; set; } = "#0078D4";
+}
+
+/// <summary>
+/// Base service result class.
+/// </summary>
+public class ServiceResult
+{
+    public bool IsSuccess { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public Exception? Exception { get; set; }
+
+    // Backward compatibility properties
+    public int Status => IsSuccess ? 1 : 0;
+    public int SuccessCount => IsSuccess ? 1 : 0;
+
+    public static ServiceResult Success(string message = "")
+        => new() { IsSuccess = true, Message = message };
+
+    public static ServiceResult Failure(string message, Exception? exception = null)
+        => new() { IsSuccess = false, Message = message, Exception = exception };
+}
+
+/// <summary>
+/// Service result class for operations that return typed data.
+/// </summary>
+public class ServiceResult<T>
+{
+    public bool IsSuccess { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public Exception? Exception { get; set; }
+    public T? Data { get; set; }
+
+    // Backward compatibility properties
+    public int Status => IsSuccess ? 1 : 0;
+    public int SuccessCount => IsSuccess ? 1 : 0;
+    public T? Value => IsSuccess ? Data : default(T);
+
+    public static ServiceResult<T> Success(T data, string message = "")
+        => new() { IsSuccess = true, Data = data, Message = message };
+
+    public static ServiceResult<T> Failure(string message, Exception? exception = null)
+        => new() { IsSuccess = false, Message = message, Exception = exception };
+}
+
+/// <summary>
+/// MTM theme service implementation.
+/// Provides comprehensive theme management with support for MTM color schemes.
+/// </summary>
+public class ThemeService : IThemeService
+{
+    private readonly ILogger<ThemeService> _logger;
+    private readonly IConfigurationService _configurationService;
+    private readonly IApplicationStateService _applicationStateService;
+    private string _currentTheme = "MTM_Blue";
+    private readonly List<ThemeInfo> _availableThemes;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+    public event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
+
+    public ThemeService(ILogger<ThemeService> logger, IConfigurationService configurationService, IApplicationStateService applicationStateService)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+        _applicationStateService = applicationStateService ?? throw new ArgumentNullException(nameof(applicationStateService));
+
+        _availableThemes = new List<ThemeInfo>
+        {
+            new() { Id = "MTM_Blue", DisplayName = "MTM Blue", Description = "Primary MTM theme with Windows 11 blue", IsDark = false, PreviewColor = "#0078D4" },
+            new() { Id = "MTM_Green", DisplayName = "MTM Green", Description = "Alternative green theme", IsDark = false, PreviewColor = "#107C10" },
+            new() { Id = "MTM_Red", DisplayName = "MTM Red", Description = "High visibility red theme", IsDark = false, PreviewColor = "#D13438" },
+            new() { Id = "MTM_Dark", DisplayName = "MTM Dark", Description = "Dark theme for low light environments", IsDark = true, PreviewColor = "#1F1F1F" },
+            new() { Id = "MTMTheme", DisplayName = "MTM Default", Description = "Default MTM theme (fallback)", IsDark = false, PreviewColor = "#0078D4" }
+        };
+
+        _logger.LogDebug("ThemeService initialized with {ThemeCount} themes", _availableThemes.Count);
+    }
+
+    public string CurrentTheme => _currentTheme;
+    public IReadOnlyList<ThemeInfo> AvailableThemes => _availableThemes.AsReadOnly();
+    public bool IsDarkTheme => _availableThemes.FirstOrDefault(t => t.Id == _currentTheme)?.IsDark ?? false;
+
+    public async Task<ServiceResult> SetThemeAsync(string themeId)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(themeId))
+                return ServiceResult.Failure("Theme ID cannot be empty");
+
+            if (!_availableThemes.Any(t => t.Id == themeId))
+                return ServiceResult.Failure($"Theme '{themeId}' not found");
+
+            var previousTheme = _currentTheme;
+            var isInitialLoad = string.IsNullOrEmpty(previousTheme) || _currentTheme == themeId;
+
+            if (_currentTheme == themeId && !isInitialLoad)
+                return ServiceResult.Success("Theme already active");
+
+            _currentTheme = themeId;
+
+            // Apply theme through Avalonia's styling system using MTMTheme static variants
+            if (Application.Current != null)
+            {
+                _logger.LogInformation("Applying theme {ThemeId} using MTMTheme static variants (Initial load: {IsInitial})", themeId, isInitialLoad);
+                ApplyStaticThemeVariant(themeId);
+            }
+            else
+            {
+                _logger.LogWarning("Application.Current is null - cannot apply theme {ThemeId}", themeId);
+            }
+
+            OnPropertyChanged(nameof(CurrentTheme));
+            OnPropertyChanged(nameof(IsDarkTheme));
+
+            var args = new ThemeChangedEventArgs(previousTheme, _currentTheme);
+            ThemeChanged?.Invoke(this, args);
+
+            _logger.LogInformation("Theme changed from {PreviousTheme} to {CurrentTheme}", previousTheme, _currentTheme);
+            return ServiceResult.Success($"Theme changed to {themeId}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to set theme to {ThemeId}", themeId);
+            return ServiceResult.Failure($"Failed to set theme: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<ServiceResult> ToggleVariantAsync()
+    {
+        var currentThemeInfo = _availableThemes.FirstOrDefault(t => t.Id == _currentTheme);
+        if (currentThemeInfo == null)
+            return ServiceResult.Failure("Current theme not found");
+
+        // Simple toggle between light and dark variants
+        var targetTheme = currentThemeInfo.IsDark ? "MTM_Blue" : "MTM_Dark";
+        return await SetThemeAsync(targetTheme);
+    }
+
+    public async Task<ServiceResult<string>> GetUserPreferredThemeAsync()
+    {
+        try
+        {
+            var currentUser = _applicationStateService.CurrentUser;
+            var connectionString = _configurationService.GetConnectionString();
+
+            if (string.IsNullOrEmpty(currentUser))
+            {
+                _logger.LogWarning("No current user found, using default MTMTheme");
+                return ServiceResult<string>.Success("MTMTheme", "Using default theme - no user specified");
+            }
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                _logger.LogWarning("No database connection string found, using default MTMTheme");
+                return ServiceResult<string>.Success("MTMTheme", "Using default theme - no database connection");
+            }
+
+            _logger.LogDebug("Loading theme preference for user: {User}", currentUser);
+
+            var parameters = new MySqlParameter[]
+            {
+                new("p_User", currentUser)
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                connectionString,
+                "usr_users_Get_ByUser",
+                parameters
+            );
+
+            if (result.Status == 1 && result.Data.Rows.Count > 0)
+            {
+                var row = result.Data.Rows[0];
+                var userTheme = row["Theme_Name"].ToString() ?? "MTMTheme";
+
+                // Validate that the theme exists in our available themes
+                if (_availableThemes.Any(t => t.Id.Equals(userTheme, StringComparison.OrdinalIgnoreCase)))
+                {
+                    _logger.LogInformation("Loaded user theme preference: {Theme} for user: {User}", userTheme, currentUser);
+                    return ServiceResult<string>.Success(userTheme, $"Retrieved user theme: {userTheme}");
+                }
+                else
+                {
+                    _logger.LogWarning("User has invalid theme preference '{UserTheme}' - falling back to MTMTheme for user: {User}", userTheme, currentUser);
+                    return ServiceResult<string>.Success("MTMTheme", $"Invalid user theme '{userTheme}' - using fallback");
+                }
+            }
+            else
+            {
+                _logger.LogInformation("User {User} not found in database or query failed (Status: {Status}) - using MTMTheme", currentUser, result.Status);
+                return ServiceResult<string>.Success("MTMTheme", "User not found - using default theme");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get user preferred theme from database");
+            return ServiceResult<string>.Success("MTMTheme", $"Database error - using fallback theme: {ex.Message}");
+        }
+    }
+
+    public async Task<ServiceResult> SaveUserPreferredThemeAsync(string themeId)
+    {
+        try
+        {
+            // This would integrate with settings service in a full implementation
+            await Task.Delay(1); // Placeholder for async operation
+            _logger.LogDebug("User preference saved for theme: {ThemeId}", themeId);
+            return ServiceResult.Success("Theme preference saved");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to save user preferred theme {ThemeId}", themeId);
+            return ServiceResult.Failure($"Failed to save preference: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<ServiceResult> ApplyCustomColorsAsync(Dictionary<string, string> colorOverrides)
+    {
+        try
+        {
+            // This would apply custom color overrides to the current theme
+            await Task.Delay(1); // Placeholder for async operation
+            _logger.LogDebug("Applied {OverrideCount} color overrides", colorOverrides.Count);
+            return ServiceResult.Success("Custom colors applied");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to apply custom colors");
+            return ServiceResult.Failure($"Failed to apply colors: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<ServiceResult> InitializeThemeSystemAsync()
+    {
+        try
+        {
+            _logger.LogInformation("Starting database-driven theme system initialization");
+
+            // Step 1: Load user's preferred theme from database
+            var userPreferredThemeResult = await GetUserPreferredThemeAsync();
+            string themeToApply = "MTMTheme"; // Always use MTMTheme as fallback
+
+            if (userPreferredThemeResult.IsSuccess && !string.IsNullOrEmpty(userPreferredThemeResult.Data))
+            {
+                themeToApply = userPreferredThemeResult.Data;
+                _logger.LogInformation("Database returned user theme preference: {Theme}", themeToApply);
+            }
+            else
+            {
+                _logger.LogInformation("Using fallback theme: {Theme} (Reason: {Reason})", themeToApply, userPreferredThemeResult.Message ?? "No user theme found");
+            }
+
+            // Step 2: Validate theme exists in application
+            var themeExists = _availableThemes.Any(t => t.Id.Equals(themeToApply, StringComparison.OrdinalIgnoreCase));
+            if (!themeExists)
+            {
+                _logger.LogWarning("Theme '{ThemeId}' not found in available themes, falling back to MTMTheme", themeToApply);
+                themeToApply = "MTMTheme";
+            }
+
+            // Step 3: Apply the selected theme
+            var themeResult = await SetThemeAsync(themeToApply);
+            if (!themeResult.IsSuccess)
+            {
+                _logger.LogError("Failed to apply theme {ThemeId}: {Error}", themeToApply, themeResult.Message);
+
+                // Step 4: Final fallback - try MTMTheme if we haven't already
+                if (themeToApply != "MTMTheme")
+                {
+                    _logger.LogWarning("Attempting final fallback to MTMTheme");
+                    var fallbackResult = await SetThemeAsync("MTMTheme");
+                    if (!fallbackResult.IsSuccess)
+                    {
+                        return ServiceResult.Failure($"Critical: Failed to apply both user theme and fallback theme. Error: {fallbackResult.Message}");
+                    }
+                }
+                else
+                {
+                    return ServiceResult.Failure($"Critical: Failed to apply fallback MTMTheme. Error: {themeResult.Message}");
+                }
+            }
+
+            _logger.LogInformation("Theme system initialization completed successfully with theme: {ThemeId}", _currentTheme);
+            return ServiceResult.Success($"Theme system initialized with theme: {_currentTheme}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Critical error during theme system initialization");
+            return ServiceResult.Failure($"Theme system initialization failed: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Apply MTM theme using static ThemeVariant approach (eliminates UI thread issues)
+    /// </summary>
+    /// <param name="themeId">Theme identifier</param>
+    private void ApplyStaticThemeVariant(string themeId)
+    {
+        try
+        {
+            if (Application.Current == null)
+            {
+                _logger.LogError("Cannot apply theme: Application.Current is null");
+                return;
+            }
+
+            // Use MTMTheme static class to get the appropriate ThemeVariant
+            var themeVariant = MTMTheme.GetThemeVariant(themeId);
+
+            _logger.LogInformation("Applying MTM theme: {ThemeId} -> {ThemeVariant}", themeId, themeVariant);
+
+            // Use Avalonia's built-in theme system - NO manual resource dictionary loading!
+            Application.Current.RequestedThemeVariant = themeVariant;
+
+            _logger.LogInformation("MTM theme applied successfully: {ThemeVariant}", themeVariant);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to apply MTM theme: {ThemeId}", themeId);
+
+            // Fallback to default theme
+            if (Application.Current != null)
+            {
+                Application.Current.RequestedThemeVariant = MTMTheme.Blue;
+                _logger.LogInformation("Applied fallback MTM Blue theme");
+            }
+        }
+    }
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        try
+        {
+            if (Application.Current?.Resources?.MergedDictionaries == null)
+            {
+                _logger.LogError("CRITICAL: Application.Current.Resources.MergedDictionaries is null - cannot load theme");
+                return;
+            }
+
+            var initialCount = Application.Current.Resources.MergedDictionaries.Count;
+            _logger.LogDebug("Starting theme load - Initial merged dictionaries count: {Count}", initialCount);
+
+            // Build the theme resource URI based on theme ID
+            Uri themeUri;
+            switch (themeId)
+            {
+                case "MTM_Blue":
+                    themeUri = new Uri("avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml");
+                    break;
+                case "MTM_Green":
+                    themeUri = new Uri("avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Green.axaml");
+                    break;
+                case "MTM_Red":
+                    themeUri = new Uri("avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Red.axaml");
+                    break;
+                case "MTM_Dark":
+                    themeUri = new Uri("avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Dark.axaml");
+                    break;
+                default:
+                    _logger.LogWarning("Unknown theme ID: {ThemeId}, falling back to MTM_Blue", themeId);
+                    themeUri = new Uri("avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml");
+                    break;
+            }
+
+            // Remove existing MTM theme resources to prevent conflicts
+            var existingMTMThemes = Application.Current.Resources.MergedDictionaries
+                .Where(dict => dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out var _))
+                .ToList();
+
+            _logger.LogDebug("Found {ExistingCount} existing MTM theme dictionaries to remove", existingMTMThemes.Count);
+
+            foreach (var themeDict in existingMTMThemes)
+            {
+                Application.Current.Resources.MergedDictionaries.Remove(themeDict);
+                _logger.LogDebug("Removed existing MTM theme dictionary");
+            }
+
+            try
+            {
+                _logger.LogInformation("LOADING: Attempting to load theme resource from {Uri}", themeUri);
+
+                // Load the new theme resource dictionary on UI thread
+                Avalonia.Controls.ResourceDictionary? newThemeDict = null;
+                bool hasExpectedResources = false;
+                object? primaryAction = null;
+                int finalCount = 0;
+                bool appLevelResource = false;
+                object? appPrimaryAction = null;
+
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    newThemeDict = (Avalonia.Controls.ResourceDictionary)AvaloniaXamlLoader.Load(themeUri);
+
+                    if (newThemeDict != null)
+                    {
+                        // Verify the loaded dictionary has expected resources
+                        hasExpectedResources = newThemeDict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out primaryAction);
+
+                        if (hasExpectedResources)
+                        {
+                            // Add the new theme dictionary
+                            Application.Current.Resources.MergedDictionaries.Add(newThemeDict);
+                            finalCount = Application.Current.Resources.MergedDictionaries.Count;
+
+                            // Verify the resource is accessible from the application level
+                            appLevelResource = Application.Current.Resources.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out appPrimaryAction);
+                        }
+                    }
+                });
+
+                if (newThemeDict == null)
+                {
+                    _logger.LogError("FAILED: AvaloniaXamlLoader.Load returned null for {Uri}", themeUri);
+                    return;
+                }
+
+                _logger.LogInformation("Theme dictionary loaded - Has PrimaryAction resource: {HasResource}, Value: {Value}",
+                    hasExpectedResources, primaryAction?.ToString() ?? "null");
+
+                if (!hasExpectedResources)
+                {
+                    _logger.LogError("FAILED: Loaded theme dictionary does not contain expected MTM resources");
+                    return;
+                }
+
+                _logger.LogInformation("SUCCESS: Theme applied! Merged dictionaries count: {FinalCount} (was {InitialCount})",
+                    finalCount, initialCount);
+
+                _logger.LogInformation("Application-level resource check - PrimaryAction accessible: {IsAccessible}, Value: {Value}",
+                    appLevelResource, appPrimaryAction?.ToString() ?? "null");
+
+                _logger.LogDebug("Successfully applied Avalonia theme: {ThemeId} from {Uri}", themeId, themeUri);
+            }
+            catch (Exception loadEx)
+            {
+                _logger.LogError(loadEx, "Failed to load theme resource from {Uri}, falling back to default MTM theme", themeUri);
+
+                // Fallback to default MTM theme (MTM_Blue.axaml)
+                if (themeId != "MTM_Blue")
+                {
+                    try
+                    {
+                        var fallbackUri = new Uri("avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTM_Blue.axaml");
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            var fallbackDict = (Avalonia.Controls.ResourceDictionary)AvaloniaXamlLoader.Load(fallbackUri);
+                            Application.Current.Resources.MergedDictionaries.Add(fallbackDict);
+                        });
+                        _logger.LogInformation("Applied fallback MTM_Blue theme successfully");
+                    }
+                    catch (Exception fallbackEx)
+                    {
+                        _logger.LogError(fallbackEx, "Failed to apply fallback theme, theme system may be broken");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in ApplyAvaloniaThemeAsync for theme {ThemeId}", themeId);
+        }
+    }
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}
+
+/// <summary>
+/// Theme changed event arguments.
+/// </summary>
+public class ThemeChangedEventArgs : EventArgs
+{
+    public string PreviousTheme { get; }
+    public string NewTheme { get; }
+
+    public ThemeChangedEventArgs(string previousTheme, string newTheme)
+    {
+        PreviousTheme = previousTheme;
+        NewTheme = newTheme;
+    }
+}
+
+#endregion

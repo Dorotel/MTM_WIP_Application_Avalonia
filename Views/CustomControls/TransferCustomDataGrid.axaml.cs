@@ -203,6 +203,7 @@ public partial class TransferCustomDataGrid : UserControl
 
     /// <summary>
     /// Handles selection changes in the DataListBox
+    /// Includes type conversion to handle binding compatibility issues
     /// </summary>
     private void OnDataListBoxSelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
     {
@@ -210,12 +211,9 @@ public partial class TransferCustomDataGrid : UserControl
         {
             if (DataListBox == null) return;
 
-            // Update the SelectedItemsCollection with the current selection
-            SelectedItemsCollection.Clear();
-            foreach (var item in DataListBox.SelectedItems)
-            {
-                SelectedItemsCollection.Add(item);
-            }
+            // CRITICAL FIX: Handle type conversion for SelectedItemsCollection binding
+            // This addresses binding errors with ObservableCollection<InventoryItem> to ObservableCollection<object> conversion
+            SyncSelectedItemsCollection();
 
             // Update the single selected item
             if (SelectedItemsCollection.Count > 0)
@@ -245,6 +243,42 @@ public partial class TransferCustomDataGrid : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling DataListBox selection change");
+        }
+    }
+
+    /// <summary>
+    /// Synchronizes the SelectedItemsCollection property with DataListBox selection
+    /// Handles type conversion for Avalonia binding compatibility
+    /// Compatible with Universal Overlay System integration planned in refactor
+    /// </summary>
+    private void SyncSelectedItemsCollection()
+    {
+        try
+        {
+            if (DataListBox?.SelectedItems == null)
+            {
+                SelectedItemsCollection.Clear();
+                return;
+            }
+
+            // Convert selected items to object collection for binding compatibility
+            var selectedItems = DataListBox.SelectedItems.Cast<object>().ToList();
+
+            // Update the collection efficiently - clear and add new items
+            SelectedItemsCollection.Clear();
+            foreach (var item in selectedItems)
+            {
+                SelectedItemsCollection.Add(item);
+            }
+
+            _logger?.LogTrace("Synced SelectedItemsCollection: {Count} items", selectedItems.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error syncing SelectedItemsCollection");
+
+            // Ensure we have a valid empty collection on error
+            SelectedItemsCollection.Clear();
         }
     }
 

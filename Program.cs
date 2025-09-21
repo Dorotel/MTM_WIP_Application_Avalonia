@@ -43,6 +43,11 @@ public static class Program
             // Phase 2: Configure services using ApplicationStartup infrastructure
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring services using ApplicationStartup...");
             var configureResult = await ConfigureServicesAsync();
+
+            // Critical debugging: immediately after ConfigureServicesAsync returns
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] ConfigureServicesAsync() returned: {configureResult}");
+            Console.Out.Flush();
+
             if (!configureResult)
             {
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] CRITICAL: Service configuration failed");
@@ -50,20 +55,64 @@ public static class Program
                 return;
             }
 
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Service configuration succeeded, about to transition to Avalonia startup");
+            Console.Out.Flush();
+
             // Phase 3: Start Avalonia application (MainView initialization will happen after Avalonia starts)
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Starting Avalonia application...");
+            Console.Out.Flush();
+
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Platform: {Environment.OSVersion}");
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Runtime: {Environment.Version}");
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Is Interactive: {Environment.UserInteractive}");
-            _logger?.LogInformation("Starting Avalonia application with {ArgCount} arguments", args.Length);
+            Console.Out.Flush();
+
+            // Try to access logger - this might be where the freeze occurs
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to try accessing logger...");
+            Console.Out.Flush();
+
+            try
+            {
+                _logger?.LogInformation("Starting Avalonia application with {ArgCount} arguments", args.Length);
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Logger access successful");
+            }
+            catch (Exception logEx)
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Logger access failed: {logEx.Message}");
+            }
+            Console.Out.Flush();
 
             var appStopwatch = Stopwatch.StartNew();
 
             // For now, all platforms use classic desktop lifetime
             // Mobile support can be added later when creating dedicated mobile projects
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Starting with classic desktop lifetime (cross-platform compatible)");
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to call BuildAvaloniaApp().StartWithClassicDesktopLifetime(args)");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Args count: {args.Length}");
 
+            // Force console buffer flush before critical call
+            Console.Out.Flush();
+            Console.Error.Flush();
+
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] === CRITICAL POINT: About to enter Avalonia initialization ===");
+            Console.Out.Flush();
+
+            // This is where the application might hang - in Avalonia initialization
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Calling BuildAvaloniaApp()...");
+            Console.Out.Flush();
+
+            var appBuilder = BuildAvaloniaApp();
+
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BuildAvaloniaApp() returned successfully");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to call StartWithClassicDesktopLifetime(args)...");
+            Console.Out.Flush();
+
+            appBuilder.StartWithClassicDesktopLifetime(args);
+
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] StartWithClassicDesktopLifetime(args) completed - THIS SHOULD NEVER BE REACHED");
+            Console.Out.Flush();
+
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Avalonia StartWithClassicDesktopLifetime returned successfully");
             appStopwatch.Stop();
 
             mainStopwatch.Stop();
@@ -182,6 +231,9 @@ public static class Program
 
             configureStopwatch.Stop();
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Service configuration completed in {configureStopwatch.ElapsedMilliseconds}ms");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Service provider type: {_serviceProvider.GetType().Name}");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Logger factory available: {_serviceProvider.GetService<ILoggerFactory>() != null}");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Logger available: {_logger != null}");
             _logger?.LogInformation("Service configuration completed successfully in {ConfigureMs}ms",
                 configureStopwatch.ElapsedMilliseconds);
 

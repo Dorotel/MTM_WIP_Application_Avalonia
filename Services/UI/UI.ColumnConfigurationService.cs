@@ -320,7 +320,7 @@ public class ColumnConfigurationService : IColumnConfigurationService
                 Description = "Auto-saved session configuration",
                 ColumnSettings = configuration.ColumnSettings.Select(s => s.Clone()).ToList(),
                 IsDefault = false,
-                CreatedBy = Environment.UserName
+                CreatedBy = Environment.UserName.ToUpper()
             };
 
             var json = JsonSerializer.Serialize(sessionConfig, _jsonOptions);

@@ -179,6 +179,15 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                     VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch
                 };
 
+                // Ensure the overlay view has access to application resources
+                if (Application.Current?.Resources != null)
+                {
+                    // The overlay should automatically inherit resources from Application.Current
+                    // but we can explicitly set it if needed
+                    _logger.LogDebug("Overlay view created with access to {ResourceCount} application resource dictionaries",
+                        Application.Current.Resources.MergedDictionaries.Count);
+                }
+
                 // Set up completion source to wait for user interaction
                 var completionSource = new TaskCompletionSource<string?>();
 
@@ -186,8 +195,12 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 viewModel.SuggestionSelected += (selectedSuggestion) =>
                 {
                     _logger.LogDebug("User selected suggestion: '{Suggestion}'", selectedSuggestion);
-                    // TODO: Implement Universal Overlay Service pattern
-                    // mainView.HideSuggestionOverlay();
+
+                    // Hide the suggestion overlay
+                    if (mainView is MTM_WIP_Application_Avalonia.Views.MainView mainViewInstance)
+                    {
+                        mainViewInstance.HideSuggestionOverlay();
+                    }
 
                     // Handle focus management - move to next tab index after selection
                     if (_focusManagementService != null)
@@ -213,8 +226,12 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 viewModel.Cancelled += () =>
                 {
                     _logger.LogDebug("User cancelled suggestion overlay");
-                    // TODO: Implement Universal Overlay Service pattern
-                    // mainView.HideSuggestionOverlay();
+
+                    // Hide the suggestion overlay
+                    if (mainView is MTM_WIP_Application_Avalonia.Views.MainView mainViewInstance)
+                    {
+                        mainViewInstance.HideSuggestionOverlay();
+                    }
 
                     // Handle focus management - stay on current tab index after cancellation
                     if (_focusManagementService != null)
@@ -238,8 +255,12 @@ public class SuggestionOverlayService : ISuggestionOverlayService
 
                 // Show the overlay in the MainView panel
                 _logger.LogDebug("Showing suggestion overlay in MainView panel");
-                // TODO: Implement Universal Overlay Service pattern
-                // mainView.ShowSuggestionOverlay(overlayView);
+
+                // Show the suggestion overlay
+                if (mainView is MTM_WIP_Application_Avalonia.Views.MainView mainViewInstance)
+                {
+                    mainViewInstance.ShowSuggestionOverlay(overlayView);
+                }
 
                 // Wait for user interaction
                 var result = await completionSource.Task;

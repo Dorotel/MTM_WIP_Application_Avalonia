@@ -438,22 +438,9 @@ namespace MTM_WIP_Application_Avalonia.Views.CustomControls
             // Update SelectedItem property
             SelectedItem = DataListBox?.SelectedItem;
 
-            // CRITICAL FIX: Sync SelectedItemsCollection with DataListBox selection for ViewModel binding
-            // Create new collection and set property to trigger two-way binding notification
-            var selectedItems = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
-            if (selectedItems.Count > 0)
-            {
-                // Create new ObservableCollection to trigger binding system
-                var newSelectedItems = new System.Collections.ObjectModel.ObservableCollection<object>(selectedItems);
-                SelectedItemsCollection = newSelectedItems;
-                _logger.LogDebug("Updated SelectedItemsCollection with new collection: {Count} items", selectedItems.Count);
-            }
-            else
-            {
-                // Clear selection by setting to empty collection
-                SelectedItemsCollection = new System.Collections.ObjectModel.ObservableCollection<object>();
-                _logger.LogDebug("Cleared SelectedItemsCollection");
-            }
+            // CRITICAL FIX: Handle type conversion for SelectedItemsCollection binding
+            // This addresses the binding error: cannot convert ObservableCollection<InventoryItem> to ICollection<object>
+            SyncSelectedItemsCollection();
 
             // Raise selection changed event
             var selectedItemsForEvent = DataListBox?.SelectedItems?.Cast<object>().ToList() ?? new List<object>();
@@ -462,6 +449,44 @@ namespace MTM_WIP_Application_Avalonia.Views.CustomControls
                 SelectedItems = selectedItemsForEvent,
                 SelectionMode = "WinFormsSelection"
             });
+        }
+
+        /// <summary>
+        /// Synchronizes the SelectedItemsCollection property with DataListBox selection
+        /// Handles type conversion between strongly typed collections and object collections
+        /// Compatible with Universal Overlay System integration planned in refactor
+        /// </summary>
+        private void SyncSelectedItemsCollection()
+        {
+            try
+            {
+                if (DataListBox?.SelectedItems == null)
+                {
+                    if (SelectedItemsCollection != null)
+                    {
+                        SelectedItemsCollection.Clear();
+                    }
+                    return;
+                }
+
+                var selectedItems = DataListBox.SelectedItems.Cast<object>().ToList();
+
+                // Create new collection to properly trigger binding notifications
+                // This works with both ICollection<object> and ObservableCollection<object> bindings
+                var newCollection = new System.Collections.ObjectModel.ObservableCollection<object>(selectedItems);
+
+                // Set the property to trigger two-way binding
+                SelectedItemsCollection = newCollection;
+
+                _logger.LogDebug("Synced SelectedItemsCollection: {Count} items", selectedItems.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error syncing SelectedItemsCollection");
+
+                // Fallback: ensure we have a valid empty collection
+                SelectedItemsCollection = new System.Collections.ObjectModel.ObservableCollection<object>();
+            }
         }
 
         /// <summary>

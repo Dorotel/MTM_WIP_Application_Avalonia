@@ -4,137 +4,141 @@
              xmlns:conv="using:MTM_WIP_Application_Avalonia.Converters"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.SuggestionOverlayView"
-             x:DataType="vm:SuggestionOverlayViewModel">
+             x:DataType="vm:SuggestionOverlayViewModel"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center">
 
   <UserControl.Resources>
     <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
   </UserControl.Resources>
 
-  <!-- Standard overlay container with background overlay -->
-  <Border Background="#80000000"
-          IsVisible="{Binding IsVisible}"
-          HorizontalAlignment="Center"
-          VerticalAlignment="Center">
+  <!-- Direct content without additional background overlay since it's in MainView panel -->
+  <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+          BorderThickness="1"
+          CornerRadius="8"
+          MaxWidth="500"
+          MaxHeight="400"
+          MinWidth="350"
+          MinHeight="200"
+          Padding="0">
 
-    <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-            BorderThickness="1"
-            CornerRadius="8"
-            MaxWidth="500"
-            MaxHeight="400"
-            Padding="0">
+    <Grid x:Name="MainContainer" RowDefinitions="Auto,*,Auto">
 
-      <Grid x:Name="MainContainer" RowDefinitions="Auto,*,Auto">
+      <!-- Header with icon -->
+      <Border Grid.Row="0"
+              Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+              CornerRadius="8,8,0,0"
+              Padding="16,12">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <materialIcons:MaterialIcon Kind="Lightbulb"
+                                    Width="24" Height="24"
+                                    Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}" />
+          <TextBlock Text="{Binding Title}"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}" />
+        </StackPanel>
+      </Border>
 
-        <!-- Header with icon -->
-        <Border Grid.Row="0"
-                Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                CornerRadius="8,8,0,0"
-                Padding="16,12">
-          <StackPanel Orientation="Horizontal" Spacing="12">
-            <materialIcons:MaterialIcon Kind="Lightbulb"
-                                      Width="24" Height="24"
-                                      Foreground="White" />
-            <TextBlock Text="{Binding Title}"
-                      FontSize="16"
-                      FontWeight="SemiBold"
-                      Foreground="White" />
-          </StackPanel>
-        </Border>
+      <!-- Message and suggestions content -->
+      <ScrollViewer Grid.Row="1"
+                    VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled"
+                    Padding="16">
+        <StackPanel Spacing="16">
 
-        <!-- Message and suggestions content -->
-        <ScrollViewer Grid.Row="1"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled"
-                      Padding="16">
-          <StackPanel Spacing="16">
+          <!-- Message -->
+          <TextBlock Text="{Binding Message}"
+                    TextWrapping="Wrap"
+                    FontSize="14"
+                    Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
 
-            <!-- Message -->
-            <TextBlock Text="{Binding Message}"
-                      TextWrapping="Wrap"
-                      FontSize="14" />
+          <!-- Suggestions ListBox -->
+          <ListBox ItemsSource="{Binding Suggestions}"
+                   SelectedItem="{Binding SelectedSuggestion, Mode=TwoWay}"
+                   x:Name="SuggestionListBox"
+                   MinHeight="120"
+                   MaxHeight="200"
+                   Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                   BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                   BorderThickness="1"
+                   CornerRadius="4"
+                   Padding="4">
 
-            <!-- Suggestions ListBox -->
-            <ListBox ItemsSource="{Binding Suggestions}"
-                     SelectedItem="{Binding SelectedSuggestion, Mode=TwoWay}"
-                     x:Name="SuggestionListBox"
-                     MinHeight="120"
-                     MaxHeight="200"
-                     Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                     BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
-                     BorderThickness="1"
-                     CornerRadius="4"
-                     Padding="4">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal"
+                            Spacing="8"
+                            Margin="8,4">
+                  <materialIcons:MaterialIcon Kind="Package"
+                                            Width="16"
+                                            Height="16"
+                                            VerticalAlignment="Center"
+                                            Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+                  <TextBlock Text="{Binding}"
+                             VerticalAlignment="Center"
+                             FontSize="13"
+                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
 
-              <ListBox.ItemTemplate>
-                <DataTemplate>
-                  <StackPanel Orientation="Horizontal"
-                              Spacing="8"
-                              Margin="8,4">
-                    <materialIcons:MaterialIcon Kind="Package"
-                                              Width="16"
-                                              Height="16"
-                                              VerticalAlignment="Center"
-                                              Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-                    <TextBlock Text="{Binding}"
-                               VerticalAlignment="Center"
-                               FontSize="13" />
-                  </StackPanel>
-                </DataTemplate>
-              </ListBox.ItemTemplate>
+            <ListBox.Styles>
+              <!-- ListBox item styling with dynamic resource bindings -->
+              <Style Selector="ListBoxItem">
+                <Setter Property="Padding" Value="4"/>
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="CornerRadius" Value="3"/>
+                <Setter Property="Background" Value="Transparent"/>
+              </Style>
 
-              <ListBox.Styles>
-                <!-- ListBox item styling -->
-                <Style Selector="ListBoxItem">
-                  <Setter Property="Padding" Value="4"/>
-                  <Setter Property="Margin" Value="2"/>
-                  <Setter Property="CornerRadius" Value="3"/>
-                  <Setter Property="Background" Value="Transparent"/>
-                </Style>
+              <Style Selector="ListBoxItem:selected">
+                <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+                <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"/>
+              </Style>
 
-                <Style Selector="ListBoxItem:selected">
-                  <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SelectionBrush}"/>
-                  <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SelectionTextBrush}"/>
-                </Style>
+              <Style Selector="ListBoxItem:pointerover">
+                <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+              </Style>
+            </ListBox.Styles>
+          </ListBox>
 
-                <Style Selector="ListBoxItem:pointerover">
-                  <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBrush}"/>
-                </Style>
-              </ListBox.Styles>
-            </ListBox>
+          <!-- Help text -->
+          <TextBlock Text="Double-click to select, use arrow keys to navigate, Enter to select, Escape to cancel"
+                     FontSize="12"
+                     Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                     TextWrapping="Wrap" />
+        </StackPanel>
+      </ScrollViewer>
 
-            <!-- Help text -->
-            <TextBlock Text="Double-click to select, use arrow keys to navigate, Enter to select, Escape to cancel"
-                       FontSize="12"
-                       Foreground="{DynamicResource MTM_Shared_Logic.SecondaryTextBrush}"
-                       TextWrapping="Wrap" />
-          </StackPanel>
-        </ScrollViewer>
-
-        <!-- Action buttons -->
-        <Border Grid.Row="2"
-                Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
-                BorderThickness="0,1,0,0"
-                CornerRadius="0,0,8,8"
-                Padding="16,12">
-          <StackPanel Orientation="Horizontal"
-                     HorizontalAlignment="Right"
-                     Spacing="8">
-            <Button Content="Cancel"
-                   Command="{Binding CancelCommand}"
-                   Classes="secondary"
-                   Padding="16,8"
-                   MinWidth="80" />
-            <Button Content="Select"
-                   Command="{Binding SelectCommand}"
-                   Classes="primary"
-                   Padding="16,8"
-                   MinWidth="80"
-                   IsEnabled="{Binding SelectedSuggestion, Converter={StaticResource NullToBoolConverter}}" />
-          </StackPanel>
-        </Border>
-      </Grid>
-    </Border>
+      <!-- Action buttons -->
+      <Border Grid.Row="2"
+              Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+              BorderThickness="0,1,0,0"
+              CornerRadius="0,0,8,8"
+              Padding="16,12">
+        <StackPanel Orientation="Horizontal"
+                   HorizontalAlignment="Right"
+                   Spacing="8">
+          <Button Content="Cancel"
+                 Command="{Binding CancelCommand}"
+                 Classes="secondary"
+                 Padding="16,8"
+                 MinWidth="80"
+                 Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
+                 Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}" />
+          <Button Content="Select"
+                 Command="{Binding SelectCommand}"
+                 Classes="primary"
+                 Padding="16,8"
+                 MinWidth="80"
+                 Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                 Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
+                 IsEnabled="{Binding SelectedSuggestion, Converter={StaticResource NullToBoolConverter}}" />
+        </StackPanel>
+      </Border>
+    </Grid>
   </Border>
 </UserControl>

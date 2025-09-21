@@ -40,10 +40,12 @@ public class MainWindowViewModel : BaseViewModel
         Lazy<EmergencyShutdownOverlayViewModel>? emergencyShutdownOverlay = null,
         Lazy<ThemeQuickSwitcherOverlayViewModel>? themeQuickSwitcherOverlay = null) : base(logger)
     {
+        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainWindowViewModel constructor started");
         Logger.LogDebug("MainWindowViewModel constructor started");
 
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainWindowViewModel - navigation and state services injected");
 
         // Optional overlay service injection - allows for graceful degradation if not available
         _overlayService = overlayService;
@@ -203,31 +205,42 @@ public class MainWindowViewModel : BaseViewModel
     /// </summary>
     public void InitializeMainView()
     {
+        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainWindowViewModel.InitializeMainView() started");
+
         if (CurrentView != null)
         {
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainView already initialized, skipping");
             Logger.LogDebug("MainView already initialized, skipping");
             return;
         }
 
+        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Manually initializing MainView after startup");
         Logger.LogDebug("Manually initializing MainView after startup");
         try
         {
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Resolving MainViewViewModel...");
             var mainViewViewModel = Program.GetService<MainViewViewModel>();
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainViewViewModel resolved successfully");
             Logger.LogDebug("MainViewViewModel resolved successfully for manual initialization, type: {MainViewViewModelType}", mainViewViewModel.GetType().FullName);
 
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Creating MainView...");
             CurrentView = new MainView
             {
                 DataContext = mainViewViewModel
             };
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainView created and set as CurrentView");
 
             Logger.LogInformation("MainView manually initialized and set as CurrentView");
 
             // Request startup focus after MainView is fully initialized
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Requesting startup focus...");
             Logger.LogDebug("Requesting startup focus after MainView initialization");
             mainViewViewModel.RequestStartupFocus();
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainView initialization completed successfully");
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Failed to manually initialize MainView: {ex.Message}");
             Logger.LogError(ex, "Failed to manually initialize MainView");
             throw;
         }

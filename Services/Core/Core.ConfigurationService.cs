@@ -110,7 +110,7 @@ public class ConfigurationService : IConfigurationService
 /// </summary>
 public class ApplicationStateService : IApplicationStateService
 {
-    private string _currentUser = Environment.UserName;
+    private string _currentUser = Environment.UserName.ToUpper();
     private string _currentLocation = string.Empty;
     private string _currentOperation = string.Empty;
     private bool _isOfflineMode = false;
@@ -125,12 +125,13 @@ public class ApplicationStateService : IApplicationStateService
         get => _currentUser;
         set
         {
-            if (_currentUser != value)
+            var upperValue = value?.ToUpper() ?? string.Empty;
+            if (_currentUser != upperValue)
             {
                 var oldValue = _currentUser;
-                _currentUser = value;
+                _currentUser = upperValue;
                 OnPropertyChanged();
-                StateChanged?.Invoke(this, new StateChangedEventArgs(nameof(CurrentUser), oldValue, value));
+                StateChanged?.Invoke(this, new StateChangedEventArgs(nameof(CurrentUser), oldValue, upperValue));
             }
         }
     }

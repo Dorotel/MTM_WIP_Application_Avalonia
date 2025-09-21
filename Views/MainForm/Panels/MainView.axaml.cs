@@ -616,13 +616,20 @@ namespace MTM_WIP_Application_Avalonia.Views
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"MainView.ShowSuggestionOverlay called with content type: {overlayContent?.GetType().Name}");
+
                 var overlayPanel = this.FindControl<Border>("SuggestionOverlayPanel");
                 var contentControl = this.FindControl<ContentControl>("SuggestionOverlayContent");
+
+                System.Diagnostics.Debug.WriteLine($"Found overlayPanel: {overlayPanel != null}, contentControl: {contentControl != null}");
 
                 if (overlayPanel != null && contentControl != null)
                 {
                     contentControl.Content = overlayContent;
                     overlayPanel.IsVisible = true;
+
+                    System.Diagnostics.Debug.WriteLine($"Overlay panel visibility set to: {overlayPanel.IsVisible}");
+                    System.Diagnostics.Debug.WriteLine($"Content control content set to: {contentControl.Content?.GetType().Name}");
                     System.Diagnostics.Debug.WriteLine("Suggestion overlay panel shown successfully");
                 }
                 else

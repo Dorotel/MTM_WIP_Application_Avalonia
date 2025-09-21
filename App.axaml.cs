@@ -39,13 +39,16 @@ public partial class App : Application
     {
         try
         {
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] App.Initialize() started");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] App.Initialize() started - XAML loading begins");
 
             // Set up global exception handlers for emergency shutdown
             SetupGlobalExceptionHandlers();
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Global exception handlers configured");
 
             // Load XAML with proper error handling
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to load XAML with AvaloniaXamlLoader.Load(this)");
             AvaloniaXamlLoader.Load(this);
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] XAML loading completed successfully");
 
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] App.Initialize() completed - XAML loaded successfully");
         }
@@ -68,107 +71,127 @@ public partial class App : Application
     /// <exception cref="InvalidOperationException">Thrown when critical services cannot be resolved</exception>
     public override void OnFrameworkInitializationCompleted()
     {
-        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] App.OnFrameworkInitializationCompleted() started");
+        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] App.OnFrameworkInitializationCompleted() started");
 
         // Check if we're in design mode and exit early
         if (IsDesignMode())
         {
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Design mode detected - skipping service initialization");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Design mode detected - skipping service initialization");
             base.OnFrameworkInitializationCompleted();
             return;
         }
 
+        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Not in design mode - proceeding with full initialization");
+
         try
         {
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Initializing application services...");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Initializing application services...");
 
             // Initialize configuration with proper null checking
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to get Configuration service...");
             var configuration = Program.GetService<IConfiguration>()
                 ?? throw new InvalidOperationException("Configuration service could not be resolved");
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Configuration service obtained");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuration service obtained successfully");
 
             // Initialize application variables with configuration
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to initialize Model_AppVariables...");
             Model_AppVariables.Initialize(configuration);
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Model_AppVariables initialized");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Model_AppVariables initialized successfully");
 
             // Initialize logging infrastructure with proper error handling
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to get ILogger<App> service...");
             _logger = Program.GetService<ILogger<App>>();
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] ILogger<App> service obtained successfully");
+
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to get ILoggerFactory service...");
             var loggerFactory = Program.GetService<ILoggerFactory>()
                 ?? throw new InvalidOperationException("LoggerFactory service could not be resolved");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] ILoggerFactory service obtained successfully");
+
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to create general logger and set Helper_Database_StoredProcedure logger...");
             var generalLogger = loggerFactory.CreateLogger("Services.Core.Helper_Database_StoredProcedure");
             Services.Core.Helper_Database_StoredProcedure.SetLogger(generalLogger);
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] General logger and Helper_Database_StoredProcedure logger set successfully");
 
             _logger?.LogInformation("MTM WIP Application framework initialization started");
             _logger?.LogInformation("Model_AppVariables and database helper initialized successfully");
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Logging infrastructure initialized");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Logging infrastructure initialized successfully");
 
-            // Initialize theme system before creating UI components
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Initializing theme system...");
-            // Use synchronous initialization to avoid theme loading conflicts
-            InitializeDefaultTheme();
+            // Apply default theme immediately for UI rendering - user preferences will load asynchronously
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to apply default theme for immediate UI rendering...");
+            ApplyDefaultThemeForUI();
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Default theme applied for UI - user preferences will load after startup");
 
             // Configure desktop application lifetime with dependency injection
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Creating MainWindow with dependency injection...");
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Creating MainWindow with dependency injection...");
 
                 // Resolve MainWindow ViewModel with proper error handling
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to resolve MainWindowViewModel service...");
                 var mainWindowViewModel = Program.GetService<MainWindowViewModel>()
                     ?? throw new InvalidOperationException("MainWindowViewModel service could not be resolved");
                 _logger?.LogInformation("MainWindowViewModel service resolved successfully");
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] MainWindowViewModel resolved");
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainWindowViewModel resolved successfully");
 
                 // Create and configure main window
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to create new MainWindow and set DataContext...");
                 desktop.MainWindow = new MainWindow
                 {
                     DataContext = mainWindowViewModel
                 };
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainWindow created and DataContext set successfully");
 
                 _logger?.LogInformation("Main window created with dependency injection - DataContext set to MainWindowViewModel");
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] MainWindow created and DataContext set");
 
                 // Initialize MainView after Avalonia platform is ready
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Initializing MainView after platform initialization...");
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to initialize MainView after platform initialization...");
                 try
                 {
                     mainWindowViewModel.InitializeMainView();
-                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] MainView initialized successfully after platform startup");
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainView initialized successfully after platform startup");
                     _logger?.LogInformation("MainView initialized successfully after Avalonia platform startup");
                 }
                 catch (Exception mainViewEx)
                 {
-                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Warning: MainView initialization failed after platform startup: {mainViewEx.Message}");
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Warning: MainView initialization failed after platform startup: {mainViewEx.Message}");
                     _logger?.LogWarning(mainViewEx, "MainView initialization failed after platform startup - application will continue with empty content");
                 }
 
                 // Schedule startup dialog with proper async handling
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Scheduling startup dialog...");
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Scheduling startup dialog task...");
                 _ = Task.Run(async () =>
                 {
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Startup dialog task started");
                     _logger?.LogDebug("Startup dialog task started");
                     // Wait for main window initialization
                     await Task.Delay(1000);
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Startup dialog delay completed");
 
-                    // Initialize theme service after UI is ready
+                    // Load database-driven user theme preferences AFTER UI is created and can render
                     try
                     {
+                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Loading user's database-driven theme preferences...");
                         var themeService = Program.GetService<IThemeService>();
-                        var themeInitResult = await themeService.InitializeThemeSystemAsync();
-                        if (themeInitResult.IsSuccess)
+                        if (themeService != null)
                         {
-                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization successful: {themeInitResult.Message}");
-                            _logger?.LogInformation("Deferred theme initialization successful: {Message}", themeInitResult.Message);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization failed: {themeInitResult.Message}");
-                            _logger?.LogWarning("Deferred theme initialization failed: {Message}", themeInitResult.Message);
+                            var themeInitResult = await themeService.InitializeThemeSystemAsync();
+                            if (themeInitResult.IsSuccess)
+                            {
+                                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Database-driven theme loaded successfully: {themeInitResult.Message}");
+                                _logger?.LogInformation("Database-driven theme loaded successfully after UI creation: {Message}", themeInitResult.Message);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Database-driven theme loading failed: {themeInitResult.Message}");
+                                _logger?.LogWarning("Database-driven theme loading failed: {Message}", themeInitResult.Message);
+                            }
                         }
                     }
                     catch (Exception themeEx)
                     {
-                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization error: {themeEx.Message}");
-                        _logger?.LogWarning(themeEx, "Deferred theme initialization error");
+                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Database-driven theme loading error: {themeEx.Message}");
+                        _logger?.LogWarning(themeEx, "Database-driven theme loading error");
                     }
 
                     // Initialize master data service early for all ViewModels
@@ -204,26 +227,33 @@ public partial class App : Application
             }
 
             _logger?.LogInformation("Framework initialization completed successfully");
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Framework initialization completed");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Framework initialization completed successfully");
+
+            // Call base implementation
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to call base.OnFrameworkInitializationCompleted()...");
+            base.OnFrameworkInitializationCompleted();
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] base.OnFrameworkInitializationCompleted() completed successfully");
         }
         catch (Exception ex)
         {
             var errorMessage = $"Error during application framework initialization: {ex.Message}";
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {errorMessage}");
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stack trace: {ex.StackTrace}");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] CRITICAL ERROR: {errorMessage}");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Exception Type: {ex.GetType().Name}");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Stack trace: {ex.StackTrace}");
 
             _logger?.LogError(ex, "Critical error during application framework initialization");
 
             // Create fallback window for debugging if main window creation failed
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow == null)
             {
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Creating fallback MainWindow due to initialization error");
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Creating fallback MainWindow due to initialization error");
                 desktop.MainWindow = new MainWindow
                 {
                     DataContext = null // Use design-time data
                 };
             }
 
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] About to rethrow exception after cleanup...");
             throw;
         }
         finally
@@ -238,24 +268,47 @@ public partial class App : Application
     /// Now checks database for user's preferred theme instead of forcing MTM_Light.
     /// Follows .NET best practices for resource management and error handling.
     /// </summary>
-    private void InitializeDefaultTheme()
+    /// <summary>
+    /// Apply a default theme immediately for UI creation without database operations.
+    /// This ensures UI elements can render properly while user preferences load asynchronously.
+    /// </summary>
+    private void ApplyDefaultThemeForUI()
     {
         try
         {
             if (Application.Current?.Resources == null) return;
 
-            // Clear any existing theme resource conflicts
-            ClearConflictingThemeResources();
-
-            // Set a basic light theme variant - actual theme will be loaded later by ThemeService
+            // Set basic theme variant for immediate UI rendering
             RequestedThemeVariant = ThemeVariant.Light;
 
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Basic theme initialization complete - ThemeService will load user's preferred theme");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Default light theme applied for immediate UI rendering");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Error initializing basic theme: {ex.Message}");
-            _logger?.LogError(ex, "Error initializing basic theme");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Error applying default theme for UI: {ex.Message}");
+            _logger?.LogError(ex, "Error applying default theme for UI");
+        }
+    }
+
+    /// <summary>
+    /// Sets a basic theme fallback when database-driven theme loading fails.
+    /// Ensures UI has minimal theme resources to function properly.
+    /// </summary>
+    private void SetBasicThemeFallback()
+    {
+        try
+        {
+            if (Application.Current?.Resources == null) return;
+
+            // Set basic theme variant as emergency fallback
+            RequestedThemeVariant = ThemeVariant.Light;
+
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Basic theme fallback applied");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] CRITICAL: Even basic theme fallback failed: {ex.Message}");
+            _logger?.LogError(ex, "CRITICAL: Even basic theme fallback failed");
         }
     }
 
