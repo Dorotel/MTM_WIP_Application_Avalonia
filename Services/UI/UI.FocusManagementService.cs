@@ -16,11 +16,6 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
-using MTM_WIP_Application_Avalonia.ViewModels;
-using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_WIP_Application_Avalonia.Views;
-using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 
 namespace MTM_WIP_Application_Avalonia.Services.UI;
 

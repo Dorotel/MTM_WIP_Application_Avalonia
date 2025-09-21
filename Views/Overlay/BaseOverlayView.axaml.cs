@@ -1,5 +1,7 @@
-﻿using Avalonia.Controls;
+﻿using System.Linq;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 
 namespace MTM_WIP_Application_Avalonia.Views.Overlay;
 
@@ -12,7 +14,7 @@ public partial class BaseOverlayView : UserControl
     public BaseOverlayView()
     {
         InitializeComponent();
-        
+
         // Set up default behaviors
         SetupDefaultBehavior();
     }
@@ -24,7 +26,7 @@ public partial class BaseOverlayView : UserControl
     {
         // Focus management - set initial focus to first input control when overlay is loaded
         Loaded += OnOverlayLoaded;
-        
+
         // Keyboard handling - ESC to close if allowed
         KeyDown += OnOverlayKeyDown;
     }
@@ -35,10 +37,17 @@ public partial class BaseOverlayView : UserControl
     protected virtual void OnOverlayLoaded(object? sender, RoutedEventArgs e)
     {
         // Try to find and focus the first input control
-        var firstInput = this.FindControl<Control>("OverlayContentPresenter")
-            ?.FindDescendantOfType<TextBox>() ??
-            this.FindControl<Control>("OverlayContentPresenter")
-            ?.FindDescendantOfType<ComboBox>();
+        var contentPresenter = this.FindControl<Control>("OverlayContentPresenter");
+        Control? firstInput = null;
+
+        if (contentPresenter != null)
+        {
+            firstInput = FindDescendantOfType<TextBox>(contentPresenter);
+            if (firstInput == null)
+            {
+                firstInput = FindDescendantOfType<ComboBox>(contentPresenter);
+            }
+        }
 
         if (firstInput != null)
         {
@@ -96,6 +105,32 @@ public partial class BaseOverlayView : UserControl
     /// </summary>
     protected T? FindDescendantOfType<T>() where T : Control
     {
-        return this.FindDescendantOfType<T>();
+        return FindDescendantOfType<T>(this);
+    }
+
+    /// <summary>
+    /// Helper method to find a descendant control of a specific type starting from a parent.
+    /// </summary>
+    private T? FindDescendantOfType<T>(Control parent) where T : Control
+    {
+        try
+        {
+            if (parent is T typedControl)
+                return typedControl;
+
+            var children = parent.GetVisualChildren().OfType<Control>();
+            foreach (var child in children)
+            {
+                var result = FindDescendantOfType<T>(child);
+                if (result != null)
+                    return result;
+            }
+
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

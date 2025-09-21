@@ -7,7 +7,8 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using Avalonia.Logging;
+using Avalonia.LogicalTree;
+using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 
@@ -340,17 +341,7 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
                         Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.Infrastructure.EmergencyKeyboardHookService>.Instance
                     );
 
-                    _emergencyKeyboardHook.EmergencyExitRequested += () =>
-                    {
-                        Logger.LogWarning("Emergency exit requested via global shortcut");
-                        _ = Task.Run(async () => await ExitApplicationCommand.ExecuteAsync(null));
-                    };
-
-                    _emergencyKeyboardHook.EmergencyContinueRequested += () =>
-                    {
-                        Logger.LogWarning("Emergency continue requested via global shortcut");
-                        _ = Task.Run(async () => await ContinueCommand.ExecuteAsync(null));
-                    };
+                    _emergencyKeyboardHook.EmergencyKeyPressed += OnEmergencyKeyPressed;
 
                     _emergencyKeyboardHook.StartHook();
                 }
@@ -632,5 +623,34 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
     }
 
     #endregion
+
+    /// <summary>
+    /// Handles emergency key pressed events and executes appropriate commands
+    /// </summary>
+    private void OnEmergencyKeyPressed(object? sender, Services.Infrastructure.EmergencyKeyEventArgs e)
+    {
+        try
+        {
+            // Handle different emergency key combinations
+            if (e.Key == Avalonia.Input.Key.Escape && e.Modifiers.HasFlag(Avalonia.Input.KeyModifiers.Control))
+            {
+                Logger.LogWarning("Emergency exit requested via Ctrl+Escape");
+                _ = Task.Run(async () => await ExitApplicationCommand.ExecuteAsync(null));
+            }
+            else if (e.Key == Avalonia.Input.Key.Enter && e.Modifiers.HasFlag(Avalonia.Input.KeyModifiers.Control))
+            {
+                Logger.LogWarning("Emergency continue requested via Ctrl+Enter");
+                _ = Task.Run(async () => await ContinueCommand.ExecuteAsync(null));
+            }
+            else
+            {
+                Logger.LogDebug("Unhandled emergency key: {Key} with modifiers {Modifiers}", e.Key, e.Modifiers);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling emergency key press");
+        }
+    }
 }
 

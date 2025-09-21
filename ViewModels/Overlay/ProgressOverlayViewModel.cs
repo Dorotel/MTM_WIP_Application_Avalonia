@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -161,7 +161,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
 
                 AddStatusHistory($"Started: {operationName}");
 
-                _logger.LogInformation("Progress tracking initialized for operation: {OperationName}", operationName);
+                Logger.LogInformation("Progress tracking initialized for operation: {OperationName}", operationName);
                 await ShowAsync();
             }
             catch (Exception ex)
@@ -193,11 +193,11 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                     EstimatedTimeRemaining = totalEstimated - elapsed;
                 }
 
-                _logger.LogDebug("Progress updated to {Percentage}%: {StatusMessage}", percentage, statusMessage);
+                Logger.LogDebug("Progress updated to {Percentage}%: {StatusMessage}", percentage, statusMessage);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to update progress");
+                Logger.LogWarning(ex, "Failed to update progress");
             }
         }
 
@@ -236,11 +236,11 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                     AddStatusHistory($"Step {stepNumber}: {statusMessage}");
                 }
 
-                _logger.LogDebug("Current step updated to {StepNumber}: {StepName}", stepNumber, CurrentStep);
+                Logger.LogDebug("Current step updated to {StepNumber}: {StepName}", stepNumber, CurrentStep);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to update current step");
+                Logger.LogWarning(ex, "Failed to update current step");
             }
         }
 
@@ -272,11 +272,11 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                     AddStatusHistory(statusMessage);
                 }
 
-                _logger.LogDebug("Item progress updated: {ProcessedItems}/{TotalItems}", processedItems, TotalItems);
+                Logger.LogDebug("Item progress updated: {ProcessedItems}/{TotalItems}", processedItems, TotalItems);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to update item progress");
+                Logger.LogWarning(ex, "Failed to update item progress");
             }
         }
 
@@ -286,7 +286,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
         public void SetDetailedStatus(string detailedMessage)
         {
             DetailedStatusMessage = detailedMessage;
-            _logger.LogDebug("Detailed status updated: {DetailedMessage}", detailedMessage);
+            Logger.LogDebug("Detailed status updated: {DetailedMessage}", detailedMessage);
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
 
                 _elapsedTimeTimer?.Stop();
 
-                _logger.LogInformation("Operation completed: {CompletionMessage}", completionMessage);
+                Logger.LogInformation("Operation completed: {CompletionMessage}", completionMessage);
 
                 if (AutoCloseOnCompletion)
                 {
@@ -357,7 +357,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 }
                 else
                 {
-                    _logger.LogError("Operation failed: {ErrorMessage}", errorMessage);
+                    Logger.LogError("Operation failed: {ErrorMessage}", errorMessage);
                 }
             }
             catch (Exception ex)
@@ -382,7 +382,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 CurrentStatusMessage = "Cancellation requested...";
                 AddStatusHistory("Cancellation requested by user");
 
-                _logger.LogInformation("Operation cancellation requested: {OperationName}", OperationName);
+                Logger.LogInformation("Operation cancellation requested: {OperationName}", OperationName);
             }
             catch (Exception ex)
             {
@@ -412,7 +412,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
 
                 _elapsedTimeTimer?.Stop();
 
-                _logger.LogInformation("Operation cancelled: {CancellationMessage}", cancellationMessage);
+                Logger.LogInformation("Operation cancelled: {CancellationMessage}", cancellationMessage);
             }
             catch (Exception ex)
             {
@@ -429,7 +429,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
             try
             {
                 await HideAsync();
-                _logger.LogInformation("Progress overlay closed for operation: {OperationName}", OperationName);
+                Logger.LogInformation("Progress overlay closed for operation: {OperationName}", OperationName);
             }
             catch (Exception ex)
             {
@@ -444,7 +444,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
         public void ToggleDetailedView()
         {
             ShowDetailedProgress = !ShowDetailedProgress;
-            _logger.LogDebug("Detailed progress view toggled to: {ShowDetailed}", ShowDetailedProgress);
+            Logger.LogDebug("Detailed progress view toggled to: {ShowDetailed}", ShowDetailedProgress);
         }
 
         /// <summary>
@@ -454,7 +454,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
         public void ToggleStepView()
         {
             ShowStepProgress = !ShowStepProgress;
-            _logger.LogDebug("Step progress view toggled to: {ShowSteps}", ShowStepProgress);
+            Logger.LogDebug("Step progress view toggled to: {ShowSteps}", ShowStepProgress);
         }
 
         /// <summary>

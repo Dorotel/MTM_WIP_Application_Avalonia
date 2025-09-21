@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
-             x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.TransferCustomDataGrid"
+             x:Class="MTM_WIP_Application_Avalonia.Views.CustomControls.TransferCustomDataGrid"
              x:Name="TransferCustomDataGridRoot">
 
   <UserControl.Styles>

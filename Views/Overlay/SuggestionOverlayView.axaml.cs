@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using Microsoft.Extensions.Logging;
 
-namespace MTM_WIP_Application_Avalonia.Views
+namespace MTM_WIP_Application_Avalonia.Views.Overlay
 {
 
     public partial class SuggestionOverlayView : UserControl
@@ -16,76 +16,76 @@ namespace MTM_WIP_Application_Avalonia.Views
 
         public SuggestionOverlayView() : this(null) { }
 
-    public SuggestionOverlayView(Microsoft.Extensions.Logging.ILogger<SuggestionOverlayView>? logger)
-    {
-        InitializeComponent();
-        _logger = logger;
-        _logger?.LogInformation("SuggestionOverlayView initialized");
-        
-        // Focus management: set focus to ListBox when overlay appears
-        this.AttachedToVisualTree += async (s, e) =>
+        public SuggestionOverlayView(Microsoft.Extensions.Logging.ILogger<SuggestionOverlayView>? logger)
         {
-            _logger?.LogInformation("SuggestionOverlayView attached to visual tree. DataContext type: {DataContextType}, IsEnabled: {IsEnabled}, ParentType: {ParentType}", 
-                DataContext?.GetType().FullName ?? "null", 
-                this.IsEnabled, 
-                this.Parent?.GetType().FullName ?? "null");
+            InitializeComponent();
+            _logger = logger;
+            _logger?.LogInformation("SuggestionOverlayView initialized");
 
-            // Debug the suggestions in the ViewModel
-            if (DataContext is SuggestionOverlayViewModel vm)
+            // Focus management: set focus to ListBox when overlay appears
+            this.AttachedToVisualTree += async (s, e) =>
             {
-                _logger?.LogInformation("ViewModel has {Count} suggestions. First: {First}", 
-                    vm.Suggestions.Count, 
-                    vm.Suggestions.FirstOrDefault() ?? "none");
-            }
+                _logger?.LogInformation("SuggestionOverlayView attached to visual tree. DataContext type: {DataContextType}, IsEnabled: {IsEnabled}, ParentType: {ParentType}",
+                    DataContext?.GetType().FullName ?? "null",
+                    this.IsEnabled,
+                    this.Parent?.GetType().FullName ?? "null");
 
-            // Enhanced focus management with multiple attempts to ensure proper keyboard navigation
-            await Task.Delay(100); // Allow UI to complete rendering
-            
-            var listBox = this.FindControl<ListBox>("SuggestionListBox");
-            if (listBox != null)
-            {
-                _logger?.LogInformation("Found ListBox. ItemsSource: {HasItemsSource}, Items count: {Count}", 
-                    listBox.ItemsSource != null, 
-                    listBox.ItemCount);
-
-                // If there are items, select the first one first
-                if (listBox.ItemCount > 0)
+                // Debug the suggestions in the ViewModel
+                if (DataContext is SuggestionOverlayViewModel vm)
                 {
-                    listBox.SelectedIndex = 0;
-                    _logger?.LogInformation("Selected first item (index 0) in suggestion list");
+                    _logger?.LogInformation("ViewModel has {Count} suggestions. First: {First}",
+                        vm.Suggestions.Count,
+                        vm.Suggestions.FirstOrDefault() ?? "none");
                 }
 
-                // Force focus with multiple attempts
-                listBox.Focus();
-                
-                // Also ensure the UserControl can receive key events
-                this.Focus();
-                
-                // Additional attempt after a short delay to ensure focus sticks
-                await Task.Delay(50);
-                if (!listBox.IsFocused)
+                // Enhanced focus management with multiple attempts to ensure proper keyboard navigation
+                await Task.Delay(100); // Allow UI to complete rendering
+
+                var listBox = this.FindControl<ListBox>("SuggestionListBox");
+                if (listBox != null)
                 {
-                    _logger?.LogInformation("First focus attempt failed, retrying...");
+                    _logger?.LogInformation("Found ListBox. ItemsSource: {HasItemsSource}, Items count: {Count}",
+                        listBox.ItemsSource != null,
+                        listBox.ItemCount);
+
+                    // If there are items, select the first one first
+                    if (listBox.ItemCount > 0)
+                    {
+                        listBox.SelectedIndex = 0;
+                        _logger?.LogInformation("Selected first item (index 0) in suggestion list");
+                    }
+
+                    // Force focus with multiple attempts
                     listBox.Focus();
+
+                    // Also ensure the UserControl can receive key events
                     this.Focus();
+
+                    // Additional attempt after a short delay to ensure focus sticks
+                    await Task.Delay(50);
+                    if (!listBox.IsFocused)
+                    {
+                        _logger?.LogInformation("First focus attempt failed, retrying...");
+                        listBox.Focus();
+                        this.Focus();
+                    }
+
+                    // Ensure both UserControl and ListBox are keyboard navigable
+                    listBox.TabIndex = 0;
+                    listBox.IsTabStop = true;
+                    this.IsTabStop = true;
+
+                    _logger?.LogInformation("ListBox focus state: IsFocused={IsFocused}, IsTabStop={IsTabStop}, TabIndex={TabIndex}",
+                        listBox.IsFocused, listBox.IsTabStop, listBox.TabIndex);
                 }
-                
-                // Ensure both UserControl and ListBox are keyboard navigable
-                listBox.TabIndex = 0;
-                listBox.IsTabStop = true;
-                this.IsTabStop = true;
-                
-                _logger?.LogInformation("ListBox focus state: IsFocused={IsFocused}, IsTabStop={IsTabStop}, TabIndex={TabIndex}", 
-                    listBox.IsFocused, listBox.IsTabStop, listBox.TabIndex);
-            }
-            else
-            {
-                _logger?.LogWarning("ListBox not found!");
-            }
-        };
-    }        /// <summary>
-        /// Handles double-tap on the ListBox to select the currently selected suggestion.
-        /// </summary>
+                else
+                {
+                    _logger?.LogWarning("ListBox not found!");
+                }
+            };
+        }        /// <summary>
+                 /// Handles double-tap on the ListBox to select the currently selected suggestion.
+                 /// </summary>
         public void OnSuggestionListBoxDoubleTapped(object? sender, RoutedEventArgs e)
         {
             if (DataContext is SuggestionOverlayViewModel vm && vm.SelectCommand != null && vm.SelectedSuggestion != null)
@@ -208,7 +208,7 @@ namespace MTM_WIP_Application_Avalonia.Views
         public void OnUserControlKeyDown(object? sender, KeyEventArgs e)
         {
             _logger?.LogDebug("UserControl KeyDown: {Key}", e.Key);
-            
+
             // Handle Escape at UserControl level first for immediate cancellation
             if (e.Key == Avalonia.Input.Key.Escape)
             {
@@ -220,7 +220,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                     return;
                 }
             }
-            
+
             var listBox = this.FindControl<ListBox>("SuggestionListBox");
             if (listBox != null && !e.Handled)
             {

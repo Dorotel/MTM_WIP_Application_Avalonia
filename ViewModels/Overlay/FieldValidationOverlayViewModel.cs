@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -83,7 +83,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 // Perform initial validation
                 await ValidateFieldAsync();
 
-                _logger.LogInformation("Field validation initialized for {FieldName}", fieldName);
+                Logger.LogInformation("Field validation initialized for {FieldName}", fieldName);
             }
             catch (Exception ex)
             {
@@ -130,7 +130,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 HasValidationErrors = ValidationErrors.Any();
                 UpdateValidationMessage();
 
-                _logger.LogDebug("Field validation completed for {FieldName}: {ErrorCount} errors", FieldName, ValidationErrors.Count);
+                Logger.LogDebug("Field validation completed for {FieldName}: {ErrorCount} errors", FieldName, ValidationErrors.Count);
             }
             catch (Exception ex)
             {
@@ -158,7 +158,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 // Re-validate with new value
                 await ValidateFieldAsync();
 
-                _logger.LogInformation("Applied suggestion '{Suggestion}' to field {FieldName}", suggestion, FieldName);
+                Logger.LogInformation("Applied suggestion '{Suggestion}' to field {FieldName}", suggestion, FieldName);
             }
             catch (Exception ex)
             {
@@ -177,7 +177,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 // Load comprehensive help text
                 await LoadDetailedHelpAsync();
 
-                _logger.LogInformation("Showed help for field {FieldName}", FieldName);
+                Logger.LogInformation("Showed help for field {FieldName}", FieldName);
             }
             catch (Exception ex)
             {
@@ -214,7 +214,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
 
                 await HideAsync();
 
-                _logger.LogInformation("Accepted field validation for {FieldName} with value '{Value}'", FieldName, FieldValue);
+                Logger.LogInformation("Accepted field validation for {FieldName} with value '{Value}'", FieldName, FieldValue);
             }
             catch (Exception ex)
             {
@@ -231,7 +231,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
             try
             {
                 await HideAsync();
-                _logger.LogInformation("Cancelled field validation for {FieldName}", FieldName);
+                Logger.LogInformation("Cancelled field validation for {FieldName}", FieldName);
             }
             catch (Exception ex)
             {
@@ -329,7 +329,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Validation rule {RuleName} failed to execute", rule.Name);
+                    Logger.LogWarning(ex, "Validation rule {RuleName} failed to execute", rule.Name);
                     return new ValidationResult
                     {
                         IsValid = false,
@@ -550,7 +550,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Invalid regex pattern: {Pattern}", rule.Pattern);
+                Logger.LogWarning(ex, "Invalid regex pattern: {Pattern}", rule.Pattern);
                 return new ValidationResult { IsValid = true };
             }
         }

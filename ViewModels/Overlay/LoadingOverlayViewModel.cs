@@ -68,7 +68,7 @@ public partial class LoadingOverlayViewModel : BaseOverlayViewModel
     {
         Title = "Loading";
         // Loading overlays typically don't have confirm/cancel buttons
-        ShowButtons = false;
+        CanClose = false;
     }
 
     #endregion

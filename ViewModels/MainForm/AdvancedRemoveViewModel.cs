@@ -26,7 +26,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 /// <summary>
 /// ViewModel for Advanced Remove: Enhanced Removal Operations Interface
 /// Provides sophisticated removal operations beyond standard inventory removal functionality.
-/// Features include bulk removal operations, removal history tracking, undo capabilities, 
+/// Features include bulk removal operations, removal history tracking, undo capabilities,
 /// and specialized reporting for removal analytics.
 /// Uses MVVM Community Toolkit for modern .NET patterns.
 /// </summary>
@@ -219,13 +219,13 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     #region Constructor
     public AdvancedRemoveViewModel(ILogger<AdvancedRemoveViewModel> logger, IConfigurationService configurationService, IApplicationStateService applicationState) : base(logger)
     {
+        _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+        _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+
         try
         {
             Logger.LogInformation("Initializing AdvancedRemoveViewModel");
-            
-            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-            _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
-            
+
             // Initialize with safe default date range
             try
             {
@@ -240,7 +240,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             }
 
             StatusMessage = "Advanced removal system initialized";
-            
+
             // Setup collection change notifications for CanUndo
             LastRemovedItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CanUndo));
 
@@ -269,13 +269,13 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Loading removal history...";
-            
+
             // Load master data from stored procedures
             await LoadOptionsAsync().ConfigureAwait(false);
-            
+
             // Load removal history from database
             await LoadRemovalHistoryAsync().ConfigureAwait(false);
-            
+
             StatusMessage = "Data loaded successfully";
             Logger.LogInformation("Advanced removal data loaded successfully");
         }
@@ -300,33 +300,33 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Searching removal history...";
-            
+
             var parameters = new Dictionary<string, object>();
-            
+
             // Add filter parameters
             if (!string.IsNullOrWhiteSpace(FilterPartIDText))
                 parameters["p_PartID"] = FilterPartIDText;
-                
+
             if (!string.IsNullOrWhiteSpace(FilterLocationText))
                 parameters["p_Location"] = FilterLocationText;
-                
+
             if (!string.IsNullOrWhiteSpace(FilterUserText))
                 parameters["p_User"] = FilterUserText;
-                
+
             if (!string.IsNullOrWhiteSpace(FilterOperation))
                 parameters["p_Operation"] = FilterOperation;
-                
+
             if (RemovalDateRangeStart.HasValue)
                 parameters["p_StartDate"] = RemovalDateRangeStart.Value.DateTime;
-                
+
             if (RemovalDateRangeEnd.HasValue)
                 parameters["p_EndDate"] = RemovalDateRangeEnd.Value.DateTime;
-            
+
             var connectionString = _configurationService.GetConnectionString();
             var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString, "inv_transaction_Get_History", parameters
             );
-            
+
             if (result.Status == 1)
             {
                 await Dispatcher.UIThread.InvokeAsync(() =>
@@ -347,7 +347,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                             TransactionType = row["TransactionType"]?.ToString() ?? "OUT"
                         });
                     }
-                    
+
                     StatusMessage = $"Found {RemovalHistory.Count} removal records";
                 });
             }
@@ -359,7 +359,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 );
                 StatusMessage = "Search failed - please try again";
             }
-            
+
             Logger.LogInformation("Search completed with {Count} results", RemovalHistory.Count);
         }
         catch (Exception ex)
@@ -435,11 +435,11 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             StatusMessage = $"Removing {RemovalHistory.Count} items in bulk...";
 
             var connectionString = _configurationService.GetConnectionString();
-            
+
             // Process each selected item for removal
             int successCount = 0;
             int failCount = 0;
-            
+
             foreach (var item in RemovalHistory.ToList())
             {
                 try
@@ -467,7 +467,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                     else
                     {
                         failCount++;
-                        Logger.LogWarning("Bulk removal failed for item {PartId}: Status {Status}, Message: {Message}", 
+                        Logger.LogWarning("Bulk removal failed for item {PartId}: Status {Status}, Message: {Message}",
                             item.PartId, result.Status, result.Message);
                     }
                 }
@@ -507,11 +507,11 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Processing conditional removal...";
-            
+
             // TODO: Implement conditional removal logic based on business requirements
             // This would need to be defined based on specific MTM business rules
             await Task.Delay(400).ConfigureAwait(false);
-            
+
             StatusMessage = "Conditional removal completed";
             Logger.LogInformation("Conditional removal executed");
         }
@@ -536,11 +536,11 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Processing scheduled removal...";
-            
+
             // TODO: Implement scheduled removal based on business requirements
             // This would integrate with a scheduling system if available
             await Task.Delay(600).ConfigureAwait(false);
-            
+
             StatusMessage = "Scheduled removal processed";
             Logger.LogInformation("Scheduled removal executed");
         }
@@ -573,19 +573,19 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             StatusMessage = "Undoing last removal...";
 
             var lastItem = LastRemovedItems.Last();
-            
+
             var parameters = new Dictionary<string, object>
             {
                 ["p_BatchNumber"] = lastItem.BatchNumber,
                 ["p_UndoReason"] = "User requested undo",
                 ["p_UndoUser"] = _applicationState.CurrentUser ?? "System"
             };
-            
+
             var connectionString = _configurationService.GetConnectionString();
             var result = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 connectionString, "inv_inventory_Undo_Remove", parameters
             );
-            
+
             if (result.Status == 1)
             {
                 await Dispatcher.UIThread.InvokeAsync(() =>
@@ -597,10 +597,10 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                         RemovalHistory.Add(lastItem);
                     }
                 });
-                
+
                 StatusMessage = $"Successfully undid removal of {lastItem.PartId}";
                 Logger.LogInformation("Removal undone for part {PartId}", lastItem.PartId);
-                
+
                 // Refresh the display
                 await SearchAsync();
             }
@@ -634,10 +634,10 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Loading detailed removal history...";
-            
+
             // Refresh current removal history display
             await LoadRemovalHistoryAsync();
-            
+
             StatusMessage = "Removal history refreshed";
             Logger.LogInformation("Viewing removal history");
         }
@@ -662,14 +662,14 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Generating removal report...";
-            
+
             // Generate and save detailed removal report
             var reportContent = GenerateRemovalSummary();
             var fileName = $"Removal_Report_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
             var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
-            
+
             await File.WriteAllTextAsync(filePath, reportContent);
-            
+
             StatusMessage = $"Removal report saved to {fileName}";
             Logger.LogInformation("Removal report generated and saved to {FilePath}", filePath);
         }
@@ -694,14 +694,14 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Exporting removal data...";
-            
+
             // Implemented export data functionality
             var csvContent = GenerateRemovalDataCSV();
             var fileName = $"Removal_Data_Export_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.csv";
             var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
-            
+
             await File.WriteAllTextAsync(filePath, csvContent);
-            
+
             StatusMessage = $"Removal data exported to {fileName} ({RemovalHistory.Count} records)";
             Logger.LogInformation("Removal data exported successfully to {FilePath} with {Count} records", filePath, RemovalHistory.Count);
         }
@@ -726,14 +726,14 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Generating removal summary...";
-            
+
             // Implemented print summary functionality
             var summaryContent = GenerateRemovalSummary();
             var fileName = $"Removal_Summary_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
             var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
-            
+
             await File.WriteAllTextAsync(filePath, summaryContent);
-            
+
             StatusMessage = $"Removal summary saved to {fileName}";
             Logger.LogInformation("Removal summary generated and saved to {FilePath}", filePath);
         }
@@ -845,7 +845,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             var partResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                 connectionString, "md_part_ids_Get_All", new Dictionary<string, object>()
             );
-            
+
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 PartIDOptions.Clear();
@@ -857,11 +857,11 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 }
             });
 
-            // Load Locations from stored procedure  
+            // Load Locations from stored procedure
             var locationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                 connectionString, "md_locations_Get_All", new Dictionary<string, object>()
             );
-            
+
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 LocationOptions.Clear();
@@ -877,7 +877,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             var operationResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableDirect(
                 connectionString, "md_operation_numbers_Get_All", new Dictionary<string, object>()
             );
-            
+
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 OperationOptions.Clear();
@@ -895,7 +895,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 var userResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                     connectionString, "usr_users_Get_All", new Dictionary<string, object>()
                 );
-                
+
                 if (userResult.Status == 1)
                 {
                     await Dispatcher.UIThread.InvokeAsync(() =>
@@ -946,7 +946,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 RemovalHistory.Clear();
-                
+
                 if (result.Status == 1)
                 {
                     foreach (DataRow row in result.Data.Rows)
@@ -967,7 +967,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 }
                 else
                 {
-                    Logger.LogWarning("LoadRemovalHistoryAsync returned status {Status}: {Message}", 
+                    Logger.LogWarning("LoadRemovalHistoryAsync returned status {Status}: {Message}",
                         result.Status, result.Message);
                 }
             });
@@ -978,7 +978,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         {
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Load Advanced Remove History", _applicationState.CurrentUser ?? "System");
             Logger.LogError(ex, "Error loading removal history");
-            
+
             // Continue with empty history rather than failing completely
             await Dispatcher.UIThread.InvokeAsync(() => RemovalHistory.Clear());
         }
@@ -1025,7 +1025,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 RemovalHistory.Clear();
-                
+
                 if (result.Status == 1)
                 {
                     foreach (DataRow row in result.Data.Rows)
@@ -1043,7 +1043,7 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                             TransactionType = row["TransactionType"]?.ToString() ?? "OUT"
                         });
                     }
-                    
+
                     StatusMessage = $"Search completed. Found {RemovalHistory.Count} items.";
                 }
                 else
@@ -1065,17 +1065,17 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             IsBusy = false;
         }
     }
-    
+
     /// <summary>
     /// Generates CSV content for removal data export.
     /// </summary>
     private string GenerateRemovalDataCSV()
     {
         var csv = new StringBuilder();
-        
+
         // CSV header
         csv.AppendLine("Date/Time,Part ID,Operation,Location,Quantity,User,Status,Transaction Time");
-        
+
         // Data rows
         foreach (var item in RemovalHistory.OrderByDescending(h => h.TransactionTime))
         {
@@ -1087,88 +1087,88 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                       $"{EscapeCsvField(item.User)}," +
                       $"{EscapeCsvField(item.Status)}," +
                       $"{item.TransactionTime:yyyy-MM-dd HH:mm:ss}";
-            
+
             csv.AppendLine(line);
         }
-        
+
         return csv.ToString();
     }
-    
+
     /// <summary>
     /// Generates a text summary of removal data.
     /// </summary>
     private string GenerateRemovalSummary()
     {
         var summary = new StringBuilder();
-        
+
         // Header
         summary.AppendLine("MTM WIP Application - Advanced Removal Summary");
         summary.AppendLine($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
         summary.AppendLine($"Generated by: {Environment.UserName}");
         summary.AppendLine(new string('=', 60));
         summary.AppendLine();
-        
+
         // Overall statistics
         var totalRecords = RemovalHistory.Count;
         var totalQuantity = RemovalHistory.Sum(h => h.Quantity);
         var uniqueParts = RemovalHistory.Select(h => h.PartId).Distinct().Count();
         var uniqueUsers = RemovalHistory.Select(h => h.User).Distinct().Count();
-        
+
         summary.AppendLine("SUMMARY STATISTICS");
         summary.AppendLine(new string('-', 20));
         summary.AppendLine($"Total Records: {totalRecords}");
         summary.AppendLine($"Total Quantity Removed: {totalQuantity:N0}");
         summary.AppendLine($"Unique Parts: {uniqueParts}");
         summary.AppendLine($"Unique Users: {uniqueUsers}");
-        
+
         if (totalRecords > 0)
         {
             var dateRange = $"{RemovalHistory.Min(h => h.TransactionTime):yyyy-MM-dd} to {RemovalHistory.Max(h => h.TransactionTime):yyyy-MM-dd}";
             summary.AppendLine($"Date Range: {dateRange}");
         }
-        
+
         summary.AppendLine();
-        
+
         // Top parts by quantity removed
         if (RemovalHistory.Any())
         {
             summary.AppendLine("TOP PARTS BY QUANTITY REMOVED");
             summary.AppendLine(new string('-', 35));
-            
+
             var topParts = RemovalHistory
                 .GroupBy(h => h.PartId)
                 .Select(g => new { PartId = g.Key, TotalQuantity = g.Sum(h => h.Quantity), Count = g.Count() })
                 .OrderByDescending(p => p.TotalQuantity)
                 .Take(10);
-                
+
             foreach (var part in topParts)
             {
                 summary.AppendLine($"{part.PartId}: {part.TotalQuantity:N0} items ({part.Count} removals)");
             }
-            
+
             summary.AppendLine();
-            
+
             // Activity by user
             summary.AppendLine("REMOVAL ACTIVITY BY USER");
             summary.AppendLine(new string('-', 25));
-            
+
             var userActivity = RemovalHistory
                 .GroupBy(h => h.User)
                 .Select(g => new { User = g.Key, TotalQuantity = g.Sum(h => h.Quantity), Count = g.Count() })
                 .OrderByDescending(u => u.Count);
-                
+
             foreach (var user in userActivity)
             {
                 summary.AppendLine($"{user.User}: {user.Count} removals, {user.TotalQuantity:N0} items");
             }
         }
-        
+
         summary.AppendLine();
         summary.AppendLine("End of Summary");
-        
+
         return summary.ToString();
     }
-    
+
     /// <summary>
     /// Escapes CSV field content to handle commas, quotes, and newlines.
     /// </summary>
@@ -1176,13 +1176,13 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         if (string.IsNullOrEmpty(field))
             return string.Empty;
-            
+
         // If field contains comma, quote, or newline, wrap in quotes and escape internal quotes
         if (field.Contains(',') || field.Contains('"') || field.Contains('\n') || field.Contains('\r'))
         {
             return '"' + field.Replace("\"", "\"\"") + '"';
         }
-        
+
         return field;
     }
 

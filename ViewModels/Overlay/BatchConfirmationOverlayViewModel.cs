@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -143,7 +143,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 // Update confirmation state
                 UpdateConfirmationState();
 
-                _logger.LogInformation("Batch confirmation initialized for operation: {OperationName} with {ItemCount} items",
+                Logger.LogInformation("Batch confirmation initialized for operation: {OperationName} with {ItemCount} items",
                     operationName, TotalItemCount);
 
                 await ShowAsync();
@@ -164,7 +164,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
             {
                 if (!IsUserConfirmed)
                 {
-                    _logger.LogWarning("User attempted to confirm operation without proper confirmation");
+                    Logger.LogWarning("User attempted to confirm operation without proper confirmation");
                     return;
                 }
 
@@ -185,7 +185,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
 
                 await HideAsync();
 
-                _logger.LogInformation("Batch operation confirmed: {OperationName}, BatchId: {BatchId}, Items: {ItemCount}",
+                Logger.LogInformation("Batch operation confirmed: {OperationName}, BatchId: {BatchId}, Items: {ItemCount}",
                     OperationName, BatchId, confirmedItems.Count);
 
                 // Raise confirmation result event or return result
@@ -215,7 +215,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
 
                 await HideAsync();
 
-                _logger.LogInformation("Batch operation cancelled: {OperationName}, BatchId: {BatchId}", OperationName, BatchId);
+                Logger.LogInformation("Batch operation cancelled: {OperationName}, BatchId: {BatchId}", OperationName, BatchId);
 
                 OnBatchCancelled?.Invoke(result);
             }
@@ -241,11 +241,11 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 SelectedItemCount = TotalItemCount;
                 UpdateConfirmationState();
 
-                _logger.LogDebug("Selected all {ItemCount} items for batch operation", TotalItemCount);
+                Logger.LogDebug("Selected all {ItemCount} items for batch operation", TotalItemCount);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to select all items");
+                Logger.LogWarning(ex, "Failed to select all items");
             }
         }
 
@@ -265,11 +265,11 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 SelectedItemCount = 0;
                 UpdateConfirmationState();
 
-                _logger.LogDebug("Deselected all items for batch operation");
+                Logger.LogDebug("Deselected all items for batch operation");
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to deselect all items");
+                Logger.LogWarning(ex, "Failed to deselect all items");
             }
         }
 
@@ -287,11 +287,11 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 SelectedItemCount = OperationItems.Count(i => i.IsSelected);
                 UpdateConfirmationState();
 
-                _logger.LogDebug("Toggled selection for item: {ItemId}", item.ItemId);
+                Logger.LogDebug("Toggled selection for item: {ItemId}", item.ItemId);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to toggle item selection for item: {ItemId}", item.ItemId);
+                Logger.LogWarning(ex, "Failed to toggle item selection for item: {ItemId}", item.ItemId);
             }
         }
 
@@ -307,7 +307,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
 
                 // This could show a detailed view of the item
                 // For now, just log the details
-                _logger.LogInformation("Item details requested for: {ItemId} - {ItemName}", item.ItemId, item.ItemName);
+                Logger.LogInformation("Item details requested for: {ItemId} - {ItemName}", item.ItemId, item.ItemName);
 
                 // You could implement a detailed item view overlay here
             }
@@ -324,7 +324,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
         public void ToggleItemDetails()
         {
             ShowItemDetails = !ShowItemDetails;
-            _logger.LogDebug("Item details view toggled to: {ShowDetails}", ShowItemDetails);
+            Logger.LogDebug("Item details view toggled to: {ShowDetails}", ShowItemDetails);
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
         public void ToggleSummary()
         {
             ShowSummary = !ShowSummary;
-            _logger.LogDebug("Operation summary view toggled to: {ShowSummary}", ShowSummary);
+            Logger.LogDebug("Operation summary view toggled to: {ShowSummary}", ShowSummary);
         }
 
         #region Command CanExecute Methods

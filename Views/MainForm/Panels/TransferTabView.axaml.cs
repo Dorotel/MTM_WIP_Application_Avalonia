@@ -1,19 +1,16 @@
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
-using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.UI;
-using MTM_WIP_Application_Avalonia.Controls;
 using MTM_WIP_Application_Avalonia.Views.Overlay;
 using MTM_Shared_Logic.Models;
+using Avalonia.Controls;
+using Microsoft.Extensions.Logging;
+using System;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using Avalonia.Input;
+using System.Threading.Tasks;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.Views;
 
@@ -267,9 +264,7 @@ public partial class TransferTabView : UserControl
                         if (_successOverlayService == null)
                         {
                             var successServiceLogger = loggerFactory.CreateLogger<SuccessOverlayService>();
-                            var focusManagementLogger = loggerFactory.CreateLogger<FocusManagementService>();
-                            var focusService = _serviceProvider?.GetService<IFocusManagementService>() ?? new FocusManagementService(focusManagementLogger);
-                            _successOverlayService = new SuccessOverlayService(successServiceLogger, focusService);
+                            _successOverlayService = new SuccessOverlayService(successServiceLogger);
                             _logger?.LogWarning("Method 3 - Manual SuccessOverlayService creation successful as fallback");
                             System.Diagnostics.Debug.WriteLine("Method 3 - Manual SuccessOverlayService creation successful as fallback");
                         }

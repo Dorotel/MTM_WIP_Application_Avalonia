@@ -4,9 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
 using MTM_WIP_Application_Avalonia.Models.CustomDataGrid.UI;
 using MTM_WIP_Application_Avalonia.Models.UI;
 

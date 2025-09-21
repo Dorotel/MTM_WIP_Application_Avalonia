@@ -1,17 +1,15 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher"
-             x:Name="ThemeQuickSwitcherRoot">
+             x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.ThemeQuickSwitcher">
 
     <!-- Theme Quick Switcher Component -->
     <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-            BorderThickness="1"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
             CornerRadius="6"
             Padding="8">
-        
+
         <StackPanel Orientation="Horizontal" Spacing="8">
-            
+
             <!-- Theme Icon with Edit Button -->
             <StackPanel Orientation="Horizontal" Spacing="4">
                 <Button x:Name="EditThemeButton"
@@ -22,35 +20,19 @@
                         Height="24"
                         VerticalAlignment="Center"
                         ToolTip.Tip="Edit current theme colors"
-                        Cursor="Hand">
-                    <Button.Styles>
-                        <Style Selector="Button.mtm-icon-button">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Padding" Value="2"/>
-                            <Setter Property="CornerRadius" Value="4"/>
-                        </Style>
-                        <Style Selector="Button.mtm-icon-button:pointerover">
-                            <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBrush}"/>
-                        </Style>
-                        <Style Selector="Button.mtm-icon-button:pressed">
-                            <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-                        </Style>
-                    </Button.Styles>
-                </Button>
+                        Cursor="Hand"/>
             </StackPanel>
-            
+
             <!-- Theme Selector -->
             <ComboBox x:Name="ThemeComboBox"
-                      MinWidth="180"
+                      MinWidth="192"
                       FontSize="12"
-                      Padding="6,4"
+                      Padding="8,4"
                       VerticalAlignment="Center"
                       ToolTip.Tip="Select application theme">
                 <!-- Items will be populated dynamically from code-behind -->
             </ComboBox>
-            
+
             <!-- Quick Apply Button -->
             <Button x:Name="ApplyButton"
                     Content="Apply"

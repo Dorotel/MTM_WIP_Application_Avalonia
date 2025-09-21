@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -129,7 +129,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
         ArgumentNullException.ThrowIfNull(themeService);
 
         _themeService = themeService;
-        _logger.LogDebug("ThemeQuickSwitcherOverlayViewModel initialized");
+        Logger.LogDebug("ThemeQuickSwitcherOverlayViewModel initialized");
 
         // Subscribe to theme service changes
         _themeService.PropertyChanged += OnThemeServicePropertyChanged;
@@ -150,7 +150,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
 
         try
         {
-            _logger.LogInformation("Previewing theme: {ThemeName}", theme.DisplayName);
+            Logger.LogInformation("Previewing theme: {ThemeName}", theme.DisplayName);
 
             IsApplyingTheme = true;
             StatusMessage = $"Previewing {theme.DisplayName}...";
@@ -171,12 +171,12 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
             if (result.IsSuccess)
             {
                 StatusMessage = $"Previewing: {theme.DisplayName}";
-                _logger.LogInformation("Theme preview applied successfully: {ThemeName}", theme.DisplayName);
+                Logger.LogInformation("Theme preview applied successfully: {ThemeName}", theme.DisplayName);
             }
             else
             {
                 StatusMessage = $"Failed to preview theme: {result.Message}";
-                _logger.LogWarning("Failed to preview theme {ThemeName}: {Error}", theme.DisplayName, result.Message);
+                Logger.LogWarning("Failed to preview theme {ThemeName}: {Error}", theme.DisplayName, result.Message);
             }
         }
         catch (Exception ex)
@@ -200,7 +200,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
 
         try
         {
-            _logger.LogInformation("Applying theme permanently: {ThemeName}", SelectedTheme.DisplayName);
+            Logger.LogInformation("Applying theme permanently: {ThemeName}", SelectedTheme.DisplayName);
 
             IsApplyingTheme = true;
             StatusMessage = $"Applying {SelectedTheme.DisplayName}...";
@@ -210,7 +210,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
             if (!result.IsSuccess)
             {
                 StatusMessage = $"Failed to apply theme: {result.Message}";
-                _logger.LogError("Failed to apply theme {ThemeName}: {Error}", SelectedTheme.DisplayName, result.Message);
+                Logger.LogError("Failed to apply theme {ThemeName}: {Error}", SelectedTheme.DisplayName, result.Message);
                 return;
             }
 
@@ -220,11 +220,11 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
                 var saveResult = await _themeService.SaveUserPreferredThemeAsync(SelectedTheme.Id);
                 if (saveResult.IsSuccess)
                 {
-                    _logger.LogInformation("Theme preference saved: {ThemeName}", SelectedTheme.DisplayName);
+                    Logger.LogInformation("Theme preference saved: {ThemeName}", SelectedTheme.DisplayName);
                 }
                 else
                 {
-                    _logger.LogWarning("Failed to save theme preference: {Error}", saveResult.Message);
+                    Logger.LogWarning("Failed to save theme preference: {Error}", saveResult.Message);
                 }
             }
 
@@ -259,7 +259,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogInformation("Cancelling theme preview and restoring original theme");
+            Logger.LogInformation("Cancelling theme preview and restoring original theme");
 
             if (_originalTheme != null)
             {
@@ -270,12 +270,12 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
                 if (result.IsSuccess)
                 {
                     StatusMessage = $"Restored: {_originalTheme.DisplayName}";
-                    _logger.LogInformation("Original theme restored: {ThemeName}", _originalTheme.DisplayName);
+                    Logger.LogInformation("Original theme restored: {ThemeName}", _originalTheme.DisplayName);
                 }
                 else
                 {
                     StatusMessage = "Failed to restore original theme";
-                    _logger.LogWarning("Failed to restore original theme: {Error}", result.Message);
+                    Logger.LogWarning("Failed to restore original theme: {Error}", result.Message);
                 }
             }
 
@@ -304,7 +304,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogInformation("Toggling theme variant (light/dark)");
+            Logger.LogInformation("Toggling theme variant (light/dark)");
 
             IsApplyingTheme = true;
             StatusMessage = "Switching theme variant...";
@@ -314,12 +314,12 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
             {
                 StatusMessage = result.Message;
                 await RefreshThemeCollections();
-                _logger.LogInformation("Theme variant toggled successfully");
+                Logger.LogInformation("Theme variant toggled successfully");
             }
             else
             {
                 StatusMessage = $"Toggle failed: {result.Message}";
-                _logger.LogWarning("Failed to toggle theme variant: {Error}", result.Message);
+                Logger.LogWarning("Failed to toggle theme variant: {Error}", result.Message);
             }
         }
         catch (Exception ex)
@@ -341,7 +341,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogInformation("Resetting to default MTM theme");
+            Logger.LogInformation("Resetting to default MTM theme");
 
             IsApplyingTheme = true;
             StatusMessage = "Resetting to default theme...";
@@ -360,12 +360,12 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
                 StatusMessage = "Reset to MTM Default theme";
                 await RefreshThemeCollections();
 
-                _logger.LogInformation("Successfully reset to default theme");
+                Logger.LogInformation("Successfully reset to default theme");
             }
             else
             {
                 StatusMessage = $"Reset failed: {result.Message}";
-                _logger.LogWarning("Failed to reset to default theme: {Error}", result.Message);
+                Logger.LogWarning("Failed to reset to default theme: {Error}", result.Message);
             }
         }
         catch (Exception ex)
@@ -387,7 +387,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogDebug("Filtering themes by type: {FilterType}", filterType);
+            Logger.LogDebug("Filtering themes by type: {FilterType}", filterType);
 
             ShowAllThemes = filterType == "all";
             ShowLightThemesOnly = filterType == "light";
@@ -399,7 +399,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error filtering themes by type: {FilterType}", filterType);
+            Logger.LogError(ex, "Error filtering themes by type: {FilterType}", filterType);
         }
     }
 
@@ -510,7 +510,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogDebug("Loading theme collections from theme service");
+            Logger.LogDebug("Loading theme collections from theme service");
 
             AvailableThemes.Clear();
             FilteredThemes.Clear();
@@ -523,13 +523,13 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
 
             ApplyThemeFilters();
 
-            _logger.LogInformation("Loaded {ThemeCount} themes from theme service", themes.Count);
+            Logger.LogInformation("Loaded {ThemeCount} themes from theme service", themes.Count);
 
             await Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading theme collections");
+            Logger.LogError(ex, "Error loading theme collections");
             throw;
         }
     }
@@ -552,7 +552,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error refreshing theme collections");
+            Logger.LogError(ex, "Error refreshing theme collections");
         }
     }
 
@@ -591,12 +591,12 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
                 FilteredThemes.Add(theme);
             }
 
-            _logger.LogDebug("Applied filters - showing {FilteredCount}/{TotalCount} themes",
+            Logger.LogDebug("Applied filters - showing {FilteredCount}/{TotalCount} themes",
                 FilteredThemes.Count, AvailableThemes.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error applying theme filters");
+            Logger.LogError(ex, "Error applying theme filters");
         }
     }
 
@@ -644,7 +644,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error handling theme service property change: {PropertyName}", e.PropertyName);
+            Logger.LogError(ex, "Error handling theme service property change: {PropertyName}", e.PropertyName);
         }
     }
 
@@ -655,14 +655,14 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogDebug("Theme changed from {Previous} to {New}",
-                e.PreviousTheme.DisplayName, e.NewTheme.DisplayName);
+            Logger.LogDebug("Theme changed from {Previous} to {New}",
+                e.PreviousTheme, e.NewTheme);
 
-            StatusMessage = $"Changed to: {e.NewTheme.DisplayName}";
+            StatusMessage = $"Changed to: {e.NewTheme}";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error handling theme changed event");
+            Logger.LogError(ex, "Error handling theme changed event");
         }
     }
 
@@ -690,7 +690,7 @@ public partial class ThemeQuickSwitcherOverlayViewModel : BaseOverlayViewModel
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error restoring original theme during disposal");
+                    Logger.LogError(ex, "Error restoring original theme during disposal");
                 }
             }
         }

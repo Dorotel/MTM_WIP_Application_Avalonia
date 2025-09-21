@@ -1,4 +1,5 @@
 using MTM_WIP_Application_Avalonia.Models.Core;
+using MTM_WIP_Application_Avalonia.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -449,8 +450,9 @@ namespace MTM_WIP_Application_Avalonia.Services.Business
                     var updatedItem = await GetOriginalInventoryItemAsync(inventoryId);
                     if (updatedItem != null)
                     {
-                        var editModel = new EditInventoryModel(updatedItem);
-                        var successResult = EditInventoryResult.CreateSuccess(ConvertToSharedModel(updatedItem), editModel, user);
+                        var sharedLogicItem = ConvertToSharedModel(updatedItem);
+                        var editModel = new EditInventoryModel(sharedLogicItem);
+                        var successResult = EditInventoryResult.CreateSuccess(sharedLogicItem, editModel, user);
                         successResult.RecordFieldChange("Notes", notes, notes);
                         return successResult;
                     }

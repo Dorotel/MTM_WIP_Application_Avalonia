@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -91,7 +91,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     public EmergencyShutdownOverlayViewModel(ILogger<EmergencyShutdownOverlayViewModel> logger)
         : base(logger)
     {
-        _logger.LogDebug("EmergencyShutdownOverlayViewModel initialized");
+        Logger.LogDebug("EmergencyShutdownOverlayViewModel initialized");
 
         // Set default values
         CountdownSeconds = shutdownTimeoutSeconds;
@@ -109,7 +109,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogCritical("User initiated emergency shutdown: {Reason}", ShutdownReason);
+            Logger.LogCritical("User initiated emergency shutdown: {Reason}", ShutdownReason);
 
             IsUserInitiated = true;
             IsShuttingDown = true;
@@ -131,7 +131,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogWarning("Starting emergency shutdown countdown: {Seconds} seconds", ShutdownTimeoutSeconds);
+            Logger.LogWarning("Starting emergency shutdown countdown: {Seconds} seconds", ShutdownTimeoutSeconds);
 
             IsCountdownActive = true;
             CountdownSeconds = ShutdownTimeoutSeconds;
@@ -153,7 +153,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogInformation("User cancelled emergency shutdown countdown");
+            Logger.LogInformation("User cancelled emergency shutdown countdown");
 
             _shutdownCancellationSource?.Cancel();
 
@@ -179,7 +179,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogCritical("User forced immediate shutdown without data saving");
+            Logger.LogCritical("User forced immediate shutdown without data saving");
 
             SaveDataBeforeShutdown = false;
             IsUserInitiated = true;
@@ -193,7 +193,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
             await HandleErrorAsync(ex, "Failed to force immediate shutdown");
 
             // Ultimate fallback - force process termination
-            _logger.LogCritical("Emergency shutdown failed - terminating process");
+            Logger.LogCritical("Emergency shutdown failed - terminating process");
             Environment.Exit(1);
         }
     }
@@ -206,7 +206,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogWarning("User chose to continue operation despite emergency situation");
+            Logger.LogWarning("User chose to continue operation despite emergency situation");
 
             ShutdownStatusMessage = "Continuing operation...";
 
@@ -230,7 +230,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
             ShutdownTimeoutSeconds = timeout;
             CountdownSeconds = timeout;
 
-            _logger.LogInformation("Shutdown timeout set to {Timeout} seconds", timeout);
+            Logger.LogInformation("Shutdown timeout set to {Timeout} seconds", timeout);
         }
     }
 
@@ -313,7 +313,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
         // Cancel any active countdown
         _shutdownCancellationSource?.Cancel();
 
-        _logger.LogInformation("Emergency shutdown overlay cancelled by user");
+        Logger.LogInformation("Emergency shutdown overlay cancelled by user");
     }
 
     #endregion
@@ -341,7 +341,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
             // If countdown completed naturally (not cancelled)
             if (CountdownSeconds <= 0 && IsCountdownActive)
             {
-                _logger.LogCritical("Emergency shutdown countdown expired - initiating automatic shutdown");
+                Logger.LogCritical("Emergency shutdown countdown expired - initiating automatic shutdown");
 
                 IsCountdownActive = false;
                 await InitiateEmergencyShutdownCommand.ExecuteAsync(null);
@@ -349,11 +349,11 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Emergency shutdown countdown was cancelled");
+            Logger.LogInformation("Emergency shutdown countdown was cancelled");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during emergency shutdown countdown");
+            Logger.LogError(ex, "Error during emergency shutdown countdown");
             await HandleErrorAsync(ex, "Countdown failed");
         }
     }
@@ -365,7 +365,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogCritical("Beginning emergency shutdown process");
+            Logger.LogCritical("Beginning emergency shutdown process");
 
             // Step 1: Save critical data if requested
             if (SaveDataBeforeShutdown)
@@ -403,7 +403,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "Critical error during emergency shutdown process");
+            Logger.LogCritical(ex, "Critical error during emergency shutdown process");
 
             // If graceful shutdown fails, force termination
             ShutdownStatusMessage = "Emergency shutdown failed - forcing termination...";
@@ -418,7 +418,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogInformation("Saving critical data during emergency shutdown");
+            Logger.LogInformation("Saving critical data during emergency shutdown");
 
             // Simulate critical data saving (in real implementation, this would save:)
             // - Current user session data
@@ -428,11 +428,11 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
 
             await Task.Delay(1500); // Simulate save operation
 
-            _logger.LogInformation("Critical data saved successfully");
+            Logger.LogInformation("Critical data saved successfully");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to save critical data during emergency shutdown");
+            Logger.LogError(ex, "Failed to save critical data during emergency shutdown");
             // Continue with shutdown even if save fails
         }
     }
@@ -444,7 +444,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogInformation("Notifying services of emergency shutdown");
+            Logger.LogInformation("Notifying services of emergency shutdown");
 
             // In real implementation, this would:
             // - Notify database service to close connections
@@ -453,11 +453,11 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
 
             await Task.Delay(800); // Simulate service notification
 
-            _logger.LogInformation("Services notified of emergency shutdown");
+            Logger.LogInformation("Services notified of emergency shutdown");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to notify services during emergency shutdown");
+            Logger.LogError(ex, "Failed to notify services during emergency shutdown");
             // Continue with shutdown even if notification fails
         }
     }
@@ -469,7 +469,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogInformation("Closing application windows during emergency shutdown");
+            Logger.LogInformation("Closing application windows during emergency shutdown");
 
             // In real implementation, this would close:
             // - Main application window
@@ -478,11 +478,11 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
 
             await Task.Delay(500); // Simulate window closing
 
-            _logger.LogInformation("Application windows closed");
+            Logger.LogInformation("Application windows closed");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to close windows during emergency shutdown");
+            Logger.LogError(ex, "Failed to close windows during emergency shutdown");
             // Continue with shutdown
         }
     }
@@ -494,7 +494,7 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogInformation("Disposing resources during emergency shutdown");
+            Logger.LogInformation("Disposing resources during emergency shutdown");
 
             // Dispose cancellation source
             _shutdownCancellationSource?.Cancel();
@@ -503,11 +503,11 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
 
             await Task.Delay(300); // Simulate resource disposal
 
-            _logger.LogInformation("Resources disposed successfully");
+            Logger.LogInformation("Resources disposed successfully");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to dispose resources during emergency shutdown");
+            Logger.LogError(ex, "Failed to dispose resources during emergency shutdown");
             // Continue with shutdown
         }
     }
@@ -519,27 +519,27 @@ public partial class EmergencyShutdownOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogCritical("Performing final emergency shutdown");
+            Logger.LogCritical("Performing final emergency shutdown");
 
             // Try graceful shutdown first
             if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                _logger.LogInformation("Attempting graceful shutdown via ApplicationLifetime");
+                Logger.LogInformation("Attempting graceful shutdown via ApplicationLifetime");
 
                 var shutdownTask = Task.Run(() => desktop.Shutdown(1)); // Exit code 1 for emergency
                 await shutdownTask.WaitAsync(TimeSpan.FromSeconds(3));
 
-                _logger.LogInformation("Graceful shutdown completed");
+                Logger.LogInformation("Graceful shutdown completed");
             }
             else
             {
-                _logger.LogWarning("ApplicationLifetime not available - using Environment.Exit");
+                Logger.LogWarning("ApplicationLifetime not available - using Environment.Exit");
                 Environment.Exit(1);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "Final shutdown failed - forcing process termination");
+            Logger.LogCritical(ex, "Final shutdown failed - forcing process termination");
             Environment.Exit(1);
         }
     }

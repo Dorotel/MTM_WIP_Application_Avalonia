@@ -245,7 +245,7 @@ public class MainWindowViewModel : BaseViewModel
             var newView = e.Target?.GetType().Name ?? "null";
 
             Logger.LogInformation("MainWindow navigation completed - Previous: {PreviousView}, New: {NewView}", previousView, newView);
-            Logger.LogDebug("Navigation event args - Target: {Target}, Source: {Source}", e.Target, e.Source);
+            Logger.LogDebug("Navigation event args - Target: {Target}", e.Target);
         }
         catch (Exception ex)
         {

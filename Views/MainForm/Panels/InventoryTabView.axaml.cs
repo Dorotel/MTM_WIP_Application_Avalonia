@@ -374,9 +374,7 @@ public partial class InventoryTabView : UserControl
                         if (_successOverlayService == null)
                         {
                             var successServiceLogger = loggerFactory.CreateLogger<SuccessOverlayService>();
-                            var focusManagementLogger = loggerFactory.CreateLogger<FocusManagementService>();
-                            var focusService = _serviceProvider?.GetService<IFocusManagementService>() ?? new FocusManagementService(focusManagementLogger);
-                            _successOverlayService = new SuccessOverlayService(successServiceLogger, focusService);
+                            _successOverlayService = new SuccessOverlayService(successServiceLogger);
                             _logger?.LogWarning("Method 3 - Manual SuccessOverlayService creation successful as fallback");
                             System.Diagnostics.Debug.WriteLine("Method 3 - Manual SuccessOverlayService creation successful as fallback");
                         }

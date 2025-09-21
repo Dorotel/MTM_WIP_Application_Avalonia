@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -77,7 +77,7 @@ public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
 
         _databaseService = databaseService;
 
-        _logger.LogDebug("ConnectionStatusOverlayViewModel initialized");
+        Logger.LogDebug("ConnectionStatusOverlayViewModel initialized");
     }
 
     #endregion
@@ -95,7 +95,7 @@ public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
             IsTestingConnection = true;
             ClearError();
 
-            _logger.LogInformation("Retrying database connection (attempt {AttemptNumber}/{MaxAttempts})",
+            Logger.LogInformation("Retrying database connection (attempt {AttemptNumber}/{MaxAttempts})",
                 RetryAttempts + 1, MaxRetryAttempts);
 
             ConnectionStatus = "Testing connection...";
@@ -111,7 +111,7 @@ public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
                 ConnectionStatus = "Connected Successfully";
                 LastConnectionError = string.Empty;
 
-                _logger.LogInformation("Database connection successful after {Attempts} attempt(s)", RetryAttempts);
+                Logger.LogInformation("Database connection successful after {Attempts} attempt(s)", RetryAttempts);
 
                 // Auto-close overlay after successful connection
                 await Task.Delay(1500); // Brief delay to show success
@@ -123,12 +123,12 @@ public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
                 ConnectionStatus = "Connection Failed";
                 LastConnectionError = connectionResult.ErrorMessage;
 
-                _logger.LogWarning("Database connection failed: {Error}", connectionResult.ErrorMessage);
+                Logger.LogWarning("Database connection failed: {Error}", connectionResult.ErrorMessage);
 
                 if (RetryAttempts >= MaxRetryAttempts)
                 {
                     ConnectionStatus = "Connection Failed - Max Retries Exceeded";
-                    _logger.LogError("Maximum retry attempts ({MaxAttempts}) exceeded for database connection", MaxRetryAttempts);
+                    Logger.LogError("Maximum retry attempts ({MaxAttempts}) exceeded for database connection", MaxRetryAttempts);
                 }
             }
         }
@@ -153,7 +153,7 @@ public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogWarning("User chose to skip connection test and continue");
+            Logger.LogWarning("User chose to skip connection test and continue");
 
             ConnectionStatus = "Connection Test Skipped";
             await HideAsync();
@@ -172,7 +172,7 @@ public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogInformation("Resetting connection test");
+            Logger.LogInformation("Resetting connection test");
 
             RetryAttempts = 0;
             IsConnected = false;
@@ -235,12 +235,12 @@ public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
         // For connection status overlay, confirm means accepting current connection state
         if (IsConnected)
         {
-            _logger.LogInformation("User confirmed successful database connection");
+            Logger.LogInformation("User confirmed successful database connection");
             return true; // Allow overlay to close
         }
         else
         {
-            _logger.LogWarning("User attempted to confirm failed connection state");
+            Logger.LogWarning("User attempted to confirm failed connection state");
 
             // Ask if they want to proceed without connection
             // For now, just allow confirmation
@@ -260,7 +260,7 @@ public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
     {
         try
         {
-            _logger.LogDebug("Testing database connection with timeout of {TimeoutSeconds} seconds", ConnectionTimeoutSeconds);
+            Logger.LogDebug("Testing database connection with timeout of {TimeoutSeconds} seconds", ConnectionTimeoutSeconds);
 
             // Create a timeout task
             using var timeoutCancellation = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(ConnectionTimeoutSeconds));
@@ -285,7 +285,7 @@ public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Database connection test failed with exception");
+            Logger.LogError(ex, "Database connection test failed with exception");
             return ConnectionTestResult.Failure($"Connection failed: {ex.Message}");
         }
     }

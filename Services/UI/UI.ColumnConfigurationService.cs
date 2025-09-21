@@ -1,27 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Controls.Primitives;
-using Avalonia.Input;
-using Avalonia.Styling;
-using Avalonia.Threading;
-using Avalonia.VisualTree;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models.UI;
-using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
-using MTM_WIP_Application_Avalonia.ViewModels;
-using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_WIP_Application_Avalonia.Views;
-using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 
 namespace MTM_WIP_Application_Avalonia.Services.UI;
 

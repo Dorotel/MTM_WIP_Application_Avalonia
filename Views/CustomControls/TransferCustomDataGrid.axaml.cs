@@ -11,7 +11,7 @@ using Avalonia.Interactivity;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models.CustomDataGrid.UI;
 
-namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
+namespace MTM_WIP_Application_Avalonia.Views.CustomControls;
 
 /// <summary>
 /// TransferCustomDataGrid - Custom data grid control optimized for inventory transfer operations.
@@ -24,7 +24,7 @@ public partial class TransferCustomDataGrid : UserControl
 {
     #region Fields
 
-    private readonly ILogger<TransferCustomDataGrid> _logger;
+    private readonly ILogger<TransferCustomDataGrid>? _logger;
 
     #endregion
 

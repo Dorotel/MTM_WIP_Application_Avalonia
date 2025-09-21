@@ -19,6 +19,7 @@ using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Views;
+using CoreStoredProcedureResult = MTM_WIP_Application_Avalonia.Services.Core.Helper_Database_StoredProcedure.StoredProcedureResult;
 using Avalonia.Threading;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;

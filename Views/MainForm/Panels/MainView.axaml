@@ -5,7 +5,8 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
              xmlns:panelViews="using:MTM_WIP_Application_Avalonia.Views.MainForm.Panels"
-             xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:controls="using:using:MTM_WIP_Application_Avalonia.Views.Overlay"
+             xmlns:overlayControls="using:MTM_WIP_Application_Avalonia.Views.Overlay"
              xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d"
              d:DesignWidth="1200"
@@ -42,10 +43,10 @@
 
   <!-- Main container that stretches to fill entire available space -->
   <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-    <DockPanel HorizontalAlignment="Stretch" 
+    <DockPanel HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch"
                LastChildFill="True">
-    
+
     <!-- Header Menu with MTM Branding -->
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
@@ -55,7 +56,7 @@
       <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
         <!-- Left side: Menu -->
         <Menu Grid.Column="0"
-              Background="Transparent" 
+              Background="Transparent"
               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
               HorizontalAlignment="Left">
           <MenuItem Header="_File" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}">
@@ -67,13 +68,13 @@
             <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
           </MenuItem>
           <!-- Development builds only -->
-          <MenuItem Header="_Help" 
+          <MenuItem Header="_Help"
                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                     IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
             <MenuItem Header="_About" Command="{Binding OpenAboutCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
           </MenuItem>
         </Menu>
-        
+
         <!-- Right side: Theme Quick Switcher -->
         <views:ThemeQuickSwitcher x:Name="ThemeQuickSwitcher"
                                  Grid.Column="1"
@@ -89,10 +90,10 @@
             Padding="24,8"
             HorizontalAlignment="Stretch"
             MinHeight="36">
-      <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto"
             ColumnSpacing="16"
             HorizontalAlignment="Stretch">
-        
+
         <!-- Main Progress Bar -->
         <Border Grid.Column="0"
                 Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
@@ -102,8 +103,8 @@
                 CornerRadius="12"
                 HorizontalAlignment="Left">
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="Progress:" 
-                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+            <TextBlock Text="Progress:"
+                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                        FontSize="10"
                        FontWeight="Medium"/>
             <ProgressBar Minimum="0" Maximum="100"
@@ -119,7 +120,7 @@
         <Border Grid.Column="1" Background="Transparent"/>
 
         <!-- Enhanced Status Text Box -->
-        <Border Grid.Column="2" 
+        <Border Grid.Column="2"
                 Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                 BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
                 BorderThickness="1"
@@ -152,14 +153,14 @@
     </Border>
 
     <!-- Main Content Area - Fills remaining space -->
-    <Grid HorizontalAlignment="Stretch" 
+    <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch"
           Margin="8">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" MinWidth="400"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
-      
+
       <!-- Left Panel: Tab Control - Stretches fully -->
       <Grid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <!-- Main Tab Control -->
@@ -180,7 +181,7 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch">
-          
+
           <!-- Inventory Tab -->
           <TabItem>
             <TabItem.Header>
@@ -188,14 +189,14 @@
                 <Border CornerRadius="10"
                         Width="24"
                         Height="24">
-                  <TextBlock Text="📦" 
-                             FontSize="14" 
-                             HorizontalAlignment="Center" 
+                  <TextBlock Text="📦"
+                             FontSize="14"
+                             HorizontalAlignment="Center"
                              VerticalAlignment="Center"
                              Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                 </Border>
-                <TextBlock Text="Inventory" 
-                           FontSize="15" 
+                <TextBlock Text="Inventory"
+                           FontSize="15"
                            FontWeight="SemiBold"
                            VerticalAlignment="Center"
                            Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
@@ -210,7 +211,7 @@
                               VerticalContentAlignment="Stretch"/>
             </DockPanel>
           </TabItem>
-          
+
           <!-- Remove Tab -->
           <TabItem>
             <TabItem.Header>
@@ -218,14 +219,14 @@
                 <Border CornerRadius="10"
                         Width="24"
                         Height="24">
-                  <TextBlock Text="🗑️" 
-                             FontSize="14" 
-                             HorizontalAlignment="Center" 
+                  <TextBlock Text="🗑️"
+                             FontSize="14"
+                             HorizontalAlignment="Center"
                              VerticalAlignment="Center"
                              Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                 </Border>
-                <TextBlock Text="Remove" 
-                           FontSize="15" 
+                <TextBlock Text="Remove"
+                           FontSize="15"
                            FontWeight="SemiBold"
                            VerticalAlignment="Center"
                            Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
@@ -240,7 +241,7 @@
                               VerticalContentAlignment="Stretch"/>
             </DockPanel>
           </TabItem>
-          
+
           <!-- Transfer Tab -->
           <TabItem>
             <TabItem.Header>
@@ -248,14 +249,14 @@
                 <Border CornerRadius="10"
                         Width="24"
                         Height="24">
-                  <TextBlock Text="🔄" 
-                             FontSize="14" 
-                             HorizontalAlignment="Center" 
+                  <TextBlock Text="🔄"
+                             FontSize="14"
+                             HorizontalAlignment="Center"
                              VerticalAlignment="Center"
                              Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
                 </Border>
-                <TextBlock Text="Transfer" 
-                           FontSize="15" 
+                <TextBlock Text="Transfer"
+                           FontSize="15"
                            FontWeight="SemiBold"
                            VerticalAlignment="Center"
                            Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
@@ -272,7 +273,7 @@
           </TabItem>
         </TabControl>
         </Border>
-        
+
         <!-- Suggestion Overlay Panel - Covers entire left panel area when visible -->
         <Border x:Name="SuggestionOverlayPanel"
                 IsVisible="False"
@@ -299,7 +300,7 @@
                             VerticalContentAlignment="Stretch"/>
           </Border>
         </Border>
-        
+
         <!-- Success Overlay Panel - Full screen overlay for success messages -->
         <Border x:Name="SuccessOverlayPanel"
                 IsVisible="False"
@@ -316,7 +317,7 @@
                           HorizontalContentAlignment="Stretch"
                           VerticalContentAlignment="Stretch"/>
         </Border>
-        
+
         <!-- NewQuickButton View Panel - Full screen view for creating new QuickButtons -->
         <Border x:Name="NewQuickButtonOverlayPanel"
                 IsVisible="False"
@@ -337,7 +338,7 @@
       </Grid>
 
       <!-- Right Panel: Collapsible Quick Actions -->
-      <controls:CollapsiblePanel Grid.Column="1"
+      <overlayControls:CollapsiblePanel Grid.Column="1"
                                 HeaderPosition="Right"
                                 IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
                                 IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
@@ -348,7 +349,7 @@
         <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
                                HorizontalAlignment="Stretch"
                                VerticalAlignment="Stretch"/>
-      </controls:CollapsiblePanel>
+      </overlayControls:CollapsiblePanel>
     </Grid>
   </DockPanel>
 

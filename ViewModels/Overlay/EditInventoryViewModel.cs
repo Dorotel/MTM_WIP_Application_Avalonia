@@ -412,8 +412,11 @@ public partial class EditInventoryViewModel : BaseViewModel
             Logger.LogCritical("ðŸš¨ QA SOURCE DATA: InventoryItem ALL Properties - ID: {Id}, PartId: '{PartId}', Operation: '{Operation}', Quantity: {Quantity}, ItemType: '{ItemType}', BatchNumber: '{BatchNumber}', User: '{User}', Location: '{Location}', Notes: '{Notes}', ReceiveDate: {ReceiveDate}, LastUpdated: {LastUpdated}",
                 inventoryItem.Id, inventoryItem.PartId ?? "NULL", inventoryItem.Operation ?? "NULL", inventoryItem.Quantity, inventoryItem.ItemType ?? "NULL", inventoryItem.BatchNumber ?? "NULL", inventoryItem.User ?? "NULL", inventoryItem.Location ?? "NULL", inventoryItem.Notes ?? "NULL", inventoryItem.ReceiveDate, inventoryItem.LastUpdated);
 
-            // Initialize the edit model directly from the InventoryItem
-            EditModel = new EditInventoryModel(inventoryItem);
+            // Convert Events.InventoryItem to Shared Logic model that EditInventoryModel expects
+            var sharedLogicItem = ConvertToSharedLogicModel(inventoryItem);
+
+            // Initialize the edit model directly from the converted InventoryItem
+            EditModel = new EditInventoryModel(sharedLogicItem);
             EditModel.ResetChangeTracking(); // Start fresh change tracking
 
             // Initialize QuantityText to prevent binding errors
@@ -720,6 +723,29 @@ public partial class EditInventoryViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error during EditInventoryViewModel cleanup");
         }
+    }
+
+    /// <summary>
+    /// Converts from Events.InventoryItem to Shared Logic InventoryItem for EditInventoryModel
+    /// </summary>
+    /// <param name="eventsItem">The Events model inventory item</param>
+    /// <returns>Converted Shared Logic inventory item</returns>
+    private static MTM_Shared_Logic.Models.InventoryItem ConvertToSharedLogicModel(MTM_WIP_Application_Avalonia.Models.Events.InventoryItem eventsItem)
+    {
+        return new MTM_Shared_Logic.Models.InventoryItem
+        {
+            ID = eventsItem.Id,           // Map Id to ID
+            PartID = eventsItem.PartId,   // Map PartId to PartID
+            Location = eventsItem.Location,
+            Operation = eventsItem.Operation,
+            Quantity = eventsItem.Quantity,
+            ItemType = eventsItem.ItemType,
+            ReceiveDate = eventsItem.ReceiveDate,
+            LastUpdated = eventsItem.LastUpdated,
+            User = eventsItem.User,
+            BatchNumber = eventsItem.BatchNumber,
+            Notes = eventsItem.Notes
+        };
     }
 }
 

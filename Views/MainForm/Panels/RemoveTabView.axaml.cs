@@ -240,7 +240,7 @@ public partial class RemoveTabView : UserControl
         try
         {
             // CRITICAL FIX: Find CustomDataGrid instead of regular DataGrid
-            var customDataGrid = this.FindControl<Controls.CustomDataGrid.CustomDataGrid>("InventoryDataGrid");
+            var customDataGrid = this.FindControl<Views.CustomControls.CustomDataGrid>("InventoryDataGrid");
             if (customDataGrid != null)
             {
                 customDataGrid.SelectionChanged += OnCustomDataGridSelectionChanged;
