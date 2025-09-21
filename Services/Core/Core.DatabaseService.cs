@@ -163,9 +163,44 @@ public class DatabaseService : IDatabaseService
     // Inventory Operations
     public async Task<StoredProcedureResult> AddInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string batchNumber, string notes)
     {
-        // Placeholder implementation - will use Helper_Database_StoredProcedure when available
-        _logger.LogInformation("Adding inventory item: {PartId}, {Location}, {Operation}, {Quantity}", partId, location, operation, quantity);
-        return new StoredProcedureResult { Success = true, Message = "Item added successfully" };
+        try
+        {
+            // Use stored procedure inv_inventory_Add_Item which generates its own batch number
+            var parameters = new Dictionary<string, object>
+            {
+                { "p_PartID", partId },
+                { "p_Location", location },
+                { "p_Operation", operation },
+                { "p_Quantity", quantity },
+                { "p_ItemType", itemType },
+                { "p_User", user },
+                { "p_Notes", notes ?? string.Empty }
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Add_Item",
+                parameters
+            );
+
+            // Convert Helper result to DatabaseService result format
+            return new StoredProcedureResult
+            {
+                Success = result.Status == 1,
+                Message = result.Message,
+                Data = result.Data
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to execute inv_inventory_Add_Item stored procedure");
+            return new StoredProcedureResult
+            {
+                Success = false,
+                Message = $"Database error: {ex.Message}",
+                Data = null
+            };
+        }
     }
 
     public async Task<DataTable> GetInventoryByPartIdAsync(string partId)
@@ -210,8 +245,45 @@ public class DatabaseService : IDatabaseService
 
     public async Task<StoredProcedureResult> RemoveInventoryItemAsync(string partId, string location, string operation, int quantity, string itemType, string user, string batchNumber, string notes)
     {
-        _logger.LogInformation("Removing inventory item: {PartId}, {Quantity}", partId, quantity);
-        return new StoredProcedureResult { Success = true, Message = "Item removed successfully" };
+        try
+        {
+            // Use stored procedure inv_inventory_Remove_Item
+            var parameters = new Dictionary<string, object>
+            {
+                { "p_PartID", partId },
+                { "p_Location", location },
+                { "p_Operation", operation },
+                { "p_Quantity", quantity },
+                { "p_ItemType", itemType },
+                { "p_User", user },
+                { "p_BatchNumber", batchNumber ?? string.Empty },
+                { "p_Notes", notes ?? string.Empty }
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "inv_inventory_Remove_Item",
+                parameters
+            );
+
+            // Convert Helper result to DatabaseService result format
+            return new StoredProcedureResult
+            {
+                Success = result.Status == 1,
+                Message = result.Message,
+                Data = result.Data
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to execute inv_inventory_Remove_Item stored procedure");
+            return new StoredProcedureResult
+            {
+                Success = false,
+                Message = $"Database error: {ex.Message}",
+                Data = null
+            };
+        }
     }
 
     public async Task<bool> TransferPartAsync(string batchNumber, string partId, string operation, string newLocation)
@@ -294,8 +366,22 @@ public class DatabaseService : IDatabaseService
 
     public async Task<DataTable> GetAllUsersAsync()
     {
-        var query = "SELECT * FROM users ORDER BY Username";
-        return await ExecuteQueryAsync(query);
+        try
+        {
+            // Use stored procedure instead of direct SQL query
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "usr_users_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            return result.Status == 1 ? result.Data : new DataTable();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to execute usr_users_Get_All stored procedure");
+            return new DataTable();
+        }
     }
 
     public async Task<DataTable> GetUserDetailsAsync(string username)
@@ -322,20 +408,62 @@ public class DatabaseService : IDatabaseService
 
     public async Task<DataTable> GetAllPartsAsync()
     {
-        var query = "SELECT * FROM parts ORDER BY PartId";
-        return await ExecuteQueryAsync(query);
+        try
+        {
+            // Use stored procedure instead of direct SQL query
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "md_part_ids_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            return result.Status == 1 ? result.Data : new DataTable();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to execute md_part_ids_Get_All stored procedure");
+            return new DataTable();
+        }
     }
 
     public async Task<DataTable> GetAllOperationsAsync()
     {
-        var query = "SELECT * FROM operations ORDER BY Operation";
-        return await ExecuteQueryAsync(query);
+        try
+        {
+            // Use stored procedure instead of direct SQL query
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "md_operation_numbers_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            return result.Status == 1 ? result.Data : new DataTable();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to execute md_operation_numbers_Get_All stored procedure");
+            return new DataTable();
+        }
     }
 
     public async Task<DataTable> GetAllLocationsAsync()
     {
-        var query = "SELECT * FROM locations ORDER BY Location";
-        return await ExecuteQueryAsync(query);
+        try
+        {
+            // Use stored procedure instead of direct SQL query
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _connectionString,
+                "md_locations_Get_All",
+                new Dictionary<string, object>()
+            );
+
+            return result.Status == 1 ? result.Data : new DataTable();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to execute md_locations_Get_All stored procedure");
+            return new DataTable();
+        }
     }
 
     public async Task<DataTable> GetAllPartIDsAsync()

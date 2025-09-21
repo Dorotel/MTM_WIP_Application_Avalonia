@@ -14,8 +14,9 @@ using Avalonia.LogicalTree;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Models.Core;
 
-namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
+namespace MTM_WIP_Application_Avalonia.Views.CustomControls
 {
     /// <summary>
     /// CustomDataGrid control for MTM WIP Application
@@ -640,7 +641,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             return item switch
             {
                 MTM_Shared_Logic.Models.InventoryItem inventoryItem => inventoryItem.PartId,
-                Models.EditInventoryModel editModel => editModel.PartId,
+                EditInventoryModel editModel => editModel.PartId,
                 _ => GetPropertyValue(item, "PartId") ?? GetPropertyValue(item, "PartID") ?? string.Empty
             };
         }
@@ -653,7 +654,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             return item switch
             {
                 MTM_Shared_Logic.Models.InventoryItem inventoryItem => inventoryItem.Operation ?? string.Empty,
-                Models.EditInventoryModel editModel => editModel.Operation,
+                EditInventoryModel editModel => editModel.Operation,
                 _ => GetPropertyValue(item, "Operation") ?? string.Empty
             };
         }
@@ -666,7 +667,7 @@ namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid
             return item switch
             {
                 MTM_Shared_Logic.Models.InventoryItem inventoryItem => inventoryItem.Quantity,
-                Models.EditInventoryModel editModel => editModel.Quantity,
+                EditInventoryModel editModel => editModel.Quantity,
                 _ => int.TryParse(GetPropertyValue(item, "Quantity"), out int qty) ? qty : 0
             };
         }

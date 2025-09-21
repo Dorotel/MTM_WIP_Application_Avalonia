@@ -24,11 +24,11 @@ namespace MTM_Shared_Logic.Models
     {
         public int ID { get; set; }
         public string User_Name { get; set; } = string.Empty; // Column is 'User' but property is User_Name to avoid conflicts
-        
+
         // Add UserName property for compatibility
         public string UserName => User_Name;
         public string? UserId => User_Name; // For compatibility with existing code
-        
+
         public string? FullName { get; set; }
         public string Shift { get; set; } = "1";
         public bool VitsUser { get; set; }
@@ -40,7 +40,7 @@ namespace MTM_Shared_Logic.Models
         public string VisualUserName { get; set; } = "User Name";
         public string VisualPassword { get; set; } = "Password";
         public string WipServerAddress { get; set; } = "localhost";
-        public string WIPDatabase { get; set; } = MTM_WIP_Application_Avalonia.Models.Model_AppVariables.IsDebugMode ? "mtm_wip_application_test" : "mtm_wip_application";
+        public string WIPDatabase { get; set; } = MTM_WIP_Application_Avalonia.Models.Core.Model_AppVariables.IsDebugMode ? "mtm_wip_application_test" : "mtm_wip_application";
         public string WipServerPort { get; set; } = "3306";
     }
 
@@ -69,7 +69,7 @@ namespace MTM_Shared_Logic.Models
         public int RoleID { get; set; }
         public string AssignedBy { get; set; } = string.Empty;
         public DateTime AssignedAt { get; set; }
-        
+
         // Navigation properties
         public User? User { get; set; }
         public Role? Role { get; set; }
@@ -87,14 +87,14 @@ namespace MTM_Shared_Logic.Models
     public class InventoryItem : INotifyPropertyChanged
     {
         private bool _isSelected;
-        
+
         public int ID { get; set; }
         public string PartID { get; set; } = string.Empty;
-        
+
         // Add compatibility properties
         public int Id => ID; // For compatibility
         public string PartId => PartID;
-        
+
         public string Location { get; set; } = string.Empty;
         public string? Operation { get; set; } // String numbers like "90", "100", "110"
         public int Quantity { get; set; }
@@ -102,14 +102,14 @@ namespace MTM_Shared_Logic.Models
         public DateTime ReceiveDate { get; set; }
         public DateTime LastUpdated { get; set; }
         public string User { get; set; } = string.Empty;
-        
+
         // Add LastUpdatedBy property for compatibility
         public string LastUpdatedBy
         {
-             get => User; 
+            get => User;
             set => User = value;
         }
-        
+
         public string? BatchNumber { get; set; }
         public string? Notes { get; set; }
 
@@ -156,11 +156,11 @@ namespace MTM_Shared_Logic.Models
         public TransactionType TransactionType { get; set; }
         public string? BatchNumber { get; set; }
         public string PartID { get; set; } = string.Empty;
-        
+
         // Add PartId property for compatibility
         public string PartId
         {
-            get => PartID; 
+            get => PartID;
             set => PartID = value;
         }
 
@@ -180,18 +180,18 @@ namespace MTM_Shared_Logic.Models
             set => FromLocation = value;
         }
 
-        public DateTime TransactionDateTime 
-        { 
+        public DateTime TransactionDateTime
+        {
             get => ReceiveDate;
             set => ReceiveDate = value;
         }
-        public string UserName            
-        { 
+        public string UserName
+        {
             get => User;
             set => User = value;
         }
-        public string? Comments 
-        { 
+        public string? Comments
+        {
             get => Notes;
             set => Notes = value;
         }
@@ -391,18 +391,18 @@ namespace MTM_Shared_Logic.Models
         public bool IsValid { get; set; }
         public List<string> Errors { get; set; } = new();
         public List<string> Warnings { get; set; } = new();
-        
+
         // Add ErrorMessages property for compatibility
         public List<string> ErrorMessages => Errors;
-        
+
         public void AddError(string error) => Errors.Add(error);
         public void AddWarning(string warning) => Warnings.Add(warning);
-        
+
         public static ValidationResult Success() => new() { IsValid = true };
-        public static ValidationResult Failure(params string[] errors) => new() 
-        { 
-            IsValid = false, 
-            Errors = new List<string>(errors) 
+        public static ValidationResult Failure(params string[] errors) => new()
+        {
+            IsValid = false,
+            Errors = new List<string>(errors)
         };
     }
 
@@ -432,7 +432,7 @@ namespace MTM_Shared_Logic.Models
             {
                 if (value is TParam typedValue)
                     return typedValue;
-                
+
                 try
                 {
                     return (TParam)Convert.ChangeType(value, typeof(TParam));
@@ -442,7 +442,7 @@ namespace MTM_Shared_Logic.Models
                     return default(TParam);
                 }
             }
-            
+
             return default(TParam);
         }
     }

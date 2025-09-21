@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignWidth="400"
              d:DesignHeight="600"
-             x:Class="MTM_WIP_Application_Avalonia.Controls.CollapsiblePanel">
+             x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.CollapsiblePanel">
 
   <UserControl.Resources>
     <!-- Use theme colors instead of hardcoded MTM colors -->
@@ -24,10 +24,10 @@
               BorderThickness="2"
               CornerRadius="8"
               BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.ShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,4,12,0'}">
-        
+
         <!-- Empty grid that gets configured dynamically by code -->
         <Grid x:Name="RootGrid">
-          
+
           <!-- Header Bar (position determined by HeaderPosition property) -->
           <Border x:Name="HeaderArea"
                   Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
@@ -35,14 +35,14 @@
                   BorderThickness="0"
                   MinWidth="15"
                   MinHeight="15">
-            
+
             <!-- Simple grid for toggle button and header content -->
             <Grid x:Name="HeaderContentGrid">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
               </Grid.ColumnDefinitions>
-              
+
               <!-- Toggle Button - positioned dynamically by code -->
               <Button x:Name="ToggleButton"
                       Grid.Column="0"
@@ -58,14 +58,14 @@
                                        Height="12"
                                        Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
               </Button>
-              
+
               <!-- Header Content Presenter -->
               <ContentPresenter x:Name="HeaderPresenter"
                               Grid.Column="1"
                               Content="{TemplateBinding Header}"
                               VerticalAlignment="Center"
                               Margin="8,0,0,0"/>
-              
+
             </Grid>
           </Border>
 

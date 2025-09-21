@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Models;
+using MTM_WIP_Application_Avalonia.Models.Print;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -130,7 +131,7 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
 
                 // Subscribe to property changes
                 columnViewModel.PropertyChanged += OnColumnPropertyChanged;
-                
+
                 Columns.Add(columnViewModel);
             }
 
@@ -184,7 +185,7 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
         TotalColumnCount = Columns.Count;
         VisibleColumnCount = Columns.Count(c => c.IsVisible);
         AllColumnsVisible = VisibleColumnCount == TotalColumnCount;
-        
+
         StatusMessage = $"{VisibleColumnCount} of {TotalColumnCount} columns visible";
     }
 
@@ -201,9 +202,9 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
         try
         {
             IsLoading = true;
-            
+
             var makeVisible = !AllColumnsVisible;
-            
+
             foreach (var column in Columns)
             {
                 column.IsVisible = makeVisible;
@@ -211,7 +212,7 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
 
             UpdateColumnCounts();
             HasUnsavedChanges = true;
-            
+
             StatusMessage = makeVisible ? "All columns made visible" : "All columns hidden";
             Logger.LogDebug("Toggled all columns visibility to: {Visible}", makeVisible);
         }
@@ -241,20 +242,20 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
             {
                 // Set default visibility (all visible by default)
                 column.IsVisible = true;
-                
+
                 // Reset width to default
                 column.Width = 100;
-                
+
                 // Reset alignment based on column type/name
                 column.Alignment = DetermineDefaultAlignment(column.PropertyName);
-                
+
                 // Reset display order to original order
                 column.DisplayOrder = Columns.IndexOf(column);
             }
 
             UpdateColumnCounts();
             HasUnsavedChanges = true;
-            
+
             StatusMessage = "Columns reset to default configuration";
             Logger.LogDebug("Reset {ColumnCount} columns to default configuration", Columns.Count);
         }
@@ -309,7 +310,7 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
             if (currentIndex > 0)
             {
                 var previousColumn = Columns[currentIndex - 1];
-                
+
                 // Swap display orders
                 var tempOrder = SelectedColumn.DisplayOrder;
                 SelectedColumn.DisplayOrder = previousColumn.DisplayOrder;
@@ -350,7 +351,7 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
             if (currentIndex < Columns.Count - 1)
             {
                 var nextColumn = Columns[currentIndex + 1];
-                
+
                 // Swap display orders
                 var tempOrder = SelectedColumn.DisplayOrder;
                 SelectedColumn.DisplayOrder = nextColumn.DisplayOrder;
@@ -413,7 +414,7 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
         // Update command states when selection changes
         MoveColumnUpCommand.NotifyCanExecuteChanged();
         MoveColumnDownCommand.NotifyCanExecuteChanged();
-        
+
         if (value != null)
         {
             StatusMessage = $"Selected column: {value.Header}";

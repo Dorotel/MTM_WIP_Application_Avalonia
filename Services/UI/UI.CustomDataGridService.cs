@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
+using MTM_WIP_Application_Avalonia.Models.CustomDataGrid.UI;
+using MTM_WIP_Application_Avalonia.Models.UI;
 
 namespace MTM_WIP_Application_Avalonia.Services.UI;
 
@@ -20,58 +22,58 @@ public interface ICustomDataGridService
     /// Creates default column definitions for inventory data.
     /// </summary>
     Task<ObservableCollection<CustomDataGridColumn>> CreateInventoryColumnsAsync();
-    
+
     /// <summary>
     /// Creates default column definitions for transaction data.
     /// </summary>
     Task<ObservableCollection<CustomDataGridColumn>> CreateTransactionColumnsAsync();
-    
+
     /// <summary>
     /// Exports grid data to the specified format.
     /// </summary>
     Task<bool> ExportDataAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns, string filePath, string format);
-    
+
     /// <summary>
     /// Exports grid data to the specified format with selection filtering support.
     /// </summary>
     Task<bool> ExportDataAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns, string filePath, string format, bool exportOnlySelected, IEnumerable<T>? selectedItems = null);
-    
+
     /// <summary>
     /// Imports data from CSV file with validation and error reporting.
     /// Phase 6 feature for data import functionality.
     /// </summary>
     Task<ImportResult<T>> ImportFromCsvAsync<T>(string filePath, ObservableCollection<CustomDataGridColumn> columns) where T : new();
-    
+
     /// <summary>
     /// Imports data from Excel file with validation and error reporting.
     /// Phase 6 feature for advanced data import functionality.
     /// </summary>
     Task<ImportResult<T>> ImportFromExcelAsync<T>(string filePath, ObservableCollection<CustomDataGridColumn> columns) where T : new();
-    
+
     /// <summary>
     /// Validates imported data against column configurations and business rules.
     /// Phase 6 feature for data validation.
     /// </summary>
     Task<ValidationResult<T>> ValidateImportedDataAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns);
-    
+
     /// <summary>
     /// Performs bulk update operations on multiple data items.
     /// Phase 6 feature for batch operations.
     /// </summary>
     Task<BulkOperationResult<T>> BulkUpdateAsync<T>(IEnumerable<T> items, Dictionary<string, object> updates);
-    
+
     /// <summary>
     /// Performs bulk delete operations on multiple data items.
     /// Phase 6 feature for batch operations.
     /// </summary>
     Task<BulkOperationResult<T>> BulkDeleteAsync<T>(IEnumerable<T> items);
-    
+
     /// <summary>
     /// Gets data analytics and statistics for grid data.
     /// Phase 6 feature for reporting and insights.
     /// </summary>
     Task<DataAnalytics<T>> GetDataAnalyticsAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns);
-    
+
     /// <summary>
     /// Gets selection statistics for the provided data and selected items.
     /// </summary>
@@ -110,17 +112,17 @@ public interface ICustomDataGridService
 
 /// <summary>
 /// MTM Custom Data Grid Service - Phase 2 Implementation
-/// 
+///
 /// Provides data management and configuration services for CustomDataGrid controls.
 /// Follows established MTM service patterns with category-based consolidation,
 /// proper error handling, and MVVM Community Toolkit integration.
-/// 
+///
 /// Phase 1 Features:
 /// - Default column configuration for MTM data types
-/// - Basic CSV export functionality  
+/// - Basic CSV export functionality
 /// - Performance optimization for large datasets
 /// - Integration with MTM error handling and logging patterns
-/// 
+///
 /// Phase 2 Features:
 /// - Multi-selection support with export filtering
 /// - Selection statistics and metrics
@@ -138,7 +140,7 @@ public class CustomDataGridService : ICustomDataGridService
     {
         ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
-        
+
         _logger.LogDebug("CustomDataGridService initialized");
     }
 
@@ -151,7 +153,7 @@ public class CustomDataGridService : ICustomDataGridService
         try
         {
             _logger.LogDebug("Creating inventory columns");
-            
+
             var columns = new ObservableCollection<CustomDataGridColumn>
             {
                 new CustomDataGridColumn
@@ -175,7 +177,7 @@ public class CustomDataGridService : ICustomDataGridService
                 new CustomDataGridColumn
                 {
                     PropertyName = "Location",
-                    DisplayName = "Location", 
+                    DisplayName = "Location",
                     DataType = typeof(string),
                     Width = 100,
                     CanSort = true,
@@ -213,7 +215,7 @@ public class CustomDataGridService : ICustomDataGridService
             };
 
             await Task.Delay(1); // Simulate async operation
-            
+
             _logger.LogDebug("Created {Count} inventory columns", columns.Count);
             return columns;
         }
@@ -234,7 +236,7 @@ public class CustomDataGridService : ICustomDataGridService
         try
         {
             _logger.LogDebug("Creating transaction columns");
-            
+
             var columns = new ObservableCollection<CustomDataGridColumn>
             {
                 new CustomDataGridColumn
@@ -314,7 +316,7 @@ public class CustomDataGridService : ICustomDataGridService
             };
 
             await Task.Delay(1); // Simulate async operation
-            
+
             _logger.LogDebug("Created {Count} transaction columns", columns.Count);
             return columns;
         }
@@ -332,9 +334,9 @@ public class CustomDataGridService : ICustomDataGridService
     /// Phase 2 enhancement: Supports exporting only selected items.
     /// </summary>
     public Task<bool> ExportDataAsync<T>(
-        IEnumerable<T> data, 
-        ObservableCollection<CustomDataGridColumn> columns, 
-        string filePath, 
+        IEnumerable<T> data,
+        ObservableCollection<CustomDataGridColumn> columns,
+        string filePath,
         string format)
     {
         return ExportDataAsync(data, columns, filePath, format, exportOnlySelected: false);
@@ -345,9 +347,9 @@ public class CustomDataGridService : ICustomDataGridService
     /// Phase 2 implementation supports exporting only selected items.
     /// </summary>
     public async Task<bool> ExportDataAsync<T>(
-        IEnumerable<T> data, 
-        ObservableCollection<CustomDataGridColumn> columns, 
-        string filePath, 
+        IEnumerable<T> data,
+        ObservableCollection<CustomDataGridColumn> columns,
+        string filePath,
         string format,
         bool exportOnlySelected,
         IEnumerable<T>? selectedItems = null)
@@ -358,24 +360,24 @@ public class CustomDataGridService : ICustomDataGridService
             ArgumentNullException.ThrowIfNull(columns);
             ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
             ArgumentException.ThrowIfNullOrWhiteSpace(format);
-            
-            _logger.LogInformation("Exporting data to {Format} format: {FilePath} (Selected only: {SelectedOnly})", 
+
+            _logger.LogInformation("Exporting data to {Format} format: {FilePath} (Selected only: {SelectedOnly})",
                 format.ToUpper(), filePath, exportOnlySelected);
 
             // Filter data if only exporting selected items
             var exportData = exportOnlySelected && selectedItems != null
                 ? selectedItems
                 : data;
-            
+
             switch (format.ToLowerInvariant())
             {
                 case "csv":
                     return await ExportToCsvAsync(exportData, columns, filePath);
-                    
+
                 case "excel":
                 case "xlsx":
                     return await ExportToExcelAsync(exportData, columns, filePath);
-                    
+
                 default:
                     _logger.LogWarning("Unsupported export format: {Format}", format);
                     return false;
@@ -401,7 +403,7 @@ public class CustomDataGridService : ICustomDataGridService
         {
             var total = totalItems.Count();
             var selected = selectedItems?.Count() ?? 0;
-            
+
             return new SelectionStatistics
             {
                 TotalCount = total,
@@ -422,31 +424,31 @@ public class CustomDataGridService : ICustomDataGridService
     #region Private Methods
 
     private async Task<bool> ExportToCsvAsync<T>(
-        IEnumerable<T> data, 
-        ObservableCollection<CustomDataGridColumn> columns, 
+        IEnumerable<T> data,
+        ObservableCollection<CustomDataGridColumn> columns,
         string filePath)
     {
         try
         {
             var visibleColumns = columns.Where(c => c.IsVisible).ToList();
             var dataList = data.ToList();
-            
+
             using var writer = new System.IO.StreamWriter(filePath);
-            
+
             // Write header
             var headers = visibleColumns.Select(c => EscapeCsvValue(c.DisplayName));
             await writer.WriteLineAsync(string.Join(",", headers));
-            
+
             // Write data rows
             foreach (var item in dataList)
             {
                 var values = new List<string>();
-                
+
                 foreach (var column in visibleColumns)
                 {
                     var propertyInfo = typeof(T).GetProperty(column.PropertyName);
                     var value = propertyInfo?.GetValue(item);
-                    
+
                     string stringValue;
                     if (value == null)
                     {
@@ -460,16 +462,16 @@ public class CustomDataGridService : ICustomDataGridService
                     {
                         stringValue = value.ToString() ?? string.Empty;
                     }
-                    
+
                     values.Add(EscapeCsvValue(stringValue));
                 }
-                
+
                 await writer.WriteLineAsync(string.Join(",", values));
             }
-            
-            _logger.LogDebug("CSV export completed: {RowCount} rows, {ColumnCount} columns", 
+
+            _logger.LogDebug("CSV export completed: {RowCount} rows, {ColumnCount} columns",
                 dataList.Count, visibleColumns.Count);
-            
+
             return true;
         }
         catch (Exception ex)
@@ -483,13 +485,13 @@ public class CustomDataGridService : ICustomDataGridService
     {
         if (string.IsNullOrEmpty(value))
             return string.Empty;
-            
+
         // Escape commas, quotes, and newlines
         if (value.Contains(',') || value.Contains('"') || value.Contains('\n') || value.Contains('\r'))
         {
             return $"\"{value.Replace("\"", "\"\"")}\"";
         }
-        
+
         return value;
     }
 
@@ -517,7 +519,7 @@ public class CustomDataGridService : ICustomDataGridService
                 return false;
             }
 
-            configuration.UpdateLastModified();
+            configuration.Touch();
 
             // In a full implementation, this would save to database or file system
             // For now, we'll simulate the operation
@@ -555,7 +557,7 @@ public class CustomDataGridService : ICustomDataGridService
             await Task.Delay(25); // Simulate async load operation
 
             _logger.LogDebug("Attempted to load column configuration for grid {GridId}: {ConfigId}", gridId, configurationId);
-            
+
             // Return null to indicate no saved configuration found
             return null;
         }
@@ -717,7 +719,7 @@ public class CustomDataGridService : ICustomDataGridService
 
             // Check for valid order values
             var invalidOrders = configuration.ColumnSettings
-                .Where(s => s.Order < 0)
+                .Where(s => s.DisplayOrder < 0)
                 .Select(s => s.PropertyName)
                 .ToList();
 
@@ -753,46 +755,46 @@ public class CustomDataGridService : ICustomDataGridService
     {
         var result = new ImportResult<T>();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        
+
         try
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
             ArgumentNullException.ThrowIfNull(columns);
-            
+
             if (!File.Exists(filePath))
             {
                 result.IsSuccess = false;
                 result.Errors.Add($"File not found: {filePath}");
                 return result;
             }
-            
+
             _logger.LogInformation("Importing CSV data from: {FilePath}", filePath);
-            
+
             var lines = await File.ReadAllLinesAsync(filePath);
             if (lines.Length == 0)
             {
                 result.Warnings.Add("File is empty");
                 return result;
             }
-            
+
             // Parse header
             var header = lines[0].Split(',').Select(h => h.Trim('"', ' ')).ToArray();
             var columnMap = new Dictionary<string, int>();
-            
+
             for (int i = 0; i < header.Length; i++)
             {
-                var matchingColumn = columns.FirstOrDefault(c => 
+                var matchingColumn = columns.FirstOrDefault(c =>
                     string.Equals(c.DisplayName, header[i], StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(c.PropertyName, header[i], StringComparison.OrdinalIgnoreCase));
-                
+
                 if (matchingColumn != null)
                 {
                     columnMap[matchingColumn.PropertyName] = i;
                 }
             }
-            
+
             result.Statistics.TotalRows = lines.Length - 1; // Exclude header
-            
+
             // Parse data rows
             for (int rowIndex = 1; rowIndex < lines.Length; rowIndex++)
             {
@@ -801,7 +803,7 @@ public class CustomDataGridService : ICustomDataGridService
                     var values = ParseCsvLine(lines[rowIndex]);
                     var item = new T();
                     var hasData = false;
-                    
+
                     foreach (var kvp in columnMap)
                     {
                         if (kvp.Value < values.Length)
@@ -818,7 +820,7 @@ public class CustomDataGridService : ICustomDataGridService
                             }
                         }
                     }
-                    
+
                     if (hasData)
                     {
                         result.ImportedData.Add(item);
@@ -836,13 +838,13 @@ public class CustomDataGridService : ICustomDataGridService
                     result.Errors.Add($"Row {rowIndex + 1}: {ex.Message}");
                 }
             }
-            
+
             stopwatch.Stop();
             result.Statistics.Duration = stopwatch.Elapsed;
-            
+
             _logger.LogInformation("CSV import completed: {SuccessfulRows}/{TotalRows} rows imported in {Duration}ms",
                 result.Statistics.SuccessfulRows, result.Statistics.TotalRows, stopwatch.ElapsedMilliseconds);
-                
+
             return result;
         }
         catch (Exception ex)
@@ -861,22 +863,22 @@ public class CustomDataGridService : ICustomDataGridService
     public async Task<ImportResult<T>> ImportFromExcelAsync<T>(string filePath, ObservableCollection<CustomDataGridColumn> columns) where T : new()
     {
         var result = new ImportResult<T>();
-        
+
         try
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
             ArgumentNullException.ThrowIfNull(columns);
-            
+
             // For Phase 6 initial implementation, convert Excel to CSV approach
             // Full Excel library integration can be added later
             _logger.LogInformation("Excel import requested for: {FilePath}", filePath);
-            
+
             // Simulate Excel import by converting to CSV format
             result.IsSuccess = false;
             result.Errors.Add("Excel import requires additional library integration - please use CSV format");
-            
+
             await Task.Delay(50); // Simulate async operation
-            
+
             return result;
         }
         catch (Exception ex)
@@ -896,21 +898,21 @@ public class CustomDataGridService : ICustomDataGridService
     {
         var result = new ValidationResult<T>();
         var dataList = data.ToList();
-        
+
         try
         {
             ArgumentNullException.ThrowIfNull(data);
             ArgumentNullException.ThrowIfNull(columns);
-            
+
             _logger.LogDebug("Validating {ItemCount} imported items", dataList.Count);
-            
+
             result.Statistics.TotalItems = dataList.Count;
-            
+
             for (int i = 0; i < dataList.Count; i++)
             {
                 var item = dataList[i];
                 var errors = new List<string>();
-                
+
                 // Validate each column
                 foreach (var column in columns.Where(c => c.IsVisible))
                 {
@@ -918,13 +920,13 @@ public class CustomDataGridService : ICustomDataGridService
                     if (property != null)
                     {
                         var value = property.GetValue(item);
-                        
+
                         // Check for required fields (if this is a required field)
                         if (column.PropertyName.EndsWith("Id") && (value == null || string.IsNullOrWhiteSpace(value.ToString())))
                         {
                             errors.Add($"{column.DisplayName} is required");
                         }
-                        
+
                         // Validate data type constraints
                         if (value != null)
                         {
@@ -945,7 +947,7 @@ public class CustomDataGridService : ICustomDataGridService
                         }
                     }
                 }
-                
+
                 if (errors.Count > 0)
                 {
                     result.InvalidItems.Add(new ValidationError<T>
@@ -962,14 +964,14 @@ public class CustomDataGridService : ICustomDataGridService
                     result.Statistics.ValidItems++;
                 }
             }
-            
+
             result.IsValid = result.InvalidItems.Count == 0;
-            
+
             await Task.Delay(1); // Simulate async operation
-            
-            _logger.LogDebug("Validation completed: {ValidItems}/{TotalItems} items valid", 
+
+            _logger.LogDebug("Validation completed: {ValidItems}/{TotalItems} items valid",
                 result.Statistics.ValidItems, result.Statistics.TotalItems);
-                
+
             return result;
         }
         catch (Exception ex)
@@ -989,17 +991,17 @@ public class CustomDataGridService : ICustomDataGridService
         var result = new BulkOperationResult<T>();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var itemList = items.ToList();
-        
+
         try
         {
             ArgumentNullException.ThrowIfNull(items);
             ArgumentNullException.ThrowIfNull(updates);
-            
+
             _logger.LogInformation("Starting bulk update operation on {ItemCount} items with {UpdateCount} updates",
                 itemList.Count, updates.Count);
-            
+
             result.Statistics.TotalItems = itemList.Count;
-            
+
             foreach (var item in itemList)
             {
                 try
@@ -1014,7 +1016,7 @@ public class CustomDataGridService : ICustomDataGridService
                             property.SetValue(item, convertedValue);
                         }
                     }
-                    
+
                     result.SuccessfulItems.Add(item);
                     result.Statistics.SuccessfulOperations++;
                 }
@@ -1025,13 +1027,13 @@ public class CustomDataGridService : ICustomDataGridService
                     result.Errors.Add($"Failed to update item: {ex.Message}");
                 }
             }
-            
+
             stopwatch.Stop();
             result.Statistics.Duration = stopwatch.Elapsed;
-            
+
             _logger.LogInformation("Bulk update completed: {SuccessfulOperations}/{TotalItems} items updated in {Duration}ms",
                 result.Statistics.SuccessfulOperations, result.Statistics.TotalItems, stopwatch.ElapsedMilliseconds);
-                
+
             return result;
         }
         catch (Exception ex)
@@ -1052,15 +1054,15 @@ public class CustomDataGridService : ICustomDataGridService
         var result = new BulkOperationResult<T>();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var itemList = items.ToList();
-        
+
         try
         {
             ArgumentNullException.ThrowIfNull(items);
-            
+
             _logger.LogInformation("Starting bulk delete operation on {ItemCount} items", itemList.Count);
-            
+
             result.Statistics.TotalItems = itemList.Count;
-            
+
             // Simulate bulk delete operation
             foreach (var item in itemList)
             {
@@ -1078,15 +1080,15 @@ public class CustomDataGridService : ICustomDataGridService
                     result.Errors.Add($"Failed to delete item: {ex.Message}");
                 }
             }
-            
+
             stopwatch.Stop();
             result.Statistics.Duration = stopwatch.Elapsed;
-            
+
             await Task.Delay(1); // Simulate async operation
-            
+
             _logger.LogInformation("Bulk delete completed: {SuccessfulOperations}/{TotalItems} items deleted in {Duration}ms",
                 result.Statistics.SuccessfulOperations, result.Statistics.TotalItems, stopwatch.ElapsedMilliseconds);
-                
+
             return result;
         }
         catch (Exception ex)
@@ -1106,22 +1108,22 @@ public class CustomDataGridService : ICustomDataGridService
     {
         var result = new DataAnalytics<T>();
         var dataList = data.ToList();
-        
+
         try
         {
             ArgumentNullException.ThrowIfNull(data);
             ArgumentNullException.ThrowIfNull(columns);
-            
-            _logger.LogDebug("Analyzing {ItemCount} data items across {ColumnCount} columns", 
+
+            _logger.LogDebug("Analyzing {ItemCount} data items across {ColumnCount} columns",
                 dataList.Count, columns.Count);
-            
+
             result.TotalItems = dataList.Count;
-            
+
             if (dataList.Count == 0)
             {
                 return result;
             }
-            
+
             // Analyze each column
             foreach (var column in columns.Where(c => c.IsVisible))
             {
@@ -1131,15 +1133,15 @@ public class CustomDataGridService : ICustomDataGridService
                     await AnalyzeColumnAsync(dataList, column, property, result);
                 }
             }
-            
+
             // Calculate data quality metrics
             result.QualityMetrics = CalculateDataQualityMetrics(dataList, result);
-            
+
             // Generate insights
             result.Insights = GenerateDataInsights(result);
-            
+
             _logger.LogDebug("Data analytics completed for {TotalItems} items", result.TotalItems);
-            
+
             return result;
         }
         catch (Exception ex)
@@ -1161,14 +1163,14 @@ public class CustomDataGridService : ICustomDataGridService
             // Full Excel library integration can be added later
             var csvFilePath = filePath.Replace(".xlsx", ".csv");
             var success = await ExportToCsvAsync(data, columns, csvFilePath);
-            
+
             if (success && csvFilePath != filePath)
             {
                 // Copy CSV to Excel filename for compatibility
                 File.Copy(csvFilePath, filePath, true);
                 File.Delete(csvFilePath);
             }
-            
+
             _logger.LogInformation("Excel export completed (CSV format): {FilePath}", filePath);
             return success;
         }
@@ -1185,7 +1187,7 @@ public class CustomDataGridService : ICustomDataGridService
     #endregion
 
     #region Private Methods
-    
+
     private Task HandleErrorAsync(Exception ex, string context)
     {
         try
@@ -1197,7 +1199,7 @@ public class CustomDataGridService : ICustomDataGridService
         {
             _logger.LogCritical(handlingEx, "Error in error handling for context: {Context}", context);
         }
-        
+
         return Task.CompletedTask;
     }
 
@@ -1211,11 +1213,11 @@ public class CustomDataGridService : ICustomDataGridService
         var values = new List<string>();
         var current = new System.Text.StringBuilder();
         bool inQuotes = false;
-        
+
         for (int i = 0; i < line.Length; i++)
         {
             char c = line[i];
-            
+
             if (c == '"')
             {
                 inQuotes = !inQuotes;
@@ -1230,7 +1232,7 @@ public class CustomDataGridService : ICustomDataGridService
                 current.Append(c);
             }
         }
-        
+
         values.Add(current.ToString().Trim());
         return values.ToArray();
     }
@@ -1242,29 +1244,29 @@ public class CustomDataGridService : ICustomDataGridService
     {
         if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
             return null;
-            
+
         var stringValue = value.ToString()!;
-        
+
         try
         {
             if (targetType == typeof(string))
                 return stringValue;
-                
+
             if (targetType == typeof(int) || targetType == typeof(int?))
                 return int.Parse(stringValue);
-                
+
             if (targetType == typeof(double) || targetType == typeof(double?))
                 return double.Parse(stringValue);
-                
+
             if (targetType == typeof(decimal) || targetType == typeof(decimal?))
                 return decimal.Parse(stringValue);
-                
+
             if (targetType == typeof(DateTime) || targetType == typeof(DateTime?))
                 return DateTime.Parse(stringValue);
-                
+
             if (targetType == typeof(bool) || targetType == typeof(bool?))
                 return bool.Parse(stringValue);
-                
+
             // Try generic conversion as fallback
             return Convert.ChangeType(stringValue, Nullable.GetUnderlyingType(targetType) ?? targetType);
         }
@@ -1283,7 +1285,7 @@ public class CustomDataGridService : ICustomDataGridService
         {
             var values = data.Select(item => property.GetValue(item)).ToList();
             var nonNullValues = values.Where(v => v != null).ToList();
-            
+
             var stats = new ColumnStatistics
             {
                 ColumnName = column.DisplayName,
@@ -1291,7 +1293,7 @@ public class CustomDataGridService : ICustomDataGridService
                 NullCount = values.Count - nonNullValues.Count,
                 UniqueCount = nonNullValues.Distinct().Count()
             };
-            
+
             if (nonNullValues.Count > 0)
             {
                 // Calculate min/max for comparable types
@@ -1300,22 +1302,22 @@ public class CustomDataGridService : ICustomDataGridService
                     stats.MinValue = nonNullValues.Min();
                     stats.MaxValue = nonNullValues.Max();
                 }
-                
+
                 // Calculate average for numeric types
                 if (column.DataType == typeof(int) || column.DataType == typeof(double) || column.DataType == typeof(decimal))
                 {
                     stats.Average = nonNullValues.Cast<IConvertible>().Average(v => v.ToDouble(null));
                 }
             }
-            
+
             result.ColumnStatistics[column.PropertyName] = stats;
-            
+
             // Create data distribution
             var distribution = new DataDistribution
             {
                 ColumnName = column.DisplayName
             };
-            
+
             foreach (var value in nonNullValues)
             {
                 if (distribution.ValueFrequencies.ContainsKey(value))
@@ -1323,16 +1325,16 @@ public class CustomDataGridService : ICustomDataGridService
                 else
                     distribution.ValueFrequencies[value] = 1;
             }
-            
+
             if (distribution.ValueFrequencies.Count > 0)
             {
                 var mostCommon = distribution.ValueFrequencies.OrderByDescending(kvp => kvp.Value).First();
                 distribution.MostCommonValue = mostCommon.Key;
                 distribution.MostCommonFrequency = mostCommon.Value;
             }
-            
+
             result.DataDistributions[column.PropertyName] = distribution;
-            
+
             await Task.Delay(1); // Simulate async processing
         }
         catch (Exception ex)
@@ -1347,24 +1349,24 @@ public class CustomDataGridService : ICustomDataGridService
     private static DataQualityMetrics CalculateDataQualityMetrics<T>(List<T> data, DataAnalytics<T> analytics)
     {
         var metrics = new DataQualityMetrics();
-        
+
         if (data.Count == 0 || analytics.ColumnStatistics.Count == 0)
             return metrics;
-        
+
         // Calculate completeness (percentage of non-null values)
         var totalCells = data.Count * analytics.ColumnStatistics.Count;
         var nullCells = analytics.ColumnStatistics.Values.Sum(s => s.NullCount);
         metrics.CompletenessScore = totalCells > 0 ? (double)(totalCells - nullCells) / totalCells * 100 : 100;
-        
+
         // Calculate consistency (based on data type conformity)
         metrics.ConsistencyScore = 95; // Simplified calculation for demo
-        
+
         // Detect potential duplicates (simplified)
         metrics.DuplicateRows = 0; // Would require more complex duplicate detection
-        
+
         // Overall score is weighted average
         metrics.OverallScore = (metrics.CompletenessScore * 0.6) + (metrics.ConsistencyScore * 0.4);
-        
+
         return metrics;
     }
 
@@ -1374,7 +1376,7 @@ public class CustomDataGridService : ICustomDataGridService
     private static List<DataInsight> GenerateDataInsights<T>(DataAnalytics<T> analytics)
     {
         var insights = new List<DataInsight>();
-        
+
         // Check data quality
         if (analytics.QualityMetrics.CompletenessScore < 90)
         {
@@ -1387,7 +1389,7 @@ public class CustomDataGridService : ICustomDataGridService
                 RecommendedActions = { "Review data collection processes", "Implement validation rules", "Clean existing data" }
             });
         }
-        
+
         // Check for columns with high null rates
         foreach (var column in analytics.ColumnStatistics.Where(kvp => kvp.Value.NullCount > analytics.TotalItems * 0.3))
         {
@@ -1400,7 +1402,7 @@ public class CustomDataGridService : ICustomDataGridService
                 RecommendedActions = { "Review data source", "Add default values", "Improve data collection" }
             });
         }
-        
+
         // Check for low cardinality columns
         foreach (var column in analytics.ColumnStatistics.Where(kvp => kvp.Value.UniqueCount < 5 && analytics.TotalItems > 50))
         {
@@ -1413,7 +1415,7 @@ public class CustomDataGridService : ICustomDataGridService
                 RecommendedActions = { "Verify data diversity", "Check for data entry constraints" }
             });
         }
-        
+
         return insights;
     }
 
@@ -1461,7 +1463,7 @@ public class SelectionStatistics
     /// <summary>
     /// Gets a summary string describing the selection.
     /// </summary>
-    public string SelectionSummary => 
+    public string SelectionSummary =>
         SelectedCount == 0 ? "No items selected" :
         SelectedCount == 1 ? "1 item selected" :
         IsAllSelected ? $"All {TotalCount} items selected" :
@@ -1492,9 +1494,9 @@ public class ValidationResult
     /// <summary>
     /// Gets a summary of the validation result.
     /// </summary>
-    public string Summary => IsValid 
-        ? "Validation passed successfully" 
-        : $"Validation failed with {Errors.Count} error(s)" + 
+    public string Summary => IsValid
+        ? "Validation passed successfully"
+        : $"Validation failed with {Errors.Count} error(s)" +
           (Warnings.Count > 0 ? $" and {Warnings.Count} warning(s)" : "");
 
     /// <summary>
@@ -1515,31 +1517,31 @@ public class ImportResult<T>
     /// Gets or sets whether the import was successful.
     /// </summary>
     public bool IsSuccess { get; set; } = true;
-    
+
     /// <summary>
     /// Gets the imported data items.
     /// </summary>
     public List<T> ImportedData { get; set; } = new();
-    
+
     /// <summary>
     /// Gets the collection of import errors.
     /// </summary>
     public List<string> Errors { get; set; } = new();
-    
+
     /// <summary>
     /// Gets the collection of import warnings.
     /// </summary>
     public List<string> Warnings { get; set; } = new();
-    
+
     /// <summary>
     /// Gets import statistics and metrics.
     /// </summary>
     public ImportStatistics Statistics { get; set; } = new();
-    
+
     /// <summary>
     /// Gets a summary of the import result.
     /// </summary>
-    public string Summary => IsSuccess 
+    public string Summary => IsSuccess
         ? $"Successfully imported {ImportedData.Count} items"
         : $"Import failed: {Errors.Count} error(s), {Warnings.Count} warning(s)";
 }
@@ -1553,27 +1555,27 @@ public class ImportStatistics
     /// Gets or sets the total number of rows processed.
     /// </summary>
     public int TotalRows { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of successfully imported rows.
     /// </summary>
     public int SuccessfulRows { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of rows with errors.
     /// </summary>
     public int ErrorRows { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of rows skipped.
     /// </summary>
     public int SkippedRows { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the time taken for the import operation.
     /// </summary>
     public TimeSpan Duration { get; set; }
-    
+
     /// <summary>
     /// Gets the success rate as a percentage.
     /// </summary>
@@ -1590,31 +1592,31 @@ public class BulkOperationResult<T>
     /// Gets or sets whether the operation was successful.
     /// </summary>
     public bool IsSuccess { get; set; } = true;
-    
+
     /// <summary>
     /// Gets the items that were successfully processed.
     /// </summary>
     public List<T> SuccessfulItems { get; set; } = new();
-    
+
     /// <summary>
     /// Gets the items that failed to process.
     /// </summary>
     public List<T> FailedItems { get; set; } = new();
-    
+
     /// <summary>
     /// Gets the collection of operation errors.
     /// </summary>
     public List<string> Errors { get; set; } = new();
-    
+
     /// <summary>
     /// Gets operation statistics.
     /// </summary>
     public BulkOperationStatistics Statistics { get; set; } = new();
-    
+
     /// <summary>
     /// Gets a summary of the bulk operation result.
     /// </summary>
-    public string Summary => IsSuccess 
+    public string Summary => IsSuccess
         ? $"Successfully processed {SuccessfulItems.Count} items"
         : $"Processed {SuccessfulItems.Count} items, {FailedItems.Count} failed";
 }
@@ -1628,22 +1630,22 @@ public class BulkOperationStatistics
     /// Gets or sets the total number of items processed.
     /// </summary>
     public int TotalItems { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of successful operations.
     /// </summary>
     public int SuccessfulOperations { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of failed operations.
     /// </summary>
     public int FailedOperations { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the time taken for the bulk operation.
     /// </summary>
     public TimeSpan Duration { get; set; }
-    
+
     /// <summary>
     /// Gets the success rate as a percentage.
     /// </summary>
@@ -1660,17 +1662,17 @@ public class ValidationResult<T>
     /// Gets or sets whether the data is valid.
     /// </summary>
     public bool IsValid { get; set; } = true;
-    
+
     /// <summary>
     /// Gets the valid data items.
     /// </summary>
     public List<T> ValidItems { get; set; } = new();
-    
+
     /// <summary>
     /// Gets the invalid data items with their errors.
     /// </summary>
     public List<ValidationError<T>> InvalidItems { get; set; } = new();
-    
+
     /// <summary>
     /// Gets validation statistics.
     /// </summary>
@@ -1686,12 +1688,12 @@ public class ValidationError<T>
     /// Gets or sets the invalid data item.
     /// </summary>
     public T Item { get; set; } = default!;
-    
+
     /// <summary>
     /// Gets the collection of validation errors for this item.
     /// </summary>
     public List<string> Errors { get; set; } = new();
-    
+
     /// <summary>
     /// Gets or sets the row number (for file imports).
     /// </summary>
@@ -1707,17 +1709,17 @@ public class ValidationStatistics
     /// Gets or sets the total number of items validated.
     /// </summary>
     public int TotalItems { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of valid items.
     /// </summary>
     public int ValidItems { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of invalid items.
     /// </summary>
     public int InvalidItems { get; set; }
-    
+
     /// <summary>
     /// Gets the validation success rate as a percentage.
     /// </summary>
@@ -1734,22 +1736,22 @@ public class DataAnalytics<T>
     /// Gets or sets the total number of items analyzed.
     /// </summary>
     public int TotalItems { get; set; }
-    
+
     /// <summary>
     /// Gets column statistics for numeric columns.
     /// </summary>
     public Dictionary<string, ColumnStatistics> ColumnStatistics { get; set; } = new();
-    
+
     /// <summary>
     /// Gets data distribution information.
     /// </summary>
     public Dictionary<string, DataDistribution> DataDistributions { get; set; } = new();
-    
+
     /// <summary>
     /// Gets data quality metrics.
     /// </summary>
     public DataQualityMetrics QualityMetrics { get; set; } = new();
-    
+
     /// <summary>
     /// Gets insights and recommendations.
     /// </summary>
@@ -1765,32 +1767,32 @@ public class ColumnStatistics
     /// Gets or sets the column name.
     /// </summary>
     public string ColumnName { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Gets or sets the data type.
     /// </summary>
     public Type DataType { get; set; } = typeof(object);
-    
+
     /// <summary>
     /// Gets or sets the minimum value.
     /// </summary>
     public object? MinValue { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the maximum value.
     /// </summary>
     public object? MaxValue { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the average value (for numeric types).
     /// </summary>
     public double? Average { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of null/empty values.
     /// </summary>
     public int NullCount { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of unique values.
     /// </summary>
@@ -1806,17 +1808,17 @@ public class DataDistribution
     /// Gets or sets the column name.
     /// </summary>
     public string ColumnName { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Gets value frequency counts.
     /// </summary>
     public Dictionary<object, int> ValueFrequencies { get; set; } = new();
-    
+
     /// <summary>
     /// Gets the most common value.
     /// </summary>
     public object? MostCommonValue { get; set; }
-    
+
     /// <summary>
     /// Gets the frequency of the most common value.
     /// </summary>
@@ -1832,17 +1834,17 @@ public class DataQualityMetrics
     /// Gets or sets the completeness score (0-100).
     /// </summary>
     public double CompletenessScore { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the data consistency score (0-100).
     /// </summary>
     public double ConsistencyScore { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the number of duplicate rows.
     /// </summary>
     public int DuplicateRows { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the overall data quality score (0-100).
     /// </summary>
@@ -1858,22 +1860,22 @@ public class DataInsight
     /// Gets or sets the insight type.
     /// </summary>
     public DataInsightType Type { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the insight title.
     /// </summary>
     public string Title { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Gets or sets the insight description.
     /// </summary>
     public string Description { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Gets or sets the importance level.
     /// </summary>
     public ImportanceLevel Importance { get; set; }
-    
+
     /// <summary>
     /// Gets or sets any recommended actions.
     /// </summary>

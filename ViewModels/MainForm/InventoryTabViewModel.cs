@@ -1,36 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.UI;
 using MTM_WIP_Application_Avalonia.Services.Business;
+using MTM_WIP_Application_Avalonia.Services.Feature;
+using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_WIP_Application_Avalonia.Models;
+using MTM_WIP_Application_Avalonia.Models.Events;
 using Avalonia.Threading;
-using MTM_WIP_Application_Avalonia.Views;
-using Avalonia.Controls;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 /// <summary>
 /// InventoryTabViewModel - Comprehensive inventory management interface using MVVM Community Toolkit
-/// 
+///
 /// Provides comprehensive inventory management functionality including item entry, validation,
 /// lookup data management, and integration with MTM business operations. Uses MVVM Community Toolkit
 /// patterns for modern .NET development with source generators and optimized performance.
-/// 
+///
 /// Key Features:
 /// - MVVM Community Toolkit with [ObservableProperty] and [RelayCommand] source generators
-/// - Centralized progress reporting via IApplicationStateService 
+/// - Centralized progress reporting via IApplicationStateService
 /// - MTM database integration with stored procedures
 /// - Comprehensive input validation with user feedback
 /// - Comprehensive input validation with user feedback
@@ -45,8 +43,9 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService? _configurationService;
     private readonly ISuggestionOverlayService _suggestionService;
-    private readonly MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService _masterDataService;
+    private readonly IMasterDataService _masterDataService;
     private readonly ISuccessOverlayService? _successOverlayService;
+    private readonly IUniversalOverlayService _universalOverlayService;
 
     #endregion
 
@@ -70,7 +69,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Currently selected operation number (e.g., "90", "100", "110")
     /// </summary>
-    [ObservableProperty] 
+    [ObservableProperty]
     private string _selectedOperation = string.Empty;
 
     /// <summary>
@@ -261,7 +260,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// Determines if the save operation can be executed based on current validation state
     /// Requires all fields to have valid values from the database and quantity to be positive
     /// </summary>
-    public bool CanSave => !IsLoading && 
+    public bool CanSave => !IsLoading &&
                           IsPartValidInDatabase &&
                           IsOperationValidInDatabase &&
                           IsLocationValidInDatabase &&
@@ -275,7 +274,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Validation state for Part ID field - checks if value exists in database
     /// </summary>
-    public bool IsPartValidInDatabase => IsPartValid && 
+    public bool IsPartValidInDatabase => IsPartValid &&
                                         _masterDataService?.PartIds?.Contains(SelectedPart) == true;
 
     /// <summary>
@@ -289,7 +288,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// Validation state for Operation field - checks if not empty and valid manufacturing operation number
     /// Valid operations are numeric strings like "90", "100", "110", "120", etc.
     /// </summary>
-    public bool IsOperationValid => !string.IsNullOrWhiteSpace(SelectedOperation) && 
+    public bool IsOperationValid => !string.IsNullOrWhiteSpace(SelectedOperation) &&
                                    IsValidManufacturingOperation(SelectedOperation);
 
     /// <summary>
@@ -308,7 +307,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Validation state for Operation field - checks if value exists in database
     /// </summary>
-    public bool IsOperationValidInDatabase => IsOperationValid && 
+    public bool IsOperationValidInDatabase => IsOperationValid &&
                                              _masterDataService?.Operations?.Contains(SelectedOperation) == true;
 
     /// <summary>
@@ -326,7 +325,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Validation state for Location field - checks if value exists in database
     /// </summary>
-    public bool IsLocationValidInDatabase => IsLocationValid && 
+    public bool IsLocationValidInDatabase => IsLocationValid &&
                                             _masterDataService?.Locations?.Contains(SelectedLocation) == true;
 
     /// <summary>
@@ -382,7 +381,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Design-time constructor for XAML designer support
     /// </summary>
-    public InventoryTabViewModel() : this(null!, null!, null!, null!, null!, null!, null!)
+    public InventoryTabViewModel() : this(null!, null!, null!, null!, null!, null!, null!, null!)
     {
         // Design-time constructor - services will be null but handled gracefully
     }
@@ -397,14 +396,16 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <param name="suggestionService">Suggestion overlay service</param>
     /// <param name="masterDataService">Master data service for shared reference data</param>
     /// <param name="successOverlayService">Success overlay service for user feedback</param>
+    /// <param name="universalOverlayService">Universal overlay service for loading and error overlays</param>
     public InventoryTabViewModel(
         IApplicationStateService applicationStateService,
-        INavigationService navigationService, 
+        INavigationService navigationService,
         IDatabaseService databaseService,
         IConfigurationService configurationService,
         ISuggestionOverlayService suggestionService,
-        MTM_WIP_Application_Avalonia.Services.Business.IMasterDataService masterDataService,
-        ISuccessOverlayService? successOverlayService = null) : base()
+        IMasterDataService masterDataService,
+        ISuccessOverlayService? successOverlayService,
+        IUniversalOverlayService universalOverlayService) : base()
     {
         // Validate required dependencies with descriptive error messages
         _applicationStateService = applicationStateService ?? throw new ArgumentNullException(nameof(applicationStateService), "Application state service is required for inventory management");
@@ -414,19 +415,20 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         _suggestionService = suggestionService ?? throw new ArgumentNullException(nameof(suggestionService), "Suggestion service is required for user experience");
         _masterDataService = masterDataService ?? throw new ArgumentNullException(nameof(masterDataService), "Master data service is required for reference data");
         _successOverlayService = successOverlayService; // Optional service - can be null
+        _universalOverlayService = universalOverlayService ?? throw new ArgumentNullException(nameof(universalOverlayService), "Universal overlay service is required for modern UX");
 
         Logger.LogInformation("InventoryTabViewModel initialized with MVVM Community Toolkit patterns");
-        Logger.LogInformation("Connection string configured: {HasConnectionString}", 
+        Logger.LogInformation("Connection string configured: {HasConnectionString}",
             !string.IsNullOrEmpty(_configurationService?.GetConnectionString()));
-        
+
         // Initialize master data loading
-        _ = Task.Run(async () => 
+        _ = Task.Run(async () =>
         {
             try
             {
                 await _masterDataService.LoadAllMasterDataAsync();
                 Logger.LogInformation("Master data loaded successfully for InventoryTabViewModel");
-                
+
                 // Update database validation states after master data is loaded
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -445,7 +447,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                 Logger.LogError(ex, "Failed to load master data in InventoryTabViewModel");
             }
         });
-        
+
         // Database loading will be deferred until after UI is shown to prevent startup deadlocks
         Logger.LogInformation("InventoryTabViewModel constructor completed - database loading deferred");
     }
@@ -457,15 +459,17 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Command to save the current inventory item to the database
     /// Includes comprehensive validation, progress reporting, and error handling
+    /// Enhanced with Universal Overlay Service for better UX
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
     {
         try
         {
+            // Enhanced overlay integration for better UX
             IsLoading = true;
 
-            Logger.LogInformation("Saving inventory item: Part={PartId}, Operation={Operation}, Quantity={Quantity}", 
+            Logger.LogInformation("Saving inventory item: Part={PartId}, Operation={Operation}, Quantity={Quantity}",
                 SelectedPart, SelectedOperation, Quantity);
 
             // Update progress to MainView - following centralized progress pattern
@@ -475,8 +479,20 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             if (!ValidateInput())
             {
                 await _applicationStateService.SetProgressAsync(0, "Validation failed");
-                Logger.LogWarning("Form validation failed - Part: '{Part}', Operation: '{Operation}', Location: '{Location}', Quantity: {Quantity}", 
+                Logger.LogWarning("Form validation failed - Part: '{Part}', Operation: '{Operation}', Location: '{Location}', Quantity: {Quantity}",
                     SelectedPart, SelectedOperation, SelectedLocation, Quantity);
+
+                // Show validation error overlay
+                if (_successOverlayService != null)
+                {
+                    await _successOverlayService.ShowErrorOverlayInMainViewAsync(
+                        null,
+                        "Validation Failed",
+                        "Please check all required fields and ensure data is valid",
+                        "AlertCircle",
+                        3000
+                    );
+                }
                 return;
             }
 
@@ -494,8 +510,8 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
 
             // Generate unique batch number for inventory tracking (following WinForms pattern)
             var batchNumber = await GenerateUniqueBatchNumberAsync();
-            
-            Logger.LogInformation("Attempting to save with values - Part: '{PartId}', Operation: '{Operation}', Location: '{Location}', Quantity: {Quantity}, User: '{User}', Batch: '{BatchNumber}'", 
+
+            Logger.LogInformation("Attempting to save with values - Part: '{PartId}', Operation: '{Operation}', Location: '{Location}', Quantity: {Quantity}, User: '{User}', Batch: '{BatchNumber}'",
                 SelectedPart, SelectedOperation ?? "NULL", SelectedLocation ?? "NULL", Quantity, currentUser, batchNumber);
 
             // Use DatabaseService method for proper parameter validation and error handling
@@ -513,51 +529,45 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             if (result.IsSuccess)
             {
                 await _applicationStateService.SetProgressAsync(75, "Processing transaction...");
-                
+
                 Logger.LogInformation("Inventory item saved successfully with batch number: {BatchNumber}", batchNumber);
-                
-                // Show success overlay (new implementation)
+
+                // Show success overlay with enhanced details
                 var successDetails = $"Part: {SelectedPart} | Operation: {SelectedOperation ?? "N/A"} | Quantity: {Quantity} | Location: {SelectedLocation ?? "N/A"}";
-                
-                // Fire event for View to handle overlay display
-                var successArgs = new SuccessEventArgs
-                {
-                    Message = "Inventory item saved successfully!",
-                    Details = successDetails,
-                    IconKind = "CheckCircle",
-                    Duration = 4000, // 4 seconds: form resets immediately, overlay continues for additional time
-                    SuccessTime = DateTime.Now
-                };
-                
-                Logger.LogInformation("[SUCCESS EVENT] About to fire ShowSuccessOverlay event. Event null? {EventNull}, ViewModel HashCode: {ViewModelHash}, Subscribers: {SubscriberCount}",
-                    ShowSuccessOverlay == null,
-                    GetHashCode(),
-                    ShowSuccessOverlay?.GetInvocationList()?.Length ?? 0);
-                
-                ShowSuccessOverlay?.Invoke(this, successArgs);
-                
-                Logger.LogInformation("[SUCCESS EVENT] ShowSuccessOverlay event fired successfully");
-                
+
+                // Use Success Overlay Service if available for better UX
                 if (_successOverlayService != null)
                 {
-                    try
-                    {
-                        // Start the overlay but don't wait for it to complete - let it dismiss on its own after 4 seconds
-                        _ = _successOverlayService.ShowSuccessOverlayInMainViewAsync(
-                            null, // Auto-resolve MainView
-                            "Inventory item saved successfully!",
-                            successDetails,
-                            "CheckCircle",
-                            4000 // 4 seconds total: form resets immediately, overlay continues for additional 2 seconds
-                        );
-                        Logger.LogInformation("Success overlay started for inventory save operation (4 second duration)");
-                    }
-                    catch (Exception overlayEx)
-                    {
-                        Logger.LogWarning(overlayEx, "Failed to show success overlay");
-                    }
+                    await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
+                        null,
+                        "Inventory Saved Successfully",
+                        successDetails,
+                        "CheckCircle",
+                        4000
+                    );
                 }
-                
+                else
+                {
+                    // Fallback to event-based approach
+                    var successArgs = new SuccessEventArgs
+                    {
+                        Message = "Inventory item saved successfully!",
+                        Details = successDetails,
+                        IconKind = "CheckCircle",
+                        Duration = 4000, // 4 seconds: form resets immediately, overlay continues for additional time
+                        SuccessTime = DateTime.Now
+                    };
+
+                    Logger.LogInformation("[SUCCESS EVENT] About to fire ShowSuccessOverlay event. Event null? {EventNull}, ViewModel HashCode: {ViewModelHash}, Subscribers: {SubscriberCount}",
+                        ShowSuccessOverlay == null,
+                        GetHashCode(),
+                        ShowSuccessOverlay?.GetInvocationList()?.Length ?? 0);
+
+                    ShowSuccessOverlay?.Invoke(this, successArgs);
+                }
+
+                Logger.LogInformation("[SUCCESS EVENT] ShowSuccessOverlay event fired successfully");
+
                 // Fire event to notify parent components (following WinForms pattern)
                 SaveCompleted?.Invoke(this, new InventorySavedEventArgs
                 {
@@ -567,36 +577,60 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                     Location = SelectedLocation ?? string.Empty,
                     Notes = Notes ?? string.Empty
                 });
-                
+
                 await _applicationStateService.SetProgressAsync(100, "Inventory saved successfully");
-                
-                // Clear progress immediately 
+
+                // Clear progress immediately
                 await _applicationStateService.ClearProgressAsync();
-                
+
                 // Reset form immediately after overlay starts - overlay will continue running independently
                 await ResetAsync();
-                
+
                 // Update application state with last used values
                 _applicationStateService.CurrentOperation = SelectedOperation ?? string.Empty;
                 _applicationStateService.CurrentLocation = SelectedLocation ?? string.Empty;
             }
             else
             {
-                Logger.LogError("Failed to save inventory item: Status={Status}, Message='{Message}', Parameters: Part='{Part}', Operation='{Operation}', Location='{Location}', Quantity={Quantity}, User='{User}'", 
+                Logger.LogError("Failed to save inventory item: Status={Status}, Message='{Message}', Parameters: Part='{Part}', Operation='{Operation}', Location='{Location}', Quantity={Quantity}, User='{User}'",
                     result.Status, result.Message, SelectedPart, SelectedOperation, SelectedLocation, Quantity, currentUser);
-                
+
+                // Show error overlay with enhanced UX
+                if (_successOverlayService != null)
+                {
+                    await _successOverlayService.ShowErrorOverlayInMainViewAsync(
+                        null,
+                        "Save Failed",
+                        result.Message ?? "Database operation failed. Please check your data and try again.",
+                        "AlertCircle",
+                        5000 // Longer display for errors
+                    );
+                }
+
                 // Use centralized error handling instead of local error properties
                 await Services.Core.ErrorHandling.HandleErrorAsync(
-                    new InvalidOperationException(result.Message ?? "Database operation failed"), 
+                    new InvalidOperationException(result.Message ?? "Database operation failed"),
                     "Failed to save inventory item",
                     _applicationStateService.CurrentUser
                 );
-                
+
                 await _applicationStateService.SetProgressAsync(0, $"Error: {result.Message ?? "Database operation failed"}");
             }
         }
         catch (Exception ex)
         {
+            // Show error overlay for exceptions
+            if (_successOverlayService != null)
+            {
+                await _successOverlayService.ShowErrorOverlayInMainViewAsync(
+                    null,
+                    "Unexpected Error",
+                    $"An unexpected error occurred: {ex.Message}",
+                    "AlertCircle",
+                    5000
+                );
+            }
+
             // Use centralized error handling for exceptions
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Error saving inventory item", _applicationStateService.CurrentUser);
             Logger.LogError(ex, "Exception during inventory save operation");
@@ -632,7 +666,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
 
             // Form reset completed
             Logger.LogInformation("Inventory form reset completed successfully");
-            
+
             // Trigger LostFocus events to restore error highlighting on cleared fields
             TriggerValidationLostFocus?.Invoke(this, EventArgs.Empty);
 
@@ -722,14 +756,14 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             // Test database connection first
             Logger.LogInformation("Testing database connection...");
             var isConnected = await _databaseService.TestConnectionAsync();
-            
+
             if (!isConnected)
             {
                 Logger.LogWarning("Database connection test failed, using fallback data");
                 await LoadFallbackDataAsync();
                 return;
             }
-            
+
             Logger.LogInformation("Database connection successful, loading real data");
             await LoadLookupDataAsync();
         }
@@ -777,9 +811,9 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         try
         {
             IsLoadingParts = true;
-            
+
             Logger.LogInformation("Loading Part IDs from database...");
-            
+
             // First try to get parts directly from master data table using the correct stored procedure
             var masterResult = await Services.Core.Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _configurationService?.GetConnectionString() ?? throw new InvalidOperationException("Configuration service not available"),
@@ -787,58 +821,26 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                 new Dictionary<string, object>()
             );
 
-            if (masterResult.IsSuccess && masterResult.Data.Rows.Count > 0)
+            if (masterResult.Status == 1 && masterResult.Data.Rows.Count > 0)
             {
                 Logger.LogInformation("Successfully retrieved {Count} rows from md_part_ids_Get_All", masterResult.Data.Rows.Count);
-                
+
                 Dispatcher.UIThread.Post(() =>
                 {
                     PartIds.Clear();
                     foreach (DataRow row in masterResult.Data.Rows)
                     {
-                        // Try different possible column names based on the table structure
-                        string? partId = null;
-                        
-                        if (masterResult.Data.Columns.Contains("PartID"))
-                        {
-                            partId = row["PartID"]?.ToString();
-                        }
-                        else if (masterResult.Data.Columns.Contains("partid"))
-                        {
-                            partId = row["partid"]?.ToString();
-                        }
-                        else if (masterResult.Data.Columns.Contains("part_id"))
-                        {
-                            partId = row["part_id"]?.ToString();
-                        }
-                        else if (masterResult.Data.Columns.Contains("ItemNumber"))
-                        {
-                            partId = row["ItemNumber"]?.ToString();
-                        }
-                        else if (masterResult.Data.Columns.Contains("item_number"))
-                        {
-                            partId = row["item_number"]?.ToString();
-                        }
-                        else
-                        {
-                            // If we can't find expected columns, use the first non-ID column
-                            var firstDataColumn = masterResult.Data.Columns.Cast<DataColumn>()
-                                .FirstOrDefault(c => !c.ColumnName.Equals("ID", StringComparison.OrdinalIgnoreCase));
-                            if (firstDataColumn != null)
-                            {
-                                partId = row[firstDataColumn.ColumnName]?.ToString();
-                            }
-                        }
-                        
+                        // Use correct column name from md_part_ids table schema: "PartID"
+                        var partId = row["PartID"]?.ToString();
                         if (!string.IsNullOrEmpty(partId))
                         {
                             PartIds.Add(partId);
                         }
                     }
                 });
-                
+
                 Logger.LogInformation("Loaded {Count} Part IDs from master data table", PartIds.Count);
-                
+
                 // Log first few part IDs for verification
                 if (PartIds.Count > 0)
                 {
@@ -848,52 +850,44 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             }
             else
             {
-                Logger.LogWarning("md_part_ids_Get_All returned no data. Status: {Status}, Message: {Message}", 
+                Logger.LogWarning("md_part_ids_Get_All returned no data. Status: {Status}, Message: {Message}",
                     masterResult.Status, masterResult.Message);
-                
+
                 // Try getting parts from inventory table as fallback
                 Logger.LogInformation("Trying to get unique parts from inventory table...");
-                
+
                 var inventoryResult = await _databaseService.GetAllPartIDsAsync();
-                
+
                 if (inventoryResult != null && inventoryResult.Rows.Count > 0)
                 {
                     Logger.LogInformation("Retrieved {Count} rows from inventory", inventoryResult.Rows.Count);
-                    
+
                     // Log inventory column names for reference
                     var invColumnNames = string.Join(", ", inventoryResult.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
                     Logger.LogInformation("Inventory columns: {Columns}", invColumnNames);
-                    
+
                     Dispatcher.UIThread.Post(() =>
                     {
                         PartIds.Clear();
                         var uniqueParts = new HashSet<string>();
-                        
+
                         foreach (DataRow row in inventoryResult.Rows)
                         {
                             // Try different possible column names for part ID in inventory
                             string? partId = null;
-                            
+
                             if (inventoryResult.Columns.Contains("PartID"))
                             {
                                 partId = row["PartID"]?.ToString();
                             }
-                            else if (inventoryResult.Columns.Contains("partid"))
-                            {
-                                partId = row["partid"]?.ToString();
-                            }
-                            else if (inventoryResult.Columns.Contains("part_id"))
-                            {
-                                partId = row["part_id"]?.ToString();
-                            }
-                            
+
                             if (!string.IsNullOrEmpty(partId) && uniqueParts.Add(partId))
                             {
                                 PartIds.Add(partId);
                             }
                         }
                     });
-                    
+
                     Logger.LogInformation("Loaded {Count} unique Part IDs from inventory table", PartIds.Count);
                 }
                 else
@@ -922,9 +916,9 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         try
         {
             IsLoadingOperations = true;
-            
+
             Logger.LogInformation("Loading Operations from database...");
-            
+
             // Load Operations using DatabaseService
             var result = await _databaseService.GetAllOperationsAsync();
 
@@ -943,7 +937,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                         }
                     }
                 });
-                
+
                 Logger.LogInformation("Loaded {Count} Operations from database", Operations.Count);
             }
             else
@@ -971,9 +965,9 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         try
         {
             IsLoadingLocations = true;
-            
+
             Logger.LogInformation("Loading Locations from database...");
-            
+
             // Load Locations using DatabaseService
             var result = await _databaseService.GetAllLocationsAsync();
 
@@ -992,7 +986,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
                         }
                     }
                 });
-                
+
                 Logger.LogInformation("Loaded {Count} Locations from database", Locations.Count);
             }
             else
@@ -1084,7 +1078,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     private static class DatabaseConstraints
     {
         public const int PartID_MaxLength = 300;      // VARCHAR(300)
-        public const int Location_MaxLength = 100;    // VARCHAR(100) 
+        public const int Location_MaxLength = 100;    // VARCHAR(100)
         public const int Operation_MaxLength = 100;   // VARCHAR(100)
         public const int ItemType_MaxLength = 100;    // VARCHAR(100)
         public const int User_MaxLength = 100;        // VARCHAR(100)
@@ -1157,14 +1151,14 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
     {
         const int maxAttempts = 100;
         var attempt = 0;
-        
+
         while (attempt < maxAttempts)
         {
             // Generate batch number with timestamp and random component
             var timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
             var randomComponent = (Environment.TickCount % 10000) + attempt;
             var batchNumber = $"BATCH-{timestamp}-{randomComponent:D4}";
-            
+
             try
             {
                 // Check if batch number already exists in the database
@@ -1177,12 +1171,12 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             {
                 Logger.LogWarning(ex, "Failed to validate batch number uniqueness on attempt {Attempt}", attempt + 1);
                 attempt++;
-                
+
                 // Add small delay to ensure timestamp changes
                 await Task.Delay(10);
             }
         }
-        
+
         // Fallback - this should never happen but provides safety
         var fallbackBatch = $"BATCH-FALLBACK-{DateTime.Now.Ticks}";
         Logger.LogWarning("Using fallback batch number after {MaxAttempts} attempts: {BatchNumber}", maxAttempts, fallbackBatch);
@@ -1203,7 +1197,7 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
         try
         {
             // Refresh validation state for all form fields
-            
+
             // Trigger property change notifications for all validation properties
             OnPropertyChanged(nameof(IsPartValid));
             OnPropertyChanged(nameof(IsPartValidInDatabase));
@@ -1213,18 +1207,18 @@ public partial class InventoryTabViewModel : BaseViewModel, IDisposable
             OnPropertyChanged(nameof(IsLocationValidInDatabase));
             OnPropertyChanged(nameof(IsQuantityValid));
             OnPropertyChanged(nameof(IsNotesValid));
-            
+
             // Trigger property change notifications for watermarks
             OnPropertyChanged(nameof(PartWatermark));
             OnPropertyChanged(nameof(OperationWatermark));
             OnPropertyChanged(nameof(LocationWatermark));
             OnPropertyChanged(nameof(QuantityWatermark));
             OnPropertyChanged(nameof(NotesWatermark));
-            
+
             // Trigger property change notification for overall form state
             OnPropertyChanged(nameof(CanSave));
             SaveCommand.NotifyCanExecuteChanged();
-            
+
             Logger.LogInformation("Validation state refreshed - CanSave: {CanSave}", CanSave);
         }
         catch (Exception ex)

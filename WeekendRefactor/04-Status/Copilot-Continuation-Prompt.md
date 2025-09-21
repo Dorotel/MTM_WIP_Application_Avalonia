@@ -1,390 +1,204 @@
-# GitHub Copilot Continuation Prompt - MTM WIP Application
+# MTM Copilot Development Continuation Prompt
+
+**Generated**: MTM Audit System v1.0  
+**Branch**: copilot/fix-ceed4abc-44a8-47a5-a008-f4549b04c054  
+**Context**: Complete MTM Refactor Phase 1-2 - Project Reorganization Foundation + Universal Overlay System Implementation
+
+---
+
+## @copilot Critical Development Context
 
 **Referenced Files:** Following MTM copilot-instructions.md - all required instruction files, context files, templates, and patterns are automatically referenced for this response.
 
-## 🚨 CRITICAL: Development Context & Status
+### 🚨 IMMEDIATE PRIORITY: Service Registration (Critical Path)
 
-**Date**: September 19, 2025  
-**Branch**: `copilot/fix-ceed4abc-44a8-47a5-a008-f4549b04c054`  
-**Active PR**: [Complete MTM Refactor Phase 1-2 - Project Reorganization Foundation + Universal Overlay System Implementation #87](https://github.com/Dorotel/MTM_WIP_Application_Avalonia/pull/87)
+The MTM Refactor Phase 1-2 has successfully implemented 16 new service files but they are **NOT REGISTERED** in the DI container. Application startup will fail when trying to inject these services.
 
-### **Project Status Summary**
+**CRITICAL ACTION REQUIRED:**
 
-**Overall Progress**: 59% complete (10/17 SubTasks)  
-**Phase 1**: ✅ COMPLETE - Project Reorganization Foundation (16/16 SubTasks)  
-**Phase 2**: 🟡 IN PROGRESS - Universal Overlay System (10/17 SubTasks, 59%)  
-**Phase 3**: 🔴 NOT STARTED - Integration & Polish (0/14 SubTasks)
-
-### **Current Development State**
-
-**✅ MAJOR ACCOMPLISHMENTS:**
-
-1. **Services Consolidation Complete**: 21+ services → 9 consolidated groups
-   - Core Services: Database, Configuration, ErrorHandling
-   - Business Services: MasterData, Remove, InventoryEditing
-   - UI Services: Navigation, Theme, Focus, SuccessOverlay
-   - Infrastructure Services: File operations, Print, Logging
-
-2. **Universal Overlay System Foundation**: BaseOverlayViewModel and service architecture implemented
-
-3. **Critical Safety Overlays**: Confirmation, Error, Progress, Loading overlays completed
-
-4. **Project Organization**: WeekendRefactor structured with numbered folders (01-04)
-
-**🎯 IMMEDIATE NEXT ACTIONS:**
-
-Continue Phase 2 implementation focusing on:
-
-- **Task 2.3**: MainWindow Integration Overlays (1/4 SubTasks) - IN PROGRESS
-  - ✅ SubTask 2.3.1: Connection Status Overlay - COMPLETED  
-  - 🎯 **NEXT**: SubTask 2.3.2: Emergency Shutdown Overlay
-- **Task 2.4**: View-Specific Overlay Integration (0/5 SubTasks)
-
----
-
-## 💻 Developer Continuation Instructions
-
-### **Starting Development Session**
-
-When you continue development on this project:
-
-1. **Verify Build Status**: Check that the application compiles successfully
-2. **Review Current Phase**: Focus on Phase 2 - Universal Overlay System
-3. **Check Progress**: Review completed SubTasks in [Progress-Tracking.md](Progress-Tracking.md)
-4. **Start Next Task**: Begin with Task 2.3.1 (Connection Status Overlay)
-
-### **Phase 2 Continuation Checklist**
-
-#### **Task 2.3: MainWindow Integration Overlays (NEXT)**
-
-**Estimated Time**: 6-8 hours  
-**Priority**: HIGH (Critical user experience overlays)
-
-- [ ] **SubTask 2.3.1**: ✅ **COMPLETE** - Implement Connection Status Overlay (2 hours)
-  - ConnectionStatusOverlayViewModel with database connection testing
-  - ConnectionStatusOverlayView with MTM design system
-  - Retry logic with configurable max attempts  
-  - Proper service registration and integration
-
-- [ ] **SubTask 2.3.2**: Implement Emergency Shutdown Overlay (1.5 hours)  
-  - Create EmergencyShutdownOverlayViewModel
-  - Provide safe application shutdown
-  - Save critical data before shutdown
-  - Display shutdown progress
-
-- [ ] **SubTask 2.3.3**: Implement Theme Quick Switcher Overlay (2 hours)
-  - Create ThemeQuickSwitcherOverlayViewModel  
-  - Allow rapid theme switching
-  - Preview theme changes
-  - Apply theme selections
-
-- [ ] **SubTask 2.3.4**: Integrate MainWindow Overlays (0.5 hours)
-  - Update MainWindow to use new overlays
-  - Test overlay integration
-  - Validate performance
-
-#### **Task 2.4: View-Specific Overlay Integration (FOLLOWING)**
-
-**Estimated Time**: 8-10 hours  
-**Priority**: HIGH (Core functionality enhancement)
-
-- [ ] **SubTask 2.4.1**: InventoryTabView Overlay Integration (2 hours)
-- [ ] **SubTask 2.4.2**: RemoveTabView Overlay Integration (2 hours)  
-- [ ] **SubTask 2.4.3**: TransferTabView Overlay Integration (2 hours)
-- [ ] **SubTask 2.4.4**: AdvancedInventoryView Overlay Integration (1 hour)
-- [ ] **SubTask 2.4.5**: AdvancedRemoveView Overlay Integration (1 hour)
-
----
-
-## 🏗️ Technical Implementation Patterns
-
-### **Overlay ViewModel Pattern (MANDATORY)**
-
-All new overlays MUST follow the established BaseOverlayViewModel pattern:
+Update `Extensions/ServiceCollectionExtensions.cs` with these exact service registrations:
 
 ```csharp
-[ObservableObject]
-public partial class ConnectionStatusOverlayViewModel : BaseOverlayViewModel
-{
-    [ObservableProperty]
-    private string connectionStatus = "Checking...";
-    
-    [ObservableProperty]
-    private bool isConnected;
-    
-    [ObservableProperty]
-    private string lastConnectionError = string.Empty;
-    
-    [RelayCommand]
-    private async Task RetryConnectionAsync()
-    {
-        IsProcessing = true;
-        try
-        {
-            // Test database connection
-            var result = await _databaseService.TestConnectionAsync();
-            IsConnected = result.IsSuccess;
-            ConnectionStatus = result.IsSuccess ? "Connected" : "Disconnected";
-            
-            if (!result.IsSuccess)
-            {
-                LastConnectionError = result.ErrorMessage;
-            }
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex, "Connection retry failed");
-            IsConnected = false;
-            ConnectionStatus = "Connection Failed";
-        }
-        finally
-        {
-            IsProcessing = false;
-        }
-    }
-    
-    public ConnectionStatusOverlayViewModel(
-        ILogger<ConnectionStatusOverlayViewModel> logger,
-        IDatabaseService databaseService) : base(logger)
-    {
-        ArgumentNullException.ThrowIfNull(databaseService);
-        _databaseService = databaseService;
-    }
-    
-    private readonly IDatabaseService _databaseService;
-}
+// Infrastructure Services (Singleton lifetime)
+services.TryAddSingleton<IEmergencyKeyboardHookService, EmergencyKeyboardHookService>();
+services.TryAddSingleton<IFileLoggingService, FileLoggingService>();
+services.TryAddSingleton<IFilePathService, FilePathService>();
+services.TryAddSingleton<IFileSelectionService, FileSelectionService>();
+services.TryAddSingleton<IMTMFileLoggerProvider, MTMFileLoggerProvider>();
+services.TryAddSingleton<INavigationService, NavigationService>();
+services.TryAddSingleton<IPrintService, PrintService>();
+
+// UI Services (Scoped lifetime for per-session state)
+services.TryAddScoped<IColumnConfigurationService, ColumnConfigurationService>();
+services.TryAddScoped<IFocusManagementService, FocusManagementService>();
+services.TryAddScoped<ISettingsPanelStateManager, SettingsPanelStateManager>();
+services.TryAddScoped<ISuccessOverlayService, SuccessOverlayService>();
+services.TryAddScoped<ISuggestionOverlayService, SuggestionOverlayService>();
+services.TryAddScoped<IThemeService, ThemeService>();
+services.TryAddScoped<IVirtualPanelManager, VirtualPanelManager>();
 ```
 
-### **Avalonia AXAML Pattern (MANDATORY)**
+**WHY THIS IS CRITICAL:**
 
-All overlay AXAML files MUST follow MTM design patterns:
-
-```xml
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
-             x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.ConnectionStatusOverlayView">
-
-    <Border Background="{DynamicResource MTM_Shared_Logic.OverlayBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-            BorderThickness="1"
-            CornerRadius="8"
-            Padding="16"
-            MaxWidth="400"
-            MaxHeight="300">
-        
-        <Grid RowDefinitions="Auto,*,Auto" Spacing="16">
-            
-            <!-- Header -->
-            <Border Grid.Row="0" 
-                    Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
-                    CornerRadius="4"
-                    Padding="12,8">
-                <TextBlock Text="Database Connection Status"
-                           Foreground="White"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center" />
-            </Border>
-            
-            <!-- Content -->
-            <StackPanel Grid.Row="1" Spacing="12">
-                <TextBlock Text="{Binding ConnectionStatus}"
-                           FontSize="16"
-                           HorizontalAlignment="Center" />
-                           
-                <Border IsVisible="{Binding IsConnected}"
-                        Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
-                        CornerRadius="4"
-                        Padding="8">
-                    <TextBlock Text="✓ Connected Successfully"
-                               Foreground="White"
-                               HorizontalAlignment="Center" />
-                </Border>
-                
-                <Border IsVisible="{Binding !IsConnected}"
-                        Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
-                        CornerRadius="4"
-                        Padding="8">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="✗ Connection Failed"
-                                   Foreground="White"
-                                   HorizontalAlignment="Center" />
-                        <TextBlock Text="{Binding LastConnectionError}"
-                                   Foreground="White"
-                                   FontSize="12"
-                                   TextWrapping="Wrap"
-                                   HorizontalAlignment="Center"
-                                   IsVisible="{Binding LastConnectionError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-            
-            <!-- Actions -->
-            <StackPanel Grid.Row="2" 
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Spacing="8">
-                <Button Content="Retry Connection"
-                        Command="{Binding RetryConnectionCommand}"
-                        IsEnabled="{Binding !IsProcessing}"
-                        Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
-                        Foreground="White"
-                        Padding="12,6" />
-                        
-                <Button Content="Close"
-                        Command="{Binding HideCommand}"
-                        Background="{DynamicResource MTM_Shared_Logic.SecondaryBrush}"
-                        Padding="12,6" />
-            </StackPanel>
-            
-        </Grid>
-    </Border>
-</UserControl>
-```
-
-### **Service Integration Pattern (MANDATORY)**
-
-Register new overlays in the consolidated UI services:
-
-```csharp
-// In Services/UI/UIServices.cs
-services.TryAddTransient<ConnectionStatusOverlayViewModel>();
-services.TryAddTransient<EmergencyShutdownOverlayViewModel>();
-services.TryAddTransient<ThemeQuickSwitcherOverlayViewModel>();
-```
+- Application will crash at startup when ViewModels try to inject these services
+- DI container cannot resolve interfaces without proper registration
+- 15 new services are fully implemented but unusable without DI registration
 
 ---
 
-## 🎯 Quality Standards & Validation
+### 🏗️ CONTEXT: Successfully Implemented Architecture
 
-### **Code Quality Requirements**
+**Current Implementation Status (85% Complete):**
 
-1. **MVVM Community Toolkit**: All ViewModels use [ObservableObject], [ObservableProperty], [RelayCommand]
-2. **Avalonia Syntax**: Use x:Name (not Name), proper xmlns namespaces, DynamicResource bindings
-3. **Error Handling**: Use Services.Core.ErrorHandling.HandleErrorAsync() for all exceptions
-4. **Database**: Only stored procedures via Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()
-5. **Dependency Injection**: ArgumentNullException.ThrowIfNull() validation for all constructor parameters
+✅ **Services/Infrastructure/** - 7 complete service implementations
 
-### **Testing Requirements**
+- `Infrastructure.EmergencyKeyboardHookService.cs` - Keyboard hook with proper disposal
+- `Infrastructure.FileLoggingService.cs` - Async file logging with retention policies
+- `Infrastructure.FilePathService.cs` - Safe path operations with validation
+- `Infrastructure.FileSelectionService.cs` - Avalonia storage provider integration
+- `Infrastructure.MTMFileLoggerProvider.cs` - Custom logging provider with MySQL detection
+- `Infrastructure.NavigationService.cs` - Navigation with history stack management
+- `Infrastructure.PrintService.cs` - Cross-platform print functionality
 
-After each SubTask completion:
+✅ **Services/UI/** - 8 complete service implementations
 
-1. **Build Validation**: Application compiles with 0 errors
-2. **Functionality Test**: Overlay displays and functions correctly
-3. **Integration Test**: Overlay works with target view/window
-4. **Theme Compatibility**: Overlay works with all MTM themes (Blue, Green, Red, Dark)
-5. **Performance Test**: No significant performance degradation
+- `UI.ColumnConfigurationService.cs` - Column persistence with intelligent caching
+- `UI.FocusManagementService.cs` - Tab index management with SuggestionOverlay integration
+- `UI.SettingsPanelStateManager.cs` - Complete state tracking with change detection
+- `UI.SuccessOverlayService.cs` - Success/error overlay with MainView integration
+- `UI.SuggestionOverlayService.cs` - Autocomplete with wildcard search and focus management
+- `UI.ThemeService.cs` - Complete theme management with ServiceResult patterns
+- `UI.VirtualPanelManager.cs` - Performance-aware panel management with resource optimization
 
-### **Progress Tracking Requirements**
+✅ **Views/Overlay/ConfirmationOverlayView** - Complete overlay implementation
 
-After each SubTask completion, update Progress-Tracking.md:
-
-1. Mark SubTask as completed: `- [x] **SubTask X.Y.Z**: ✅ **COMPLETE** - [Description]`
-2. Update task progress percentage: `Task Progress: XX% (Y/Z)`
-3. Update phase progress: `Phase 2: Status: In Progress (XX%)`
-4. Add completion notes with file changes and validation results
-
----
-
-## 📋 Development Environment Setup
-
-### **Required Tools & Extensions**
-
-- **VS Code**: Latest version with Avalonia extension
-- **.NET SDK**: 8.0 or later
-- **MySQL**: Connection to MTM database available
-- **Git**: Configured for Dorotel/MTM_WIP_Application_Avalonia repository
-
-### **Branch Management**
-
-- **Current Branch**: `copilot/fix-ceed4abc-44a8-47a5-a008-f4549b04c054`
-- **Keep commits focused**: Each SubTask should be a logical commit
-- **Update PR description**: Reflect progress and completed SubTasks
-
-### **Build & Test Commands**
-
-```powershell
-# Verify build
-dotnet build
-
-# Run application for testing
-dotnet run
-
-# Check for warnings
-dotnet build --verbosity normal
-```
+- Material Design icons integration
+- Proper MTM theme integration with DynamicResource bindings
+- Keyboard navigation support
+- AXAML compliance with proper xmlns declarations
 
 ---
 
-## 🚨 Critical Success Factors
+### 📋 HIGH PRIORITY: Models Reorganization Implementation
 
-### **Do Not Break Existing Functionality**
+The Models reorganization plan exists in `WeekendRefactor/02-Reorganization/Models-Reorganization-Plan.md` but **physical file moves are not executed**.
 
-- Maintain all existing overlay functionality (ConfirmationOverlayViewModel, SuccessOverlayViewModel)
-- Preserve all service interfaces and dependency injection patterns
-- Keep all database operations using stored procedures only
-- Maintain theme system compatibility
+**REQUIRED ACTIONS:**
 
-### **Follow Established Patterns**
+1. Create Models subdirectories: Core, Events, UI, Print, Shared
+2. Move and rename model files using {Folder}.{Model}.cs pattern
+3. Update namespace declarations in moved files
+4. Fix all `using MTM_WIP_Application_Avalonia.Models;` statements across codebase
+5. Test compilation after each category migration
 
-- Use only patterns found in existing codebase
-- Follow MTM design system colors and spacing
-- Maintain MVVM Community Toolkit standards throughout
-- Use consolidated service patterns (Services.UI, Services.Core, etc.)
-
-### **Performance Considerations**
-
-- Implement overlay pooling for memory efficiency
-- Avoid memory leaks in overlay lifecycle management
-- Minimize overlay creation/destruction overhead
-- Maintain responsive UI during overlay operations
+**CRITICAL:** This must be done carefully to prevent breaking changes across ViewModels, Services, and Views.
 
 ---
 
-## 📚 Reference Documentation
+### 🎯 MTM ARCHITECTURAL COMPLIANCE REQUIREMENTS
 
-### **Key Files for Reference**
+**MANDATORY PATTERNS (100% Required):**
 
-- **Progress Tracking**: [Progress-Tracking.md](Progress-Tracking.md) - Complete implementation status
-- **Service Architecture**: [../Services/SERVICE_DEPENDENCY_ANALYSIS.md](../Services/SERVICE_DEPENDENCY_ANALYSIS.md)
-- **Master Plan**: [../Master-Refactor-Implementation-Plan.md](../Master-Refactor-Implementation-Plan.md)
-- **Implementation Guide**: [../03-Implementation/README.md](../03-Implementation/README.md)
+**MVVM Community Toolkit Only:**
 
-### **Existing Overlay Examples**
+- All ViewModels MUST use `[ObservableObject]`, `[ObservableProperty]`, `[RelayCommand]`
+- NO ReactiveUI patterns allowed (ReactiveObject, ReactiveCommand, WhenAnyValue)
+- Proper BaseViewModel inheritance with ILogger integration
 
-- **BaseOverlayViewModel.cs**: Foundation class for all overlays
-- **ConfirmationOverlayViewModel.cs**: User confirmation overlay example
-- **ProgressOverlayViewModel.cs**: Long-running operation overlay example
-- **LoadingOverlayViewModel.cs**: Quick operation overlay example
+**Avalonia AXAML Syntax Rules:**
 
-### **Service References**
+- `xmlns="https://github.com/avaloniaui"` namespace (NOT WPF namespace)
+- Use `x:Name` instead of `Name` on Grid definitions
+- DynamicResource bindings for all MTM theme elements
+- ColumnDefinitions attribute form: `ColumnDefinitions="Auto,*"`
 
-- **Services/UI/UIServices.cs**: UI service consolidation including overlay service
-- **Services/Core/CoreServices.cs**: Core services including error handling and database
-- **Extensions/ServiceCollectionExtensions.cs**: Service registration patterns
+**Database Access Pattern:**
 
----
+- ALL database operations MUST use `Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()`
+- NO direct SQL, NO string concatenation, NO MySqlCommand usage
+- Use actual stored procedure names from existing 45+ procedure catalog
 
-## 🎯 Success Definition
+**Service Layer Pattern:**
 
-### **Phase 2 Complete When:**
-
-- All 17 SubTasks in Phase 2 marked as completed
-- All major views have appropriate overlay integration
-- MainWindow has critical system overlays (connection, shutdown, theme)
-- Application compiles and runs without errors
-- All overlays function correctly with proper themes
-- Performance remains acceptable with overlay system
-
-### **Ready for Phase 3 When:**
-
-- Universal overlay system fully functional across the application
-- All overlay ViewModels follow BaseOverlayViewModel pattern
-- Service integration complete and tested
-- Documentation updated to reflect Phase 2 changes
+- Constructor dependency injection with `ArgumentNullException.ThrowIfNull`
+- Centralized error handling via `Services.ErrorHandling.HandleErrorAsync()`
+- Proper service lifetime management (Singleton/Scoped/Transient)
+- TryAdd service registration methods
 
 ---
 
-**START HERE**: Begin with **SubTask 2.3.1: Implement Connection Status Overlay** following the technical patterns outlined above.
+### 🔧 DEVELOPMENT ENVIRONMENT CONTEXT
 
-**REMEMBER**: Update Progress-Tracking.md after each SubTask completion with specific details about what was implemented, files changed, and validation results.
+**Technology Stack:**
+
+- .NET 8.0 with C# 12 nullable reference types
+- Avalonia UI 11.3.4 (PRIMARY UI framework)
+- MVVM Community Toolkit 8.3.2 with source generators
+- MySQL 9.4.0 via MySql.Data package
+- Microsoft.Extensions 9.0.8 (DI, Logging, Configuration, Hosting)
+
+**Project Structure:**
+
+- **Services organized by category**: Infrastructure (system services), UI (user interface services)
+- **{Folder}.{Service}.cs naming pattern**: Enforced across all new implementations
+- **Universal Overlay System**: ConfirmationOverlayView implemented, integration pending
+- **WeekendRefactor documentation**: Complete implementation plans and progress tracking
+
+---
+
+### � IMMEDIATE NEXT STEPS (Priority Order)
+
+**Step 1: Service Registration (15 minutes - CRITICAL)**
+
+- Update ServiceCollectionExtensions.cs with all 15 service registrations above
+- Test application startup to verify DI resolution
+- Check for circular dependencies
+
+**Step 2: Models Reorganization (3 hours - HIGH PRIORITY)**
+
+- Execute Models-Reorganization-Plan.md systematically
+- Create folder structure: Models/{Core,Events,UI,Print,Shared}/
+- Move files with {Folder}.{Model}.cs naming pattern
+- Update all namespace references
+- Validate compilation after each category
+
+**Step 3: Universal Overlay Integration (1 hour - HIGH PRIORITY)**
+
+- Connect ConfirmationOverlayView to MainView overlay panel
+- Add overlay service orchestration logic
+- Test overlay display functionality
+
+---
+
+### �️ VALIDATION CHECKLIST
+
+Before marking complete:
+
+- [ ] All 15 services resolve correctly from DI container
+- [ ] Application starts without errors
+- [ ] Models follow {Folder}.{Model}.cs naming consistently
+- [ ] All namespace references updated correctly
+- [ ] ConfirmationOverlayView displays through overlay system
+- [ ] Focus management integration works seamlessly
+- [ ] Theme system integration maintained
+- [ ] No AXAML compilation errors (AVLN2000)
+- [ ] All services implement proper MTM error handling patterns
+
+---
+
+### 📊 SUCCESS METRICS
+
+**When implementation is complete:**
+
+- ✅ Clean application startup with all services registered
+- ✅ Zero namespace compilation errors
+- ✅ Universal overlay system fully functional
+- ✅ Models organized with consistent {Folder}.{Model}.cs naming
+- ✅ 100% MTM architectural pattern compliance
+- ✅ Service layer integration complete with proper dependency injection
+
+---
+
+**MTM Refactor Phase 1-2 is 85% complete with excellent architectural compliance. The remaining 15% consists primarily of service registration and models reorganization - both are well-documented and ready for implementation.**
+
+**Priority focus should be on service registration first (prevents application startup failure), then Models reorganization (prevents future compilation errors), then overlay system integration (completes Universal Overlay System feature).**

@@ -8,11 +8,8 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.LogicalTree;
-using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
+using MTM_WIP_Application_Avalonia.Models.CustomDataGrid.UI;
 
 namespace MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
 

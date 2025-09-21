@@ -117,7 +117,7 @@ public class SuccessOverlayService : ISuccessOverlayService
                     IsError = isError
                 };
 
-                var overlayView = new SuccessOverlay
+                var overlayView = new Views.Overlay.SuccessOverlayView
                 {
                     DataContext = overlayViewModel
                 };

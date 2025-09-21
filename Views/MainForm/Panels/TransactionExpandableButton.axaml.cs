@@ -5,7 +5,7 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Material.Icons;
 
-namespace MTM_WIP_Application_Avalonia.Controls;
+namespace MTM_WIP_Application_Avalonia.Views.MainForm.Panels;
 
 /// <summary>
 /// Custom expandable button control for transaction history display.
@@ -170,7 +170,7 @@ public partial class TransactionExpandableButton : UserControl
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        
+
         // Get references to named elements
         _headerBorder = this.FindControl<Border>("HeaderBorder");
         _contentBorder = this.FindControl<Border>("ContentBorder");
@@ -187,7 +187,7 @@ public partial class TransactionExpandableButton : UserControl
         _transactionIdText = this.FindControl<TextBlock>("TransactionIdText");
         _notesText = this.FindControl<TextBlock>("NotesText");
         _notesPanel = this.FindControl<Grid>("NotesPanel");
-        
+
         // Update the display with current values
         UpdateDisplay();
     }
@@ -195,7 +195,7 @@ public partial class TransactionExpandableButton : UserControl
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
-        
+
         if (change.Property == PartIdProperty ||
             change.Property == OperationProperty ||
             change.Property == QuantityProperty ||
@@ -220,12 +220,12 @@ public partial class TransactionExpandableButton : UserControl
     private void UpdateDisplay()
     {
         if (_partIdText == null) return; // Not initialized yet
-        
+
         // Update header content
         _partIdText!.Text = PartId;
         _operationText!.Text = string.IsNullOrEmpty(Operation) ? "Unknown" : $"Operation {Operation}";
         _quantityText!.Text = Quantity.ToString();
-        
+
         // Update content details
         if (_locationText != null) _locationText.Text = Location;
         if (_userText != null) _userText.Text = User;
@@ -234,16 +234,16 @@ public partial class TransactionExpandableButton : UserControl
         if (_itemTypeText != null) _itemTypeText.Text = ItemType;
         if (_transactionIdText != null) _transactionIdText.Text = TransactionId;
         if (_notesText != null) _notesText.Text = Notes;
-        
+
         // Show/hide notes panel based on content
         if (_notesPanel != null)
         {
             _notesPanel.IsVisible = !string.IsNullOrEmpty(Notes);
         }
-        
+
         // Update transaction type styling and icon
         UpdateTransactionTypeDisplay();
-        
+
         // Update expanded/collapsed state
         UpdateExpandedState();
     }
@@ -251,16 +251,16 @@ public partial class TransactionExpandableButton : UserControl
     private void UpdateTransactionTypeDisplay()
     {
         if (_headerBorder == null || _contentBorder == null || _transactionIcon == null) return;
-        
+
         // Clear existing transaction type classes
         _headerBorder.Classes.Remove("transaction-in");
         _headerBorder.Classes.Remove("transaction-out");
         _headerBorder.Classes.Remove("transaction-transfer");
-        
+
         _contentBorder.Classes.Remove("transaction-in-light");
         _contentBorder.Classes.Remove("transaction-out-light");
         _contentBorder.Classes.Remove("transaction-transfer-light");
-        
+
         // Set appropriate styling based on transaction type
         switch (TransactionType.ToUpperInvariant())
         {
@@ -290,10 +290,10 @@ public partial class TransactionExpandableButton : UserControl
     private void UpdateExpandedState()
     {
         if (_contentBorder == null || _expandIcon == null) return;
-        
+
         _contentBorder.IsVisible = IsExpanded;
         _expandIcon.Kind = IsExpanded ? MaterialIconKind.ChevronDown : MaterialIconKind.ChevronRight;
-        
+
         // Update header corner radius based on expanded state
         if (_headerBorder != null)
         {

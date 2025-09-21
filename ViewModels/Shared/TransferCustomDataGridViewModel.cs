@@ -11,6 +11,8 @@ using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_Shared_Logic.Models;
+using MTM_WIP_Application_Avalonia.Services.UI;
+using MTM_WIP_Application_Avalonia.Models.CustomDataGrid.UI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Shared;
 

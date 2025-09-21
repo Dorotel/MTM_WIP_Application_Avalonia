@@ -217,7 +217,7 @@ public class VirtualPanelManager : IVirtualPanelManager
         _panelViewTypes["remove-itemtype"] = typeof(Views.SettingsForm.RemoveItemTypeView);
 
         // Advanced Features
-        _panelViewTypes["theme-builder"] = typeof(Views.SettingsForm.ThemeBuilderView);
+        _panelViewTypes["theme-builder"] = typeof(Views.ThemeEditorView);
         _panelViewTypes["shortcuts"] = typeof(Views.SettingsForm.ShortcutsView);
         _panelViewTypes["about"] = typeof(Views.SettingsForm.AboutView);
 

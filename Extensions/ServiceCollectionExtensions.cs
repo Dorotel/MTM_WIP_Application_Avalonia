@@ -52,6 +52,11 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.VirtualPanelManager>();
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.SettingsPanelStateManager>();
 
+        // NEW INDIVIDUAL UI SERVICES (from {Folder}.{Service}.cs files)
+        services.TryAddScoped<Services.UI.IColumnConfigurationService, Services.UI.ColumnConfigurationService>();
+        services.TryAddScoped<Services.UI.IFocusManagementService, Services.UI.FocusManagementService>();
+        services.TryAddScoped<Services.UI.IThemeService, Services.UI.ThemeService>();
+
         // INFRASTRUCTURE SERVICES (Services/Infrastructure/ folder - using folder-specific namespace)
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileSelectionService, MTM_WIP_Application_Avalonia.Services.Infrastructure.FileSelectionService>();
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IFilePathService, MTM_WIP_Application_Avalonia.Services.Infrastructure.FilePathService>();
@@ -59,6 +64,15 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileLoggingService, MTM_WIP_Application_Avalonia.Services.Infrastructure.FileLoggingService>();
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IEmergencyKeyboardHookService, MTM_WIP_Application_Avalonia.Services.Infrastructure.EmergencyKeyboardHookService>();
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.INavigationService, MTM_WIP_Application_Avalonia.Services.Infrastructure.NavigationService>();
+
+        // NEW INDIVIDUAL INFRASTRUCTURE SERVICES (from {Folder}.{Service}.cs files)
+        services.TryAddSingleton<Services.Infrastructure.IEmergencyKeyboardHookService, Services.Infrastructure.EmergencyKeyboardHookService>();
+        services.TryAddSingleton<Services.Infrastructure.IFileLoggingService, Services.Infrastructure.FileLoggingService>();
+        services.TryAddSingleton<Services.Infrastructure.IFilePathService, Services.Infrastructure.FilePathService>();
+        services.TryAddSingleton<Services.Infrastructure.IFileSelectionService, Services.Infrastructure.FileSelectionService>();
+        services.TryAddSingleton<Services.Infrastructure.IMTMFileLoggerProvider, Services.Infrastructure.MTMFileLoggerProvider>();
+        services.TryAddSingleton<Services.Infrastructure.INavigationService, Services.Infrastructure.NavigationService>();
+        services.TryAddSingleton<Services.Infrastructure.IPrintService, Services.Infrastructure.PrintService>();
 
         // FEATURE SERVICES (Services/Feature/ folder - using folder-specific namespace)
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Feature.ISettingsService, MTM_WIP_Application_Avalonia.Services.Feature.SettingsService>();

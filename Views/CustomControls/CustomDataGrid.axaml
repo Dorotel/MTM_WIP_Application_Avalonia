@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
-             x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.CustomDataGrid"
+             x:Class="MTM_WIP_Application_Avalonia.Views.CustomControls.CustomDataGrid"
              x:Name="CustomDataGridRoot">
 
   <UserControl.Styles>
@@ -387,44 +387,6 @@
 
       </Grid>
     </Border>
-
-    <!-- Column Management Panel (Phase 3 - Disabled) -->
-    <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
-            x:Name="ColumnManagementContainer"
-            Width="0"
-            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
-            BorderThickness="1,1,0,1"
-            IsVisible="False">
-
-      <!-- Column Management Panel will be implemented in Phase 3 -->
-      <TextBlock Text="Column Management\\n(Phase 3)"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
-                 FontSize="12"
-                 Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                 Opacity="0.7" />
-    </Border>
-
-    <!-- Filter Panel (Phase 5 - Disabled) -->
-    <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
-            x:Name="FilterPanelContainer"
-            Width="0"
-            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
-            BorderThickness="1,1,1,1"
-            CornerRadius="0,8,8,0"
-            IsVisible="False">
-
-      <!-- Filter Panel will be implemented in Phase 5 -->
-      <TextBlock Text="Filter Panel\\n(Phase 5)"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
-                 FontSize="12"
-                 Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                 Opacity="0.7" />
-    </Border>
-
   </Grid>
 
 </UserControl>

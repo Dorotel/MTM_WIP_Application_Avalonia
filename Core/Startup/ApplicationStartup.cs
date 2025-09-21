@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Extensions;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
 
 namespace MTM_WIP_Application_Avalonia.Core.Startup;
 
@@ -113,8 +114,8 @@ public static class ApplicationStartup
 
         try
         {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? 
-                             Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? 
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                             Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ??
                              "Production";
 
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Environment: {environment}");
@@ -319,11 +320,11 @@ public static class ApplicationStartup
             if (validationService != null)
             {
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Performing application validation...");
-                
+
                 try
                 {
                     var validationResults = validationService.ValidateApplication();
-                    
+
                     if (!validationResults.IsValid)
                     {
 #if DEBUG

@@ -14,6 +14,8 @@ using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using Avalonia.Media;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.UI;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -26,7 +28,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 {
     private readonly IThemeService? _themeService;
     private readonly INavigationService? _navigationService;
-    
+
     // Real-time preview system
     private Timer? _previewTimer;
     private const int PreviewDebounceMs = 500; // 500ms debounce for smooth real-time preview
@@ -133,7 +135,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         public string Name { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; } = DateTime.Now;
         public Dictionary<string, Color> Colors { get; set; } = new();
-        
+
         public ColorSnapshot(string name = "Color Change")
         {
             Name = name;
@@ -180,7 +182,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         "None",
         "Protanopia (Red-blind)",
-        "Deuteranopia (Green-blind)", 
+        "Deuteranopia (Green-blind)",
         "Tritanopia (Blue-blind)",
         "Protanomaly (Red-weak)",
         "Deuteranomaly (Green-weak)",
@@ -195,7 +197,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     [ObservableProperty]
     private bool isPrintPreviewEnabled = false;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private bool isLightingSimulationEnabled = false;
 
     [ObservableProperty]
@@ -205,7 +207,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private ObservableCollection<string> lightingConditions = new()
     {
         "Natural Daylight (5500K)",
-        "Office Fluorescent (6500K)", 
+        "Office Fluorescent (6500K)",
         "Warm Indoor (3000K)",
         "Cool White LED (4000K)",
         "Tungsten Bulb (2700K)",
@@ -363,17 +365,17 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private static bool TryParseHexColor(string? hexValue, out Color color)
     {
         color = Colors.Black;
-        
+
         if (string.IsNullOrWhiteSpace(hexValue))
             return false;
-            
+
         try
         {
             // Handle different hex formats
             var cleanHex = hexValue.Trim();
             if (!cleanHex.StartsWith("#"))
                 cleanHex = "#" + cleanHex;
-                
+
             color = Color.Parse(cleanHex);
             return true;
         }
@@ -954,10 +956,10 @@ public partial class ThemeEditorViewModel : BaseViewModel
             CurrentHistoryIndex--;
             var snapshot = ColorHistory[CurrentHistoryIndex];
             await RestoreFromSnapshotAsync(snapshot, false);
-            
+
             CanUndo = CurrentHistoryIndex > 0;
             CanRedo = true;
-            
+
             StatusMessage = $"Undone: {snapshot.Name}";
             Logger.LogDebug("Undo applied: {SnapshotName}", snapshot.Name);
         }
@@ -978,10 +980,10 @@ public partial class ThemeEditorViewModel : BaseViewModel
             CurrentHistoryIndex++;
             var snapshot = ColorHistory[CurrentHistoryIndex];
             await RestoreFromSnapshotAsync(snapshot, false);
-            
+
             CanRedo = CurrentHistoryIndex < ColorHistory.Count - 1;
             CanUndo = true;
-            
+
             StatusMessage = $"Redone: {snapshot.Name}";
             Logger.LogDebug("Redo applied: {SnapshotName}", snapshot.Name);
         }
@@ -998,7 +1000,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         try
         {
             IsColorBlindPreviewEnabled = !IsColorBlindPreviewEnabled;
-            
+
             if (IsColorBlindPreviewEnabled)
             {
                 StatusMessage = $"Color blindness preview enabled: {ColorBlindnessType}";
@@ -1024,34 +1026,34 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             IsLoading = true;
             StatusMessage = $"Adjusting all colors brightness by {adjustment:P0}...";
-            
+
             SaveColorSnapshot("Bulk Brightness Adjustment");
-            
+
             // Adjust all color categories
             PrimaryActionColor = AdjustBrightness(PrimaryActionColor, adjustment);
             SecondaryActionColor = AdjustBrightness(SecondaryActionColor, adjustment);
             AccentColor = AdjustBrightness(AccentColor, adjustment);
             HighlightColor = AdjustBrightness(HighlightColor, adjustment);
-            
+
             HeadingTextColor = AdjustBrightness(HeadingTextColor, adjustment);
             BodyTextColor = AdjustBrightness(BodyTextColor, adjustment);
             InteractiveTextColor = AdjustBrightness(InteractiveTextColor, adjustment);
             TertiaryTextColor = AdjustBrightness(TertiaryTextColor, adjustment);
-            
+
             MainBackgroundColor = AdjustBrightness(MainBackgroundColor, adjustment);
             CardBackgroundColor = AdjustBrightness(CardBackgroundColor, adjustment);
             HoverBackgroundColor = AdjustBrightness(HoverBackgroundColor, adjustment);
             PanelBackgroundColor = AdjustBrightness(PanelBackgroundColor, adjustment);
             SidebarBackgroundColor = AdjustBrightness(SidebarBackgroundColor, adjustment);
-            
+
             SuccessColor = AdjustBrightness(SuccessColor, adjustment);
             WarningColor = AdjustBrightness(WarningColor, adjustment);
             ErrorColor = AdjustBrightness(ErrorColor, adjustment);
             InfoColor = AdjustBrightness(InfoColor, adjustment);
-            
+
             BorderColor = AdjustBrightness(BorderColor, adjustment);
             BorderAccentColor = AdjustBrightness(BorderAccentColor, adjustment);
-            
+
             HasUnsavedChanges = true;
             StatusMessage = $"Brightness adjusted by {adjustment:P0} for all colors";
         }
@@ -1073,27 +1075,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             IsLoading = true;
             StatusMessage = $"Adjusting all colors saturation by {adjustment:P0}...";
-            
+
             SaveColorSnapshot("Bulk Saturation Adjustment");
-            
+
             // Adjust saturation for all colors
             PrimaryActionColor = AdjustSaturation(PrimaryActionColor, adjustment);
             SecondaryActionColor = AdjustSaturation(SecondaryActionColor, adjustment);
             AccentColor = AdjustSaturation(AccentColor, adjustment);
             HighlightColor = AdjustSaturation(HighlightColor, adjustment);
-            
+
             HeadingTextColor = AdjustSaturation(HeadingTextColor, adjustment);
             BodyTextColor = AdjustSaturation(BodyTextColor, adjustment);
             InteractiveTextColor = AdjustSaturation(InteractiveTextColor, adjustment);
             TertiaryTextColor = AdjustSaturation(TertiaryTextColor, adjustment);
-            
+
             // Skip backgrounds for saturation to maintain neutrality
-            
+
             SuccessColor = AdjustSaturation(SuccessColor, adjustment);
             WarningColor = AdjustSaturation(WarningColor, adjustment);
             ErrorColor = AdjustSaturation(ErrorColor, adjustment);
             InfoColor = AdjustSaturation(InfoColor, adjustment);
-            
+
             HasUnsavedChanges = true;
             StatusMessage = $"Saturation adjusted by {adjustment:P0} for all colors";
         }
@@ -1108,7 +1110,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         }
     }
 
-    [RelayCommand] 
+    [RelayCommand]
     private void AddToRecentColors(Color color)
     {
         try
@@ -1118,15 +1120,15 @@ public partial class ThemeEditorViewModel : BaseViewModel
             {
                 RecentColors.Remove(color);
             }
-            
+
             RecentColors.Insert(0, color);
-            
+
             // Keep only the 16 most recent colors
             while (RecentColors.Count > 16)
             {
                 RecentColors.RemoveAt(RecentColors.Count - 1);
             }
-            
+
             Logger.LogDebug("Added color {Color} to recent colors", color.ToString());
         }
         catch (Exception ex)
@@ -1148,13 +1150,13 @@ public partial class ThemeEditorViewModel : BaseViewModel
         Logger.LogDebug("ThemeEditorViewModel initialized");
         InitializeColorCategories();
         LoadCurrentThemeColors();
-        
+
         // Initialize with current colors as first snapshot
         SaveColorSnapshot("Initial Theme State");
-        
+
         // Load available custom themes
         _ = Task.Run(async () => await RefreshCustomThemesAsync());
-        
+
         // Set initial status message with real-time preview information
         StatusMessage = "🎨 Theme Editor ready - Real-time preview enabled for instant color changes";
     }
@@ -1208,31 +1210,31 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 ["MTM_Shared_Logic.SecondaryAction"] = SecondaryActionColor.ToString(),
                 ["MTM_Shared_Logic.AccentColor"] = AccentColor.ToString(),
                 ["MTM_Shared_Logic.HighlightColor"] = HighlightColor.ToString(),
-                
+
                 // Text Colors (5)
                 ["MTM_Shared_Logic.HeadingText"] = HeadingTextColor.ToString(),
                 ["MTM_Shared_Logic.BodyText"] = BodyTextColor.ToString(),
                 ["MTM_Shared_Logic.InteractiveText"] = InteractiveTextColor.ToString(),
                 ["MTM_Shared_Logic.OverlayTextBrush"] = OverlayTextColor.ToString(),
                 ["MTM_Shared_Logic.TertiaryTextBrush"] = TertiaryTextColor.ToString(),
-                
+
                 // Background Colors (5)
                 ["MTM_Shared_Logic.MainBackground"] = MainBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.CardBackgroundBrush"] = CardBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.HoverBackground"] = HoverBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.PanelBackgroundBrush"] = PanelBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.SidebarBackground"] = SidebarBackgroundColor.ToString(),
-                
+
                 // Status Colors (4)
                 ["MTM_Shared_Logic.SuccessBrush"] = SuccessColor.ToString(),
                 ["MTM_Shared_Logic.WarningBrush"] = WarningColor.ToString(),
                 ["MTM_Shared_Logic.ErrorBrush"] = ErrorColor.ToString(),
                 ["MTM_Shared_Logic.InfoBrush"] = InfoColor.ToString(),
-                
+
                 // Border Colors (2)
                 ["MTM_Shared_Logic.BorderBrush"] = BorderColor.ToString(),
                 ["MTM_Shared_Logic.BorderAccentBrush"] = BorderAccentColor.ToString(),
-                
+
                 // Additional derived resources
                 ["MTM_Shared_Logic.FocusBrush"] = AccentColor.ToString(),
                 ["MTM_Shared_Logic.BorderDarkBrush"] = DarkenColor(BorderColor, 0.2f).ToString(),
@@ -1273,7 +1275,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogDebug("Navigating to section: {CategoryId}", categoryId);
             SelectedCategory = categoryId;
             StatusMessage = $"Viewing {GetCategoryName(categoryId)} colors";
-            
+
             // Trigger UI scroll to section (handled in view)
             await Task.Delay(50); // Allow UI to process
         }
@@ -1298,7 +1300,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogDebug("Auto-filling core colors from primary color");
 
             var referenceColor = PrimaryActionColor;
-            
+
             // Generate harmonious core color palette
             SecondaryActionColor = DarkenColor(referenceColor, 0.2f);
             AccentColor = LightenColor(referenceColor, 0.3f);
@@ -1452,7 +1454,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             // Simulate advanced color picker dialog
             StatusMessage = $"🎨 Advanced color picker for {colorProperty} - Enhanced RGB/HSL/LAB controls";
-            
+
             // In a real implementation, this would open a sophisticated color picker dialog
             await Task.Delay(100);
         }
@@ -1473,7 +1475,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             if (string.IsNullOrEmpty(colorProperty)) return;
 
             StatusMessage = $"👁️ Eyedropper mode for {colorProperty} - Click on screen to pick color";
-            
+
             // In a real implementation, this would activate screen color picking
             await Task.Delay(100);
         }
@@ -1495,10 +1497,10 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             var color = GetColorByProperty(colorProperty);
             var hex = color.ToString();
-            
+
             // In a real implementation, copy to clipboard
             StatusMessage = $"📋 Copied {hex} to clipboard";
-            
+
             await Task.Delay(100);
         }
         catch (Exception ex)
@@ -1525,7 +1527,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 case "SecondaryAction":
                     SecondaryActionColor = Color.Parse("#106EBE");
                     break;
-                // Add more cases as needed
+                    // Add more cases as needed
             }
 
             StatusMessage = $"🔄 Reset {colorProperty} to default";
@@ -1580,27 +1582,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
                     ["SecondaryAction"] = SecondaryActionColor.ToString(),
                     ["AccentColor"] = AccentColor.ToString(),
                     ["HighlightColor"] = HighlightColor.ToString(),
-                    
+
                     // Text colors
                     ["HeadingText"] = HeadingTextColor.ToString(),
                     ["BodyText"] = BodyTextColor.ToString(),
                     ["InteractiveText"] = InteractiveTextColor.ToString(),
                     ["OverlayText"] = OverlayTextColor.ToString(),
                     ["TertiaryText"] = TertiaryTextColor.ToString(),
-                    
+
                     // Background colors
                     ["MainBackground"] = MainBackgroundColor.ToString(),
                     ["CardBackground"] = CardBackgroundColor.ToString(),
                     ["HoverBackground"] = HoverBackgroundColor.ToString(),
                     ["PanelBackground"] = PanelBackgroundColor.ToString(),
                     ["SidebarBackground"] = SidebarBackgroundColor.ToString(),
-                    
+
                     // Status colors
                     ["Success"] = SuccessColor.ToString(),
                     ["Warning"] = WarningColor.ToString(),
                     ["Error"] = ErrorColor.ToString(),
                     ["Info"] = InfoColor.ToString(),
-                    
+
                     // Border colors
                     ["Border"] = BorderColor.ToString(),
                     ["BorderAccent"] = BorderAccentColor.ToString()
@@ -1613,15 +1615,15 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 WriteIndented = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-            
+
             var themeJson = JsonSerializer.Serialize(themeExport, jsonOptions);
-            
+
             // Save to file (in a production app, this would use a file dialog)
             var fileName = $"MTM_Theme_{CurrentThemeName.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
             var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
-            
+
             await File.WriteAllTextAsync(filePath, themeJson);
-            
+
             StatusMessage = $"Theme exported successfully to: {fileName}";
             Logger.LogInformation("Theme exported to {FilePath}", filePath);
         }
@@ -1650,35 +1652,35 @@ public partial class ThemeEditorViewModel : BaseViewModel
             // For now, we'll look for theme files on the desktop
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             var themeFiles = Directory.GetFiles(desktopPath, "MTM_Theme_*.json");
-            
+
             if (!themeFiles.Any())
             {
                 StatusMessage = "No theme files found on desktop";
                 return;
             }
-            
+
             // Use the most recent theme file for demo purposes
             var latestThemeFile = themeFiles
                 .Select(f => new FileInfo(f))
                 .OrderByDescending(f => f.LastWriteTime)
                 .First();
-            
+
             // Read and parse theme file
             var themeJson = await File.ReadAllTextAsync(latestThemeFile.FullName);
-            var themeImport = JsonSerializer.Deserialize<ThemeExportModel>(themeJson, new JsonSerializerOptions 
-            { 
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
+            var themeImport = JsonSerializer.Deserialize<ThemeExportModel>(themeJson, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
-            
+
             if (themeImport == null || !themeImport.Colors.Any())
             {
                 StatusMessage = "Invalid theme file format";
                 return;
             }
-            
+
             // Apply imported colors
             Logger.LogDebug("Applying imported theme colors from {FileName}", latestThemeFile.Name);
-            
+
             if (themeImport.Colors.TryGetValue("PrimaryAction", out var primaryAction))
                 PrimaryActionColor = SafeParseColor(primaryAction, PrimaryActionColor);
             if (themeImport.Colors.TryGetValue("SecondaryAction", out var secondaryAction))
@@ -1687,7 +1689,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 AccentColor = SafeParseColor(accentColor, AccentColor);
             if (themeImport.Colors.TryGetValue("HighlightColor", out var highlightColor))
                 HighlightColor = SafeParseColor(highlightColor, HighlightColor);
-                
+
             if (themeImport.Colors.TryGetValue("HeadingText", out var headingText))
                 HeadingTextColor = SafeParseColor(headingText, HeadingTextColor);
             if (themeImport.Colors.TryGetValue("BodyText", out var bodyText))
@@ -1698,7 +1700,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 OverlayTextColor = SafeParseColor(overlayText, OverlayTextColor);
             if (themeImport.Colors.TryGetValue("TertiaryText", out var tertiaryText))
                 TertiaryTextColor = SafeParseColor(tertiaryText, TertiaryTextColor);
-                
+
             if (themeImport.Colors.TryGetValue("MainBackground", out var mainBackground))
                 MainBackgroundColor = SafeParseColor(mainBackground, MainBackgroundColor);
             if (themeImport.Colors.TryGetValue("CardBackground", out var cardBackground))
@@ -1709,7 +1711,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 PanelBackgroundColor = SafeParseColor(panelBackground, PanelBackgroundColor);
             if (themeImport.Colors.TryGetValue("SidebarBackground", out var sidebarBackground))
                 SidebarBackgroundColor = SafeParseColor(sidebarBackground, SidebarBackgroundColor);
-                
+
             if (themeImport.Colors.TryGetValue("Success", out var success))
                 SuccessColor = SafeParseColor(success, SuccessColor);
             if (themeImport.Colors.TryGetValue("Warning", out var warning))
@@ -1718,16 +1720,16 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 ErrorColor = SafeParseColor(error, ErrorColor);
             if (themeImport.Colors.TryGetValue("Info", out var info))
                 InfoColor = SafeParseColor(info, InfoColor);
-                
+
             if (themeImport.Colors.TryGetValue("Border", out var border))
                 BorderColor = SafeParseColor(border, BorderColor);
             if (themeImport.Colors.TryGetValue("BorderAccent", out var borderAccent))
                 BorderAccentColor = SafeParseColor(borderAccent, BorderAccentColor);
-            
+
             // Update theme metadata
             CurrentThemeName = themeImport.Name;
             HasUnsavedChanges = true;
-            
+
             StatusMessage = $"Theme '{themeImport.Name}' imported successfully from {latestThemeFile.Name}";
             Logger.LogInformation("Theme imported successfully from {FileName} - {ThemeName}", latestThemeFile.Name, themeImport.Name);
         }
@@ -1814,27 +1816,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
                     ["SecondaryAction"] = SecondaryActionColor.ToString(),
                     ["Accent"] = AccentColor.ToString(),
                     ["Highlight"] = HighlightColor.ToString(),
-                    
+
                     // Text Colors
                     ["HeadingText"] = HeadingTextColor.ToString(),
                     ["BodyText"] = BodyTextColor.ToString(),
                     ["TertiaryText"] = TertiaryTextColor.ToString(),
                     ["InteractiveText"] = InteractiveTextColor.ToString(),
                     ["OverlayText"] = OverlayTextColor.ToString(),
-                    
+
                     // Background Colors
                     ["MainBackground"] = MainBackgroundColor.ToString(),
                     ["CardBackground"] = CardBackgroundColor.ToString(),
                     ["PanelBackground"] = PanelBackgroundColor.ToString(),
                     ["SidebarBackground"] = SidebarBackgroundColor.ToString(),
                     ["HoverBackground"] = HoverBackgroundColor.ToString(),
-                    
+
                     // Status Colors
                     ["Success"] = SuccessColor.ToString(),
                     ["Warning"] = WarningColor.ToString(),
                     ["Error"] = ErrorColor.ToString(),
                     ["Info"] = InfoColor.ToString(),
-                    
+
                     // Border Colors
                     ["Border"] = BorderColor.ToString(),
                     ["BorderAccent"] = BorderAccentColor.ToString()
@@ -1844,24 +1846,24 @@ public partial class ThemeEditorViewModel : BaseViewModel
             // Create custom theme file name
             var fileName = $"Custom_{customTheme.Name.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
             var themesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Themes");
-            
+
             // Ensure directory exists
             Directory.CreateDirectory(themesDirectory);
-            
+
             var filePath = Path.Combine(themesDirectory, fileName);
-            
+
             var json = JsonSerializer.Serialize(customTheme, new JsonSerializerOptions
             {
                 WriteIndented = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
-            
+
             await File.WriteAllTextAsync(filePath, json);
-            
+
             HasUnsavedChanges = false;
             StatusMessage = $"✅ Custom theme saved as '{fileName}'";
             Logger.LogInformation("Custom theme saved to {FilePath}", filePath);
-            
+
             // Trigger refresh of available custom themes
             await RefreshCustomThemesAsync();
         }
@@ -1953,11 +1955,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
             // Update theme metadata
             CurrentThemeName = customTheme.Name;
             HasUnsavedChanges = false;
-            
+
             var fileName = Path.GetFileName(themePath);
             StatusMessage = $"✅ Custom theme '{customTheme.Name}' loaded successfully";
             Logger.LogInformation("Custom theme loaded from {FileName} - {ThemeName}", fileName, customTheme.Name);
-            
+
             // Trigger real-time preview
             TriggerRealTimePreview();
         }
@@ -1982,7 +1984,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         try
         {
             var themesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Themes");
-            
+
             if (!Directory.Exists(themesDirectory))
             {
                 Directory.CreateDirectory(themesDirectory);
@@ -1990,9 +1992,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
             }
 
             var customThemeFiles = Directory.GetFiles(themesDirectory, "Custom_*.json");
-            
+
             AvailableCustomThemes.Clear();
-            
+
             foreach (var filePath in customThemeFiles.OrderByDescending(f => new FileInfo(f).CreationTime))
             {
                 try
@@ -2046,7 +2048,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             File.Delete(themeInfo.FilePath);
             AvailableCustomThemes.Remove(themeInfo);
-            
+
             StatusMessage = $"✅ Custom theme '{themeInfo.Name}' deleted successfully";
             Logger.LogInformation("Custom theme deleted: {FilePath}", themeInfo.FilePath);
         }
@@ -2100,27 +2102,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
                     ["SecondaryAction"] = SecondaryActionColor.ToString(),
                     ["AccentColor"] = AccentColor.ToString(),
                     ["HighlightColor"] = HighlightColor.ToString(),
-                    
+
                     // Text colors
                     ["HeadingText"] = HeadingTextColor.ToString(),
                     ["BodyText"] = BodyTextColor.ToString(),
                     ["InteractiveText"] = InteractiveTextColor.ToString(),
                     ["OverlayText"] = OverlayTextColor.ToString(),
                     ["TertiaryText"] = TertiaryTextColor.ToString(),
-                    
+
                     // Background colors
                     ["MainBackground"] = MainBackgroundColor.ToString(),
                     ["CardBackground"] = CardBackgroundColor.ToString(),
                     ["HoverBackground"] = HoverBackgroundColor.ToString(),
                     ["PanelBackground"] = PanelBackgroundColor.ToString(),
                     ["SidebarBackground"] = SidebarBackgroundColor.ToString(),
-                    
+
                     // Status colors
                     ["Success"] = SuccessColor.ToString(),
                     ["Warning"] = WarningColor.ToString(),
                     ["Error"] = ErrorColor.ToString(),
                     ["Info"] = InfoColor.ToString(),
-                    
+
                     // Border colors
                     ["Border"] = BorderColor.ToString(),
                     ["BorderAccent"] = BorderAccentColor.ToString()
@@ -2128,7 +2130,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             };
 
             ThemeVersionHistory.Insert(0, snapshot);
-            
+
             // Keep only the last 20 versions
             while (ThemeVersionHistory.Count > 20)
             {
@@ -2136,7 +2138,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             }
 
             CanRollback = ThemeVersionHistory.Count > 1;
-            
+
             // Auto-increment version
             if (double.TryParse(ThemeVersion, out var currentVersion))
             {
@@ -2185,7 +2187,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 AccentColor = SafeParseColor(accentColor, AccentColor);
             if (version.Colors.TryGetValue("HighlightColor", out var highlightColor))
                 HighlightColor = SafeParseColor(highlightColor, HighlightColor);
-                
+
             if (version.Colors.TryGetValue("HeadingText", out var headingText))
                 HeadingTextColor = SafeParseColor(headingText, HeadingTextColor);
             if (version.Colors.TryGetValue("BodyText", out var bodyText))
@@ -2196,7 +2198,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 OverlayTextColor = SafeParseColor(overlayText, OverlayTextColor);
             if (version.Colors.TryGetValue("TertiaryText", out var tertiaryText))
                 TertiaryTextColor = SafeParseColor(tertiaryText, TertiaryTextColor);
-                
+
             if (version.Colors.TryGetValue("MainBackground", out var mainBackground))
                 MainBackgroundColor = SafeParseColor(mainBackground, MainBackgroundColor);
             if (version.Colors.TryGetValue("CardBackground", out var cardBackground))
@@ -2207,7 +2209,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 PanelBackgroundColor = SafeParseColor(panelBackground, PanelBackgroundColor);
             if (version.Colors.TryGetValue("SidebarBackground", out var sidebarBackground))
                 SidebarBackgroundColor = SafeParseColor(sidebarBackground, SidebarBackgroundColor);
-                
+
             if (version.Colors.TryGetValue("Success", out var success))
                 SuccessColor = SafeParseColor(success, SuccessColor);
             if (version.Colors.TryGetValue("Warning", out var warning))
@@ -2216,7 +2218,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 ErrorColor = SafeParseColor(error, ErrorColor);
             if (version.Colors.TryGetValue("Info", out var info))
                 InfoColor = SafeParseColor(info, InfoColor);
-                
+
             if (version.Colors.TryGetValue("Border", out var border))
                 BorderColor = SafeParseColor(border, BorderColor);
             if (version.Colors.TryGetValue("BorderAccent", out var borderAccent))
@@ -2260,14 +2262,14 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 return;
 
             ColorCustomNames[colorProperty] = CustomColorName;
-            
+
             StatusMessage = $"Custom name '{CustomColorName}' set for {colorProperty}";
             Logger.LogDebug("Custom color name set: {ColorProperty} = {CustomName}", colorProperty, CustomColorName);
-            
+
             // Clear the input
             CustomColorName = string.Empty;
             SelectedColorForNaming = string.Empty;
-            
+
             HasUnsavedChanges = true;
         }
         catch (Exception ex)
@@ -2298,7 +2300,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
     public string GetColorDisplayName(string colorProperty)
     {
-        return ColorCustomNames.ContainsKey(colorProperty) 
+        return ColorCustomNames.ContainsKey(colorProperty)
             ? $"{ColorCustomNames[colorProperty]} ({colorProperty})"
             : colorProperty;
     }
@@ -2334,7 +2336,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             var stats = ColorUsageAnalytics[colorProperty];
             stats.UsageCount++;
             stats.LastUsed = DateTime.Now;
-            
+
             Logger.LogDebug("Color usage tracked: {ColorProperty} (Count: {UsageCount})", colorProperty, stats.UsageCount);
         }
         catch (Exception ex)
@@ -2462,27 +2464,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
         SecondaryActionColor = Color.Parse("#106EBE");
         AccentColor = Color.Parse("#40A2E8");
         HighlightColor = Color.Parse("#005A9E");
-        
+
         HeadingTextColor = Color.Parse("#323130");
         BodyTextColor = Color.Parse("#605E5C");
         InteractiveTextColor = Color.Parse("#0078D4");
         OverlayTextColor = Color.Parse("#FFFFFF");
         TertiaryTextColor = Color.Parse("#8A8886");
-        
+
         MainBackgroundColor = Color.Parse("#FAFAFA");
         CardBackgroundColor = Color.Parse("#FFFFFF");
         HoverBackgroundColor = Color.Parse("#F3F2F1");
         PanelBackgroundColor = Color.Parse("#F8F8F8");
         SidebarBackgroundColor = Color.Parse("#F0F0F0");
-        
+
         SuccessColor = Color.Parse("#4CAF50");
         WarningColor = Color.Parse("#FF9800");
         ErrorColor = Color.Parse("#F44336");
         InfoColor = Color.Parse("#2196F3");
-        
+
         BorderColor = Color.Parse("#E1DFDD");
         BorderAccentColor = Color.Parse("#0078D4");
-        
+
         await Task.Delay(1); // Ensure async pattern
     }
 
@@ -2493,27 +2495,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
         SecondaryActionColor = Color.Parse("#29B6F6");
         AccentColor = Color.Parse("#81D4FA");
         HighlightColor = Color.Parse("#0288D1");
-        
+
         HeadingTextColor = Color.Parse("#FFFFFF");
         BodyTextColor = Color.Parse("#E0E0E0");
         InteractiveTextColor = Color.Parse("#4FC3F7");
         OverlayTextColor = Color.Parse("#000000");
         TertiaryTextColor = Color.Parse("#BDBDBD");
-        
+
         MainBackgroundColor = Color.Parse("#121212");
         CardBackgroundColor = Color.Parse("#1E1E1E");
         HoverBackgroundColor = Color.Parse("#2C2C2C");
         PanelBackgroundColor = Color.Parse("#181818");
         SidebarBackgroundColor = Color.Parse("#202020");
-        
+
         SuccessColor = Color.Parse("#66BB6A");
         WarningColor = Color.Parse("#FFCA28");
         ErrorColor = Color.Parse("#EF5350");
         InfoColor = Color.Parse("#42A5F5");
-        
+
         BorderColor = Color.Parse("#404040");
         BorderAccentColor = Color.Parse("#4FC3F7");
-        
+
         await Task.Delay(1);
     }
 
@@ -2524,27 +2526,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
         SecondaryActionColor = Color.Parse("#005A9E");
         AccentColor = Color.Parse("#106EBE");
         HighlightColor = Color.Parse("#004578");
-        
+
         HeadingTextColor = Color.Parse("#000000");
         BodyTextColor = Color.Parse("#323130");
         InteractiveTextColor = Color.Parse("#0078D4");
         OverlayTextColor = Color.Parse("#FFFFFF");
         TertiaryTextColor = Color.Parse("#605E5C");
-        
+
         MainBackgroundColor = Color.Parse("#FFFFFF");
         CardBackgroundColor = Color.Parse("#F9F9F9");
         HoverBackgroundColor = Color.Parse("#F5F5F5");
         PanelBackgroundColor = Color.Parse("#FAFAFA");
         SidebarBackgroundColor = Color.Parse("#F0F0F0");
-        
+
         SuccessColor = Color.Parse("#107C10");
         WarningColor = Color.Parse("#FF8C00");
         ErrorColor = Color.Parse("#D13438");
         InfoColor = Color.Parse("#0078D4");
-        
+
         BorderColor = Color.Parse("#CCCCCC");
         BorderAccentColor = Color.Parse("#0078D4");
-        
+
         await Task.Delay(1);
     }
 
@@ -2555,27 +2557,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
         SecondaryActionColor = Color.Parse("#409CFF");
         AccentColor = Color.Parse("#80DDFF");
         HighlightColor = Color.Parse("#2080FF");
-        
+
         HeadingTextColor = Color.Parse("#FFFFFF");
         BodyTextColor = Color.Parse("#FFFFFF");
         InteractiveTextColor = Color.Parse("#60CDFF");
         OverlayTextColor = Color.Parse("#000000");
         TertiaryTextColor = Color.Parse("#CCCCCC");
-        
+
         MainBackgroundColor = Color.Parse("#202020");
         CardBackgroundColor = Color.Parse("#2C2C2C");
         HoverBackgroundColor = Color.Parse("#383838");
         PanelBackgroundColor = Color.Parse("#252525");
         SidebarBackgroundColor = Color.Parse("#2B2B2B");
-        
+
         SuccessColor = Color.Parse("#6CCB5F");
         WarningColor = Color.Parse("#FCE100");
         ErrorColor = Color.Parse("#FF5757");
         InfoColor = Color.Parse("#60CDFF");
-        
+
         BorderColor = Color.Parse("#404040");
         BorderAccentColor = Color.Parse("#60CDFF");
-        
+
         await Task.Delay(1);
     }
 
@@ -2586,27 +2588,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
         SecondaryActionColor = Color.Parse("#388E3C");
         AccentColor = Color.Parse("#66BB6A");
         HighlightColor = Color.Parse("#2E7D32");
-        
+
         HeadingTextColor = Color.Parse("#1B5E20");
         BodyTextColor = Color.Parse("#2E7D32");
         InteractiveTextColor = Color.Parse("#4CAF50");
         OverlayTextColor = Color.Parse("#FFFFFF");
         TertiaryTextColor = Color.Parse("#81C784");
-        
+
         MainBackgroundColor = Color.Parse("#F1F8E9");
         CardBackgroundColor = Color.Parse("#FFFFFF");
         HoverBackgroundColor = Color.Parse("#E8F5E8");
         PanelBackgroundColor = Color.Parse("#F3F8F3");
         SidebarBackgroundColor = Color.Parse("#E8F4E8");
-        
+
         SuccessColor = Color.Parse("#4CAF50");
         WarningColor = Color.Parse("#FF9800");
         ErrorColor = Color.Parse("#F44336");
         InfoColor = Color.Parse("#2196F3");
-        
+
         BorderColor = Color.Parse("#C8E6C9");
         BorderAccentColor = Color.Parse("#4CAF50");
-        
+
         await Task.Delay(1);
     }
 
@@ -2617,27 +2619,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
         SecondaryActionColor = Color.Parse("#D32F2F");
         AccentColor = Color.Parse("#EF5350");
         HighlightColor = Color.Parse("#C62828");
-        
+
         HeadingTextColor = Color.Parse("#B71C1C");
         BodyTextColor = Color.Parse("#D32F2F");
         InteractiveTextColor = Color.Parse("#F44336");
         OverlayTextColor = Color.Parse("#FFFFFF");
         TertiaryTextColor = Color.Parse("#E57373");
-        
+
         MainBackgroundColor = Color.Parse("#FFEBEE");
         CardBackgroundColor = Color.Parse("#FFFFFF");
         HoverBackgroundColor = Color.Parse("#FFCDD2");
         PanelBackgroundColor = Color.Parse("#FCE4EC");
         SidebarBackgroundColor = Color.Parse("#FFEBEE");
-        
+
         SuccessColor = Color.Parse("#4CAF50");
         WarningColor = Color.Parse("#FF9800");
         ErrorColor = Color.Parse("#F44336");
         InfoColor = Color.Parse("#2196F3");
-        
+
         BorderColor = Color.Parse("#FFCDD2");
         BorderAccentColor = Color.Parse("#F44336");
-        
+
         await Task.Delay(1);
     }
 
@@ -2649,7 +2651,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             {
                 var colorProperty = kvp.Key;
                 var colorValue = kvp.Value;
-                
+
                 // Apply override to the appropriate color property
                 if (Color.TryParse(colorValue, out var color))
                 {
@@ -2667,11 +2669,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
                         case "HighlightColor":
                             HighlightColor = color;
                             break;
-                        // Add other color properties as needed
+                            // Add other color properties as needed
                     }
                 }
             }
-            
+
             await Task.Delay(1); // Ensure async pattern
         }
         catch (Exception ex)
@@ -2729,7 +2731,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             ConditionalThemes[context] = contextColors;
             ConditionalContext = context;
-            
+
             StatusMessage = $"Conditional theme saved for: {context}";
             Logger.LogInformation("Conditional theme saved for context: {Context}", context);
         }
@@ -2761,13 +2763,13 @@ public partial class ThemeEditorViewModel : BaseViewModel
             }
 
             var contextColors = ConditionalThemes[context];
-            
+
             // Apply all colors from the conditional theme
             foreach (var kvp in contextColors)
             {
                 var colorProperty = kvp.Key;
                 var colorValue = kvp.Value;
-                
+
                 if (Color.TryParse(colorValue, out var color))
                 {
                     switch (colorProperty)
@@ -2839,7 +2841,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             ConditionalContext = context;
             CurrentThemeName = $"{BaseTheme} - {context}";
             HasUnsavedChanges = true;
-            
+
             StatusMessage = $"Conditional theme loaded: {context}";
             Logger.LogInformation("Conditional theme loaded for context: {Context}", context);
         }
@@ -2876,7 +2878,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             // Check system theme preference (this would typically use platform-specific APIs)
             var isSystemDark = await DetectSystemDarkModeAsync();
-            
+
             if (isSystemDark)
             {
                 await LoadWindowsDarkBaseAsync();
@@ -2890,7 +2892,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             BaseTheme = isSystemDark ? "Windows_Dark" : "Windows_Light";
             HasUnsavedChanges = true;
-            
+
             StatusMessage = $"Synced with system theme: {(isSystemDark ? "Dark" : "Light")}";
             Logger.LogInformation("Theme synced with system: {IsDark}", isSystemDark);
         }
@@ -2915,9 +2917,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
             // - Windows: Registry check or WinRT API
             // - macOS: NSUserDefaults
             // - Linux: gsettings or desktop environment specific APIs
-            
+
             await Task.Delay(100); // Simulate async detection
-            
+
             // For now, return based on current time (demo purposes)
             var currentHour = DateTime.Now.Hour;
             return currentHour < 7 || currentHour > 19; // Dark mode for evening/night hours
@@ -2985,18 +2987,18 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 WriteIndented = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-            
+
             var themeJson = JsonSerializer.Serialize(shareableTheme, jsonOptions);
-            
+
             // Save to network shared folder (would be configurable in production)
             var networkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "MTM_SharedThemes");
             Directory.CreateDirectory(networkPath);
-            
+
             var fileName = $"MTM_SharedTheme_{CurrentThemeName.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
             var filePath = Path.Combine(networkPath, fileName);
-            
+
             await File.WriteAllTextAsync(filePath, themeJson);
-            
+
             StatusMessage = $"Theme shared to network: {fileName}";
             Logger.LogInformation("Theme shared to network: {FilePath}", filePath);
         }
@@ -3022,7 +3024,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogDebug("Importing themes from network share");
 
             var networkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "MTM_SharedThemes");
-            
+
             if (!Directory.Exists(networkPath))
             {
                 StatusMessage = "No network shared themes folder found";
@@ -3030,7 +3032,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             }
 
             var themeFiles = Directory.GetFiles(networkPath, "MTM_SharedTheme_*.json");
-            
+
             if (!themeFiles.Any())
             {
                 StatusMessage = "No shared themes found on network";
@@ -3044,14 +3046,14 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 .First();
 
             var themeJson = await File.ReadAllTextAsync(latestFile.FullName);
-            
+
             var jsonOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-            
+
             var sharedTheme = JsonSerializer.Deserialize<ThemeShareModel>(themeJson, jsonOptions);
-            
+
             if (sharedTheme == null)
             {
                 StatusMessage = "Invalid shared theme format";
@@ -3169,17 +3171,17 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogDebug("Auto-filling monochromatic colors");
 
             var baseColor = PrimaryActionColor;
-            
+
             // Generate tints and shades of the base color
             SecondaryActionColor = DarkenColor(baseColor, 0.15f);
             AccentColor = LightenColor(baseColor, 0.2f);
             HighlightColor = DarkenColor(baseColor, 0.3f);
-            
+
             // Subtle background variations
             MainBackgroundColor = LightenColor(baseColor, 0.95f);
             CardBackgroundColor = LightenColor(baseColor, 0.92f);
             HoverBackgroundColor = LightenColor(baseColor, 0.88f);
-            
+
             // Text colors with good contrast
             HeadingTextColor = DarkenColor(baseColor, 0.7f);
             BodyTextColor = DarkenColor(baseColor, 0.5f);
@@ -3210,13 +3212,13 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             var baseColor = PrimaryActionColor;
             var complementary = GetComplementaryColor(baseColor);
-            
+
             // Use base and complementary for high contrast
             PrimaryActionColor = baseColor;
             SecondaryActionColor = complementary;
             AccentColor = BlendColor(baseColor, complementary, 0.7f);
             HighlightColor = DarkenColor(baseColor, 0.2f);
-            
+
             // Status colors using complementary principles
             SuccessColor = GetComplementaryColor(Color.Parse("#4CAF50")); // Red-green complementary
             WarningColor = GetComplementaryColor(Color.Parse("#FF9800")); // Orange-blue complementary
@@ -3247,16 +3249,16 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogDebug("Auto-filling analogous colors");
 
             var baseColor = PrimaryActionColor;
-            
+
             // Generate analogous colors (adjacent on color wheel)
             var analogous1 = ShiftHue(baseColor, 30);  // +30 degrees
             var analogous2 = ShiftHue(baseColor, -30); // -30 degrees
-            
+
             PrimaryActionColor = baseColor;
             SecondaryActionColor = analogous1;
             AccentColor = analogous2;
             HighlightColor = DarkenColor(baseColor, 0.2f);
-            
+
             // Harmonious background colors
             MainBackgroundColor = LightenColor(analogous2, 0.9f);
             CardBackgroundColor = LightenColor(analogous1, 0.85f);
@@ -3286,16 +3288,16 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogDebug("Auto-filling triadic colors");
 
             var baseColor = PrimaryActionColor;
-            
+
             // Generate triadic colors (120 degrees apart)
             var triadic1 = ShiftHue(baseColor, 120);  // +120 degrees
             var triadic2 = ShiftHue(baseColor, 240);  // +240 degrees (or -120)
-            
+
             PrimaryActionColor = baseColor;
             SecondaryActionColor = triadic1;
             AccentColor = triadic2;
             HighlightColor = DarkenColor(baseColor, 0.2f);
-            
+
             // Use triadic colors for status
             SuccessColor = triadic1;
             WarningColor = BlendColor(baseColor, triadic2, 0.7f);
@@ -3327,33 +3329,33 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             // Generate colors that meet WCAG AAA (7:1) contrast requirements
             var darkBackground = Color.Parse("#FFFFFF"); // White background
-            
+
             // Generate high-contrast colors
             PrimaryActionColor = Color.Parse("#0066CC");   // Blue that meets AAA on white
             SecondaryActionColor = Color.Parse("#004499");  // Darker blue
             AccentColor = Color.Parse("#0099FF");          // Lighter blue, still AAA compliant
             HighlightColor = Color.Parse("#003366");       // Very dark blue
-            
+
             // Text colors with maximum contrast
             HeadingTextColor = Color.Parse("#000000");     // Pure black
             BodyTextColor = Color.Parse("#333333");        // Very dark gray
             InteractiveTextColor = Color.Parse("#0066CC"); // Same as primary
             OverlayTextColor = Color.Parse("#FFFFFF");     // White for dark backgrounds
             TertiaryTextColor = Color.Parse("#666666");    // Medium gray, still AAA
-            
+
             // High-contrast status colors
             SuccessColor = Color.Parse("#006600");         // Dark green
-            WarningColor = Color.Parse("#CC6600");         // Dark orange  
+            WarningColor = Color.Parse("#CC6600");         // Dark orange
             ErrorColor = Color.Parse("#CC0000");           // Dark red
             InfoColor = PrimaryActionColor;               // Consistent with primary
-            
+
             // Clean, high-contrast backgrounds
             MainBackgroundColor = Color.Parse("#FFFFFF");   // Pure white
             CardBackgroundColor = Color.Parse("#F8F8F8");   // Very light gray
             HoverBackgroundColor = Color.Parse("#F0F0F0");  // Light gray
             PanelBackgroundColor = Color.Parse("#FAFAFA");  // Off-white
             SidebarBackgroundColor = Color.Parse("#F5F5F5"); // Light gray
-            
+
             // Strong borders for clarity
             BorderColor = Color.Parse("#CCCCCC");          // Medium gray
             BorderAccentColor = Color.Parse("#999999");    // Darker gray
@@ -3393,27 +3395,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 ["MTM_Shared_Logic.SecondaryAction"] = SecondaryActionColor.ToString(),
                 ["MTM_Shared_Logic.AccentColor"] = AccentColor.ToString(),
                 ["MTM_Shared_Logic.HighlightColor"] = HighlightColor.ToString(),
-                
+
                 // Text colors
                 ["MTM_Shared_Logic.HeadingText"] = HeadingTextColor.ToString(),
                 ["MTM_Shared_Logic.BodyText"] = BodyTextColor.ToString(),
                 ["MTM_Shared_Logic.InteractiveText"] = InteractiveTextColor.ToString(),
                 ["MTM_Shared_Logic.OverlayTextBrush"] = OverlayTextColor.ToString(),
                 ["MTM_Shared_Logic.TertiaryTextBrush"] = TertiaryTextColor.ToString(),
-                
+
                 // Background colors
                 ["MTM_Shared_Logic.MainBackground"] = MainBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.CardBackgroundBrush"] = CardBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.HoverBrush"] = HoverBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.PanelBackgroundBrush"] = PanelBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.SidebarBackground"] = SidebarBackgroundColor.ToString(),
-                
+
                 // Status colors
                 ["MTM_Shared_Logic.SuccessBrush"] = SuccessColor.ToString(),
                 ["MTM_Shared_Logic.WarningBrush"] = WarningColor.ToString(),
                 ["MTM_Shared_Logic.ErrorBrush"] = ErrorColor.ToString(),
                 ["MTM_Shared_Logic.InfoBrush"] = InfoColor.ToString(),
-                
+
                 // Border colors
                 ["MTM_Shared_Logic.BorderBrush"] = BorderColor.ToString(),
                 ["MTM_Shared_Logic.BorderAccentBrush"] = BorderAccentColor.ToString()
@@ -3494,31 +3496,31 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 ["MTM_Shared_Logic.SecondaryAction"] = SecondaryActionColor.ToString(),
                 ["MTM_Shared_Logic.AccentColor"] = AccentColor.ToString(),
                 ["MTM_Shared_Logic.HighlightColor"] = HighlightColor.ToString(),
-                
+
                 // Text Colors (5)
                 ["MTM_Shared_Logic.HeadingText"] = HeadingTextColor.ToString(),
                 ["MTM_Shared_Logic.BodyText"] = BodyTextColor.ToString(),
                 ["MTM_Shared_Logic.InteractiveText"] = InteractiveTextColor.ToString(),
                 ["MTM_Shared_Logic.OverlayTextBrush"] = OverlayTextColor.ToString(),
                 ["MTM_Shared_Logic.TertiaryTextBrush"] = TertiaryTextColor.ToString(),
-                
+
                 // Background Colors (5)
                 ["MTM_Shared_Logic.MainBackground"] = MainBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.CardBackgroundBrush"] = CardBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.HoverBackground"] = HoverBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.PanelBackgroundBrush"] = PanelBackgroundColor.ToString(),
                 ["MTM_Shared_Logic.SidebarBackground"] = SidebarBackgroundColor.ToString(),
-                
+
                 // Status Colors (4)
                 ["MTM_Shared_Logic.SuccessBrush"] = SuccessColor.ToString(),
                 ["MTM_Shared_Logic.WarningBrush"] = WarningColor.ToString(),
                 ["MTM_Shared_Logic.ErrorBrush"] = ErrorColor.ToString(),
                 ["MTM_Shared_Logic.InfoBrush"] = InfoColor.ToString(),
-                
+
                 // Border Colors (2)
                 ["MTM_Shared_Logic.BorderBrush"] = BorderColor.ToString(),
                 ["MTM_Shared_Logic.BorderAccentBrush"] = BorderAccentColor.ToString(),
-                
+
                 // Additional derived resources for comprehensive theming
                 ["MTM_Shared_Logic.FocusBrush"] = AccentColor.ToString(),
                 ["MTM_Shared_Logic.BorderDarkBrush"] = DarkenColor(BorderColor, 0.2f).ToString(),
@@ -3574,7 +3576,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             {
                 StatusMessage = "Closing with unsaved changes - changes will be lost";
                 Logger.LogWarning("Closing theme editor with unsaved changes");
-                
+
                 // Allow a moment for the user to see the status message
                 await Task.Delay(1500);
             }
@@ -3668,7 +3670,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             // Prepare final status message
             var resultCount = validationResults.Count;
             var warningCount = warnings.Count;
-            
+
             if (warningCount == 0)
             {
                 StatusMessage = $"✅ Theme validation passed! ({resultCount} checks completed)";
@@ -3679,14 +3681,14 @@ public partial class ThemeEditorViewModel : BaseViewModel
             }
 
             // Log detailed results
-            Logger.LogInformation("Theme validation completed: {PassedChecks} passed, {Warnings} warnings", 
+            Logger.LogInformation("Theme validation completed: {PassedChecks} passed, {Warnings} warnings",
                 resultCount, warningCount);
-            
+
             foreach (var result in validationResults)
             {
                 Logger.LogDebug("Validation result: {Result}", result);
             }
-            
+
             foreach (var warning in warnings)
             {
                 Logger.LogWarning("Validation warning: {Warning}", warning);
@@ -3719,7 +3721,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             Logger.LogDebug("Starting color blindness accessibility validation");
 
             var (isValid, issues) = await ValidateColorBlindnessDistinction();
-            
+
             if (isValid)
             {
                 StatusMessage = "✅ All colors remain distinguishable across all color vision types!";
@@ -3729,11 +3731,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
             {
                 var criticalIssues = issues.Count(i => i.StartsWith("⚠️"));
                 var warnings = issues.Count(i => i.StartsWith("🟡"));
-                
+
                 StatusMessage = $"⚠️ Color blindness validation: {criticalIssues} critical, {warnings} warnings";
-                Logger.LogWarning("Color blindness validation found {Critical} critical issues and {Warnings} warnings", 
+                Logger.LogWarning("Color blindness validation found {Critical} critical issues and {Warnings} warnings",
                     criticalIssues, warnings);
-                
+
                 // Log detailed findings
                 foreach (var issue in issues.Take(5)) // Limit console output
                 {
@@ -4104,11 +4106,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             // Get current color for the specified property
             var currentColor = GetCurrentColorForProperty(colorProperty);
-            
+
             // For now, we'll simulate a color picker dialog
             // In a real implementation, this would open a proper color picker dialog
             var newColor = await ShowSimpleColorPickerAsync(currentColor, colorProperty);
-            
+
             if (newColor.HasValue)
             {
                 SetColorForProperty(colorProperty, newColor.Value);
@@ -4141,14 +4143,14 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task<Color?> ShowSimpleColorPickerAsync(Color currentColor, string propertyName)
     {
         await Task.Delay(100); // Simulate dialog opening time
-        
+
         try
         {
             // For demonstration, we'll cycle through some predefined colors
             var predefinedColors = new[]
             {
                 Color.Parse("#0078D4"), // MTM Blue
-                Color.Parse("#107C10"), // Green  
+                Color.Parse("#107C10"), // Green
                 Color.Parse("#D83B01"), // Orange
                 Color.Parse("#A4262C"), // Red
                 Color.Parse("#5C2D91"), // Purple
@@ -4160,10 +4162,10 @@ public partial class ThemeEditorViewModel : BaseViewModel
             // Find current color index and move to next one (cycling through)
             var currentIndex = Array.FindIndex(predefinedColors, c => c == currentColor);
             var nextIndex = (currentIndex + 1) % predefinedColors.Length;
-            
-            Logger.LogDebug("Color picker for {Property}: changing from {Current} to {Next}", 
+
+            Logger.LogDebug("Color picker for {Property}: changing from {Current} to {Next}",
                 propertyName, currentColor, predefinedColors[nextIndex]);
-                
+
             return predefinedColors[nextIndex];
         }
         catch (Exception ex)
@@ -4357,7 +4359,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             IsLoading = true;
             IsPrintPreviewEnabled = !IsPrintPreviewEnabled;
-            
+
             if (IsPrintPreviewEnabled)
             {
                 StatusMessage = "🖨️ Print preview enabled - colors adjusted for print output";
@@ -4393,7 +4395,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             IsLoading = true;
             IsLightingSimulationEnabled = !IsLightingSimulationEnabled;
-            
+
             if (IsLightingSimulationEnabled)
             {
                 StatusMessage = $"💡 Lighting simulation enabled: {LightingCondition}";
@@ -4426,14 +4428,14 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task ChangeLightingConditionAsync(string? condition)
     {
         if (string.IsNullOrEmpty(condition)) return;
-        
+
         try
         {
             IsLoading = true;
             LightingCondition = condition;
             StatusMessage = $"💡 Lighting changed to: {condition}";
             Logger.LogDebug("Lighting condition changed to: {Condition}", condition);
-            
+
             if (IsLightingSimulationEnabled)
             {
                 await ApplyLightingSimulationAsync(condition);
@@ -4461,7 +4463,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             IsLoading = true;
             IsMultiMonitorPreviewEnabled = !IsMultiMonitorPreviewEnabled;
-            
+
             if (IsMultiMonitorPreviewEnabled)
             {
                 await DetectAvailableMonitorsAsync();
@@ -4496,14 +4498,14 @@ public partial class ThemeEditorViewModel : BaseViewModel
         try
         {
             if (monitorIndex < 0 || monitorIndex >= AvailableMonitors.Count) return;
-            
+
             IsLoading = true;
             SelectedMonitorIndex = monitorIndex;
             var selectedMonitor = AvailableMonitors[monitorIndex];
-            
+
             StatusMessage = $"🖥️ Preview monitor changed to: {selectedMonitor.DisplayName}";
             Logger.LogDebug("Preview monitor changed to: {Monitor}", selectedMonitor.DisplayName);
-            
+
             await ApplyMonitorSpecificSettingsAsync(selectedMonitor);
         }
         catch (Exception ex)
@@ -4524,27 +4526,27 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task ApplyPrintPreviewFiltersAsync()
     {
         await Task.Delay(100); // Simulate processing time
-        
+
         try
         {
             SaveColorSnapshot("Before print preview");
-            
+
             // Apply print-specific adjustments
             // Print colors typically need higher contrast and less saturation
             var allColors = GetAllColorsForProcessing();
-            
+
             foreach (var (propertyName, color) in allColors)
             {
                 var hsv = RgbToHsv(color);
-                
+
                 // Adjust for print characteristics
                 hsv.S = (float)Math.Max(0, Math.Min(1, hsv.S * 0.9f)); // Reduce saturation by 10%
                 hsv.V = (float)Math.Max(0, Math.Min(1, hsv.V * 1.1f)); // Increase brightness by 10%
-                
+
                 var adjustedColor = HsvToRgb(hsv);
                 SetColorForProperty(propertyName, adjustedColor);
             }
-            
+
             Logger.LogDebug("Print preview filters applied to {Count} colors", allColors.Count);
         }
         catch (Exception ex)
@@ -4560,7 +4562,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task RestoreScreenPreviewAsync()
     {
         await Task.Delay(50);
-        
+
         try
         {
             // Find the last "Before print preview" snapshot and restore
@@ -4583,23 +4585,23 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task ApplyLightingSimulationAsync(string lightingCondition)
     {
         await Task.Delay(100); // Simulate processing time
-        
+
         try
         {
             SaveColorSnapshot($"Before {lightingCondition} simulation");
-            
+
             // Get color temperature and intensity for the lighting condition
             var (colorTemp, intensity) = GetLightingParameters(lightingCondition);
-            
+
             var allColors = GetAllColorsForProcessing();
-            
+
             foreach (var (propertyName, color) in allColors)
             {
                 var adjustedColor = ApplyColorTemperatureFilter(color, colorTemp, intensity);
                 SetColorForProperty(propertyName, adjustedColor);
             }
-            
-            Logger.LogDebug("Lighting simulation applied: {Condition} ({ColorTemp}K, {Intensity}% intensity)", 
+
+            Logger.LogDebug("Lighting simulation applied: {Condition} ({ColorTemp}K, {Intensity}% intensity)",
                 lightingCondition, colorTemp, intensity * 100);
         }
         catch (Exception ex)
@@ -4615,7 +4617,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task RestoreStandardLightingAsync()
     {
         await Task.Delay(50);
-        
+
         try
         {
             // Find the last lighting simulation snapshot and restore
@@ -4638,11 +4640,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task DetectAvailableMonitorsAsync()
     {
         await Task.Delay(200); // Simulate monitor detection time
-        
+
         try
         {
             AvailableMonitors.Clear();
-            
+
             // Primary monitor (always available)
             AvailableMonitors.Add(new MonitorInfo
             {
@@ -4651,7 +4653,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 Height = 1080,
                 IsPrimary = true
             });
-            
+
             // Simulate additional monitors (in real implementation, would use platform APIs)
             AvailableMonitors.Add(new MonitorInfo
             {
@@ -4660,7 +4662,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 Height = 768,
                 IsPrimary = false
             });
-            
+
             AvailableMonitors.Add(new MonitorInfo
             {
                 Name = "Wide Monitor",
@@ -4668,7 +4670,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 Height = 1440,
                 IsPrimary = false
             });
-            
+
             Logger.LogDebug("Detected {Count} monitors for preview", AvailableMonitors.Count);
         }
         catch (Exception ex)
@@ -4684,12 +4686,12 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task ApplyMonitorSpecificSettingsAsync(MonitorInfo monitor)
     {
         await Task.Delay(100);
-        
+
         try
         {
             // Apply monitor-specific color corrections (simplified)
             Logger.LogDebug("Applying color settings for monitor: {Monitor}", monitor.DisplayName);
-            
+
             // Different monitor types might need different color adjustments
             // This is a simplified example - in practice, would use monitor profiles
         }
@@ -4727,7 +4729,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         try
         {
             var rgb = (r: color.R / 255f, g: color.G / 255f, b: color.B / 255f);
-            
+
             // Apply color temperature adjustment
             // Warmer temperatures (lower K) add red/yellow, cooler (higher K) add blue
             if (colorTemp < 5500)
@@ -4744,12 +4746,12 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 coolFactor = Math.Min(1.0f, coolFactor);
                 rgb.b = Math.Min(1.0f, rgb.b + coolFactor * 0.1f);
             }
-            
+
             // Apply intensity
             rgb.r = Math.Max(0f, Math.Min(1.0f, rgb.r * intensity));
             rgb.g = Math.Max(0f, Math.Min(1.0f, rgb.g * intensity));
             rgb.b = Math.Max(0f, Math.Min(1.0f, rgb.b * intensity));
-            
+
             return Color.FromRgb(
                 (byte)(rgb.r * 255),
                 (byte)(rgb.g * 255),
@@ -4876,9 +4878,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task<List<string>> ValidateContrastRatiosAsync()
     {
         await Task.Delay(10); // Async operation simulation
-        
+
         var issues = new List<string>();
-        
+
         try
         {
             // Check primary text on main background
@@ -4888,7 +4890,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 issues.Add($"Heading text contrast too low: {primaryContrast:F1}:1 (needs 4.5:1)");
             }
 
-            // Check body text on card background  
+            // Check body text on card background
             var bodyContrast = CalculateContrastRatio(BodyTextColor, CardBackgroundColor);
             if (bodyContrast < 4.5)
             {
@@ -4945,9 +4947,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
             // Check for triadic harmony
             var primaryAccentHueDiff = Math.Abs(primaryHsv.H - accentHsv.H);
             var secondaryAccentHueDiff = Math.Abs(secondaryHsv.H - accentHsv.H);
-            
-            if (Math.Abs(primarySecondaryHueDiff - 120) < 30 && 
-                Math.Abs(primaryAccentHueDiff - 120) < 30 && 
+
+            if (Math.Abs(primarySecondaryHueDiff - 120) < 30 &&
+                Math.Abs(primaryAccentHueDiff - 120) < 30 &&
                 Math.Abs(secondaryAccentHueDiff - 120) < 30)
             {
                 return (true, "Triadic");
@@ -4981,12 +4983,12 @@ public partial class ThemeEditorViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Loading current theme colors from ThemeService");
-            
+
             if (_themeService != null)
             {
                 // Get current theme name
                 CurrentThemeName = _themeService.CurrentTheme ?? "MTM Theme";
-                
+
                 // Load current theme colors from application resources
                 LoadColorsFromApplicationResources();
             }
@@ -5002,7 +5004,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             LoadDefaultColors(); // Fallback to defaults
         }
     }
-    
+
     private void LoadColorsFromApplicationResources()
     {
         try
@@ -5049,7 +5051,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             LoadDefaultColors();
         }
     }
-    
+
     private Color GetColorFromResource(string resourceKey, string fallbackHex)
     {
         try
@@ -5069,7 +5071,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                     return parsedColor;
                 }
             }
-            
+
             // Fallback to provided hex color
             return Color.Parse(fallbackHex);
         }
@@ -5165,7 +5167,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     {
         if (string.IsNullOrWhiteSpace(colorString))
             return false;
-            
+
         try
         {
             Color.Parse(colorString);
@@ -5193,7 +5195,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 Logger.LogWarning(ex, "Failed to parse color '{Color}', using fallback", colorString);
             }
         }
-        
+
         return fallback;
     }
 
@@ -5437,30 +5439,30 @@ public partial class ThemeEditorViewModel : BaseViewModel
         try
         {
             var invalidColors = new List<string>();
-            
+
             // Check each color property
             if (PrimaryActionColor == default) invalidColors.Add("Primary Action");
             if (SecondaryActionColor == default) invalidColors.Add("Secondary Action");
             if (AccentColor == default) invalidColors.Add("Accent");
             if (HighlightColor == default) invalidColors.Add("Highlight");
-            
+
             if (HeadingTextColor == default) invalidColors.Add("Heading Text");
             if (BodyTextColor == default) invalidColors.Add("Body Text");
             if (InteractiveTextColor == default) invalidColors.Add("Interactive Text");
             if (OverlayTextColor == default) invalidColors.Add("Overlay Text");
             if (TertiaryTextColor == default) invalidColors.Add("Tertiary Text");
-            
+
             if (MainBackgroundColor == default) invalidColors.Add("Main Background");
             if (CardBackgroundColor == default) invalidColors.Add("Card Background");
             if (HoverBackgroundColor == default) invalidColors.Add("Hover Background");
             if (PanelBackgroundColor == default) invalidColors.Add("Panel Background");
             if (SidebarBackgroundColor == default) invalidColors.Add("Sidebar Background");
-            
+
             if (SuccessColor == default) invalidColors.Add("Success");
             if (WarningColor == default) invalidColors.Add("Warning");
             if (ErrorColor == default) invalidColors.Add("Error");
             if (InfoColor == default) invalidColors.Add("Info");
-            
+
             if (BorderColor == default) invalidColors.Add("Border");
             if (BorderAccentColor == default) invalidColors.Add("Border Accent");
 
@@ -5470,7 +5472,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 CanApplyTheme = false;
                 return false;
             }
-            
+
             StatusMessage = "All colors are valid";
             CanApplyTheme = true;
             return true;
@@ -5494,11 +5496,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
             // Convert colors to relative luminance
             var foregroundLuminance = CalculateRelativeLuminance(foreground);
             var backgroundLuminance = CalculateRelativeLuminance(background);
-            
+
             // Calculate contrast ratio
             var lighter = Math.Max(foregroundLuminance, backgroundLuminance);
             var darker = Math.Min(foregroundLuminance, backgroundLuminance);
-            
+
             return (lighter + 0.05) / (darker + 0.05);
         }
         catch (Exception ex)
@@ -5533,11 +5535,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private Dictionary<string, Color> GenerateColorPalette(Color baseColor, string algorithm)
     {
         var palette = new Dictionary<string, Color>();
-        
+
         try
         {
             var baseHsv = RgbToHsv(baseColor);
-            
+
             switch (algorithm.ToLowerInvariant())
             {
                 case "monochromatic":
@@ -5545,25 +5547,25 @@ public partial class ThemeEditorViewModel : BaseViewModel
                     palette["secondary"] = HsvToRgb((baseHsv.H, baseHsv.S, Math.Max(0, baseHsv.V - 0.2f)));
                     palette["accent"] = HsvToRgb((baseHsv.H, Math.Max(0, baseHsv.S - 0.3f), Math.Min(1, baseHsv.V + 0.1f)));
                     break;
-                    
+
                 case "complementary":
                     palette["primary"] = baseColor;
                     palette["secondary"] = HsvToRgb(((baseHsv.H + 180) % 360, baseHsv.S, baseHsv.V));
                     palette["accent"] = HsvToRgb(((baseHsv.H + 30) % 360, baseHsv.S * 0.7f, baseHsv.V));
                     break;
-                    
+
                 case "triadic":
                     palette["primary"] = baseColor;
                     palette["secondary"] = HsvToRgb(((baseHsv.H + 120) % 360, baseHsv.S, baseHsv.V));
                     palette["accent"] = HsvToRgb(((baseHsv.H + 240) % 360, baseHsv.S, baseHsv.V));
                     break;
-                    
+
                 case "analogous":
                     palette["primary"] = baseColor;
                     palette["secondary"] = HsvToRgb(((baseHsv.H + 30) % 360, baseHsv.S, baseHsv.V));
                     palette["accent"] = HsvToRgb(((baseHsv.H - 30 + 360) % 360, baseHsv.S, baseHsv.V));
                     break;
-                    
+
                 default:
                     palette["primary"] = baseColor;
                     palette["secondary"] = DarkenColor(baseColor, 0.2f);
@@ -5579,7 +5581,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             palette["secondary"] = DarkenColor(baseColor, 0.2f);
             palette["accent"] = LightenColor(baseColor, 0.3f);
         }
-        
+
         return palette;
     }
 
@@ -5593,52 +5595,52 @@ public partial class ThemeEditorViewModel : BaseViewModel
         try
         {
             var snapshot = new ColorSnapshot(name);
-            
+
             // Capture all current colors
             snapshot.Colors["PrimaryAction"] = PrimaryActionColor;
             snapshot.Colors["SecondaryAction"] = SecondaryActionColor;
             snapshot.Colors["Accent"] = AccentColor;
             snapshot.Colors["Highlight"] = HighlightColor;
-            
+
             snapshot.Colors["HeadingText"] = HeadingTextColor;
             snapshot.Colors["BodyText"] = BodyTextColor;
             snapshot.Colors["InteractiveText"] = InteractiveTextColor;
             snapshot.Colors["OverlayText"] = OverlayTextColor;
             snapshot.Colors["TertiaryText"] = TertiaryTextColor;
-            
+
             snapshot.Colors["MainBackground"] = MainBackgroundColor;
             snapshot.Colors["CardBackground"] = CardBackgroundColor;
             snapshot.Colors["HoverBackground"] = HoverBackgroundColor;
             snapshot.Colors["PanelBackground"] = PanelBackgroundColor;
             snapshot.Colors["SidebarBackground"] = SidebarBackgroundColor;
-            
+
             snapshot.Colors["Success"] = SuccessColor;
             snapshot.Colors["Warning"] = WarningColor;
             snapshot.Colors["Error"] = ErrorColor;
             snapshot.Colors["Info"] = InfoColor;
-            
+
             snapshot.Colors["Border"] = BorderColor;
             snapshot.Colors["BorderAccent"] = BorderAccentColor;
-            
+
             // Remove any snapshots after current index (for redo chain)
             while (ColorHistory.Count > CurrentHistoryIndex + 1)
             {
                 ColorHistory.RemoveAt(ColorHistory.Count - 1);
             }
-            
+
             ColorHistory.Add(snapshot);
             CurrentHistoryIndex = ColorHistory.Count - 1;
-            
+
             // Limit history to 20 entries
             while (ColorHistory.Count > 20)
             {
                 ColorHistory.RemoveAt(0);
                 CurrentHistoryIndex--;
             }
-            
+
             CanUndo = CurrentHistoryIndex > 0;
             CanRedo = false;
-            
+
             Logger.LogDebug("Color snapshot saved: {SnapshotName}", name);
         }
         catch (Exception ex)
@@ -5658,7 +5660,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             {
                 SaveColorSnapshot($"Before restore: {snapshot.Name}");
             }
-            
+
             // Restore all colors from snapshot
             if (snapshot.Colors.TryGetValue("PrimaryAction", out var primaryAction))
                 PrimaryActionColor = primaryAction;
@@ -5668,7 +5670,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 AccentColor = accent;
             if (snapshot.Colors.TryGetValue("Highlight", out var highlight))
                 HighlightColor = highlight;
-                
+
             if (snapshot.Colors.TryGetValue("HeadingText", out var headingText))
                 HeadingTextColor = headingText;
             if (snapshot.Colors.TryGetValue("BodyText", out var bodyText))
@@ -5679,7 +5681,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 OverlayTextColor = overlayText;
             if (snapshot.Colors.TryGetValue("TertiaryText", out var tertiaryText))
                 TertiaryTextColor = tertiaryText;
-                
+
             if (snapshot.Colors.TryGetValue("MainBackground", out var mainBg))
                 MainBackgroundColor = mainBg;
             if (snapshot.Colors.TryGetValue("CardBackground", out var cardBg))
@@ -5690,7 +5692,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 PanelBackgroundColor = panelBg;
             if (snapshot.Colors.TryGetValue("SidebarBackground", out var sidebarBg))
                 SidebarBackgroundColor = sidebarBg;
-                
+
             if (snapshot.Colors.TryGetValue("Success", out var success))
                 SuccessColor = success;
             if (snapshot.Colors.TryGetValue("Warning", out var warning))
@@ -5699,12 +5701,12 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 ErrorColor = error;
             if (snapshot.Colors.TryGetValue("Info", out var info))
                 InfoColor = info;
-                
+
             if (snapshot.Colors.TryGetValue("Border", out var border))
                 BorderColor = border;
             if (snapshot.Colors.TryGetValue("BorderAccent", out var borderAccent))
                 BorderAccentColor = borderAccent;
-            
+
             HasUnsavedChanges = true;
             await Task.Delay(50); // Brief delay for UI update
         }
@@ -5723,10 +5725,10 @@ public partial class ThemeEditorViewModel : BaseViewModel
         try
         {
             Logger.LogDebug("Applying color blindness filter: {Type}", ColorBlindnessType);
-            
+
             // Save original colors for restoration
             SaveColorSnapshot($"Before {ColorBlindnessType} simulation");
-            
+
             // Apply filter based on type
             switch (ColorBlindnessType)
             {
@@ -5752,7 +5754,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                     ApplyMonochromacyFilter();
                     break;
             }
-            
+
             await Task.Delay(100); // Allow UI to update
         }
         catch (Exception ex)
@@ -5925,8 +5927,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
         var r = 0.567 * color.R + 0.433 * color.G;
         var g = 0.558 * color.R + 0.442 * color.G;
         var b = 0.242 * color.B;
-        
-        return Color.FromArgb(color.A, 
+
+        return Color.FromArgb(color.A,
             (byte)Math.Min(255, Math.Max(0, r)),
             (byte)Math.Min(255, Math.Max(0, g)),
             (byte)Math.Min(255, Math.Max(0, b)));
@@ -5940,7 +5942,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         var r = 0.625 * color.R + 0.375 * color.G;
         var g = 0.70 * color.R + 0.30 * color.G;
         var b = 0.30 * color.B;
-        
+
         return Color.FromArgb(color.A,
             (byte)Math.Min(255, Math.Max(0, r)),
             (byte)Math.Min(255, Math.Max(0, g)),
@@ -5955,7 +5957,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         var r = 0.95 * color.R + 0.05 * color.B;
         var g = 0.433 * color.G + 0.567 * color.B;
         var b = 0.475 * color.B;
-        
+
         return Color.FromArgb(color.A,
             (byte)Math.Min(255, Math.Max(0, r)),
             (byte)Math.Min(255, Math.Max(0, g)),
@@ -5967,9 +5969,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
     /// </summary>
     private Color ReduceRedComponent(Color color, double factor)
     {
-        return Color.FromArgb(color.A, 
-            (byte)(color.R * factor), 
-            color.G, 
+        return Color.FromArgb(color.A,
+            (byte)(color.R * factor),
+            color.G,
             color.B);
     }
 
@@ -5978,9 +5980,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
     /// </summary>
     private Color ReduceGreenComponent(Color color, double factor)
     {
-        return Color.FromArgb(color.A, 
-            color.R, 
-            (byte)(color.G * factor), 
+        return Color.FromArgb(color.A,
+            color.R,
+            (byte)(color.G * factor),
             color.B);
     }
 
@@ -5989,9 +5991,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
     /// </summary>
     private Color ReduceBlueComponent(Color color, double factor)
     {
-        return Color.FromArgb(color.A, 
-            color.R, 
-            color.G, 
+        return Color.FromArgb(color.A,
+            color.R,
+            color.G,
             (byte)(color.B * factor));
     }
 
@@ -6011,7 +6013,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private async Task<(bool IsValid, List<string> Issues)> ValidateColorBlindnessDistinction()
     {
         await Task.Delay(50); // Simulate processing time
-        
+
         var issues = new List<string>();
         bool isValid = true;
 
@@ -6032,7 +6034,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             var testTypes = new[]
             {
                 "Protanopia (Red-blind)",
-                "Deuteranopia (Green-blind)", 
+                "Deuteranopia (Green-blind)",
                 "Tritanopia (Blue-blind)",
                 "Protanomaly (Red-weak)",
                 "Deuteranomaly (Green-weak)",
@@ -6046,9 +6048,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 {
                     var simulatedColor1 = SimulateColorBlindness(color1, testType);
                     var simulatedColor2 = SimulateColorBlindness(color2, testType);
-                    
+
                     var deltaE = CalculateColorDistance(simulatedColor1, simulatedColor2);
-                    
+
                     // Colors should have Delta E > 3.0 for basic distinction
                     // and > 7.0 for strong distinction (accessibility best practice)
                     if (deltaE < 3.0)
@@ -6065,7 +6067,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             // Additional validation for text contrast
             await ValidateTextContrastForColorBlindness(issues);
-            
+
             if (isValid)
             {
                 Logger.LogDebug("Color blindness validation passed - all critical colors remain distinguishable");
@@ -6173,9 +6175,9 @@ public partial class ThemeEditorViewModel : BaseViewModel
             {
                 var simTextColor = SimulateColorBlindness(textColor, testType);
                 var simBgColor = SimulateColorBlindness(bgColor, testType);
-                
+
                 var contrastRatio = CalculateContrastRatio(simTextColor, simBgColor);
-                
+
                 if (contrastRatio < 4.5) // WCAG AA standard
                 {
                     issues.Add($"⚠️ {textName} on {bgName} fails WCAG contrast for {testType} ({contrastRatio:F1}:1)");
@@ -6190,7 +6192,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private (double hue, double saturation, double value) ColorToHsv(Color color)
     {
         double r = color.R / 255.0;
-        double g = color.G / 255.0; 
+        double g = color.G / 255.0;
         double b = color.B / 255.0;
 
         double max = Math.Max(r, Math.Max(g, b));
@@ -6347,10 +6349,10 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             var contrastWithWhite = CalculateContrastRatio(PrimaryActionColor, Colors.White);
             var contrastWithBlack = CalculateContrastRatio(PrimaryActionColor, Colors.Black);
-            
+
             var wcagAA = contrastWithWhite >= 4.5 || contrastWithBlack >= 4.5;
             var wcagAAA = contrastWithWhite >= 7.0 || contrastWithBlack >= 7.0;
-            
+
             var status = wcagAAA ? "AAA ✓" : wcagAA ? "AA ✓" : "Fail ✗";
             return $"WCAG Contrast: {status} (vs White: {contrastWithWhite:F1}, vs Black: {contrastWithBlack:F1})";
         }
@@ -6460,10 +6462,10 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             var contrastWithWhite = CalculateContrastRatio(SecondaryActionColor, Colors.White);
             var contrastWithBlack = CalculateContrastRatio(SecondaryActionColor, Colors.Black);
-            
+
             var wcagAA = contrastWithWhite >= 4.5 || contrastWithBlack >= 4.5;
             var wcagAAA = contrastWithWhite >= 7.0 || contrastWithBlack >= 7.0;
-            
+
             var status = wcagAAA ? "AAA ✓" : wcagAA ? "AA ✓" : "Fail ✗";
             return $"WCAG Contrast: {status} (vs White: {contrastWithWhite:F1}, vs Black: {contrastWithBlack:F1})";
         }
@@ -6544,8 +6546,8 @@ public partial class ThemeEditorViewModel : BaseViewModel
         }
 
         return Color.FromRgb(
-            (byte)Math.Round(r * 255), 
-            (byte)Math.Round(g * 255), 
+            (byte)Math.Round(r * 255),
+            (byte)Math.Round(g * 255),
             (byte)Math.Round(b * 255));
     }
 
@@ -6563,7 +6565,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             _previewTimer?.Dispose();
             _previewTimer = null;
         }
-        
+
         // Call base class dispose
         base.Dispose(disposing);
     }

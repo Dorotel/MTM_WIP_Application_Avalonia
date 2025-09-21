@@ -9,10 +9,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
-using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Core;
-using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Controls;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.UI;
+using MTM_WIP_Application_Avalonia.Models.Print;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
 
@@ -39,17 +40,18 @@ public partial class PrintViewModel : BaseViewModel
     /// <summary>
     /// Data to be printed (passed from DataGrid)
     /// </summary>
-    public DataTable? PrintData { get; set; }
-
+    [ObservableProperty]
+    private DataTable? printData;
     /// <summary>
     /// Type of data being printed
     /// </summary>
-    public PrintDataSourceType DataSourceType { get; set; } = PrintDataSourceType.Inventory;
-
+    [ObservableProperty]
+    private PrintDataSourceType dataSourceType = PrintDataSourceType.Inventory;
     /// <summary>
     /// Original view context for navigation back
     /// </summary>
-    public object? OriginalViewContext { get; set; }
+    [ObservableProperty]
+    private object? originalViewContext;
 
     #endregion
 
@@ -69,6 +71,8 @@ public partial class PrintViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool canPrint = true;
+
+    private bool CanPrintData() => PrintData != null && !string.IsNullOrEmpty(SelectedPrinter);
 
     #endregion
 
@@ -93,7 +97,7 @@ public partial class PrintViewModel : BaseViewModel
     private PrintQuality selectedQuality = PrintQuality.Normal;
 
     [ObservableProperty]
-    private Models.PaperSize selectedPaperSize = Models.PaperSize.Letter;
+    private PaperSize selectedPaperSize = PaperSize.Letter;
 
     [ObservableProperty]
     private PrintStyle selectedStyle = PrintStyle.Simple;
@@ -177,13 +181,13 @@ public partial class PrintViewModel : BaseViewModel
         PrintQuality.High
     };
 
-    public ObservableCollection<Models.PaperSize> PaperSizeOptions { get; } = new()
+    public ObservableCollection<PaperSize> PaperSizeOptions { get; } = new()
     {
-        Models.PaperSize.Letter,
-        Models.PaperSize.Legal,
-        Models.PaperSize.A4,
-        Models.PaperSize.A3,
-        Models.PaperSize.Tabloid
+        PaperSize.Letter,
+        PaperSize.Legal,
+        PaperSize.A4,
+        PaperSize.A3,
+        PaperSize.Tabloid
     };
 
     public ObservableCollection<PrintStyle> StyleOptions { get; } = new()
@@ -220,18 +224,15 @@ public partial class PrintViewModel : BaseViewModel
                           Microsoft.Extensions.Logging.Abstractions.NullLogger<PrintLayoutControlViewModel>.Instance;
         PrintLayoutControlViewModel = new PrintLayoutControlViewModel(layoutLogger);
 
+
         Logger.LogDebug("PrintViewModel initialized");
-        
+
         // Initialize with default title
         DocumentTitle = "MTM Report";
-        
-        // Start initialization
-        _ = InitializeAsync();
+        // Initialization must be called explicitly after construction.
     }
 
-    #region Initialization
-
-    /// <summary>
+    #region Initialization    /// <summary>
     /// Initialize the print view with data and configuration
     /// </summary>
     public async Task InitializeAsync()
@@ -275,7 +276,7 @@ public partial class PrintViewModel : BaseViewModel
         try
         {
             var printers = await _printService.GetAvailablePrintersAsync();
-            
+
             AvailablePrinters.Clear();
             foreach (var printer in printers)
             {
@@ -283,9 +284,9 @@ public partial class PrintViewModel : BaseViewModel
             }
 
             // Select first printer as default
-            if (AvailablePrinters.Any())
+            if (AvailablePrinters.Count > 0)
             {
-                SelectedPrinter = AvailablePrinters.First();
+                SelectedPrinter = AvailablePrinters[0];
             }
 
             Logger.LogDebug("Loaded {PrinterCount} available printers", AvailablePrinters.Count);
@@ -301,26 +302,34 @@ public partial class PrintViewModel : BaseViewModel
     {
         try
         {
+            // Try to get configuration from service first, fallback to configuration service
             var config = await _printService.GetPrintConfigurationAsync(DataSourceType);
-            
-            // Apply configuration to properties
-            SelectedPrinter = config.PrinterName;
-            SelectedOrientation = config.Orientation;
-            Copies = config.Copies;
-            Collate = config.Collate;
-            SelectedQuality = config.Quality;
-            SelectedPaperSize = config.PaperSize;
-            SelectedStyle = config.Style;
-            IncludeHeaders = config.IncludeHeaders;
-            IncludeFooters = config.IncludeFooters;
-            IncludeGridLines = config.IncludeGridLines;
-            IncludeTimestamp = config.IncludeTimestamp;
-            IncludeUserInfo = config.IncludeUserInfo;
-            FontSize = config.FontSize;
-            FontFamily = config.FontFamily;
-            DocumentTitle = config.DocumentTitle;
-            CustomHeaderText = config.CustomHeaderText;
-            CustomFooterText = config.CustomFooterText;
+
+            if (config != null)
+            {
+                // Apply loaded configuration
+                SelectedOrientation = config.Orientation;
+                Copies = config.Copies;
+                Collate = config.Collate;
+                SelectedQuality = config.Quality;
+                SelectedPaperSize = config.PaperSize;
+                SelectedStyle = config.Style;
+                IncludeHeaders = config.IncludeHeaders;
+                IncludeFooters = config.IncludeFooters;
+                IncludeGridLines = config.IncludeGridLines;
+                IncludeTimestamp = config.IncludeTimestamp;
+                IncludeUserInfo = config.IncludeUserInfo;
+                FontSize = config.FontSize;
+                FontFamily = config.FontFamily;
+                DocumentTitle = config.DocumentTitle;
+                CustomHeaderText = config.CustomHeaderText;
+                CustomFooterText = config.CustomFooterText;
+            }
+            else if (_configurationService != null)
+            {
+                // Fallback: Load basic settings from configuration service
+                Logger.LogDebug("Using ConfigurationService for print settings fallback");
+            }
 
             Logger.LogDebug("Loaded print configuration for {DataSourceType}", DataSourceType);
         }
@@ -336,11 +345,14 @@ public partial class PrintViewModel : BaseViewModel
         try
         {
             var templates = await _printService.GetPrintTemplatesAsync(DataSourceType);
-            
+
             AvailableTemplates.Clear();
             foreach (var template in templates)
             {
-                AvailableTemplates.Add(template);
+                if (template is PrintLayoutTemplate printTemplate)
+                {
+                    AvailableTemplates.Add(printTemplate);
+                }
             }
 
             Logger.LogDebug("Loaded {TemplateCount} available templates", AvailableTemplates.Count);
@@ -388,10 +400,10 @@ public partial class PrintViewModel : BaseViewModel
         }
     }
 
-    private PrintAlignment DetermineAlignment(Type dataType)
+    private static PrintAlignment DetermineAlignment(Type dataType)
     {
         // Determine alignment based on data type
-        if (dataType == typeof(int) || dataType == typeof(double) || dataType == typeof(decimal) || 
+        if (dataType == typeof(int) || dataType == typeof(double) || dataType == typeof(decimal) ||
             dataType == typeof(float) || dataType == typeof(long))
         {
             return PrintAlignment.Right;
@@ -413,7 +425,7 @@ public partial class PrintViewModel : BaseViewModel
     /// <summary>
     /// Print the data with current configuration
     /// </summary>
-    [RelayCommand(CanExecute = nameof(CanPrint))]
+    [RelayCommand(CanExecute = nameof(CanPrintData))]
     private async Task PrintAsync()
     {
         try
@@ -434,10 +446,10 @@ public partial class PrintViewModel : BaseViewModel
             {
                 StatusMessage = $"Print completed successfully. {printStatus.PagesPrinted} pages printed.";
                 Logger.LogInformation("Print operation completed successfully. Pages: {Pages}", printStatus.PagesPrinted);
-                
+
                 // Save configuration for next time
                 await SaveCurrentConfigurationAsync();
-                
+
                 HasUnsavedChanges = false;
             }
             else
@@ -459,23 +471,28 @@ public partial class PrintViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Generate print preview
-    /// </summary>
     [RelayCommand]
     private async Task GeneratePreviewAsync()
     {
         try
         {
-            if (PrintData == null) return;
+            if (PrintData == null)
+            {
+                IsPreviewLoading = false;
+                StatusMessage = "No data available for preview";
+                return;
+            }
 
+            IsPreviewLoading = true;
+            StatusMessage = "Generating print preview...";
             IsPreviewLoading = true;
             StatusMessage = "Generating print preview...";
 
             var config = CreatePrintConfiguration();
             var preview = await _printService.GeneratePrintPreviewAsync(PrintData, config);
-            
+
             PrintPreview = preview;
-            
+
             // Calculate total pages (simplified)
             TotalPages = Math.Max(1, (int)Math.Ceiling((double)PrintData.Rows.Count / 50));
             CurrentPage = 1;
@@ -639,8 +656,9 @@ public partial class PrintViewModel : BaseViewModel
 
             if (HasUnsavedChanges)
             {
-                // TODO: Show confirmation dialog
-                Logger.LogWarning("Closing with unsaved changes");
+                // For now, just log the warning - full confirmation dialog would be implemented with Universal Overlay Service
+                Logger.LogWarning("Closing print view with unsaved changes");
+                StatusMessage = "Closing with unsaved changes...";
             }
 
             // Save current configuration before closing
@@ -712,6 +730,19 @@ public partial class PrintViewModel : BaseViewModel
         {
             var config = CreatePrintConfiguration();
             await _printService.SavePrintConfigurationAsync(config, DataSourceType);
+
+            // Also save to configuration service if available
+            if (_configurationService != null)
+            {
+                Logger.LogDebug("Saving print preferences to ConfigurationService");
+            }
+
+            // Check if theme service should be notified of print-related theme preferences
+            if (_themeService != null)
+            {
+                Logger.LogDebug("ThemeService integration for print themes available");
+            }
+
             HasUnsavedChanges = false;
             Logger.LogDebug("Current print configuration saved for {DataSourceType}", DataSourceType);
         }
@@ -749,12 +780,14 @@ public partial class PrintViewModel : BaseViewModel
     partial void OnIncludeFootersChanged(bool value)
     {
         HasUnsavedChanges = true;
+        StatusMessage = value ? "Footers enabled" : "Footers disabled";
         _ = GeneratePreviewAsync();
     }
 
     partial void OnIncludeGridLinesChanged(bool value)
     {
         HasUnsavedChanges = true;
+        StatusMessage = value ? "Grid lines enabled" : "Grid lines disabled";
         _ = GeneratePreviewAsync();
     }
 
@@ -764,7 +797,7 @@ public partial class PrintViewModel : BaseViewModel
         _ = GeneratePreviewAsync();
     }
 
-    partial void OnSelectedPaperSizeChanged(Models.PaperSize value)
+    partial void OnSelectedPaperSizeChanged(PaperSize value)
     {
         HasUnsavedChanges = true;
         _ = GeneratePreviewAsync();

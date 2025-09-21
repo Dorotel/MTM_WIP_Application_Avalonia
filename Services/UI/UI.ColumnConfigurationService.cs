@@ -16,6 +16,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Models.UI;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
@@ -146,7 +147,7 @@ public class ColumnConfigurationService : IColumnConfigurationService
                 return false;
             }
 
-            configuration.UpdateLastModified();
+            configuration.Touch();
 
             var fileName = GetConfigurationFileName(gridId, configuration.ConfigurationId);
             var filePath = Path.Combine(_configurationsPath, fileName);
@@ -254,7 +255,7 @@ public class ColumnConfigurationService : IColumnConfigurationService
                 }
             });
 
-            return File.Exists(filePath) == false;
+            return !File.Exists(filePath);
         }
         catch (Exception ex)
         {

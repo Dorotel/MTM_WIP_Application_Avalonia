@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace MTM_WIP_Application_Avalonia.Core.Startup;
+namespace MTM_WIP_Application_Avalonia.Services.Core;
 
 /// <summary>
 /// Interface for application health monitoring and diagnostics.
@@ -74,7 +74,7 @@ public class ApplicationHealthService : IApplicationHealthService
     {
         var stopwatch = Stopwatch.StartNew();
         _logger.LogDebug("Getting application health status");
-        
+
         try
         {
             var status = new ApplicationHealthStatus
@@ -105,7 +105,7 @@ public class ApplicationHealthService : IApplicationHealthService
             stopwatch.Stop();
             status.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
 
-            _logger.LogDebug("Health status retrieved in {DurationMs}ms - Healthy: {IsHealthy}", 
+            _logger.LogDebug("Health status retrieved in {DurationMs}ms - Healthy: {IsHealthy}",
                 stopwatch.ElapsedMilliseconds, status.IsHealthy);
 
             return Task.FromResult(status);
@@ -159,11 +159,11 @@ public class ApplicationHealthService : IApplicationHealthService
 
             stopwatch.Stop();
             result.CheckDurationMs = stopwatch.ElapsedMilliseconds;
-            result.OverallHealth = result.ComponentResults.Values.All(c => c.IsHealthy) 
-                ? HealthStatus.Healthy 
+            result.OverallHealth = result.ComponentResults.Values.All(c => c.IsHealthy)
+                ? HealthStatus.Healthy
                 : HealthStatus.Degraded;
 
-            _logger.LogInformation("Health check completed in {DurationMs}ms - Status: {OverallHealth}", 
+            _logger.LogInformation("Health check completed in {DurationMs}ms - Status: {OverallHealth}",
                 stopwatch.ElapsedMilliseconds, result.OverallHealth);
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Health check completed - Status: {result.OverallHealth}");
             Debug.WriteLine($"[HEALTH-CHECK] Health check completed in {stopwatch.ElapsedMilliseconds}ms");
@@ -228,7 +228,7 @@ public class ApplicationHealthService : IApplicationHealthService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting performance metrics");
-            
+
             return new ApplicationPerformanceMetrics
             {
                 Timestamp = DateTime.UtcNow,
@@ -271,7 +271,7 @@ public class ApplicationHealthService : IApplicationHealthService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting startup metrics");
-            
+
             return new StartupMetrics
             {
                 ApplicationStartTime = _startTime,
@@ -338,7 +338,7 @@ public class ApplicationHealthService : IApplicationHealthService
         {
             stopwatch.Stop();
             _logger.LogError(ex, "Error checking system resources");
-            
+
             result.ComponentResults["SystemResources"] = new ComponentHealthResult
             {
                 ComponentName = "SystemResources",
@@ -372,7 +372,7 @@ public class ApplicationHealthService : IApplicationHealthService
             };
 
             // Check if main window exists (UI component health)
-            var hasMainWindow = Avalonia.Application.Current?.ApplicationLifetime is 
+            var hasMainWindow = Avalonia.Application.Current?.ApplicationLifetime is
                 Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop &&
                 desktop.MainWindow != null;
 
@@ -392,7 +392,7 @@ public class ApplicationHealthService : IApplicationHealthService
         {
             stopwatch.Stop();
             _logger.LogError(ex, "Error checking application components");
-            
+
             result.ComponentResults["ApplicationComponents"] = new ComponentHealthResult
             {
                 ComponentName = "ApplicationComponents",
@@ -455,7 +455,7 @@ public class ApplicationHealthService : IApplicationHealthService
         {
             stopwatch.Stop();
             _logger.LogError(ex, "Error checking runtime environment");
-            
+
             result.ComponentResults["RuntimeEnvironment"] = new ComponentHealthResult
             {
                 ComponentName = "RuntimeEnvironment",
