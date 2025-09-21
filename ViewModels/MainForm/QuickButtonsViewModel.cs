@@ -1,3 +1,5 @@
+﻿using MTM_WIP_Application_Avalonia.Models.Events;
+using MTM_WIP_Application_Avalonia.Models.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,6 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.Services.Core;
 using Avalonia.Threading;
 
@@ -18,7 +21,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 
 /// <summary>
 /// QuickButtonsViewModel manages the quick action buttons that provide shortcuts
-/// to frequently used inventory operations. Uses MVVM Community Toolkit for 
+/// to frequently used inventory operations. Uses MVVM Community Toolkit for
 /// property and command management with comprehensive database integration.
 /// </summary>
 public partial class QuickButtonsViewModel : BaseViewModel
@@ -57,7 +60,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
     /// <summary>
     /// Gets the non-empty quick buttons for display
     /// </summary>
-    public IEnumerable<QuickButtonItemViewModel> NonEmptyQuickButtons => 
+    public IEnumerable<QuickButtonItemViewModel> NonEmptyQuickButtons =>
         QuickButtons.Where(button => !button.IsEmpty);
 
     /// <summary>
@@ -86,17 +89,17 @@ public partial class QuickButtonsViewModel : BaseViewModel
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
 
         // Add console output to ensure we can see constructor execution
-        Console.WriteLine("🔧🔧🔧 QuickButtonsViewModel constructor STARTED");
-        System.Diagnostics.Debug.WriteLine("🔧🔧🔧 QuickButtonsViewModel constructor STARTED");
+        Console.WriteLine("ðŸ”§ðŸ”§ðŸ”§ QuickButtonsViewModel constructor STARTED");
+        System.Diagnostics.Debug.WriteLine("ðŸ”§ðŸ”§ðŸ”§ QuickButtonsViewModel constructor STARTED");
 
         Logger.LogInformation("QuickButtonsViewModel initialized with dependency injection");
-        Logger.LogInformation("🔧 QuickButtonsViewModel constructor started");
+        Logger.LogInformation("ðŸ”§ QuickButtonsViewModel constructor started");
 
         // Check current user immediately
         var currentUser = _applicationState.CurrentUser;
-        Console.WriteLine($"🔧🔧🔧 Current user in constructor: '{currentUser ?? "NULL"}'");
-        System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Current user in constructor: '{currentUser ?? "NULL"}'");
-        Logger.LogInformation("🔧 Current user in constructor: '{CurrentUser}'", currentUser ?? "NULL");
+        Console.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ Current user in constructor: '{currentUser ?? "NULL"}'");
+        System.Diagnostics.Debug.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ Current user in constructor: '{currentUser ?? "NULL"}'");
+        Logger.LogInformation("ðŸ”§ Current user in constructor: '{CurrentUser}'", currentUser ?? "NULL");
 
         // Subscribe to service events
         _quickButtonsService.QuickButtonsChanged += OnQuickButtonsChanged;
@@ -111,38 +114,38 @@ public partial class QuickButtonsViewModel : BaseViewModel
             OnPropertyChanged(nameof(CanAnyButtonMoveDown));
         };
 
-        Console.WriteLine("🔧🔧🔧 Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
-        System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
-        Logger.LogInformation("🔧 Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
+        Console.WriteLine("ðŸ”§ðŸ”§ðŸ”§ Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
+        System.Diagnostics.Debug.WriteLine("ðŸ”§ðŸ”§ðŸ”§ Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
+        Logger.LogInformation("ðŸ”§ Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync");
 
         // Load data from database service asynchronously without blocking startup
         Task.Run(async () =>
         {
             try
             {
-                Console.WriteLine("🔧🔧🔧 Loading transactions in background - about to call LoadLast10TransactionsAsync");
-                System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Loading transactions in background - about to call LoadLast10TransactionsAsync");
-                Logger.LogInformation("🔧 Loading transactions in background - about to call LoadLast10TransactionsAsync");
+                Console.WriteLine("ðŸ”§ðŸ”§ðŸ”§ Loading transactions in background - about to call LoadLast10TransactionsAsync");
+                System.Diagnostics.Debug.WriteLine("ðŸ”§ðŸ”§ðŸ”§ Loading transactions in background - about to call LoadLast10TransactionsAsync");
+                Logger.LogInformation("ðŸ”§ Loading transactions in background - about to call LoadLast10TransactionsAsync");
                 await LoadLast10TransactionsAsync();
-                Console.WriteLine("🔧🔧🔧 Background loading completed LoadLast10TransactionsAsync");
-                System.Diagnostics.Debug.WriteLine("🔧🔧🔧 Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
-                Logger.LogInformation("🔧 Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
+                Console.WriteLine("ðŸ”§ðŸ”§ðŸ”§ Background loading completed LoadLast10TransactionsAsync");
+                System.Diagnostics.Debug.WriteLine("ðŸ”§ðŸ”§ðŸ”§ Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
+                Logger.LogInformation("ðŸ”§ Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"🔧🔧🔧 Failed to load initial quick buttons data in Dispatcher.UIThread.InvokeAsync: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Failed to load initial quick buttons data in Dispatcher.UIThread.InvokeAsync: {ex.Message}");
+                Console.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ Failed to load initial quick buttons data in Dispatcher.UIThread.InvokeAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ Failed to load initial quick buttons data in Dispatcher.UIThread.InvokeAsync: {ex.Message}");
                 Logger.LogError(ex, "Failed to load initial quick buttons data");
-                Logger.LogError(ex, "🔧 Failed to load initial quick buttons data in Dispatcher.UIThread.InvokeAsync");
-                
+                Logger.LogError(ex, "ðŸ”§ Failed to load initial quick buttons data in Dispatcher.UIThread.InvokeAsync");
+
                 // If database service fails, just load empty buttons
                 LoadEmptyButtons();
             }
         });
 
-        Console.WriteLine("🔧🔧🔧 QuickButtonsViewModel constructor COMPLETED");
-        System.Diagnostics.Debug.WriteLine("🔧🔧🔧 QuickButtonsViewModel constructor COMPLETED");
-        Logger.LogInformation("🔧 QuickButtonsViewModel constructor completed");
+        Console.WriteLine("ðŸ”§ðŸ”§ðŸ”§ QuickButtonsViewModel constructor COMPLETED");
+        System.Diagnostics.Debug.WriteLine("ðŸ”§ðŸ”§ðŸ”§ QuickButtonsViewModel constructor COMPLETED");
+        Logger.LogInformation("ðŸ”§ QuickButtonsViewModel constructor completed");
     }
 
     #region RelayCommand Methods
@@ -153,7 +156,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
     [RelayCommand]
     private async Task RefreshButtons()
     {
-        Logger.LogInformation("🔧 RefreshButtonsCommand executed");
+        Logger.LogInformation("ðŸ”§ RefreshButtonsCommand executed");
         LastOperationStatus = "Refreshing...";
         await LoadLast10TransactionsAsync();
     }
@@ -289,10 +292,10 @@ public partial class QuickButtonsViewModel : BaseViewModel
         try
         {
             Logger.LogInformation("NewQuickButton command executed - requesting overlay display");
-            
+
             // Raise event to request overlay display with panel expansion
             NewQuickButtonRequested?.Invoke(this, EventArgs.Empty);
-            
+
             LastOperationStatus = "Creating...";
         }
         catch (Exception ex)
@@ -311,7 +314,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
         try
         {
             _progressService.StartOperation("Exporting quick buttons...", false);
-            
+
             var currentUser = _applicationState.CurrentUser;
             if (string.IsNullOrEmpty(currentUser))
             {
@@ -320,7 +323,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
 
             // Use enhanced export with file selection - pass null for sourceControl as we'll handle it in the service
             await _quickButtonsService.ExportQuickButtonsWithSelectionAsync(currentUser, null!);
-            
+
             _progressService.CompleteOperation("Export process completed");
             LastOperationStatus = "Export Initiated";
             Logger.LogInformation("Enhanced export initiated for user: {User}", currentUser);
@@ -342,7 +345,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
         try
         {
             _progressService.StartOperation("Importing quick buttons...", false);
-            
+
             var currentUser = _applicationState.CurrentUser;
             if (string.IsNullOrEmpty(currentUser))
             {
@@ -351,11 +354,11 @@ public partial class QuickButtonsViewModel : BaseViewModel
 
             // Use enhanced import with file selection - pass null for sourceControl as we'll handle it in the service
             await _quickButtonsService.ImportQuickButtonsWithSelectionAsync(currentUser, null!);
-            
+
             _progressService.CompleteOperation("Import process completed");
             LastOperationStatus = "Import Initiated";
             Logger.LogInformation("Enhanced import initiated for user: {User}", currentUser);
-            
+
             // Refresh the UI after import
             await RefreshButtons();
         }
@@ -373,73 +376,74 @@ public partial class QuickButtonsViewModel : BaseViewModel
     {
         try
         {
-            Console.WriteLine("🔧🔧🔧 LoadLast10TransactionsAsync ENTRY POINT");
-            System.Diagnostics.Debug.WriteLine("🔧🔧🔧 LoadLast10TransactionsAsync ENTRY POINT");
-            Logger.LogInformation("🔧 LoadLast10TransactionsAsync ENTRY POINT");
+            Console.WriteLine("ðŸ”§ðŸ”§ðŸ”§ LoadLast10TransactionsAsync ENTRY POINT");
+            System.Diagnostics.Debug.WriteLine("ðŸ”§ðŸ”§ðŸ”§ LoadLast10TransactionsAsync ENTRY POINT");
+            Logger.LogInformation("ðŸ”§ LoadLast10TransactionsAsync ENTRY POINT");
             _progressService.StartOperation("Loading recent transactions...", false);
 
             // Ensure we have a valid user before making the database call
             var currentUser = _applicationState.CurrentUser;
-            Console.WriteLine($"🔧🔧🔧 Current user in LoadLast10TransactionsAsync: '{currentUser ?? "NULL"}'");
-            System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Current user in LoadLast10TransactionsAsync: '{currentUser ?? "NULL"}'");
-            Logger.LogInformation("🔧 Current user in LoadLast10TransactionsAsync: '{CurrentUser}'", currentUser ?? "NULL");
+            Console.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ Current user in LoadLast10TransactionsAsync: '{currentUser ?? "NULL"}'");
+            System.Diagnostics.Debug.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ Current user in LoadLast10TransactionsAsync: '{currentUser ?? "NULL"}'");
+            Logger.LogInformation("ðŸ”§ Current user in LoadLast10TransactionsAsync: '{CurrentUser}'", currentUser ?? "NULL");
 
             // If no user is set, use the current Windows user as default
             if (string.IsNullOrEmpty(currentUser))
             {
                 currentUser = Environment.UserName.ToUpper();
-                Logger.LogInformation("🔧 No user set, using Windows user: {CurrentUser}", currentUser);
-                Console.WriteLine($"🔧🔧🔧 No user set, using Windows user: {currentUser}");
-                System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 No user set, using Windows user: {currentUser}");
+                Logger.LogInformation("ðŸ”§ No user set, using Windows user: {CurrentUser}", currentUser);
+                Console.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ No user set, using Windows user: {currentUser}");
+                System.Diagnostics.Debug.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ No user set, using Windows user: {currentUser}");
 
                 // Update the application state with the default user
                 _applicationState.CurrentUser = currentUser;
             }
 
-            Console.WriteLine($"🔧🔧🔧 About to call QuickButtons service with user: {currentUser}");
-            System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 About to call QuickButtons service with user: {currentUser}");
-            Logger.LogInformation("🔧 About to call QuickButtons service with user: {CurrentUser}", currentUser);
+            Console.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ About to call QuickButtons service with user: {currentUser}");
+            System.Diagnostics.Debug.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ About to call QuickButtons service with user: {currentUser}");
+            Logger.LogInformation("ðŸ”§ About to call QuickButtons service with user: {CurrentUser}", currentUser);
 
             var transactions = await _quickButtonsService.LoadUserQuickButtonsAsync(currentUser);
 
-            Console.WriteLine($"🔧🔧🔧 QuickButtons service returned {transactions.Count} transactions");
-            System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 QuickButtons service returned {transactions.Count} transactions");
-            Logger.LogInformation("🔧 QuickButtons service returned {Count} transactions", transactions.Count);
+            Console.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ QuickButtons service returned {transactions.Count} transactions");
+            System.Diagnostics.Debug.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ QuickButtons service returned {transactions.Count} transactions");
+            Logger.LogInformation("ðŸ”§ QuickButtons service returned {Count} transactions", transactions.Count);
 
             // Update collection on UI thread
             Dispatcher.UIThread.Post(() =>
             {
                 QuickButtons.Clear();
 
-            // Convert service data to ViewModel items
-            for (int i = 0; i < Math.Min(transactions.Count, 10); i++)
-            {
-                var transaction = transactions[i];
-                Logger.LogDebug("🔧 Creating button {Index}: PartId={PartId}, Operation={Operation}, Quantity={Quantity}",
-                    i + 1, transaction.PartId, transaction.Operation, transaction.Quantity);
-
-                // CRITICAL: Ensure button data is properly set for non-empty detection
-                var button = new QuickButtonItemViewModel
+                // Convert service data to ViewModel items
+                for (int i = 0; i < Math.Min(transactions.Count, 10); i++)
                 {
-                    Position = i + 1,
-                    PartId = transaction.PartId ?? string.Empty,  // Ensure not null
-                    Operation = transaction.Operation ?? string.Empty, // Ensure not null and not "EMPTY"
-                    Quantity = transaction.Quantity,
-                    DisplayText = string.IsNullOrEmpty(transaction.PartId) ? "Empty Slot" : transaction.PartId,
-                    SubText = string.IsNullOrEmpty(transaction.PartId) ? "Click to assign" : string.Empty,
-                    ToolTipText = string.IsNullOrEmpty(transaction.PartId) ? 
-                        $"Empty slot {i + 1} - Click to assign a quick action." :
-                        $"Position {i + 1}: Click to populate Part ID: {transaction.PartId}, Operation: {transaction.Operation}, Quantity: {transaction.Quantity} in the active tab. Right-click for move and remove options."
-                };
+                    var transaction = transactions[i];
+                    Logger.LogDebug("ðŸ”§ Creating button {Index}: PartId={PartId}, Operation={Operation}, Quantity={Quantity}",
+                        i + 1, transaction.PartId, transaction.Operation, transaction.Quantity);
 
-                Logger.LogDebug("🔧 Button {Index} IsEmpty check: PartId='{PartId}', Operation='{Operation}', IsEmpty={IsEmpty}",
-                    i + 1, button.PartId, button.Operation, button.IsEmpty);
+                    // CRITICAL: Ensure button data is properly set for non-empty detection
+                    var button = new QuickButtonItemViewModel
+                    {
+                        Position = i + 1,
+                        PartId = transaction.PartId ?? string.Empty,  // Ensure not null
+                        Operation = transaction.Operation ?? string.Empty, // Ensure not null and not "EMPTY"
+                        Quantity = transaction.Quantity,
+                        DisplayText = string.IsNullOrEmpty(transaction.PartId) ? "Empty Slot" : transaction.PartId,
+                        SubText = string.IsNullOrEmpty(transaction.PartId) ? "Click to assign" : string.Empty,
+                        ToolTipText = string.IsNullOrEmpty(transaction.PartId) ?
+                            $"Empty slot {i + 1} - Click to assign a quick action." :
+                            $"Position {i + 1}: Click to populate Part ID: {transaction.PartId}, Operation: {transaction.Operation}, Quantity: {transaction.Quantity} in the active tab. Right-click for move and remove options."
+                    };
 
-                // Subscribe to property changes
-                button.PropertyChanged += OnButtonPropertyChanged;
-                QuickButtons.Add(button);
-            }                Logger.LogInformation("🔧 Added {ActualButtonCount} transaction buttons to QuickButtons collection",
-                    QuickButtons.Count(b => !b.IsEmpty));
+                    Logger.LogDebug("ðŸ”§ Button {Index} IsEmpty check: PartId='{PartId}', Operation='{Operation}', IsEmpty={IsEmpty}",
+                        i + 1, button.PartId, button.Operation, button.IsEmpty);
+
+                    // Subscribe to property changes
+                    button.PropertyChanged += OnButtonPropertyChanged;
+                    QuickButtons.Add(button);
+                }
+                Logger.LogInformation("ðŸ”§ Added {ActualButtonCount} transaction buttons to QuickButtons collection",
+                        QuickButtons.Count(b => !b.IsEmpty));
 
                 // Fill remaining slots with empty buttons
                 for (int i = transactions.Count; i < 10; i++)
@@ -471,13 +475,13 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 // Ensure the math is correct: nonEmpty + empty = total = 10
                 if (nonEmptyCount + emptyCount != totalCount)
                 {
-                    Logger.LogWarning("🔧 Button count mismatch! NonEmpty: {NonEmpty}, Empty: {Empty}, Total: {Total}", 
+                    Logger.LogWarning("ðŸ”§ Button count mismatch! NonEmpty: {NonEmpty}, Empty: {Empty}, Total: {Total}",
                         nonEmptyCount, emptyCount, totalCount);
                 }
 
-                Console.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
-                System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
-                Logger.LogInformation("🔧 Total QuickButtons collection now has {TotalCount} items ({NonEmpty} non-empty, {Empty} empty)",
+                Console.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
+                System.Diagnostics.Debug.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ Total QuickButtons collection now has {totalCount} items ({nonEmptyCount} non-empty, {emptyCount} empty)");
+                Logger.LogInformation("ðŸ”§ Total QuickButtons collection now has {TotalCount} items ({NonEmpty} non-empty, {Empty} empty)",
                     totalCount, nonEmptyCount, emptyCount);
 
                 // Update move command validation
@@ -485,7 +489,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
             });
 
             _progressService.CompleteOperation("Transactions loaded successfully");
-            
+
             // Update debug status for footer display
             DatabaseConnectionStatus = "Connected";
             LastOperationStatus = $"Success - {DateTime.Now:HH:mm:ss}";
@@ -493,9 +497,9 @@ public partial class QuickButtonsViewModel : BaseViewModel
         catch (Exception ex)
         {
             _progressService.ReportError($"Failed to load transactions: {ex.Message}");
-            Console.WriteLine($"🔧🔧🔧 LoadLast10TransactionsAsync FAILED with exception: {ex.Message}");
-            System.Diagnostics.Debug.WriteLine($"🔧🔧🔧 LoadLast10TransactionsAsync FAILED with exception: {ex.Message}");
-            Logger.LogError(ex, "🔧 LoadLast10TransactionsAsync FAILED with exception");
+            Console.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ LoadLast10TransactionsAsync FAILED with exception: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"ðŸ”§ðŸ”§ðŸ”§ LoadLast10TransactionsAsync FAILED with exception: {ex.Message}");
+            Logger.LogError(ex, "ðŸ”§ LoadLast10TransactionsAsync FAILED with exception");
 
             // Update debug status for footer display
             DatabaseConnectionStatus = "Error";
@@ -516,7 +520,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 return;
             }
 
-            Logger.LogInformation("Executing quick action: {PartId}, {Operation}, {Quantity}", 
+            Logger.LogInformation("Executing quick action: {PartId}, {Operation}, {Quantity}",
                 button.PartId, button.Operation, button.Quantity);
 
             // Fire event to populate InventoryTab fields
@@ -526,7 +530,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 Operation = button.Operation,
                 Quantity = button.Quantity
             });
-            
+
             // Note: Removed SaveQuickButtonAsync call to update last used date
             // This was causing save errors and is not critical for functionality
             // The QuickButton execution should only populate fields, not save data
@@ -545,10 +549,10 @@ public partial class QuickButtonsViewModel : BaseViewModel
         try
         {
             _progressService.StartOperation($"Removing quick button: {button.PartId}...", false);
-            
+
             // Remove from service - let the event system handle UI updates
             var success = await _quickButtonsService.RemoveQuickButtonAsync(button.Position, _applicationState.CurrentUser);
-            
+
             if (success)
             {
                 _progressService.CompleteOperation("Quick button removed successfully");
@@ -572,9 +576,9 @@ public partial class QuickButtonsViewModel : BaseViewModel
         try
         {
             _progressService.StartOperation("Clearing all quick buttons...", false);
-            
+
             var success = await _quickButtonsService.ClearAllQuickButtonsAsync(_applicationState.CurrentUser);
-            
+
             if (success)
             {
                 QuickButtons.Clear();
@@ -615,7 +619,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
         {
             QuickButtons[i].Position = i + 1;
         }
-        
+
         // Update move command validation for each button
         UpdateMoveCommandValidation();
     }
@@ -630,7 +634,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
             button.CanMoveUp = CanMoveButtonUp(button);
             button.CanMoveDown = CanMoveButtonDown(button);
         }
-        
+
         // Notify parent-level properties
         OnPropertyChanged(nameof(CanAnyButtonMoveUp));
         OnPropertyChanged(nameof(CanAnyButtonMoveDown));
@@ -642,7 +646,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
         Dispatcher.UIThread.Post(() =>
         {
             QuickButtons.Clear();
-            
+
             // Load 10 empty button slots
             for (int i = 1; i <= 10; i++)
             {
@@ -656,19 +660,19 @@ public partial class QuickButtonsViewModel : BaseViewModel
                     SubText = "Click to assign",
                     ToolTipText = $"Empty slot {i} - Click to assign a quick action. Right-click for options."
                 };
-                
+
                 // Subscribe to property changes to update count
                 emptyButton.PropertyChanged += OnButtonPropertyChanged;
                 QuickButtons.Add(emptyButton);
             }
-            
+
             // Update move command validation
             UpdateMoveCommandValidation();
-            
+
             // Raise initial count update
             OnPropertyChanged(nameof(NonEmptyQuickButtonsCount));
             OnPropertyChanged(nameof(NonEmptyQuickButtons));
-            
+
             Logger.LogInformation("Loaded 10 empty quick button slots");
         });
     }
@@ -684,12 +688,12 @@ public partial class QuickButtonsViewModel : BaseViewModel
             // First, add to the sys_last_10_transactions table
             var success = await _quickButtonsService.AddTransactionToLast10Async(
                 _applicationState.CurrentUser, partId, operation, quantity);
-                
+
             if (success)
             {
-                Logger.LogInformation("Transaction added to last 10 for quick buttons: {PartId}, {Operation}, {Quantity}", 
+                Logger.LogInformation("Transaction added to last 10 for quick buttons: {PartId}, {Operation}, {Quantity}",
                     partId, operation, quantity);
-                
+
                 // Refresh the buttons to show the new one
                 await LoadLast10TransactionsAsync();
             }
@@ -731,18 +735,18 @@ public partial class QuickButtonsViewModel : BaseViewModel
             Dispatcher.UIThread.Post(() =>
             {
                 SessionTransactionHistory.Insert(0, sessionTransaction);
-                
+
                 // Keep only the most recent 50 transactions to prevent memory issues
                 while (SessionTransactionHistory.Count > 50)
                 {
                     SessionTransactionHistory.RemoveAt(SessionTransactionHistory.Count - 1);
                 }
-                
+
                 // Notify property changes
                 OnPropertyChanged(nameof(SessionTransactionCount));
             });
 
-            Logger.LogInformation("Added session transaction: {PartId}, {Operation}, {TransactionType}", 
+            Logger.LogInformation("Added session transaction: {PartId}, {Operation}, {TransactionType}",
                 partId, operation, transactionType);
         }
         catch (Exception ex)
@@ -783,7 +787,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
         {
             _isUpdatingFromService = true; // Prevent reload during our update
             _progressService.StartOperation($"Saving quick button: {button.PartId}...", false);
-            
+
             var buttonData = new QuickButtonData
             {
                 UserId = _applicationState.CurrentUser,
@@ -793,14 +797,14 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 Quantity = button.Quantity,
                 LastUsedDate = DateTime.Now
             };
-            
+
             var success = await _quickButtonsService.SaveQuickButtonAsync(buttonData);
-            
+
             if (success)
             {
                 _progressService.CompleteOperation("Quick button saved successfully");
                 Logger.LogInformation("Saved quick button: {PartId} at position {Position}", button.PartId, button.Position);
-                
+
                 // Update the display properties to reflect the saved data
                 button.DisplayText = button.PartId;
                 button.SubText = string.Empty;
@@ -832,7 +836,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
             if (e.UserId == _applicationState.CurrentUser && !_isUpdatingFromService)
             {
                 Logger.LogInformation("Quick buttons changed for current user: {ChangeType}", e.ChangeType);
-                
+
                 // Reload for all change types that affect the button list
                 switch (e.ChangeType)
                 {
@@ -865,9 +869,9 @@ public partial class QuickButtonsViewModel : BaseViewModel
         {
             if (e.UserId == _applicationState.CurrentUser)
             {
-                Logger.LogInformation("Adding session transaction for current user: {PartId}, {Operation}, {TransactionType}", 
+                Logger.LogInformation("Adding session transaction for current user: {PartId}, {Operation}, {TransactionType}",
                     e.PartId, e.Operation, e.TransactionType);
-                
+
                 // Call AddSessionTransaction to add to the session history
                 AddSessionTransaction(
                     e.PartId,
@@ -891,7 +895,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
     /// </summary>
     private void OnButtonPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(QuickButtonItemViewModel.PartId) || 
+        if (e.PropertyName == nameof(QuickButtonItemViewModel.PartId) ||
             e.PropertyName == nameof(QuickButtonItemViewModel.Operation))
         {
             OnPropertyChanged(nameof(NonEmptyQuickButtonsCount));
@@ -911,29 +915,29 @@ public partial class QuickButtonsViewModel : BaseViewModel
 
         var fromButton = QuickButtons.FirstOrDefault(b => b.Position == fromPosition);
         var toButton = QuickButtons.FirstOrDefault(b => b.Position == toPosition);
-        
+
         if (fromButton == null || toButton == null) return;
-        
+
         // Cannot move empty buttons
         if (fromButton.IsEmpty)
         {
             Logger.LogDebug("Cannot reorder empty button from position {FromPosition}", fromPosition);
             return;
         }
-        
+
         // Find the boundaries for valid moves
         var lastNonEmptyPosition = QuickButtons
             .Where(b => !b.IsEmpty)
             .Max(b => b.Position);
-        
+
         // Cannot move to a position beyond the last non-empty button
         if (toPosition > lastNonEmptyPosition && toPosition > fromPosition)
         {
-            Logger.LogDebug("Cannot move button to position {ToPosition}: beyond last non-empty button at position {LastPosition}", 
+            Logger.LogDebug("Cannot move button to position {ToPosition}: beyond last non-empty button at position {LastPosition}",
                 toPosition, lastNonEmptyPosition);
             return;
         }
-        
+
         // Cannot move to position 0 or negative
         if (toPosition < 1)
         {
@@ -949,12 +953,12 @@ public partial class QuickButtonsViewModel : BaseViewModel
             // Perform the swap locally first for immediate UI feedback
             var fromIndex = QuickButtons.IndexOf(fromButton);
             var toIndex = QuickButtons.IndexOf(toButton);
-            
+
             if (fromIndex >= 0 && toIndex >= 0)
             {
                 QuickButtons.Move(fromIndex, toIndex);
                 UpdateButtonPositions();
-                
+
                 // Persist the new order to the database
                 var reorderedButtons = QuickButtons.Where(b => !b.IsEmpty)
                     .Select(b => new QuickButtonData
@@ -965,9 +969,9 @@ public partial class QuickButtonsViewModel : BaseViewModel
                         Operation = b.Operation,
                         Quantity = b.Quantity
                     }).ToList();
-                
+
                 var success = await _quickButtonsService.ReorderQuickButtonsAsync(_applicationState.CurrentUser, reorderedButtons);
-                
+
                 if (success)
                 {
                     _progressService.CompleteOperation("Quick buttons reordered successfully");
@@ -1000,17 +1004,17 @@ public partial class QuickButtonsViewModel : BaseViewModel
     {
         if (fromPosition == toPosition || fromPosition < 1 || toPosition < 1)
             return false;
-            
+
         var fromButton = QuickButtons.FirstOrDefault(b => b.Position == fromPosition);
         if (fromButton == null || fromButton.IsEmpty)
             return false;
-        
+
         // Find the last non-empty button position
         var lastNonEmptyPosition = QuickButtons
             .Where(b => !b.IsEmpty)
             .DefaultIfEmpty()
             .Max(b => b?.Position ?? 0);
-        
+
         // Cannot move beyond the last non-empty button (unless moving backwards)
         return toPosition <= lastNonEmptyPosition || toPosition < fromPosition;
     }
@@ -1022,14 +1026,14 @@ public partial class QuickButtonsViewModel : BaseViewModel
     private async void MoveButtonUpImplementation(QuickButtonItemViewModel button)
     {
         var currentIndex = QuickButtons.IndexOf(button);
-        
+
         // Cannot move up if already at position 1 (index 0)
         if (currentIndex <= 0)
         {
             Logger.LogDebug("Cannot move button up: already at position 1");
             return;
         }
-        
+
         // Cannot move empty buttons
         if (button.IsEmpty)
         {
@@ -1041,16 +1045,16 @@ public partial class QuickButtonsViewModel : BaseViewModel
         {
             _isUpdatingFromService = true; // Prevent reload during our update
             _progressService.StartOperation("Moving button up...", false);
-            
+
             // Perform the move locally first for immediate UI feedback
             QuickButtons.Move(currentIndex, currentIndex - 1);
             UpdateButtonPositions();
-            
+
             // Persist the new order to the database
             await PersistButtonOrderAsync();
-            
+
             _progressService.CompleteOperation("Button moved up successfully");
-            Logger.LogInformation("Moved button up: {PartId} from position {OldPos} to {NewPos}", 
+            Logger.LogInformation("Moved button up: {PartId} from position {OldPos} to {NewPos}",
                 button.PartId, currentIndex + 1, currentIndex);
         }
         catch (Exception ex)
@@ -1058,7 +1062,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
             // If server update fails, revert the UI change
             QuickButtons.Move(currentIndex - 1, currentIndex);
             UpdateButtonPositions();
-            
+
             _progressService.ReportError($"Failed to move button: {ex.Message}");
             Logger.LogError(ex, "Failed to move button up: {PartId}", button.PartId);
         }
@@ -1075,21 +1079,21 @@ public partial class QuickButtonsViewModel : BaseViewModel
     private async void MoveButtonDownImplementation(QuickButtonItemViewModel button)
     {
         var currentIndex = QuickButtons.IndexOf(button);
-        
+
         // Cannot move down if already at the last position
         if (currentIndex >= QuickButtons.Count - 1)
         {
             Logger.LogDebug("Cannot move button down: already at last position");
             return;
         }
-        
+
         // Cannot move empty buttons
         if (button.IsEmpty)
         {
             Logger.LogDebug("Cannot move empty button down");
             return;
         }
-        
+
         // Find the last non-empty button position
         var lastNonEmptyIndex = -1;
         for (int i = QuickButtons.Count - 1; i >= 0; i--)
@@ -1100,7 +1104,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 break;
             }
         }
-        
+
         // Cannot move down if we're already at the last non-empty position
         // or if moving down would put us past the last non-empty button
         if (currentIndex >= lastNonEmptyIndex)
@@ -1113,16 +1117,16 @@ public partial class QuickButtonsViewModel : BaseViewModel
         {
             _isUpdatingFromService = true; // Prevent reload during our update
             _progressService.StartOperation("Moving button down...", false);
-            
+
             // Perform the move locally first for immediate UI feedback
             QuickButtons.Move(currentIndex, currentIndex + 1);
             UpdateButtonPositions();
-            
+
             // Persist the new order to the database
             await PersistButtonOrderAsync();
-            
+
             _progressService.CompleteOperation("Button moved down successfully");
-            Logger.LogInformation("Moved button down: {PartId} from position {OldPos} to {NewPos}", 
+            Logger.LogInformation("Moved button down: {PartId} from position {OldPos} to {NewPos}",
                 button.PartId, currentIndex + 1, currentIndex + 2);
         }
         catch (Exception ex)
@@ -1130,7 +1134,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
             // If server update fails, revert the UI change
             QuickButtons.Move(currentIndex + 1, currentIndex);
             UpdateButtonPositions();
-            
+
             _progressService.ReportError($"Failed to move button: {ex.Message}");
             Logger.LogError(ex, "Failed to move button down: {PartId}", button.PartId);
         }
@@ -1147,7 +1151,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
     {
         if (button == null || button.IsEmpty)
             return false;
-            
+
         var currentIndex = QuickButtons.IndexOf(button);
         return currentIndex > 0;
     }
@@ -1159,9 +1163,9 @@ public partial class QuickButtonsViewModel : BaseViewModel
     {
         if (button == null || button.IsEmpty)
             return false;
-            
+
         var currentIndex = QuickButtons.IndexOf(button);
-        
+
         // Find the last non-empty button position
         var lastNonEmptyIndex = -1;
         for (int i = QuickButtons.Count - 1; i >= 0; i--)
@@ -1172,7 +1176,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
                 break;
             }
         }
-        
+
         // Can move down if not at the last non-empty position
         return currentIndex >= 0 && currentIndex < lastNonEmptyIndex;
     }
@@ -1193,7 +1197,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
             }).ToList();
 
         var success = await _quickButtonsService.ReorderQuickButtonsAsync(_applicationState.CurrentUser, reorderedButtons);
-        
+
         if (!success)
         {
             throw new InvalidOperationException("Failed to persist button order to server");
@@ -1207,33 +1211,33 @@ public partial class QuickButtonsViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogInformation("🧪 TEST: Manual test started");
-            
+            Logger.LogInformation("ðŸ§ª TEST: Manual test started");
+
             var currentUser = _applicationState.CurrentUser;
-            Logger.LogInformation("🧪 TEST: Current user: '{CurrentUser}'", currentUser ?? "NULL");
-            
+            Logger.LogInformation("ðŸ§ª TEST: Current user: '{CurrentUser}'", currentUser ?? "NULL");
+
             if (string.IsNullOrEmpty(currentUser))
             {
                 // Try with a test user
                 currentUser = "admin";
-                Logger.LogInformation("🧪 TEST: Using test user: {TestUser}", currentUser);
+                Logger.LogInformation("ðŸ§ª TEST: Using test user: {TestUser}", currentUser);
             }
-            
+
             var transactions = await _quickButtonsService.LoadLast10TransactionsAsync(currentUser);
-            
-            Logger.LogInformation("🧪 TEST: Service returned {Count} transactions", transactions.Count);
-            
+
+            Logger.LogInformation("ðŸ§ª TEST: Service returned {Count} transactions", transactions.Count);
+
             foreach (var transaction in transactions)
             {
-                Logger.LogInformation("🧪 TEST: Transaction - PartId: {PartId}, Operation: {Operation}, Quantity: {Quantity}", 
+                Logger.LogInformation("ðŸ§ª TEST: Transaction - PartId: {PartId}, Operation: {Operation}, Quantity: {Quantity}",
                     transaction.PartId, transaction.Operation, transaction.Quantity);
             }
-            
-            Logger.LogInformation("🧪 TEST: Manual test completed successfully");
+
+            Logger.LogInformation("ðŸ§ª TEST: Manual test completed successfully");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "🧪 TEST: Manual test failed");
+            Logger.LogError(ex, "ðŸ§ª TEST: Manual test failed");
         }
     }
 }
@@ -1304,3 +1308,5 @@ public partial class QuickButtonItemViewModel : BaseViewModel
     /// </summary>
     public bool IsEmpty => string.IsNullOrEmpty(PartId) || Operation == "EMPTY";
 }
+
+

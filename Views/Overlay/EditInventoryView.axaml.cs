@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 
 namespace MTM_WIP_Application_Avalonia.Views.Overlay;

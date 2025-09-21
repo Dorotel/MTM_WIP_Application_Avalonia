@@ -1,3 +1,7 @@
+﻿using MTM_WIP_Application_Avalonia.Models.Events;
+using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,7 +96,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 System.Diagnostics.Debug.WriteLine("Theme editor requested - navigating to theme editor");
 
                 // Get navigation service and navigate to theme editor
-                var navigationService = Program.GetOptionalService<Services.INavigationService>();
+                var navigationService = Program.GetOptionalService<INavigationService>();
                 if (navigationService != null)
                 {
                     // Get theme editor view from DI container
@@ -1445,7 +1449,7 @@ namespace MTM_WIP_Application_Avalonia.Views
                 System.Diagnostics.Debug.WriteLine($"MainView received focus management request: {e.FocusType} for tab {e.TabIndex} with {e.DelayMs}ms delay");
 
                 // Get the FocusManagementService from the service provider
-                var focusService = Program.GetService<Services.IFocusManagementService>();
+                var focusService = Program.GetService<IFocusManagementService>();
                 if (focusService == null)
                 {
                     System.Diagnostics.Debug.WriteLine("FocusManagementService not available");
@@ -1656,3 +1660,5 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
     }
 }
+
+

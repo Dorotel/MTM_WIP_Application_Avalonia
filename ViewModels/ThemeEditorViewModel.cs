@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -158,12 +158,12 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             if (value)
             {
-                StatusMessage = $"🎨 Color blindness preview enabled: {ColorBlindnessType}";
+                StatusMessage = $"ðŸŽ¨ Color blindness preview enabled: {ColorBlindnessType}";
                 _ = ApplyColorBlindnessFilterAsync();
             }
             else
             {
-                StatusMessage = "👁️ Color blindness preview disabled";
+                StatusMessage = "ðŸ‘ï¸ Color blindness preview disabled";
                 _ = RestoreOriginalColorsAsync();
             }
         }
@@ -1158,7 +1158,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         _ = Task.Run(async () => await RefreshCustomThemesAsync());
 
         // Set initial status message with real-time preview information
-        StatusMessage = "🎨 Theme Editor ready - Real-time preview enabled for instant color changes";
+        StatusMessage = "ðŸŽ¨ Theme Editor ready - Real-time preview enabled for instant color changes";
     }
 
     #region Real-Time Preview System
@@ -1248,12 +1248,12 @@ public partial class ThemeEditorViewModel : BaseViewModel
             if (result.IsSuccess)
             {
                 IsPreviewMode = true;
-                StatusMessage = $"🎨 Real-time preview active ({previewColors.Count} colors updated)";
+                StatusMessage = $"ðŸŽ¨ Real-time preview active ({previewColors.Count} colors updated)";
                 Logger.LogDebug("Real-time theme preview applied with {ColorCount} colors", previewColors.Count);
             }
             else
             {
-                StatusMessage = $"⚠️ Real-time preview failed: {result.Message}";
+                StatusMessage = $"âš ï¸ Real-time preview failed: {result.Message}";
                 Logger.LogWarning("Real-time preview failed: {Error}", result.Message);
             }
         }
@@ -1453,7 +1453,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             if (string.IsNullOrEmpty(colorProperty)) return;
 
             // Simulate advanced color picker dialog
-            StatusMessage = $"🎨 Advanced color picker for {colorProperty} - Enhanced RGB/HSL/LAB controls";
+            StatusMessage = $"ðŸŽ¨ Advanced color picker for {colorProperty} - Enhanced RGB/HSL/LAB controls";
 
             // In a real implementation, this would open a sophisticated color picker dialog
             await Task.Delay(100);
@@ -1474,7 +1474,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             if (string.IsNullOrEmpty(colorProperty)) return;
 
-            StatusMessage = $"👁️ Eyedropper mode for {colorProperty} - Click on screen to pick color";
+            StatusMessage = $"ðŸ‘ï¸ Eyedropper mode for {colorProperty} - Click on screen to pick color";
 
             // In a real implementation, this would activate screen color picking
             await Task.Delay(100);
@@ -1499,7 +1499,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             var hex = color.ToString();
 
             // In a real implementation, copy to clipboard
-            StatusMessage = $"📋 Copied {hex} to clipboard";
+            StatusMessage = $"ðŸ“‹ Copied {hex} to clipboard";
 
             await Task.Delay(100);
         }
@@ -1530,7 +1530,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
                     // Add more cases as needed
             }
 
-            StatusMessage = $"🔄 Reset {colorProperty} to default";
+            StatusMessage = $"ðŸ”„ Reset {colorProperty} to default";
             await Task.Delay(100);
         }
         catch (Exception ex)
@@ -1861,7 +1861,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             await File.WriteAllTextAsync(filePath, json);
 
             HasUnsavedChanges = false;
-            StatusMessage = $"✅ Custom theme saved as '{fileName}'";
+            StatusMessage = $"âœ… Custom theme saved as '{fileName}'";
             Logger.LogInformation("Custom theme saved to {FilePath}", filePath);
 
             // Trigger refresh of available custom themes
@@ -1871,7 +1871,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error saving custom theme");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to save custom theme", Environment.UserName);
-            StatusMessage = "❌ Failed to save custom theme";
+            StatusMessage = "âŒ Failed to save custom theme";
         }
         finally
         {
@@ -1886,7 +1886,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             if (string.IsNullOrWhiteSpace(themePath) || !File.Exists(themePath))
             {
-                StatusMessage = "❌ Custom theme file not found";
+                StatusMessage = "âŒ Custom theme file not found";
                 return;
             }
 
@@ -1902,7 +1902,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             if (customTheme?.Colors == null)
             {
-                StatusMessage = "❌ Invalid custom theme file format";
+                StatusMessage = "âŒ Invalid custom theme file format";
                 return;
             }
 
@@ -1957,7 +1957,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             HasUnsavedChanges = false;
 
             var fileName = Path.GetFileName(themePath);
-            StatusMessage = $"✅ Custom theme '{customTheme.Name}' loaded successfully";
+            StatusMessage = $"âœ… Custom theme '{customTheme.Name}' loaded successfully";
             Logger.LogInformation("Custom theme loaded from {FileName} - {ThemeName}", fileName, customTheme.Name);
 
             // Trigger real-time preview
@@ -1967,7 +1967,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error loading custom theme");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to load custom theme", Environment.UserName);
-            StatusMessage = "❌ Failed to load custom theme";
+            StatusMessage = "âŒ Failed to load custom theme";
         }
         finally
         {
@@ -2039,7 +2039,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             if (themeInfo?.FilePath == null || !File.Exists(themeInfo.FilePath))
             {
-                StatusMessage = "❌ Custom theme file not found";
+                StatusMessage = "âŒ Custom theme file not found";
                 return;
             }
 
@@ -2049,14 +2049,14 @@ public partial class ThemeEditorViewModel : BaseViewModel
             File.Delete(themeInfo.FilePath);
             AvailableCustomThemes.Remove(themeInfo);
 
-            StatusMessage = $"✅ Custom theme '{themeInfo.Name}' deleted successfully";
+            StatusMessage = $"âœ… Custom theme '{themeInfo.Name}' deleted successfully";
             Logger.LogInformation("Custom theme deleted: {FilePath}", themeInfo.FilePath);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error deleting custom theme");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to delete custom theme", Environment.UserName);
-            StatusMessage = "❌ Failed to delete custom theme";
+            StatusMessage = "âŒ Failed to delete custom theme";
         }
         finally
         {
@@ -3536,18 +3536,18 @@ public partial class ThemeEditorViewModel : BaseViewModel
                 if (result.IsSuccess)
                 {
                     IsPreviewMode = true;
-                    StatusMessage = $"✅ Preview applied ({previewColors.Count} colors) - Use Apply to save changes";
+                    StatusMessage = $"âœ… Preview applied ({previewColors.Count} colors) - Use Apply to save changes";
                     Logger.LogInformation("Theme preview applied successfully with {ColorCount} colors", previewColors.Count);
                 }
                 else
                 {
-                    StatusMessage = $"❌ Preview failed: {result.Message}";
+                    StatusMessage = $"âŒ Preview failed: {result.Message}";
                     Logger.LogWarning("Theme preview failed: {Message}", result.Message);
                 }
             }
             else
             {
-                StatusMessage = "❌ Preview unavailable - Theme service not available";
+                StatusMessage = "âŒ Preview unavailable - Theme service not available";
                 Logger.LogWarning("Theme service not available for preview");
             }
 
@@ -3557,7 +3557,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error generating comprehensive theme preview");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate theme preview", Environment.UserName);
-            StatusMessage = "❌ Error generating preview";
+            StatusMessage = "âŒ Error generating preview";
         }
         finally
         {
@@ -3628,44 +3628,44 @@ public partial class ThemeEditorViewModel : BaseViewModel
             // Basic color validation
             if (!ValidateAllColors())
             {
-                validationResults.Add("❌ Basic color validation failed");
+                validationResults.Add("âŒ Basic color validation failed");
                 return;
             }
-            validationResults.Add("✅ All color properties are valid");
+            validationResults.Add("âœ… All color properties are valid");
 
             // Contrast validation (simplified WCAG check)
             var contrastIssues = await ValidateContrastRatiosAsync();
             if (contrastIssues.Any())
             {
-                warnings.AddRange(contrastIssues.Select(issue => $"⚠️ {issue}"));
+                warnings.AddRange(contrastIssues.Select(issue => $"âš ï¸ {issue}"));
             }
             else
             {
-                validationResults.Add("✅ Contrast ratios meet basic accessibility requirements");
+                validationResults.Add("âœ… Contrast ratios meet basic accessibility requirements");
             }
 
             // Color harmony validation
             var harmonyCheck = ValidateColorHarmony();
             if (harmonyCheck.isHarmonious)
             {
-                validationResults.Add($"✅ Color harmony: {harmonyCheck.harmonyType}");
+                validationResults.Add($"âœ… Color harmony: {harmonyCheck.harmonyType}");
             }
             else
             {
-                warnings.Add($"⚠️ Colors may not be harmonious - consider using auto-fill algorithms");
+                warnings.Add($"âš ï¸ Colors may not be harmonious - consider using auto-fill algorithms");
             }
 
             // Color blindness accessibility validation
             var (isColorBlindSafe, colorBlindIssues) = await ValidateColorBlindnessDistinction();
             if (isColorBlindSafe)
             {
-                validationResults.Add("✅ Colors remain distinguishable across all color vision types");
+                validationResults.Add("âœ… Colors remain distinguishable across all color vision types");
             }
             else
             {
                 warnings.AddRange(colorBlindIssues);
             }
-            validationResults.Add($"✅ Color blindness validation completed ({colorBlindIssues.Count} findings)");
+            validationResults.Add($"âœ… Color blindness validation completed ({colorBlindIssues.Count} findings)");
 
             // Prepare final status message
             var resultCount = validationResults.Count;
@@ -3673,11 +3673,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             if (warningCount == 0)
             {
-                StatusMessage = $"✅ Theme validation passed! ({resultCount} checks completed)";
+                StatusMessage = $"âœ… Theme validation passed! ({resultCount} checks completed)";
             }
             else
             {
-                StatusMessage = $"⚠️ Theme validation: {resultCount} passed, {warningCount} warnings";
+                StatusMessage = $"âš ï¸ Theme validation: {resultCount} passed, {warningCount} warnings";
             }
 
             // Log detailed results
@@ -3700,7 +3700,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error during theme validation");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Theme validation failed", Environment.UserName);
-            StatusMessage = "❌ Theme validation encountered an error";
+            StatusMessage = "âŒ Theme validation encountered an error";
         }
         finally
         {
@@ -3717,22 +3717,22 @@ public partial class ThemeEditorViewModel : BaseViewModel
         try
         {
             IsLoading = true;
-            StatusMessage = "🔍 Validating color blindness accessibility...";
+            StatusMessage = "ðŸ” Validating color blindness accessibility...";
             Logger.LogDebug("Starting color blindness accessibility validation");
 
             var (isValid, issues) = await ValidateColorBlindnessDistinction();
 
             if (isValid)
             {
-                StatusMessage = "✅ All colors remain distinguishable across all color vision types!";
+                StatusMessage = "âœ… All colors remain distinguishable across all color vision types!";
                 Logger.LogInformation("Color blindness validation passed - theme is accessible");
             }
             else
             {
-                var criticalIssues = issues.Count(i => i.StartsWith("⚠️"));
-                var warnings = issues.Count(i => i.StartsWith("🟡"));
+                var criticalIssues = issues.Count(i => i.StartsWith("âš ï¸"));
+                var warnings = issues.Count(i => i.StartsWith("ðŸŸ¡"));
 
-                StatusMessage = $"⚠️ Color blindness validation: {criticalIssues} critical, {warnings} warnings";
+                StatusMessage = $"âš ï¸ Color blindness validation: {criticalIssues} critical, {warnings} warnings";
                 Logger.LogWarning("Color blindness validation found {Critical} critical issues and {Warnings} warnings",
                     criticalIssues, warnings);
 
@@ -3749,7 +3749,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error during color blindness validation");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Color blindness validation failed", Environment.UserName);
-            StatusMessage = "❌ Color blindness validation encountered an error";
+            StatusMessage = "âŒ Color blindness validation encountered an error";
         }
         finally
         {
@@ -3801,7 +3801,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             BorderAccentColor = Color.Parse("#666666");      // Darker accent borders
 
             HasUnsavedChanges = true;
-            StatusMessage = "✅ Manufacturing theme applied - optimized for industrial displays";
+            StatusMessage = "âœ… Manufacturing theme applied - optimized for industrial displays";
             Logger.LogInformation("Successfully applied manufacturing-optimized theme");
 
             await Task.Delay(100); // Brief pause for user feedback
@@ -3810,7 +3810,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error applying optimized manufacturing theme");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to apply manufacturing theme", Environment.UserName);
-            StatusMessage = "❌ Failed to apply manufacturing theme";
+            StatusMessage = "âŒ Failed to apply manufacturing theme";
         }
         finally
         {
@@ -3865,7 +3865,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             CurrentThemeName = "Healthcare Theme";
             HasUnsavedChanges = true;
-            StatusMessage = "✅ Healthcare theme applied - calming medical colors";
+            StatusMessage = "âœ… Healthcare theme applied - calming medical colors";
             Logger.LogInformation("Successfully applied healthcare theme");
 
             await Task.Delay(100);
@@ -3874,7 +3874,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error applying healthcare theme");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to apply healthcare theme", Environment.UserName);
-            StatusMessage = "❌ Failed to apply healthcare theme";
+            StatusMessage = "âŒ Failed to apply healthcare theme";
         }
         finally
         {
@@ -3929,7 +3929,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             CurrentThemeName = "Office Theme";
             HasUnsavedChanges = true;
-            StatusMessage = "✅ Office theme applied - professional business colors";
+            StatusMessage = "âœ… Office theme applied - professional business colors";
             Logger.LogInformation("Successfully applied office theme");
 
             await Task.Delay(100);
@@ -3938,7 +3938,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error applying office theme");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to apply office theme", Environment.UserName);
-            StatusMessage = "❌ Failed to apply office theme";
+            StatusMessage = "âŒ Failed to apply office theme";
         }
         finally
         {
@@ -3993,7 +3993,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             CurrentThemeName = "High Contrast Theme";
             HasUnsavedChanges = true;
-            StatusMessage = "✅ High contrast theme applied - maximum accessibility";
+            StatusMessage = "âœ… High contrast theme applied - maximum accessibility";
             Logger.LogInformation("Successfully applied high contrast theme");
 
             await Task.Delay(100);
@@ -4002,7 +4002,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error applying high contrast theme");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to apply high contrast theme", Environment.UserName);
-            StatusMessage = "❌ Failed to apply high contrast theme";
+            StatusMessage = "âŒ Failed to apply high contrast theme";
         }
         finally
         {
@@ -4060,7 +4060,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             BorderAccentColor = AdjustColorBrightness(BorderAccentColor, factor);
 
             HasUnsavedChanges = true;
-            StatusMessage = $"✅ Brightness adjusted by {adjustment}%";
+            StatusMessage = $"âœ… Brightness adjusted by {adjustment}%";
             Logger.LogInformation("Successfully adjusted brightness by {Adjustment}%", adjustment);
 
             await Task.Delay(100);
@@ -4069,7 +4069,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error adjusting brightness");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to adjust brightness", Environment.UserName);
-            StatusMessage = "❌ Failed to adjust brightness";
+            StatusMessage = "âŒ Failed to adjust brightness";
         }
         finally
         {
@@ -4114,7 +4114,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             if (newColor.HasValue)
             {
                 SetColorForProperty(colorProperty, newColor.Value);
-                StatusMessage = $"✅ Color updated for {colorProperty}";
+                StatusMessage = $"âœ… Color updated for {colorProperty}";
                 HasUnsavedChanges = true;
                 ValidateAllColors();
             }
@@ -4129,7 +4129,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error opening color picker for {ColorProperty}", colorProperty);
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, $"Failed to open color picker for {colorProperty}", Environment.UserName);
-            StatusMessage = $"❌ Failed to open color picker for {colorProperty}";
+            StatusMessage = $"âŒ Failed to open color picker for {colorProperty}";
         }
         finally
         {
@@ -4301,11 +4301,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
             var contrastIssues = await ValidateContrastRatiosAsync();
             if (!contrastIssues.Any())
             {
-                report.AppendLine("✅ All color combinations meet WCAG AA standards (4.5:1 contrast ratio)");
+                report.AppendLine("âœ… All color combinations meet WCAG AA standards (4.5:1 contrast ratio)");
             }
             else
             {
-                report.AppendLine("⚠️ The following color combinations have accessibility issues:");
+                report.AppendLine("âš ï¸ The following color combinations have accessibility issues:");
                 foreach (var issue in contrastIssues)
                 {
                     report.AppendLine($"- {issue}");
@@ -4332,7 +4332,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             var reportPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), reportFileName);
             await File.WriteAllTextAsync(reportPath, report.ToString());
 
-            StatusMessage = $"✅ Theme report saved to Desktop: {reportFileName}";
+            StatusMessage = $"âœ… Theme report saved to Desktop: {reportFileName}";
             Logger.LogInformation("Theme report generated: {ReportPath}", reportPath);
 
             await Task.Delay(100);
@@ -4341,7 +4341,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error generating theme report");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to generate theme report", Environment.UserName);
-            StatusMessage = "❌ Failed to generate theme report";
+            StatusMessage = "âŒ Failed to generate theme report";
         }
         finally
         {
@@ -4362,13 +4362,13 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             if (IsPrintPreviewEnabled)
             {
-                StatusMessage = "🖨️ Print preview enabled - colors adjusted for print output";
+                StatusMessage = "ðŸ–¨ï¸ Print preview enabled - colors adjusted for print output";
                 Logger.LogDebug("Print preview mode enabled");
                 await ApplyPrintPreviewFiltersAsync();
             }
             else
             {
-                StatusMessage = "📱 Screen preview restored";
+                StatusMessage = "ðŸ“± Screen preview restored";
                 Logger.LogDebug("Print preview mode disabled");
                 await RestoreScreenPreviewAsync();
             }
@@ -4377,7 +4377,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error toggling print preview");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle print preview", Environment.UserName);
-            StatusMessage = "❌ Failed to toggle print preview";
+            StatusMessage = "âŒ Failed to toggle print preview";
         }
         finally
         {
@@ -4398,13 +4398,13 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
             if (IsLightingSimulationEnabled)
             {
-                StatusMessage = $"💡 Lighting simulation enabled: {LightingCondition}";
+                StatusMessage = $"ðŸ’¡ Lighting simulation enabled: {LightingCondition}";
                 Logger.LogDebug("Lighting simulation enabled with condition: {Condition}", LightingCondition);
                 await ApplyLightingSimulationAsync(LightingCondition);
             }
             else
             {
-                StatusMessage = "🖥️ Standard lighting restored";
+                StatusMessage = "ðŸ–¥ï¸ Standard lighting restored";
                 Logger.LogDebug("Lighting simulation disabled");
                 await RestoreStandardLightingAsync();
             }
@@ -4413,7 +4413,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error toggling lighting simulation");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle lighting simulation", Environment.UserName);
-            StatusMessage = "❌ Failed to toggle lighting simulation";
+            StatusMessage = "âŒ Failed to toggle lighting simulation";
         }
         finally
         {
@@ -4433,7 +4433,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             IsLoading = true;
             LightingCondition = condition;
-            StatusMessage = $"💡 Lighting changed to: {condition}";
+            StatusMessage = $"ðŸ’¡ Lighting changed to: {condition}";
             Logger.LogDebug("Lighting condition changed to: {Condition}", condition);
 
             if (IsLightingSimulationEnabled)
@@ -4445,7 +4445,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error changing lighting condition");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to change lighting condition", Environment.UserName);
-            StatusMessage = "❌ Failed to change lighting condition";
+            StatusMessage = "âŒ Failed to change lighting condition";
         }
         finally
         {
@@ -4467,12 +4467,12 @@ public partial class ThemeEditorViewModel : BaseViewModel
             if (IsMultiMonitorPreviewEnabled)
             {
                 await DetectAvailableMonitorsAsync();
-                StatusMessage = $"🖥️ Multi-monitor preview enabled - {AvailableMonitors.Count} monitors detected";
+                StatusMessage = $"ðŸ–¥ï¸ Multi-monitor preview enabled - {AvailableMonitors.Count} monitors detected";
                 Logger.LogDebug("Multi-monitor preview enabled with {Count} monitors", AvailableMonitors.Count);
             }
             else
             {
-                StatusMessage = "📱 Single monitor view restored";
+                StatusMessage = "ðŸ“± Single monitor view restored";
                 Logger.LogDebug("Multi-monitor preview disabled");
                 AvailableMonitors.Clear();
             }
@@ -4481,7 +4481,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error toggling multi-monitor preview");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to toggle multi-monitor preview", Environment.UserName);
-            StatusMessage = "❌ Failed to toggle multi-monitor preview";
+            StatusMessage = "âŒ Failed to toggle multi-monitor preview";
         }
         finally
         {
@@ -4503,7 +4503,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             SelectedMonitorIndex = monitorIndex;
             var selectedMonitor = AvailableMonitors[monitorIndex];
 
-            StatusMessage = $"🖥️ Preview monitor changed to: {selectedMonitor.DisplayName}";
+            StatusMessage = $"ðŸ–¥ï¸ Preview monitor changed to: {selectedMonitor.DisplayName}";
             Logger.LogDebug("Preview monitor changed to: {Monitor}", selectedMonitor.DisplayName);
 
             await ApplyMonitorSpecificSettingsAsync(selectedMonitor);
@@ -4512,7 +4512,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         {
             Logger.LogError(ex, "Error selecting preview monitor");
             await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Failed to select preview monitor", Environment.UserName);
-            StatusMessage = "❌ Failed to select preview monitor";
+            StatusMessage = "âŒ Failed to select preview monitor";
         }
         finally
         {
@@ -4971,11 +4971,11 @@ public partial class ThemeEditorViewModel : BaseViewModel
     private void InitializeColorCategories()
     {
         ColorCategories.Clear();
-        ColorCategories.Add(new ColorCategory("core", "🎯 Core Colors", "Primary actions, secondary elements, and accent colors"));
-        ColorCategories.Add(new ColorCategory("text", "📝 Text Colors", "Headings, body text, overlay text, and interactive text"));
-        ColorCategories.Add(new ColorCategory("background", "🖼️ Background Colors", "Main backgrounds, card backgrounds, and hover states"));
-        ColorCategories.Add(new ColorCategory("status", "⚡ Status Colors", "Success, warning, error, and informational indicators"));
-        ColorCategories.Add(new ColorCategory("border", "🔲 Border Colors", "Light, standard, and accent border variations"));
+        ColorCategories.Add(new ColorCategory("core", "ðŸŽ¯ Core Colors", "Primary actions, secondary elements, and accent colors"));
+        ColorCategories.Add(new ColorCategory("text", "ðŸ“ Text Colors", "Headings, body text, overlay text, and interactive text"));
+        ColorCategories.Add(new ColorCategory("background", "ðŸ–¼ï¸ Background Colors", "Main backgrounds, card backgrounds, and hover states"));
+        ColorCategories.Add(new ColorCategory("status", "âš¡ Status Colors", "Success, warning, error, and informational indicators"));
+        ColorCategories.Add(new ColorCategory("border", "ðŸ”² Border Colors", "Light, standard, and accent border variations"));
     }
 
     private void LoadCurrentThemeColors()
@@ -6055,12 +6055,12 @@ public partial class ThemeEditorViewModel : BaseViewModel
                     // and > 7.0 for strong distinction (accessibility best practice)
                     if (deltaE < 3.0)
                     {
-                        issues.Add($"⚠️ {name1} and {name2} are indistinguishable for {testType} (ΔE: {deltaE:F1})");
+                        issues.Add($"âš ï¸ {name1} and {name2} are indistinguishable for {testType} (Î”E: {deltaE:F1})");
                         isValid = false;
                     }
                     else if (deltaE < 7.0)
                     {
-                        issues.Add($"🟡 {name1} and {name2} have weak distinction for {testType} (ΔE: {deltaE:F1})");
+                        issues.Add($"ðŸŸ¡ {name1} and {name2} have weak distinction for {testType} (Î”E: {deltaE:F1})");
                     }
                 }
             }
@@ -6082,7 +6082,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error during color blindness validation");
-            issues.Add("❌ Color blindness validation failed due to internal error");
+            issues.Add("âŒ Color blindness validation failed due to internal error");
             return (false, issues);
         }
     }
@@ -6180,7 +6180,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
 
                 if (contrastRatio < 4.5) // WCAG AA standard
                 {
-                    issues.Add($"⚠️ {textName} on {bgName} fails WCAG contrast for {testType} ({contrastRatio:F1}:1)");
+                    issues.Add($"âš ï¸ {textName} on {bgName} fails WCAG contrast for {testType} ({contrastRatio:F1}:1)");
                 }
             }
         }
@@ -6353,7 +6353,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             var wcagAA = contrastWithWhite >= 4.5 || contrastWithBlack >= 4.5;
             var wcagAAA = contrastWithWhite >= 7.0 || contrastWithBlack >= 7.0;
 
-            var status = wcagAAA ? "AAA ✓" : wcagAA ? "AA ✓" : "Fail ✗";
+            var status = wcagAAA ? "AAA âœ“" : wcagAA ? "AA âœ“" : "Fail âœ—";
             return $"WCAG Contrast: {status} (vs White: {contrastWithWhite:F1}, vs Black: {contrastWithBlack:F1})";
         }
     }
@@ -6466,7 +6466,7 @@ public partial class ThemeEditorViewModel : BaseViewModel
             var wcagAA = contrastWithWhite >= 4.5 || contrastWithBlack >= 4.5;
             var wcagAAA = contrastWithWhite >= 7.0 || contrastWithBlack >= 7.0;
 
-            var status = wcagAAA ? "AAA ✓" : wcagAA ? "AA ✓" : "Fail ✗";
+            var status = wcagAAA ? "AAA âœ“" : wcagAA ? "AA âœ“" : "Fail âœ—";
             return $"WCAG Contrast: {status} (vs White: {contrastWithWhite:F1}, vs Black: {contrastWithBlack:F1})";
         }
     }

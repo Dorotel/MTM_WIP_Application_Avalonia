@@ -1,3 +1,5 @@
+﻿using MTM_WIP_Application_Avalonia.Models.Core;
+using MTM_WIP_Application_Avalonia.Models.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -33,7 +35,7 @@ public partial class EditInventoryViewModel : BaseViewModel
     /// </summary>
     partial void OnEditModelChanged(EditInventoryModel? oldValue, EditInventoryModel newValue)
     {
-        Logger.LogInformation("🔍 QA DEBUG: EditModel property CHANGED! Old BatchNumber: '{OldBatch}', New BatchNumber: '{NewBatch}', New User: '{NewUser}', New ID: {NewId}",
+        Logger.LogInformation("ðŸ” QA DEBUG: EditModel property CHANGED! Old BatchNumber: '{OldBatch}', New BatchNumber: '{NewBatch}', New User: '{NewUser}', New ID: {NewId}",
             oldValue?.BatchNumber ?? "NULL",
             newValue?.BatchNumber ?? "NULL",
             newValue?.User ?? "NULL",
@@ -51,7 +53,7 @@ public partial class EditInventoryViewModel : BaseViewModel
             newValue.PropertyChanged -= OnEditModelPropertyChanged; // Ensure no double subscription
             newValue.PropertyChanged += OnEditModelPropertyChanged;
 
-            Logger.LogDebug("🔍 Subscribed to new EditModel property changes");
+            Logger.LogDebug("ðŸ” Subscribed to new EditModel property changes");
 
             // Trigger initial CanSave evaluation
             OnPropertyChanged(nameof(CanSave));
@@ -59,7 +61,7 @@ public partial class EditInventoryViewModel : BaseViewModel
         }
 
         // TextBox bindings work correctly - no manual refresh needed
-        Logger.LogInformation("🔍 QA TEXTBOX-BINDINGS: TextBox controls should auto-refresh with EditModel changes");
+        Logger.LogInformation("ðŸ” QA TEXTBOX-BINDINGS: TextBox controls should auto-refresh with EditModel changes");
     }
 
     /// <summary>
@@ -67,7 +69,7 @@ public partial class EditInventoryViewModel : BaseViewModel
     /// </summary>
     private void OnEditModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        Logger.LogDebug("🔍 EditModel property changed: {PropertyName}", e.PropertyName);
+        Logger.LogDebug("ðŸ” EditModel property changed: {PropertyName}", e.PropertyName);
 
         ValidateField(e.PropertyName);
         OnPropertyChanged(nameof(CanSave)); // Notify CanSave when EditModel changes
@@ -176,7 +178,7 @@ public partial class EditInventoryViewModel : BaseViewModel
                         quantityValid;
 
             // Debug logging to identify which condition is failing
-            Logger.LogDebug("🔍 CanSave DEBUG: CanEditRecord={CanEdit}, HasChanges={HasChanges}, " +
+            Logger.LogDebug("ðŸ” CanSave DEBUG: CanEditRecord={CanEdit}, HasChanges={HasChanges}, " +
                           "HasValidationErrors={HasErrors}, IsLoading={Loading}, " +
                           "IsOperationValid={OperationValid}, IsQuantityValid={QuantityValid}, " +
                           "RESULT={Result}",
@@ -204,7 +206,7 @@ public partial class EditInventoryViewModel : BaseViewModel
             DisplayReceiveDate = EditModel.ReceiveDate;
             DisplayLastUpdated = EditModel.LastUpdated;
 
-            Logger.LogInformation("🔍 QA DISPLAY-UPDATE: Updated display properties - ItemType: {ItemType}, BatchNumber: {BatchNumber}, User: {User}",
+            Logger.LogInformation("ðŸ” QA DISPLAY-UPDATE: Updated display properties - ItemType: {ItemType}, BatchNumber: {BatchNumber}, User: {User}",
                 DisplayItemType, DisplayBatchNumber, DisplayUser);
         }
     }
@@ -222,7 +224,7 @@ public partial class EditInventoryViewModel : BaseViewModel
         _masterDataService = masterDataService;
 
         // QA: Track ViewModel creation
-        Logger.LogInformation("🔍 QA CONSTRUCTOR: EditInventoryViewModel created at {Timestamp}", DateTime.Now);
+        Logger.LogInformation("ðŸ” QA CONSTRUCTOR: EditInventoryViewModel created at {Timestamp}", DateTime.Now);
 
         // Initialize item types with common values
         AvailableItemTypes = new ObservableCollection<string>
@@ -361,7 +363,7 @@ public partial class EditInventoryViewModel : BaseViewModel
                 ValidateAllFields();
 
                 // Force initial CanSave evaluation and notification
-                Logger.LogDebug("🔍 InitializeAsync(int) - Initial validation completed, triggering CanSave notification");
+                Logger.LogDebug("ðŸ” InitializeAsync(int) - Initial validation completed, triggering CanSave notification");
                 OnPropertyChanged(nameof(CanSave));
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -370,7 +372,7 @@ public partial class EditInventoryViewModel : BaseViewModel
                 // Even if user can't edit, we should set the validation states properly
                 IsOperationValid = true; // Don't block on validation if can't edit anyway
                 IsQuantityValid = true;
-                Logger.LogDebug("🔍 InitializeAsync(int) - User can't edit, setting validation states to true");
+                Logger.LogDebug("ðŸ” InitializeAsync(int) - User can't edit, setting validation states to true");
                 OnPropertyChanged(nameof(CanSave));
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -403,11 +405,11 @@ public partial class EditInventoryViewModel : BaseViewModel
             await LoadMasterDataAsync();
 
             // QUALITY ASSURANCE DEBUG: Log before and after EditModel replacement
-            Logger.LogInformation("🔍 QA DEBUG: BEFORE EditModel replacement - Current BatchNumber: {CurrentBatch}, Current User: {CurrentUser}, New BatchNumber: {NewBatch}, New User: {NewUser}, New ID: {NewId}",
+            Logger.LogInformation("ðŸ” QA DEBUG: BEFORE EditModel replacement - Current BatchNumber: {CurrentBatch}, Current User: {CurrentUser}, New BatchNumber: {NewBatch}, New User: {NewUser}, New ID: {NewId}",
                 EditModel?.BatchNumber ?? "NULL", EditModel?.User ?? "NULL", inventoryItem.BatchNumber ?? "NULL", inventoryItem.User ?? "NULL", inventoryItem.Id);
 
-            // 🔍 QA: Log all InventoryItem properties to see what data we're starting with
-            Logger.LogCritical("🚨 QA SOURCE DATA: InventoryItem ALL Properties - ID: {Id}, PartId: '{PartId}', Operation: '{Operation}', Quantity: {Quantity}, ItemType: '{ItemType}', BatchNumber: '{BatchNumber}', User: '{User}', Location: '{Location}', Notes: '{Notes}', ReceiveDate: {ReceiveDate}, LastUpdated: {LastUpdated}",
+            // ðŸ” QA: Log all InventoryItem properties to see what data we're starting with
+            Logger.LogCritical("ðŸš¨ QA SOURCE DATA: InventoryItem ALL Properties - ID: {Id}, PartId: '{PartId}', Operation: '{Operation}', Quantity: {Quantity}, ItemType: '{ItemType}', BatchNumber: '{BatchNumber}', User: '{User}', Location: '{Location}', Notes: '{Notes}', ReceiveDate: {ReceiveDate}, LastUpdated: {LastUpdated}",
                 inventoryItem.Id, inventoryItem.PartId ?? "NULL", inventoryItem.Operation ?? "NULL", inventoryItem.Quantity, inventoryItem.ItemType ?? "NULL", inventoryItem.BatchNumber ?? "NULL", inventoryItem.User ?? "NULL", inventoryItem.Location ?? "NULL", inventoryItem.Notes ?? "NULL", inventoryItem.ReceiveDate, inventoryItem.LastUpdated);
 
             // Initialize the edit model directly from the InventoryItem
@@ -420,11 +422,11 @@ public partial class EditInventoryViewModel : BaseViewModel
             // Immediately update display properties for TextBlock bindings
             UpdateDisplayProperties();
 
-            Logger.LogInformation("🔍 QA DEBUG: AFTER EditModel replacement - EditModel.BatchNumber: {BatchNumber}, EditModel.User: {User}, EditModel.Id: {Id}",
+            Logger.LogInformation("ðŸ” QA DEBUG: AFTER EditModel replacement - EditModel.BatchNumber: {BatchNumber}, EditModel.User: {User}, EditModel.Id: {Id}",
                 EditModel.BatchNumber ?? "NULL", EditModel.User ?? "NULL", EditModel.Id);
 
-            // 🔍 QA: Log all EditModel properties to see what's actually set
-            Logger.LogCritical("🚨 QA DETAILED: EditModel ALL Properties - ID: {Id}, PartId: '{PartId}', Operation: '{Operation}', Quantity: {Quantity}, ItemType: '{ItemType}', BatchNumber: '{BatchNumber}', User: '{User}', Location: '{Location}', Notes: '{Notes}', ReceiveDate: {ReceiveDate}, LastUpdated: {LastUpdated}",
+            // ðŸ” QA: Log all EditModel properties to see what's actually set
+            Logger.LogCritical("ðŸš¨ QA DETAILED: EditModel ALL Properties - ID: {Id}, PartId: '{PartId}', Operation: '{Operation}', Quantity: {Quantity}, ItemType: '{ItemType}', BatchNumber: '{BatchNumber}', User: '{User}', Location: '{Location}', Notes: '{Notes}', ReceiveDate: {ReceiveDate}, LastUpdated: {LastUpdated}",
                 EditModel.Id, EditModel.PartId ?? "NULL", EditModel.Operation ?? "NULL", EditModel.Quantity, EditModel.ItemType ?? "NULL", EditModel.BatchNumber ?? "NULL", EditModel.User ?? "NULL", EditModel.Location ?? "NULL", EditModel.Notes ?? "NULL", EditModel.ReceiveDate, EditModel.LastUpdated);
 
             // Check if current user can edit this record
@@ -450,7 +452,7 @@ public partial class EditInventoryViewModel : BaseViewModel
                 ValidateAllFields();
 
                 // Force initial CanSave evaluation and notification
-                Logger.LogDebug("🔍 InitializeAsync(InventoryItem) - Initial validation completed, triggering CanSave notification");
+                Logger.LogDebug("ðŸ” InitializeAsync(InventoryItem) - Initial validation completed, triggering CanSave notification");
                 OnPropertyChanged(nameof(CanSave));
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -459,7 +461,7 @@ public partial class EditInventoryViewModel : BaseViewModel
                 // Even if user can't edit, we should set the validation states properly
                 IsOperationValid = true; // Don't block on validation if can't edit anyway
                 IsQuantityValid = true;
-                Logger.LogDebug("🔍 InitializeAsync(InventoryItem) - User can't edit, setting validation states to true");
+                Logger.LogDebug("ðŸ” InitializeAsync(InventoryItem) - User can't edit, setting validation states to true");
                 OnPropertyChanged(nameof(CanSave));
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -720,3 +722,5 @@ public partial class EditInventoryViewModel : BaseViewModel
         }
     }
 }
+
+

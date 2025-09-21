@@ -1,3 +1,5 @@
+﻿using MTM_WIP_Application_Avalonia.Models.Events;
+using MTM_WIP_Application_Avalonia.Services.UI;
 using System.Linq;
 using System;
 using System.Collections.Generic;
@@ -1810,3 +1812,5 @@ public partial class InventoryTabView : UserControl
 
     #endregion
 }
+
+

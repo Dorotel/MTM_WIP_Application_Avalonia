@@ -1,3 +1,4 @@
+using MTM_WIP_Application_Avalonia.Models.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +13,7 @@ using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_WIP_Application_Avalonia.Services.UI;
 using MTM_WIP_Application_Avalonia.Services.Business;
 
-namespace MTM_WIP_Application_Avalonia.Services;
+namespace MTM_WIP_Application_Avalonia.Services.Business;
 
 /// <summary>
 /// Interface for inventory removal service that provides centralized business logic for inventory removal operations
@@ -42,7 +43,7 @@ public interface IRemoveService
     /// <summary>
     /// Event fired when inventory items are removed successfully
     /// </summary>
-    event EventHandler<Models.ItemsRemovedEventArgs>? ItemsRemoved;
+    event EventHandler<Models.Events.ItemsRemovedEventArgs>? ItemsRemoved;
 
     /// <summary>
     /// Event fired when service loading state changes
@@ -148,7 +149,7 @@ public class RemoveService : IRemoveService
     }
 
     /// <inheritdoc />
-    public event EventHandler<Models.ItemsRemovedEventArgs>? ItemsRemoved;
+    public event EventHandler<Models.Events.ItemsRemovedEventArgs>? ItemsRemoved;
 
     /// <inheritdoc />
     public event EventHandler<bool>? LoadingStateChanged;
@@ -371,7 +372,7 @@ public class RemoveService : IRemoveService
                 });
 
                 // Fire event for integration
-                ItemsRemoved?.Invoke(this, new Models.ItemsRemovedEventArgs
+                ItemsRemoved?.Invoke(this, new Models.Events.ItemsRemovedEventArgs
                 {
                     RemovedItems = successfulRemovals,
                     RemovalTime = DateTime.Now,
@@ -877,3 +878,4 @@ public class RestoreFailure
 }
 
 #endregion
+

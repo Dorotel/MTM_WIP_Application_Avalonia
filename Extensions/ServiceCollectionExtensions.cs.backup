@@ -147,6 +147,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<AddItemTypeViewModel>();
         services.TryAddTransient<EditItemTypeViewModel>();
         services.TryAddTransient<RemoveItemTypeViewModel>();
+        services.TryAddTransient<ThemeBuilderViewModel>();
         services.TryAddTransient<ShortcutsViewModel>();
         services.TryAddTransient<AboutViewModel>();
 

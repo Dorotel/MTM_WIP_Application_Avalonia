@@ -1,3 +1,4 @@
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
@@ -6,6 +7,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using Avalonia.Logging;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 
@@ -79,7 +81,7 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
     /// <summary>
     /// Emergency keyboard hook for global shortcuts
     /// </summary>
-    private Services.EmergencyKeyboardHook? _emergencyKeyboardHook;
+    private Services.Infrastructure.EmergencyKeyboardHookService? _emergencyKeyboardHook;
 
     #endregion
 
@@ -334,8 +336,8 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
                 try
                 {
                     _emergencyKeyboardHook?.Dispose();
-                    _emergencyKeyboardHook = new Services.EmergencyKeyboardHook(
-                        Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.EmergencyKeyboardHook>.Instance
+                    _emergencyKeyboardHook = new Services.Infrastructure.EmergencyKeyboardHookService(
+                        Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.Infrastructure.EmergencyKeyboardHookService>.Instance
                     );
 
                     _emergencyKeyboardHook.EmergencyExitRequested += () =>
@@ -631,3 +633,4 @@ public partial class SuccessOverlayViewModel : BaseOverlayViewModel
 
     #endregion
 }
+

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services.UI;
+using MTM_WIP_Application_Avalonia.Services.Feature;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 
@@ -11,10 +12,9 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 /// Base class for all overlay ViewModels in the MTM WIP Application.
 /// Provides common overlay functionality with MVVM Community Toolkit patterns.
 /// </summary>
-[ObservableObject]
-public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposable
+public abstract partial class BaseOverlayViewModel : ObservableObject, IOverlayViewModel, IDisposable
 {
-    protected readonly ILogger _logger;
+    protected readonly ILogger Logger;
     private bool _disposed = false;
 
     #region Observable Properties
@@ -79,11 +79,11 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
 
     protected BaseOverlayViewModel(ILogger logger)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
         // Initialize overlay in hidden state
         IsVisible = false;
-        Title = GetDefaultTitle();
+        Title = "Overlay"; // Use string literal to avoid virtual call in constructor
     }
 
     #endregion
@@ -94,7 +94,7 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
     /// Command to close the overlay with cancellation result.
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanClose))]
-    private async Task CloseAsync()
+    protected async Task CloseAsync()
     {
         try
         {
@@ -104,7 +104,7 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error closing overlay {OverlayId}", OverlayId);
+            Logger.LogError(ex, "Error closing overlay {OverlayId}", OverlayId);
             await HandleErrorAsync(ex, "Failed to close overlay");
         }
     }
@@ -129,7 +129,7 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error confirming overlay {OverlayId}", OverlayId);
+            Logger.LogError(ex, "Error confirming overlay {OverlayId}", OverlayId);
             await HandleErrorAsync(ex, "Failed to confirm operation");
         }
         finally
@@ -152,7 +152,7 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error cancelling overlay {OverlayId}", OverlayId);
+            Logger.LogError(ex, "Error cancelling overlay {OverlayId}", OverlayId);
             await HandleErrorAsync(ex, "Failed to cancel operation");
         }
     }
@@ -229,7 +229,7 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
     /// </summary>
     protected virtual void OnClosed(OverlayCloseReason reason)
     {
-        _logger.LogInformation("Overlay {OverlayId} closed with reason: {Reason}", OverlayId, reason);
+        Logger.LogInformation("Overlay {OverlayId} closed with reason: {Reason}", OverlayId, reason);
     }
 
     #endregion
@@ -247,6 +247,39 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
     #region Public Methods
 
     /// <summary>
+    /// Shows the overlay (synchronous version).
+    /// </summary>
+    public void Show()
+    {
+        try
+        {
+            IsVisible = true;
+            Logger.LogDebug("Overlay {OverlayId} shown (sync)", OverlayId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error showing overlay {OverlayId}", OverlayId);
+        }
+    }
+
+    /// <summary>
+    /// Shows buttons in the overlay.
+    /// </summary>
+    public void ShowButtons()
+    {
+        try
+        {
+            // Default implementation - derived classes can override
+            CanClose = true;
+            Logger.LogDebug("Buttons shown in overlay {OverlayId}", OverlayId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error showing buttons in overlay {OverlayId}", OverlayId);
+        }
+    }
+
+    /// <summary>
     /// Shows the overlay asynchronously.
     /// </summary>
     public async Task ShowAsync()
@@ -256,11 +289,11 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
             await OnShowingAsync();
             IsVisible = true;
             await OnShownAsync();
-            _logger.LogInformation("Overlay {OverlayId} shown", OverlayId);
+            Logger.LogInformation("Overlay {OverlayId} shown", OverlayId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error showing overlay {OverlayId}", OverlayId);
+            Logger.LogError(ex, "Error showing overlay {OverlayId}", OverlayId);
             await HandleErrorAsync(ex, "Failed to show overlay");
         }
     }
@@ -282,12 +315,12 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
         try
         {
             await OnInitializeAsync(requestData);
-            _logger.LogInformation("Overlay {OverlayId} initialized with data type: {DataType}", 
+            Logger.LogInformation("Overlay {OverlayId} initialized with data type: {DataType}",
                 OverlayId, requestData?.GetType().Name ?? "null");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error initializing overlay {OverlayId}", OverlayId);
+            Logger.LogError(ex, "Error initializing overlay {OverlayId}", OverlayId);
             await HandleErrorAsync(ex, "Failed to initialize overlay");
         }
     }
@@ -304,7 +337,7 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
         var errorMsg = $"{context}: {ex.Message}";
         ErrorMessage = errorMsg;
         HasError = true;
-        
+
         try
         {
             // Use MTM centralized error handling
@@ -312,7 +345,7 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
         }
         catch (Exception loggingEx)
         {
-            _logger.LogError(loggingEx, "Failed to log error for overlay {OverlayId}", OverlayId);
+            Logger.LogError(loggingEx, "Failed to log error for overlay {OverlayId}", OverlayId);
         }
     }
 
@@ -335,11 +368,11 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
         {
             await OnClosingAsync();
             IsVisible = false;
-            _logger.LogInformation("Overlay {OverlayId} hidden", OverlayId);
+            Logger.LogInformation("Overlay {OverlayId} hidden", OverlayId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error hiding overlay {OverlayId}", OverlayId);
+            Logger.LogError(ex, "Error hiding overlay {OverlayId}", OverlayId);
         }
     }
 
@@ -361,9 +394,9 @@ public abstract partial class BaseOverlayViewModel : IOverlayViewModel, IDisposa
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error during overlay disposal for {OverlayId}", OverlayId);
+                Logger.LogError(ex, "Error during overlay disposal for {OverlayId}", OverlayId);
             }
-            
+
             _disposed = true;
         }
     }

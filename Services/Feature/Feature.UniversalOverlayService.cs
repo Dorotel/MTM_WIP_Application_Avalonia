@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Microsoft.Extensions.Logging;
 
 namespace MTM_WIP_Application_Avalonia.Services.Feature;
 
@@ -194,12 +196,12 @@ public class UniversalOverlayService : Services.Feature.IUniversalOverlayService
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }
 
-    public event EventHandler<Services.Interfaces.OverlayEventArgs>? OverlayShowing;
-    public event EventHandler<Services.Interfaces.OverlayEventArgs>? OverlayShown;
-    public event EventHandler<Services.Interfaces.OverlayEventArgs>? OverlayHiding;
-    public event EventHandler<Services.Interfaces.OverlayEventArgs>? OverlayHidden;
+    public event EventHandler<OverlayEventArgs>? OverlayShowing;
+    public event EventHandler<OverlayEventArgs>? OverlayShown;
+    public event EventHandler<OverlayEventArgs>? OverlayHiding;
+    public event EventHandler<OverlayEventArgs>? OverlayHidden;
 
-    public async Task<Services.Interfaces.OverlayResult<T>> ShowOverlayAsync<T>(T request) where T : class
+    public async Task<OverlayResult<T>> ShowOverlayAsync<T>(T request) where T : class
     {
         if (_disposed) throw new ObjectDisposedException(nameof(UniversalOverlayService));
 
@@ -212,7 +214,7 @@ public class UniversalOverlayService : Services.Feature.IUniversalOverlayService
             if (!_overlayRegistrations.ContainsKey(requestType))
             {
                 _logger.LogError("Overlay type {OverlayType} is not registered", requestType.Name);
-                return Services.Interfaces.OverlayResult<T>.Failed($"Overlay type {requestType.Name} not registered", overlayId);
+                return OverlayResult<T>.Failed($"Overlay type {requestType.Name} not registered", overlayId);
             }
 
             var viewModelType = _overlayRegistrations[requestType];
@@ -221,17 +223,17 @@ public class UniversalOverlayService : Services.Feature.IUniversalOverlayService
             if (viewType == null)
             {
                 _logger.LogError("No view type found for ViewModel {ViewModelType}", viewModelType.Name);
-                return Services.Interfaces.OverlayResult<T>.Failed($"No view found for {viewModelType.Name}", overlayId);
+                return OverlayResult<T>.Failed($"No view found for {viewModelType.Name}", overlayId);
             }
 
             // Fire overlay showing event
-            var showingArgs = new Services.Interfaces.OverlayEventArgs(overlayId, viewModelType, true);
+            var showingArgs = new OverlayEventArgs(overlayId, viewModelType, true);
             OverlayShowing?.Invoke(this, showingArgs);
 
             if (showingArgs.Cancel)
             {
                 _logger.LogInformation("Overlay {OverlayId} showing was cancelled", overlayId);
-                return Services.Interfaces.OverlayResult<T>.Cancelled(overlayId);
+                return OverlayResult<T>.Cancelled(overlayId);
             }
 
             // Get or create ViewModel instance
@@ -241,7 +243,7 @@ public class UniversalOverlayService : Services.Feature.IUniversalOverlayService
             if (view == null)
             {
                 _logger.LogError("Failed to create view for overlay {OverlayId}", overlayId);
-                return Services.Interfaces.OverlayResult<T>.Failed("Failed to create view", overlayId);
+                return OverlayResult<T>.Failed("Failed to create view", overlayId);
             }
 
             // Configure overlay
@@ -267,7 +269,7 @@ public class UniversalOverlayService : Services.Feature.IUniversalOverlayService
             await ShowOverlayInUIAsync(overlayState);
 
             // Fire overlay shown event
-            OverlayShown?.Invoke(this, new Services.Interfaces.OverlayEventArgs(overlayId, viewModelType));
+            OverlayShown?.Invoke(this, new OverlayEventArgs(overlayId, viewModelType));
 
             // Wait for overlay result (this would be handled by the overlay ViewModel)
             var result = await WaitForOverlayResultAsync<T>(overlayId);
@@ -278,7 +280,7 @@ public class UniversalOverlayService : Services.Feature.IUniversalOverlayService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error showing overlay for type {RequestType}", typeof(T).Name);
-            return Services.Interfaces.OverlayResult<T>.Failed($"Error showing overlay: {ex.Message}");
+            return OverlayResult<T>.Failed($"Error showing overlay: {ex.Message}");
         }
     }
 
@@ -295,7 +297,7 @@ public class UniversalOverlayService : Services.Feature.IUniversalOverlayService
         try
         {
             // Fire overlay hiding event
-            var hidingArgs = new Services.Interfaces.OverlayEventArgs(overlayId, overlayState.ViewModel?.GetType() ?? typeof(object), true);
+            var hidingArgs = new OverlayEventArgs(overlayId, overlayState.ViewModel?.GetType() ?? typeof(object), true);
             OverlayHiding?.Invoke(this, hidingArgs);
 
             if (hidingArgs.Cancel)
@@ -316,7 +318,7 @@ public class UniversalOverlayService : Services.Feature.IUniversalOverlayService
             _activeOverlays.Remove(overlayId);
 
             // Fire overlay hidden event
-            OverlayHidden?.Invoke(this, new Services.Interfaces.OverlayEventArgs(overlayId, overlayState.ViewModel?.GetType() ?? typeof(object)));
+            OverlayHidden?.Invoke(this, new OverlayEventArgs(overlayId, overlayState.ViewModel?.GetType() ?? typeof(object)));
 
             _logger.LogInformation("Overlay {OverlayId} hidden successfully", overlayId);
             return true;
@@ -428,13 +430,13 @@ public class UniversalOverlayService : Services.Feature.IUniversalOverlayService
         });
     }
 
-    private async Task<Services.Interfaces.OverlayResult<T>> WaitForOverlayResultAsync<T>(string overlayId) where T : class
+    private async Task<OverlayResult<T>> WaitForOverlayResultAsync<T>(string overlayId) where T : class
     {
         // This would typically wait for the overlay ViewModel to signal completion
         // For now, we'll return a simple success result
         await Task.Delay(100); // Simulate async operation
 
-        return Services.Interfaces.OverlayResult<T>.Success(default(T)!, overlayId);
+        return OverlayResult<T>.Success(default(T)!, overlayId);
     }
 
     #endregion

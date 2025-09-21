@@ -1,3 +1,4 @@
+﻿using MTM_WIP_Application_Avalonia.Models.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -576,7 +577,7 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
             Columns.Add(new CustomDataGridColumn("PartId", "Part ID", typeof(string), 120));
             Columns.Add(new CustomDataGridColumn("Operation", "Operation", typeof(string), 80));
             Columns.Add(new CustomDataGridColumn("FromLocation", "From Location", typeof(string), 100));
-            Columns.Add(new CustomDataGridColumn("TransferArrow", "➜", typeof(string), 40));
+            Columns.Add(new CustomDataGridColumn("TransferArrow", "âžœ", typeof(string), 40));
             Columns.Add(new CustomDataGridColumn("ToLocation", "To Location", typeof(string), 100));
             Columns.Add(new CustomDataGridColumn("AvailableQuantity", "Available", typeof(int), 80));
             Columns.Add(new CustomDataGridColumn("TransferQuantity", "Transfer", typeof(int), 80));
@@ -644,4 +645,5 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
 
     #endregion
 }
+
 

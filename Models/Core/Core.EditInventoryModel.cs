@@ -5,6 +5,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Shared_Logic.Models;
 using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
+using InventoryItemEvents = MTM_WIP_Application_Avalonia.Models.Events.InventoryItem;
 
 namespace MTM_WIP_Application_Avalonia.Models.Core
 {
@@ -426,9 +427,9 @@ namespace MTM_WIP_Application_Avalonia.Models.Core
         /// Converts this edit model back to an InventoryItem
         /// </summary>
         /// <returns>InventoryItem with current values</returns>
-        public InventoryItem ToInventoryItem()
+        public InventoryItemEvents ToInventoryItem()
         {
-            return new InventoryItem
+            return new InventoryItemEvents
             {
                 Id = Id,
                 PartId = PartId,
@@ -448,7 +449,7 @@ namespace MTM_WIP_Application_Avalonia.Models.Core
         /// Updates an existing InventoryItem with values from this model
         /// </summary>
         /// <param name="inventoryItem">The inventory item to update</param>
-        public void UpdateInventoryItem(InventoryItem inventoryItem)
+        public void UpdateInventoryItem(InventoryItemEvents inventoryItem)
         {
             if (inventoryItem == null) throw new ArgumentNullException(nameof(inventoryItem));
 

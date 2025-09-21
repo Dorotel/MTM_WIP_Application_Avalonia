@@ -1,3 +1,6 @@
+﻿using MTM_WIP_Application_Avalonia.Models.Events;
+using MTM_WIP_Application_Avalonia.Services.UI;
+using MTM_WIP_Application_Avalonia.Models.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,11 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
-using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -974,3 +978,6 @@ public partial class MainViewViewModel : BaseViewModel
     #endregion
 
 }
+
+
+

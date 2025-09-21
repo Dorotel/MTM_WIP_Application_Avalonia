@@ -1,3 +1,5 @@
+using MTM_WIP_Application_Avalonia.Services.UI;
+using MTM_WIP_Application_Avalonia.Services.Feature;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -5,7 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Core;
-using MTM_WIP_Application_Avalonia.Services.Interfaces;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
@@ -231,7 +233,7 @@ public class MainWindowViewModel : BaseViewModel
         }
     }
 
-    private void OnNavigated(object? sender, Services.NavigationEventArgs e)
+    private void OnNavigated(object? sender, Services.Infrastructure.NavigationEventArgs e)
     {
         Logger.LogDebug("OnNavigated event handler triggered - Sender: {SenderType}, Target: {TargetType}",
             sender?.GetType().Name ?? "null", e.Target?.GetType().Name ?? "null");
@@ -263,3 +265,4 @@ public class MainWindowViewModel : BaseViewModel
         base.Dispose(disposing);
     }
 }
+

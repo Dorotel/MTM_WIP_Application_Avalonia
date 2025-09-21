@@ -1,3 +1,5 @@
+﻿using MTM_WIP_Application_Avalonia.Models.Events;
+using MTM_WIP_Application_Avalonia.Services.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -165,7 +167,7 @@ public partial class ThemeQuickSwitcher : UserControl
                 // Add separator for custom themes
                 var separator = new ComboBoxItem 
                 { 
-                    Content = "─── Custom Themes ───", 
+                    Content = "â”€â”€â”€ Custom Themes â”€â”€â”€", 
                     Tag = "separator",
                     IsEnabled = false
                 };
@@ -187,7 +189,7 @@ public partial class ThemeQuickSwitcher : UserControl
                         {
                             var customThemeItem = new ComboBoxItem 
                             { 
-                                Content = $"🎨 {themeInfo.Name} (Custom)", 
+                                Content = $"ðŸŽ¨ {themeInfo.Name} (Custom)", 
                                 Tag = Path.GetFileNameWithoutExtension(filePath)
                             };
                             ToolTip.SetTip(customThemeItem, $"Custom theme by {themeInfo.CreatedBy ?? "Unknown"}\nCreated: {new FileInfo(filePath).CreationTime:yyyy-MM-dd}");
@@ -536,3 +538,5 @@ public class ThemeExportModel
     public Dictionary<string, string> Colors { get; set; } = new();
     public string CreatedBy { get; set; } = string.Empty;
 }
+
+

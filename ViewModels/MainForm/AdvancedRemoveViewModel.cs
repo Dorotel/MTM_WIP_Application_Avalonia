@@ -1,3 +1,4 @@
+﻿using MTM_WIP_Application_Avalonia.Models.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -1187,3 +1188,4 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
 
     #endregion
 }
+

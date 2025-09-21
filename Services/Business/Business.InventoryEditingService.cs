@@ -1,16 +1,17 @@
+using MTM_WIP_Application_Avalonia.Models.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Models;
+using MTM_WIP_Application_Avalonia.Models.Events;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Core;
 using MTM_Shared_Logic.Models;
-using InventoryItem = MTM_WIP_Application_Avalonia.Models.InventoryItem;
+using InventoryItem = MTM_WIP_Application_Avalonia.Models.Events.InventoryItem;
 
-namespace MTM_WIP_Application_Avalonia.Services
+namespace MTM_WIP_Application_Avalonia.Services.Business
 {
     /// <summary>
     /// Interface for comprehensive inventory editing service
@@ -524,3 +525,4 @@ namespace MTM_WIP_Application_Avalonia.Services
         #endregion
     }
 }
+

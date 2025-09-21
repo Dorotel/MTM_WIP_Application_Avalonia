@@ -10,6 +10,8 @@ using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
 using MTM_WIP_Application_Avalonia.Core.Startup;
 using Avalonia.Controls.ApplicationLifetimes;
 using ZstdSharp.Unsafe;
@@ -56,12 +58,12 @@ public static class Program
             _logger?.LogInformation("Starting Avalonia application with {ArgCount} arguments", args.Length);
 
             var appStopwatch = Stopwatch.StartNew();
-            
+
             // For now, all platforms use classic desktop lifetime
             // Mobile support can be added later when creating dedicated mobile projects
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Starting with classic desktop lifetime (cross-platform compatible)");
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            
+
             appStopwatch.Stop();
 
             mainStopwatch.Stop();
@@ -94,7 +96,7 @@ public static class Program
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace();
-                
+
             // Platform-specific configurations
             if (OperatingSystem.IsAndroid())
             {
@@ -121,7 +123,7 @@ public static class Program
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring for Linux platform");
                 // Linux-specific configuration would go here if needed
             }
-            
+
             return builder;
         }
         catch (Exception ex)

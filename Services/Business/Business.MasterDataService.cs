@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -9,7 +9,7 @@ using Avalonia.Threading;
 using MySql.Data.MySqlClient;
 using MTM_WIP_Application_Avalonia.Services.Core;
 
-namespace MTM_WIP_Application_Avalonia.Services;
+namespace MTM_WIP_Application_Avalonia.Services.Business;
 
 /// <summary>
 /// Interface for master data service that provides centralized access to reference data
@@ -20,32 +20,32 @@ public interface IMasterDataService
     /// Observable collection of all Part IDs from master data
     /// </summary>
     ObservableCollection<string> PartIds { get; }
-    
+
     /// <summary>
     /// Observable collection of all Operations from master data
     /// </summary>
     ObservableCollection<string> Operations { get; }
-    
+
     /// <summary>
     /// Observable collection of all Locations from master data
     /// </summary>
     ObservableCollection<string> Locations { get; }
-    
+
     /// <summary>
     /// Observable collection of all Users from master data
     /// </summary>
     ObservableCollection<string> Users { get; }
-    
+
     /// <summary>
     /// Indicates if master data is currently being loaded
     /// </summary>
     bool IsLoading { get; }
-    
+
     /// <summary>
     /// Loads all master data from database using stored procedures
     /// </summary>
     Task LoadAllMasterDataAsync();
-    
+
     /// <summary>
     /// Refreshes specific master data category
     /// </summary>
@@ -53,7 +53,7 @@ public interface IMasterDataService
     Task RefreshOperationsAsync();
     Task RefreshLocationsAsync();
     Task RefreshUsersAsync();
-    
+
     /// <summary>
     /// Event raised when master data is loaded or refreshed
     /// </summary>
@@ -78,12 +78,12 @@ public class MasterDataService : IMasterDataService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
-        
+
         PartIds = new ObservableCollection<string>();
         Operations = new ObservableCollection<string>();
         Locations = new ObservableCollection<string>();
         Users = new ObservableCollection<string>();
-        
+
         _logger.LogInformation("MasterDataService initialized");
     }
 
@@ -93,9 +93,9 @@ public class MasterDataService : IMasterDataService
     public ObservableCollection<string> Operations { get; }
     public ObservableCollection<string> Locations { get; }
     public ObservableCollection<string> Users { get; }
-    
-    public bool IsLoading 
-    { 
+
+    public bool IsLoading
+    {
         get => _isLoading;
         private set => _isLoading = value;
     }
@@ -122,44 +122,44 @@ public class MasterDataService : IMasterDataService
         {
             IsLoading = true;
             _logger.LogInformation("Loading master data using MTM stored procedure patterns");
-            
+
             // Test database connection first
             var connectionString = _configurationService.GetConnectionString();
             _logger.LogInformation("Testing database connection...");
-            
+
             // Test basic connectivity with timeout
-            try 
+            try
             {
                 using var testConnection = new MySqlConnection(connectionString);
                 // Set connection timeout
                 var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(5));
-                
+
                 await testConnection.OpenAsync(cts.Token);
-                _logger.LogInformation("✅ Database connection test successful - Server: {Server}, Database: {Database}", 
+                _logger.LogInformation("âœ… Database connection test successful - Server: {Server}, Database: {Database}",
                     testConnection.DataSource, testConnection.Database);
                 testConnection.Close();
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
-                _logger.LogError("❌ Database connection timed out after 5 seconds");
+                _logger.LogError("âŒ Database connection timed out after 5 seconds");
                 throw new TimeoutException("Database connection timed out");
             }
             catch (Exception connEx)
             {
-                _logger.LogError(connEx, "❌ Database connection test failed - {ErrorMessage}", connEx.Message);
+                _logger.LogError(connEx, "âŒ Database connection test failed - {ErrorMessage}", connEx.Message);
                 throw new InvalidOperationException("Database connection failed", connEx);
             }
-            
+
             await Task.WhenAll(
                 LoadPartIdsFromDatabaseAsync(),
                 LoadOperationsFromDatabaseAsync(),
                 LoadLocationsFromDatabaseAsync(),
                 LoadUsersFromDatabaseAsync()
             );
-            
-            _logger.LogInformation("Master data loaded successfully from database - Parts: {PartCount}, Operations: {OpCount}, Locations: {LocCount}, Users: {UserCount}", 
+
+            _logger.LogInformation("Master data loaded successfully from database - Parts: {PartCount}, Operations: {OpCount}, Locations: {LocCount}, Users: {UserCount}",
                 PartIds.Count, Operations.Count, Locations.Count, Users.Count);
-                
+
             MasterDataLoaded?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
@@ -221,7 +221,7 @@ public class MasterDataService : IMasterDataService
         try
         {
             _logger.LogDebug("Loading Part IDs from database using DatabaseService");
-            
+
             var dataTable = await _databaseService.GetAllPartIDsAsync();
 
             if (dataTable != null && dataTable.Rows.Count > 0)
@@ -263,7 +263,7 @@ public class MasterDataService : IMasterDataService
         try
         {
             _logger.LogDebug("Loading Operations from database using DatabaseService");
-            
+
             var dataTable = await _databaseService.GetAllOperationsAsync();
 
             if (dataTable != null && dataTable.Rows.Count > 0)
@@ -305,7 +305,7 @@ public class MasterDataService : IMasterDataService
         try
         {
             _logger.LogDebug("Loading Locations from database using DatabaseService");
-            
+
             var dataTable = await _databaseService.GetAllLocationsAsync();
 
             if (dataTable != null && dataTable.Rows.Count > 0)
@@ -347,7 +347,7 @@ public class MasterDataService : IMasterDataService
         try
         {
             _logger.LogDebug("Loading Users from database using DatabaseService");
-            
+
             var dataTable = await _databaseService.GetAllUsersAsync();
 
             if (dataTable != null && dataTable.Rows.Count > 0)
@@ -389,7 +389,7 @@ public class MasterDataService : IMasterDataService
     /// Checks if all master data collections have been populated from the database.
     /// Returns false if any collection is empty, indicating potential database connectivity issues.
     /// </summary>
-    public bool IsAllDataAvailable => 
+    public bool IsAllDataAvailable =>
         PartIds.Count > 0 && Operations.Count > 0 && Locations.Count > 0 && Users.Count > 0;
 
     /// <summary>
@@ -398,7 +398,7 @@ public class MasterDataService : IMasterDataService
     public string GetDataAvailabilityStatus()
     {
         var missingData = new List<string>();
-        
+
         if (PartIds.Count == 0) missingData.Add("Part IDs");
         if (Operations.Count == 0) missingData.Add("Operations");
         if (Locations.Count == 0) missingData.Add("Locations");

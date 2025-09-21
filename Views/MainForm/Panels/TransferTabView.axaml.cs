@@ -10,7 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.UI;
 using MTM_WIP_Application_Avalonia.Controls;
+using MTM_WIP_Application_Avalonia.Views.Overlay;
 using MTM_Shared_Logic.Models;
 
 namespace MTM_WIP_Application_Avalonia.Views;

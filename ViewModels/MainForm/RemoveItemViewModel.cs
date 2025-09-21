@@ -1,5 +1,8 @@
-
-
+using MTM_WIP_Application_Avalonia.Services.UI;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Models.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,14 +14,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MTM_WIP_Application_Avalonia.Services;
-using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Models.Print;
 using MTM_WIP_Application_Avalonia.Services.Business;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
-using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Views;
-using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Threading;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -237,7 +237,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Event fired when items are successfully removed
     /// </summary>
-    public event EventHandler<MTM_WIP_Application_Avalonia.Services.Business.ItemsRemovedEventArgs>? ItemsRemoved;
+    public event EventHandler<MTM_WIP_Application_Avalonia.Models.Events.ItemsRemovedEventArgs>? ItemsRemoved;
 
     /// <summary>
     /// Event fired when panel toggle is requested
@@ -252,7 +252,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Event fired when the success overlay should be shown
     /// </summary>
-    public event EventHandler<MTM_WIP_Application_Avalonia.Models.SuccessEventArgs>? ShowSuccessOverlay;
+    public event EventHandler<MTM_WIP_Application_Avalonia.Models.Events.SuccessEventArgs>? ShowSuccessOverlay;
 
     #endregion
 
@@ -300,7 +300,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     /// <summary>
     /// Handles items removed events from the RemoveService
     /// </summary>
-    private void OnItemsRemovedFromService(object? sender, MTM_WIP_Application_Avalonia.Services.Business.ItemsRemovedEventArgs e)
+    private void OnItemsRemovedFromService(object? sender, MTM_WIP_Application_Avalonia.Models.Events.ItemsRemovedEventArgs e)
     {
         // Propagate the event to the UI
         ItemsRemoved?.Invoke(this, e);
@@ -566,7 +566,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                         : $"Batch operation completed\nItems removed: {removalResult.SuccessCount}\nTotal quantity removed: {removalResult.SuccessfulRemovals.Sum(x => x.Quantity)}";
 
                     // Fire SuccessOverlay event for View to handle
-                    var successArgs = new MTM_WIP_Application_Avalonia.Models.SuccessEventArgs
+                    var successArgs = new MTM_WIP_Application_Avalonia.Models.Events.SuccessEventArgs
                     {
                         Message = successMessage,
                         Details = detailsText,
@@ -1179,7 +1179,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             // Configure print data
             printViewModel.PrintData = dataTable;
-            printViewModel.DataSourceType = MTM_WIP_Application_Avalonia.Models.PrintDataSourceType.Remove;
+            printViewModel.DataSourceType = PrintDataSourceType.Remove;
             printViewModel.DocumentTitle = "Inventory Removal Report";
             printViewModel.OriginalViewContext = this; // Store current context for navigation back
 
@@ -1777,4 +1777,6 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     #endregion
 }
+
+
 

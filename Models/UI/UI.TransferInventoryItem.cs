@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Shared_Logic.Models;
+using InventoryItemEvents = MTM_WIP_Application_Avalonia.Models.Events.InventoryItem;
 
 namespace MTM_WIP_Application_Avalonia.Models.CustomDataGrid.UI;
 
@@ -293,9 +294,9 @@ public partial class TransferInventoryItem : ObservableValidator
     /// <summary>
     /// Converts this transfer item back to a standard InventoryItem
     /// </summary>
-    public InventoryItem ToInventoryItem()
+    public InventoryItemEvents ToInventoryItem()
     {
-        return new InventoryItem
+        return new InventoryItemEvents
         {
             Id = Id,
             PartId = PartId,

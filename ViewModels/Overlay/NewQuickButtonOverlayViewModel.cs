@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
-using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Models.Core;
 using MTM_WIP_Application_Avalonia.Services.Business;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
@@ -18,14 +18,14 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 /// ViewModel for creating new QuickButton shortcuts in the MTM WIP Application.
 /// Provides form-driven interface for defining custom inventory operation shortcuts
 /// with validation, duplicate detection, and integration with the QuickButtons system.
-/// 
+///
 /// Features:
 /// - Real-time validation against master data (Part IDs, Operations)
 /// - Duplicate QuickButton detection and warning system
 /// - Integration with TextBoxFuzzyValidationBehavior for suggestion overlays
 /// - Manufacturing data integrity enforcement (no fallback data pattern)
 /// - Event-driven architecture for UI coordination and refresh
-/// 
+///
 /// Manufacturing Use Case:
 /// Enables operators to create personalized shortcuts for frequently used
 /// Part ID + Operation + Quantity combinations to streamline inventory operations.
@@ -175,13 +175,13 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
     /// <summary>
     /// Determines if Create button should be enabled
     /// </summary>
-    public bool CanCreate => 
-        !IsLoading && 
-        IsPartIdValid && 
-        IsOperationValid && 
-        IsQuantityValid && 
-        !string.IsNullOrWhiteSpace(PartId) && 
-        !string.IsNullOrWhiteSpace(Operation) && 
+    public bool CanCreate =>
+        !IsLoading &&
+        IsPartIdValid &&
+        IsOperationValid &&
+        IsQuantityValid &&
+        !string.IsNullOrWhiteSpace(PartId) &&
+        !string.IsNullOrWhiteSpace(Operation) &&
         Quantity > 0;
 
     /// <summary>
@@ -216,15 +216,15 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
 
         // Set up property change handlers for validation and duplicate checking
         PropertyChanged += OnPropertyChanged;
-        
+
         // Initialize master data loading
-        _ = Task.Run(async () => 
+        _ = Task.Run(async () =>
         {
             try
             {
                 await _masterDataService.LoadAllMasterDataAsync();
                 Logger.LogInformation("Master data loaded successfully for NewQuickButtonOverlayViewModel");
-                
+
                 // Trigger validation after master data is loaded
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -309,7 +309,7 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
         {
             QuantityText = value.ToString();
         }
-        
+
         Logger.LogDebug("Quantity changed to: {Quantity}", value);
     }
 
@@ -345,9 +345,9 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
             {
                 IsPartIdValid = _masterDataService.PartIds.Contains(PartId, StringComparer.OrdinalIgnoreCase);
                 PartIdWatermark = IsPartIdValid ? "Valid part ID" : "Part ID not found in master data";
-                Logger.LogDebug("Part ID '{PartId}' validation result: {IsValid} (Master data count: {Count})", 
+                Logger.LogDebug("Part ID '{PartId}' validation result: {IsValid} (Master data count: {Count})",
                     PartId, IsPartIdValid, _masterDataService.PartIds.Count);
-                
+
                 // Log first few part IDs for debugging if validation fails
                 if (!IsPartIdValid)
                 {
@@ -392,9 +392,9 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
             {
                 IsOperationValid = _masterDataService.Operations.Contains(Operation, StringComparer.OrdinalIgnoreCase);
                 OperationWatermark = IsOperationValid ? "Valid operation" : "Operation not found in master data";
-                Logger.LogDebug("Operation '{Operation}' validation result: {IsValid} (Master data count: {Count})", 
+                Logger.LogDebug("Operation '{Operation}' validation result: {IsValid} (Master data count: {Count})",
                     Operation, IsOperationValid, _masterDataService.Operations.Count);
-                
+
                 // Log first few operations for debugging if validation fails
                 if (!IsOperationValid)
                 {
@@ -496,11 +496,11 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
             }
 
             // Load current user's QuickButtons to check for duplicates
-            var currentUser = Models.Model_AppVariables.CurrentUser;
+            var currentUser = Model_AppVariables.CurrentUser;
             var existingButtons = await _quickButtonsService.LoadUserQuickButtonsAsync(currentUser);
 
-            var duplicateButton = existingButtons.FirstOrDefault(b => 
-                string.Equals(b.PartId, PartId, StringComparison.OrdinalIgnoreCase) && 
+            var duplicateButton = existingButtons.FirstOrDefault(b =>
+                string.Equals(b.PartId, PartId, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(b.Operation, Operation, StringComparison.OrdinalIgnoreCase));
 
             if (duplicateButton != null)
@@ -546,15 +546,15 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
             // Debug logging to understand validation state
             Logger.LogDebug("Validation state - PartId: {PartIdValid} ({PartId}), Operation: {OperationValid} ({Operation}), Quantity: {QuantityValid} ({Quantity})",
                 IsPartIdValid, PartId, IsOperationValid, Operation, IsQuantityValid, Quantity);
-            Logger.LogDebug("Master data counts - PartIds: {PartIdCount}, Operations: {OperationCount}", 
+            Logger.LogDebug("Master data counts - PartIds: {PartIdCount}, Operations: {OperationCount}",
                 PartIds?.Count ?? 0, Operations?.Count ?? 0);
 
             // Check validation BEFORE setting IsLoading = true
-            var validationPassed = IsPartIdValid && 
-                                 IsOperationValid && 
-                                 IsQuantityValid && 
-                                 !string.IsNullOrWhiteSpace(PartId) && 
-                                 !string.IsNullOrWhiteSpace(Operation) && 
+            var validationPassed = IsPartIdValid &&
+                                 IsOperationValid &&
+                                 IsQuantityValid &&
+                                 !string.IsNullOrWhiteSpace(PartId) &&
+                                 !string.IsNullOrWhiteSpace(Operation) &&
                                  Quantity > 0;
 
             if (!validationPassed)
@@ -563,7 +563,7 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
                 if (!IsPartIdValid) validationErrors.Add($"Part ID ({PartIdWatermark})");
                 if (!IsOperationValid) validationErrors.Add($"Operation ({OperationWatermark})");
                 if (!IsQuantityValid) validationErrors.Add($"Quantity ({QuantityWatermark})");
-                
+
                 StatusMessage = $"Validation errors: {string.Join(", ", validationErrors)}";
                 Logger.LogWarning("Cannot create QuickButton due to validation errors:");
                 Logger.LogWarning("  - Part ID Valid: {PartIdValid}, Value: '{PartId}', Master data count: {PartIdCount}", IsPartIdValid, PartId, PartIds?.Count ?? 0);
@@ -578,10 +578,10 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
 
             // Create the QuickButton using the service
             var success = await _quickButtonsService.CreateQuickButtonAsync(
-                PartId, 
-                Operation, 
+                PartId,
+                Operation,
                 string.Empty, // Location - not used in QuickButton creation context
-                Quantity, 
+                Quantity,
                 Notes);
 
             if (success)
@@ -604,7 +604,7 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error in Create QuickButton: {Message}", ex.Message);
-            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Create QuickButton", Models.Model_AppVariables.CurrentUser);
+            await Services.Core.ErrorHandling.HandleErrorAsync(ex, "Create QuickButton", Model_AppVariables.CurrentUser);
             StatusMessage = "Error creating QuickButton. Please check logs for details.";
         }
         finally
@@ -620,7 +620,7 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
     private void Cancel()
     {
         Logger.LogInformation("QuickButton creation cancelled by user");
-        
+
         // Fire event to notify parent components
         Cancelled?.Invoke(this, EventArgs.Empty);
     }
@@ -638,17 +638,17 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
             Quantity = 1;
             QuantityText = "1";  // Set QuantityText to match Quantity
             Notes = string.Empty;
-            
+
             // Reset validation state
             IsPartIdValid = true;
             IsOperationValid = true;
             IsQuantityValid = true;
-            
+
             // Reset UI state
             HasDuplicateWarning = false;
             DuplicateWarningMessage = string.Empty;
             StatusMessage = string.Empty;
-            
+
             // Reset watermarks
             PartIdWatermark = "Enter part ID...";
             OperationWatermark = "Enter operation...";
@@ -690,7 +690,7 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
             {
                 // Unsubscribe from events
                 PropertyChanged -= OnPropertyChanged;
-                
+
                 Logger.LogDebug("NewQuickButtonOverlayViewModel disposed");
             }
             catch (Exception ex)
@@ -698,7 +698,7 @@ public partial class NewQuickButtonOverlayViewModel : BaseViewModel
                 Logger.LogError(ex, "Error disposing NewQuickButtonOverlayViewModel");
             }
         }
-        
+
         base.Dispose(disposing);
     }
 

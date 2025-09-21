@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -608,29 +608,29 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.Overlay
                 HelpText = ValidationType switch
                 {
                     ValidationType.PartId => @"Part ID Guidelines:
-• Must be 3-20 characters long
-• Can contain letters (A-Z, a-z), numbers (0-9), and dashes (-)
-• Should be unique within the system
-• Examples: PART001, ABC-123, ENGINE-V8-001
-• Avoid special characters like spaces, periods, or symbols",
+â€¢ Must be 3-20 characters long
+â€¢ Can contain letters (A-Z, a-z), numbers (0-9), and dashes (-)
+â€¢ Should be unique within the system
+â€¢ Examples: PART001, ABC-123, ENGINE-V8-001
+â€¢ Avoid special characters like spaces, periods, or symbols",
 
                     ValidationType.Quantity => @"Quantity Guidelines:
-• Must be a positive whole number (1, 2, 3, etc.)
-• Cannot be zero or negative
-• Maximum value depends on system limits
-• For decimal quantities, use the decimal field type instead",
+â€¢ Must be a positive whole number (1, 2, 3, etc.)
+â€¢ Cannot be zero or negative
+â€¢ Maximum value depends on system limits
+â€¢ For decimal quantities, use the decimal field type instead",
 
                     ValidationType.Location => @"Location Guidelines:
-• Must match an existing location in the system
-• Format typically follows warehouse-aisle-position pattern
-• Examples: A1-01, B2-15, C3-BULK
-• Use suggestions or location browser for valid options",
+â€¢ Must match an existing location in the system
+â€¢ Format typically follows warehouse-aisle-position pattern
+â€¢ Examples: A1-01, B2-15, C3-BULK
+â€¢ Use suggestions or location browser for valid options",
 
                     ValidationType.Operation => @"Operation Guidelines:
-• Must be a valid operation number from the workflow
-• Common operations: 90 (Receiving), 100 (Inspection), 110 (Storage), 120 (Shipping)
-• Operations define the workflow step for the part
-• Contact supervisor for custom operation numbers",
+â€¢ Must be a valid operation number from the workflow
+â€¢ Common operations: 90 (Receiving), 100 (Inspection), 110 (Storage), 120 (Shipping)
+â€¢ Operations define the workflow step for the part
+â€¢ Contact supervisor for custom operation numbers",
 
                     _ => HelpText
                 };

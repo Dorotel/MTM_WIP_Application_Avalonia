@@ -1,9 +1,11 @@
+﻿using MTM_Shared_Logic.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Services.UI;
 
 namespace MTM_WIP_Application_Avalonia.Services.Feature;
 
@@ -355,3 +357,4 @@ public class SettingsService : ISettingsService
 
     #endregion
 }
+

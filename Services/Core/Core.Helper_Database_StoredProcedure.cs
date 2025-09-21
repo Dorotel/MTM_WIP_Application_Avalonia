@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -23,6 +23,16 @@ namespace MTM_WIP_Application_Avalonia.Services.Core;
 /// </summary>
 public static class Helper_Database_StoredProcedure
 {
+    private static ILogger? _logger;
+
+    /// <summary>
+    /// Sets the logger instance for database operations.
+    /// </summary>
+    public static void SetLogger(ILogger logger)
+    {
+        _logger = logger;
+    }
+
     /// <summary>
     /// Result structure for stored procedure execution with status and data.
     /// </summary>
@@ -31,6 +41,12 @@ public static class Helper_Database_StoredProcedure
         public int Status { get; set; }
         public string Message { get; set; } = string.Empty;
         public DataTable Data { get; set; } = new();
+
+        /// <summary>
+        /// Indicates if the stored procedure executed successfully.
+        /// MTM convention: Status >= 0 for success, -1 for error
+        /// </summary>
+        public bool IsSuccess => Status >= 0 || (Data != null && Data.Rows.Count > 0);
     }
 
     /// <summary>
@@ -40,6 +56,11 @@ public static class Helper_Database_StoredProcedure
     {
         public int Status { get; set; }
         public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Indicates if the stored procedure executed successfully.
+        /// </summary>
+        public bool IsSuccess => Status >= 0;
     }
 
     /// <summary>

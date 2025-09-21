@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -250,7 +250,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "database",
             DisplayName = "Database Settings",
-            Icon = "🗄️",
+            Icon = "ðŸ—„ï¸",
             PanelType = typeof(DatabaseSettingsViewModel)
         });
 
@@ -259,7 +259,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "user-management",
             DisplayName = "User Management",
-            Icon = "👥",
+            Icon = "ðŸ‘¥",
             HasSubCategories = true
         };
 
@@ -267,7 +267,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "add-user",
             DisplayName = "Add User",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddUserViewModel),
             Parent = userManagement
         });
@@ -276,7 +276,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "edit-user",
             DisplayName = "Edit User",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditUserViewModel),
             Parent = userManagement
         });
@@ -285,7 +285,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "delete-user",
             DisplayName = "Delete User",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemoveUserViewModel),
             Parent = userManagement
         });
@@ -297,7 +297,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "part-numbers",
             DisplayName = "Part Numbers",
-            Icon = "🔧",
+            Icon = "ðŸ”§",
             HasSubCategories = true
         };
 
@@ -305,7 +305,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "add-part",
             DisplayName = "Add Part Number",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddPartViewModel),
             Parent = partNumbers
         });
@@ -314,7 +314,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "edit-part",
             DisplayName = "Edit Part Number",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditPartViewModel),
             Parent = partNumbers
         });
@@ -323,7 +323,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "remove-part",
             DisplayName = "Remove Part Number",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemovePartViewModel),
             Parent = partNumbers
         });
@@ -335,7 +335,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "operations",
             DisplayName = "Operations",
-            Icon = "⚙️",
+            Icon = "âš™ï¸",
             HasSubCategories = true
         };
 
@@ -343,7 +343,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "add-operation",
             DisplayName = "Add Operation",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddOperationViewModel),
             Parent = operations
         });
@@ -352,7 +352,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "edit-operation",
             DisplayName = "Edit Operation",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditOperationViewModel),
             Parent = operations
         });
@@ -361,7 +361,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "remove-operation",
             DisplayName = "Remove Operation",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemoveOperationViewModel),
             Parent = operations
         });
@@ -373,7 +373,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "locations",
             DisplayName = "Locations",
-            Icon = "📍",
+            Icon = "ðŸ“",
             HasSubCategories = true
         };
 
@@ -381,7 +381,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "add-location",
             DisplayName = "Add Location",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddLocationViewModel),
             Parent = locations
         });
@@ -390,7 +390,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "edit-location",
             DisplayName = "Edit Location",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditLocationViewModel),
             Parent = locations
         });
@@ -399,7 +399,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "remove-location",
             DisplayName = "Remove Location",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemoveLocationViewModel),
             Parent = locations
         });
@@ -411,7 +411,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "item-types",
             DisplayName = "Item Types",
-            Icon = "📦",
+            Icon = "ðŸ“¦",
             HasSubCategories = true
         };
 
@@ -419,7 +419,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "add-itemtype",
             DisplayName = "Add Item Type",
-            Icon = "➕",
+            Icon = "âž•",
             PanelType = typeof(AddItemTypeViewModel),
             Parent = itemTypes
         });
@@ -428,7 +428,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "edit-itemtype",
             DisplayName = "Edit Item Type",
-            Icon = "✏️",
+            Icon = "âœï¸",
             PanelType = typeof(EditItemTypeViewModel),
             Parent = itemTypes
         });
@@ -437,7 +437,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "remove-itemtype",
             DisplayName = "Remove Item Type",
-            Icon = "🗑️",
+            Icon = "ðŸ—‘ï¸",
             PanelType = typeof(RemoveItemTypeViewModel),
             Parent = itemTypes
         });
@@ -449,7 +449,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "shortcuts",
             DisplayName = "Shortcuts Configuration",
-            Icon = "⌨️",
+            Icon = "âŒ¨ï¸",
             PanelType = typeof(ShortcutsViewModel)
         });
 
@@ -458,7 +458,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "about",
             DisplayName = "About Information",
-            Icon = "ℹ️",
+            Icon = "â„¹ï¸",
             PanelType = typeof(AboutViewModel)
         });
 
@@ -467,7 +467,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "system-health",
             DisplayName = "System Health & Diagnostics",
-            Icon = "🩺",
+            Icon = "ðŸ©º",
             PanelType = typeof(SystemHealthViewModel)
         });
 
@@ -476,7 +476,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "backup-recovery",
             DisplayName = "Backup & Recovery",
-            Icon = "💾",
+            Icon = "ðŸ’¾",
             PanelType = typeof(BackupRecoveryViewModel)
         });
 
@@ -485,7 +485,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             Id = "security-permissions",
             DisplayName = "Security & Permissions",
-            Icon = "🔒",
+            Icon = "ðŸ”’",
             PanelType = typeof(SecurityPermissionsViewModel)
         });
 

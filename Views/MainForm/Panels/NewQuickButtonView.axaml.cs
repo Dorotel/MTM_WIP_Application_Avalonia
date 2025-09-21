@@ -1,3 +1,4 @@
+﻿using MTM_WIP_Application_Avalonia.Services.UI;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -661,3 +662,4 @@ public partial class NewQuickButtonView : UserControl
 
     #endregion
 }
+

@@ -12,7 +12,10 @@ using Microsoft.Extensions.Logging;
 using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Services.Core;
+using MTM_WIP_Application_Avalonia.Models.Print;
 using MTM_WIP_Application_Avalonia.Services.Business;
+using MTM_WIP_Application_Avalonia.Services.Infrastructure;
+using MTM_WIP_Application_Avalonia.Services.UI;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -663,7 +666,7 @@ public partial class TransferItemViewModel : BaseViewModel
 
             // Configure print data with mock data
             printViewModel.PrintData = mockDataTable;
-            printViewModel.DataSourceType = MTM_WIP_Application_Avalonia.Models.PrintDataSourceType.Transfer;
+            printViewModel.DataSourceType = PrintDataSourceType.Transfer;
             printViewModel.DocumentTitle = "Test Transfer Report - Mock Data";
             printViewModel.OriginalViewContext = this; // Store current context for navigation back
 

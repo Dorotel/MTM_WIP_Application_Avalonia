@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -38,7 +38,7 @@ public partial class SettingsCategoryViewModel : ObservableObject
     /// <summary>
     /// Icon emoji or symbol for the category.
     /// </summary>
-    public string Icon { get; set; } = "📁";
+    public string Icon { get; set; } = "ðŸ“";
 
     /// <summary>
     /// Description of the category functionality.
