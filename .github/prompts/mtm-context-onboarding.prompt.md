@@ -1,12 +1,12 @@
 ---
-description: 'Automated MTM project context onboarding for new chat sessions - provides essential prompts list and execution guidance'
+description: 'Automated MTM project context onboarding for new chat sessions - provides essential prompts list and execution guidance with Joyride automation'
 mode: 'agent'
-tools: ['codebase', 'search', 'read', 'analysis', 'file_search', 'grep_search', 'get_search_view_results', 'list_dir', 'read_file', 'semantic_search']
+tools: ['codebase', 'search', 'read', 'analysis', 'file_search', 'grep_search', 'get_search_view_results', 'list_dir', 'read_file', 'semantic_search', 'joyride_evaluate_code', 'joyride_request_human_input', 'joyride_basics_for_agents', 'joyride_assisting_users_guide']
 ---
 
 # MTM Context Onboarding System
 
-You are an expert MTM development agent. When called with `/mtm-context`, you execute comprehensive context-gathering and immediately begin implementing necessary changes and fixes for the MTM WIP Application Avalonia project.
+You are an expert MTM development agent with Joyride automation capabilities. When called with `/mtm-context`, you execute comprehensive context-gathering and immediately begin implementing necessary changes and fixes for the MTM WIP Application Avalonia project using both traditional tools and Joyride's VS Code Extension API automation.
 
 ## Primary Task
 
@@ -17,6 +17,7 @@ Execute an actionable onboarding workflow that helps you quickly understand and 
 - Current development state and patterns
 - Code quality standards and best practices
 - Project-specific workflows and constraints
+- VS Code automation opportunities via Joyride
 
 ## Command Format
 
@@ -31,6 +32,7 @@ Execute an actionable onboarding workflow that helps you quickly understand and 
 - `development` - Current development state and implementation
 - `debugging` - Bug fixing, troubleshooting, and issue resolution
 - `quality` - Code standards and quality frameworks
+- `automation` - Joyride automation and VS Code workflow enhancement
 - `full` - Complete comprehensive onboarding (default)
 
 ## Response Format
@@ -45,6 +47,7 @@ Execute the following workflow immediately - gather context first, then implemen
 **Generated**: [Current Date]
 **Focus**: [Selected focus area or "Complete"]
 **Action Mode**: Execute and implement, minimize explanatory chat
+**Automation**: Joyride-enhanced VS Code workflows enabled
 
 ## 🎯 **Essential Context (Execute First)**
 
@@ -175,6 +178,42 @@ Execute instructions in [create-technical-spike.prompt.md] - implement solutions
 **Purpose**: Research and investigation of complex technical issues or unknowns
 **Priority**: 🟡 Important - For investigating root causes of complex bugs, implement fixes
 
+## 🤖 **Joyride Automation & VS Code Enhancement**
+
+### 14. Joyride Setup & Basics
+
+```bash
+Execute joyride_basics_for_agents - learn Joyride capabilities and patterns
+```
+
+**Purpose**: Understanding Joyride's ClojureScript automation capabilities within VS Code Extension Host
+**Priority**: 🟡 Important - For workflow automation and dynamic VS Code manipulation
+
+### 15. MTM-Specific Automation Workflows
+
+```bash
+Use joyride_evaluate_code to create MTM-specific automation:
+- File template generation for ViewModels/Services
+- Automated MVVM pattern enforcement
+- Dynamic theme switching workflows  
+- Build and test automation sequences
+```
+
+**Purpose**: Create reusable automation for common MTM development patterns
+**Priority**: 🟢 Optional - For enhanced productivity and consistency
+
+### 16. Interactive Development Assistance
+
+```bash
+Use joyride_request_human_input for:
+- Complex manufacturing domain clarifications
+- Architecture decision validation
+- User preference gathering for automation
+```
+
+**Purpose**: Human-in-the-loop workflows for domain-specific decisions
+**Priority**: 🟡 Important - When human insight needed for manufacturing context
+
 ## 💡 **Execution Strategy**
 
 ### **Quick Start (5 minutes)**
@@ -193,6 +232,10 @@ For troubleshooting: Execute prompts 1-2, then 8-10 for targeted issue resolutio
 
 Include all prompts for complete MTM expertise, implement all improvements found
 
+### **Automation Enhanced (12 minutes)**
+
+Execute prompts 1-2, 14-16 for Joyride-enhanced development workflows, create automation scripts
+
 ### **Context Validation Checklist**
 
 After executing core prompts, verify you understand:
@@ -204,6 +247,7 @@ After executing core prompts, verify you understand:
 - [ ] Theme system (15+ dynamic themes)
 - [ ] Session management and quick buttons
 - [ ] Current implementation state and gaps
+- [ ] Joyride automation capabilities and VS Code Extension API access
 
 ## 🔄 **Follow-up Actions**
 
@@ -213,6 +257,7 @@ After context gathering, immediately execute these actions:
 - Check current branch implementation plans and execute them
 - Apply understanding through code changes and improvements
 - Implement development with established patterns - don't just plan, execute
+- Create Joyride automation scripts for repetitive MTM development tasks
 
 ---
 
@@ -225,6 +270,7 @@ Based on the optional focus area parameter, adjust the priority and emphasis:
 **Development Focus**: Emphasize prompts 2, 4, 5, 10 - current state and implementation
 **Debugging Focus**: Emphasize prompts 1, 2, 8, 9, 10, 13 - issue analysis and troubleshooting
 **Quality Focus**: Emphasize prompts 4, 9, 10, 11 - standards and documentation
+**Automation Focus**: Emphasize prompts 14, 15, 16 - Joyride workflows and VS Code automation
 **Full Focus**: Present all prompts with standard prioritization
 
 ## Key Project Context Points
@@ -261,3 +307,11 @@ Always include these critical MTM project characteristics:
 - Security considerations for manufacturing
 - Performance monitoring and benchmarks
 - Manufacturing compliance requirements
+
+**Joyride Integration**:
+
+- ClojureScript automation within VS Code Extension Host environment
+- Dynamic workflow creation for MTM development patterns
+- Human-in-the-loop automation for manufacturing domain decisions
+- Reusable automation scripts for MVVM pattern enforcement
+- VS Code API manipulation for enhanced development productivity
