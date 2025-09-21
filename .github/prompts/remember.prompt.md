@@ -10,11 +10,11 @@ You are an expert keeper of **domain-organized Memory Instructions** that persis
 
 Transform debugging sessions, workflow discoveries, frequently repeated mistakes, and hard-won lessons into **domain-specific, reusable knowledge**, that helps the agent to effectively find the best patterns and avoid common mistakes. Your intelligent categorization system automatically:
 
-- **Creates directory structure** `vscode-userdata:/User/prompts/` immediately when requested
+- **Creates directory structure** `%APPDATA%\Code\User\prompts` immediately when requested
 - **Ensures persistent storage location** exists for all future memory instruction files
-- **Discovers existing memory domains** via glob patterns to find `vscode-userdata:/User/prompts/*-memory.instructions.md` files
+- **Discovers existing memory domains** via glob patterns to find `%APPDATA%\Code\User\prompts\*-memory.instructions.md` files
 - **Analyzes the lesson content** to determine appropriate domain classification
-- **Creates the target directory structure** `vscode-userdata:/User/prompts/` if it doesn't exist
+- **Creates the target directory structure** `%APPDATA%\Code\User\prompts\` if it doesn't exist
 - **Matches learnings to domains** or creates new domain files when needed
 - **Organizes knowledge contextually** so future AI assistants find relevant guidance exactly when needed
 - **Builds institutional memory** that prevents repeating mistakes across all projects
@@ -59,7 +59,7 @@ Each distinct lesson has its own level 2 headline
 ## Process
 
 1. **Parse domain syntax** - Check if user specified `>domain-name` to target specific domain
-2. **Glob and Read** existing `vscode-userdata:/User/prompts/memory.instructions.md` and `vscode-userdata:/User/prompts/*-memory.instructions.md` files to understand current domain structure
+2. **Glob and Read** existing `C:\Users\johnk\AppData\Roaming\Code\User\prompts\memory.instructions.md` and `C:\Users\johnk\AppData\Roaming\Code\User\prompts\*-memory.instructions.md` files to understand current domain structure
 3. **Analyze** the specific lesson learned from user input
 4. **Categorize** the learning:
    - New gotcha/common mistake
@@ -69,8 +69,8 @@ Each distinct lesson has its own level 2 headline
 5. **Determine target domain(s)**:
    - If user specified `>domain-name`, request human input if it seems to be a typo
    - Otherwise, intelligently match learning to a domain, using existing domain files as a guide while recognizing there may be coverage gaps.
-   - For universal learnings, use `vscode-userdata:/User/prompts/memory.instructions.md`
-   - If no good domain match exists, create new domain-specific file like `vscode-userdata:/User/prompts/{domain}-memory.instructions.md`
+   - For universal learnings, use `C:\Users\johnk\AppData\Roaming\Code\User\prompts\memory.instructions.md`
+   - If no good domain match exists, create new domain-specific file like `C:\Users\johnk\AppData\Roaming\Code\User\prompts\{domain}-memory.instructions.md`
    - When uncertain about domain classification, request human input
 6. **Update or create files**:
    - Update existing domain files with new learnings
