@@ -23,8 +23,8 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly INavigationService _navigationService;
     private readonly IThemeService _themeService;
     private readonly ISettingsService _settingsService;
-    private readonly VirtualPanelManager _panelManager;
-    private readonly SettingsPanelStateManager _stateManager;
+    private readonly IVirtualPanelManager _panelManager;
+    private readonly ISettingsPanelStateManager _stateManager;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSaveChanges))]
@@ -58,8 +58,8 @@ public partial class SettingsViewModel : BaseViewModel
         INavigationService navigationService,
         IThemeService themeService,
         ISettingsService settingsService,
-        VirtualPanelManager panelManager,
-        SettingsPanelStateManager stateManager,
+        IVirtualPanelManager panelManager,
+        ISettingsPanelStateManager stateManager,
         ILogger<SettingsViewModel> logger) : base(logger)
     {
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));

@@ -73,17 +73,9 @@ public partial class InventoryTabView : UserControl
         _serviceProvider = serviceProvider;
         _logger = _serviceProvider?.GetService<ILogger<InventoryTabView>>();
 
-        // Try to resolve the suggestion overlay service immediately if we have a service provider
-        try
-        {
-            _suggestionOverlayService = _serviceProvider?.GetService<ISuggestionOverlayService>();
-            _successOverlayService = _serviceProvider?.GetService<ISuccessOverlayService>();
-            _logger?.LogInformation("SuccessOverlayService resolved in constructor: {ServiceResolved}", _successOverlayService != null);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogWarning(ex, "Failed to resolve overlay services in constructor");
-        }
+        // Defer overlay service resolution to avoid circular dependencies during DI construction
+        // Services will be resolved lazily when first needed
+        _logger?.LogInformation("InventoryTabView initialized with deferred service resolution to avoid circular dependencies");
     }
 
     #region Control Initialization

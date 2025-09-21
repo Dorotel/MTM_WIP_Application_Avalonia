@@ -1,7 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
-             xmlns:services="using:MTM_WIP_Application_Avalonia.Services"
+             xmlns:services="using:MTM_WIP_Application_Avalonia.Services.UI"
+             xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.ThemeQuickSwitcherOverlayView"
              x:DataType="vm:ThemeQuickSwitcherOverlayViewModel">
 
@@ -107,7 +108,7 @@
               <!-- Theme Variant Indicator -->
               <Border Grid.Column="2" Background="White" CornerRadius="4"
                       Padding="6,2" Opacity="0.9">
-                <TextBlock Text="{Binding IsCurrentThemeDark, Converter={x:Static BoolConverters.ToStringConverter}, ConverterParameter='Dark|Light'}"
+                <TextBlock Text="Theme"
                           FontSize="10" FontWeight="SemiBold"
                           Foreground="{DynamicResource MTM_Shared_Logic.InfoBrush}" />
               </Border>
@@ -129,8 +130,8 @@
                   <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
                           BorderThickness="1" CornerRadius="8" Margin="4" Padding="12"
-                          Classes.Selected="{Binding Id, Converter={x:Static StringConverters.Equals}, ConverterParameter={Binding $parent[UserControl].((vm:ThemeQuickSwitcherOverlayViewModel)DataContext).SelectedTheme.Id}}"
-                          Classes.Preview="{Binding Id, Converter={x:Static StringConverters.Equals}, ConverterParameter={Binding $parent[UserControl].((vm:ThemeQuickSwitcherOverlayViewModel)DataContext).PreviewTheme.Id}}">
+                          Classes.Selected="{Binding Id, Converter={StaticResource StringEqualsConverter}, ConverterParameter={Binding $parent[UserControl].((vm:ThemeQuickSwitcherOverlayViewModel)DataContext).SelectedTheme.Id}}"
+                          Classes.Preview="{Binding Id, Converter={StaticResource StringEqualsConverter}, ConverterParameter={Binding $parent[UserControl].((vm:ThemeQuickSwitcherOverlayViewModel)DataContext).PreviewTheme.Id}}">
 
                     <Border.Styles>
                       <Style Selector="Border.Selected">
@@ -155,9 +156,9 @@
                                 TextWrapping="Wrap" Margin="0,0,0,4" />
 
                       <!-- Theme Type Badge -->
-                      <Border Grid.Row="2" Background="{Binding IsDark, Converter={x:Static BoolConverters.ToBrushConverter}, ConverterParameter='#2C2C2C|{DynamicResource MTM_Shared_Logic.InfoBrush}'}"
+                      <Border Grid.Row="2" Background="{DynamicResource MTM_Shared_Logic.InfoBrush}"
                               CornerRadius="8" Padding="6,2" HorizontalAlignment="Left" Margin="0,0,0,8">
-                        <TextBlock Text="{Binding IsDark, Converter={x:Static BoolConverters.ToStringConverter}, ConverterParameter='Dark|Light'}"
+                        <TextBlock Text="Theme"
                                   FontSize="10" FontWeight="Bold" Foreground="White" />
                       </Border>
 

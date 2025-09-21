@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlays"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
              x:Class="MTM_WIP_Application_Avalonia.Views.Overlays.ProgressOverlayView"
              x:DataType="vm:ProgressOverlayViewModel">
 

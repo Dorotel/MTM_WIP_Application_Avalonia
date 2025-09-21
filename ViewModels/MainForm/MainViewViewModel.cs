@@ -1,6 +1,7 @@
 ﻿using MTM_WIP_Application_Avalonia.Models.Events;
 using MTM_WIP_Application_Avalonia.Services.UI;
 using MTM_WIP_Application_Avalonia.Models.Core;
+using MTM_WIP_Application_Avalonia.Services.Feature;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,6 +34,7 @@ public partial class MainViewViewModel : BaseViewModel
     private readonly IServiceProvider _serviceProvider;
     private readonly IDatabaseService _databaseService;
     private readonly IFocusManagementService _focusManagementService;
+    private readonly IUniversalOverlayService _universalOverlayService;
 
     /// <summary>
     /// Gets or sets the currently selected tab index (0-based)
@@ -161,6 +163,7 @@ public partial class MainViewViewModel : BaseViewModel
         QuickButtonsViewModel quickButtonsViewModel,
         IServiceProvider serviceProvider,
         IFocusManagementService focusManagementService,
+        IUniversalOverlayService universalOverlayService,
         ILogger<MainViewViewModel> logger) : base(logger)
     {
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
@@ -168,6 +171,7 @@ public partial class MainViewViewModel : BaseViewModel
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _focusManagementService = focusManagementService ?? throw new ArgumentNullException(nameof(focusManagementService));
+        _universalOverlayService = universalOverlayService ?? throw new ArgumentNullException(nameof(universalOverlayService));
 
         Logger.LogInformation("MainViewViewModel initialized with dependency injection");
 
@@ -415,6 +419,43 @@ public partial class MainViewViewModel : BaseViewModel
         UpdateRemoveContent();
         StatusText = "Normal Remove Mode";
         Logger.LogInformation("Switched to Normal Remove Mode");
+    }
+
+    /// <summary>
+    /// Shows the Theme Quick Switcher overlay for theme selection and management
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowThemeQuickSwitcherAsync()
+    {
+        try
+        {
+            Logger.LogInformation("Opening Theme Quick Switcher overlay");
+            StatusText = "Opening theme switcher...";
+
+            // Create a simple request object for now (will be replaced with proper model later)
+            var request = new { Title = "Theme Quick Switcher" };
+
+            // Show the overlay using the Universal Overlay Service
+            // Note: This is a simplified implementation - proper request/response models
+            // should be implemented according to WeekendRefactor documentation
+            var result = await _universalOverlayService.ShowOverlayAsync(request);
+
+            if (result != null)
+            {
+                Logger.LogInformation("Theme Quick Switcher completed successfully");
+                StatusText = "Theme switcher closed";
+            }
+            else
+            {
+                Logger.LogInformation("Theme Quick Switcher was cancelled");
+                StatusText = "Theme selection cancelled";
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to show Theme Quick Switcher overlay");
+            StatusText = "Failed to open theme switcher";
+        }
     }
 
     #endregion

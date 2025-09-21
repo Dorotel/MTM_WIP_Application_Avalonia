@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlays"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
              x:Class="MTM_WIP_Application_Avalonia.Views.Overlays.FieldValidationOverlayView"
              x:DataType="vm:FieldValidationOverlayViewModel">
 
@@ -87,23 +87,12 @@
                   <Border Width="16" Height="16"
                           Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
                           CornerRadius="8">
-                    <Border.RenderTransform>
-                      <RotateTransform/>
-                    </Border.RenderTransform>
-                    <Border.Styles>
-                      <Style Selector="Border">
-                        <Style.Animations>
-                          <Animation Duration="0:0:1" IterationCount="INFINITE">
-                            <KeyFrame Cue="0%">
-                              <Setter Property="RenderTransform.Angle" Value="0"/>
-                            </KeyFrame>
-                            <KeyFrame Cue="100%">
-                              <Setter Property="RenderTransform.Angle" Value="360"/>
-                            </KeyFrame>
-                          </Animation>
-                        </Style.Animations>
-                      </Style>
-                    </Border.Styles>
+                    <!-- Simple loading indicator without complex animations -->
+                    <TextBlock Text="●"
+                               FontSize="12"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
                   </Border>
                   <TextBlock Text="Validating..."
                              FontSize="12"

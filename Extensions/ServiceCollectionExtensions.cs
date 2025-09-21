@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.ICustomDataGridService, MTM_WIP_Application_Avalonia.Services.UI.CustomDataGridService>();
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.IColumnConfigurationService, MTM_WIP_Application_Avalonia.Services.UI.ColumnConfigurationService>();
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.ISettingsPanelStateManager, MTM_WIP_Application_Avalonia.Services.UI.SettingsPanelStateManager>();
-        // TODO: Add VirtualPanelManager registration when SettingsViewModel dependency is fixed
+        services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.UI.IVirtualPanelManager, MTM_WIP_Application_Avalonia.Services.UI.VirtualPanelManager>();
 
         // INFRASTRUCTURE SERVICES (Services/Infrastructure/ folder - using folder-specific namespace)
         services.TryAddSingleton<MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileSelectionService, MTM_WIP_Application_Avalonia.Services.Infrastructure.FileSelectionService>();
@@ -292,6 +292,53 @@ public static class ServiceCollectionExtensions
         {
             var errorMessage = $"Failed to resolve critical services:{Environment.NewLine}{string.Join(Environment.NewLine, failedServices)}";
             throw new InvalidOperationException(errorMessage);
+        }
+    }
+
+    /// <summary>
+    /// Validates critical services one by one to identify problematic services.
+    /// Performs selective testing to avoid circular dependency issues.
+    /// </summary>
+    public static void ValidateSelectiveRuntimeServices(this IServiceProvider serviceProvider)
+    {
+        var criticalServices = new[]
+        {
+            // Test Core Services first (most fundamental)
+            typeof(MTM_WIP_Application_Avalonia.Services.Core.IConfigurationService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Core.IApplicationStateService),
+
+            // Test Infrastructure Services (no complex dependencies)
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IFilePathService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileLoggingService),
+            typeof(MTM_WIP_Application_Avalonia.Services.Infrastructure.IFileSelectionService),
+
+            // Test simpler UI Services
+            typeof(MTM_WIP_Application_Avalonia.Services.UI.IThemeService),
+
+            // Test Business Services (may have more complex dependencies)
+            typeof(IMasterDataService),
+            typeof(IRemoveService),
+            typeof(IInventoryEditingService),
+
+            // Skip complex services that might cause issues
+            // typeof(MTM_WIP_Application_Avalonia.Services.Core.IDatabaseService),
+            // typeof(MTM_WIP_Application_Avalonia.Services.UI.IFocusManagementService),
+            // typeof(MTM_WIP_Application_Avalonia.Services.UI.ISuccessOverlayService),
+        };
+
+        foreach (var serviceType in criticalServices)
+        {
+            try
+            {
+                Console.WriteLine($"[VALIDATION-TEST] Testing {serviceType.Name}...");
+                var service = serviceProvider.GetRequiredService(serviceType);
+                Console.WriteLine($"[VALIDATION-SUCCESS] {serviceType.Name} resolved successfully");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[VALIDATION-ERROR] {serviceType.Name}: {ex.Message}");
+                // Don't throw - just log and continue to identify all problematic services
+            }
         }
     }
 }

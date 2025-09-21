@@ -17,13 +17,13 @@ namespace MTM_WIP_Application_Avalonia.Views;
 /// <summary>
 /// Code-behind for NewQuickButtonView - MTM QuickButton creation interface.
 /// Implements minimal Avalonia UserControl pattern with SuggestionOverlay integration.
-/// 
+///
 /// Responsibilities:
 /// - SuggestionOverlay event subscription and handling
 /// - Keyboard navigation and focus management
 /// - UI-specific interactions that cannot be handled in ViewModel
 /// - Resource cleanup and event unsubscription
-/// 
+///
 /// Integration Points:
 /// - TextBoxFuzzyValidationBehavior for Part ID and Operation fields
 /// - SuggestionOverlayView for fuzzy search suggestions
@@ -32,14 +32,14 @@ namespace MTM_WIP_Application_Avalonia.Views;
 public partial class NewQuickButtonView : UserControl
 {
     #region Fields
-    
+
     private readonly IServiceProvider? _serviceProvider;
     private readonly ILogger<NewQuickButtonView>? _logger;
     private ISuggestionOverlayService? _suggestionOverlayService;
-    
+
     // Flag to prevent cascading suggestion overlays
     private bool _isShowingSuggestionOverlay = false;
-    
+
     #endregion
 
     #region Constructor
@@ -53,10 +53,10 @@ public partial class NewQuickButtonView : UserControl
         InitializeComponent();
         InitializeControlReferences();
         SetupEventHandlers();
-        
+
         Loaded += OnLoaded;
     }
-    
+
     /// <summary>
     /// Constructor for dependency injection support.
     /// </summary>
@@ -65,27 +65,17 @@ public partial class NewQuickButtonView : UserControl
     {
         _serviceProvider = serviceProvider;
         _logger = _serviceProvider?.GetService<ILogger<NewQuickButtonView>>();
-        
+
         // Try to resolve the suggestion overlay service immediately if we have a service provider
-        try
-        {
-            // Try to get both services from the service provider
-            _suggestionOverlayService = _serviceProvider?.GetService<ISuggestionOverlayService>();
-            
-            // If we got the service from DI, it should already have focus management
-            // If not available, we'll create it manually in TryResolveServices
-            _logger?.LogInformation("SuggestionOverlayService resolved in constructor: {ServiceResolved}", _suggestionOverlayService != null);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogWarning(ex, "Failed to resolve SuggestionOverlayService in constructor");
-        }
+        // Defer service resolution to avoid circular dependencies during DI construction
+        // Services will be resolved lazily when first needed in TryResolveServices method
+        _logger?.LogInformation("NewQuickButtonView initialized with deferred service resolution to avoid circular dependencies");
     }
 
     #endregion
-    
+
     #region Control Initialization
-    
+
     /// <summary>
     /// Initializes references to UI controls for direct manipulation.
     /// </summary>
@@ -102,7 +92,7 @@ public partial class NewQuickButtonView : UserControl
             System.Diagnostics.Debug.WriteLine($"Error initializing control references: {ex.Message}");
         }
     }
-    
+
     /// <summary>
     /// Sets up event handlers for the form controls.
     /// </summary>
@@ -113,21 +103,21 @@ public partial class NewQuickButtonView : UserControl
             // Set up LostFocus handlers for TextBoxes with SuggestionOverlay support
             var partIdTextBox = this.FindControl<TextBox>("PartIdTextBox");
             var operationTextBox = this.FindControl<TextBox>("OperationTextBox");
-            
+
             if (partIdTextBox != null)
             {
                 partIdTextBox.LostFocus += OnPartIdLostFocus;
                 _logger?.LogDebug("PartId TextBox LostFocus event handler attached");
             }
-            
+
             if (operationTextBox != null)
             {
                 operationTextBox.LostFocus += OnOperationLostFocus;
                 _logger?.LogDebug("Operation TextBox LostFocus event handler attached");
             }
-            
+
             KeyDown += OnUserControlKeyDown;
-            
+
             _logger?.LogDebug("Event handlers set up successfully");
         }
         catch (Exception ex)
@@ -136,7 +126,7 @@ public partial class NewQuickButtonView : UserControl
             System.Diagnostics.Debug.WriteLine($"Error setting up event handlers: {ex.Message}");
         }
     }
-    
+
     #endregion
 
     #region SuggestionOverlay LostFocus Handlers
@@ -149,7 +139,7 @@ public partial class NewQuickButtonView : UserControl
     {
         try
         {
-            if (DataContext is not NewQuickButtonOverlayViewModel viewModel || sender is not TextBox textBox) 
+            if (DataContext is not NewQuickButtonOverlayViewModel viewModel || sender is not TextBox textBox)
                 return;
 
             // Ensure services are resolved before proceeding
@@ -165,7 +155,7 @@ public partial class NewQuickButtonView : UserControl
             {
                 _logger?.LogWarning("No Part IDs available - likely database connectivity issue");
                 System.Diagnostics.Debug.WriteLine("No Part IDs available - likely database connectivity issue");
-                
+
                 // Clear the textbox and show error message about data unavailability
                 textBox.Text = string.Empty;
                 viewModel.PartId = string.Empty;
@@ -173,13 +163,13 @@ public partial class NewQuickButtonView : UserControl
             }
 
             // Only show suggestions if the user actually entered something
-            if (!string.IsNullOrEmpty(value) && 
-                !data.Contains(value, StringComparer.OrdinalIgnoreCase) && 
+            if (!string.IsNullOrEmpty(value) &&
+                !data.Contains(value, StringComparer.OrdinalIgnoreCase) &&
                 _suggestionOverlayService != null &&
                 !_isShowingSuggestionOverlay)
             {
                 // Check if the value has any partial matches in the data
-                var hasPartialMatches = data.Any(part => 
+                var hasPartialMatches = data.Any(part =>
                     part.Contains(value, StringComparison.OrdinalIgnoreCase));
 
                 if (hasPartialMatches)
@@ -210,10 +200,10 @@ public partial class NewQuickButtonView : UserControl
                     // MTM Pattern: Clear textbox when no matches found to maintain data integrity
                     _logger?.LogInformation($"Part ID '{value}' has no matches in validation source. Clearing textbox for data integrity.");
                     System.Diagnostics.Debug.WriteLine($"Part ID '{value}' has no matches in validation source. Clearing textbox for data integrity.");
-                    
+
                     textBox.Text = string.Empty;
                     viewModel.PartId = string.Empty;
-                    
+
                     // Show user feedback about the clearing action
                     _ = Task.Run(async () =>
                     {
@@ -248,7 +238,7 @@ public partial class NewQuickButtonView : UserControl
     {
         try
         {
-            if (DataContext is not NewQuickButtonOverlayViewModel viewModel || sender is not TextBox textBox) 
+            if (DataContext is not NewQuickButtonOverlayViewModel viewModel || sender is not TextBox textBox)
                 return;
 
             // Ensure services are resolved before proceeding
@@ -264,7 +254,7 @@ public partial class NewQuickButtonView : UserControl
             {
                 _logger?.LogWarning("No Operations available - likely database connectivity issue");
                 System.Diagnostics.Debug.WriteLine("No Operations available - likely database connectivity issue");
-                
+
                 // Clear the textbox and show error message about data unavailability
                 textBox.Text = string.Empty;
                 viewModel.Operation = string.Empty;
@@ -272,13 +262,13 @@ public partial class NewQuickButtonView : UserControl
             }
 
             // Only show suggestions if the user actually entered something
-            if (!string.IsNullOrEmpty(value) && 
-                !data.Contains(value, StringComparer.OrdinalIgnoreCase) && 
+            if (!string.IsNullOrEmpty(value) &&
+                !data.Contains(value, StringComparer.OrdinalIgnoreCase) &&
                 _suggestionOverlayService != null &&
                 !_isShowingSuggestionOverlay)
             {
                 // Check if the value has any partial matches in the data
-                var hasPartialMatches = data.Any(op => 
+                var hasPartialMatches = data.Any(op =>
                     op.Contains(value, StringComparison.OrdinalIgnoreCase));
 
                 if (hasPartialMatches)
@@ -309,10 +299,10 @@ public partial class NewQuickButtonView : UserControl
                     // MTM Pattern: Clear textbox when no matches found to maintain data integrity
                     _logger?.LogInformation($"Operation '{value}' has no matches in validation source. Clearing textbox for data integrity.");
                     System.Diagnostics.Debug.WriteLine($"Operation '{value}' has no matches in validation source. Clearing textbox for data integrity.");
-                    
+
                     textBox.Text = string.Empty;
                     viewModel.Operation = string.Empty;
-                    
+
                     // Show user feedback about the clearing action
                     _ = Task.Run(async () =>
                     {
@@ -352,21 +342,21 @@ public partial class NewQuickButtonView : UserControl
             if (_serviceProvider != null)
             {
                 _suggestionOverlayService = _serviceProvider.GetService<ISuggestionOverlayService>();
-                
+
                 // If ISuggestionOverlayService is not registered, create it manually with dependencies
                 if (_suggestionOverlayService == null)
                 {
                     var suggestionLogger = _serviceProvider.GetService<ILogger<SuggestionOverlayService>>();
                     var focusService = _serviceProvider.GetService<IFocusManagementService>();
-                    
+
                     if (suggestionLogger != null)
                     {
                         _suggestionOverlayService = new SuggestionOverlayService(suggestionLogger, focusService);
                         _logger?.LogDebug("SuggestionOverlayService created manually with DI dependencies");
                     }
                 }
-                
-                _logger?.LogDebug("SuggestionOverlayService resolved via ServiceProvider: {ServiceResolved}", 
+
+                _logger?.LogDebug("SuggestionOverlayService resolved via ServiceProvider: {ServiceResolved}",
                     _suggestionOverlayService != null);
                 return;
             }
@@ -375,7 +365,7 @@ public partial class NewQuickButtonView : UserControl
             if (TopLevel.GetTopLevel(this) is Window mainWindow)
             {
                 // Try to get service provider from DataContext or other means
-                try 
+                try
                 {
                     // Attempt to resolve service via App.Current
                     if (Avalonia.Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop &&
@@ -390,7 +380,7 @@ public partial class NewQuickButtonView : UserControl
                             {
                                 var windowServiceProvider = serviceProviderProperty.GetValue(dataContext) as IServiceProvider;
                                 _suggestionOverlayService = windowServiceProvider?.GetService<ISuggestionOverlayService>();
-                                _logger?.LogDebug("SuggestionOverlayService resolved via MainWindow DataContext: {ServiceResolved}", 
+                                _logger?.LogDebug("SuggestionOverlayService resolved via MainWindow DataContext: {ServiceResolved}",
                                     _suggestionOverlayService != null);
                                 if (_suggestionOverlayService != null) return;
                             }
@@ -409,7 +399,7 @@ public partial class NewQuickButtonView : UserControl
                 var serviceLogger = Microsoft.Extensions.Logging.LoggerFactory
                     .Create(builder => builder.AddConsole())
                     .CreateLogger<SuggestionOverlayService>();
-                    
+
                 // Try to get IFocusManagementService or create one
                 var focusService = _serviceProvider?.GetService<IFocusManagementService>();
                 if (focusService == null)
@@ -419,7 +409,7 @@ public partial class NewQuickButtonView : UserControl
                         .CreateLogger<FocusManagementService>();
                     focusService = new FocusManagementService(focusLogger);
                 }
-                    
+
                 _suggestionOverlayService = new SuggestionOverlayService(serviceLogger, focusService);
                 _logger?.LogDebug("SuggestionOverlayService created directly as fallback with focus management");
             }
@@ -439,7 +429,7 @@ public partial class NewQuickButtonView : UserControl
     /// Handles suggestion overlay requests from TextBoxFuzzyValidationBehavior.
     /// This integrates the NewQuickButtonView with the MTM suggestion system
     /// used throughout the application for consistent user experience.
-    /// 
+    ///
     /// NOTE: This method is deprecated in favor of direct LostFocus handlers above.
     /// Kept for backward compatibility but should not be actively used.
     /// </summary>
@@ -452,7 +442,7 @@ public partial class NewQuickButtonView : UserControl
             // Get control references
             var partIdTextBox = this.FindControl<TextBox>("PartIdTextBox");
             var operationTextBox = this.FindControl<TextBox>("OperationTextBox");
-            
+
             // Verify that the suggestion request is from our TextBox controls
             if (sourceTextBox != partIdTextBox && sourceTextBox != operationTextBox)
             {
@@ -462,7 +452,7 @@ public partial class NewQuickButtonView : UserControl
 
             // Determine suggestion type based on source TextBox
             string suggestionContext = sourceTextBox == partIdTextBox ? "Part ID" : "Operation";
-            
+
             // Log for backward compatibility tracking
             System.Diagnostics.Debug.WriteLine(
                 $"[DEPRECATED] SuggestionOverlay requested for {suggestionContext} with {suggestions.Count} suggestions - Use LostFocus handlers instead");
@@ -498,7 +488,7 @@ public partial class NewQuickButtonView : UserControl
                     }
                     e.Handled = true;
                     break;
-                    
+
                 case Key.Enter:
                     // Enter key advances focus or triggers create if on Create button
                     if (e.Source == CreateButton && DataContext is NewQuickButtonOverlayViewModel vm && vm.CanCreate)
@@ -513,7 +503,7 @@ public partial class NewQuickButtonView : UserControl
                         e.Handled = true;
                     }
                     break;
-                    
+
                 case Key.Tab:
                     // Let default Tab behavior handle focus movement
                     break;
@@ -533,14 +523,14 @@ public partial class NewQuickButtonView : UserControl
         try
         {
             var currentFocus = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
-            
+
             // Get control references
             var partIdTextBox = this.FindControl<TextBox>("PartIdTextBox");
             var operationTextBox = this.FindControl<TextBox>("OperationTextBox");
             var quantityTextBox = this.FindControl<TextBox>("QuantityTextBox");
             var createButton = this.FindControl<Button>("CreateButton");
             var cancelButton = this.FindControl<Button>("CancelButton");
-            
+
             // Define the logical tab order for this form
             Control? nextControl = currentFocus switch
             {
@@ -597,7 +587,7 @@ public partial class NewQuickButtonView : UserControl
         {
             // Validation is handled automatically by the ViewModel's property change handlers
             // This method is available for any additional UI-specific focus handling if needed
-            
+
             if (sender is TextBox textBox && DataContext is NewQuickButtonOverlayViewModel)
             {
                 // Trigger any UI-specific validation feedback if needed
@@ -648,7 +638,7 @@ public partial class NewQuickButtonView : UserControl
         {
             // Clean up any resources or subscriptions
             // (LostFocus handlers are cleaned up automatically when control is disposed)
-            
+
             // Call base cleanup
             base.OnDetachedFromVisualTree(e);
         }

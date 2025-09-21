@@ -67,17 +67,22 @@ public class ServiceResult
 /// <summary>
 /// Service result class for operations that return typed data.
 /// </summary>
-public class ServiceResult<T> : ServiceResult
+public class ServiceResult<T>
 {
+    public bool IsSuccess { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public Exception? Exception { get; set; }
     public T? Data { get; set; }
 
-    // Backward compatibility
+    // Backward compatibility properties
+    public int Status => IsSuccess ? 1 : 0;
+    public int SuccessCount => IsSuccess ? 1 : 0;
     public T? Value => IsSuccess ? Data : default(T);
 
     public static ServiceResult<T> Success(T data, string message = "")
         => new() { IsSuccess = true, Data = data, Message = message };
 
-    public static new ServiceResult<T> Failure(string message, Exception? exception = null)
+    public static ServiceResult<T> Failure(string message, Exception? exception = null)
         => new() { IsSuccess = false, Message = message, Exception = exception };
 }
 

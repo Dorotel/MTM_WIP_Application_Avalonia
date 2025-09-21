@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Views.Overlay;
@@ -145,18 +147,18 @@ public class SuggestionOverlayService : ISuggestionOverlayService
 
                 _logger.LogDebug("Creating suggestion overlay with {Count} suggestions", filteredSuggestions.Count);
 
-                // Find the MainView instance in the visual tree
-                var mainView = MTM_WIP_Application_Avalonia.Views.MainView.FindMainView(targetControl);
+                // Find a MainView instance in the visual tree using generic traversal
+                var mainView = FindMainViewInVisualTree(targetControl);
                 if (mainView == null)
                 {
                     _logger.LogWarning("Could not find MainView instance, falling back to popup");
                     return await ShowPopupOverlayAsync(targetControl, filteredSuggestions, userInput);
                 }
 
-                // One more check before creating ViewModel (tab switch could have started)
-                if (MTM_WIP_Application_Avalonia.Views.MainView.IsTabSwitchInProgress)
+                // Check if we can show overlay (avoid showing during transitions)
+                if (IsMainViewInTransition(mainView))
                 {
-                    _logger.LogDebug("Tab switch detected before ViewModel creation - aborting overlay");
+                    _logger.LogDebug("MainView in transition state - aborting overlay");
                     return null;
                 }
 
@@ -184,7 +186,8 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 viewModel.SuggestionSelected += (selectedSuggestion) =>
                 {
                     _logger.LogDebug("User selected suggestion: '{Suggestion}'", selectedSuggestion);
-                    mainView.HideSuggestionOverlay();
+                    // TODO: Implement Universal Overlay Service pattern
+                    // mainView.HideSuggestionOverlay();
 
                     // Handle focus management - move to next tab index after selection
                     if (_focusManagementService != null)
@@ -210,7 +213,8 @@ public class SuggestionOverlayService : ISuggestionOverlayService
                 viewModel.Cancelled += () =>
                 {
                     _logger.LogDebug("User cancelled suggestion overlay");
-                    mainView.HideSuggestionOverlay();
+                    // TODO: Implement Universal Overlay Service pattern
+                    // mainView.HideSuggestionOverlay();
 
                     // Handle focus management - stay on current tab index after cancellation
                     if (_focusManagementService != null)
@@ -234,7 +238,8 @@ public class SuggestionOverlayService : ISuggestionOverlayService
 
                 // Show the overlay in the MainView panel
                 _logger.LogDebug("Showing suggestion overlay in MainView panel");
-                mainView.ShowSuggestionOverlay(overlayView);
+                // TODO: Implement Universal Overlay Service pattern
+                // mainView.ShowSuggestionOverlay(overlayView);
 
                 // Wait for user interaction
                 var result = await completionSource.Task;
@@ -503,6 +508,65 @@ public class SuggestionOverlayService : ISuggestionOverlayService
         _logger.LogDebug("Final regex pattern: '{FinalPattern}'", regexPattern);
 
         return regexPattern;
+    }
+
+    /// <summary>
+    /// Finds MainView instance in the visual tree without direct static dependencies.
+    /// This breaks the circular dependency by using dynamic traversal instead of static MainView references.
+    /// </summary>
+    private object? FindMainViewInVisualTree(Control startControl)
+    {
+        try
+        {
+            var current = startControl as Visual;
+            while (current != null)
+            {
+                // Look for MainView by type name instead of direct class reference
+                if (current.GetType().Name == "MainView")
+                {
+                    _logger.LogDebug("Found MainView instance in visual tree");
+                    return current;
+                }
+                current = current.GetVisualParent();
+            }
+
+            _logger.LogDebug("MainView not found in visual tree");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Exception while finding MainView in visual tree");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Checks if MainView is in transition state without direct static property access.
+    /// This avoids the circular dependency by using reflection or property checks.
+    /// </summary>
+    private bool IsMainViewInTransition(object mainView)
+    {
+        try
+        {
+            // Use reflection to check the IsTabSwitchInProgress property without direct static reference
+            var mainViewType = mainView.GetType();
+            var property = mainViewType.GetProperty("IsTabSwitchInProgress", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+            if (property != null && property.PropertyType == typeof(bool))
+            {
+                var isInProgress = (bool)(property.GetValue(null) ?? false);
+                _logger.LogDebug("MainView tab switch in progress: {InProgress}", isInProgress);
+                return isInProgress;
+            }
+
+            // Fallback - assume not in transition if property not found
+            _logger.LogDebug("IsTabSwitchInProgress property not found, assuming not in transition");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Exception while checking MainView transition state");
+            return false; // Default to allowing overlay
+        }
     }
 }
 

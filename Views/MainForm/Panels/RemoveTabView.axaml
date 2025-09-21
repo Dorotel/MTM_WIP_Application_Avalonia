@@ -153,7 +153,6 @@
                                          SelectedItemsCollection="{Binding SelectedItems}"
                                          DeleteItemCommand="{Binding DeleteSingleItemCommand}"
                                          MultiRowDeleteCommand="{Binding DeleteMultipleItemsCommand}"
-                                         EditItemCommand="{Binding EditItemCommand}"
                                          IsVisible="{Binding HasInventoryItems}"
                                          Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
@@ -256,24 +255,6 @@
 
     </Grid>
 
-    <!-- Note Editor Overlay - positioned above main content when visible -->
-    <Border x:Name="NoteEditorOverlay"
-            IsVisible="{Binding IsNoteEditorVisible}"
-            Background="#CC000000">
-      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-              BorderThickness="2"
-              CornerRadius="8"
-              MaxWidth="600"
-              MaxHeight="500"
-              Margin="50"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Center"
-              BoxShadow="0 8 32 8 #40000000">
-        <!-- Direct reference to NoteEditorView with proper DataContext -->
-        <views:NoteEditorView DataContext="{Binding NoteEditorViewModel}" />
-      </Border>
-    </Border>
 
     <!-- Edit Inventory Dialog Overlay - comprehensive inventory editing -->
     <Border x:Name="EditInventoryDialogOverlay"

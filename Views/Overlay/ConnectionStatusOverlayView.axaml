@@ -12,7 +12,7 @@
             MinWidth="350"
             MaxHeight="400">
 
-        <Grid RowDefinitions="Auto,*,Auto" Spacing="16">
+        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="16">
 
             <!-- Header -->
             <Border Grid.Row="0"

@@ -1,0 +1,10 @@
+
+		digraph G{
+      node [shape = box;];
+			"MTM_WIP_Application_Avalonia" [
+            label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+                <TR><TD><FONT POINT-SIZE="14">MTM_WIP_Application_Avalonia</FONT></TD></TR>
+                <TR><TD><FONT POINT-SIZE="10">net8.0</FONT></TD></TR>
+              </TABLE>>
+        ];
+  }

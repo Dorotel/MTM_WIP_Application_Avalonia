@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.Overlay"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Views.Overlay.LoadingOverlayView"
+             x:CompileBindings="True"
+             x:DataType="vm:LoadingOverlayViewModel">
+
+  <!-- Overlay Background -->
+  <Border Background="#80000000" ZIndex="1000">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+              BorderThickness="1"
+              CornerRadius="8"
+              Padding="24"
+              MinWidth="200"
+              MinHeight="100">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+
+          <!-- Loading Spinner -->
+          <Border Width="32" Height="32"
+                  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                  CornerRadius="16"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center">
+            <!-- Simple loading indicator -->
+            <TextBlock Text="●"
+                       FontSize="20"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+          </Border>
+
+          <!-- Loading Message -->
+          <TextBlock Text="{Binding LoadingMessage}"
+                     FontSize="14"
+                     FontWeight="Medium"
+                     Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                     HorizontalAlignment="Center"
+                     TextAlignment="Center" />
+
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Border>
+</UserControl>

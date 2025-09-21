@@ -190,19 +190,7 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     #endregion
 
-    #region Note Editor Properties
-
-    /// <summary>
-    /// Indicates if the note editor overlay is currently visible
-    /// </summary>
-    [ObservableProperty]
-    private bool _isNoteEditorVisible;
-
-    /// <summary>
-    /// Currently selected inventory item for note editing
-    /// </summary>
-    [ObservableProperty]
-    private InventoryItem? _noteEditorItem;
+    #region Dialog Properties
 
     /// <summary>
     /// Current edit dialog ViewModel instance for comprehensive inventory editing.
